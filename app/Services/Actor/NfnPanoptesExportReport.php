@@ -105,7 +105,7 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
 
         $message = [
             $this->expedition->title,
-            trans('messages.expedition_export_complete_message', [
+            trans('pages.expedition_export_complete_message', [
                 'expedition' => $this->expedition->title
                 ])
         ];

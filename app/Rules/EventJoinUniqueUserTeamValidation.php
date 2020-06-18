@@ -58,6 +58,6 @@ class EventJoinUniqueUserTeamValidation implements Rule
      */
     public function message()
     {
-        return trans('messages.event_join_user_error');
+        return trans('pages.event_join_user_error');
     }
 }

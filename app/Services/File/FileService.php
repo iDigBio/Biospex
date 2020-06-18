@@ -46,12 +46,12 @@ class FileService
     {
         if ( ! $this->filesystem->isDirectory($dir) && ! $this->filesystem->makeDirectory($dir, 0775, true))
         {
-            throw new \Exception(trans('messages.create_dir', ['directory' => $dir]));
+            throw new \Exception(trans('pages.create_dir', ['directory' => $dir]));
         }
 
         if ( ! $this->filesystem->isWritable($dir) && ! chmod($dir, 0775))
         {
-            throw new \Exception(trans('messages.write_dir', ['directory' => $dir]));
+            throw new \Exception(trans('pages.write_dir', ['directory' => $dir]));
         }
     }
 

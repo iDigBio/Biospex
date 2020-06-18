@@ -91,11 +91,11 @@ class EventUserExportCsvJob implements ShouldQueue
 
             $file = empty($rows) ? null : $this->setCsv($csv, $rows);
 
-            $this->user->notify(new EventCsvExport(trans('messages.event_export_csv_complete'), $file));
+            $this->user->notify(new EventCsvExport(trans('pages.event_export_csv_complete'), $file));
         }
         catch (\Exception $e)
         {
-            $this->user->notify(new EventCsvExport(trans('messages.event_export_csv_error', ['error' => $e->getMessage()])));
+            $this->user->notify(new EventCsvExport(trans('pages.event_export_csv_error', ['error' => $e->getMessage()])));
         }
     }
 

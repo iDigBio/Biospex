@@ -87,7 +87,7 @@ class EventsController extends Controller
         $event = $contract->findWith($eventId, ['project.lastPanoptesProject', 'teams:id,title,event_id']);
 
         if ($event === null) {
-            FlashHelper::error(trans('messages.record_get_error'));
+            FlashHelper::error(trans('pages.record_get_error'));
 
             return redirect()->route('front.events.index');
         }
@@ -109,7 +109,7 @@ class EventsController extends Controller
         $active = GeneralHelper::eventBefore($team->event) || GeneralHelper::eventActive($team->event);
 
         if ($team === null) {
-            FlashHelper::error(trans('messages.event_join_team_error'));
+            FlashHelper::error(trans('pages.event_join_team_error'));
         }
 
         return view('front.event.signup', compact('team', 'active'));
@@ -137,12 +137,12 @@ class EventsController extends Controller
             $team = $eventTeamContract->findWith($request->get('team_id'), ['event']);
             $team->users()->syncWithoutDetaching([$user->id]);
 
-            FlashHelper::success(trans('messages.event_join_team_success'));
+            FlashHelper::success(trans('pages.event_join_team_success'));
 
             return redirect()->route('front.events.read', [$team->event->id]);
         }
 
-        FlashHelper::error(trans('messages.event_join_team_error'));
+        FlashHelper::error(trans('pages.event_join_team_error'));
 
         return redirect()->route('front.events.signup', [$uuid]);
     }

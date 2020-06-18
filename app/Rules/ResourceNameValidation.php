@@ -67,6 +67,6 @@ class ResourceNameValidation implements Rule
      */
     public function message()
     {
-        return trans('messages.resource_url_required');
+        return trans('pages.resource_url_required');
     }
 }

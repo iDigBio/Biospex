@@ -90,7 +90,7 @@ class RecordsetImportJob implements ShouldQueue
         {
             $project = $projectContract->findWith($this->data['project_id'], ['group.owner']);
 
-            $message = trans('messages.import_process', [
+            $message = trans('pages.import_process', [
                 'title'   => $project->title,
                 'id'      => $project->id,
                 'message' => $e->getMessage()
@@ -130,7 +130,7 @@ class RecordsetImportJob implements ShouldQueue
 
         if ($response->getStatusCode() !== 200)
         {
-            throw new \Exception(trans('messages.http_status_code', ['url' => $url, 'code' => $response->getStatusCode()]));
+            throw new \Exception(trans('pages.http_status_code', ['url' => $url, 'code' => $response->getStatusCode()]));
         }
 
         $this->response = json_decode($response->getBody()->getContents());
@@ -162,7 +162,7 @@ class RecordsetImportJob implements ShouldQueue
 
         if (\Storage::put($filePath, $file) === false)
         {
-            throw new \Exception(trans('messages.zip_download'));
+            throw new \Exception(trans('pages.zip_download'));
         }
 
         $import = $this->importContract->create([

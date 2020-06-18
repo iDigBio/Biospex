@@ -1,9 +1,9 @@
 @component('mail::message')
-# @lang('messages.contact')
+# @lang('pages.contact')
 
-**@lang('messages.contact_name'):** {{ $contact['name'] }}
-**@lang('messages.contact_email'):** {{ $contact['email'] }}
-**@lang('messages.contact_message'):**
+**@lang('pages.contact_name'):** {{ $contact['name'] }}
+**@lang('pages.contact_email'):** {{ $contact['email'] }}
+**@lang('pages.contact_message'):**
 {{ $contact['message'] }}
 
 Thank you,<br>

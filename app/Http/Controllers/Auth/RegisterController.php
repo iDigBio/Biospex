@@ -82,7 +82,7 @@ class RegisterController extends Controller
     public function showRegistrationForm()
     {
         if ( ! config('config.registration')) {
-            return redirect()->route('home')->with('error', trans('messages.inactive_reg'));
+            return redirect()->route('home')->with('error', trans('pages.inactive_reg'));
         }
 
         $code = request('code');
@@ -91,7 +91,7 @@ class RegisterController extends Controller
 
         if ( ! empty($code) && ! $invite)
         {
-            FlashHelper::warning( trans('messages.invite_not_found'));
+            FlashHelper::warning( trans('pages.invite_not_found'));
         }
 
         $code = $invite->code ?? null;

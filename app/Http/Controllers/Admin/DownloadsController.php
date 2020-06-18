@@ -76,7 +76,7 @@ class DownloadsController extends Controller
             $download = $this->downloadService->getDownload($downloadId);
 
             if (! $download) {
-                Flash::error(trans('messages.missing_download_file'));
+                Flash::error(trans('pages.missing_download_file'));
 
                 return redirect()->back();
             }
@@ -94,7 +94,7 @@ class DownloadsController extends Controller
             }
 
             if (! GeneralHelper::downloadFileExists($download->type, $download->file)) {
-                Flash::error(trans('messages.missing_download_file'));
+                Flash::error(trans('pages.missing_download_file'));
 
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
@@ -122,9 +122,9 @@ class DownloadsController extends Controller
         try {
             $this->downloadService->resetExpeditionData($expeditionId);
 
-            Flash::success(trans('messages.download_regeneration_success'));
+            Flash::success(trans('pages.download_regeneration_success'));
         } catch (\Exception $e) {
-            Flash::error(trans('messages.download_regeneration_error', ['error' => $e->getMessage()]));
+            Flash::error(trans('pages.download_regeneration_error', ['error' => $e->getMessage()]));
         }
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
@@ -163,7 +163,7 @@ class DownloadsController extends Controller
         $expedition = $this->downloadService->getExpeditionById($expeditionId, ['project.group']);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
-            return __('messages.insufficient_permissions');
+            return __('pages.insufficient_permissions');
         }
 
         if (! Storage::exists(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html')) {
@@ -214,7 +214,7 @@ class DownloadsController extends Controller
     {
         ExportDownloadBatchJob::dispatch($downloadId);
 
-        Flash::success(trans('messages.download_batch_success'));
+        Flash::success(trans('pages.download_batch_success'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
@@ -239,7 +239,7 @@ class DownloadsController extends Controller
             }
 
             if (! GeneralHelper::downloadFileExists('export', $file)) {
-                Flash::error(trans('messages.missing_download_file'));
+                Flash::error(trans('pages.missing_download_file'));
 
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }

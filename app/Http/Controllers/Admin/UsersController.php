@@ -114,11 +114,11 @@ class UsersController extends Controller
 
         if ($result)
         {
-            FlashHelper::success(trans('messages.record_updated'));
+            FlashHelper::success(trans('pages.record_updated'));
         }
         else
         {
-            FlashHelper::error(trans('messages.record_updated_error'));
+            FlashHelper::error(trans('pages.record_updated_error'));
         }
 
         return redirect()->route('admin.users.edit', [$user->id]);
@@ -143,14 +143,14 @@ class UsersController extends Controller
 
         if ( ! Hash::check($request->input('oldPassword'), $user->password))
         {
-            FlashHelper::error(trans('messages.old_password'));
+            FlashHelper::error(trans('pages.old_password'));
 
             return redirect()->route('admin.users.edit', [$user->id]);
         }
 
         $this->resetPassword($user, $request->input('newPassword'));
 
-        FlashHelper::success(trans('messages.password_chg'));
+        FlashHelper::success(trans('pages.password_chg'));
 
         return redirect()->route('admin.users.edit', [$user->id]);
     }

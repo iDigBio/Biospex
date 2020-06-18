@@ -123,13 +123,13 @@ class GridExportCsvJob implements ShouldQueue
 
             $csv->insertAll($records->toArray());
 
-            $message = __('messages.grid_export_csv_complete', ['link' => route('admin.downloads.report', $fileName)]);
+            $message = __('pages.grid_export_csv_complete', ['link' => route('admin.downloads.report', $fileName)]);
 
             $this->user->notify(new GridCsvExport($message));
         }
         catch (\Exception $e)
         {
-            $this->user->notify(new GridCsvExport(__('messages.grid_export_csv_error', ['error' => $e->getMessage()])));
+            $this->user->notify(new GridCsvExport(__('pages.grid_export_csv_error', ['error' => $e->getMessage()])));
         }
     }
 }

@@ -85,7 +85,7 @@ class NfnPanoptesExportConvertImages extends NfnPanoptesBase
 
         if (empty(File::files($this->tmpDirectory))) {
             ActorEventHelper::fireActorErrorEvent($this->actor);
-            throw new \Exception(__('messages.export_subject_files_exist_error'));
+            throw new \Exception(__('pages.export_subject_files_exist_error'));
         }
 
         ActorEventHelper::fireActorQueuedEvent($this->actor);

@@ -234,7 +234,7 @@ class DarwinCoreCsvImport
     public function testHeaderRowCount($row)
     {
         if (count($this->header) !== count($row)) {
-            throw new \Exception(trans('messages.csv_row_count', [
+            throw new \Exception(trans('pages.csv_row_count', [
                 'headers' => count($this->header),
                 'rows'    => count($row),
             ]));
@@ -284,7 +284,7 @@ class DarwinCoreCsvImport
     public function createShortNameForHeader($row, $key, $qualified, $header)
     {
         if (! isset($row[$key])) {
-            throw new \Exception(trans('messages.csv_build_header', ['key' => $key, 'qualified' => $qualified]));
+            throw new \Exception(trans('pages.csv_build_header', ['key' => $key, 'qualified' => $qualified]));
         }
 
         $short = $this->checkProperty($qualified, $row[$key]);
@@ -388,7 +388,7 @@ class DarwinCoreCsvImport
         }
 
         if (collect($this->metaFields[$type])->intersect($this->identifiers)->isEmpty()) {
-            throw new \Exception(trans('messages.missing_identifier', ['identifiers' => implode(',', $this->identifiers)]));
+            throw new \Exception(trans('pages.missing_identifier', ['identifiers' => implode(',', $this->identifiers)]));
         }
     }
 
@@ -430,7 +430,7 @@ class DarwinCoreCsvImport
             });
 
         if ($identifierColumnValues->isEmpty()) {
-            $rejected = ['Reason' => __('messages.dwc_import_columns')] + $row;
+            $rejected = ['Reason' => __('pages.dwc_import_columns')] + $row;
             $this->reject($rejected);
 
             return false;
@@ -488,14 +488,14 @@ class DarwinCoreCsvImport
     private function checkColumns($row)
     {
         if (! trim($row['id'])) {
-            $rejected = ['Reason' => __('messages.dwc_missing_id')] + $row;
+            $rejected = ['Reason' => __('pages.dwc_missing_id')] + $row;
             $this->reject($rejected);
 
             return true;
         }
 
         if (empty($row['accessURI'])) {
-            $rejected = ['Reason' => __('messages.dwc_missing_uri')] + $row;
+            $rejected = ['Reason' => __('pages.dwc_missing_uri')] + $row;
             $this->reject($rejected);
 
             return true;

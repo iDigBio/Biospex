@@ -99,7 +99,7 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
         {
             ActorEventHelper::fireActorErrorEvent($actor);
 
-            $message = trans('messages.nfn_classifications_error', [
+            $message = trans('pages.nfn_classifications_error', [
                 'title'   => $record->title,
                 'id'      => $record->id,
                 'message' => $e->getMessage()
@@ -117,7 +117,7 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
      */
     protected function notify($record)
     {
-        $message = trans('messages.nfn_transcriptions_complete_message', ['expedition' => $record->title]);
+        $message = trans('pages.nfn_transcriptions_complete_message', ['expedition' => $record->title]);
 
         $record->project->group->owner->notify(new NfnTranscriptionsComplete($message));
     }

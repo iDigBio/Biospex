@@ -85,12 +85,12 @@ class GroupsController extends Controller
 
             event('group.saved');
 
-            FlashHelper::success(trans('messages.record_created'));
+            FlashHelper::success(trans('pages.record_created'));
 
             return redirect()->route('admin.groups.index');
         }
 
-        FlashHelper::warning(trans('messages.loginreq'));
+        FlashHelper::warning(trans('pages.loginreq'));
 
         return redirect()->back();
     }
@@ -149,7 +149,7 @@ class GroupsController extends Controller
             return redirect()->back();
         }
 
-        $this->groupContract->update($request->all(), $groupId) ? FlashHelper::success(trans('messages.record_updated')) : FlashHelper::error('messages.record_updated_error');
+        $this->groupContract->update($request->all(), $groupId) ? FlashHelper::success(trans('pages.record_updated')) : FlashHelper::error('pages.record_updated_error');
 
         return redirect()->route('admin.groups.show', [$groupId]);
     }
@@ -171,7 +171,7 @@ class GroupsController extends Controller
         try {
             foreach ($group->projects as $project) {
                 if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                    FlashHelper::error(trans('messages.expedition_process_exists'));
+                    FlashHelper::error(trans('pages.expedition_process_exists'));
 
                     return redirect()->route('admin.groups.index');
                 }
@@ -181,11 +181,11 @@ class GroupsController extends Controller
 
             event('group.deleted', $group->id);
 
-            FlashHelper::success(trans('messages.record_deleted'));
+            FlashHelper::success(trans('pages.record_deleted'));
 
             return redirect()->route('admin.groups.index');
         } catch (\Exception $e) {
-            FlashHelper::error(trans('messages.record_delete_error'));
+            FlashHelper::error(trans('pages.record_delete_error'));
 
             return redirect()->route('admin.groups.index');
         }
@@ -209,7 +209,7 @@ class GroupsController extends Controller
 
         try {
             if ($group->user_id === (int) $userId) {
-                FlashHelper::error(trans('messages.group_user_deleted_owner'));
+                FlashHelper::error(trans('pages.group_user_deleted_owner'));
 
                 return redirect()->route('admin.groups.show', [$groupId]);
             }
@@ -217,11 +217,11 @@ class GroupsController extends Controller
             $user = $userContract->find($userId);
             $user->detachGroup($group->id);
 
-            FlashHelper::success(trans('messages.group_user_deleted'));
+            FlashHelper::success(trans('pages.group_user_deleted'));
 
             return redirect()->route('admin.groups.show', [$groupId]);
         } catch (\Exception $e) {
-            FlashHelper::error(trans('messages.group_user_deleted_error'));
+            FlashHelper::error(trans('pages.group_user_deleted_error'));
 
             return redirect()->route('admin.groups.show', [$groupId]);
         }

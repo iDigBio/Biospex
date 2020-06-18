@@ -285,7 +285,7 @@ class MetaFile
         $this->coreFile = $this->core->nodeValue;
         if ($this->coreFile === '')
         {
-            throw new \Exception(trans('messages.core_node_missing'));
+            throw new \Exception(trans('pages.core_node_missing'));
         }
     }
 

@@ -119,7 +119,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
             return;
         }
 
-        throw new \Exception(__('messages.export_file_exist_error'));
+        throw new \Exception(__('pages.export_file_exist_error'));
     }
 
     /**

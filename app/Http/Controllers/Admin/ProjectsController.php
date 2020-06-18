@@ -142,12 +142,12 @@ class ProjectsController extends Controller
             $project = $this->projectContract->findWith($model->id, ['workflow.actors.contacts']);
             $this->projectService->notifyActorContacts($project);
 
-            FlashHelper::success(__('messages.record_created'));
+            FlashHelper::success(__('pages.record_created'));
 
             return redirect()->route('admin.projects.show', [$project->id]);
         }
 
-        FlashHelper::error(__('messages.record_save_error'));
+        FlashHelper::error(__('pages.record_save_error'));
 
         return redirect()->route('admin.projects.create')->withInput();
     }
@@ -163,7 +163,7 @@ class ProjectsController extends Controller
         $project = $this->projectContract->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
         if (! $project) {
-            FlashHelper::error(__('messages.record_get_error'));
+            FlashHelper::error(__('pages.record_get_error'));
 
             return redirect()->route('admin.projects.show', [$projectId]);
         }
@@ -192,7 +192,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group', 'resources']);
         if (! $project) {
-            FlashHelper::error(__('messages.record_get_error'));
+            FlashHelper::error(__('pages.record_get_error'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -228,7 +228,7 @@ class ProjectsController extends Controller
 
         $project = $this->projectContract->update($request->all(), $projectId);
 
-        $project ? FlashHelper::success(__('messages.record_updated')) : FlashHelper::error(__('messages.record_updated_error'));
+        $project ? FlashHelper::success(__('pages.record_updated')) : FlashHelper::error(__('pages.record_updated_error'));
 
         return redirect()->back();
     }
@@ -307,11 +307,11 @@ class ProjectsController extends Controller
 
             DeleteProject::dispatch($project);
 
-            FlashHelper::success(__('messages.record_deleted'));
+            FlashHelper::success(__('pages.record_deleted'));
 
             return redirect()->route('admin.projects.index');
         } catch (Exception $e) {
-            FlashHelper::error(__('messages.record_delete_error'));
+            FlashHelper::error(__('pages.record_delete_error'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -333,7 +333,7 @@ class ProjectsController extends Controller
 
         OcrCreateJob::dispatch($projectId);
 
-        FlashHelper::success(__('messages.ocr_process_success'));
+        FlashHelper::success(__('pages.ocr_process_success'));
 
         return redirect()->route('admin.projects.show', [$projectId]);
     }

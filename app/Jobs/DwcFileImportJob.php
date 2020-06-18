@@ -114,7 +114,7 @@ class DwcFileImportJob implements ShouldQueue
             $fileService->filesystem->cleanDirectory($scratchFileDir);
             $fileService->filesystem->deleteDirectory($scratchFileDir);
 
-            $message = trans('messages.import_process', [
+            $message = trans('pages.import_process', [
                 'title'   => $project->title,
                 'id'      => $project->id,
                 'message' => $e->getMessage()

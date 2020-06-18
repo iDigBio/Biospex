@@ -132,12 +132,12 @@ class EventsController extends Controller
         $event = $this->eventContract->createEvent($request->all());
 
         if ($event) {
-            FlashHelper::success(trans('messages.record_created'));
+            FlashHelper::success(trans('pages.record_created'));
 
             return redirect()->route('admin.events.show', [$event->id]);
         }
 
-        FlashHelper::error(trans('messages.record_save_error'));
+        FlashHelper::error(trans('pages.record_save_error'));
 
         return redirect()->route('admin.events.index');
     }
@@ -185,12 +185,12 @@ class EventsController extends Controller
         $result = $this->eventContract->updateEvent($request->all(), $eventId);
 
         if ($result) {
-            FlashHelper::success(trans('messages.record_updated'));
+            FlashHelper::success(trans('pages.record_updated'));
 
             return redirect()->route('admin.events.show', [$eventId]);
         }
 
-        FlashHelper::error(trans('messages.record_updated_error'));
+        FlashHelper::error(trans('pages.record_updated_error'));
 
         return redirect()->route('admin.events.edit', [$eventId]);
     }
@@ -214,12 +214,12 @@ class EventsController extends Controller
 
         if ($result)
         {
-            FlashHelper::success(trans('messages.record_deleted'));
+            FlashHelper::success(trans('pages.record_deleted'));
 
             return redirect()->route('admin.events.index');
         }
 
-        FlashHelper::error(trans('messages.record_delete_error'));
+        FlashHelper::error(trans('pages.record_delete_error'));
 
         return redirect()->route('admin.events.edit', [$eventId]);
     }

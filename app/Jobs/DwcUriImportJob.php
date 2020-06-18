@@ -88,17 +88,17 @@ class DwcUriImportJob implements ShouldQueue
             $file = file_get_contents(GeneralHelper::urlEncode($this->data['url']));
             if ($file === false)
             {
-                throw new \Exception(trans('messages.zip_download'));
+                throw new \Exception(trans('pages.zip_download'));
             }
 
             if (!$this->checkFileType($file))
             {
-                throw new \Exception(trans('messages.zip_type'));
+                throw new \Exception(trans('pages.zip_type'));
             }
 
             if (Storage::put($filePath, $file) === false)
             {
-                throw new \Exception(trans('messages.save_file', [':file' => $filePath]));
+                throw new \Exception(trans('pages.save_file', [':file' => $filePath]));
             }
 
             $import = $importContract->create([
@@ -113,7 +113,7 @@ class DwcUriImportJob implements ShouldQueue
         {
             $project = $projectContract->findWith($this->data['id'], ['group.owner']);
 
-            $message = trans('messages.import_process', [
+            $message = trans('pages.import_process', [
                 'title'   => $project->title,
                 'id'      => $project->id,
                 'message' => $e->getMessage()
