@@ -19,11 +19,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
+use App\Presenters\DownloadPresenter;
 
 class Download extends BaseEloquentModel
 {
-    use UuidTrait;
+    use UuidTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -42,6 +44,11 @@ class Download extends BaseEloquentModel
         'data',
         'count'
     ];
+
+    /**
+     * @var string
+     */
+    protected $presenter = DownloadPresenter::class;
 
     /**
      * Expedition relationship.

@@ -148,7 +148,7 @@ class DownloadService
     {
         $headers = [
             'Content-Type'        => 'application/x-compressed',
-            'Content-disposition' => 'attachment; filename="'.$download->type.'-'.$download->file.'"',
+            'Content-disposition' => 'attachment; filename="'.$download->present()->file_type.'-'.$download->file.'"',
         ];
 
         $path = $download->type === 'export' ?

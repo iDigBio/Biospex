@@ -5,13 +5,15 @@
 @stop
 
 @section('content')
+
     <div class="row mt-5 justify-content-center">
         {{ $reconciles->links() }}
     </div>
     <div class="row">
         <div class="col-6">
             <div class="panzoom">
-                <img src="{{ $accessURI }}" class="img-fluid">
+                <div class="loader mx-auto"></div>
+                <img src="{{ $accessURI }}" class="img-fluid lazy">
             </div>
         </div>
         <div class="col-6">
@@ -21,19 +23,21 @@
                 @csrf
                 <input type="hidden" name="_id" value="{{ $reconciles->first()->_id }}">
                 <div class="row">
-                    <div id="output"></div>
+                    <h2 id="output"></h2>
                 </div>
                 @foreach($data[$reconciles->first()->subject_id] as $column)
                     <div class="row">
                         <div class="input-group mt-5">
                             <div class="col-7">
-                                <label for="{{ $column }}" class="col-form-label">Your expert opinion of<br> {{ $column }}:</label>
+                                <label for="{{ $column }}" class="col-form-label">{{ __('pages.expert_opinion') }}
+                                    <br> {{ $column }}:</label>
                                 <textarea class="form-control" rows="3"
-                                       id="{{ $column }}"
+                                          id="{{ $column }}"
                                           name="{{ $column }}">{{ $reconciles->first()->{$column} }}</textarea>
                             </div>
                             <div class="col-5">
-                                <label class="col-form-label">Participants entered for {{ $column }}:</label>
+                                <label class="col-form-label">{{ __('pages.participants_entered') }} {{ $column }}
+                                    :</label>
                                 @foreach($reconciles->first()->transcriptions->sortByDesc($column) as $transcription)
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="{{ $column }}_radio"
@@ -50,19 +54,31 @@
                 @endforeach
                 <div class="row">
                     <div class="form-group m-auto">
+                        <a href="{{ $reconciles->previousPageUrl() }}" class="btn btn-primary text-uppercase mt-5">
+                            {{__('pages.previous')}}</a>
                         <button type="submit"
-                                class="btn btn-primary text-uppercase mt-5">{{ __('pages.submit') }}</button>
+                                class="btn btn-primary text-uppercase mt-5">{{ __('pages.save') }}</button>
+                        <a href="{{ $reconciles->nextPageUrl() }}" class="btn btn-primary text-uppercase mt-5">
+                            {{__('pages.next')}}</a>
                     </div>
                 </div>
             </form>
             @if(!$reconciles->hasMorePages())
                 <div class="row mt-5">
                     <div class="col-12 m-auto justify-content-center text-center">
-                        <a href="{{ route('admin.reconciles.publish', [$projectId, $expeditionId]) }}" class="btn btn-primary p-2 m-1 prevent-default text-uppercase"
+                        <a href="{{ route('admin.reconciles.publish', [$projectId, $expeditionId]) }}"
+                           class="btn btn-primary p-2 m-1 prevent-default text-uppercase"
                            data-method="post"
                            data-confirm="confirmation"
-                           data-title="Publish Reconciled File" data-content="This will publish a new reconciled.csv file containing your edits in the Expedition downloads section.">
+                           data-title="Publish Reconciled File"
+                           data-content="This will publish a new reconciled.csv file containing your edits in the Expedition downloads section.">
                             {{__('pages.publish_reconciled')}}</a>
+                    </div>
+                </div>
+            @else
+                <div class="row mt-5">
+                    <div class="col-12 m-auto justify-content-center text-center">
+                        <p>{{ __('messages.reconciled_message') }}</p>
                     </div>
                 </div>
             @endif
@@ -77,31 +93,41 @@
     <script src="{{ secure_asset('admin/js/jquery.panzoom.min.js') }}"></script>
     <script src="{{ secure_asset('admin/js/jquery.form.min.js') }}"></script>
     <script>
-        let $panzoom = $('.panzoom').panzoom();
-        $panzoom.parent().on('mousewheel.focal', function (e) {
-            e.preventDefault();
-            let delta = e.delta || e.originalEvent.wheelDelta;
-            let zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
-            $panzoom.panzoom('zoom', zoomOut, {
-                animate: false,
-                focal: e
+        $(function () {
+            let $panzoom = $('.panzoom').panzoom();
+            $panzoom.parent().on('mousewheel.focal', function (e) {
+                e.preventDefault();
+                let delta = e.delta || e.originalEvent.wheelDelta;
+                let zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+                $panzoom.panzoom('zoom', zoomOut, {
+                    animate: false,
+                    focal: e
+                });
             });
-        });
 
-        let options = {
-            beforeSubmit: function() {
-                $('#output').removeClass().html('<div class="loader mx-auto"></div>');
-            },
-            success: function(response) {
-                let css = response.result === 'false' ? 'alert-danger' : 'alert-success';
-                $('#output').addClass(css).html(response.message);
-            }
-        };
+            let options = {
+                beforeSubmit: function () {
+                    $('#output').removeClass().html('<div class="loader mx-auto"></div>');
+                },
+                success: function (response) {
+                    let css = response.result === 'false' ? 'alert-danger' : 'alert-success';
+                    $('#output').addClass(css).html(response.message);
+                }
+            };
 
-        $('#frmReconcile').ajaxForm(options);
-        $(':radio').on('click', function() {
-            let id = $(this).attr('name').replace('_radio', '');
-            $('#'+id).val($(this).val());
+            $('#frmReconcile').ajaxForm(options);
+            $(':radio').on('click', function () {
+                let id = $(this).attr('name').replace('_radio', '');
+                $('#' + id).val($(this).val());
+            });
+
+            $('img.lazy').one('load', function () {
+                $('.loader').remove();
+            }).each(function () {
+                if (this.complete) {
+                    $(this).trigger('load');
+                }
+            });
         });
 
     </script>

@@ -24,7 +24,6 @@ use App\Services\Model\DownloadService;
 use Flash;
 use App\Http\Controllers\Controller;
 use GeneralHelper;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadsController extends Controller
@@ -56,7 +55,7 @@ class DownloadsController extends Controller
         $user = $this->downloadService->getUserProfile(request()->user()->id);
         $expedition = $this->downloadService->getExpeditionByActor($projectId, $expeditionId);
 
-        $error = ! $this->checkPermissions('readProject', $expedition->project->group) ? true : false;
+        $error = ! $this->checkPermissions('readProject', $expedition->project->group);
 
         return view('admin.partials.expedition-download-modal-body', compact('expedition', 'user', 'error'));
     }
@@ -102,7 +101,7 @@ class DownloadsController extends Controller
 
             [$headers, $file] = $this->downloadService->createDownloadFile($download);
 
-            return response()->download($file, $download->type.'-'.$download->file, $headers);
+            return response()->download($file, $download->present()->file_type.'-'.$download->file, $headers);
 
         } catch (\Exception $e) {
             Flash::error(__($e->getMessage()));

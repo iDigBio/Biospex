@@ -22,7 +22,7 @@
                     @foreach($actor->downloads as $download)
                         @if ( ! empty($download) && GeneralHelper::downloadFileExists($download->type, $download->file))
                             <tr>
-                                <td>{{ $download->type }}</td>
+                                <td>{{ $download->present()->file_type }}</td>
                                 <td>{{ $download->file }}</td>
                                 <td>
                                     @if (GeneralHelper::downloadFileExists($download->type, $download->file))
@@ -38,7 +38,7 @@
                                         @can('isOwner', $expedition->project->group)
                                             <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                                data-hover="tooltip"
-                                               title="{{ __('pages.download') }} {{ $download->type }}">
+                                               title="{{ __('pages.download') }} {{ $download->present()->file_type }}">
                                                 <i class="fas fa-file-download fa-2x"></i></a>
                                             @if ($download->type === 'summary')
                                                 <a href="{{ route('admin.downloads.summary', [$expedition->project->id, $expedition->id]) }}"

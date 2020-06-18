@@ -79,6 +79,7 @@ return [
     'password_chg'                        => 'Your password has been changed.',
     'process_no_exists'                   => 'Expedition has no processes at this time.',
     'process_stopped'                     => 'Expedition process has been stopped locally. This does not stop any processing occurring on remote sites.',
+    'reconciled_message'                  => 'Once you have submitted your expert opinion for each page, go to the last page and click "Publish Reconciled."',
     'reconciled_publish'                  => 'Reconcile publish job has started. You will by email when completed.',
     'reconciled_publish_subject'          => 'Reconciled CSV File',
     'reconciled_publish_complete'         => 'The Reconciled CSV file has been published for :title',

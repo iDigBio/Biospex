@@ -41,7 +41,7 @@
                 'action="'+Laravel.frmUrl+'" role="form">' +
                 '<input name="_token" value="' + csrfVar + '" type="hidden">' +
                 '<input type="hidden" id="frmData" name="data" value=""> ' +
-                '<button type="submit" class="mt-5" style="background-color: #e83f29; color: #ffffff; padding: 20px; font-size: 16px; cursor: pointer">Expert Review Reconciliation Ambiguities</button>' +
+                '<button type="submit" class="mt-5" style="background-color: #e83f29; color: #ffffff; padding: 20px; font-size: 16px; cursor: pointer; border: none">Expert Review Ambiguities</button>' +
                 '</form>';
 
             $iframe.contents().find('#editReconcile').remove();

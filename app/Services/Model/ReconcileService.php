@@ -231,13 +231,13 @@ class ReconcileService
             'expedition_id' => $expeditionId,
             'actor_id' => 2,
             'file' => $expeditionId . '.csv',
-            'type' => 'reconciled'
+            'type' => 'reconciled_with_expert_opinion'
         ];
         $attributes = [
             'expedition_id' => $expeditionId,
             'actor_id' => 2,
             'file' => $expeditionId . '.csv',
-            'type' => 'reconciled'
+            'type' => 'reconciled_with_expert_opinion'
         ];
 
         $this->downloadContract->updateOrCreate($attributes, $values);
