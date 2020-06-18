@@ -129,9 +129,9 @@
                 >{{ __('pages.view') }} {{ __('pages.completed') }} {{ __('pages.expeditions') }}</button>
             </div>
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                <span class="text">{{ $project->expeditions_count }} Expeditions</span>
-                <span class="text">{{ $transcriptionsCount }} Transcriptions</span>
-                <span class="text">{{ $transcribersCount }} Transcribers</span>
+                <span class="text">{{ $project->expeditions_count }} {{ __('pages.expeditions') }}</span>
+                <span class="text">{{ $transcriptionsCount }} {{ __('pages.transcriptions') }}</span>
+                <span class="text">{{ $transcribersCount }} {{ __('pages.transcribers') }}</span>
             </div>
             <hr class="header mx-auto">
         </div>
