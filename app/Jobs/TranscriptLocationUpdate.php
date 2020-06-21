@@ -115,9 +115,8 @@ class TranscriptLocationUpdate implements ShouldQueue
     private function getTranscriptions()
     {
         $this->service->setCollection('panoptes_transcriptions');
-        $transcriptions = $this->service->find(['subject_expeditionId' => $this->expedition->id]);
 
-        return $transcriptions;
+        return $this->service->find(['subject_expeditionId' => $this->expedition->id]);
     }
 
     /**
