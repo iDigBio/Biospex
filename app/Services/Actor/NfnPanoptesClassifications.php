@@ -130,7 +130,7 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
      * @param $workflow
      * @param $actor
      */
-    protected function checkFinishedAt(&$record, $workflow, &$actor)
+    protected function checkFinishedAt($record, $workflow, &$actor)
     {
         if ($workflow['finished_at'] !== null)
         {
