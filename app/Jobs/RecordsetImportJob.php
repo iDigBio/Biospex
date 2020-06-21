@@ -22,12 +22,14 @@ namespace App\Jobs;
 use App\Repositories\Interfaces\Import;
 use App\Repositories\Interfaces\Project;
 use App\Notifications\DarwinCoreImportError;
+use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Storage;
 
 class RecordsetImportJob implements ShouldQueue
 {
@@ -86,7 +88,7 @@ class RecordsetImportJob implements ShouldQueue
             $url = $this->setUrl();
             $this->send($url);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             $project = $projectContract->findWith($this->data['project_id'], ['group.owner']);
 
@@ -130,7 +132,7 @@ class RecordsetImportJob implements ShouldQueue
 
         if ($response->getStatusCode() !== 200)
         {
-            throw new \Exception(trans('pages.http_status_code', ['url' => $url, 'code' => $response->getStatusCode()]));
+            throw new Exception(trans('pages.http_status_code', ['url' => $url, 'code' => $response->getStatusCode()]));
         }
 
         $this->response = json_decode($response->getBody()->getContents());
@@ -156,13 +158,13 @@ class RecordsetImportJob implements ShouldQueue
     public function download()
     {
         $fileName = $this->data['id'] . '.zip';
-        $filePath = \Storage::path(config('config.import_dir') . '/' . $fileName);
+        $filePath = Storage::path(config('config.import_dir') . '/' . $fileName);
 
         $file = file_get_contents($this->response->download_url);
 
-        if (\Storage::put($filePath, $file) === false)
+        if (Storage::put($filePath, $file) === false)
         {
-            throw new \Exception(trans('pages.zip_download'));
+            throw new Exception(trans('pages.zip_download'));
         }
 
         $import = $this->importContract->create([

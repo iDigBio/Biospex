@@ -20,6 +20,7 @@
 namespace App\Transformers;
 
 use App\Models\PusherTranscription as Model;
+use DateHelper;
 use Illuminate\Support\Facades\Config;
 use League\Fractal\TransformerAbstract;
 
@@ -32,7 +33,7 @@ class PusherTranscriptionTransformer extends TransformerAbstract
             'project'              => $model->project,
             'description'          => $model->description,
             'guid'                 => $model->guid,
-            'timestamp'            => \DateHelper::formatMongoDbDate($model->timestamp, 'Y-m-d\TH:i:s\Z'),
+            'timestamp'            => DateHelper::formatMongoDbDate($model->timestamp, 'Y-m-d\TH:i:s\Z'),
             'subject'              => $model->subject,
             'contributor'          => $model->contributor,
             'transcriptionContent' => $model->transcriptionContent,

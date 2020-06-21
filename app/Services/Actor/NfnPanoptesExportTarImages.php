@@ -21,6 +21,7 @@ namespace App\Services\Actor;
 
 use App\Models\ExportQueue;
 use App\Repositories\Interfaces\Download;
+use Exception;
 
 class NfnPanoptesExportTarImages extends NfnPanoptesBase
 {
@@ -78,6 +79,6 @@ class NfnPanoptesExportTarImages extends NfnPanoptesBase
             return;
         }
 
-        throw new \Exception('Could not create compressed export file for Queue ID: '.$queue->id);
+        throw new Exception('Could not create compressed export file for Queue ID: '.$queue->id);
     }
 }

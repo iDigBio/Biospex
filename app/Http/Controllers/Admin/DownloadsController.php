@@ -21,10 +21,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Jobs\ExportDownloadBatchJob;
 use App\Services\Model\DownloadService;
+use Exception;
 use Flash;
 use App\Http\Controllers\Controller;
 use GeneralHelper;
 use Illuminate\Support\Facades\Storage;
+use JavaScript;
 
 class DownloadsController extends Controller
 {
@@ -103,7 +105,7 @@ class DownloadsController extends Controller
 
             return response()->download($file, $download->present()->file_type.'-'.$download->file, $headers);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Flash::error(__($e->getMessage()));
 
             return redirect()->back();
@@ -123,7 +125,7 @@ class DownloadsController extends Controller
             $this->downloadService->resetExpeditionData($expeditionId);
 
             Flash::success(trans('pages.download_regeneration_success'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Flash::error(trans('pages.download_regeneration_error', ['error' => $e->getMessage()]));
         }
 
@@ -146,7 +148,7 @@ class DownloadsController extends Controller
             return redirect()->route('webauth.projects.show', [$projectId]);
         }
 
-        \JavaScript::put(['frmUrl' => route('admin.reconciles.reconcile', [$projectId, $expeditionId])]);
+        JavaScript::put(['frmUrl' => route('admin.reconciles.reconcile', [$projectId, $expeditionId])]);
         return view('admin.download.summary', compact('expedition'));
     }
 
@@ -195,7 +197,7 @@ class DownloadsController extends Controller
 
             return response()->download($file, $fileName, $headers);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Flash::error($e->getMessage());
 
             return redirect()->route('admin.projects.index');
@@ -248,7 +250,7 @@ class DownloadsController extends Controller
 
             return response()->download($filePath, $file, $headers);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Flash::error(__($e->getMessage()));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);

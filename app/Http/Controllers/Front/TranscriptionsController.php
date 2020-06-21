@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\AmChart;
+use File;
 
 class TranscriptionsController extends Controller
 {
@@ -37,7 +38,7 @@ class TranscriptionsController extends Controller
     {
         $chart = $amChartContract->findBy('project_id', $projectId);
 
-        $file = json_decode(\File::get(config('config.project_chart_config')), true);
+        $file = json_decode(File::get(config('config.project_chart_config')), true);
         $file['series'] = $chart->series[$year];
         $file['data'] = $chart->data[$year];
 

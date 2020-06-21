@@ -19,6 +19,8 @@
 
 namespace App\Presenters;
 
+use Storage;
+
 class ExpeditionPresenter extends Presenter
 {
     /**
@@ -32,7 +34,7 @@ class ExpeditionPresenter extends Presenter
         $url = $this->model->logo->url('medium');
         $path = str_replace($baseLength, '', $url);
 
-        return \Storage::disk('public')->exists($path) ? $url : config('config.missing_expedition_logo');
+        return Storage::disk('public')->exists($path) ? $url : config('config.missing_expedition_logo');
     }
 
     /**

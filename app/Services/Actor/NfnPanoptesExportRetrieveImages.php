@@ -22,6 +22,7 @@ namespace App\Services\Actor;
 use App\Facades\ActorEventHelper;
 use App\Repositories\Interfaces\ExportQueueFile;
 use App\Models\ExportQueue;
+use Exception;
 
 /**
  * Class NfnPanoptesExportRetrieveImages
@@ -74,7 +75,7 @@ class NfnPanoptesExportRetrieveImages extends NfnPanoptesBase
         $files = $this->exportQueueFileContract->getFilesByQueueId($queue->id);
         if ($files->isEmpty())
         {
-            throw new \Exception('Missing export subjects for Expedition ID ' . $queue->expedition_id);
+            throw new Exception('Missing export subjects for Expedition ID ' . $queue->expedition_id);
         }
 
         $this->actorImageService->setActor($this->actor);

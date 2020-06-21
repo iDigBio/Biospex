@@ -20,6 +20,7 @@
 namespace App\Repositories\MongoDb;
 
 use App\Repositories\Repository;
+use Exception;
 use Jenssegers\Mongodb\Eloquent\Model as MongodbModel;
 
 abstract class MongoDbRepository extends Repository
@@ -33,7 +34,7 @@ abstract class MongoDbRepository extends Repository
         $this->model = $this->app->make($this->model());
 
         if ( ! $this->model instanceof MongodbModel)
-            throw new \Exception("Class {$this->model()} must be an instance of Jenssegers\\Mongodb\\Eloquent\\Model");
+            throw new Exception("Class {$this->model()} must be an instance of Jenssegers\\Mongodb\\Eloquent\\Model");
 
         return;
     }

@@ -25,6 +25,7 @@ use App\Services\Api\GeoLocation;
 use GeneralHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use JavaScript;
 use Session;
 
 class BingoService
@@ -148,7 +149,7 @@ class BingoService
 
         Session::put('bingoUuid', $map->uuid);
 
-        \JavaScript::put([
+        JavaScript::put([
             'channel' => config('config.poll_bingo_channel') . '.' . $bingo->id,
             'winnerUrl' => route('ajax.get.bingoWinner', ['bingo' => 1, 'map' => $map->id]),
             'mapUuid' => $map->uuid

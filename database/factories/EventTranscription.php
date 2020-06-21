@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use App\Models\EventTranscription;
 use Faker\Generator as Faker;
 
 /*
@@ -30,7 +31,7 @@ use Faker\Generator as Faker;
 |
 */
 
-$factory->define(\App\Models\EventTranscription::class, function (Faker $faker) {
+$factory->define(EventTranscription::class, function (Faker $faker) {
 
     return [
         'classification_id' => $faker->unique()->randomNumber(8),

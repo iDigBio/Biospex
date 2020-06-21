@@ -19,6 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App;
+use File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Storage;
@@ -80,23 +82,23 @@ class AppFileDeployment extends Command
     public function handle()
     {
         // copy needed files to locations
-        $appFiles = \File::files($this->resPath.'/apps');
+        $appFiles = File::files($this->resPath.'/apps');
         $appTargets = collect($appFiles)->reject(function ($file) {
-            return \App::environment() === 'dev';
+            return App::environment() === 'dev';
         })->map(function ($file) {
-            $target = $this->appPath.'/'.\File::name($file);
-            \File::copy($file, $target);
+            $target = $this->appPath.'/'.File::name($file);
+            File::copy($file, $target);
 
             return $target;
         });
 
-        $supFiles = \File::files($this->resPath.'/supervisord');
+        $supFiles = File::files($this->resPath.'/supervisord');
         $subTargets = collect($supFiles)->reject(function ($file) {
-            return (\File::name($file) === 'echoserver.conf' || \File::name($file) === 'panoptes-pusher.conf')
-                && \App::environment() === 'dev';
+            return (File::name($file) === 'echoserver.conf' || File::name($file) === 'panoptes-pusher.conf')
+                && App::environment() === 'dev';
         })->map(function ($file) {
-            $target = $this->supPath.'/'.\File::name($file);
-            \File::copy($file, $target);
+            $target = $this->supPath.'/'.File::name($file);
+            File::copy($file, $target);
 
             return $target;
         });

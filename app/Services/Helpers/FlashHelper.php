@@ -19,6 +19,11 @@
 
 namespace App\Services\Helpers;
 
+/**
+ * Class FlashHelper
+ *
+ * @package App\Services\Helpers
+ */
 class FlashHelper
 {
 

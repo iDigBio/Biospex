@@ -26,6 +26,7 @@ use App\Notifications\DarwinCoreImportError;
 use App\Notifications\ImportComplete;
 use App\Services\File\FileService;
 use App\Services\Process\DarwinCore;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -107,7 +108,7 @@ class DwcFileImportJob implements ShouldQueue
             $this->import->delete();
             $this->delete();
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             $this->import->error = 1;
             $this->import->save();

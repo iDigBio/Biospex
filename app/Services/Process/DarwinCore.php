@@ -27,6 +27,7 @@ set_time_limit(0);
 ignore_user_abort(true);
 
 use App\Services\Csv\DarwinCoreCsvImport;
+use Exception;
 
 class DarwinCore
 {
@@ -115,7 +116,7 @@ class DarwinCore
     {
         if ( ! file_exists($file))
         {
-            throw new \Exception(trans('messages.import_file_missing', ['file' => $file]));
+            throw new Exception(trans('messages.import_file_missing', ['file' => $file]));
         }
     }
 

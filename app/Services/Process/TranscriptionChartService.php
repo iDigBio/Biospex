@@ -24,6 +24,7 @@ use App\Models\Expedition;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use Carbon\CarbonPeriod;
+use File;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -153,7 +154,7 @@ class TranscriptionChartService
         $this->amChartData = collect();
         $this->projectChartSeries = [];
         $file = config('config.project_chart_series');
-        $this->projectChartSeriesFile = json_decode(\File::get($file), true);
+        $this->projectChartSeriesFile = json_decode(File::get($file), true);
     }
 
     /**

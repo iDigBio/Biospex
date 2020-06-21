@@ -24,11 +24,13 @@ use App\Notifications\EventCsvExport;
 use App\Repositories\Interfaces\EventTranscription;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Services\Csv\Csv;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Storage;
 use Str;
 
 class EventTranscriptionExportCsvJob implements ShouldQueue
@@ -95,7 +97,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
 
             $this->user->notify(new EventCsvExport(trans('pages.event_export_csv_complete'), $file));
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             $this->user->notify(new EventCsvExport(trans('pages.event_export_csv_error', ['error' => $e->getMessage()])));
         }
@@ -111,7 +113,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
         $first = $transcriptions->first()->toArray();
         $header = array_keys($first);
 
-        $file = \Storage::path(config('config.reports_dir') . '/' . Str::random() . '.csv');
+        $file = Storage::path(config('config.reports_dir') . '/' . Str::random() . '.csv');
         $csv->writerCreateFromPath($file);
         $csv->insertOne($header);
         $csv->insertAll($transcriptions->toArray());

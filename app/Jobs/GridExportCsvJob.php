@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use Exception;
 use Illuminate\Support\Str;
 use App\Facades\DateHelper;
 use App\Facades\GeneralHelper;
@@ -127,7 +128,7 @@ class GridExportCsvJob implements ShouldQueue
 
             $this->user->notify(new GridCsvExport($message));
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             $this->user->notify(new GridCsvExport(__('pages.grid_export_csv_error', ['error' => $e->getMessage()])));
         }

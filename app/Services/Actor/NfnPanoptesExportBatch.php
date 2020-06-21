@@ -23,6 +23,7 @@ use App\Models\Download;
 use App\Notifications\NfnBatchExportComplete;
 use App\Services\Csv\Csv;
 use App\Services\Model\DownloadService;
+use Exception;
 use File;
 
 class NfnPanoptesExportBatch extends NfnPanoptesBase
@@ -119,7 +120,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
             return;
         }
 
-        throw new \Exception(__('pages.export_file_exist_error'));
+        throw new Exception(__('pages.export_file_exist_error'));
     }
 
     /**
@@ -207,7 +208,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
             return;
         }
 
-        throw new \Exception('Could not create compressed export batch file for Expedition: ' . $this->expedition->title);
+        throw new Exception('Could not create compressed export batch file for Expedition: ' . $this->expedition->title);
     }
 
     /**

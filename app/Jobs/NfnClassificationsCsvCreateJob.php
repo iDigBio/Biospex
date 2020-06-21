@@ -23,6 +23,7 @@ use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Services\Api\PanoptesApiService;
+use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;
@@ -105,7 +106,7 @@ class NfnClassificationsCsvCreateJob implements ShouldQueue
             empty($expeditionIds) ? $this->delete() :
                 NfnClassificationsCsvFileJob::dispatch($expeditionIds)->delay(14400);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             return;
         }

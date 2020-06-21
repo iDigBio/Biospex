@@ -19,6 +19,7 @@
 
 namespace App\Http\Resources;
 
+use DateHelper;
 use Illuminate\Http\Resources\Json\JsonResource ;
 
 class PusherTranscriptionResource extends JsonResource
@@ -36,7 +37,7 @@ class PusherTranscriptionResource extends JsonResource
             'project'              => $this->project,
             'description'          => $this->description,
             'guid'                 => $this->guid,
-            'timestamp'            => \DateHelper::formatMongoDbDate($this->timestamp, 'Y-m-d\TH:i:s\Z'),
+            'timestamp'            => DateHelper::formatMongoDbDate($this->timestamp, 'Y-m-d\TH:i:s\Z'),
             'subject'              => $this->subject,
             'contributor'          => $this->contributor,
             'transcriptionContent' => $this->transcriptionContent,

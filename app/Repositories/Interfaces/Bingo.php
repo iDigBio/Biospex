@@ -20,6 +20,7 @@
 namespace App\Repositories\Interfaces;
 
 use App\Repositories\RepositoryInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 interface Bingo extends RepositoryInterface
@@ -38,7 +39,7 @@ interface Bingo extends RepositoryInterface
      * @param array $attributes
      * @return \App\Models\Bingo
      */
-    public function createBingo(array $attributes): \Illuminate\Database\Eloquent\Model;
+    public function createBingo(array $attributes): Model;
 
     /**
      * Update bingo game.

@@ -21,6 +21,7 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\EventPresenter;
+use DateTimeZone;
 
 class Event extends BaseEloquentModel
 {
@@ -125,7 +126,7 @@ class Event extends BaseEloquentModel
      */
     public function setStartDateAttribute($value)
     {
-        $this->attributes['start_date'] = $value->setTimezone(new \DateTimeZone('UTC'));
+        $this->attributes['start_date'] = $value->setTimezone(new DateTimeZone('UTC'));
     }
 
     /**
@@ -135,6 +136,6 @@ class Event extends BaseEloquentModel
      */
     public function setEndDateAttribute($value)
     {
-        $this->attributes['end_date'] = $value->setTimezone(new \DateTimeZone('UTC'));
+        $this->attributes['end_date'] = $value->setTimezone(new DateTimeZone('UTC'));
     }
 }

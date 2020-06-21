@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use App\Models\EventTeam;
 use Faker\Generator as Faker;
 
 /*
@@ -30,7 +31,7 @@ use Faker\Generator as Faker;
 |
 */
 
-$factory->define(\App\Models\EventTeam::class, function (Faker $faker) {
+$factory->define(EventTeam::class, function (Faker $faker) {
 
     return [
         'event_id' => function() {

@@ -20,6 +20,8 @@
 namespace App\Services;
 
 
+use Exception;
+
 class LogViewer
 {
     /**
@@ -98,7 +100,7 @@ class LogViewer
 
         // check if requested file is really in the logs directory
         if (dirname($file) !== $logsPath) {
-            throw new \Exception('No such log file');
+            throw new Exception('No such log file');
         }
 
         return $file;

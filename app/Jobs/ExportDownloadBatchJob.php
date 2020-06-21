@@ -22,6 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Actor\NfnPanoptesExportBatch;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -67,7 +68,7 @@ class ExportDownloadBatchJob implements ShouldQueue
         try {
             $nfnPanoptesExportBatch->process($download);
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $user = User::find(1);
             $message = [
                 'Actor:' . $download->actor_id,

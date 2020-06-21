@@ -23,6 +23,7 @@ use App\Services\Requests\HttpRequest;
 use Cache;
 use GuzzleHttp\Exception\GuzzleException;
 use League\OAuth2\Client\Provider\GenericProvider;
+use Storage;
 
 class PanoptesApiService extends HttpRequest
 {
@@ -262,7 +263,7 @@ class PanoptesApiService extends HttpRequest
                 yield $index => function ($poolOpts) use ($source, $index)
                 {
                     $reqOpts = [
-                        'sink' => \Storage::path(config('config.nfn_downloads_classification') . '/' . $index . '.csv')
+                        'sink' => Storage::path(config('config.nfn_downloads_classification') . '/' . $index . '.csv')
                     ];
                     if (is_array($poolOpts) && count($poolOpts) > 0)
                     {

@@ -24,6 +24,7 @@ use App\Models\ExportQueue;
 use App\Repositories\Interfaces\ExportQueueFile;
 use App\Repositories\Interfaces\Subject;
 use App\Services\Csv\Csv;
+use Exception;
 
 class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
 {
@@ -85,7 +86,7 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
         $files = $this->exportQueueFile->getFilesWithoutErrorByQueueId($queue->id);
 
         if ($files->isEmpty()) {
-            throw new \Exception('Missing export subjects for Queue ' . $queue->id);
+            throw new Exception('Missing export subjects for Queue ' . $queue->id);
         }
 
         $csvExport = $files->filter(function ($file) {
@@ -103,7 +104,7 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
         });
 
         if (! $this->createCsv($csvExport->toArray())) {
-            throw new \Exception('Could not create CSV file for Queue ID '.$queue->id.' export');
+            throw new Exception('Could not create CSV file for Queue ID '.$queue->id.' export');
         }
 
         ActorEventHelper::fireActorQueuedEvent($this->actor);

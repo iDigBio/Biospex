@@ -20,6 +20,7 @@
 namespace App\Services\Image;
 
 use Imagick;
+use ImagickException;
 
 class ImagickService
 {
@@ -118,7 +119,7 @@ class ImagickService
     public function setOption($option, $value)
     {
         if ( ! $this->imagick->setOption($option, $value)){
-            throw new \ImagickException('Error setting Imagick option.');
+            throw new ImagickException('Error setting Imagick option.');
         }
     }
 
@@ -131,7 +132,7 @@ class ImagickService
     public function setImageFormat($format = 'jpg')
     {
         if ( ! $this->imagick->setImageFormat($format)) {
-            throw new \ImagickException('Error while setting image format.');
+            throw new ImagickException('Error while setting image format.');
         }
     }
 
@@ -143,7 +144,7 @@ class ImagickService
     public function stripImage()
     {
         if ( ! $this->imagick->stripImage()) {
-            throw new \ImagickException('Error while stripping image metadata.');
+            throw new ImagickException('Error while stripping image metadata.');
         }
     }
 

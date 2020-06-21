@@ -1,5 +1,9 @@
 <?php
 
+use Czim\FileHandling\Variant\Strategies\ImageAutoOrientStrategy;
+use Czim\FileHandling\Variant\Strategies\ImageResizeStrategy;
+use Czim\Paperclip\Path\Interpolator;
+
 return [
 
     /*
@@ -58,7 +62,7 @@ return [
     'path' => [
 
         // The class that generates the paths
-        'interpolator' => \Czim\Paperclip\Path\Interpolator::class,
+        'interpolator' => Interpolator::class,
 
         // The path to the original file to be interpolated. This will also\
         // be used for variant paths if the variant key is unset.
@@ -87,8 +91,8 @@ return [
     'variants' => [
 
         'aliases' => [
-            'auto-orient' => \Czim\FileHandling\Variant\Strategies\ImageAutoOrientStrategy::class,
-            'resize'      => \Czim\FileHandling\Variant\Strategies\ImageResizeStrategy::class,
+            'auto-orient' => ImageAutoOrientStrategy::class,
+            'resize'      => ImageResizeStrategy::class,
         ],
 
         // If no specific variants are set for a clipped file on a Model, these

@@ -24,12 +24,14 @@ putenv('MAGICK_THREAD_LIMIT=1');
 use App\Facades\ActorEventHelper;
 use App\Models\Actor;
 use App\Repositories\Interfaces\ExportQueueFile;
+use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Pool;
 use App\Services\Image\ImagickService;
 use App\Services\Requests\HttpRequest;
 use Illuminate\Support\Collection;
 use File;
+use ImagickException;
 
 /**
  * Class ActorImageService
@@ -141,7 +143,7 @@ class ActorImageService
     public function getImages()
     {
         if ($this->propertiesCheck()) {
-            throw new \Exception(__('Missing needed properties for ActorImageService'));
+            throw new Exception(__('Missing needed properties for ActorImageService'));
         }
 
         $this->httpRequest->setHttpProvider();
@@ -216,7 +218,7 @@ class ActorImageService
             $this->imagickService->stripImage();
             $this->writeImagickFile($this->workingDirectory, $this->files[$index]->subject_id);
             $this->imagickService->clearImagickObject();
-        } catch (\ImagickException $e) {
+        } catch (ImagickException $e) {
             $this->setFileErrorMessage($this->files[$index], $e->getMessage());
             $this->imagickService->clearImagickObject();
         }
@@ -236,7 +238,7 @@ class ActorImageService
             $this->imagickService->setOption('jpeg:extent', '600kb');
             $this->writeImagickFile($this->tmpDirectory, $fileName);
             $this->imagickService->clearImagickObject();
-        } catch (\ImagickException $e) {
+        } catch (ImagickException $e) {
             $this->setFileErrorMessage($fileName, $e->getMessage());
             $this->imagickService->clearImagickObject();
         }
@@ -292,7 +294,7 @@ class ActorImageService
     {
         $destination = $dir.'/'.$fileName.'.jpg';
         if (! $this->imagickService->writeImagickImageToFile($destination)) {
-            throw new \ImagickException('Could not write image '.$destination);
+            throw new ImagickException('Could not write image '.$destination);
         }
     }
 }

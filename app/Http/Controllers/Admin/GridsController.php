@@ -25,6 +25,8 @@ use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\Subject;
 use App\Services\Grid\JqGridJsonEncoder;
 use App\Services\Csv\Csv;
+use Auth;
+use Exception;
 
 class GridsController extends Controller
 {
@@ -104,7 +106,7 @@ class GridsController extends Controller
         {
             return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             return response($e->getMessage(), 404);
         }
@@ -121,7 +123,7 @@ class GridsController extends Controller
         {
             return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             return response($e->getMessage(), 404);
         }
@@ -138,7 +140,7 @@ class GridsController extends Controller
         {
             return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             return response($e->getMessage(), 404);
         }
@@ -155,7 +157,7 @@ class GridsController extends Controller
         {
             return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             return response($e->getMessage(), 404);
         }
@@ -169,7 +171,7 @@ class GridsController extends Controller
      */
     public function export($projectId, $expeditionId = null)
     {
-        GridExportCsvJob::dispatch(\Auth::user(), $projectId, $expeditionId);
+        GridExportCsvJob::dispatch(Auth::user(), $projectId, $expeditionId);
 
         return;
     }

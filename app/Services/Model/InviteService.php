@@ -24,6 +24,7 @@ use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\Invite;
 use App\Repositories\Interfaces\User;
 use App\Facades\FlashHelper;
+use Exception;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
@@ -91,7 +92,7 @@ class InviteService
 
             return true;
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             FlashHelper::error(trans('messages.send_invite_error', ['group' => $group->title]));
 

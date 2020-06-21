@@ -22,6 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Process\TranscriptionChartService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -70,7 +71,7 @@ class AmChartJob implements ShouldQueue
 
             $this->delete();
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             $user = User::find(1);
 

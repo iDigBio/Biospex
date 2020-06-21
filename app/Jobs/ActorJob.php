@@ -22,6 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Actor\ActorFactory;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -66,7 +67,7 @@ class ActorJob implements ShouldQueue
             $actorClass->actor($this->actor);
             $this->delete();
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             event('actor.pivot.error', $this->actor);
 

@@ -23,7 +23,9 @@ use App\Models\Actor;
 use App\Models\Expedition;
 use App\Models\ExportQueue;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\File;
+use Storage;
 
 class NfnPanoptesBase
 {
@@ -130,7 +132,7 @@ class NfnPanoptesBase
     public function setFolder()
     {
         if ($this->actor === null || $this->expedition === null) {
-            throw new \Exception(__('messages.export_error_exception'));
+            throw new Exception(__('messages.export_error_exception'));
         }
 
         $this->folderName = $this->actor->id . '-' . $this->expedition->uuid;
@@ -145,7 +147,7 @@ class NfnPanoptesBase
     public function setDirectories(bool $delete = false)
     {
         if ($this->folderName === null) {
-            throw new \Exception(__('messages.export_error_exception'));
+            throw new Exception(__('messages.export_error_exception'));
         }
 
         $this->setScratchDirectory();
@@ -160,7 +162,7 @@ class NfnPanoptesBase
      */
     private function setScratchDirectory()
     {
-        $this->scratchDirectory = \Storage::path(config('config.scratch_dir'));
+        $this->scratchDirectory = Storage::path(config('config.scratch_dir'));
     }
 
     /**
@@ -194,7 +196,7 @@ class NfnPanoptesBase
      */
     private function setNfnExportDirectory()
     {
-        $this->nfnExportDirectory = \Storage::path(config('config.export_dir'));
+        $this->nfnExportDirectory = Storage::path(config('config.export_dir'));
     }
 
     /**

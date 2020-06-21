@@ -21,6 +21,7 @@ namespace App\Services\Process;
 
 use App\Repositories\Interfaces\Subject;
 use App\Services\Requests\HttpRequest;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Storage;
 use thiagoalessio\TesseractOCR\TesseractOCR;
@@ -140,7 +141,7 @@ class TesseractService
             $ocr = preg_replace('/\s+/', ' ', trim($result));
             $file['ocr'] = empty($ocr) ? 'Error: OCR returned empty string.' : $ocr;
             $this->updateSubject($file);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $file['ocr'] = $e->getMessage();
             $this->updateSubject($file);
         }

@@ -20,6 +20,7 @@
 namespace App\Services\Image;
 
 use App\Services\File\FileService;
+use Exception;
 use GuzzleHttp\Client;
 use Storage;
 
@@ -82,7 +83,7 @@ class Thumbnail extends ImagickService
                 $image = $this->thumbFromUrl($url);
                 $this->createThumbnail($url, $image);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->getFile($this->defaultThumbImg);
         }
 

@@ -24,6 +24,7 @@ use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Process\OcrService;
 use App\Services\Process\TesseractService;
+use Artisan;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -71,7 +72,7 @@ class OcrTesseractJob implements ShouldQueue
         if ($count === 0) {
             $service->complete($this->ocrQueue);
 
-            \Artisan::call('ocrprocess:records');
+            Artisan::call('ocrprocess:records');
 
             $this->delete();
 
@@ -90,7 +91,7 @@ class OcrTesseractJob implements ShouldQueue
 
         event('ocr.status', [$this->ocrQueue]);
 
-        \Artisan::call('ocrprocess:records');
+        Artisan::call('ocrprocess:records');
 
         $this->delete();
 
@@ -118,6 +119,6 @@ class OcrTesseractJob implements ShouldQueue
         $user = User::find(1);
         $user->notify(new JobError(__FILE__, $messages));
 
-        \Artisan::call('ocrprocess:records');
+        Artisan::call('ocrprocess:records');
     }
 }

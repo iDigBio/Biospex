@@ -1,5 +1,7 @@
 <?php namespace App\Services\Xml;
 
+use DOMDocument;
+
 class XmlBuild
 {
     public function __contstuct()
@@ -9,7 +11,7 @@ class XmlBuild
 
     public function setDomDocument($version, $encoding)
     {
-        return new \DOMDocument($version, $encoding);
+        return new DOMDocument($version, $encoding);
     }
 
     public function buildElementsFromArray($dom, $data)

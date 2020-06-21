@@ -21,6 +21,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Event as Model;
 use App\Models\EventTeam;
+use App\Models\User;
 use App\Repositories\Interfaces\Event;
 use Illuminate\Support\Carbon;
 
@@ -67,7 +68,7 @@ class EventRepository extends EloquentRepository implements Event
     /**
      * @inheritdoc
      */
-    public function getEventAdminIndex(\App\Models\User $user, $sort = null, $order = null)
+    public function getEventAdminIndex(User $user, $sort = null, $order = null)
     {
         $results = $user->isAdmin() ? $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
             $results = $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('owner_id', $user->id)->get();

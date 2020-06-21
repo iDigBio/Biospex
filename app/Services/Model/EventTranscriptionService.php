@@ -103,7 +103,7 @@ class EventTranscriptionService
 
         if ($events->isNotEmpty()) {
             ScoreboardJob::dispatch($projectId);
-        };
+        }
     }
 
     /**

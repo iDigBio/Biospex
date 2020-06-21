@@ -24,9 +24,11 @@ use App\Repositories\Interfaces\Property;
 use App\Repositories\Interfaces\Subject;
 use App\Services\MongoDbService;
 use Carbon\Carbon;
+use Exception;
 use ForceUTF8\Encoding;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Factory as Validation;
+use MongoDB\BSON\ObjectId;
 
 class DarwinCoreCsvImport
 {
@@ -234,7 +236,7 @@ class DarwinCoreCsvImport
     public function testHeaderRowCount($row)
     {
         if (count($this->header) !== count($row)) {
-            throw new \Exception(trans('pages.csv_row_count', [
+            throw new Exception(trans('pages.csv_row_count', [
                 'headers' => count($this->header),
                 'rows'    => count($row),
             ]));
@@ -284,7 +286,7 @@ class DarwinCoreCsvImport
     public function createShortNameForHeader($row, $key, $qualified, $header)
     {
         if (! isset($row[$key])) {
-            throw new \Exception(trans('pages.csv_build_header', ['key' => $key, 'qualified' => $qualified]));
+            throw new Exception(trans('pages.csv_build_header', ['key' => $key, 'qualified' => $qualified]));
         }
 
         $short = $this->checkProperty($qualified, $row[$key]);
@@ -306,7 +308,7 @@ class DarwinCoreCsvImport
             return $qualified;
         }
 
-        list($namespace, $short) = $this->splitNameSpaceShort($ns_short);
+        [$namespace, $short] = $this->splitNameSpaceShort($ns_short);
 
         $short = $this->setShortNameForQualifiedName($qualified, $short, $namespace);
 
@@ -321,7 +323,7 @@ class DarwinCoreCsvImport
      */
     protected function splitNameSpaceShort($ns_short)
     {
-        list($namespace, $short) = preg_match('/:/', $ns_short) ? explode(':', $ns_short) : ['', $ns_short];
+        [$namespace, $short] = preg_match('/:/', $ns_short) ? explode(':', $ns_short) : ['', $ns_short];
 
         return [$namespace, $short];
     }
@@ -388,7 +390,7 @@ class DarwinCoreCsvImport
         }
 
         if (collect($this->metaFields[$type])->intersect($this->identifiers)->isEmpty()) {
-            throw new \Exception(trans('pages.missing_identifier', ['identifiers' => implode(',', $this->identifiers)]));
+            throw new Exception(trans('pages.missing_identifier', ['identifiers' => implode(',', $this->identifiers)]));
         }
     }
 
@@ -514,7 +516,7 @@ class DarwinCoreCsvImport
         // Was causing subject not to be inserted in mongodb due to text index on ocr.
         if (isset($subject['language'])) {
             unset($subject['language']);
-        };
+        }
 
         $this->subjectContract->create($subject);
         $this->subjectCount++;
@@ -527,7 +529,7 @@ class DarwinCoreCsvImport
      */
     public function saveOccurrence($row)
     {
-        $row['_id'] = new \MongoDB\BSON\ObjectId();
+        $row['_id'] = new ObjectId();
         $row['updated_at'] = Carbon::now();
         $row['created_at'] = Carbon::now();
 

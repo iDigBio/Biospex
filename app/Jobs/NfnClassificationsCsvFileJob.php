@@ -23,6 +23,7 @@ use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Repositories\Interfaces\Expedition;
 use App\Services\Api\PanoptesApiService;
+use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;
@@ -117,7 +118,7 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
             $this->dispatchSources();
             $this->dispatchReQueued();
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             return;
         }

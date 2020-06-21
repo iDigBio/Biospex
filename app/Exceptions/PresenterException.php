@@ -19,7 +19,9 @@
 
 namespace App\Exceptions;
 
-class PresenterException extends \Exception
+use Exception;
+
+class PresenterException extends Exception
 {
     //
 }

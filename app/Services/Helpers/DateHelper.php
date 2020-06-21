@@ -104,7 +104,7 @@ class DateHelper
      */
     public function eventDateCheck($startDate, $endDate)
     {
-        $now = \Carbon\Carbon::now(new \DateTimeZone('UTC'));
+        $now = \Carbon\Carbon::now(new DateTimeZone('UTC'));
         $start_date = $startDate->setTimezone('UTC');
         $end_date = $endDate->setTimeZone('UTC');
 

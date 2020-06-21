@@ -22,6 +22,8 @@ namespace App\Jobs;
 use App\Models\ExportQueue as Model;
 use App\Repositories\Interfaces\ExportQueue;
 use App\Services\Actor\ActorFactory;
+use Artisan;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -75,9 +77,9 @@ class ExportQueueJob implements ShouldQueue
         try {
             $class = ActorFactory::create($queue->expedition->actor->class);
             $class->processQueue($queue);
-            \Artisan::call('export:poll');
+            Artisan::call('export:poll');
             $this->delete();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             event('actor.pivot.error', $queue->expedition->actor);
 
             $attributes = ['queued' => 0, 'error' => 1];
@@ -93,7 +95,7 @@ class ExportQueueJob implements ShouldQueue
 
             Notification::send($users, new NfnExportError($message));
 
-            \Artisan::call('export:queue');
+            Artisan::call('export:queue');
 
             $this->delete();
         }

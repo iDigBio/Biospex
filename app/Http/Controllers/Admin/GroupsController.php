@@ -26,6 +26,7 @@ use App\Repositories\Interfaces\Group;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
 use App\Repositories\Interfaces\User;
+use Exception;
 
 class GroupsController extends Controller
 {
@@ -184,7 +185,7 @@ class GroupsController extends Controller
             FlashHelper::success(trans('pages.record_deleted'));
 
             return redirect()->route('admin.groups.index');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             FlashHelper::error(trans('pages.record_delete_error'));
 
             return redirect()->route('admin.groups.index');
@@ -220,7 +221,7 @@ class GroupsController extends Controller
             FlashHelper::success(trans('pages.group_user_deleted'));
 
             return redirect()->route('admin.groups.show', [$groupId]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             FlashHelper::error(trans('pages.group_user_deleted_error'));
 
             return redirect()->route('admin.groups.show', [$groupId]);

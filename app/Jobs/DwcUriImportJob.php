@@ -23,6 +23,7 @@ use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Import;
 use App\Repositories\Interfaces\Project;
 use App\Notifications\DarwinCoreImportError;
+use Exception;
 use finfo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -88,17 +89,17 @@ class DwcUriImportJob implements ShouldQueue
             $file = file_get_contents(GeneralHelper::urlEncode($this->data['url']));
             if ($file === false)
             {
-                throw new \Exception(trans('pages.zip_download'));
+                throw new Exception(trans('pages.zip_download'));
             }
 
             if (!$this->checkFileType($file))
             {
-                throw new \Exception(trans('pages.zip_type'));
+                throw new Exception(trans('pages.zip_type'));
             }
 
             if (Storage::put($filePath, $file) === false)
             {
-                throw new \Exception(trans('pages.save_file', [':file' => $filePath]));
+                throw new Exception(trans('pages.save_file', [':file' => $filePath]));
             }
 
             $import = $importContract->create([
@@ -109,7 +110,7 @@ class DwcUriImportJob implements ShouldQueue
 
             DwcFileImportJob::dispatch($import);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             $project = $projectContract->findWith($this->data['id'], ['group.owner']);
 
@@ -132,7 +133,7 @@ class DwcUriImportJob implements ShouldQueue
     protected function checkFileType($file)
     {
         $finfo = new finfo(FILEINFO_MIME);
-        list($mime) = explode(';', $finfo->buffer($file));
+        [$mime] = explode(';', $finfo->buffer($file));
         $types = ['application/zip', 'application/octet-stream'];
         if (!in_array(trim($mime), $types))
         {

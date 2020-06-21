@@ -22,6 +22,7 @@ namespace App\Jobs;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Services\Api\PanoptesApiService;
+use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;
@@ -102,7 +103,7 @@ class NfnClassificationsCsvDownloadJob implements ShouldQueue
 
             NfnClassificationsReconciliationJob::dispatch($expeditionIds)->delay(1800);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             return;
         }

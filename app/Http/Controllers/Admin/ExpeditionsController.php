@@ -32,6 +32,7 @@ use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\WorkflowManager;
 use Artisan;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use JavaScript;
 
@@ -377,7 +378,7 @@ class ExpeditionsController extends Controller
             FlashHelper::success(trans('pages.record_updated'));
 
             return redirect()->route('admin.expeditions.show', [$project->id, $expedition->id]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             FlashHelper::error(trans('pages.record_save_error'));
 
             return redirect()->route('admin.expeditions.edit', [$projectId, $expeditionId]);
@@ -423,7 +424,7 @@ class ExpeditionsController extends Controller
             FlashHelper::success(trans('pages.expedition_process_success'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             FlashHelper::error(trans('pages.expedition_process_error', ['error' => $e->getMessage()]));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
@@ -516,7 +517,7 @@ class ExpeditionsController extends Controller
             FlashHelper::success(trans('pages.record_deleted'));
 
             return redirect()->route('admin.projects.index');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             FlashHelper::error(trans('record.record_delete_error'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);

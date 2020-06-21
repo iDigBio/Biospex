@@ -95,7 +95,7 @@ class EventPresenter extends Presenter
      */
     public function scoreboardDate()
     {
-        $now = Carbon::now(new \DateTimeZone('UTC'));
+        $now = Carbon::now(new DateTimeZone('UTC'));
         $start_date = $this->model->start_date->setTimezone('UTC');
         $end_date = $this->model->end_date->setTimeZone('UTC');
 

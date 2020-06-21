@@ -58,7 +58,7 @@ class EventsController extends Controller
     {
         $results = $this->eventContract->getEventAdminIndex(Auth::user());
 
-        list($events, $eventsCompleted) = $results->partition(function ($event) {
+        [$events, $eventsCompleted] = $results->partition(function ($event) {
             return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
         });
 
@@ -78,7 +78,7 @@ class EventsController extends Controller
 
         $results = $this->eventContract->getEventPublicIndex(request()->get('sort'), request()->get('order'));
 
-        list($active, $completed) = $results->partition(function ($event) {
+        [$active, $completed] = $results->partition(function ($event) {
             return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
         });
 
@@ -236,7 +236,7 @@ class EventsController extends Controller
             return response()->json(false);
         }
 
-        EventTranscriptionExportCsvJob::dispatch(\Auth::user(), $eventId);
+        EventTranscriptionExportCsvJob::dispatch(Auth::user(), $eventId);
 
         return response()->json(true);
     }
@@ -253,7 +253,7 @@ class EventsController extends Controller
             return response()->json(false);
         }
 
-        EventUserExportCsvJob::dispatch(\Auth::user(), $eventId);
+        EventUserExportCsvJob::dispatch(Auth::user(), $eventId);
 
         return response()->json(true);
     }

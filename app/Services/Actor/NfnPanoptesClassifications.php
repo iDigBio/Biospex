@@ -26,6 +26,7 @@ use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
 use App\Facades\GeneralHelper;
 use App\Services\Api\PanoptesApiService;
+use Exception;
 
 class NfnPanoptesClassifications extends NfnPanoptesBase
 {
@@ -95,7 +96,7 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
 
             return;
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             ActorEventHelper::fireActorErrorEvent($actor);
 

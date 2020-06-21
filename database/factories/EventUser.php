@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use App\Models\EventUser;
 use Faker\Generator as Faker;
 
 /*
@@ -30,7 +31,7 @@ use Faker\Generator as Faker;
 |
 */
 
-$factory->define(\App\Models\EventUser::class, function (Faker $faker) {
+$factory->define(EventUser::class, function (Faker $faker) {
 
     return [
         'nfn_user' => $faker->name,

@@ -21,6 +21,7 @@ namespace App\Services\Actor;
 
 use App\Facades\ActorEventHelper;
 use App\Models\ExportQueue;
+use Exception;
 use Illuminate\Support\Facades\File;
 
 /**
@@ -85,7 +86,7 @@ class NfnPanoptesExportConvertImages extends NfnPanoptesBase
 
         if (empty(File::files($this->tmpDirectory))) {
             ActorEventHelper::fireActorErrorEvent($this->actor);
-            throw new \Exception(__('pages.export_subject_files_exist_error'));
+            throw new Exception(__('pages.export_subject_files_exist_error'));
         }
 
         ActorEventHelper::fireActorQueuedEvent($this->actor);

@@ -19,6 +19,8 @@
 
 namespace App\Presenters;
 
+use Storage;
+
 class ProjectPresenter extends Presenter
 {
     /**
@@ -32,7 +34,7 @@ class ProjectPresenter extends Presenter
         $url = $this->model->logo->url();
         $path = str_replace($baseLength, '', $url);
 
-        return \Storage::disk('public')->exists($path) ? $url : config('config.missing_project_logo');
+        return Storage::disk('public')->exists($path) ? $url : config('config.missing_project_logo');
     }
 
     /**

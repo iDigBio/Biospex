@@ -20,7 +20,7 @@
 namespace App\Services\Helpers;
 
 use Carbon\Carbon;
-use DateTimeZone;
+use Exception;
 use Schema;
 use Storage;
 
@@ -207,7 +207,7 @@ class GeneralHelper
         $fd = $storage === null ? fopen('php://temp/maxmemory:1048576', 'w') : fopen($storage, 'w');
 
         if ($fd === false) {
-            throw new \Exception('Failed to open temporary file while creating csv file');
+            throw new Exception('Failed to open temporary file while creating csv file');
         }
 
         if ($storage === null) {

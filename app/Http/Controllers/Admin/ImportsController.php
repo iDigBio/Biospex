@@ -26,6 +26,8 @@ use App\Jobs\DwcFileImportJob;
 use App\Jobs\DwcUriImportJob;
 use App\Jobs\RecordsetImportJob;
 use App\Repositories\Interfaces\Project;
+use Auth;
+use Exception;
 
 class ImportsController extends Controller
 {
@@ -56,7 +58,7 @@ class ImportsController extends Controller
             $path = request()->file('dwc-file')->store('imports/subjects');
 
             $import = $importContract->create([
-                'user_id'    => \Auth::user()->id,
+                'user_id'    => Auth::user()->id,
                 'project_id' => $projectId,
                 'file'       => $path
             ]);
@@ -67,7 +69,7 @@ class ImportsController extends Controller
 
             return redirect()->back();
         }
-        catch(\Exception $e)
+        catch(Exception $e)
         {
             FlashHelper::error(__('pages.upload_import_error'));
 
@@ -88,7 +90,7 @@ class ImportsController extends Controller
 
             $data = [
                 'id'         => request()->input('recordset'),
-                'user_id'    => \Auth::user()->id,
+                'user_id'    => Auth::user()->id,
                 'project_id' => $projectId
             ];
 
@@ -98,7 +100,7 @@ class ImportsController extends Controller
 
             return redirect()->back();
         }
-        catch(\Exception $e)
+        catch(Exception $e)
         {
             FlashHelper::error(__('pages.upload_import_error'));
 
@@ -119,7 +121,7 @@ class ImportsController extends Controller
 
             $data = [
                 'id'      => $projectId,
-                'user_id' => \Auth::user()->id,
+                'user_id' => Auth::user()->id,
                 'url'     => request()->input('dwc-url')
             ];
 
@@ -129,7 +131,7 @@ class ImportsController extends Controller
 
             return redirect()->back();
         }
-        catch(\Exception $e)
+        catch(Exception $e)
         {
             FlashHelper::error(__('pages.upload_import_error'));
 
