@@ -75,6 +75,6 @@ class UserPolicy
      */
     public function delete(User $user)
     {
-        return $user === null ? false : ($user->isAdmin('superuser') ? true : null);
+        return $user === null ? false : ($user->isAdmin() ? true : null);
     }
 }

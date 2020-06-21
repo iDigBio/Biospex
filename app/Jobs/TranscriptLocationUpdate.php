@@ -103,7 +103,7 @@ class TranscriptLocationUpdate implements ShouldQueue
         $this->dwcTranscriptFields = $fields = config('config.dwcTranscriptFields');
         $this->dwcOccurrenceFields = $fields = config('config.dwcOccurrenceFields');
 
-        $transcriptions = $this->getTranscriptions($this->expedition);
+        $transcriptions = $this->getTranscriptions();
         $this->processTranscriptions($transcriptions);
     }
 

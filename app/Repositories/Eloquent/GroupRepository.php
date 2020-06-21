@@ -71,7 +71,7 @@ class GroupRepository extends EloquentRepository implements Group
      */
     public function getGroupsByUserId($userId)
     {
-        $results = $this->model->withCount('projects', 'expeditions', 'users')
+        $results = $this->model->withCount(['projects', 'expeditions', 'users'])
             ->whereHas('users', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })->get();
