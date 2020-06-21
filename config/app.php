@@ -1,6 +1,10 @@
 <?php
 
+use App\Facades\DateHelper;
 use App\Facades\FlashHelper;
+use App\Facades\GeneralHelper;
+use App\Facades\CountHelper;
+use App\Facades\ActorEventHelper;
 
 return [
 
@@ -234,11 +238,11 @@ return [
         'View'             => Illuminate\Support\Facades\View::class,
 
         #### Packages
-        'DateHelper'       => \App\Facades\DateHelper::class,
-        'Flash'            => \App\Facades\FlashHelper::class,
-        'GeneralHelper'    => \App\Facades\GeneralHelper::class,
-        'CountHelper'      => \App\Facades\CountHelper::class,
-        'ActorEventHelper' => \App\Facades\ActorEventHelper::class
+        'DateHelper'       => DateHelper::class,
+        'Flash'            => FlashHelper::class,
+        'GeneralHelper'    => GeneralHelper::class,
+        'CountHelper'      => CountHelper::class,
+        'ActorEventHelper' => ActorEventHelper::class
     ],
 
 ];
