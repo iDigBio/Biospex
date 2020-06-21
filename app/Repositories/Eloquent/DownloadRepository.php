@@ -42,14 +42,10 @@ class DownloadRepository extends EloquentRepository implements Download
      */
     public function getDownloadsForCleaning(): Collection
     {
-        $results = $this->model
+        return $this->model
             ->where('type', 'export')
             ->where('created_at', '<', Carbon::now()->subDays(90))
             ->get();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -57,13 +53,9 @@ class DownloadRepository extends EloquentRepository implements Download
      */
     public function getExportFiles(string $expeditionId): Collection
     {
-        $results = $this->model
+        return $this->model
             ->where('expedition_id', $expeditionId)
             ->where('type', 'export')
             ->get();
-
-        $this->resetModel();
-
-        return $results;
     }
 }

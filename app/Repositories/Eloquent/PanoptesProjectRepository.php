@@ -40,12 +40,8 @@ class PanoptesProjectRepository extends EloquentRepository implements PanoptesPr
      */
     public function findByProjectIdAndWorkflowId($projectId, $workflowId)
     {
-        $result = $this->model->where('panoptes_project_id', $projectId)
+        return $this->model->where('panoptes_project_id', $projectId)
             ->where('panoptes_workflow_id', $workflowId)->first();
-
-        $this->resetModel();
-
-        return $result;
     }
 
 }

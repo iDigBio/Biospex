@@ -70,6 +70,7 @@ class JobError extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      *
+     * @param $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)

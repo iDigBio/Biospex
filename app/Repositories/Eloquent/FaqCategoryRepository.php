@@ -40,15 +40,11 @@ class FaqCategoryRepository extends EloquentRepository implements FaqCategory
      */
     public function getCategoriesWithFaqOrdered()
     {
-        $results =  $this->model
+        return $this->model
             ->with('faqs')
             ->groupBy('id')
             ->orderBy('id', 'asc')
             ->get();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -56,11 +52,7 @@ class FaqCategoryRepository extends EloquentRepository implements FaqCategory
      */
     public function getFaqCategorySelect()
     {
-        $results = $this->model->pluck('name', 'id')->toArray();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->pluck('name', 'id')->toArray();
     }
 
     /**
@@ -68,10 +60,6 @@ class FaqCategoryRepository extends EloquentRepository implements FaqCategory
      */
     public function getFaqCategoryOrderId()
     {
-        $results = $this->model->with('faqs')->groupBy('id')->get();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->with('faqs')->groupBy('id')->get();
     }
 }

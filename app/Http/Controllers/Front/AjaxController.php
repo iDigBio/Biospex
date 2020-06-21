@@ -19,11 +19,9 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Events\BingoEvent;
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
 use App\Repositories\Interfaces\AmChart;
-use App\Repositories\Interfaces\BingoMap;
 use App\Repositories\Interfaces\Event;
 use App\Services\Model\EventStepChartService;
 use Artisan;

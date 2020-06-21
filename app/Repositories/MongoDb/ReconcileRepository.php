@@ -45,8 +45,6 @@ class ReconcileRepository extends MongoDbRepository implements Reconcile
             return $this->model->where('subject_expeditionId', $expeditionId)->count();
         });
 
-        $this->resetModel();
-
         return (int) $count;
     }
 
@@ -55,15 +53,11 @@ class ReconcileRepository extends MongoDbRepository implements Reconcile
      */
     public function paginate(array $ids)
     {
-        $results = $this->model->with(['transcriptions' => function($q1){
+        return $this->model->with(['transcriptions' => function($q1){
             $q1->with(['subject' => function($q2){
                 $q2->select('_id', 'accessURI');
             }]);
         }])->whereIn('subject_id', $ids)->paginate(1);
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -71,10 +65,6 @@ class ReconcileRepository extends MongoDbRepository implements Reconcile
      */
     public function getByExpeditionId(string $expeditionId): Collection
     {
-        $results = $this->model->where('subject_expeditionId', $expeditionId)->get();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('subject_expeditionId', $expeditionId)->get();
     }
 }

@@ -52,10 +52,11 @@ class UpdateGoogleStateCountyTable extends Command
     /**
      * Execute the console command.
      *
-     * @param HttpRequest $httpRequest
-     * @param Csv $csv
-     * @param StateCounty $stateCountyContract
+     * @param \App\Services\Requests\HttpRequest $httpRequest
+     * @param \App\Services\Csv\Csv $csv
+     * @param \App\Repositories\Interfaces\StateCounty $stateCountyContract
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \League\Csv\Exception
      */
     public function handle(HttpRequest $httpRequest, Csv $csv, StateCounty $stateCountyContract)
     {

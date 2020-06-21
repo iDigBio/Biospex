@@ -223,6 +223,8 @@ class NfnPanoptesBase
 
     /**
      * Advance the queue to the next stage.
+     *
+     * @param \App\Models\ExportQueue $queue
      */
     protected function advanceQueue(ExportQueue $queue)
     {

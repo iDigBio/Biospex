@@ -32,7 +32,6 @@ class TranscriptionsController extends Controller
      * @param string $projectId
      * @param string $year
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function index(AmChart $amChartContract, string $projectId, string $year)
     {

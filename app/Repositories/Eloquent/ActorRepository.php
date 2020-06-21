@@ -39,7 +39,7 @@ class ActorRepository extends EloquentRepository implements Actor
     /**
      * @inheritdoc
      */
-    public function createActor(array $attributes = [])
+    public function createActor(array $attributes)
     {
         $actor = $this->model->create($attributes);
 
@@ -51,15 +51,13 @@ class ActorRepository extends EloquentRepository implements Actor
             }
         }
 
-        $this->resetModel();
-
         return $actor;
     }
 
     /**
      * @inheritdoc
      */
-    public function updateActor(array $attributes = [], $actorId)
+    public function updateActor(array $attributes, $actorId)
     {
         $actor = $this->model->with(['contacts'])->find($actorId);
         $actor->fill($attributes);
@@ -79,8 +77,6 @@ class ActorRepository extends EloquentRepository implements Actor
 
         $actor = $this->model->with(['contacts'])->find($actorId);
 
-        $this->resetModel();
-
         return $actor;
     }
 
@@ -89,10 +85,6 @@ class ActorRepository extends EloquentRepository implements Actor
      */
     public function updateActorExpeditionPivot($actor, $expeditionId, array $attributes = [])
     {
-        $result = $actor->expeditions()->updateExistingPivot($expeditionId, $attributes);
-
-        $this->resetModel();
-
-        return $result;
+        return $actor->expeditions()->updateExistingPivot($expeditionId, $attributes);
     }
 }

@@ -41,8 +41,6 @@ class ImagickService
 
     /**
      * Create Imagick object.
-     *
-     * @throws \ImagickException
      */
     public function createImagickObject()
     {

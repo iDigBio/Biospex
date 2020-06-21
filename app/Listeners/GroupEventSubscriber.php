@@ -80,6 +80,8 @@ class GroupEventSubscriber
 
     /**
      * Handle user login events.
+     *
+     * @param $event
      */
     public function onUserLogin($event)
     {

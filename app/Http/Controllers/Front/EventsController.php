@@ -19,7 +19,6 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\DateHelper;
 use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventJoinRequest;
@@ -27,7 +26,6 @@ use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventTeam;
 use App\Repositories\Interfaces\EventUser;
 use GeneralHelper;
-use JavaScript;
 
 class EventsController extends Controller
 {

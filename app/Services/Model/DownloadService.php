@@ -143,6 +143,7 @@ class DownloadService
      *
      * @param \App\Models\Download $download
      * @return array
+     * @throws \App\Exceptions\PresenterException
      */
     public function createDownloadFile(\App\Models\Download $download)
     {

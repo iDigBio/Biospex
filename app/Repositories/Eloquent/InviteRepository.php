@@ -40,14 +40,10 @@ class InviteRepository extends EloquentRepository implements Invite
      */
     public function getExistingInvitesByGroupId($groupId)
     {
-        $results = $this->model
+        return $this->model
             ->with('group')
             ->where('group_id', $groupId)
             ->whereNotNull('email')
             ->get();
-
-        $this->resetModel();
-
-        return $results;
     }
 }

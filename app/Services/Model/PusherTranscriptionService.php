@@ -20,7 +20,6 @@
 namespace App\Services\Model;
 
 use App\Repositories\Interfaces\Expedition;
-use App\Repositories\Interfaces\PanoptesProject;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\PusherTranscription;
 use Illuminate\Http\Request;
@@ -42,11 +41,6 @@ class PusherTranscriptionService
      * @var PanoptesTranscription
      */
     private $panoptesTranscriptionContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\PanoptesProject
-     */
-    private $panoptesProjectContract;
 
     /**
      * ExpeditionService constructor.

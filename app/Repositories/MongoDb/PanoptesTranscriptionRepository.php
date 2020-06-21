@@ -41,13 +41,9 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getTotalTranscriptions()
     {
-        $result = Cache::remember(md5(__METHOD__), 14440, function () {
+        return Cache::remember(md5(__METHOD__), 14440, function () {
             return $this->model->count();
         });
-
-        $this->resetModel();
-
-        return $result;
     }
 
     /**
@@ -55,16 +51,12 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getContributorCount()
     {
-        $results = Cache::remember(md5(__METHOD__), 14440, function () {
+        return Cache::remember(md5(__METHOD__), 14440, function () {
             return $this->model->where('user_name', 'not regexp', '/^not-logged-in.*/i')
                 ->groupBy('user_name')
                 ->get()
                 ->count();
         });
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -86,8 +78,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
                 })->first();
             });
 
-        $this->resetModel();
-
         return $result === null ? 0 : $result->count;
     }
 
@@ -104,8 +94,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
                     ]);
                 })->first();
             });
-
-        $this->resetModel();
 
         return $result === null ? 0 : $result->count;
     }
@@ -129,8 +117,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
                 })->first();
         });
 
-        $this->resetModel();
-
         return null === $result ? null : DateHelper::formatMongoDbDate($result->classification_finished_at, 'Y-m-d H:i:s');
     }
 
@@ -153,8 +139,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
                 })->first();
             });
 
-        $this->resetModel();
-
         return null === $result ? null : DateHelper::formatMongoDbDate($result->classification_finished_at, 'Y-m-d H:i:s');
     }
 
@@ -162,13 +146,15 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      * Retrieve transcription count grouped by date.
      *
      * @param $workflowId
+     * @param $begin
+     * @param $end
      * @return mixed
-     * @throws \Exception
      */
     public function getTranscriptionCountPerDate($workflowId, $begin, $end)
     {
         $key = $workflowId . $begin->__toString() . $end->__toString();
-        $results = Cache::rememberForever(md5(__METHOD__.$key), function () use ($workflowId, $begin, $end) {
+
+        return Cache::rememberForever(md5(__METHOD__.$key), function () use ($workflowId, $begin, $end) {
                 return $this->model->raw(function ($collection) use ($workflowId, $begin, $end) {
                     return $collection->aggregate([
                         [
@@ -195,10 +181,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
                     ]);
                 })->pluck('count', '_id');
             });
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -210,7 +192,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getTranscribersTranscriptionCount($projectId)
     {
-        $results = Cache::rememberForever(md5(__METHOD__.$projectId), function () use ($projectId) {
+        return Cache::rememberForever(md5(__METHOD__.$projectId), function () use ($projectId) {
                 return $this->model->raw(function ($collection) use ($projectId) {
                     return $collection->aggregate([
                         [
@@ -251,13 +233,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
                     ]);
                 });
             });
-
-        $this->resetModel();
-
-        return $results;
     }
-
-    // not used?
 
     /**
      * @param $expeditionId
@@ -277,10 +253,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
             $model->where('classification_finished_at', '>=', $timestamp);
         }
 
-        $results = $model->orderBy('classification_finished_at')->get();
-
-        $this->resetModel();
-
-        return $results;
+        return $model->orderBy('classification_finished_at')->get();
     }
 }

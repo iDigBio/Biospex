@@ -39,11 +39,7 @@ class StateCountyRepository extends EloquentRepository implements StateCounty
      */
     public function truncateTable()
     {
-        $results = $this->model->truncate();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->truncate();
     }
 
     /**
@@ -51,11 +47,7 @@ class StateCountyRepository extends EloquentRepository implements StateCounty
      */
     public function findByCountyState($county, $stateAbbr)
     {
-        $result = $this->model->where('county_name','like', '%'.$county.'%')->where('state_abbr', $stateAbbr)->first();
-
-        $this->resetModel();
-
-        return $result;
+        return $this->model->where('county_name','like', '%'.$county.'%')->where('state_abbr', $stateAbbr)->first();
     }
 
     /**
@@ -66,8 +58,6 @@ class StateCountyRepository extends EloquentRepository implements StateCounty
         $results = $this->model->withCount(['transcriptionLocations' => function($q) use($projectId) {
             $q->where('project_id', $projectId);
         }])->get();
-
-        $this->resetModel();
 
         return $results->groupBy('state_num')->reject(function ($row, $key) {
             return empty($key);
@@ -86,12 +76,8 @@ class StateCountyRepository extends EloquentRepository implements StateCounty
      */
     public function getCountyTranscriptionCount($projectId, $stateId)
     {
-        $results = $this->model->withCount(['transcriptionLocations' => function($q) use($projectId) {
+        return $this->model->withCount(['transcriptionLocations' => function($q) use($projectId) {
             $q->where('project_id', $projectId);
         }])->where('state_num', $stateId)->get();
-
-        $this->resetModel();
-
-        return $results;
     }
 }

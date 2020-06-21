@@ -19,7 +19,6 @@
 
 namespace App\Services\Process;
 
-use App\Jobs\OcrTesseractJob;
 use App\Notifications\OcrProcessComplete;
 use App\Repositories\Interfaces\OcrQueue;
 use App\Services\Csv\Csv;

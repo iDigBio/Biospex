@@ -50,6 +50,7 @@ class PusherWeDigBioDashboardJob implements ShouldQueue
      * Create a new job instance.
      *
      * @param $data
+     * @param $panoptesProject
      */
     public function __construct($data, $panoptesProject)
     {

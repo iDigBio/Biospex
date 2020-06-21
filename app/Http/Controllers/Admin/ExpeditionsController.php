@@ -145,7 +145,7 @@ class ExpeditionsController extends Controller
      * Show the form for creating a new resource.
      *
      * @param $projectId
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function create($projectId)
     {
@@ -209,11 +209,11 @@ class ExpeditionsController extends Controller
     }
 
     /**
-     * Display the specified resource
+     * Display the specified resource.
      *
      * @param $projectId
      * @param $expeditionId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show($projectId, $expeditionId)
     {

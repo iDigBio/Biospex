@@ -29,7 +29,7 @@ interface Actor extends RepositoryInterface
      * @param array $attributes
      * @return mixed
      */
-    public function createActor(array $attributes = []);
+    public function createActor(array $attributes);
 
     /**
      * Update actor.
@@ -38,7 +38,7 @@ interface Actor extends RepositoryInterface
      * @param array $attributes
      * @return mixed
      */
-    public function updateActor(array $attributes = [], $actorId);
+    public function updateActor(array $attributes, $actorId);
 
     /**
      * Update existing pivot table for ActorExpeditions.

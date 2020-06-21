@@ -19,8 +19,6 @@
 
 namespace App\Presenters;
 
-use Storage;
-
 class ProjectResourcePresenter extends Presenter
 {
     /**

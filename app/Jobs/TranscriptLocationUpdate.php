@@ -171,9 +171,6 @@ class TranscriptLocationUpdate implements ShouldQueue
      */
     private function getSubject($transcription)
     {
-        $value = isset($transcription['subject_Subject_ID']) ?
-            $transcription['subject_Subject_ID'] : $transcription['subject_subjectId'];
-
         return $this->subjectContract->find(trim($transcription['subject_subjectId']));
     }
 

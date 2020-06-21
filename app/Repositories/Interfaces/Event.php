@@ -20,6 +20,7 @@
 namespace App\Repositories\Interfaces;
 
 use App\Repositories\RepositoryInterface;
+use Illuminate\Support\Collection;
 
 interface Event extends RepositoryInterface
 {
@@ -29,26 +30,31 @@ interface Event extends RepositoryInterface
      * @param null $sort
      * @param null $order
      * @param null $projectId
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function getEventPublicIndex($sort = null, $order = null, $projectId = null);
+    public function getEventPublicIndex($sort = null, $order = null, $projectId = null): Collection;
 
     /**
      * Get events for admin section by user id.
+     *
      * @param \App\Models\User $user
      * @param null $sort
      * @param null $order
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function getEventAdminIndex(\App\Models\User $user, $sort = null, $order = null);
+    public function getEventAdminIndex(\App\Models\User $user, $sort = null, $order = null): Collection;
 
     /**
+     * Override create event.
+     *
      * @param array $attributes
      * @return mixed
      */
     public function createEvent(array $attributes);
 
     /**
+     * Override update event.
+     *
      * @param array $attributes
      * @param $resourceId
      * @return mixed
@@ -56,31 +62,41 @@ interface Event extends RepositoryInterface
     public function updateEvent(array $attributes, $resourceId);
 
     /**
+     * Get events for user.
+     *
      * @param $userId
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function getUserEvents($userId);
+    public function getUserEvents($userId): Collection;
 
     /**
+     * Get records for show event page.
+     *
      * @param $eventId
      * @return mixed
      */
     public function getEventShow($eventId);
 
     /**
+     * Check if an event exists with team and user.
+     *
      * @param $projectId
      * @param $user
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function checkEventExistsForClassificationUser($projectId, $user);
+    public function checkEventExistsForClassificationUser($projectId, $user): Collection;
 
     /**
+     * Get events using project id.
+     *
      * @param $projectId
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function getEventsByProjectId($projectId);
+    public function getEventsByProjectId($projectId):Collection;
 
     /**
+     * Get event for scoreboard.
+     *
      * @param $eventId
      * @param array $columns
      * @return mixed

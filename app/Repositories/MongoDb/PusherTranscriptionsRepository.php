@@ -62,7 +62,7 @@ class PusherTranscriptionsRepository extends MongoDbRepository implements Pusher
             $this->buildQuery($query, $request);
         })->limit($count)->offset($current)->orderBy('timestamp', 'desc')->get();
 
-        $this->resetModel();
+
 
         return $results;
     }

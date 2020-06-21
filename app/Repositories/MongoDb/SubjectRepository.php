@@ -78,11 +78,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function findSubjectsByExpeditionId($expeditionId, array $attributes = ['*'])
     {
-        $results = $this->model->where('expedition_ids', $expeditionId)->get($attributes);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('expedition_ids', $expeditionId)->get($attributes);
     }
 
     /**
@@ -90,14 +86,10 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function getSubjectsByProjectOccurrence($projectId, $occurrenceId)
     {
-        $results = $this->model
+        return $this->model
             ->where('project_id', (int) $projectId)
             ->where('occurrence.id', trim((string) $occurrenceId))
             ->get();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -105,13 +97,9 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function getUnassignedCount($projectId)
     {
-        $results = $this->model->where('expedition_ids', 'size', 0)
+        return $this->model->where('expedition_ids', 'size', 0)
             ->where('project_id', (int) $projectId)
             ->count();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -119,14 +107,10 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function getSubjectAssignedCount($projectId)
     {
-        $results = $this->model
+        return $this->model
             ->whereRaw(['expedition_ids.0' => ['$exists' => true]])
             ->where('project_id', '=', (int) $projectId)
             ->count();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -138,8 +122,6 @@ class SubjectRepository extends MongoDbRepository implements Subject
             $subject->expedition_ids = collect($subject->expedition_ids)->diff($expeditionId)->toArray();
             $subject->save();
         });
-
-        $this->resetModel();
     }
 
     /**
@@ -147,11 +129,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function findByAccessUri($accessURI)
     {
-        $results = $this->model->where('accessURI', 'like', '%' . $accessURI . '%')->first();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('accessURI', 'like', '%' . $accessURI . '%')->first();
     }
 
     /**
@@ -182,8 +160,6 @@ class SubjectRepository extends MongoDbRepository implements Subject
         {
             $this->buildQuery($query, $vars);
         })->count();
-
-        $this->resetModel();
 
         return (int) $count;
     }
@@ -233,7 +209,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
 
         $this->setRowCheckbox($rows);
 
-        $this->resetModel();
+
 
         return $rows;
     }

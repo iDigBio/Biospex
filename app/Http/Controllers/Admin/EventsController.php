@@ -91,7 +91,7 @@ class EventsController extends Controller
      * Show event.
      *
      * @param $eventId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show($eventId)
     {

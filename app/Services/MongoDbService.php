@@ -193,7 +193,7 @@ class MongoDbService
      * @param array $attributes
      * @param $resourceId
      */
-    public function updateOneById(array $attributes = [], $resourceId)
+    public function updateOneById(array $attributes, $resourceId)
     {
         $this->clientCollection->updateOne(['_id' => $this->setMongoObjectId($resourceId)], ['$set' => $attributes]);
     }

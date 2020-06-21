@@ -46,7 +46,7 @@ class EventUserRepository extends EloquentRepository implements EventUser
     {
         $user = $this->model->where('nfn_user', $name)->first(['id']);
 
-        $this->resetModel();
+
 
         return $user;
     }

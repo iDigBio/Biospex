@@ -41,11 +41,7 @@ class ExportQueueFileRepository extends EloquentRepository implements ExportQueu
      */
     public function getFilesByQueueId(string $queueId): Collection
     {
-        $results = $this->model->where('queue_id', $queueId)->where('error', 0)->get();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('queue_id', $queueId)->where('error', 0)->get();
     }
 
     /**
@@ -53,12 +49,8 @@ class ExportQueueFileRepository extends EloquentRepository implements ExportQueu
      */
     public function getFilesWithoutErrorByQueueId(string $queueId): Collection
     {
-        $results = $this->model->with('subject')
+        return $this->model->with('subject')
             ->where('queue_id', $queueId)->where('error', 0)->get();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -66,10 +58,6 @@ class ExportQueueFileRepository extends EloquentRepository implements ExportQueu
      */
     public function getFilesWithErrorsByQueueId(string $queueId): Collection
     {
-        $results = $this->model->where('queue_id', $queueId)->where('error', 1)->get();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('queue_id', $queueId)->where('error', 1)->get();
     }
 }

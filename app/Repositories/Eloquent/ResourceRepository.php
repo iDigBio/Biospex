@@ -39,10 +39,6 @@ class ResourceRepository extends EloquentRepository implements Resource
      */
     public function getResourcesOrdered()
     {
-        $results = $this->model->orderBy('order', 'asc')->get();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->orderBy('order', 'asc')->get();
     }
 }

@@ -39,11 +39,7 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function getFirstExportWithoutError(array $attributes = ['*'])
     {
-        $results = $this->model->where('error', 0)->first($attributes);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('error', 0)->first($attributes);
     }
 
     /**
@@ -51,7 +47,7 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function findByIdExpeditionActor($queueId, $expeditionId, $actorId, array $attributes = ['*'])
     {
-        $results = $this->model->with([
+        return $this->model->with([
             'expedition.actor',
             'expedition.project.group' => function($q){
                 $q->with(['owner', 'users' => function($q){
@@ -62,10 +58,6 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
             $query->where('expedition_id', $expeditionId);
             $query->where('actor_id', $actorId);
         })->find($queueId);
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -73,16 +65,12 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function findQueueProcessData($queueId, $expeditionId, $actorId, array $attributes = ['*'])
     {
-        $results = $this->model->with(['expedition.actor', 'expedition.project.group'])->whereHas('actor', function (
+        return $this->model->with(['expedition.actor', 'expedition.project.group'])->whereHas('actor', function (
                 $query
             ) use ($expeditionId, $actorId) {
                 $query->where('expedition_id', $expeditionId);
                 $query->where('actor_id', $actorId);
             })->find($queueId);
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -90,10 +78,6 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function getAllExportQueueOrderByIdAsc()
     {
-        $results = $this->model->where('error', 0)->orderBy('id', 'asc')->get('*');
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('error', 0)->orderBy('id', 'asc')->get('*');
     }
 }

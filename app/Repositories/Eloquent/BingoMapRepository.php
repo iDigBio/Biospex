@@ -42,10 +42,7 @@ class BingoMapRepository extends EloquentRepository implements BingoMap
      */
     public function getBingoMapsByBingoId(string $bingoId): Collection
     {
-        $results = $this->model->where('bingo_id', $bingoId)->get();
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('bingo_id', $bingoId)->get();
     }
 
     /**
@@ -53,10 +50,7 @@ class BingoMapRepository extends EloquentRepository implements BingoMap
      */
     public function getBingoMapByBingoIdUuid(int $bingoId, string $uuid): ?\Illuminate\Database\Eloquent\Model
     {
-        $results = $this->model->where('bingo_id', $bingoId)->where('uuid', $uuid)->first();
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('bingo_id', $bingoId)->where('uuid', $uuid)->first();
     }
 
     /**
@@ -64,10 +58,6 @@ class BingoMapRepository extends EloquentRepository implements BingoMap
      */
     public function getBingoMapForCleaning(): Collection
     {
-        $results = $this->model->where('created_at', '<', Carbon::now()->subDays(1))->get();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('created_at', '<', Carbon::now()->subDays(1))->get();
     }
 }

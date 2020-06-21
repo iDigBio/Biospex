@@ -45,7 +45,7 @@ class GroupRepository extends EloquentRepository implements Group
             $query->where('user_id', $user->id);
         })->pluck('title', 'id')->toArray();
 
-        $this->resetModel();
+
 
         return $results;
     }
@@ -55,15 +55,11 @@ class GroupRepository extends EloquentRepository implements Group
      */
     public function getUserGroupIds($userId)
     {
-        $groupIds = $this->model->whereHas('users', function ($query) use ($userId) {
+        return $this->model->whereHas('users', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })->get()->map(function ($item) {
                 return $item['id'];
             });
-
-        $this->resetModel();
-
-        return $groupIds;
     }
 
     /**
@@ -71,14 +67,10 @@ class GroupRepository extends EloquentRepository implements Group
      */
     public function getGroupsByUserId($userId)
     {
-        $results = $this->model->withCount(['projects', 'expeditions', 'users'])
+        return $this->model->withCount(['projects', 'expeditions', 'users'])
             ->whereHas('users', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })->get();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -86,15 +78,11 @@ class GroupRepository extends EloquentRepository implements Group
      */
     public function getGroupShow($groupId)
     {
-        $results = $this->model->with([
+        return $this->model->with([
             'projects',
             'owner.profile',
             'users.profile',
         ])->withCount('expeditions')->find($groupId);
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -102,14 +90,10 @@ class GroupRepository extends EloquentRepository implements Group
      */
     public function getUserGroupCount($userId)
     {
-        $results = $this->model->withCount(['users' => function($q) use($userId) {
+        return $this->model->withCount(['users' => function($q) use($userId) {
             $q->where('user_id', $userId);
         }])->whereHas('users', function ($q) use ($userId) {
             $q->where('user_id', $userId);
         })->pluck('users_count')->sum();
-
-        $this->resetModel();
-
-        return $results;
     }
 }

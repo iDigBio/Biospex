@@ -21,7 +21,6 @@ namespace App\Repositories;
 
 use Illuminate\Container\Container as App;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
-use Illuminate\Support\Collection;
 use Jenssegers\Mongodb\Eloquent\Model as MongdbModel;
 
 abstract class Repository
@@ -52,25 +51,13 @@ abstract class Repository
     }
 
     /**
-     * @throws \Exception
-     */
-    public function resetModel()
-    {
-        $this->makeModel();
-    }
-
-    /**
      * @param array $columns
      * @return mixed
      * @throws \Exception
      */
     public function all(array $columns = ['*'])
     {
-        $results = $this->model->get($columns);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->get($columns);
     }
 
     /**
@@ -81,11 +68,7 @@ abstract class Repository
      */
     public function allWith(array $with = [], array $columns = ['*'])
     {
-        $results = $this->model->with($with)->get($columns);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->with($with)->get($columns);
     }
 
     /**
@@ -96,11 +79,7 @@ abstract class Repository
      */
     public function find($resourceId, array $columns = ['*'])
     {
-        $results = $this->model->find($resourceId, $columns);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->find($resourceId, $columns);
     }
 
     /**
@@ -112,26 +91,17 @@ abstract class Repository
      */
     public function findBy($attribute, $value, array $columns = ['*'])
     {
-        $results = $this->model->where($attribute, '=', $value)->first($columns);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where($attribute, '=', $value)->first($columns);
     }
 
     /**
      * @param $resourceId
      * @param array $with
-     * @return \Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
-     * @throws \Exception
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
      */
     public function findWith($resourceId, array $with = [])
     {
-        $results = $this->model->with($with)->find($resourceId);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->with($with)->find($resourceId);
     }
 
     /**
@@ -143,11 +113,7 @@ abstract class Repository
      */
     public function whereIn($field, array $values, array $columns = ['*'])
     {
-        $results = $this->model->whereIn($field, $values)->get($columns);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->whereIn($field, $values)->get($columns);
     }
 
     /**
@@ -157,11 +123,7 @@ abstract class Repository
      */
     public function create(array $data)
     {
-        $results = $this->model->create($data);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->create($data);
     }
 
     /**
@@ -172,11 +134,7 @@ abstract class Repository
      */
     public function firstOrCreate(array $attributes, array $data = [])
     {
-        $result = $this->model->firstOrCreate($attributes, $data);
-
-        $this->resetModel();
-
-        return $result;
+        return $this->model->firstOrCreate($attributes, $data);
     }
 
     /**
@@ -190,8 +148,6 @@ abstract class Repository
         $model = $this->model->find($resourceId);
         $result = $model->fill($data)->save();
 
-        $this->resetModel();
-
         return $result ? $model : false;
     }
 
@@ -203,11 +159,7 @@ abstract class Repository
      */
     public function updateOrCreate(array $attributes, array $values)
     {
-        $results = $this->model->updateOrCreate($attributes, $values);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->updateOrCreate($attributes, $values);
     }
 
     /**
@@ -219,11 +171,7 @@ abstract class Repository
      */
     public function updateMany(array $attributes, string $column, string $value)
     {
-        $results = $this->model->where($column, $value)->update($attributes);
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where($column, $value)->update($attributes);
     }
 
     /**
@@ -233,13 +181,9 @@ abstract class Repository
      */
     public function delete($model)
     {
-        $results = $model instanceof EloquentModel || $model instanceof MongdbModel  ?
+        return $model instanceof EloquentModel || $model instanceof MongdbModel  ?
             $model->delete() :
             $this->model->destroy($model);
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -249,11 +193,7 @@ abstract class Repository
      */
     public function count(array $attributes = [])
     {
-        $result = $this->model->where($attributes)->count();
-
-        $this->resetModel();
-
-        return $result;
+        return $this->model->where($attributes)->count();
     }
 
     /**
@@ -262,10 +202,6 @@ abstract class Repository
      */
     public function truncate()
     {
-        $results = $this->model->truncate();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->truncate();
     }
 }

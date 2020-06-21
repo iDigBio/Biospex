@@ -138,7 +138,6 @@ class DownloadsController extends Controller
      * @param string $projectId
      * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse|string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function summary(string $projectId, string $expeditionId)
     {

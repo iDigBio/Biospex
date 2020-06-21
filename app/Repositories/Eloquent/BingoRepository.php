@@ -42,12 +42,8 @@ class BingoRepository extends EloquentRepository implements Bingo
      */
     public function getAdminIndex(int $userId): Collection
     {
-        $results = $this->model->with(['user', 'project', 'words'])
+        return $this->model->with(['user', 'project', 'words'])
             ->where('user_id', $userId)->get();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**

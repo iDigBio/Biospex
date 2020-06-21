@@ -50,8 +50,6 @@ class ClearOcrResults extends Command
 
     /**
      * Execute the console command.
-     *
-     * @throws \MongoCursorException
      */
     public function handle()
     {

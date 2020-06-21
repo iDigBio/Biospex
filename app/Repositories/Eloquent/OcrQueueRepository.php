@@ -40,14 +40,10 @@ class OcrQueueRepository extends EloquentRepository implements OcrQueue
      */
     public function getOcrQueuesForPollCommand()
     {
-        $results = $this->model->with(['project.group', 'expedition'])
+        return $this->model->with(['project.group', 'expedition'])
             ->where('error', 0)
             ->orderBy('id', 'asc')
             ->get();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -55,13 +51,9 @@ class OcrQueueRepository extends EloquentRepository implements OcrQueue
      */
     public function getOcrQueueForOcrProcessCommand()
     {
-        $result = $this->model->with('project.group.owner')
+        return $this->model->with('project.group.owner')
             ->where('error', 0)
             ->orderBy('id', 'asc')
             ->first();
-
-        $this->resetModel();
-
-        return $result;
     }
 }

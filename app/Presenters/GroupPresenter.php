@@ -19,9 +19,6 @@
 
 namespace App\Presenters;
 
-use Carbon\Carbon;
-use DateTimeZone;
-
 class GroupPresenter extends Presenter
 {
     /**

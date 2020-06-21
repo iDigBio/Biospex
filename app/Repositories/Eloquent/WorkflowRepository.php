@@ -45,8 +45,6 @@ class WorkflowRepository extends EloquentRepository implements Workflow
                 ->pluck('title', 'id')
                 ->toArray();
 
-        $this->resetModel();
-
         return ['' => '--Select--'] + $results;
     }
 }

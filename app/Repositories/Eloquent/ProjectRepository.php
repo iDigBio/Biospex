@@ -30,7 +30,7 @@ class ProjectRepository extends EloquentRepository implements Project
      *
      * @return \Illuminate\Database\Eloquent\Model|string
      */
-    public function model()
+    public function model(): string
     {
         return Model::class;
     }
@@ -43,29 +43,7 @@ class ProjectRepository extends EloquentRepository implements Project
         $results = $this->model->withCount('expeditions')
             ->withCount('events')->with('group')->has('panoptesProjects')->get();
 
-        $this->resetModel();
-
-        if ($order === null) {
-            return $results->sortBy('created_at');
-        }
-
-        switch ($sort) {
-            case 'title':
-                $results = $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
-                break;
-            case 'group':
-                $results = $order === 'desc' ? $results->sortByDesc(function ($project) {
-                    return $project->group->title;
-                }) : $results->sortBy(function ($project) {
-                    return $project->group->title;
-                });
-                break;
-            case 'date':
-                $results = $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
-                break;
-        }
-
-        return $results;
+        return $this->sortResults($order, $results, $sort);
     }
 
     /**
@@ -85,29 +63,7 @@ class ProjectRepository extends EloquentRepository implements Project
             });
         })->get();
 
-        $this->resetModel();
-
-        if ($order === null) {
-            return $results->sortBy('created_at');
-        }
-
-        switch ($sort) {
-            case 'title':
-                $results = $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
-                break;
-            case 'group':
-                $results = $order === 'desc' ? $results->sortByDesc(function ($project) {
-                    return $project->group->title;
-                }) : $results->sortBy(function ($project) {
-                    return $project->group->title;
-                });
-                break;
-            case 'date':
-                $results = $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
-                break;
-        }
-
-        return $results;
+        return $this->sortResults($order, $results, $sort);
     }
 
     /**
@@ -115,7 +71,7 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectPageBySlug($slug)
     {
-        $results = $this->model->withCount('events')->withCount('expeditions')->with([
+        return $this->model->withCount('events')->withCount('expeditions')->with([
             'group.users.profile',
             'resources',
             'lastPanoptesProject',
@@ -126,10 +82,6 @@ class ProjectRepository extends EloquentRepository implements Project
             'events' => function ($q) {
                 $q->orderBy('start_date', 'desc');
             }])->where('slug', '=', $slug)->first();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -137,17 +89,13 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectShow($projectId)
     {
-        $results = $this->model->withCount('expeditions')->with([
+        return $this->model->withCount('expeditions')->with([
                 'group',
                 'ocrQueue',
                 'expeditions' => function($q) {
                     $q->with(['stat', 'nfnActor']);
                 },
             ])->find($projectId);
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**
@@ -212,11 +160,7 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectsHavingTranscriptionLocations(array $projectIds = [])
     {
-        $results = empty($projectIds) ? $this->model->has('transcriptionLocations')->get() : $this->model->has('transcriptionLocations')->whereIn('id', $projectIds)->get();
-
-        $this->resetModel();
-
-        return $results;
+        return empty($projectIds) ? $this->model->has('transcriptionLocations')->get() : $this->model->has('transcriptionLocations')->whereIn('id', $projectIds)->get();
     }
 
     /**
@@ -229,8 +173,6 @@ class ProjectRepository extends EloquentRepository implements Project
             ->get(['id', 'title'])
             ->pluck('title', 'id');
 
-        $this->resetModel();
-
         return ['' => 'Select'] + $results->toArray();
     }
 
@@ -241,16 +183,12 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectForDelete($projectId)
     {
-        $result = $this->model->with([
+        return $this->model->with([
             'group',
             'panoptesProjects',
             'workflowManagers',
             'expeditions.downloads',
         ])->find($projectId);
-
-        $this->resetModel();
-
-        return $result;
     }
 
     /**
@@ -300,17 +238,13 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectForAmChartJob($projectId)
     {
-        $result = $this->model->with([
+        return $this->model->with([
             'amChart',
             'expeditions' => function ($q) {
                 $q->with('stat')->has('stat');
                 $q->with('panoptesProject')->has('panoptesProject');
             },
         ])->find($projectId);
-
-        $this->resetModel();
-
-        return $result;
     }
 
     /**
@@ -318,14 +252,43 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectForDarwinImportJob($projectId)
     {
-        $result = $this->model->with(['workflow.actors', 'group' => function($q){
+        return $this->model->with(['workflow.actors', 'group' => function($q){
             $q->with(['owner', 'users' => function($q){
                 $q->where('notification', 1);
             }]);
         }])->find($projectId);
+    }
 
-        $this->resetModel();
+    /**
+     * Sort results from index pages.
+     *
+     * @param $order
+     * @param $results
+     * @param $sort
+     * @return mixed
+     */
+    protected function sortResults($order, $results, $sort)
+    {
+        if ($order === null) {
+            return $results->sortBy('created_at');
+        }
 
-        return $result;
+        switch ($sort) {
+            case 'title':
+                $results = $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
+                break;
+            case 'group':
+                $results = $order === 'desc' ? $results->sortByDesc(function ($project) {
+                    return $project->group->title;
+                }) : $results->sortBy(function ($project) {
+                    return $project->group->title;
+                });
+                break;
+            case 'date':
+                $results = $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
+                break;
+        }
+
+        return $results;
     }
 }

@@ -20,13 +20,11 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\StateCounty;
 use App\Services\Process\TranscriptionChartService;
 use CountHelper;
 use GeneralHelper;
-use Illuminate\Support\Carbon;
 use JavaScript;
 
 class ProjectsController extends Controller
@@ -92,11 +90,11 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->getProjectPageBySlug($slug);
 
-        list($expeditions, $expeditionsCompleted) = $project->expeditions->partition(function ($expedition) {
+        [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
             return $expedition->nfnActor->pivot->completed === 0;
         });
 
-        list($events, $eventsCompleted) = $project->events->partition(function ($event) {
+        [$events, $eventsCompleted] = $project->events->partition(function ($event) {
             return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
         });
 
@@ -124,7 +122,7 @@ class ProjectsController extends Controller
      * @param $projectId
      * @param $stateId
      * @param \App\Repositories\Interfaces\StateCounty $stateCounty
-     * @return array
+     * @return array|\Illuminate\Http\JsonResponse
      */
     public function state($projectId, $stateId, StateCounty $stateCounty)
     {

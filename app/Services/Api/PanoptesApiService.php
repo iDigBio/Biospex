@@ -35,7 +35,7 @@ class PanoptesApiService extends HttpRequest
     /**
      * @var array
      */
-    private $nfnSkipCsv = [];
+    private $nfnSkipCsv;
 
     /**
      * @var \Illuminate\Config\Repository

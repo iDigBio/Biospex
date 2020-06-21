@@ -111,9 +111,9 @@ class NfnPanoptes
     }
 
     /**
-     * @inheritdoc
+     * Process actor according to state.
      *
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @param \App\Models\Actor $actor
      */
     public function actor(Actor $actor)
     {
@@ -128,8 +128,9 @@ class NfnPanoptes
     }
 
     /**
-     * @inheritdoc
-     * @see ExportQueueJob::handle() Instantiates class and calls method.
+     * Process export queue.
+     *
+     * @param \App\Models\ExportQueue $queue
      */
     public function processQueue(ExportQueue $queue)
     {

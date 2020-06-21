@@ -40,10 +40,6 @@ class NoticeRepository extends EloquentRepository implements Notice
      */
     public function getEnabledNotices()
     {
-        $results = $this->model->where('enabled', 1)->get();
-
-        $this->resetModel();
-
-        return $results;
+        return $this->model->where('enabled', 1)->get();
     }
 }
