@@ -109,8 +109,8 @@
                             <div class="col-12">
                                 <ul class="text">
                                     <li class="mt-3">{{ $expedition->project->expeditions_count }} {{ __('pages.expeditions') }}</li>
-                                    <li>{{ CountHelper::projectTranscriberCount($expedition->project->id) }} {{ __('pages.transcribers') }}</li>
-                                    <li>{{ CountHelper::projectTranscriptionCount($expedition->project->id) }} {{ __('pages.transcriptions') }}</li>
+                                    <li>{{ CountHelper::projectTranscriberCount($expedition->project->id) }} {{ __('pages.participants') }}</li>
+                                    <li>{{ CountHelper::projectTranscriptionCount($expedition->project->id) }} {{ __('pages.digitizations') }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -137,8 +137,8 @@
                         <div class="row card-body pb-5">
                             <div class="col-12">
                                 <ul class="text">
-                                    <li class="mt-3">{{ $transcriptionCount }} {{ __('pages.launched_transcription_count') }}</li>
-                                    <li>{{ $contributorCount }} {{ __('pages.launched_contributor_count') }}</li>
+                                    <li class="mt-3">{{ $transcriptionCount }} {{ __('pages.launched_digitizations_count') }}</li>
+                                    <li>{{ $contributorCount }} {{ __('pages.launched_participants_count') }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -163,7 +163,7 @@
                              style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                             <div class="d-flex justify-content-between">
                                 <div class="p-2">
-                                    <p>{{ $expedition->stat->transcriptions_completed }} {{ __('pages.transcriptions') }}</p>
+                                    <p>{{ $expedition->stat->transcriptions_completed }} {{ __('pages.digitizations') }}</p>
                                 </div>
                                 <div class="p-2"><p>{{ $expedition->stat->percent_completed }}% {{ __('pages.completed') }}</p>
                                 </div>

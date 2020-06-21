@@ -12,8 +12,8 @@
             <div class="col-12">
                 <ul class="text">
                     <li class="smalltext">{{ $project->expeditions_count }} {{ __('pages.expeditions') }}</li>
-                    <li class="smalltext">{{ CountHelper::projectTranscriberCount($project->id) }} {{ __('pages.transcribers') }}</li>
-                    <li class="smalltext">{{ CountHelper::projectTranscriptionCount($project->id) }} {{ __('pages.transcriptions') }}</li>
+                    <li class="smalltext">{{ CountHelper::projectTranscriberCount($project->id) }} {{ __('pages.participants') }}</li>
+                    <li class="smalltext">{{ CountHelper::projectTranscriptionCount($project->id) }} {{ __('pages.digitizations') }}</li>
                 </ul>
             </div>
 

@@ -16,7 +16,7 @@
                     : {{ $event->present()->end_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}
                 </div>
                 <div class="col-md-6">
-                    <p>{{ __('pages.transcriptions') }}: {{ $event->transcriptions_count }}</p>
+                    <p>{{ __('pages.digitizations') }}: {{ $event->transcriptions_count }}</p>
                     <p>{{ __('pages.team_invite_link') }}:</p>
                     @foreach($event->teams as $team)
                         {!! $team->present()->team_join_url_icon !!}
@@ -29,7 +29,7 @@
                     {!! $event->project->lastPanoptesProject->present()->project_icon_lrg !!}
                 @endif
                 {!! $event->present()->event_download_users_icon_lrg !!}
-                {!! $event->present()->event_download_transcripts_icon_lrg !!}
+                {!! $event->present()->event_download_digitizations_icon_lrg !!}
                 {!! $event->present()->event_edit_icon_lrg !!}
                 @can('isOwner', $event)
                     {!! $event->present()->event_delete_icon_lrg !!}

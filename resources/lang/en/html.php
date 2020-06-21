@@ -26,7 +26,7 @@ return [
     'ocr_queue'              => ':batches_queued process remains in queue before processing begins|:batches_queued processes remain in queue before processing begins',
     'ocr_records'            => ':processed record of :total completed.|:processed records of :total completed.',
     'processed_records'      => '| - :processed of :total completed.',
-    'event_join_show'        => '<b>Important: </b>Transcriptions will only count during the scheduled Event times. Please be sure to log in to Notes From Nature when transcribing or your transcription will not count. To participate on a Team, please contact the Event sponsor.',
+    'event_join_show'        => '<b>Important: </b>Transcriptions will only count during the scheduled Event times. Please be sure to log in to Zooniverse when digitizing or your digitization will not count. To participate on a Team, please contact the Event sponsor.',
     'project_chart_missing'  => "<h3>Transcription chart image is not available. Please use link above to view active chart.</h3>",
     'export_batch_message'   => "The export batches for :expedition are completed.<br> Click the links below to download batch files. You must be logged into your account on Biospex.<br>",
 ];

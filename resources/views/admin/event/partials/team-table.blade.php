@@ -11,7 +11,7 @@
             <tr>
                 <th>{{ __('pages.teams') }}</th>
                 <th>{{ __('pages.users') }}</th>
-                <th>{{ __('pages.transcriptions') }}</th>
+                <th>{{ __('pages.digitizations') }}</th>
             </tr>
             </thead>
             <tbody>

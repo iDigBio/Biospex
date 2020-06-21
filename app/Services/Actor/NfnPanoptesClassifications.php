@@ -117,7 +117,7 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
      */
     protected function notify($record)
     {
-        $message = trans('pages.nfn_transcriptions_complete_message', ['expedition' => $record->title]);
+        $message = trans('pages.nfn_digitization_complete_message', ['expedition' => $record->title]);
 
         $record->project->group->owner->notify(new NfnTranscriptionsComplete($message));
     }

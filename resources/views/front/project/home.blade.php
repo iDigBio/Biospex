@@ -130,8 +130,8 @@
             </div>
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 <span class="text">{{ $project->expeditions_count }} {{ __('pages.expeditions') }}</span>
-                <span class="text">{{ $transcriptionsCount }} {{ __('pages.transcriptions') }}</span>
-                <span class="text">{{ $transcribersCount }} {{ __('pages.transcribers') }}</span>
+                <span class="text">{{ $transcriptionsCount }} {{ __('pages.digitizations') }}</span>
+                <span class="text">{{ $transcribersCount }} {{ __('pages.participants') }}</span>
             </div>
             <hr class="header mx-auto">
         </div>
@@ -197,7 +197,7 @@
         <div class="row">
             <div class="col-sm-10 mx-auto mt-5">
                 <h1 class="text-center content-header text-uppercase mt-5"
-                    id="expeditions">{{ __('pages.transcriptions') }}</h1>
+                    id="expeditions">{{ __('pages.digitizations') }}</h1>
                 <div class="text-center mt-4 mb-4">
                     @foreach($years as $year)
                         <button class="btn btn-primary btn-transcription" id="year{{ $year }}"

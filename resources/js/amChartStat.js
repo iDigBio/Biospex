@@ -3,7 +3,7 @@ let stats = am4core.createFromConfig(
         "xAxes": [{
             "type": "CategoryAxis",
             "title": {
-                "text": "Transcriptions"
+                "text": "Digitizations"
             },
             "dataFields": {
                 "category": "transcriptions"
@@ -21,7 +21,7 @@ let stats = am4core.createFromConfig(
         "yAxes": [{
             "type": "ValueAxis",
             "title": {
-                "text": "Number of Transcribers"
+                "text": "Number of Participants"
             },
             "tooltip": {
                 "disabled": true
@@ -49,7 +49,7 @@ let stats = am4core.createFromConfig(
                 "valueY": "transcribers",
                 "categoryX": "transcriptions"
             },
-            "tooltipHTML": "<span style='color:#000000;'>{valueY.value} Transcribers: {categoryX} Transcriptions</span>",
+            "tooltipHTML": "<span style='color:#000000;'>{valueY.value} Participants: {categoryX} Digitizations</span>",
             "tooltip": {
                 "background": {
                     "fill": "#FFF",

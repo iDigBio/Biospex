@@ -271,7 +271,7 @@ class EventPresenter extends Presenter
      *
      * @return string
      */
-    public function eventDownloadTranscriptsIconLrg()
+    public function eventDownloadDigitizationsIconLrg()
     {
         $route = route('admin.events.exportTranscriptions', [
             $this->model->id,
@@ -281,7 +281,7 @@ class EventPresenter extends Presenter
         data-href="'.$route.'"
         data-success="An email with attached export will be sent."
         data-error="There was an error while exporting. Please inform the Administration"
-        data-hover="tooltip" title="'.__('pages.event_download_transcripts').'">
+        data-hover="tooltip" title="'.__('pages.event_download_digitizations').'">
         <i class="fas fa-file-download fa-2x"></i></a>';
     }
 }

@@ -41,4 +41,12 @@ interface BingoMap extends RepositoryInterface
      * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function getBingoMapByBingoIdUuid(int $bingoId, string $uuid): ?Model;
+
+    /**
+     * Get bingo maps for removal.
+     *
+     * @return \Illuminate\Support\Collection
+     * @throws \Exception
+     */
+    public function getBingoMapForCleaning(): Collection;
 }

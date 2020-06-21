@@ -21,6 +21,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\BingoMap as Model;
 use App\Repositories\Interfaces\BingoMap;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class BingoMapRepository extends EloquentRepository implements BingoMap
@@ -53,6 +54,18 @@ class BingoMapRepository extends EloquentRepository implements BingoMap
     public function getBingoMapByBingoIdUuid(int $bingoId, string $uuid): ?\Illuminate\Database\Eloquent\Model
     {
         $results = $this->model->where('bingo_id', $bingoId)->where('uuid', $uuid)->first();
+        $this->resetModel();
+
+        return $results;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBingoMapForCleaning(): Collection
+    {
+        $results = $this->model->where('created_at', '<', Carbon::now()->subDays(1))->get();
+
         $this->resetModel();
 
         return $results;

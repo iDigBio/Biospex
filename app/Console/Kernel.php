@@ -35,6 +35,11 @@ class Kernel extends ConsoleKernel
             ->timezone('America/New_York')
             ->dailyAt('06:00');
 
+        // Clean bingo maps
+        $schedule->command('bingo:clean')
+            ->timezone('America/New_York')
+            ->dailyAt('06:05');
+
         // Clean report directory
         $schedule->command('report:clean')
             ->timezone('America/New_York')

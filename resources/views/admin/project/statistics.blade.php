@@ -14,10 +14,10 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4">{{ __('pages.transcriber_summary') }}</h3>
+                <h3 class="text-center pt-4">{{ __('pages.participant_summary') }}</h3>
                 <hr>
                 @if($transcribers->isEmpty())
-                    <p class="text-center">{{ __('pages.transcriptions_none') }}</p>
+                    <p class="text-center">{{ __('pages.digitizations_none') }}</p>
                 @else
                     <div class="color-action text-center">{{ __('pages.table_sort') }}</div>
                     <div class="row card-body">
@@ -27,7 +27,7 @@
                             <tr>
                                 <th>{{ __('pages.user') }}</th>
                                 <th>{{ __('pages.expeditions') }}</th>
-                                <th>{{ __('pages.transcriptions') }}</th>
+                                <th>{{ __('pages.digitizations') }}</th>
                                 <th>{{ __('pages.last_date') }}</th>
                             </tr>
                             </thead>
@@ -41,14 +41,14 @@
         </div>
         <div class="col-md-6 mb-4">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4">{{ __('pages.transcriptions') }}</h3>
+                <h3 class="text-center pt-4">{{ __('pages.digitizations') }}</h3>
                 <hr>
                 @if(isset($transcriptions))
                     <div class="row card-body">
                         <div id="statDiv" style="width: 100%; height: 600px; color: #000000; font-size: 0.8em"></div>
                     </div>
                 @else
-                    <p class="text-center">{{ __('pages.transcriptions_none') }}</p>
+                    <p class="text-center">{{ __('pages.digitizations_none') }}</p>
                 @endif
             </div>
         </div>
