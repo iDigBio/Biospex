@@ -76,16 +76,21 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
 
         switch ($sort) {
             case 'title':
-                return $order === 'desc' ? $results->sortByDesc('title') :
+                $results = $order === 'desc' ? $results->sortByDesc('title') :
                     $results->sortBy('title');
+                break;
             case 'project':
-                return $order === 'desc' ?
+                $results = $order === 'desc' ?
                     $results->sortByDesc(function ($expedition) { return $expedition->project->title; }) :
                     $results->sortBy(function ($expedition) { return $expedition->project->title; });
+                break;
             case 'date':
-                return $order === 'desc' ? $results->sortByDesc('created_at') :
+                $results = $order === 'desc' ? $results->sortByDesc('created_at') :
                     $results->sortBy('created_at');
+                break;
         }
+
+        return $results;
     }
 
     /**
@@ -112,16 +117,21 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
 
         switch ($sort) {
             case 'title':
-                return $order === 'desc' ? $results->sortByDesc('title') :
+                $results = $order === 'desc' ? $results->sortByDesc('title') :
                     $results->sortBy('title');
+                break;
             case 'project':
-                return $order === 'desc' ?
+                $results = $order === 'desc' ?
                     $results->sortByDesc(function ($expedition) { return $expedition->project->title; }) :
                     $results->sortBy(function ($expedition) { return $expedition->project->title; });
+                break;
             case 'date':
-                return $order === 'desc' ? $results->sortByDesc('created_at') :
+                $results = $order === 'desc' ? $results->sortByDesc('created_at') :
                     $results->sortBy('created_at');
+                break;
         }
+
+        return $results;
     }
 
     /**

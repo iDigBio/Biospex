@@ -35,7 +35,7 @@ trait UuidTrait
     public function getUuidAttribute($value)
     {
         if (is_null($value)) {
-            return;
+            return null;
         }
 
         $uuid = bin2hex($value);

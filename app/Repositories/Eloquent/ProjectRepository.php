@@ -51,16 +51,21 @@ class ProjectRepository extends EloquentRepository implements Project
 
         switch ($sort) {
             case 'title':
-                return $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
+                $results = $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
+                break;
             case 'group':
-                return $order === 'desc' ? $results->sortByDesc(function ($project) {
+                $results = $order === 'desc' ? $results->sortByDesc(function ($project) {
                     return $project->group->title;
                 }) : $results->sortBy(function ($project) {
                     return $project->group->title;
                 });
+                break;
             case 'date':
-                return $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
+                $results = $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
+                break;
         }
+
+        return $results;
     }
 
     /**
@@ -88,16 +93,21 @@ class ProjectRepository extends EloquentRepository implements Project
 
         switch ($sort) {
             case 'title':
-                return $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
+                $results = $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
+                break;
             case 'group':
-                return $order === 'desc' ? $results->sortByDesc(function ($project) {
+                $results = $order === 'desc' ? $results->sortByDesc(function ($project) {
                     return $project->group->title;
                 }) : $results->sortBy(function ($project) {
                     return $project->group->title;
                 });
+                break;
             case 'date':
-                return $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
+                $results = $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
+                break;
         }
+
+        return $results;
     }
 
     /**
@@ -159,6 +169,8 @@ class ProjectRepository extends EloquentRepository implements Project
         });
 
         $project->resources()->saveMany($resources->all());
+
+        return $project;
     }
 
     /**

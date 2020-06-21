@@ -49,6 +49,8 @@ class ImportFormRequest extends Request
                 return ['recordset' => 'required|alpha_dash'];
             default:break;
         }
+
+        return [];
     }
 
     public function alterInput()

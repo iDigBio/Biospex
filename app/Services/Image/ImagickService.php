@@ -113,7 +113,6 @@ class ImagickService
      *
      * @param $option
      * @param $value
-     * @return bool
      * @throws \ImagickException
      */
     public function setOption($option, $value)

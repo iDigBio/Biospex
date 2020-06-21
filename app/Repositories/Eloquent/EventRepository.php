@@ -53,16 +53,21 @@ class EventRepository extends EloquentRepository implements Event
 
         switch ($sort) {
             case 'title':
-                return $order === 'desc' ? $results->sortByDesc('title') :
+                $results = $order === 'desc' ? $results->sortByDesc('title') :
                     $results->sortBy('title');
+                break;
             case 'project':
-                return $order === 'desc' ?
+                $results = $order === 'desc' ?
                     $results->sortByDesc(function ($event) { return $event->project->title; }) :
                     $results->sortBy(function ($event) { return $event->project->title; });
+                break;
             case 'date':
-                return $order === 'desc' ? $results->sortByDesc('start_date') :
+                $results = $order === 'desc' ? $results->sortByDesc('start_date') :
                     $results->sortBy('start_date');
+                break;
         }
+
+        return $results;
     }
 
     /**
@@ -81,16 +86,21 @@ class EventRepository extends EloquentRepository implements Event
 
         switch ($sort) {
             case 'title':
-                return $order === 'desc' ? $results->sortByDesc('title') :
+                $results = $order === 'desc' ? $results->sortByDesc('title') :
                     $results->sortBy('title');
+                break;
             case 'project':
-                return $order === 'desc' ?
+                $results = $order === 'desc' ?
                     $results->sortByDesc(function ($event) { return $event->project->title; }) :
                     $results->sortBy(function ($event) { return $event->project->title; });
+                break;
             case 'date':
-                return $order === 'desc' ? $results->sortByDesc('start_date') :
+                $results = $order === 'desc' ? $results->sortByDesc('start_date') :
                     $results->sortBy('start_date');
+                break;
         }
+
+        return $results;
     }
 
     /**

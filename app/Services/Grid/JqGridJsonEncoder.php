@@ -321,18 +321,12 @@ class JqGridJsonEncoder
             unset($rows[$key]['occurrence']);
         }
 
-        if (isset($postedData['exportFormat']))
-        {
-        }
-        else
-        {
-            return json_encode([
-                'page'    => $vars['page'],
-                'total'   => $totalPages,
-                'records' => $vars['count'],
-                'rows'    => $rows,
-            ]);
-        }
+        return json_encode([
+            'page'    => $vars['page'],
+            'total'   => $totalPages,
+            'records' => $vars['count'],
+            'rows'    => $rows,
+        ]);
     }
 
     /**
