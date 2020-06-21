@@ -136,7 +136,7 @@ class PanoptesApiService extends HttpRequest
      */
     public function getPanoptesProject($projectId)
     {
-        $project = Cache::remember(__METHOD__.$projectId, 120, function () use ($projectId) {
+        return Cache::remember(__METHOD__.$projectId, 120, function () use ($projectId) {
             $this->setProvider();
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('projects', $projectId);
@@ -145,8 +145,6 @@ class PanoptesApiService extends HttpRequest
 
             return $result['projects'][0];
         });
-
-        return $project;
     }
 
     /**
@@ -157,7 +155,7 @@ class PanoptesApiService extends HttpRequest
      */
     public function getPanoptesWorkflow($workflowId)
     {
-        $workflow = Cache::remember(__METHOD__.$workflowId, 120, function () use ($workflowId) {
+        return Cache::remember(__METHOD__.$workflowId, 120, function () use ($workflowId) {
             $this->setProvider();
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('workflows', $workflowId);
@@ -166,8 +164,6 @@ class PanoptesApiService extends HttpRequest
 
             return $result['workflows'][0];
         });
-
-        return $workflow;
     }
 
     /**
@@ -178,7 +174,7 @@ class PanoptesApiService extends HttpRequest
      */
     public function getPanoptesSubject($subjectId)
     {
-        $subject = Cache::remember(__METHOD__.$subjectId, 120, function () use ($subjectId) {
+        return Cache::remember(__METHOD__.$subjectId, 120, function () use ($subjectId) {
             $this->setProvider();
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('subjects', $subjectId);
@@ -187,8 +183,6 @@ class PanoptesApiService extends HttpRequest
 
             return isset($results['subjects'][0]) ? $results['subjects'][0] : null;
         });
-
-        return $subject;
     }
 
     /**
@@ -199,7 +193,7 @@ class PanoptesApiService extends HttpRequest
      */
     public function getPanoptesUser($userId)
     {
-        $user = Cache::remember(__METHOD__.$userId, 120, function () use ($userId) {
+        return Cache::remember(__METHOD__.$userId, 120, function () use ($userId) {
             $this->setProvider();
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('users', $userId);
@@ -208,8 +202,6 @@ class PanoptesApiService extends HttpRequest
 
             return isset($results['users'][0]) ? $results['users'][0] : null;
         });
-
-        return $user;
     }
 
     /**
@@ -243,9 +235,8 @@ class PanoptesApiService extends HttpRequest
 
         $this->setProvider();
         $this->checkAccessToken('panoptes_token');
-        $responses = $this->poolBatchRequest($requests($expeditions));
 
-        return $responses;
+        return $this->poolBatchRequest($requests($expeditions));
     }
 
     /**
@@ -276,9 +267,8 @@ class PanoptesApiService extends HttpRequest
         };
 
         $this->setProvider(false);
-        $responses = $this->poolBatchRequest($requests());
 
-        return $responses;
+        return $this->poolBatchRequest($requests());
     }
 
     /**
@@ -308,9 +298,8 @@ class PanoptesApiService extends HttpRequest
 
         $this->setProvider();
         $this->checkAccessToken('panoptes_token');
-        $responses = $this->poolBatchRequest($requests($expeditions));
 
-        return $responses;
+        return $this->poolBatchRequest($requests($expeditions));
     }
 
     /**

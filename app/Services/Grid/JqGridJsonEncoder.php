@@ -193,7 +193,7 @@ class JqGridJsonEncoder
     {
         $default = $image ? $this->defaultGridVisible : $this->defaultSubGridVisible;
 
-        $col = [
+        return [
             'name'          => $column,
             'index'         => $column,
             'key'           => false,
@@ -216,8 +216,6 @@ class JqGridJsonEncoder
                     'nn'
                 ], 'value' => ':Any;true:Yes;false:No']
         ];
-
-        return $col;
     }
 
     /**
@@ -412,13 +410,11 @@ class JqGridJsonEncoder
     {
         if ($count > 0)
         {
-            $totalPages = ceil($count / $limit);
-            return $totalPages;
+            return ceil($count / $limit);
         }
         else
         {
-            $totalPages = 0;
-            return $totalPages;
+            return 0;
         }
     }
 

@@ -42,22 +42,16 @@ class ExpeditionStatUpdate extends Command
     protected $description = 'Updates Expedition Stats by setting ExpeditionStatJob. Takes comma separated expedition ids or blank.';
 
     /**
-     * @var
-     */
-    private $expeditionIds;
-
-
-    /**
      * Execute command
      * @param Expedition $expeditionContract
      */
     public function handle(Expedition $expeditionContract)
     {
-        $this->expeditionIds = null ===  $this->argument('ids') ?
+        $expeditionIds = null ===  $this->argument('ids') ?
             [] :
             explode(',', $this->argument('ids'));
 
-        $expeditions = $expeditionContract->getExpeditionStats($this->expeditionIds);
+        $expeditions = $expeditionContract->getExpeditionStats($expeditionIds);
 
         $this->setJobs($expeditions);
     }

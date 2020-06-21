@@ -167,12 +167,10 @@ class RecordsetImportJob implements ShouldQueue
             throw new Exception(trans('pages.zip_download'));
         }
 
-        $import = $this->importContract->create([
+        return $this->importContract->create([
             'user_id'    => $this->data['user_id'],
             'project_id' => $this->data['project_id'],
             'file'       => $filePath
         ]);
-
-        return $import;
     }
 }

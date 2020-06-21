@@ -41,12 +41,10 @@ class EventJoinRequest extends FormRequest
      */
     public function rules()
     {
-        $rules = [
+        return [
             'team_id' => 'required',
             'nfn_user' => ['required', 'between:3,30', new EventJoinUniqueUserTeamValidation()]
         ];
-
-        return $rules;
     }
 
     public function messages()

@@ -32,7 +32,7 @@ class UserPresenter extends Presenter
         $lastName = $this->model->profile->last_name;
         $email = $this->model->email;
 
-        $isNull = null === $firstName || null === $lastName ? true : false;
+        $isNull = null === $firstName || null === $lastName;
 
         return $isNull ? $email : $firstName.' '.$lastName;
     }

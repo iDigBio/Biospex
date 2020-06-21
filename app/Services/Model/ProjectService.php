@@ -89,9 +89,8 @@ class ProjectService
     public function userGroupSelectOptions($user)
     {
         $groups = $this->groupContract->getUsersGroupsSelect($user);
-        $select = ['' => '--Select--'] + $groups;
 
-        return $select;
+        return ['' => '--Select--'] + $groups;
     }
 
     /**

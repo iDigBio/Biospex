@@ -69,8 +69,7 @@ class StateCountyRepository extends EloquentRepository implements StateCounty
 
         $this->resetModel();
 
-
-        $states = $results->groupBy('state_num')->reject(function ($row, $key) {
+        return $results->groupBy('state_num')->reject(function ($row, $key) {
             return empty($key);
         })->map(function ($row) {
             $stateAbbr = $row->first()->state_abbr_cap;
@@ -80,8 +79,6 @@ class StateCountyRepository extends EloquentRepository implements StateCounty
 
             return ['id' => $id, 'value' => $count ?: 0, 'name' => $stateAbbr, 'statenum' => $stateNum];
         })->values();
-
-        return $states;
     }
 
     /**

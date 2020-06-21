@@ -83,7 +83,7 @@ class EventTranscriptionService
             $start_date = $event->start_date->setTimezone($event->timezone);
             $end_date = $event->end_date->setTimezone($event->timezone);
 
-            return Carbon::now($event->timezone)->between($start_date, $end_date) ? true : false;
+            return Carbon::now($event->timezone)->between($start_date, $end_date);
         })->each(function ($event) use ($data, $user) {
             $event->teams->each(function ($team) use ($event, $data, $user) {
                 $values = [

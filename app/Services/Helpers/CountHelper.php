@@ -52,9 +52,7 @@ class CountHelper
      */
     public function projectTranscriptionCount($projectId)
     {
-        $count = $this->panoptesTranscription->getProjectTranscriptionCount($projectId);
-
-        return $count;
+        return $this->panoptesTranscription->getProjectTranscriptionCount($projectId);
     }
 
     /**
@@ -65,9 +63,7 @@ class CountHelper
      */
     public function projectTranscriberCount($projectId)
     {
-        $count = $this->panoptesTranscription->getProjectTranscriberCount($projectId);
-
-        return $count;
+        return $this->panoptesTranscription->getProjectTranscriberCount($projectId);
     }
 
     /**
@@ -78,9 +74,7 @@ class CountHelper
      */
     public function getTranscribersTranscriptionCount($projectId)
     {
-        $transcribers = $this->panoptesTranscription->getTranscribersTranscriptionCount($projectId);
-
-        return $transcribers;
+        return $this->panoptesTranscription->getTranscribersTranscriptionCount($projectId);
     }
 
     /**
@@ -111,11 +105,9 @@ class CountHelper
      */
     public function getProjectSubjectAssignedCount($projectId)
     {
-        $count = Cache::tags('subjects'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use ($projectId) {
+        return Cache::tags('subjects'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use ($projectId) {
             return $this->subject->getSubjectAssignedCount($projectId);
         });
-
-        return $count;
     }
 
 }

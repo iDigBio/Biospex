@@ -140,11 +140,9 @@ class ProjectsController extends Controller
                 ];
             });
 
-        $dataArray = [
+        return [
             'max'      => abs(round(($counties->max('value') + 500), -3)),
             'counties' => $counties->toJson(),
         ];
-
-        return $dataArray;
     }
 }

@@ -38,7 +38,7 @@ class ProjectFormRequest extends Request
      */
     public function rules()
     {
-        $rules = [
+        return [
             'group_id'                => 'required|integer|min:1',
             'status'                  => 'required',
             'title'                   => 'required|between:6,140|unique:projects,title,'.$this->route('projects'),
@@ -62,8 +62,6 @@ class ProjectFormRequest extends Request
             'resources.*.description' => 'required_with:resources.*.type',
             'resources.*.download'    => 'mimes:txt,doc,csv,pdf',
         ];
-
-        return $rules;
     }
 
     /**

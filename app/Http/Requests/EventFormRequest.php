@@ -41,7 +41,7 @@ class EventFormRequest extends FormRequest
      */
     public function rules()
     {
-        $rules = [
+        return [
             'project_id'    => 'required',
             'title'         => 'required|between:6,140|unique:expeditions,title,'.$this->route('expeditions'),
             'description'   => 'required|between:6,140',
@@ -51,8 +51,6 @@ class EventFormRequest extends FormRequest
             'end_date'      => 'required|date|after:start_date',
             'teams.*.title' => 'max:20',
         ];
-
-        return $rules;
     }
 
     public function messages()

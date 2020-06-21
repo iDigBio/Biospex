@@ -111,14 +111,12 @@ class HttpRequest
      */
     protected function buildAuthenticatedRequest($method, $uri, array $options = [])
     {
-        $request = $this->provider->getAuthenticatedRequest(
+        return $this->provider->getAuthenticatedRequest(
             $method,
             $uri,
             $this->accessToken->getToken(),
             $options
         );
-
-        return $request;
     }
 
     /**
@@ -134,7 +132,7 @@ class HttpRequest
      */
     public function poolBatchRequest($requests)
     {
-        $responses = Pool::batch($this->getHttpClient(), $requests, [
+        return Pool::batch($this->getHttpClient(), $requests, [
             'concurrency' => 10,
             'fulfilled'   => function ($response, $index)
             {
@@ -145,8 +143,6 @@ class HttpRequest
                 return $index;
             }
         ]);
-
-        return $responses;
     }
 
     public function retryDecider()

@@ -73,9 +73,8 @@ class ResourceDownloadValidation implements Rule
         }
 
         $file = request()->file('resources.'.$parts[1].'.download');
-        $fileName = preg_match('/^[\w\-.]+$/', $file->getClientOriginalName()) === 1 ? true : false;
 
-        return $fileName;
+        return preg_match('/^[\w\-.]+$/', $file->getClientOriginalName()) === 1;
     }
 
     /**

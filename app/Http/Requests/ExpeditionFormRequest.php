@@ -37,7 +37,7 @@ class ExpeditionFormRequest extends Request
      */
     public function rules()
     {
-        $rules = [
+        return [
             'title' => 'required|between:6,140|unique:expeditions,title,' . $this->route('expeditions'),
             'description' => 'required|between:6,140',
             'keywords' => 'required',
@@ -48,8 +48,6 @@ class ExpeditionFormRequest extends Request
             'subjectCount' => 'integer|max:' . Config::get('config.expedition_size'),
             'panoptes_workflow_id' => 'integer|nullable|required_with:current_panoptes_workflow_id:same:current_panoptes_workflow_id'
         ];
-
-        return $rules;
     }
 
     /**

@@ -38,10 +38,8 @@ class FaqCategoryFormRequest extends Request
      */
     public function rules()
     {
-        $rules = [
+        return [
             'name' => 'required|between:3,60|unique:faq_categories,name,' . $this->route('categories')
         ];
-
-        return $rules;
     }
 }
