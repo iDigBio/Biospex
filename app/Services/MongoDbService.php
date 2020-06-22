@@ -170,11 +170,14 @@ class MongoDbService
     }
 
     /**
+     * Insert one record.
+     *
      * @param array $attributes
+     * @return \MongoDB\InsertOneResult
      */
     public function insertOne(array $attributes = [])
     {
-        $this->clientCollection->insertOne($attributes);
+        return $this->clientCollection->insertOne($attributes);
     }
 
     /**
