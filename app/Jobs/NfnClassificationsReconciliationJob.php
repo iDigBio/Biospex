@@ -83,19 +83,21 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
             $expedition = $expeditionContract->findWith($expeditionId, ['panoptesProject']);
 
             $csvPath = Storage::path(config('config.nfn_downloads_classification') . '/' . $expedition->id . '.csv');
-            $recPath = Storage::path(config('config.nfn_downloads_reconcile') . '/' . $expedition->id . '.csv');
-            $tranPath = Storage::path(config('config.nfn_downloads_transcript') . '/' . $expedition->id . '.csv');
-            $sumPath = Storage::path(config('config.nfn_downloads_summary') . '/' . $expedition->id . '.html');
+            $recPath = Storage::path(config('config.nfn_downloads_reconcile') . '/' . $expedition->id . '-test.csv');
+            $tranPath = Storage::path(config('config.nfn_downloads_transcript') . '/' . $expedition->id . '-test.csv');
+            $sumPath = Storage::path(config('config.nfn_downloads_summary') . '/' . $expedition->id . '-test.html');
 
             if ( ! File::exists($csvPath) || $expedition->panoptesProject === null)
             {
                 continue;
             }
 
+            // ./reconcile.py --reconciled data/reconciled.csv --summary data/summary.html data/classifications-from-nfn.csv
             $pythonPath = config('config.python_path');
             $reconcilePath = config('config.reconcile_path');
             $logPath = storage_path('logs/reconcile.log');
-            $command = "$pythonPath $reconcilePath -w {$expedition->panoptesProject->panoptes_workflow_id} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
+            //$command = "$pythonPath $reconcilePath -w {$expedition->panoptesProject->panoptes_workflow_id} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
+            $command = "$pythonPath $reconcilePath --reconciled $recPath --unreconciled $tranPath --summary $sumPath $csvPath &> $logPath";
             exec($command);
             $expeditionIds[] = $expedition->id;
 
@@ -121,7 +123,7 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
 
         }
 
-        NfnClassificationsTranscriptJob::dispatch($expeditionIds);
+        //NfnClassificationsTranscriptJob::dispatch($expeditionIds);
     }
 
     /**
