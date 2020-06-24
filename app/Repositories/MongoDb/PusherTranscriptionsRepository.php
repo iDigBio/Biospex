@@ -58,13 +58,9 @@ class PusherTranscriptionsRepository extends MongoDbRepository implements Pusher
         $count = $count > 500 ? 200 : $count;                                              //count
         $current = $request->has('start') ? (int) $request->input('start') : 0; // current
 
-        $results = $this->model->where(function ($query) use ($request) {
+        return $this->model->where(function ($query) use ($request) {
             $this->buildQuery($query, $request);
         })->limit($count)->offset($current)->orderBy('timestamp', 'desc')->get();
-
-
-
-        return $results;
     }
 
     /**

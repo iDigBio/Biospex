@@ -21,6 +21,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Expedition as Model;
 use App\Repositories\Interfaces\Expedition;
+use Illuminate\Database\Eloquent\Builder;
 
 class ExpeditionRepository extends EloquentRepository implements Expedition
 {
@@ -95,11 +96,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
             $query->where('completed', 0);
         });
 
-        $results = empty($expeditionIds) ? $model->get($attributes) : $model->whereIn('id', $expeditionIds)->get($attributes);
-
-
-
-        return $results;
+        return empty($expeditionIds) ? $model->get($attributes) : $model->whereIn('id', $expeditionIds)->get($attributes);
     }
 
     /**
@@ -116,13 +113,10 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     public function expeditionsByUserId($userId, array $relations = [])
     {
         $relations = ['stat', 'downloads', 'actors', 'project.group'];
-        $results = $this->model->with($relations)->whereHas('project.group.users', function ($query) use ($userId) {
+
+        return $this->model->with($relations)->whereHas('project.group.users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })->get();
-
-
-
-        return $results;
     }
 
     /**
@@ -130,16 +124,12 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function expeditionDownloadsByActor($projectId, $expeditionId)
     {
-        $results = $this->model->with([
+        return $this->model->with([
             'project.group',
             'actors.downloads' => function ($query) use ($expeditionId) {
                 $query->where('expedition_id', $expeditionId);
             },
         ])->find($expeditionId);
-
-
-
-        return $results;
     }
 
     /**
@@ -185,7 +175,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      * @param $sort
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    protected function sortResults($projectId, \Illuminate\Database\Eloquent\Builder $query, $order, $sort)
+    protected function sortResults($projectId, Builder $query, $order, $sort)
     {
         $results = $projectId === null ? $query->get() : $query->where('project_id', $projectId)->get();
 

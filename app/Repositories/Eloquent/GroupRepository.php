@@ -41,13 +41,9 @@ class GroupRepository extends EloquentRepository implements Group
      */
     public function getUsersGroupsSelect($user)
     {
-        $results = $this->model->whereHas('users', function ($query) use ($user) {
+        return $this->model->whereHas('users', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })->pluck('title', 'id')->toArray();
-
-
-
-        return $results;
     }
 
     /**

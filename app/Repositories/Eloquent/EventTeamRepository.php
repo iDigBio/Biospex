@@ -44,11 +44,7 @@ class EventTeamRepository extends EloquentRepository implements EventTeam
      */
     public function getTeamByUuid($uuid)
     {
-        $results = $this->model->with(['event'])->where('uuid', GeneralHelper::uuidToBin($uuid))->first();
-
-
-
-        return $results;
+        return $this->model->with(['event'])->where('uuid', GeneralHelper::uuidToBin($uuid))->first();
     }
 
     /**
