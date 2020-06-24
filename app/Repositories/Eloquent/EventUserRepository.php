@@ -44,10 +44,6 @@ class EventUserRepository extends EloquentRepository implements EventUser
      */
     public function getEventUserByName($name)
     {
-        $user = $this->model->where('nfn_user', $name)->first(['id']);
-
-
-
-        return $user;
+        return $this->model->where('nfn_user', $name)->first(['id']);
     }
 }
