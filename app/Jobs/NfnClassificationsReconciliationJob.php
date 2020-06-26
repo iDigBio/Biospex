@@ -96,8 +96,8 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
             $pythonPath = config('config.python_path');
             $reconcilePath = config('config.reconcile_path');
             $logPath = storage_path('logs/reconcile.log');
-            //$command = "$pythonPath $reconcilePath -w {$expedition->panoptesProject->panoptes_workflow_id} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
-            $command = "$pythonPath $reconcilePath --reconciled $recPath --unreconciled $tranPath --summary $sumPath $csvPath &> $logPath";
+            $command = "$pythonPath $reconcilePath -w {$expedition->panoptesProject->panoptes_workflow_id} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
+            //$command = "$pythonPath $reconcilePath --reconciled $recPath --unreconciled $tranPath --summary $sumPath $csvPath &> $logPath";
             exec($command);
             $expeditionIds[] = $expedition->id;
 
