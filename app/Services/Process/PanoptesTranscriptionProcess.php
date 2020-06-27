@@ -117,9 +117,12 @@ class PanoptesTranscriptionProcess
      * Process csv file.
      *
      * @param $file
+     * @param $expeditionId
      */
-    public function process($file)
+    public function process($file, $expeditionId)
     {
+        $this->expeditionId = $expeditionId;
+
         try {
             $this->csv->readerCreateFromPath($file);
             $this->csv->setDelimiter();
@@ -223,7 +226,7 @@ class PanoptesTranscriptionProcess
 
         $values['classification_id'] = $transcription['classification_id'];
         $values['project_id'] = $subject->project_id;
-        $values['expedition_id'] = $transcription['subject_expeditionId'];
+        $values['expedition_id'] = $this->expeditionId;
         $values['state_county_id'] = $stateResult->id;
         $attributes = ['classification_id' => $transcription['classification_id']];
 

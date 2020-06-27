@@ -85,7 +85,7 @@ class NfnClassificationsTranscriptJob implements ShouldQueue
                 return Storage::exists($transcriptDir . '/' . $expeditionId . '.csv');
             })->each(function($expeditionId) use ($transcriptionProcess, $transcriptDir) {
                 $csvFile = Storage::path($transcriptDir . '/' . $expeditionId . '.csv');
-                $transcriptionProcess->process($csvFile);
+                $transcriptionProcess->process($csvFile, $expeditionId);
             });
 
             if ( ! empty($transcriptionProcess->getCsvError()))
