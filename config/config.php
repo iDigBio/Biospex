@@ -40,7 +40,10 @@ return [
     'missing_avatar_medium'   => env('APP_URL').'/images/avatars/medium/missing.png',
 
     'python_path'    => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python',
-    'reconcile_path' => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
+    'label_reconcile_path' => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
+
+    'python_path_test'    => env('RECONCILIATIONS_PATH').'/venv/bin/python',
+    'reconcile_path' => env('RECONCILIATIONS_PATH').'/reconcile.py',
 
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
     'project_chart_config' => resource_path('json/projectChartConfig.json'),
