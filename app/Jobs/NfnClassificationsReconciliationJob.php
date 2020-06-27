@@ -83,22 +83,31 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
             $expedition = $expeditionContract->findWith($expeditionId, ['panoptesProject']);
 
             $csvPath = Storage::path(config('config.nfn_downloads_classification') . '/' . $expedition->id . '.csv');
-            $recPath = Storage::path(config('config.nfn_downloads_reconcile') . '/' . $expedition->id . '-test.csv');
-            $tranPath = Storage::path(config('config.nfn_downloads_transcript') . '/' . $expedition->id . '-test.csv');
-            $sumPath = Storage::path(config('config.nfn_downloads_summary') . '/' . $expedition->id . '-test.html');
+            $recPath = Storage::path(config('config.nfn_downloads_reconcile') . '/' . $expedition->id . '.csv');
+            $tranPath = Storage::path(config('config.nfn_downloads_transcript') . '/' . $expedition->id . '.csv');
+            $sumPath = Storage::path(config('config.nfn_downloads_summary') . '/' . $expedition->id . '.html');
 
             if ( ! File::exists($csvPath) || $expedition->panoptesProject === null)
             {
                 continue;
             }
 
-            // ./reconcile.py --reconciled data/reconciled.csv --summary data/summary.html data/classifications-from-nfn.csv
+            // Current
             $pythonPath = config('config.python_path');
-            $reconcilePath = config('config.reconcile_path');
+            $labelReconcilePath = config('config.label_reconcile_path');
             $logPath = storage_path('logs/reconcile.log');
-            $command = "$pythonPath $reconcilePath -w {$expedition->panoptesProject->panoptes_workflow_id} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
-            //$command = "$pythonPath $reconcilePath --reconciled $recPath --unreconciled $tranPath --summary $sumPath $csvPath &> $logPath";
+            $command = "$pythonPath $labelReconcilePath -w {$expedition->panoptesProject->panoptes_workflow_id} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
             exec($command);
+
+            // New
+            $recPath = Storage::path(config('config.nfn_downloads_reconcile') . '/' . $expedition->id . '-test.csv');
+            $tranPath = Storage::path(config('config.nfn_downloads_transcript') . '/' . $expedition->id . '-test.csv');
+            $sumPath = Storage::path(config('config.nfn_downloads_summary') . '/' . $expedition->id . '-test.html');
+            $pythonPathTest = config('config.python_path_test');
+            $reconcilePath = config('config.reconcile_path');
+            $command = "$pythonPathTest $reconcilePath --reconciled $recPath --unreconciled $tranPath --summary $sumPath $csvPath &> $logPath";
+            exec($command);
+
             $expeditionIds[] = $expedition->id;
 
             if (File::exists($csvPath))
