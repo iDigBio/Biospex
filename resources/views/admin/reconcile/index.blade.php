@@ -13,7 +13,7 @@
         <div class="col-6">
             <div class="panzoom">
                 <div class="loader mx-auto"></div>
-                <img src="{{ $accessURI }}" class="img-fluid lazy">
+                <img src="{{ $imgUrl }}" class="img-fluid lazy">
             </div>
         </div>
         <div class="col-6">

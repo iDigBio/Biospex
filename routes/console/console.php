@@ -13,6 +13,14 @@ use Illuminate\Foundation\Inspiring;
 |
 */
 
+Artisan::command('logs:clear', function() {
+
+    exec('rm ' . storage_path('logs/*.log'));
+
+    $this->comment('Logs have been cleared!');
+
+})->describe('Clear log files');
+
 Artisan::command('inspire', function () {
     $router->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');

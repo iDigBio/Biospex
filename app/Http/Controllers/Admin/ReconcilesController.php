@@ -64,9 +64,7 @@ class ReconcilesController extends Controller
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
 
-        $data = Session::get('reconcile');
-
-        $ids = $this->service->getIds($data);
+        $ids = $this->service->getIds();
 
         $reconciles = $this->service->getPagination($ids);
 
@@ -76,9 +74,10 @@ class ReconcilesController extends Controller
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
 
-        $accessURI = $reconciles->first()->transcriptions->first()->subject->accessURI;
+        dd($reconciles->first());
+        $imgUrl = $this->service->getImageUrl($reconciles->first());
 
-        return view('admin.reconcile.index', compact('reconciles', 'data', 'accessURI', 'projectId', 'expeditionId'));
+        return view('admin.reconcile.index', compact('reconciles', 'data', 'imgUrl', 'projectId', 'expeditionId'));
     }
 
     /**
@@ -97,9 +96,7 @@ class ReconcilesController extends Controller
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
 
-        $data = $this->service->getData();
-
-        Session::put('reconcile', $data);
+        $this->service->setData();
 
         return redirect()->route('admin.reconciles.index', [$projectId, $expeditionId]);
     }

@@ -23,10 +23,12 @@ use App\Notifications\NfnReconciledPublished;
 use App\Repositories\Interfaces\Download;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\Reconcile;
+use App\Repositories\Interfaces\Subject;
 use App\Services\Csv\Csv;
 use Illuminate\Support\Collection;
 use League\Csv\CannotInsertRecord;
 use League\Csv\Exception;
+use Session;
 use Storage;
 
 class ReconcileService
@@ -52,18 +54,25 @@ class ReconcileService
     private $downloadContract;
 
     /**
+     * @var \App\Repositories\Interfaces\Subject
+     */
+    private $subjectContract;
+
+    /**
      * ReconcileService constructor.
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Repositories\Interfaces\Reconcile $reconcileContract
      * @param \App\Services\Csv\Csv $csv
      * @param \App\Repositories\Interfaces\Download $downloadContract
+     * @param \App\Repositories\Interfaces\Subject $subjectContract
      */
     public function __construct(
         Expedition $expeditionContract,
         Reconcile $reconcileContract,
         Csv $csv,
-        Download $downloadContract
+        Download $downloadContract,
+        Subject $subjectContract
     )
     {
 
@@ -71,6 +80,7 @@ class ReconcileService
         $this->reconcileContract = $reconcileContract;
         $this->csv = $csv;
         $this->downloadContract = $downloadContract;
+        $this->subjectContract = $subjectContract;
     }
 
     /**
@@ -114,25 +124,26 @@ class ReconcileService
     }
 
     /**
-     * Get data from request.
-     *
-     * @return \Illuminate\Support\Collection
+     * Get data from request and set session.
      */
-    public function getData(): Collection
+    public function setData()
     {
-        return collect(json_decode(request()->get('data'), true))->mapWithKeys(function($items){
+        $data = collect(json_decode(request()->get('data'), true))->mapWithKeys(function($items){
             return [$items['id'] => explode(',', $items['columns'])];
         });
+
+        Session::put('reconcile', $data);
     }
 
     /**
      * Get ids from data.
      *
-     * @param \Illuminate\Support\Collection $data
      * @return array
      */
-    public function getIds(Collection $data): array
+    public function getIds(): array
     {
+        $data = Session::get('reconcile');
+
         return $data->keys()->map(function($value){
             return (string) $value;
         })->toArray();
@@ -252,5 +263,10 @@ class ReconcileService
     {
         $expedition = $this->getExpeditionById($expeditionId);
         $expedition->project->group->owner->notify(new NfnReconciledPublished($expedition->title));
+    }
+
+    public function getImageUrl($subjectId)
+    {
+        //$reconciles->first()->transcriptions->first()->subject->accessURI
     }
 }
