@@ -88,13 +88,13 @@ class InviteService
             Notification::send($newInvites, new GroupInvite($group));
             Notification::send($group->invites, new GroupInvite($group));
 
-            FlashHelper::success(trans('messages.send_invite_success', ['group' => $group->title]));
+            FlashHelper::success(trans('pages.send_invite_success', ['group' => $group->title]));
 
             return true;
         }
         catch (Exception $e)
         {
-            FlashHelper::error(trans('messages.send_invite_error', ['group' => $group->title]));
+            FlashHelper::error(trans('pages.send_invite_error', ['group' => $group->title]));
 
             return false;
         }

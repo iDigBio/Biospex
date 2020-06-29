@@ -60,7 +60,7 @@ class Xml
 
         $parsed = $this->xml->load($input_xml);
         if (! $parsed) {
-            throw new RuntimeException(trans('messages.loading_xml'));
+            throw new RuntimeException(trans('pages.loading_xml'));
         }
 
         $this->xpath = new DOMXpath($this->xml);

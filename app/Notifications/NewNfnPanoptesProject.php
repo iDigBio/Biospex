@@ -62,7 +62,7 @@ class NewNfnPanoptesProject extends Notification implements ShouldQueue
     public function toMail()
     {
         $vars = [
-            'message'     => trans('messages.nfn_notification'),
+            'message'     => trans('pages.nfn_notification'),
             'contact'     => $this->project->contact,
             'email'       => $this->project->contact_email,
             'title'       => $this->project->title,
@@ -70,7 +70,7 @@ class NewNfnPanoptesProject extends Notification implements ShouldQueue
         ];
 
         return (new MailMessage)
-            ->subject(trans('messages.nfn_notification_subject'))
+            ->subject(trans('pages.nfn_notification_subject'))
             ->markdown('mail.newnfnpanoptes', $vars);
     }
 

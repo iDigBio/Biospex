@@ -78,7 +78,7 @@
             @else
                 <div class="row mt-5">
                     <div class="col-12 m-auto justify-content-center text-center">
-                        <p>{{ __('messages.reconciled_message') }}</p>
+                        <p>{{ __('pages.reconciled_message') }}</p>
                     </div>
                 </div>
             @endif

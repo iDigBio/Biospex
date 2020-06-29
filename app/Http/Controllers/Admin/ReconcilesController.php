@@ -59,7 +59,7 @@ class ReconcilesController extends Controller
         }
 
         if (! Session::has('reconcile')) {
-            FlashHelper::error(trans('messages.missing_reconcile_data'));
+            FlashHelper::error(trans('pages.missing_reconcile_data'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
@@ -67,7 +67,7 @@ class ReconcilesController extends Controller
         [$reconciles, $data] = $this->service->getPagination();
 
         if (! $reconciles) {
-            FlashHelper::error(trans('messages.missing_reconcile_data'));
+            FlashHelper::error(trans('pages.missing_reconcile_data'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
@@ -108,14 +108,14 @@ class ReconcilesController extends Controller
     public function update(string $projectId, string $expeditionId): array
     {
         if (! request()->ajax()) {
-            return ['result' => false, 'message' => __('messages.record_updated_error')];
+            return ['result' => false, 'message' => __('pages.record_updated_error')];
         }
 
         if (! $this->service->updateRecord(request()->all())) {
-            return ['result' => false, 'message' => __('messages.record_updated_error')];
+            return ['result' => false, 'message' => __('pages.record_updated_error')];
         }
 
-        return ['result' => true, 'message' => __('messages.record_updated')];
+        return ['result' => true, 'message' => __('pages.record_updated')];
     }
 
     /**
@@ -128,7 +128,7 @@ class ReconcilesController extends Controller
     public function publish(string $projectId, string $expeditionId): RedirectResponse
     {
         ReconciledPublishJob::dispatch($expeditionId);
-        FlashHelper::success(__('messages.reconciled_publish'));
+        FlashHelper::success(__('pages.reconciled_publish'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }

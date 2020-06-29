@@ -373,7 +373,7 @@ class ProjectPresenter extends Presenter
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.delete').' '.__('pages.project').'?" data-content="'.__('messages.record_delete').'">
+            data-title="'.__('pages.delete').' '.__('pages.project').'?" data-content="'.__('pages.record_delete').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -389,7 +389,7 @@ class ProjectPresenter extends Presenter
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.delete').' '.__('pages.project').'?" data-content="'.__('messages.record_delete').'">
+            data-title="'.__('pages.delete').' '.__('pages.project').'?" data-content="'.__('pages.record_delete').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -421,7 +421,7 @@ class ProjectPresenter extends Presenter
             data-hover="tooltip"        
             data-method="post"
             data-confirm="confirmation"
-            data-title="'.__('pages.ocr_reprocess').'?" data-content="'.__('messages.ocr_reprocess_message', ['record' => __('pages.project')]).'">
+            data-title="'.__('pages.ocr_reprocess').'?" data-content="'.__('pages.ocr_reprocess_message', ['record' => __('pages.project')]).'">
             <i class="fas fa-redo-alt fa-2x"></i></a>';
     }
 }

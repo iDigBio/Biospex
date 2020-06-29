@@ -132,7 +132,7 @@ class NfnPanoptesBase
     public function setFolder()
     {
         if ($this->actor === null || $this->expedition === null) {
-            throw new Exception(__('messages.export_error_exception'));
+            throw new Exception(__('pages.export_error_exception'));
         }
 
         $this->folderName = $this->actor->id . '-' . $this->expedition->uuid;
@@ -147,7 +147,7 @@ class NfnPanoptesBase
     public function setDirectories(bool $delete = false)
     {
         if ($this->folderName === null) {
-            throw new Exception(__('messages.export_error_exception'));
+            throw new Exception(__('pages.export_error_exception'));
         }
 
         $this->setScratchDirectory();
