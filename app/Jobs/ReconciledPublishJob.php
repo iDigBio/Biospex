@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Model\ReconcileService;
+use App\Services\Process\ReconcilePublishService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -52,9 +52,9 @@ class ReconciledPublishJob implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param \App\Services\Model\ReconcileService $service
+     * @param \App\Services\Process\ReconcilePublishService $service
      */
-    public function handle(ReconcileService $service)
+    public function handle(ReconcilePublishService $service)
     {
 
         try {

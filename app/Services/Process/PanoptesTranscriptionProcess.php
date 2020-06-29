@@ -168,7 +168,7 @@ class PanoptesTranscriptionProcess
     {
         if (count($header) !== count($row))
         {
-            throw new Exception(trans('messages.csv_row_count', [
+            throw new Exception(trans('pages.csv_row_count', [
                 'headers' => count($header),
                 'rows'    => count($row)
             ]));

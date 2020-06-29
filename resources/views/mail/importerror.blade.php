@@ -1,5 +1,5 @@
 @component('mail::message')
-#@lang('messages.import_process_title')
+#@lang('pages.import_process_title')
 
 {!! $message !!}
 

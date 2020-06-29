@@ -19,14 +19,13 @@
 
 namespace App\Services\Model;
 
-use App\Notifications\NfnReconciledPublished;
-use App\Repositories\Interfaces\Download;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\Reconcile;
 use App\Repositories\Interfaces\Subject;
+use App\Services\Api\PanoptesApiService;
 use App\Services\Csv\Csv;
+use File;
 use Illuminate\Support\Collection;
-use League\Csv\CannotInsertRecord;
 use League\Csv\Exception;
 use Session;
 use Storage;
@@ -49,14 +48,14 @@ class ReconcileService
     private $csv;
 
     /**
-     * @var \App\Repositories\Interfaces\Download
-     */
-    private $downloadContract;
-
-    /**
      * @var \App\Repositories\Interfaces\Subject
      */
     private $subjectContract;
+
+    /**
+     * @var \App\Services\Api\PanoptesApiService
+     */
+    private $apiService;
 
     /**
      * ReconcileService constructor.
@@ -64,23 +63,22 @@ class ReconcileService
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Repositories\Interfaces\Reconcile $reconcileContract
      * @param \App\Services\Csv\Csv $csv
-     * @param \App\Repositories\Interfaces\Download $downloadContract
      * @param \App\Repositories\Interfaces\Subject $subjectContract
+     * @param \App\Services\Api\PanoptesApiService $apiService
      */
     public function __construct(
         Expedition $expeditionContract,
         Reconcile $reconcileContract,
         Csv $csv,
-        Download $downloadContract,
-        Subject $subjectContract
-    )
-    {
+        Subject $subjectContract,
+        PanoptesApiService $apiService
+    ) {
 
         $this->expeditionContract = $expeditionContract;
         $this->reconcileContract = $reconcileContract;
         $this->csv = $csv;
-        $this->downloadContract = $downloadContract;
         $this->subjectContract = $subjectContract;
+        $this->apiService = $apiService;
     }
 
     /**
@@ -103,7 +101,7 @@ class ReconcileService
     public function migrateReconcileCsv(string $expeditionId)
     {
         try {
-            $recPath = Storage::path(config('config.nfn_downloads_reconcile') . '/' . $expeditionId . '.csv');
+            $recPath = Storage::path(config('config.nfn_downloads_reconcile').'/'.$expeditionId.'.csv');
 
             $this->csv->readerCreateFromPath($recPath);
             $this->csv->setDelimiter();
@@ -117,18 +115,17 @@ class ReconcileService
             }
 
             return false;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return $e->getMessage();
         }
     }
 
     /**
-     * Get data from request and set session.
+     * Get data from request.
      */
     public function setData()
     {
-        $data = collect(json_decode(request()->get('data'), true))->mapWithKeys(function($items){
+        $data = collect(json_decode(request()->get('data'), true))->mapWithKeys(function ($items) {
             return [$items['id'] => explode(',', $items['columns'])];
         });
 
@@ -138,13 +135,12 @@ class ReconcileService
     /**
      * Get ids from data.
      *
+     * @param \Illuminate\Support\Collection $data
      * @return array
      */
-    public function getIds(): array
+    public function getIds(Collection $data): array
     {
-        $data = Session::get('reconcile');
-
-        return $data->keys()->map(function($value){
+        return $data->keys()->map(function ($value) {
             return (string) $value;
         })->toArray();
     }
@@ -152,18 +148,50 @@ class ReconcileService
     /**
      * Get pagination results.
      *
-     * @param array $ids
-     * @return mixed
+     * @return array
      */
-    public function getPagination(array $ids)
+    public function getPagination(): array
     {
+        $data = Session::get('reconcile');
+        $ids = $this->getIds($data);
+
         $reconciles = $this->reconcileContract->paginate($ids);
 
-        if ($reconciles->isEmpty() || $reconciles->first()->transcriptions->isEmpty() || $reconciles->first()->transcriptions->first()->subject === null) {
-            return false;
+        if ($reconciles->isEmpty() || $reconciles->first()->transcriptions->isEmpty()) {
+            return [false, $data];
         }
 
-        return $reconciles;
+        return [$reconciles, $data];
+    }
+
+    /**
+     * Get image url from api or accessURI.
+     *
+     * @param $reconcile
+     * @return mixed
+     */
+    public function getImageUrl($reconcile)
+    {
+        $subject = $this->apiService->getPanoptesSubject($reconcile->subject_id);
+        $locations = collect($subject['locations'])->filter(function ($location) {
+            return ! empty($location['image/jpeg']);
+        });
+
+        return $locations->isNotEmpty() ? $locations->first()['image/jpeg'] : $this->getAccessUri($reconcile);
+    }
+
+    /**
+     * Get image from accessURI.
+     *
+     * @param $reconcile
+     * @return mixed
+     */
+    public function getAccessUri($reconcile)
+    {
+        $id = $filename = File::name($reconcile->subject_imageName);
+        $subject = $this->subjectContract->find($id, ['accessURI']);
+
+        return $subject->accessURI;
     }
 
     /**
@@ -174,7 +202,7 @@ class ReconcileService
      */
     public function updateRecord(array $request)
     {
-        foreach($request as $key => $value) {
+        foreach ($request as $key => $value) {
             $request[$key] = is_null($value) ? '' : $value;
             if (strpos($key, '_radio') !== false) {
                 unset($request[$key]);
@@ -182,91 +210,5 @@ class ReconcileService
         }
 
         return $this->reconcileContract->update($request, $request['_id']);
-    }
-
-    /**
-     * Publish reconciled file.
-     *
-     * @param string $expeditionId
-     * @throws \Exception
-     */
-    public function publishReconciled(string $expeditionId)
-    {
-        $result = $this->createReconcileCsv($expeditionId);
-        if (! $result) {
-            throw new \Exception(__('Could not create reconcile csv for ' . $expeditionId));
-        }
-
-        $this->createDownload($expeditionId);
-
-        $this->sendEmail($expeditionId);
-    }
-
-    /**
-     * Create csv file for reconciled.
-     *
-     * @param string $expeditionId
-     * @return bool
-     */
-    private function createReconcileCsv(string $expeditionId): bool
-    {
-        try{
-            $results = $this->reconcileContract->getByExpeditionId($expeditionId);
-            $mapped = $results->map(function($record){
-                unset($record->_id, $record->updated_at, $record->created_at);
-                return $record;
-            });
-
-            $header = array_keys($mapped->first()->toArray());
-
-            $fileName = $expeditionId . '.csv';
-            $file = Storage::path(config('config.nfn_downloads_reconciled') . '/' . $fileName);
-            $this->csv->writerCreateFromPath($file);
-            $this->csv->insertOne($header);
-            $this->csv->insertAll($mapped->toArray());
-
-            return true;
-        } catch (CannotInsertRecord $exception) {
-            return false;
-        }
-    }
-
-    /**
-     * Create download file.
-     *
-     * @param string $expeditionId
-     */
-    private function createDownload(string $expeditionId)
-    {
-        $values = [
-            'expedition_id' => $expeditionId,
-            'actor_id' => 2,
-            'file' => $expeditionId . '.csv',
-            'type' => 'reconciled_with_expert_opinion'
-        ];
-        $attributes = [
-            'expedition_id' => $expeditionId,
-            'actor_id' => 2,
-            'file' => $expeditionId . '.csv',
-            'type' => 'reconciled_with_expert_opinion'
-        ];
-
-        $this->downloadContract->updateOrCreate($attributes, $values);
-    }
-
-    /**
-     * Send email to project owner.
-     *
-     * @param string $expeditionId
-     */
-    private function sendEmail(string $expeditionId)
-    {
-        $expedition = $this->getExpeditionById($expeditionId);
-        $expedition->project->group->owner->notify(new NfnReconciledPublished($expedition->title));
-    }
-
-    public function getImageUrl($subjectId)
-    {
-        //$reconciles->first()->transcriptions->first()->subject->accessURI
     }
 }

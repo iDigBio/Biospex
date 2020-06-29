@@ -64,9 +64,9 @@ class NfnReconciledPublished extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        $mailMessage->subject(__('messages.reconciled_publish_subject'));
+        $mailMessage->subject(__('pages.reconciled_publish_subject'));
 
-        $message = __('messages.reconciled_publish_complete', ['title' => $this->title]);
+        $message = __('pages.reconciled_publish_complete', ['title' => $this->title]);
 
         return $mailMessage->markdown('mail.nfnreconciledpublish', ['message' => $message]);
     }

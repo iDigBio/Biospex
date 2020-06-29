@@ -149,7 +149,7 @@ class ExpeditionPresenter extends Presenter
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.delete').' '.__('pages.expedition').'?" data-content="'.__('messages.record_delete').'">
+            data-title="'.__('pages.delete').' '.__('pages.expedition').'?" data-content="'.__('pages.record_delete').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -169,7 +169,7 @@ class ExpeditionPresenter extends Presenter
             data-method="delete"
             data-confirm="confirmation"
             data-title="'.__('pages.delete').' '.__('pages.expedition').'?" 
-            data-content="'.__('messages.record_delete').'">
+            data-content="'.__('pages.record_delete').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -189,7 +189,7 @@ class ExpeditionPresenter extends Presenter
             data-method="post"
             data-confirm="confirmation"
             data-title="'.__('pages.ocr_reprocess').'?" 
-            data-content="'.__('messages.ocr_reprocess_message', ['record' => __('pages.expedition')]).'">
+            data-content="'.__('pages.ocr_reprocess_message', ['record' => __('pages.expedition')]).'">
             <i class="fas fa-redo-alt fa-2x"></i></a>';
     }
 
@@ -209,7 +209,7 @@ class ExpeditionPresenter extends Presenter
             data-method="post"
             data-confirm="confirmation"
             data-title="'.__('pages.expedition_process').'?" 
-            data-content="'.__('messages.expedition_process_message').'">
+            data-content="'.__('pages.expedition_process_message').'">
             <i class="fas fa-play-circle fa-2x"></i></a>';
     }
 
@@ -229,7 +229,7 @@ class ExpeditionPresenter extends Presenter
             data-method="delete"
             data-confirm="confirmation"
             data-title="'.__('pages.expedition_stop').'" 
-            data-content="'.__('messages.expedition_process_stop_message').'">
+            data-content="'.__('pages.expedition_process_stop_message').'">
             <i class="fas fa-stop-circle fa-2x"></i></a>';
     }
 

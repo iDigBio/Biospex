@@ -65,7 +65,7 @@ class GroupInvite extends Notification implements ShouldQueue
         $url = route('app.get.register', ['code' => $notifiable->code]);
 
         return (new MailMessage)
-            ->subject(trans('messages.group_invite_subject'))
+            ->subject(trans('pages.group_invite_subject'))
             ->markdown('mail.invite', ['url' => $url, 'title' => $this->group->title]);
     }
 
