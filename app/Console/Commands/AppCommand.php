@@ -45,6 +45,5 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
     }
 }
