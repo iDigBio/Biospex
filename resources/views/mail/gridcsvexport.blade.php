@@ -1,5 +1,5 @@
 @component('mail::message')
-#@lang('messages.grid_export_csv')
+#@lang('pages.grid_export_csv')
 
 {!! $message !!}
 

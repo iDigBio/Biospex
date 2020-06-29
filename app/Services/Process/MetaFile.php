@@ -179,7 +179,7 @@ class MetaFile
             return true;
         }
 
-        throw new Exception(trans('messages.missing_meta_extension', ['file' => $this->file]));
+        throw new Exception(trans('pages.missing_meta_extension', ['file' => $this->file]));
     }
 
     /**
@@ -261,7 +261,7 @@ class MetaFile
             return;
         }
 
-        throw new Exception(trans('messages.rowtype_mismatch',
+        throw new Exception(trans('pages.rowtype_mismatch',
             ['file' => $this->file, 'row_type' => $rowType, 'type_file' => $this->extension->nodeValue]
         ));
     }
@@ -299,7 +299,7 @@ class MetaFile
         $this->extensionFile = $this->extension->nodeValue;
         if ($this->extensionFile === '')
         {
-            throw new Exception(trans('messages.extension_node_missing'));
+            throw new Exception(trans('pages.extension_node_missing'));
         }
     }
 
@@ -317,7 +317,7 @@ class MetaFile
 
         if ($this->coreDelimiter === '')
         {
-            throw new Exception(trans('messages.csv_core_delimiter'));
+            throw new Exception(trans('pages.csv_core_delimiter'));
         }
     }
 
@@ -335,7 +335,7 @@ class MetaFile
 
         if ($this->extDelimiter === '')
         {
-            throw new Exception(trans('messages.csv_ext_delimiter'));
+            throw new Exception(trans('pages.csv_ext_delimiter'));
         }
     }
 

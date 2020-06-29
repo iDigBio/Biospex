@@ -59,26 +59,22 @@ class ReconcilesController extends Controller
         }
 
         if (! Session::has('reconcile')) {
-            FlashHelper::error(trans('messages.missing_reconcile_data'));
+            FlashHelper::error(trans('pages.missing_reconcile_data'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
 
-        $data = Session::get('reconcile');
-
-        $ids = $this->service->getIds($data);
-
-        $reconciles = $this->service->getPagination($ids);
+        [$reconciles, $data] = $this->service->getPagination();
 
         if (! $reconciles) {
-            FlashHelper::error(trans('messages.missing_reconcile_data'));
+            FlashHelper::error(trans('pages.missing_reconcile_data'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
 
-        $accessURI = $reconciles->first()->transcriptions->first()->subject->accessURI;
+        $imgUrl = $this->service->getImageUrl($reconciles->first());
 
-        return view('admin.reconcile.index', compact('reconciles', 'data', 'accessURI', 'projectId', 'expeditionId'));
+        return view('admin.reconcile.index', compact('reconciles', 'data', 'imgUrl', 'projectId', 'expeditionId'));
     }
 
     /**
@@ -97,9 +93,7 @@ class ReconcilesController extends Controller
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
 
-        $data = $this->service->getData();
-
-        Session::put('reconcile', $data);
+        $this->service->setData();
 
         return redirect()->route('admin.reconciles.index', [$projectId, $expeditionId]);
     }
@@ -114,14 +108,14 @@ class ReconcilesController extends Controller
     public function update(string $projectId, string $expeditionId): array
     {
         if (! request()->ajax()) {
-            return ['result' => false, 'message' => __('messages.record_updated_error')];
+            return ['result' => false, 'message' => __('pages.record_updated_error')];
         }
 
         if (! $this->service->updateRecord(request()->all())) {
-            return ['result' => false, 'message' => __('messages.record_updated_error')];
+            return ['result' => false, 'message' => __('pages.record_updated_error')];
         }
 
-        return ['result' => true, 'message' => __('messages.record_updated')];
+        return ['result' => true, 'message' => __('pages.record_updated')];
     }
 
     /**
@@ -134,7 +128,7 @@ class ReconcilesController extends Controller
     public function publish(string $projectId, string $expeditionId): RedirectResponse
     {
         ReconciledPublishJob::dispatch($expeditionId);
-        FlashHelper::success(__('messages.reconciled_publish'));
+        FlashHelper::success(__('pages.reconciled_publish'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }

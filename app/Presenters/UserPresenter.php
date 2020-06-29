@@ -66,7 +66,7 @@ class UserPresenter extends Presenter
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.delete').' '.__('pages.member').'?" data-content="'.__('messages.group_delete_user_msg').'">
+            data-title="'.__('pages.delete').' '.__('pages.member').'?" data-content="'.__('pages.group_delete_user_msg').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 }

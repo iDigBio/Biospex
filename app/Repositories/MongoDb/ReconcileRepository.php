@@ -53,11 +53,7 @@ class ReconcileRepository extends MongoDbRepository implements Reconcile
      */
     public function paginate(array $ids)
     {
-        return $this->model->with(['transcriptions' => function($q1){
-            $q1->with(['subject' => function($q2){
-                $q2->select('_id', 'accessURI');
-            }]);
-        }])->whereIn('subject_id', $ids)->paginate(1);
+        return $this->model->with(['transcriptions'])->whereIn('subject_id', $ids)->paginate(1);
     }
 
     /**

@@ -226,7 +226,7 @@ class EventPresenter extends Presenter
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.delete').' ' .__('pages.event').'?" data-content="'.__('messages.record_delete').'">
+            data-title="'.__('pages.delete').' ' .__('pages.event').'?" data-content="'.__('pages.record_delete').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -244,7 +244,7 @@ class EventPresenter extends Presenter
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.delete').' ' .__('pages.event').'?" data-content="'.__('messages.record_delete').'">
+            data-title="'.__('pages.delete').' ' .__('pages.event').'?" data-content="'.__('pages.record_delete').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
