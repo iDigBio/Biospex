@@ -183,11 +183,12 @@ class PanoptesTranscriptionProcess
             return;
         }
 
-        $this->convertStringToIntegers($row);
-
         $this->buildTranscriptionLocation($row, $subject);
 
-        $row = array_merge($row, ['subject_projectId' => (int) $subject->project_id]);
+        $row = array_merge($row, ['subject_projectId' => $subject->project_id]);
+        if (!isset($row['subject_expeditionId'])) {
+            $row = array_merge($row, ['subject_expeditionId' => $this->expeditionId]);
+        }
 
         if ($this->validateTranscription($row)) {
             return;
@@ -335,29 +336,6 @@ class PanoptesTranscriptionProcess
         return $this->subjectContract->find(trim($value));
     }
 
-    /**
-     * Convert string numbers to integers for MongoDB
-     *
-     * @param $row
-     */
-    public function convertStringToIntegers(&$row)
-    {
-        $cols = collect([
-            'subject_id',
-            'classification_id',
-            'workflow_id',
-            'subject_expeditionId',
-            'subject_projectId'
-        ]);
-
-        foreach ($cols as $col)
-        {
-            if (isset($row[$col]))
-            {
-                $row[$col] = (int) $row[$col];
-            }
-        }
-    }
 
     /**
      * Validate transcription to prevent duplicates.
