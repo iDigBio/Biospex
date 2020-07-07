@@ -19,25 +19,25 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\NfnClassificationsTranscriptJob;
-use File;
 use Illuminate\Console\Command;
+use App\Jobs\NfnClassificationCsvCreateJob;
 
-class NfnClassificationsTranscript extends Command
+class NfnClassificationCsvCreate extends Command
 {
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'nfn:transcript {expeditionIds?}';
+    protected $signature = 'nfn:csvcreate {expeditionIds?} {--C|command}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Process reconciled transcriptions and enter into database.';
+    protected $description = 'Sends requests to create Nfn Workflow Classifications CSV files. Argument can be comma separated expeditionIds.';
 
     /**
      * NfNClassificationsCsvRequests constructor.
@@ -52,22 +52,10 @@ class NfnClassificationsTranscript extends Command
      */
     public function handle()
     {
-        $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
-        NfnClassificationsTranscriptJob::dispatch($expeditionIds);
-    }
+        $command = $this->option('command');
 
-    /**
-     * Read directory files to process.
-     */
-    private function readDirectory()
-    {
-        $expeditionIds = [];
-        $files = File::files(config('config.nfn_downloads_transcript'));
-        foreach ($files as $file)
-        {
-            $expeditionIds[] = basename($file, '.csv');
-        }
+        $expeditionIds = null ===  $this->argument('expeditionIds') ? [] : explode(',', $this->argument('expeditionIds'));
 
-        return $expeditionIds;
+        NfnClassificationCsvCreateJob::dispatch($expeditionIds, $command);
     }
 }

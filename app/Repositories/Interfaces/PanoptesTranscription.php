@@ -53,15 +53,17 @@ interface PanoptesTranscription extends RepositoryInterface
      */
     public function getProjectTranscriptionCount($projectId);
 
-    // Not used methods
-
     /**
+     * Get min finished at date for project.
+     *
      * @param $projectId
      * @return mixed
      */
     public function getMinFinishedAtDateByProjectId($projectId);
 
     /**
+     * Get max finished date for project.
+     *
      * @param $projectId
      * @return mixed
      */
@@ -78,15 +80,19 @@ interface PanoptesTranscription extends RepositoryInterface
     public function getTranscriptionCountPerDate($workflowId, $begin, $end);
 
     /**
+     * Get Transcribers count.
+     *
      * @param $projectId
      * @return mixed
      */
     public function getTranscribersTranscriptionCount($projectId);
 
     /**
+     * Get transcriptions for adding to pusher_transcriptions.
+     *
      * @param $expeditionId
-     * @param $timestamp
+     * @param null $timestamp
      * @return mixed
      */
-    public function getTranscriptionForDashboardJob($expeditionId, $timestamp);
+    public function getTranscriptionForDashboardJob($expeditionId, $timestamp = null);
 }

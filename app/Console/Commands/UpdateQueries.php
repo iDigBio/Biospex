@@ -66,30 +66,36 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
+        //$this->fixSubjectId();
+        $this->fixClassificationIdForPusher();
+
+    }
+
+    /**
+     * Fixes where subject Id was changed.
+     */
+    public function fixSubjectId()
+    {
         $this->service->setCollection('panoptes_transcriptions');
+        $attributes = ['$rename' => ['subject_Subject_ID' => 'subject_subjectId']];
+        $criteria = ['subject_Subject_ID' => ['$exists' => true]];
+        $this->service->updateMany($attributes, $criteria);
+    }
 
-        $query = ['classification_finished_at.timezone' => 'UTC'];
-
-        $cursor = $this->service->find($query);
-
-        $cursor->setTypeMap([
-            'array'    => 'array',
-            'document' => 'array',
-            'root'     => 'array'
-        ]);
-
-        $i = 0;
+    public function fixClassificationIdForPusher()
+    {
+        $this->service->setCollection('pusher_transcriptions');
+        $criteria = ['classification_id' => ['$type' => 'string']];
+        $cursor = $this->service->find($criteria);
         foreach ($cursor as $doc) {
-            $attributes = [
-                'classification_started_at' => $doc['classification_started_at']['date'],
-                'classification_finished_at' => $doc['classification_finished_at']['date'],
-            ];
-
-            $this->transcription->update($attributes, $doc['_id']);
-            $i++;
-            echo $i . PHP_EOL;
+            dd($doc);
         }
 
+    }
+
+    public function fixMissingExpeditionId()
+    {
+        
     }
 
 }

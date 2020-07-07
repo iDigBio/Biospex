@@ -20,6 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\Traits\UuidTrait;
+use App\Models\User;
+use App\Notifications\JobError;
 use App\Services\Model\PusherTranscriptionService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -29,7 +31,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Carbon;
 
-class NfnClassificationPusherTranscriptionsJob implements ShouldQueue
+class NfnClassificationPusherTranscriptionJob implements ShouldQueue
 {
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UuidTrait;
@@ -42,18 +44,25 @@ class NfnClassificationPusherTranscriptionsJob implements ShouldQueue
     public $timeout = 1800;
 
     /**
-     * @var \Illuminate\Support\Collection
+     * @var int
      */
-    private $expeditionIds;
+    private $expeditionId;
 
     /**
-     * NfnClassificationPusherTranscriptionsJob constructor.
-     *
-     * @param $expeditionIds array
+     * @var bool
      */
-    public function __construct($expeditionIds)
+    private $command;
+
+    /**
+     * NfnClassificationPusherTranscriptionJob constructor.
+     *
+     * @param int $expeditionId
+     * @param bool $command
+     */
+    public function __construct(int $expeditionId, $command = false)
     {
-        $this->expeditionIds = $expeditionIds;
+        $this->expeditionId = $expeditionId;
+        $this->command = $command;
         $this->onQueue(config('config.classification_tube'));
     }
 
@@ -66,33 +75,34 @@ class NfnClassificationPusherTranscriptionsJob implements ShouldQueue
         PusherTranscriptionService $pusherTranscriptionService
     )
     {
-
-        if (empty($this->expeditionIds))
-        {
-            $this->delete();
-
-            return;
-        }
-
         try
         {
-            collect($this->expeditionIds)->each(function($expeditionId) use ($pusherTranscriptionService){
-                $expedition = $pusherTranscriptionService->getExpedition($expeditionId);
+            $expedition = $pusherTranscriptionService->getExpedition($this->expeditionId);
 
-                $timestamp = Carbon::now()->subDays(3);
+            $timestamp = !$this->command ? Carbon::now()->subDays(3) : null;
 
-                $transcriptions = $pusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
+            $transcriptions = $pusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
 
-                $transcriptions->filter(function($transcription) use ($pusherTranscriptionService) {
-                    return $pusherTranscriptionService->checkPusherTranscription($transcription);
-                })->each(function ($transcription) use ($pusherTranscriptionService, $expedition) {
-                    $pusherTranscriptionService->processTranscripts($transcription, $expedition);
-                });
+            $transcriptions->each(function ($transcription) use ($pusherTranscriptionService, $expedition) {
+                $pusherTranscriptionService->processTranscripts($transcription, $expedition);
             });
+
+            $this->delete();
         }
         catch (Exception $e)
         {
+            $user = User::find(1);
+            $message = [
+                'Message: ' => trans('pages.nfn_pusher_job_error', [':expeditionId' => $this->expeditionId]),
+                'File: ' => $e->getFile(),
+                'Line: ' => $e->getLine(),
+                'Error: ' => $e->getMessage(),
+            ];
+            $user->notify(new JobError(__FILE__, $message));
+
             $this->delete();
+
+            return;
         }
     }
 }

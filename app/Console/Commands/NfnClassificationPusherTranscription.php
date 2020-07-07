@@ -19,27 +19,30 @@
 
 namespace App\Console\Commands;
 
+use File;
+use App\Jobs\NfnClassificationPusherTranscriptionJob;
 use Illuminate\Console\Command;
-use App\Jobs\NfnClassificationsCsvFileJob;
+use Storage;
 
-class NfnClassificationsCsvFile extends Command
+class NfnClassificationPusherTranscription extends Command
 {
     /**
      * The name and signature of the console command.
+     * expeditionIds are comma delimited expedition expeditionIds.
      *
      * @var string
      */
-    protected $signature = 'nfn:filerequest {expeditionIds?}';
+    protected $signature = 'nfn:pusher {expeditionIds?} {--C|command}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sends requests for Nfn Workflow Classifications CSV files. Argument can be comma separated expeditionIds.';
+    protected $description = 'Run WeDigBio dashboard to create/update records';
 
     /**
-     * NfNClassificationsCsvRequests constructor.
+     * PusherTranscription constructor.
      */
     public function __construct()
     {
@@ -48,11 +51,31 @@ class NfnClassificationsCsvFile extends Command
 
     /**
      * Execute the console command.
+     *
      */
     public function handle()
     {
-        $expeditionIds = null ===  $this->argument('expeditionIds') ? [] : explode(',', $this->argument('expeditionIds'));
+        $command = $this->option('command');
+        $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
 
-        NfnClassificationsCsvFileJob::dispatch($expeditionIds);
+        foreach ($expeditionIds as $expeditionId) {
+            NfnClassificationPusherTranscriptionJob::dispatch($expeditionId, $command);
+        }
+    }
+
+    /**
+     * Read directory files to process.
+     */
+    private function readDirectory()
+    {
+        $expeditionIds = [];
+        $files = File::files(Storage::path(config('config.nfn_downloads_transcript')));
+
+        foreach ($files as $file)
+        {
+            $expeditionIds[] = basename($file, '.csv');
+        }
+
+        return $expeditionIds;
     }
 }

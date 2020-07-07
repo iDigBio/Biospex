@@ -34,8 +34,10 @@
 <script>
     $('#iframe').on("load", function () {
         let $iframe = $('#iframe');
+        console.log($iframe[0].contentWindow.filters);
         let csrfVar = $('meta[name="csrf-token"]').attr('content');
 
+        //console.log("test "+$iframe[0].contentWindow.filters['Show All Problems']);
         $iframe.contents().find('select').change(function () {
             let form = '<form method="post" target="_blank" id="editReconcile" style="display: inline; margin-top: 5px" ' +
                 'action="'+Laravel.frmUrl+'" role="form">' +
@@ -46,7 +48,7 @@
 
             $iframe.contents().find('#editReconcile').remove();
 
-            if ($(this).val() === '__all__') {
+            if ($(this).val() === 'Show All Problems') {
                 $(this).after(form);
                 let frmValues = [];
                 let selector = 'tr[data-row-type="B"][data-problems!=""]';

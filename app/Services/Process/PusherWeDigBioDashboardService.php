@@ -23,6 +23,7 @@ use App\Repositories\Interfaces\PusherTranscription;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
+use Validator;
 
 class PusherWeDigBioDashboardService
 {
@@ -82,12 +83,14 @@ class PusherWeDigBioDashboardService
     {
         $thumbnailUri = $this->setPusherThumbnailUri($data);
 
-        $value = [
-            'classification_id'    => $data->classification_id,
-        ];
+        $classification_id = (int) $data->classification_id;
+
+        if ($this->validateTranscription($classification_id)) {
+            return;
+        }
 
         $attributes = [
-            'classification_id'    => $data->classification_id,
+            'classification_id'    => $classification_id,
             'project'              => $panoptesProject->title,
             'description'          => 'Classification Id ' . $data->classification_id,
             'guid'                 => Uuid::uuid4()->toString(),
@@ -124,7 +127,7 @@ class PusherWeDigBioDashboardService
             'discretionaryState'   => 'Transcribed',
         ];
 
-        $this->pusherTranscriptionContract->firstOrCreate($value, $attributes);
+        $this->pusherTranscriptionContract->create($attributes);
     }
 
     /**
@@ -138,5 +141,23 @@ class PusherWeDigBioDashboardService
         $imageUrl = (array) $data->subject_urls[0];
 
         return $imageUrl['image/jpeg'];
+    }
+
+    /**
+     * Validate transcription to prevent duplicates.
+     *
+     * @param $classification_id
+     * @return mixed
+     */
+    public function validateTranscription($classification_id)
+    {
+
+        $rules = ['classification_id' => 'unique:mongodb.pusher_transcriptions,classification_id'];
+        $values = ['classification_id' => $classification_id];
+        $validator = Validator::make($values, $rules);
+        $validator->getPresenceVerifier()->setConnection('mongodb');
+
+        // returns true if failed.
+        return $validator->fails();
     }
 }

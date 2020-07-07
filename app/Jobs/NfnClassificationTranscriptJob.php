@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Interfaces\User;
+use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Process\PanoptesTranscriptionProcess;
 use Exception;
@@ -30,9 +30,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Storage;
 
-class NfnClassificationsTranscriptJob implements ShouldQueue
+class NfnClassificationTranscriptJob implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -43,18 +42,25 @@ class NfnClassificationsTranscriptJob implements ShouldQueue
     public $timeout = 7200;
 
     /**
-     * @var array
+     * @var int
      */
-    private $expeditionIds;
+    private $expeditionId;
 
     /**
-     * NfnClassificationsTranscriptJob constructor.
-     *
-     * @param array $expeditionIds
+     * @var bool
      */
-    public function __construct(array $expeditionIds = [])
+    private $command;
+
+    /**
+     * NfnClassificationTranscriptJob constructor.
+     *
+     * @param int $expeditionId
+     * @param bool $command
+     */
+    public function __construct(int $expeditionId, $command = false)
     {
-        $this->expeditionIds = collect($expeditionIds);
+        $this->expeditionId = $expeditionId;
+        $this->command = $command;
         $this->onQueue(config('config.classification_tube'));
     }
 
@@ -62,42 +68,49 @@ class NfnClassificationsTranscriptJob implements ShouldQueue
      * Execute the job.
      *
      * @param PanoptesTranscriptionProcess $transcriptionProcess
-     * @param User $userContract
      * @return void
      */
     public function handle(
-        PanoptesTranscriptionProcess $transcriptionProcess,
-        User $userContract
-    )
-    {
-        if ($this->expeditionIds->isEmpty())
-        {
-            $this->delete();
+        PanoptesTranscriptionProcess $transcriptionProcess
+    ) {
+        try {
 
-            return;
-        }
-
-        try
-        {
             $transcriptDir = config('config.nfn_downloads_transcript');
 
-            $this->expeditionIds->filter(function($expeditionId) use ($transcriptDir) {
-                return Storage::exists($transcriptDir . '/' . $expeditionId . '.csv');
-            })->each(function($expeditionId) use ($transcriptionProcess, $transcriptDir) {
-                $csvFile = Storage::path($transcriptDir . '/' . $expeditionId . '.csv');
-                $transcriptionProcess->process($csvFile, $expeditionId);
-            });
+            if (! Storage::exists($transcriptDir.'/'.$this->expeditionId.'.csv')) {
+                $this->delete();
 
-            if ( ! empty($transcriptionProcess->getCsvError()))
-            {
-                $user = $userContract->find(1);
-                $user->notify(new JobError(__FILE__, $transcriptionProcess->getCsvError()));
+                return;
             }
 
-            NfnClassificationPusherTranscriptionsJob::dispatch($this->expeditionIds);
-        }
-        catch (Exception $e)
-        {
+            $csvFile = Storage::path($transcriptDir.'/'.$this->expeditionId.'.csv');
+            $transcriptionProcess->process($csvFile, $this->expeditionId);
+
+            if ($transcriptionProcess->checkCsvError()) {
+                throw new Exception('Error in Classification transcript job.');
+            }
+
+            if ($this->command) {
+                $this->delete();
+
+                return;
+            }
+
+            NfnClassificationPusherTranscriptionJob::dispatch($this->expeditionId);
+        } catch (Exception $e) {
+            $user = User::find(1);
+
+            $message = [
+                trans('pages.nfn_transcript_job_error', ['expeditionId' => $this->expeditionId]),
+                $e->getMessage(),
+                $e->getFile() . ':' . $e->getLine(),
+                $transcriptionProcess->csvFile
+            ];
+
+            $user->notify(new JobError(__FILE__, $message));
+
+            $this->delete();
+
             return;
         }
     }

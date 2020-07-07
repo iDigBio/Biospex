@@ -31,6 +31,18 @@ class PanoptesTranscription extends BaseMongoModel
     protected $collection = 'panoptes_transcriptions';
 
     /**
+     * @var string[]
+     */
+    protected $casts = [
+        'subject_id' => 'int',
+        'classification_id' => 'int',
+        'workflow_id' => 'int',
+        'subject_expeditionId' => 'int',
+        'subject_projectId' => 'int',
+        'transcription_id' => 'string'
+    ];
+
+    /**
      * OrderBy
      *
      * @var array
@@ -73,29 +85,6 @@ class PanoptesTranscription extends BaseMongoModel
     {
         return $this->hasOne(PusherTranscription::class, 'classification_id', 'classification_id');
     }
-
-    /**
-     * Set project id.
-     *
-     * @param $value
-     * @return int
-     */
-    public function setSubjectProjectIdAttribute($value)
-    {
-        return $this->attributes['subject_projectId'] = (int) $value;
-    }
-
-    /**
-     * Set expedition id.
-     *
-     * @param $value
-     * @return int
-     */
-    public function setSubjectExpeditionIdAttribute($value)
-    {
-        return $this->attributes['subject_expeditionId'] = (int) $value;
-    }
-
 
     /**
      * Mutate finished_at date for MongoDb

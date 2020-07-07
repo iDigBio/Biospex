@@ -20,7 +20,7 @@
 namespace App\Services\Actor;
 
 use App\Facades\ActorEventHelper;
-use App\Jobs\NfnClassificationsUpdateJob;
+use App\Jobs\NfnClassificationUpdateJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
@@ -92,7 +92,7 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
 
             ActorEventHelper::fireActorUnQueuedEvent($actor);
 
-            NfnClassificationsUpdateJob::dispatch($record->id);
+            NfnClassificationUpdateJob::dispatch($record->id);
 
             return;
         }

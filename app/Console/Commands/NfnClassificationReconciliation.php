@@ -19,29 +19,32 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\NfnClassificationReconciliationJob;
 use File;
-use App\Jobs\NfnClassificationPusherTranscriptionsJob;
 use Illuminate\Console\Command;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 
-class PusherTranscription extends Command
+class NfnClassificationReconciliation extends Command
 {
+    use DispatchesJobs;
+
     /**
      * The name and signature of the console command.
-     * expeditionIds are comma delimited expedition expeditionIds.
+     * Ids are comma delimited expedition expeditionIds.
      *
      * @var string
      */
-    protected $signature = 'wedigbio:dashboard {expeditionIds?}';
+    protected $signature = 'nfn:reconcile {expeditionIds?} {--C|command}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Run WeDigBio dashboard to create/update records';
+    protected $description = 'Process reconciliation on NFN files.';
 
     /**
-     * PusherTranscription constructor.
+     * NfNClassificationsCsvRequests constructor.
      */
     public function __construct()
     {
@@ -50,13 +53,16 @@ class PusherTranscription extends Command
 
     /**
      * Execute the console command.
-     *
      */
     public function handle()
     {
+        $command = $this->option('command');
+
         $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
 
-        NfnClassificationPusherTranscriptionsJob::dispatch($expeditionIds);
+        foreach ($expeditionIds as $expeditionId) {
+            NfnClassificationReconciliationJob::dispatch((int) $expeditionId, $command);
+        }
     }
 
     /**
@@ -65,7 +71,7 @@ class PusherTranscription extends Command
     private function readDirectory()
     {
         $expeditionIds = [];
-        $files = File::files(config('config.nfn_downloads_transcript'));
+        $files = File::files(config('config.nfn_downloads_classification'));
         foreach ($files as $file)
         {
             $expeditionIds[] = basename($file, '.csv');

@@ -238,6 +238,8 @@ return [
     'nfn_notification'                     => 'A new project implementing the Zooniverse workflow has been submitted to Biospex.',
     'nfn_notification_subject'             => 'Biospex - New Zooniverse Project Submitted',
     'nfn_digitization_complete_message'    => 'The Zooniverse digitization process for ":expedition" has been completed.',
+    'nfn_pusher_job_error'                 => 'An error occurred while processing pusher job for Expedition Id: :expeditionId',
+    'nfn_transcript_job_error'             => 'An error occurred while processing transcript job for Expedition Id: :expeditionId',
     'nfn_user'                             => 'Zooniverse Username',
     'nfn_workflow_id'                      => 'Zooniverse Workflow Id',
     'nfn_workflow_id_placeholder'          => 'Enter Workflow Id after Expedition submitted to Zooniverse',

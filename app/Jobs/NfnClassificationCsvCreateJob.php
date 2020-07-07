@@ -19,9 +19,9 @@
 
 namespace App\Jobs;
 
+use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
-use App\Repositories\Interfaces\Expedition;
 use App\Services\Api\PanoptesApiService;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
@@ -32,10 +32,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-
-class NfnClassificationsCsvFileJob implements ShouldQueue
+class NfnClassificationCsvCreateJob implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -43,7 +41,7 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 3600;
+    public $timeout = 900;
 
     /**
      * Expedition expeditionIds pass to the job.
@@ -55,27 +53,25 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
     /**
      * @var array
      */
-    private $sources = [];
-
-    /**
-     * @var array
-     */
-    private $reQueued = [];
-
-    /**
-     * @var array
-     */
     private $errorMessages = [];
+
+    /**
+     * @var bool
+     */
+    private $command;
 
     /**
      * Create a new job instance.
      *
      * NfNClassificationsCsvJob constructor.
+     *
      * @param array $expeditionIds
+     * @param bool $command
      */
-    public function __construct(array $expeditionIds = [])
+    public function __construct(array $expeditionIds = [], $command = false)
     {
         $this->expeditionIds = $expeditionIds;
+        $this->command = $command;
         $this->onQueue(config('config.classification_tube'));
     }
 
@@ -84,7 +80,7 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
      *
      * @param Expedition $expeditionContract
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @param \App\Repositories\Interfaces\User $userContract
+     * @param User $userContract
      */
     public function handle(
         Expedition $expeditionContract,
@@ -95,7 +91,9 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
         try
         {
             $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
-            $responses = $panoptesApiService->panoptesClassificationsFile($expeditions);
+
+            $expeditionIds = [];
+            $responses = $panoptesApiService->panoptesClassificationCreate($expeditions);
             foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)
@@ -104,9 +102,7 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
                     continue;
                 }
 
-                $results = json_decode($response->getBody()->getContents());
-
-                $this->checkState($results, $index);
+                $expeditionIds[] = $index;
             }
 
             if ( ! empty($this->errorMessages))
@@ -115,56 +111,13 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
                 $user->notify(new JobError(__FILE__, $this->errorMessages));
             }
 
-            $this->dispatchSources();
-            $this->dispatchReQueued();
+            (empty($expeditionIds) || $this->command) ?
+                $this->delete() :
+                NfnClassificationCsvFileJob::dispatch($expeditionIds)->delay(14400);
         }
         catch (Exception $e)
         {
             return;
         }
-
-    }
-
-    /**
-     * @param $results
-     * @param $index
-     */
-    public function checkState($results, $index)
-    {
-        if ($results->media[0]->metadata->state === 'creating')
-        {
-            $this->reQueued[] = $index;
-        }
-
-        if ($results->media[0]->metadata->state === 'ready')
-        {
-            $this->sources[$index] = $results->media[0]->src;
-        }
-    }
-
-    /**
-     * Dispatch downloads
-     */
-    public function dispatchSources()
-    {
-        if (empty($this->sources))
-        {
-            return;
-        }
-
-        NfnClassificationsCsvDownloadJob::dispatch($this->sources);
-    }
-
-    /**
-     * Dispatch CSV file job if not ready
-     */
-    public function dispatchReQueued()
-    {
-        if (empty($this->reQueued))
-        {
-            return;
-        }
-
-        NfnClassificationsCsvFileJob::dispatch($this->reQueued)->delay(3600);
     }
 }

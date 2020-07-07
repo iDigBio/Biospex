@@ -33,16 +33,18 @@ return [
     'nfn_downloads_reconciled'     => 'nfndownloads/reconciled',
     'nfn_downloads_summary'        => 'nfndownloads/summary',
     'nfn_downloads_transcript'     => 'nfndownloads/transcript',
+    'nfn_downloads_explained'      => 'nfndownloads/explained',
+    'nfn_file_types'               => ['classification', 'transcript', 'reconcile', 'summary'],
 
     'missing_project_logo'    => env('APP_URL').'/images/placeholders/project.png',
     'missing_expedition_logo' => env('APP_URL').'/images/placeholders/card-image-place-holder02.jpg',
     'missing_avatar_small'    => env('APP_URL').'/images/avatars/small/missing.png',
     'missing_avatar_medium'   => env('APP_URL').'/images/avatars/medium/missing.png',
 
-    'python_path'    => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python',
-    'label_reconcile_path' => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
+    'old_python_path'    => env('OLD_RECONCILIATIONS_PATH').'/venv/bin/python',
+    'old_reconcile_path' => env('OLD_RECONCILIATIONS_PATH').'/reconcile.py',
 
-    'python_path_test'    => env('RECONCILIATIONS_PATH').'/venv/bin/python',
+    'python_path'    => env('RECONCILIATIONS_PATH').'/venv/bin/python',
     'reconcile_path' => env('RECONCILIATIONS_PATH').'/reconcile.py',
 
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
@@ -101,8 +103,16 @@ return [
         ],
     ],
 
+    'nfnMisMatched' => [
+        'subject_Subject_ID' => 'subject_subjectId',
+        'subject_Scientific_Name' => 'subject_scientificName',
+        'subject_Expedition_Title' => 'subject_expeditionTitle',
+    ],
+
     'dwcTranscriptFields' => [
+        'stateProvince'  => 'state_province',
         'StateProvince'  => 'state_province',
+        'State Province' => 'state_province',
         'State_Province' => 'state_province',
         'State'          => 'state_province',
         'County'         => 'county',
@@ -112,6 +122,7 @@ return [
     'dwcOccurrenceFields'   => [
         'stateProvince'  => 'state_province',
         'State_Province' => 'state_province',
+        'State Province' => 'state_province',
         'State'          => 'state_province',
         'County'         => 'county',
     ],

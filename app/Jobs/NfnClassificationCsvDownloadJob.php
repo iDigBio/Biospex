@@ -19,7 +19,6 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Services\Api\PanoptesApiService;
@@ -32,8 +31,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class NfnClassificationsCsvCreateJob implements ShouldQueue
+class NfnClassificationCsvDownloadJob implements ShouldQueue
 {
+
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -41,14 +41,12 @@ class NfnClassificationsCsvCreateJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 900;
+    public $timeout = 3600;
 
     /**
-     * Expedition expeditionIds pass to the job.
-     *
-     * @var null
+     * @var array
      */
-    private $expeditionIds;
+    private $sources;
 
     /**
      * @var array
@@ -56,41 +54,41 @@ class NfnClassificationsCsvCreateJob implements ShouldQueue
     private $errorMessages = [];
 
     /**
-     * Create a new job instance.
-     *
-     * NfNClassificationsCsvJob constructor.
-     * @param array $expeditionIds
+     * NfnClassificationCsvDownloadJob constructor.
+     * @param array $sources
      */
-    public function __construct(array $expeditionIds = [])
+    public function __construct(array $sources = [])
     {
-        $this->expeditionIds = $expeditionIds;
+        $this->sources = $sources;
         $this->onQueue(config('config.classification_tube'));
     }
 
     /**
-     * Handle the job.
+     * Execute the job.
      *
-     * @param Expedition $expeditionContract
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @param User $userContract
+     * @return void
      */
     public function handle(
-        Expedition $expeditionContract,
         PanoptesApiService $panoptesApiService,
         User $userContract
     )
     {
+        if (count($this->sources) === 0)
+        {
+            return;
+        }
+
         try
         {
-            $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
-
+            $responses = $panoptesApiService->panoptesClassificationsDownload($this->sources);
             $expeditionIds = [];
-            $responses = $panoptesApiService->panoptesClassificationCreate($expeditions);
             foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)
                 {
-                    $this->errorMessages[] = $response->getMessage();
+                    $this->errorMessages[] = 'Expedition Id: ' . $index . '<br />' . $response->getMessage();
                     continue;
                 }
 
@@ -103,8 +101,9 @@ class NfnClassificationsCsvCreateJob implements ShouldQueue
                 $user->notify(new JobError(__FILE__, $this->errorMessages));
             }
 
-            empty($expeditionIds) ? $this->delete() :
-                NfnClassificationsCsvFileJob::dispatch($expeditionIds)->delay(14400);
+            foreach ($expeditionIds as $expeditionId) {
+                NfnClassificationReconciliationJob::dispatch((int) $expeditionId)->delay(1800);
+            }
         }
         catch (Exception $e)
         {

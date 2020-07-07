@@ -93,7 +93,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
             'stat',
             'nfnActor',
         ])->has('panoptesProject')->whereHas('nfnActor', function ($query) {
-            $query->where('completed', 0);
+            //$query->where('completed', 0);
         });
 
         return empty($expeditionIds) ? $model->get($attributes) : $model->whereIn('id', $expeditionIds)->get($attributes);

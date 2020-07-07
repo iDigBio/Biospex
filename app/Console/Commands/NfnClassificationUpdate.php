@@ -19,32 +19,30 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\NfnClassificationsReconciliationJob;
-use File;
+use App\Jobs\NfnClassificationUpdateJob;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\File;
+use Storage;
 
-class NfnClassificationsReconciliation extends Command
+class NfnClassificationUpdate extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The name and signature of the console command.
-     * Ids are comma delimited expedition expeditionIds.
      *
      * @var string
      */
-    protected $signature = 'nfn:reconcile {expeditionIds?}';
+    protected $signature = 'nfn:update {expeditionIds?} {--files=}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Process reconciliation on NFN files.';
+    protected $description = 'Update NfN Classifications for Expeditions. Argument is comma separated expeditionIds.';
+
 
     /**
-     * NfNClassificationsCsvRequests constructor.
+     * Create a new command instance.
      */
     public function __construct()
     {
@@ -56,9 +54,21 @@ class NfnClassificationsReconciliation extends Command
      */
     public function handle()
     {
-        $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
+        $expeditionIds = $this->argument('expeditionIds') === null ?
+            null : explode(',', $this->argument('expeditionIds'));
 
-        NfnClassificationsReconciliationJob::dispatch($expeditionIds);
+        $files = $this->option('files');
+
+        if ($expeditionIds === null && $files === null)
+        {
+            return;
+        }
+
+        $expeditionIds = $files !== "true" ? $expeditionIds : $this->readDirectory();
+
+        collect($expeditionIds)->each(function ($expeditionId){
+            NfnClassificationUpdateJob::dispatch($expeditionId);
+        });
     }
 
     /**
@@ -67,7 +77,7 @@ class NfnClassificationsReconciliation extends Command
     private function readDirectory()
     {
         $expeditionIds = [];
-        $files = File::files(config('config.nfn_downloads_classification'));
+        $files = File::files(Storage::path(config('config.nfn_downloads_transcript')));
         foreach ($files as $file)
         {
             $expeditionIds[] = basename($file, '.csv');

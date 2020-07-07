@@ -19,16 +19,15 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Process\ReconcileProcessService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class NfnClassificationsUpdateJob implements ShouldQueue
+class NfnClassificationReconciliationJob implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -41,51 +40,41 @@ class NfnClassificationsUpdateJob implements ShouldQueue
     /**
      * @var int
      */
-    private $expeditionId;
+    public $expeditionId;
 
     /**
-     * NfnClassificationsUpdateJob constructor.
-     * @param int $expeditionId
+     * @var bool
      */
-    public function __construct($expeditionId)
+    private $command;
+
+    /**
+     * NfnClassificationReconciliationJob constructor.
+     *
+     * @param int $expeditionId
+     * @param bool $command
+     */
+    public function __construct(int $expeditionId, $command = false)
     {
         $this->expeditionId = $expeditionId;
+        $this->command = $command;
         $this->onQueue(config('config.classification_tube'));
     }
 
     /**
-     * Execute job.
+     * Handle the job.
      *
-     * @param Expedition $expeditionContract
+     * @param \App\Services\Process\ReconcileProcessService $service
      */
-    public function handle(Expedition $expeditionContract)
+    public function handle(ReconcileProcessService $service)
     {
-        $expedition = $expeditionContract->getExpeditionsHavingPanoptesProjects($this->expeditionId);
+        $service->process($this->expeditionId);
 
-        if ($this->checkIfExpeditionShouldProcess($expedition))
-        {
+        if ($this->command) {
             $this->delete();
 
             return;
         }
 
-        AmChartJob::dispatch($expedition->project_id);
-
-        $this->delete();
-    }
-
-    /**
-     * Check needed variables.
-     *
-     * @param $expedition
-     * @return bool
-     */
-    public function checkIfExpeditionShouldProcess($expedition)
-    {
-        return null === $expedition
-            || ! isset($expedition->panoptesProject)
-            || null === $expedition->panoptesProject->panoptes_workflow_id
-            || null === $expedition->panoptesProject->panoptes_project_id
-            || null === $expedition->nfnActor;
+        NfnClassificationTranscriptJob::dispatch($this->expeditionId);
     }
 }

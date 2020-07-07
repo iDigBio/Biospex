@@ -63,20 +63,6 @@ class MongoDbService
     }
 
     /**
-     * Get client.
-     *
-     * @return Client
-     */
-    public function getClient()
-    {
-        if (empty($this->client)) {
-            $this->setClient();
-        }
-
-        return $this->client;
-    }
-
-    /**
      * Set database dynamically.
      *
      * @param null $database
@@ -162,11 +148,12 @@ class MongoDbService
      *
      * @param $filter
      * @param $replacement
+     * @param array $options
      * @return array|null|object
      */
-    public function findOneAndReplace($filter, $replacement)
+    public function findOneAndReplace($filter, $replacement, $options = [])
     {
-        return $this->clientCollection->findOneAndReplace($filter, $replacement);
+        return $this->clientCollection->findOneAndReplace($filter, $replacement, $options);
     }
 
     /**
@@ -218,6 +205,11 @@ class MongoDbService
     public function deleteMany(array $criteria)
     {
         $this->clientCollection->deleteMany($criteria);
+    }
+
+    public function aggregate($pipline, $options = [])
+    {
+        return $this->clientCollection->aggregate($pipline, $options);
     }
 
     /**

@@ -73,7 +73,7 @@ class ExportDownloadBatchJob implements ShouldQueue
             $message = [
                 'Actor:' . $download->actor_id,
                 'Expedition: ' . $download->expedition_id,
-                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
+                'Message: ' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
             ];
             $user->notify(new JobError(__FILE__, $message));
 

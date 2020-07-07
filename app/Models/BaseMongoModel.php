@@ -43,4 +43,19 @@ class BaseMongoModel extends Model
      */
     public $incrementing = false;
 
+    /**
+     * Enable casts in models.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return \Jenssegers\Mongodb\Eloquent\Model|mixed|void
+     */
+    public function setAttribute($key, $value)
+    {
+        if ($this->hasCast($key)) {
+            $value = $this->castAttribute($key, $value);
+        }
+
+        return parent::setAttribute($key, $value);
+    }
 }
