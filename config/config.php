@@ -104,8 +104,8 @@ return [
     ],
 
     'nfnMisMatched' => [
-        'subject_Subject_ID' => 'subject_subjectId',
-        'subject_Scientific_Name' => 'subject_scientificName',
+        'subject_Subject_ID'       => 'subject_subjectId',
+        'subject_Scientific_Name'  => 'subject_scientificName',
         'subject_Expedition_Title' => 'subject_expeditionTitle',
     ],
 
@@ -181,7 +181,10 @@ return [
 
     'nfnActors'                 => env('NFN_ACTORS'),
     'nfnNotify'                 => [1 => 'NewNfnLegacyProject', 2 => 'NewNfnPanoptesProject'],
-    'nfnSkipCsv'                => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
+    'nfnSkipApi'                => env('NFN_SKIP_API'),
+    // Skip csv creation for expedition ids that cause issues
+    'nfnSkipReconcile'          => env('NFN_SKIP_RECONCILE'),
+    // Skip csv reconciliation for expedition ids that cause issues
     'nfnTranscriptionsComplete' => env('NFN_TRANSCRIPTIONS_COMPLETE', 3),
     'nfn_participate_url'       => env('NFN_PARTICIPATE_URL'),
     'nfn_project_url'           => env('NFN_PROJECT_URL'),

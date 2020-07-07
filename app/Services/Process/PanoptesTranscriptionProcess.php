@@ -22,7 +22,6 @@ namespace App\Services\Process;
 use App\Services\Model\TranscriptionLocationStateCountyService;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Repositories\Interfaces\TranscriptionLocation;
 use Exception;
 use Storage;
 use Str;
@@ -60,16 +59,6 @@ class PanoptesTranscriptionProcess
      * @var null
      */
     public $csvFile = null;
-
-    /**
-     * @var TranscriptionLocation
-     */
-    protected $transcriptionLocationContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\StateCounty
-     */
-    protected $stateCountyContract;
 
     /**
      * @var \App\Services\Csv\Csv
@@ -123,14 +112,14 @@ class PanoptesTranscriptionProcess
             foreach ($rows as $offset => $row) {
                 $this->processRow($header, $row, $expeditionId);
             }
+
+            return;
         } catch (Exception $e) {
 
             $this->csvError[] = ['error' => $file . ': ' . $e->getMessage() . ', Line: ' . $e->getLine()];
 
             return;
         }
-
-        return;
     }
 
     /**
@@ -151,16 +140,19 @@ class PanoptesTranscriptionProcess
      * @param $header
      * @param $row
      * @param $expeditionId
-     * @throws \Exception
      */
     public function processRow($header, $row, $expeditionId)
     {
         if (count($header) !== count($row))
         {
-            throw new Exception(trans('pages.csv_row_count', [
+            $message = trans('pages.csv_row_count', [
                 'headers' => count($header),
                 'rows'    => count($row)
-            ]));
+            ]);
+
+            $this->csvError[] = ['error' => $message];
+
+            return;
         }
 
         if ($this->validateTranscription($row['classification_id'])) {

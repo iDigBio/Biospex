@@ -90,7 +90,6 @@ class ReconcileProcessService
      * Process expedition through reconcile process.
      *
      * @param $expeditionId
-     * @return bool
      */
     public function process($expeditionId)
     {
@@ -114,16 +113,12 @@ class ReconcileProcessService
 
             $this->updateOrCreateDownloads($expeditionId);
 
-            return true;
-
         } catch (Exception $e) {
             $user = User::find(1);
             $message = [
                 'Message:'.$e->getFile().': '.$e->getLine().' - '.$e->getMessage(),
             ];
             $user->notify(new JobError(__FILE__, $message));
-
-            return false;
         }
     }
 

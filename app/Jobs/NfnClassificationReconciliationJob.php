@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Jobs\Traits\SkipNfn;
 use App\Services\Process\ReconcileProcessService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -28,7 +29,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 class NfnClassificationReconciliationJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -67,6 +68,12 @@ class NfnClassificationReconciliationJob implements ShouldQueue
      */
     public function handle(ReconcileProcessService $service)
     {
+        if ($this->skip($this->expeditionId)) {
+            $this->delete();
+
+            return;
+        }
+
         $service->process($this->expeditionId);
 
         if ($this->command) {

@@ -37,6 +37,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
+     * @TODO Use expedition_stat table to get sum
      * @inheritDoc
      */
     public function getTotalTranscriptions()
@@ -82,6 +83,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
+     * @TODO Change to sum expedition stat table
      * @inheritdoc
      */
     public function getProjectTranscriptionCount($projectId)

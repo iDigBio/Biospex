@@ -35,7 +35,7 @@ class PanoptesApiService extends HttpRequest
     /**
      * @var array
      */
-    private $nfnSkipCsv;
+    private $nfnSkipApi;
 
     /**
      * @var \Illuminate\Config\Repository
@@ -47,7 +47,7 @@ class PanoptesApiService extends HttpRequest
      */
     public function __construct()
     {
-        $this->nfnSkipCsv = explode(',', config('config.nfnSkipCsv'));
+        $this->nfnSkipApi = explode(',', config('config.nfnSkipApi'));
         $this->apiUri = config('config.panoptes.apiUri');
     }
 
@@ -314,6 +314,6 @@ class PanoptesApiService extends HttpRequest
             ! isset($expedition->panoptesProject) ||
             null === $expedition->panoptesProject->panoptes_workflow_id ||
             null === $expedition->panoptesProject->panoptes_project_id ||
-            in_array($expedition->id, $this->nfnSkipCsv, false);
+            in_array($expedition->id, $this->nfnSkipApi, false);
     }
 }

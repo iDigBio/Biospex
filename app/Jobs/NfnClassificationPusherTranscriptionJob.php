@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Jobs\Traits\SkipNfn;
 use App\Models\Traits\UuidTrait;
 use App\Models\User;
 use App\Notifications\JobError;
@@ -34,7 +35,7 @@ use Illuminate\Support\Carbon;
 class NfnClassificationPusherTranscriptionJob implements ShouldQueue
 {
 
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UuidTrait;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UuidTrait, SkipNfn;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -75,6 +76,12 @@ class NfnClassificationPusherTranscriptionJob implements ShouldQueue
         PusherTranscriptionService $pusherTranscriptionService
     )
     {
+        if ($this->skip($this->expeditionId)) {
+            $this->delete();
+
+            return;
+        }
+
         try
         {
             $expedition = $pusherTranscriptionService->getExpedition($this->expeditionId);

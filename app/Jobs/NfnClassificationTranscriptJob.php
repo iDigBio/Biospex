@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Process\PanoptesTranscriptionProcess;
@@ -32,7 +33,7 @@ use Storage;
 
 class NfnClassificationTranscriptJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -50,6 +51,11 @@ class NfnClassificationTranscriptJob implements ShouldQueue
      * @var bool
      */
     private $command;
+
+    /**
+     * @var array
+     */
+    private $nfnSkipReconcile = [];
 
     /**
      * NfnClassificationTranscriptJob constructor.
@@ -73,6 +79,13 @@ class NfnClassificationTranscriptJob implements ShouldQueue
     public function handle(
         PanoptesTranscriptionProcess $transcriptionProcess
     ) {
+
+        if ($this->skip($this->expeditionId)) {
+            $this->delete();
+
+            return;
+        }
+
         try {
 
             $transcriptDir = config('config.nfn_downloads_transcript');
