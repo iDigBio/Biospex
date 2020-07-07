@@ -19,14 +19,16 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Services\MongoDbService;
+use App\Jobs\Traits\SkipNfn;
+use App\Repositories\Interfaces\ExpeditionStat;
+use App\Repositories\Interfaces\PanoptesProject;
+use App\Services\Api\PanoptesApiService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class UpdateQueries extends Command
 {
-    use DispatchesJobs;
+    use DispatchesJobs, SkipNfn;
 
     /**
      * The console command name.
@@ -39,26 +41,34 @@ class UpdateQueries extends Command
     protected $description = 'Used for custom queries when updating database';
 
     /**
-     * @var \App\Services\MongoDbService
+     * @var \App\Repositories\Interfaces\PanoptesProject
      */
-    private $service;
+    private $panoptesProject;
 
     /**
-     * @var \App\Repositories\Interfaces\PanoptesTranscription
+     * @var \App\Services\Api\PanoptesApiService
      */
-    private $transcription;
+    private $panoptesApiService;
+
+    /**
+     * @var \App\Repositories\Interfaces\ExpeditionStat
+     */
+    private $expeditionStat;
 
     /**
      * UpdateQueries constructor.
      *
-     * @param \App\Services\MongoDbService $service
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $transcription
      */
-    public function __construct(MongoDbService $service, PanoptesTranscription $transcription)
+    public function __construct(
+        PanoptesProject $panoptesProject,
+        PanoptesApiService $panoptesApiService,
+        ExpeditionStat $expeditionStat
+    )
     {
         parent::__construct();
-        $this->service = $service;
-        $this->transcription = $transcription;
+        $this->panoptesProject = $panoptesProject;
+        $this->panoptesApiService = $panoptesApiService;
+        $this->expeditionStat = $expeditionStat;
     }
 
     /**
@@ -66,36 +76,24 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        //$this->fixSubjectId();
-        $this->fixClassificationIdForPusher();
+        $records = $this->panoptesProject->all();
+        $records->filter(function($record){
+            return isset($record->expedition_id);
+        })->mapWithKeys(function($record){
+            return [$record->expedition_id => $record->panoptes_workflow_id];
+        })->each(function($workflowId, $expeditionId){
+            $workflow = $this->panoptesApiService->getPanoptesWorkflow($workflowId);
+            $this->panoptesApiService->calculateTotals($workflow);
 
-    }
+            $stat = $this->expeditionStat->findBy('expedition_id', $expeditionId);
+            $stat->subject_count = $this->panoptesApiService->getSubjectCount();
+            $stat->transcriptions_total = $this->panoptesApiService->getTranscriptionsTotal();
+            $stat->transcriptions_completed = $this->panoptesApiService->getTranscriptionsCompleted();
+            $stat->percent_completed = $this->panoptesApiService->getPercentCompleted();
 
-    /**
-     * Fixes where subject Id was changed.
-     */
-    public function fixSubjectId()
-    {
-        $this->service->setCollection('panoptes_transcriptions');
-        $attributes = ['$rename' => ['subject_Subject_ID' => 'subject_subjectId']];
-        $criteria = ['subject_Subject_ID' => ['$exists' => true]];
-        $this->service->updateMany($attributes, $criteria);
-    }
+            $stat->save();
+        });
 
-    public function fixClassificationIdForPusher()
-    {
-        $this->service->setCollection('pusher_transcriptions');
-        $criteria = ['classification_id' => ['$type' => 'string']];
-        $cursor = $this->service->find($criteria);
-        foreach ($cursor as $doc) {
-            dd($doc);
-        }
-
-    }
-
-    public function fixMissingExpeditionId()
-    {
-        
     }
 
 }

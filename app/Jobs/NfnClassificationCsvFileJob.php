@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Jobs\Traits\SkipNfn;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Repositories\Interfaces\Expedition;
@@ -34,7 +35,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 class NfnClassificationCsvFileJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -97,6 +98,13 @@ class NfnClassificationCsvFileJob implements ShouldQueue
         PanoptesApiService $panoptesApiService,
         User $userContract
     ) {
+
+        foreach ($this->expeditionIds as $key => $expeditionId) {
+            if ($this->skipApi($expeditionId)) {
+                unset($this->expeditionIds[$key]);
+            }
+        }
+
         try {
             $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
             $responses = $panoptesApiService->panoptesClassificationsFile($expeditions);

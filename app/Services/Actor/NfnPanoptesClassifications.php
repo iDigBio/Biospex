@@ -76,15 +76,11 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
         try
         {
             $workflow = $this->panoptesApiService->getPanoptesWorkflow($record->panoptesProject->panoptes_workflow_id);
-            $count = $workflow['subjects_count'];
-            $transcriptionCompleted = $workflow['classifications_count'];
-            $transcriptionTotal = GeneralHelper::transcriptionsTotal($workflow['subjects_count']);
-            $percentCompleted = GeneralHelper::transcriptionsPercentCompleted($transcriptionTotal, $transcriptionCompleted);
-
-            $record->stat->subject_count = $count;
-            $record->stat->transcriptions_total = $transcriptionTotal;
-            $record->stat->transcriptions_completed = $transcriptionCompleted;
-            $record->stat->percent_completed = $percentCompleted;
+            $this->panoptesApiService->calculateTotals($workflow);
+            $record->stat->subject_count = $this->panoptesApiService->getSubjectCount();
+            $record->stat->transcriptions_total = $this->panoptesApiService->getTranscriptionsTotal();
+            $record->stat->transcriptions_completed = $this->panoptesApiService->getTranscriptionsCompleted();
+            $record->stat->percent_completed = $this->panoptesApiService->getPercentCompleted();
 
             $this->checkFinishedAt($record, $workflow, $actor);
 

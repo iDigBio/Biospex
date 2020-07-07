@@ -68,7 +68,7 @@ class NfnClassificationReconciliationJob implements ShouldQueue
      */
     public function handle(ReconcileProcessService $service)
     {
-        if ($this->skip($this->expeditionId)) {
+        if ($this->skipReconcile($this->expeditionId)) {
             $this->delete();
 
             return;

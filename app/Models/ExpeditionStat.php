@@ -37,7 +37,7 @@ class ExpeditionStat extends BaseEloquentModel
         'transcriptions_total',
         'transcriptions_completed',
         'percentage_completed',
-        'classifiction_process'
+        'retirement_count'
     ];
 
     /**

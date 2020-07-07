@@ -87,6 +87,7 @@ class AppCommand extends Command
         $this->pusherTranscriptionService = $pusherTranscriptionService;
 
         $this->panoptesTranscriptionProcess = $panoptesTranscriptionProcess;
+
     }
 
     /**
@@ -95,7 +96,8 @@ class AppCommand extends Command
     public function handle()
     {
         //$this->checkPanoptesWithPusher();
-        $this->checkPanoptesToPanoptes();
+        //$this->checkPanoptesToPanoptes();
+
 
     }
 

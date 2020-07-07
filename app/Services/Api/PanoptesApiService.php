@@ -33,21 +33,35 @@ class PanoptesApiService extends HttpRequest
     public $provider;
 
     /**
-     * @var array
-     */
-    private $nfnSkipApi;
-
-    /**
      * @var \Illuminate\Config\Repository
      */
     private $apiUri;
+
+    /**
+     * @var int
+     */
+    private $subject_count;
+
+    /**
+     * @var int
+     */
+    private $transcriptions_completed;
+
+    /**
+     * @var int
+     */
+    private $transcriptions_total;
+
+    /**
+     * @var float
+     */
+    private $percent_completed;
 
     /**
      * PanoptesApiService constructor.
      */
     public function __construct()
     {
-        $this->nfnSkipApi = explode(',', config('config.nfnSkipApi'));
         $this->apiUri = config('config.panoptes.apiUri');
     }
 
@@ -313,7 +327,72 @@ class PanoptesApiService extends HttpRequest
         return null === $expedition ||
             ! isset($expedition->panoptesProject) ||
             null === $expedition->panoptesProject->panoptes_workflow_id ||
-            null === $expedition->panoptesProject->panoptes_project_id ||
-            in_array($expedition->id, $this->nfnSkipApi, false);
+            null === $expedition->panoptesProject->panoptes_project_id;
+    }
+
+    /**
+     * Calculates totals for transcripts and sets properties.
+     *
+     * @param $workflow
+     */
+    public function calculateTotals($workflow)
+    {
+        $this->subject_count = (int) $workflow['subjects_count'];
+        $this->transcriptions_completed = (int) $workflow['classifications_count'];
+        $this->transcriptions_total = (int) $workflow['subjects_count'] * (int) $workflow['retirement']['options']['count'];
+        $this->percent_completed = $this->percentCompleted();
+    }
+
+    /**
+     * Calculate percent complete for transcriptsions.
+     *
+     * @return false|float|int
+     */
+    private function percentCompleted()
+    {
+        $value = ($this->transcriptions_total === 0 || $this->transcriptions_completed === 0) ? 0 :
+            ($this->transcriptions_completed / $this->transcriptions_total) * 100;
+
+        return ($value > 100) ? 100 : round($value, 2);
+    }
+
+    /**
+     * Return subject count.
+     *
+     * @return int
+     */
+    public function getSubjectCount()
+    {
+        return $this->subject_count;
+    }
+
+    /**
+     * Return transcriptions completed.
+     *
+     * @return int
+     */
+    public function getTranscriptionsCompleted()
+    {
+        return $this->transcriptions_completed;
+    }
+
+    /**
+     * Return transcriptions_total.
+     *
+     * @return int
+     */
+    public function getTranscriptionsTotal()
+    {
+        return $this->transcriptions_total;
+    }
+
+    /**
+     * Return percent completed.
+     *
+     * @return float
+     */
+    public function getPercentCompleted()
+    {
+        return $this->percent_completed;
     }
 }

@@ -76,7 +76,7 @@ class NfnClassificationPusherTranscriptionJob implements ShouldQueue
         PusherTranscriptionService $pusherTranscriptionService
     )
     {
-        if ($this->skip($this->expeditionId)) {
+        if ($this->skipReconcile($this->expeditionId)) {
             $this->delete();
 
             return;

@@ -80,7 +80,7 @@ class NfnClassificationTranscriptJob implements ShouldQueue
         PanoptesTranscriptionProcess $transcriptionProcess
     ) {
 
-        if ($this->skip($this->expeditionId)) {
+        if ($this->skipReconcile($this->expeditionId)) {
             $this->delete();
 
             return;

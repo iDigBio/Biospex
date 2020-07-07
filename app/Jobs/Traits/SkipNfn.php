@@ -27,16 +27,33 @@ namespace App\Jobs\Traits;
 trait SkipNfn
 {
     /**
-     * Used to skip reconcile processes if expedition id is in list.
+     * Used to skip reconcile process.
      *
      * @param $expeditionId
      * @return bool
      */
-    protected function skip($expeditionId)
+    protected function skipReconcile($expeditionId)
     {
         $nfnSkipReconcile = explode(',', config('config.nfnSkipReconcile'));
 
         if (in_array($expeditionId, $nfnSkipReconcile, false)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Skip expedition for panoptes api.
+     *
+     * @param $expeditionId
+     * @return bool
+     */
+    protected function skipApi($expeditionId)
+    {
+        $nfnSkipApi = explode(',', config('config.nfnSkipApi'));
+
+        if (in_array($expeditionId, $nfnSkipApi, false)) {
             return true;
         }
 
