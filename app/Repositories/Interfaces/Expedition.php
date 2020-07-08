@@ -115,9 +115,18 @@ interface Expedition extends RepositoryInterface
     public function getExpeditionsHavingPanoptesProjects($expeditionId);
 
     /**
+     * Find Expedition having workflow manager.
+     *
      * @param $expeditionId
      * @return mixed
      */
     public function findExpeditionHavingWorkflowManager($expeditionId);
+
+    /**
+     * Return expedition and relations for expert review creation.
+     *
+     * @param int $expeditionId
+     */
+    public function findExpeditionForExpertReview(int $expeditionId);
 
 }

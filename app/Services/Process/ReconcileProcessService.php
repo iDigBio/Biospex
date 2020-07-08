@@ -125,15 +125,12 @@ class ReconcileProcessService
     /**
      * Process reconcile explained file.
      *
-     * @param $expeditionId
+     * @param $expedition
      */
-    public function processExplained($expeditionId)
+    public function processExplained($expedition)
     {
         try {
-
-            $expedition = $this->expeditionContract->findWith($expeditionId, ['panoptesProject', 'actor']);
-
-            $this->setPaths($expeditionId);
+            $this->setPaths($expedition->id);
 
             if (! File::exists($this->csvPath) || $expedition->panoptesProject === null || $expedition->actor->completed === 0) {
                 throw new Exception(__('pages.file_does_not_exist').' for classification: '.$this->csvPath);
@@ -141,18 +138,17 @@ class ReconcileProcessService
 
             $this->runCommand(true);
 
-            $expeditionIds[] = $expedition->id;
-
             if (! File::exists($this->expPath)) {
                 throw new Exception(__('pages.file_does_not_exist').' for reconciliation explained process');
             }
 
         } catch (Exception $e) {
-            $user = User::find(1);
-            $message = [
-                'Message:'.$e->getFile().': '.$e->getLine().' - '.$e->getMessage(),
+            $user = $expedition->project->group->owner;
+            $messages = [
+                'Message: ' .  $e->getMessage(),
+                'File : ' . $e->getFile() . ': ' . $e->getLine()
             ];
-            $user->notify(new JobError(__FILE__, $message));
+            $user->notify(new JobError(__FILE__, $messages));
         }
     }
 
@@ -207,7 +203,7 @@ class ReconcileProcessService
      *
      * @param $expeditionId
      */
-    protected function updateOrCreateDownloads($expeditionId)
+    protected function updateOrCreateDownloads($expeditionId, $explained = false)
     {
         collect(config('config.nfn_file_types'))->each(function ($type) use ($expeditionId) {
             $values = [

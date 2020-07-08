@@ -19,7 +19,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Facades\FlashHelper;
+use Flash;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\Invite;
@@ -91,7 +91,7 @@ class RegisterController extends Controller
 
         if ( ! empty($code) && ! $invite)
         {
-            FlashHelper::warning( trans('pages.invite_not_found'));
+            Flash::warning( trans('pages.invite_not_found'));
         }
 
         $code = $invite->code ?? null;

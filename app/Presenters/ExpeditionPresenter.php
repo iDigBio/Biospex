@@ -234,18 +234,34 @@ class ExpeditionPresenter extends Presenter
     }
 
     /**
-     * Return large icon and path for reprocessing export file.
+     * Return button and path for reprocessing export file.
      *
      * @return string
      */
-    public function expeditionRegenerateExportLrg()
+    public function expeditionRegenerateExportBtn()
     {
-        return '<a class="float-right mr-4" href="'.route('admin.downloads.regenerate', [
-                $this->model->project->id,
-                $this->model->id,
-            ]).'"
-                   data-hover="tooltip"
-                   title="'.__('pages.regenerate_export').'">
-                    <i class="fas fa-file-export fa-2x"></i></a>';
+        $route = route('admin.downloads.regenerate', [
+            $this->model->project->id,
+            $this->model->id,
+        ]);
+
+        return '<a class="btn btn-primary float-right mt-2 mb-2" href="'.$route.'">'.__('pages.regenerate_export').'</a>';
+    }
+
+    /**
+     * Return button and path for expert review.
+     *
+     * @return string
+     */
+    public function expeditionExpertReviewBtn()
+    {
+        $route = route('admin.downloads.regenerate', [
+            $this->model->project->id,
+            $this->model->id,
+        ]);
+
+        $class = $this->model->actor->pivot->expert ? 'green' : '';
+
+        return '<a class="btn btn-primary '.$class.' float-right m-2" href="#">Expert Review Ambiguities</a>';
     }
 }

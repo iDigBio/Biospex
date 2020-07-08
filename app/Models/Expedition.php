@@ -162,7 +162,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public function actors()
     {
         return $this->belongsToMany(Actor::class, 'actor_expedition')
-            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'processed', 'error', 'queued', 'completed', 'order')
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'processed', 'error', 'queued', 'completed', 'order', 'expert')
             ->orderBy('order')
             ->withTimestamps();
     }

@@ -22,6 +22,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\Expedition as Model;
 use App\Repositories\Interfaces\Expedition;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class ExpeditionRepository extends EloquentRepository implements Expedition
 {
@@ -59,9 +60,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null)
     {
-        $query = $this->model->with('project')
-            ->has('panoptesProject')->has('nfnActor')
-            ->with('panoptesProject', 'stat', 'nfnActor');
+        $query = $this->model->with('project')->has('panoptesProject')->has('nfnActor')->with('panoptesProject', 'stat', 'nfnActor');
 
         return $this->sortResults($projectId, $query, $order, $sort);
     }
@@ -75,7 +74,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
             'project.group',
             'stat',
             'nfnActor',
-            'panoptesProject'
+            'panoptesProject',
         ])->whereHas('project.group.users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         });
@@ -200,5 +199,23 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
         }
 
         return $results;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findExpeditionForExpertReview(int $expeditionId)
+    {
+        return $this->model->with([
+            'project' => function ($query) {
+                $query->select('id', 'group_id')->with([
+                    'group' => function ($query) {
+                        $query->select('id', 'user_id')->with('owner');
+                    },
+                ]);
+            },
+            'stat',
+            'nfnActor',
+        ])->find($expeditionId);
     }
 }

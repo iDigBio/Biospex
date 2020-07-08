@@ -34,7 +34,7 @@ return [
     'nfn_downloads_summary'        => 'nfndownloads/summary',
     'nfn_downloads_transcript'     => 'nfndownloads/transcript',
     'nfn_downloads_explained'      => 'nfndownloads/explained',
-    'nfn_file_types'               => ['classification', 'transcript', 'reconcile', 'summary'],
+    'nfn_file_types'               => ['classification', 'transcript', 'reconcile', 'summary', 'explained'],
 
     'missing_project_logo'    => env('APP_URL').'/images/placeholders/project.png',
     'missing_expedition_logo' => env('APP_URL').'/images/placeholders/card-image-place-holder02.jpg',

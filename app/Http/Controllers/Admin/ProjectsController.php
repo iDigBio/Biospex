@@ -25,7 +25,7 @@ use App\Jobs\OcrCreateJob;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Model\ProjectService;
-use App\Facades\FlashHelper;
+use Flash;
 use Auth;
 use CountHelper;
 use Exception;
@@ -142,12 +142,12 @@ class ProjectsController extends Controller
             $project = $this->projectContract->findWith($model->id, ['workflow.actors.contacts']);
             $this->projectService->notifyActorContacts($project);
 
-            FlashHelper::success(__('pages.record_created'));
+            Flash::success(__('pages.record_created'));
 
             return redirect()->route('admin.projects.show', [$project->id]);
         }
 
-        FlashHelper::error(__('pages.record_save_error'));
+        Flash::error(__('pages.record_save_error'));
 
         return redirect()->route('admin.projects.create')->withInput();
     }
@@ -163,7 +163,7 @@ class ProjectsController extends Controller
         $project = $this->projectContract->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
         if (! $project) {
-            FlashHelper::error(__('pages.record_get_error'));
+            Flash::error(__('pages.record_get_error'));
 
             return redirect()->route('admin.projects.show', [$projectId]);
         }
@@ -192,7 +192,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group', 'resources']);
         if (! $project) {
-            FlashHelper::error(__('pages.record_get_error'));
+            Flash::error(__('pages.record_get_error'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -228,7 +228,7 @@ class ProjectsController extends Controller
 
         $project = $this->projectContract->update($request->all(), $projectId);
 
-        $project ? FlashHelper::success(__('pages.record_updated')) : FlashHelper::error(__('pages.record_updated_error'));
+        $project ? Flash::success(__('pages.record_updated')) : Flash::error(__('pages.record_updated_error'));
 
         return redirect()->back();
     }
@@ -301,18 +301,18 @@ class ProjectsController extends Controller
 
         try {
             if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                FlashHelper::error(__('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+                Flash::error(__('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
                 redirect()->route('admin.projects.index');
             }
 
             DeleteProject::dispatch($project);
 
-            FlashHelper::success(__('pages.record_deleted'));
+            Flash::success(__('pages.record_deleted'));
 
             return redirect()->route('admin.projects.index');
         } catch (Exception $e) {
-            FlashHelper::error(__('pages.record_delete_error'));
+            Flash::error(__('pages.record_delete_error'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -334,7 +334,7 @@ class ProjectsController extends Controller
 
         OcrCreateJob::dispatch($projectId);
 
-        FlashHelper::success(__('pages.ocr_process_success'));
+        Flash::success(__('pages.ocr_process_success'));
 
         return redirect()->route('admin.projects.show', [$projectId]);
     }

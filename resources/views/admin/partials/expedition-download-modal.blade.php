@@ -12,14 +12,6 @@
                     </button>
                 </div>
             </div>
-            <div class="text-center color-action" id="preparing-file" title="Preparing download" style="display: none;">
-                {{ __('messages.download_prepare') }}
-                <div class="ui-progressbar-value ui-corner-left ui-corner-right" style="width: 100%; height:22px; margin-top: 20px;"></div>
-            </div>
-            <div class="text-center color-action" id="error-file" title="Error" style="display: none;">
-                {{ __('messages.download_prepare_error') }}
-            </div>
-
             <div class="modal-body"></div>
 
             <div class="modal-footer text-center">

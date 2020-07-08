@@ -19,8 +19,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\FlashHelper;
+use Flash;
 use App\Http\Controllers\Controller;
+use App\Jobs\NfnExpertReconcileJob;
 use App\Jobs\ReconciledPublishJob;
 use App\Services\Model\ReconcileService;
 use Illuminate\Http\RedirectResponse;
@@ -59,7 +60,7 @@ class ReconcilesController extends Controller
         }
 
         if (! Session::has('reconcile')) {
-            FlashHelper::error(trans('pages.missing_reconcile_data'));
+            Flash::error(trans('pages.missing_reconcile_data'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
@@ -67,7 +68,7 @@ class ReconcilesController extends Controller
         [$reconciles, $data] = $this->service->getPagination();
 
         if (! $reconciles) {
-            FlashHelper::error(trans('pages.missing_reconcile_data'));
+            Flash::error(trans('pages.missing_reconcile_data'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
@@ -84,11 +85,33 @@ class ReconcilesController extends Controller
      * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
+    public function create(string $projectId, string $expeditionId): RedirectResponse
+    {
+        $expedition = $this->service->getExpeditionById($expeditionId);
+
+        if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
+            return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
+        }
+
+        NfnExpertReconcileJob::dispatch($expedition->id);
+
+        Flash::success(__('pages.nfn_expert_review_create_msg'));
+
+        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+    }
+
+    /**
+     * Set up data and redirect to index for processing.
+     *
+     * @param string $projectId
+     * @param string $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function reconcile(string $projectId, string $expeditionId): RedirectResponse
     {
         $error = $this->service->migrateReconcileCsv($expeditionId);
         if ($error) {
-            FlashHelper::error($error);
+            Flash::error($error);
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
@@ -128,7 +151,7 @@ class ReconcilesController extends Controller
     public function publish(string $projectId, string $expeditionId): RedirectResponse
     {
         ReconciledPublishJob::dispatch($expeditionId);
-        FlashHelper::success(__('pages.reconciled_publish'));
+        Flash::success(__('pages.reconciled_publish'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }

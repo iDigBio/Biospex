@@ -39,7 +39,6 @@ trait Presentable
         }
 
         if (property_exists($this, 'presenter') and class_exists($this->presenter)) {
-            $this->presenterInstance = new $this->presenter($this);
             return $this->presenterInstance = new $this->presenter($this);
         }
 

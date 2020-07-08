@@ -19,6 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\Traits\SkipNfn;
+use App\Notifications\JobError;
 use App\Repositories\Interfaces\Expedition;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Model\PusherTranscriptionService;
@@ -29,6 +31,8 @@ use MongoDB\Operation\FindOneAndReplace;
 
 class AppCommand extends Command
 {
+    use SkipNfn;
+
     /**
      * The console command name.
      */
@@ -97,6 +101,23 @@ class AppCommand extends Command
     {
         //$this->checkPanoptesWithPusher();
         //$this->checkPanoptesToPanoptes();
+        $expedition = $this->expeditionContract->findExpeditionForExpertReview(80);
+
+        try {
+            if ($this->skipReconcile(80)) {
+                throw new \Exception(__('pages.nfn_expert_review_skip_msg', ['id' => $expedition->id, 'title' => $expedition->title]));
+            }
+
+
+
+        } catch (\Exception $e) {
+            $user = $expedition->project->group->owner;
+            $messages = [
+                'Message: ' .  $e->getMessage(),
+                'File : ' . $e->getFile() . ': ' . $e->getLine()
+            ];
+            $user->notify(new JobError(__FILE__, $messages));
+        }
 
 
     }
