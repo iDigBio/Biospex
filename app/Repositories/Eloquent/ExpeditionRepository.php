@@ -214,8 +214,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
                     },
                 ]);
             },
-            'stat',
             'nfnActor',
-        ])->find($expeditionId);
+        ])->has('panoptesProject')->find($expeditionId);
     }
 }

@@ -17,9 +17,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Begin Reconcile Controller
-$router->get('reconciles/{expeditions}')->uses('ReconcilesController@index')->name('admin.reconciles.index');
-$router->get('reconciles/{expeditions}/create')->uses('ReconcilesController@create')->name('admin.reconciles.create');
+namespace App\Services\Csv;
 
-$router->put('reconciles/{expeditions}')->uses('ReconcilesController@update')->name('admin.reconciles.update');
-$router->post('reconciles/{expeditions}/publish')->uses('ReconcilesController@publish')->name('admin.reconciles.publish');
+class ExpertReconcileCsv
+{
+    /**
+     * @var \App\Services\Csv\Csv
+     */
+    private $csv;
+
+    /**
+     * ExpertReconcileCsv constructor.
+     *
+     * @param \App\Services\Csv\Csv $csv
+     */
+    public function __construct(Csv $csv)
+    {
+
+        $this->csv = $csv;
+    }
+
+
+    public function createReader(int $expeditionId)
+    {
+        $file = \Storage::path(config('config.nfn_downloads_explained') . '/' . $expeditionId . '.csv');
+        dd($file);
+    }
+}

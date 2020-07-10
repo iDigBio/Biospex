@@ -47,12 +47,13 @@ class ReconcilesController extends Controller
     /**
      * Show files needing reconciliation with pagination.
      *
-     * @param string $projectId
+     * @TODO check if reconciles exist or not.
      * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function index(string $projectId, string $expeditionId)
+    public function index(string $expeditionId)
     {
+        dd('index');
         $expedition = $this->service->getExpeditionById($expeditionId);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
@@ -81,23 +82,22 @@ class ReconcilesController extends Controller
     /**
      * Set up data and redirect to index for processing.
      *
-     * @param string $projectId
      * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function create(string $projectId, string $expeditionId): RedirectResponse
+    public function create(string $expeditionId): RedirectResponse
     {
         $expedition = $this->service->getExpeditionById($expeditionId);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
-            return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
+            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
         NfnExpertReconcileJob::dispatch($expedition->id);
 
         Flash::success(__('pages.nfn_expert_review_create_msg'));
 
-        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
     }
 
     /**

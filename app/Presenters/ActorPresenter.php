@@ -17,9 +17,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Begin Reconcile Controller
-$router->get('reconciles/{expeditions}')->uses('ReconcilesController@index')->name('admin.reconciles.index');
-$router->get('reconciles/{expeditions}/create')->uses('ReconcilesController@create')->name('admin.reconciles.create');
+namespace App\Presenters;
 
-$router->put('reconciles/{expeditions}')->uses('ReconcilesController@update')->name('admin.reconciles.update');
-$router->post('reconciles/{expeditions}/publish')->uses('ReconcilesController@publish')->name('admin.reconciles.publish');
+class ActorPresenter extends Presenter
+{
+    /**
+     * Return button and path for expert review.
+     *
+     * @return string
+     */
+    public function reconcileExpertReviewBtn()
+    {
+        $route = $this->model->pivot->expert ? 'admin.reconciles.index' : 'admin.reconciles.create';
+        $url = route($route, [$this->model->pivot->expedition_id]);
+
+        $class = $this->model->pivot->expert ? 'green' : '';
+
+        return '<a class="btn btn-primary '.$class.' float-right m-2" href="'.$url.'">Expert Review Ambiguities</a>';
+    }
+}

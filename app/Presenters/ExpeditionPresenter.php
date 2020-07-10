@@ -247,21 +247,4 @@ class ExpeditionPresenter extends Presenter
 
         return '<a class="btn btn-primary float-right mt-2 mb-2" href="'.$route.'">'.__('pages.regenerate_export').'</a>';
     }
-
-    /**
-     * Return button and path for expert review.
-     *
-     * @return string
-     */
-    public function expeditionExpertReviewBtn()
-    {
-        $route = route('admin.downloads.regenerate', [
-            $this->model->project->id,
-            $this->model->id,
-        ]);
-
-        $class = $this->model->actor->pivot->expert ? 'green' : '';
-
-        return '<a class="btn btn-primary '.$class.' float-right m-2" href="#">Expert Review Ambiguities</a>';
-    }
 }

@@ -20,14 +20,18 @@
 namespace App\Console\Commands;
 
 use App\Jobs\Traits\SkipNfn;
+use App\Models\PanoptesProject;
 use App\Notifications\JobError;
 use App\Repositories\Interfaces\Expedition;
 use App\Services\Api\PanoptesApiService;
+use App\Services\Csv\Csv;
+use App\Services\Csv\ExpertReconcileCsv;
 use App\Services\Model\PusherTranscriptionService;
 use App\Services\MongoDbService;
 use App\Services\Process\PanoptesTranscriptionProcess;
 use Illuminate\Console\Command;
 use MongoDB\Operation\FindOneAndReplace;
+use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class AppCommand extends Command
 {
@@ -71,6 +75,16 @@ class AppCommand extends Command
     private $panoptesTranscriptionProcess;
 
     /**
+     * @var \App\Services\Csv\ExpertReconcileCsv
+     */
+    private $expertReconcileCsv;
+
+    /**
+     * @var \App\Services\Csv\Csv
+     */
+    private $csv;
+
+    /**
      * AppCommand constructor.
      * 109052 panoptes transcriptions without subject_expeditionId
      *
@@ -81,7 +95,9 @@ class AppCommand extends Command
         Expedition $expeditionContract,
         PanoptesApiService $panoptesApiService,
         PusherTranscriptionService $pusherTranscriptionService,
-        PanoptesTranscriptionProcess $panoptesTranscriptionProcess
+        PanoptesTranscriptionProcess $panoptesTranscriptionProcess,
+        ExpertReconcileCsv $expertReconcileCsv,
+        Csv $csv
     ) {
         parent::__construct();
         $this->service = $service;
@@ -89,9 +105,9 @@ class AppCommand extends Command
         $this->expeditionContract = $expeditionContract;
         $this->panoptesApiService = $panoptesApiService;
         $this->pusherTranscriptionService = $pusherTranscriptionService;
-
         $this->panoptesTranscriptionProcess = $panoptesTranscriptionProcess;
-
+        $this->expertReconcileCsv = $expertReconcileCsv;
+        $this->csv = $csv;
     }
 
     /**
@@ -101,25 +117,28 @@ class AppCommand extends Command
     {
         //$this->checkPanoptesWithPusher();
         //$this->checkPanoptesToPanoptes();
-        $expedition = $this->expeditionContract->findExpeditionForExpertReview(80);
+        $this->findWorkflowsMissingCsv();
 
-        try {
-            if ($this->skipReconcile(80)) {
-                throw new \Exception(__('pages.nfn_expert_review_skip_msg', ['id' => $expedition->id, 'title' => $expedition->title]));
+        /*
+        $text = explode(',', config('config.nfn_reconcile_problem_match'));
+
+        foreach ($text as $string) {
+            if (preg_match('/No (?:select|text) match on|Only 1 transcript in|There was 1 number in/i', $string, $matches)) {
+                echo $matches[0] . PHP_EOL;
             }
-
-
-
-        } catch (\Exception $e) {
-            $user = $expedition->project->group->owner;
-            $messages = [
-                'Message: ' .  $e->getMessage(),
-                'File : ' . $e->getFile() . ': ' . $e->getLine()
-            ];
-            $user->notify(new JobError(__FILE__, $messages));
         }
+        */
 
+    }
 
+    public function findWorkflowsMissingCsv()
+    {
+        $results = PanoptesProject::whereNotNull('expedition_id')->get();
+        $rejected = $results->reject(function ($result){
+            return \Storage::exists(config('config.nfn_downloads_classification') . '/' . $result->expedition_id . '.csv');
+        });
+
+        dd($rejected->pluck('expedition_id'));
     }
 
     public function checkPanoptesWithPusher()
@@ -140,18 +159,25 @@ class AppCommand extends Command
 
     public function checkPanoptesToPanoptes()
     {
+        $this->csv->writerCreateFromPath(storage_path('missing_transcriptions.csv'));
+        $rows = [];
+
         $this->service->setCollection('panoptes_transcriptions', 'biospex_dev');
         $cursor = $this->service->find([]);
-        $i = 0;
         foreach($cursor as $doc) {
             $this->service->setCollection('panoptes_transcriptions');
             $count = $this->service->count(['classification_id' => $doc['classification_id']]);
             if (!$count){
-                \Log::alert($doc['classification_id']);
-                $i++;
+                $expedition = isset($doc['subject_expeditionId']) ? $doc['subject_expeditionId'] : '';
+                $rows[] = ['expedition' => $expedition, 'classification_id' =>  $doc['classification_id']];
             }
         }
-        dd($i);
+        $header = array_keys($rows[0]);
+        $this->csv->insertOne($header);
+        foreach ($rows as $row) {
+            $this->csv->insertOne($row);
+        }
+        dd('complete');
     }
 
     public function findAndReplace()

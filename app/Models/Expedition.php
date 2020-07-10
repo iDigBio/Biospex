@@ -182,7 +182,8 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
             'error',
             'queued',
             'completed',
-            'order'
+            'order',
+            'expert'
         ];
 
         return $this->belongsToMany(Actor::class, 'actor_expedition')
@@ -203,10 +204,12 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
+    /*
     public function actor()
     {
         return $this->actors();
     }
+    */
 
     /**
      * NfnClassificationsCount attribute.

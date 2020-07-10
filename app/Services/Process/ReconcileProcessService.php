@@ -99,7 +99,7 @@ class ReconcileProcessService
 
             $this->setPaths($expeditionId);
 
-            if (! File::exists($this->csvPath) || !isset($expedition->panoptesProject)) {
+            if (! File::exists($this->csvPath) || ! isset($expedition->panoptesProject)) {
                 throw new Exception(__('pages.file_does_not_exist').' for classification: '.$this->csvPath);
             }
 
@@ -108,11 +108,10 @@ class ReconcileProcessService
             $expeditionIds[] = $expedition->id;
 
             if (! $this->checkFilesExist()) {
-                throw new Exception(__('pages.file_does_not_exist').' for download creation. Expedition: ' . $expeditionId);
+                throw new Exception(__('pages.file_does_not_exist').' for download creation. Expedition: '.$expeditionId);
             }
 
             $this->updateOrCreateDownloads($expeditionId);
-
         } catch (Exception $e) {
             $user = User::find(1);
             $message = [
@@ -132,7 +131,7 @@ class ReconcileProcessService
         try {
             $this->setPaths($expedition->id);
 
-            if (! File::exists($this->csvPath) || $expedition->panoptesProject === null || $expedition->actor->completed === 0) {
+            if (! File::exists($this->csvPath) || $expedition->nfnActor->pivot->completed === 0) {
                 throw new Exception(__('pages.file_does_not_exist').' for classification: '.$this->csvPath);
             }
 
@@ -145,8 +144,8 @@ class ReconcileProcessService
         } catch (Exception $e) {
             $user = $expedition->project->group->owner;
             $messages = [
-                'Message: ' .  $e->getMessage(),
-                'File : ' . $e->getFile() . ': ' . $e->getLine()
+                'Message: '.$e->getMessage(),
+                'File : '.$e->getFile().': '.$e->getLine(),
             ];
             $user->notify(new JobError(__FILE__, $messages));
         }
@@ -154,7 +153,7 @@ class ReconcileProcessService
 
     /**
      * Set paths.
-     * 
+     *
      * @param $expeditionId
      */
     protected function setPaths($expeditionId)
@@ -175,10 +174,7 @@ class ReconcileProcessService
      */
     protected function checkFilesExist()
     {
-        if (File::exists($this->csvPath) &&
-            File::exists($this->tranPath) &&
-            File::exists($this->recPath) &&
-            File::exists($this->sumPath)) {
+        if (File::exists($this->csvPath) && File::exists($this->tranPath) && File::exists($this->recPath) && File::exists($this->sumPath)) {
             return true;
         }
 
@@ -192,20 +188,26 @@ class ReconcileProcessService
      */
     protected function runCommand($explained = false)
     {
-        $command = !$explained ?
-            "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->recPath} --unreconciled {$this->tranPath} --summary {$this->sumPath} {$this->csvPath}" :
-            $command = "{$this->pythonPath} {$this->reconcilePath} --explanations --reconciled {$this->expPath} {$this->csvPath}";
-        exec($command);
+        $command = ! $explained ? "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->recPath} --unreconciled {$this->tranPath} --summary {$this->sumPath} {$this->csvPath}" : $command = "{$this->pythonPath} {$this->reconcilePath} --explanations --reconciled {$this->expPath} {$this->csvPath}";
+        exec($command, $output, $return);
+        \Log::alert($command);
+        \Log::alert(print_r($output,true));
+        \Log::alert($return);
     }
 
     /**
      * Update or create downloads.
      *
      * @param $expeditionId
+     * @param bool $explained
      */
     protected function updateOrCreateDownloads($expeditionId, $explained = false)
     {
-        collect(config('config.nfn_file_types'))->each(function ($type) use ($expeditionId) {
+        collect(config('config.nfn_file_types'))->filter(function ($type) use ($explained) {
+            return $explained ?
+                $type === 'reconciled_with_expert_opinion':
+                $type !== 'reconciled_with_expert_opinion';
+        })->each(function ($type) use ($expeditionId) {
             $values = [
                 'expedition_id' => $expeditionId,
                 'actor_id'      => 2,

@@ -19,8 +19,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
+use App\Presenters\ActorPresenter;
+
 class Actor extends BaseEloquentModel
 {
+    use Presentable;
+
     /**
      * @inheritDoc
      */
@@ -35,6 +40,11 @@ class Actor extends BaseEloquentModel
         'class',
         'private'
     ];
+
+    /**
+     * @var string
+     */
+    protected $presenter = ActorPresenter::class;
 
     /**
      * Workflow relationship.
