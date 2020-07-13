@@ -395,4 +395,20 @@ class PanoptesApiService extends HttpRequest
     {
         return $this->percent_completed;
     }
+
+    /**
+     * Get image url for subject.
+     *
+     * @param $subjectId
+     * @return mixed|null
+     */
+    public function getSubjectImageLocation($subjectId)
+    {
+        $subject = $this->getPanoptesSubject($subjectId);
+        $locations = collect($subject['locations'])->filter(function ($location) {
+            return ! empty($location['image/jpeg']);
+        });
+
+        return $locations->isNotEmpty() ? $locations->first()['image/jpeg'] : null;
+    }
 }
