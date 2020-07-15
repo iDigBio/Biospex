@@ -1,5 +1,5 @@
 @component('mail::message')
-# Notes From Nature Export Completed
+# Zooniverse Export Completed
 
 {!! $message !!}
 

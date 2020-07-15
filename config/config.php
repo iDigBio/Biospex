@@ -41,7 +41,7 @@ return [
         'summary',
         'reconciled_with_expert_opinion',
     ],
-    'nfn_reconcile_problem_match'  => env('NFN_RECONCILE_PROBLEM_MATCH'),
+    'nfn_reconcile_problem_regex'  => env('NFN_RECONCILE_PROBLEM_REGEX'),
 
     'missing_project_logo'    => env('APP_URL').'/images/placeholders/project.png',
     'missing_expedition_logo' => env('APP_URL').'/images/placeholders/card-image-place-holder02.jpg',

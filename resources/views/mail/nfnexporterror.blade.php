@@ -1,5 +1,5 @@
 @component('mail::message')
-# Error Exporting For Notes From Nature
+# Error Exporting For Zooniverse
 
 {!! $message !!}
 

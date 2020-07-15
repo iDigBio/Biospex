@@ -4,5 +4,7 @@
     "/js/manifest.js": "/js/manifest.js?id=3c768977c2574a34506e",
     "/js/vendor.js": "/js/vendor.js?id=04caa92a677169b5827a",
     "/js/jquery.panzoom.min.js": "/js/jquery.panzoom.min.js?id=7db72f2a0bb4aaa3bd2a",
-    "/js/jquery.form.min.js": "/js/jquery.form.min.js?id=c96241e183012fd2646c"
+    "/js/jquery.form.min.js": "/js/jquery.form.min.js?id=c96241e183012fd2646c",
+    "/js/expertReview.js": "/js/expertReview.js?id=9c9f93b4bd00c4a59ab1",
+    "/js/expertReview.min.js": "/js/expertReview.min.js?id=9c9f93b4bd00c4a59ab1"
 }

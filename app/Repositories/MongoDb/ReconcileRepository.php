@@ -51,15 +51,18 @@ class ReconcileRepository extends MongoDbRepository implements Reconcile
     /**
      * @inheritDoc
      */
-    public function paginate(array $ids)
+    public function paginate(int $expeditionId)
     {
-        return $this->model->with(['transcriptions'])->whereIn('subject_id', $ids)->paginate(1);
+        return $this->model->with(['transcriptions'])
+            ->where('subject_expeditionId', $expeditionId)
+            ->where('problem', 1)
+            ->paginate(1);
     }
 
     /**
      * @inheritDoc
      */
-    public function getByExpeditionId(string $expeditionId): Collection
+    public function getByExpeditionId(int $expeditionId): Collection
     {
         return $this->model->where('subject_expeditionId', $expeditionId)->get();
     }

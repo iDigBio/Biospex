@@ -54,7 +54,7 @@ interface Expedition extends RepositoryInterface
     public function getExpeditionAdminIndex($userId = null, $sort = null, $order = null, $projectId = null);
 
     /**
-     * Retrieve expeditions for Notes From Nature classification process.
+     * Retrieve expeditions for Zooniverse classification process.
      *
      * @param array $expeditionIds
      * @param array $attributes

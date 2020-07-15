@@ -19,7 +19,7 @@ class DbFix001Command extends Command
      *
      * @var string
      */
-    protected $description = 'Fixes classification id and sets to integer';
+    protected $description = 'Fixes classification id and sets to integer. Then runs fix:002 for mongodb.';
 
     /**
      * @var \App\Services\MongoDbService
@@ -52,6 +52,8 @@ class DbFix001Command extends Command
             $this->service->updateOneById($attributes, $resourceId);
         }
 
-        echo 'Completed' . PHP_EOL;
+        echo 'Completed. Running fix:002' . PHP_EOL;
+
+        \Artisan::call('fix:002');
     }
 }

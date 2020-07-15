@@ -19,13 +19,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Flash;
 use App\Http\Controllers\Controller;
-use App\Jobs\NfnExpertReconcileJob;
-use App\Jobs\ReconciledPublishJob;
+use App\Jobs\NfnExpertReviewJob;
+use App\Jobs\NfnExpertReviewPublishJob;
 use App\Services\Model\ReconcileService;
 use Illuminate\Http\RedirectResponse;
-use Session;
+use App\Repositories\Interfaces\Expedition;
+use App\Services\Api\PanoptesApiService;
+use Flash;
 
 class ReconcilesController extends Controller
 {
@@ -35,48 +36,50 @@ class ReconcilesController extends Controller
     private $service;
 
     /**
+     * @var \App\Repositories\Interfaces\Expedition
+     */
+    private $expeditionContract;
+
+    /**
      * ReconcilesController constructor.
      *
      * @param \App\Services\Model\ReconcileService $service
+     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      */
-    public function __construct(ReconcileService $service)
+    public function __construct(ReconcileService $service, Expedition $expeditionContract)
     {
         $this->service = $service;
+        $this->expeditionContract = $expeditionContract;
     }
 
     /**
      * Show files needing reconciliation with pagination.
      *
-     * @TODO check if reconciles exist or not.
      * @param string $expeditionId
+     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function index(string $expeditionId)
+    public function index(string $expeditionId, PanoptesApiService $panoptesApiService)
     {
-        dd('index');
-        $expedition = $this->service->getExpeditionById($expeditionId);
+        $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group.owner']);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
-            return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
+            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        if (! Session::has('reconcile')) {
-            Flash::error(trans('pages.missing_reconcile_data'));
+        $reconciles = $this->service->getPagination((int) $expedition->id);
 
-            return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
+        if ($reconciles->isEmpty()) {
+            Flash::error(trans('pages.expert_review_missing_data_flash'));
+
+            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        [$reconciles, $data] = $this->service->getPagination();
+        $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
+        $imgUrl = $this->service->getImageUrl($reconciles->first()->subject_imageName, $location);
+        $columns = $this->service->setColumnMasks($reconciles->first()->columns);
 
-        if (! $reconciles) {
-            Flash::error(trans('pages.missing_reconcile_data'));
-
-            return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
-        }
-
-        $imgUrl = $this->service->getImageUrl($reconciles->first());
-
-        return view('admin.reconcile.index', compact('reconciles', 'data', 'imgUrl', 'projectId', 'expeditionId'));
+        return view('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition'));
     }
 
     /**
@@ -87,48 +90,26 @@ class ReconcilesController extends Controller
      */
     public function create(string $expeditionId): RedirectResponse
     {
-        $expedition = $this->service->getExpeditionById($expeditionId);
+        $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group.owner']);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        NfnExpertReconcileJob::dispatch($expedition->id);
+        NfnExpertReviewJob::dispatch($expedition->id);
 
-        Flash::success(__('pages.nfn_expert_review_create_msg'));
+        Flash::success(__('pages.expert_review_job_create_flash'));
 
         return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
     }
 
     /**
-     * Set up data and redirect to index for processing.
-     *
-     * @param string $projectId
-     * @param string $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function reconcile(string $projectId, string $expeditionId): RedirectResponse
-    {
-        $error = $this->service->migrateReconcileCsv($expeditionId);
-        if ($error) {
-            Flash::error($error);
-
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-        }
-
-        $this->service->setData();
-
-        return redirect()->route('admin.reconciles.index', [$projectId, $expeditionId]);
-    }
-
-    /**
      * Update reconciled record.
      *
-     * @param string $projectId
      * @param string $expeditionId
      * @return array
      */
-    public function update(string $projectId, string $expeditionId): array
+    public function update(string $expeditionId): array
     {
         if (! request()->ajax()) {
             return ['result' => false, 'message' => __('pages.record_updated_error')];
@@ -150,8 +131,8 @@ class ReconcilesController extends Controller
      */
     public function publish(string $projectId, string $expeditionId): RedirectResponse
     {
-        ReconciledPublishJob::dispatch($expeditionId);
-        Flash::success(__('pages.reconciled_publish'));
+        NfnExpertReviewPublishJob::dispatch($expeditionId);
+        Flash::success(__('pages.expert_review_pub_flash'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }

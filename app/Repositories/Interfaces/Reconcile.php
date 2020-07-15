@@ -35,16 +35,16 @@ interface Reconcile extends RepositoryInterface
     /**
      * Paginate results.
      *
-     * @param array $ids
+     * @param int $expeditionId
      * @return mixed
      */
-    public function paginate(array $ids);
+    public function paginate(int $expeditionId);
 
     /**
      * Get by expedition id.
      *
-     * @param string $expeditionId
+     * @param int $expeditionId
      * @return \Illuminate\Support\Collection
      */
-    public function getByExpeditionId(string $expeditionId): Collection;
+    public function getByExpeditionId(int $expeditionId): Collection;
 }

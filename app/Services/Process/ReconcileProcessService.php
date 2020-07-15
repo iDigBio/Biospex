@@ -100,7 +100,7 @@ class ReconcileProcessService
             $this->setPaths($expeditionId);
 
             if (! File::exists($this->csvPath) || ! isset($expedition->panoptesProject)) {
-                throw new Exception(__('pages.file_does_not_exist').' for classification: '.$this->csvPath);
+                throw new Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $this->csvPath]));
             }
 
             $this->runCommand();
@@ -108,7 +108,7 @@ class ReconcileProcessService
             $expeditionIds[] = $expedition->id;
 
             if (! $this->checkFilesExist()) {
-                throw new Exception(__('pages.file_does_not_exist').' for download creation. Expedition: '.$expeditionId);
+                throw new Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $expeditionId]));
             }
 
             $this->updateOrCreateDownloads($expeditionId);
@@ -124,30 +124,21 @@ class ReconcileProcessService
     /**
      * Process reconcile explained file.
      *
-     * @param $expedition
+     * @param \App\Models\Expedition $expedition
+     * @throws \Exception
      */
-    public function processExplained($expedition)
+    public function processExplained(\App\Models\Expedition $expedition)
     {
-        try {
-            $this->setPaths($expedition->id);
+        $this->setPaths($expedition->id);
 
-            if (! File::exists($this->csvPath) || $expedition->nfnActor->pivot->completed === 0) {
-                throw new Exception(__('pages.file_does_not_exist').' for classification: '.$this->csvPath);
-            }
+        if (! File::exists($this->csvPath) || $expedition->nfnActor->pivot->completed === 0) {
+            throw new Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $this->csvPath]));
+        }
 
-            $this->runCommand(true);
+        $this->runCommand(true);
 
-            if (! File::exists($this->expPath)) {
-                throw new Exception(__('pages.file_does_not_exist').' for reconciliation explained process');
-            }
-
-        } catch (Exception $e) {
-            $user = $expedition->project->group->owner;
-            $messages = [
-                'Message: '.$e->getMessage(),
-                'File : '.$e->getFile().': '.$e->getLine(),
-            ];
-            $user->notify(new JobError(__FILE__, $messages));
+        if (! File::exists($this->expPath)) {
+            throw new Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $this->expPath]));
         }
     }
 
@@ -185,14 +176,20 @@ class ReconcileProcessService
      * Run reconcile command.
      *
      * @param bool $explained
+     * @throws \Exception
      */
     protected function runCommand($explained = false)
     {
         $command = ! $explained ? "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->recPath} --unreconciled {$this->tranPath} --summary {$this->sumPath} {$this->csvPath}" : $command = "{$this->pythonPath} {$this->reconcilePath} --explanations --reconciled {$this->expPath} {$this->csvPath}";
         exec($command, $output, $return);
-        \Log::alert($command);
-        \Log::alert(print_r($output,true));
-        \Log::alert($return);
+
+        if ($return) {
+            $message = $explained ?
+                'Error processing reconcile explained command: ' . $command :
+                'Error processing reconcile command: ' . $command;
+            throw new Exception($message);
+        }
+
     }
 
     /**

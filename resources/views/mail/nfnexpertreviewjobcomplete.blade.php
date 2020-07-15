@@ -1,7 +1,11 @@
 @component('mail::message')
-# Zooniverse Transcriptions Completed
+# {{ $title }}
 
 {!! $message !!}
+
+@component('mail::button', ['url' => $url])
+    {{ $button }}
+@endcomponent
 
 Thank you,<br>
 {{ config('app.name') }}

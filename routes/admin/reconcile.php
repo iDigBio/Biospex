@@ -20,6 +20,5 @@
 // Begin Reconcile Controller
 $router->get('reconciles/{expeditions}')->uses('ReconcilesController@index')->name('admin.reconciles.index');
 $router->get('reconciles/{expeditions}/create')->uses('ReconcilesController@create')->name('admin.reconciles.create');
-
 $router->put('reconciles/{expeditions}')->uses('ReconcilesController@update')->name('admin.reconciles.update');
-$router->post('reconciles/{expeditions}/publish')->uses('ReconcilesController@publish')->name('admin.reconciles.publish');
+$router->post('reconciles/{projects}/publish/{expeditions}')->uses('ReconcilesController@publish')->name('admin.reconciles.publish');

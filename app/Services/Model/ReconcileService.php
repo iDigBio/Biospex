@@ -19,24 +19,18 @@
 
 namespace App\Services\Model;
 
-use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\Reconcile;
 use App\Repositories\Interfaces\Subject;
-use App\Services\Api\PanoptesApiService;
 use App\Services\Csv\Csv;
 use File;
 use Illuminate\Support\Collection;
-use League\Csv\Exception;
 use Session;
 use Storage;
+use Exception;
+use Validator;
 
 class ReconcileService
 {
-    /**
-     * @var \App\Repositories\Interfaces\Expedition
-     */
-    private $expeditionContract;
-
     /**
      * @var \App\Repositories\Interfaces\Reconcile
      */
@@ -53,71 +47,66 @@ class ReconcileService
     private $subjectContract;
 
     /**
-     * @var \App\Services\Api\PanoptesApiService
+     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
-    private $apiService;
+    private $problemRegex;
 
     /**
      * ReconcileService constructor.
      *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Repositories\Interfaces\Reconcile $reconcileContract
      * @param \App\Services\Csv\Csv $csv
      * @param \App\Repositories\Interfaces\Subject $subjectContract
-     * @param \App\Services\Api\PanoptesApiService $apiService
      */
     public function __construct(
-        Expedition $expeditionContract,
         Reconcile $reconcileContract,
         Csv $csv,
-        Subject $subjectContract,
-        PanoptesApiService $apiService
+        Subject $subjectContract
     ) {
 
-        $this->expeditionContract = $expeditionContract;
         $this->reconcileContract = $reconcileContract;
         $this->csv = $csv;
         $this->subjectContract = $subjectContract;
-        $this->apiService = $apiService;
-    }
 
-    /**
-     * Get expedition by id.
-     *
-     * @param string $expeditionId
-     * @return mixed
-     */
-    public function getExpeditionById(string $expeditionId)
-    {
-        return $this->expeditionContract->findWith($expeditionId, ['project.group.owner']);
+        $this->problemRegex = config('config.nfn_reconcile_problem_regex');
     }
 
     /**
      * Migrate reconcile csv to mongodb using first or create.
      *
      * @param string $expeditionId
-     * @return string|bool
+     * @throws \League\Csv\Exception|\Exception
      */
     public function migrateReconcileCsv(string $expeditionId)
     {
-        try {
-            $recPath = Storage::path(config('config.nfn_downloads_reconcile').'/'.$expeditionId.'.csv');
+        $file = config('config.nfn_downloads_reconcile').'/'.$expeditionId.'.csv';
 
-            $this->csv->readerCreateFromPath($recPath);
-            $this->csv->setDelimiter();
-            $this->csv->setEnclosure();
-            $this->csv->setHeaderOffset();
-
-            $rows = $this->csv->getRecords($this->csv->getHeader());
-            foreach ($rows as $offset => $row) {
-                $attributes = ['subject_id' => $row['subject_id'], 'subject_expeditionId' => $expeditionId];
-                $this->reconcileContract->firstOrCreate($attributes, $row);
-            }
-
-            return false;
-        } catch (Exception $e) {
-            return $e->getMessage();
+        if (!Storage::exists($file)) {
+            throw new Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $file]));
         }
+
+        $filePath = Storage::path($file);
+        $rows = $this->getCsvRows($filePath);
+        $rows->each(function($row) {
+            if (!$this->validateReconcile($row['subject_id'])) {
+                $this->reconcileContract->create($row);
+            }
+        });
+    }
+
+    /**
+     * Get csv rows from file.
+     *
+     * @param $filePath
+     * @return \Illuminate\Support\Collection
+     * @throws \League\Csv\Exception
+     */
+    public function getCsvRows($filePath): Collection
+    {
+        $this->csv->readerCreateFromPath($filePath);
+        $this->csv->setHeaderOffset();
+
+        return collect($this->csv->getRecords($this->csv->getHeader()));
     }
 
     /**
@@ -148,67 +137,152 @@ class ReconcileService
     /**
      * Get pagination results.
      *
-     * @return array
+     * @param int $expeditionId
+     * @return mixed
      */
-    public function getPagination(): array
+    public function getPagination(int $expeditionId)
     {
-        $data = Session::get('reconcile');
-        $ids = $this->getIds($data);
-
-        $reconciles = $this->reconcileContract->paginate($ids);
-
-        if ($reconciles->isEmpty() || $reconciles->first()->transcriptions->isEmpty()) {
-            return [false, $data];
-        }
-
-        return [$reconciles, $data];
+        return $this->reconcileContract->paginate($expeditionId);
     }
 
     /**
      * Get image url from api or accessURI.
      *
-     * @param $reconcile
+     * @param string $imageName
+     * @param string|null $location
      * @return mixed
      */
-    public function getImageUrl($reconcile)
+    public function getImageUrl(string $imageName, string $location = null)
     {
-        $subject = $this->apiService->getPanoptesSubject($reconcile->subject_id);
-        $locations = collect($subject['locations'])->filter(function ($location) {
-            return ! empty($location['image/jpeg']);
-        });
-
-        return $locations->isNotEmpty() ? $locations->first()['image/jpeg'] : $this->getAccessUri($reconcile);
+        return $location !== null ? $location : $this->getAccessUri($imageName);
     }
 
     /**
      * Get image from accessURI.
      *
-     * @param $reconcile
+     * @param $imageName
      * @return mixed
      */
-    public function getAccessUri($reconcile)
+    public function getAccessUri($imageName)
     {
-        $id = $filename = File::name($reconcile->subject_imageName);
+        $id = File::name($imageName);
         $subject = $this->subjectContract->find($id, ['accessURI']);
 
         return $subject->accessURI;
     }
 
     /**
+     * Create masked columns for names.
+     *
+     * When posting names with spaces, PHP converts to underscore. So we mask, and demask on update.
+     * @param string $columns
+     * @return array
+     */
+    public function setColumnMasks(string $columns)
+    {
+        $columnArray = explode(',', $columns);
+        sort($columnArray);
+        $maskedColumns = [];
+        foreach($columnArray as $column) {
+            $maskedColumns[base64_encode($column)] = $column;
+        }
+
+        return $maskedColumns;
+    }
+
+    /**
      * Update reconciled record.
      *
+     * Unset unneeded variables and decode columns.
      * @param array $request
      * @return mixed
      */
     public function updateRecord(array $request)
     {
+        $id = $request['_id'];
+        $unsetArray = ['_id', '_method', '_token', 'radio'];
+        $attributes = [];
+
         foreach ($request as $key => $value) {
-            $request[$key] = is_null($value) ? '' : $value;
-            if (strpos($key, '_radio') !== false) {
+            if (in_array($key, $unsetArray)) {
                 unset($request[$key]);
+                continue;
             }
+
+            $attributes[base64_decode($key)] = is_null($value) ? '' : $value;
         }
 
-        return $this->reconcileContract->update($request, $request['_id']);
+        return $this->reconcileContract->update($attributes, $id);
+    }
+
+    /**
+     * Set problem columns in reconcile documents.
+     *
+     * @param int $expeditionId
+     * @throws \League\Csv\Exception|\Exception
+     */
+    public function setReconcileProblems(int $expeditionId)
+    {
+        $file = config('config.nfn_downloads_explained').'/'.$expeditionId.'.csv';
+
+        if (! Storage::exists($file)) {
+            throw new \Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $file]));
+        }
+
+        $filePath = Storage::path($file);
+
+        $rows = $this->getCsvRows($filePath);
+
+        $rows->mapWithKeys(function ($row) {
+            $problems = collect($row)->filter(function ($value, $field) {
+                return $this->checkForProblem($value, $field);
+            });
+
+            return [$row['subject_id'] => $problems];
+        })->reject(function ($problem) {
+            return $problem->isEmpty();
+        })->mapWithKeys(function ($problem, $subjectId) {
+            $string = $problem->keys()->map(function ($key) {
+                return trim(str_replace('Explanation', '', $key));
+            })->flatten()->join(',');
+
+            return [$subjectId => $string];
+        })->each(function ($columns, $subjectId) {
+            $reconcile = $this->reconcileContract->findBy('subject_id', $subjectId);
+            $reconcile->problem = 1;
+            $reconcile->columns = $columns;
+            $reconcile->save();
+        });
+    }
+
+    /**
+     * Check columns for problems.
+     *
+     * Regex match = /No (?:select|text) match on|Only 1 transcript in|There was 1 number in/i
+     *
+     * @param string $value
+     * @param string $field
+     * @return bool
+     */
+    private function checkForProblem(string $value, string $field)
+    {
+        return strpos($field, 'Explanation') !== false && preg_match($this->problemRegex, $value);
+    }
+
+    /**
+     * Validate transcription to prevent duplicates.
+     *
+     * @param $subject_id
+     * @return mixed
+     */
+    private function validateReconcile($subject_id)
+    {
+        $rules = ['subject_id' => 'unique:mongodb.reconciles,subject_id'];
+        $values = ['subject_id' => (int) $subject_id];
+        $validator = Validator::make($values, $rules);
+        $validator->getPresenceVerifier()->setConnection('mongodb');
+
+        // returns true if record exists.
+        return $validator->fails();
     }
 }

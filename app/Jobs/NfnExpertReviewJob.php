@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Jobs\Traits\SkipNfn;
 use App\Notifications\JobError;
+use App\Notifications\NfnExpertReviewJobComplete;
 use App\Repositories\Interfaces\Expedition;
 use App\Services\Model\ReconcileService;
 use App\Services\Process\ReconcileProcessService;
@@ -13,7 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class NfnExpertReconcileJob implements ShouldQueue
+class NfnExpertReviewJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
@@ -44,26 +45,29 @@ class NfnExpertReconcileJob implements ShouldQueue
     public function handle(
         Expedition $expeditionContract,
         ReconcileProcessService $reconcileProcessService,
-        ReconcileService $reconcileService)
+        ReconcileService $reconcileService
+    )
     {
         $expedition = $expeditionContract->findExpeditionForExpertReview($this->expeditionId);
+        $user = $expedition->project->group->owner;
 
         try {
             if ($this->skipReconcile($this->expeditionId)) {
-                throw new \Exception(__('pages.nfn_expert_review_skip_msg', ['id' => $expedition->id, 'title' => $expedition->title]));
+                throw new \Exception(__('pages.expert_review_job_create_skip_msg', ['id' => $expedition->id, 'title' => $expedition->title]));
             }
 
             $reconcileProcessService->processExplained($expedition);
             $reconcileService->migrateReconcileCsv($expedition->id);
-
+            $reconcileService->setReconcileProblems($expedition->id);
 
             $expedition->nfnActor->pivot->expert = 1;
             $expedition->nfnActor->pivot->save();
 
+            $user->notify(new NfnExpertReviewJobComplete($expedition->title, $expedition->id));
 
+            return $this->deleteJob();
 
         } catch (\Exception $e) {
-            $user = $expedition->project->group->owner;
             $messages = [
                 'Message: ' .  $e->getMessage(),
                 'File : ' . $e->getFile() . ': ' . $e->getLine()

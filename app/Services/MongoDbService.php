@@ -55,6 +55,19 @@ class MongoDbService
     }
 
     /**
+     * Return cursor as array.
+     *
+     * @param $cursor
+     * @return mixed
+     */
+    public function getArray($cursor)
+    {
+        $cursor->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
+
+        return $cursor->toArray();
+    }
+
+    /**
      * Set connection client.
      */
     public function setClient()

@@ -28,8 +28,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use League\Csv\CannotInsertRecord;
 
-class ReconciledPublishJob implements ShouldQueue
+class NfnExpertReviewPublishJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -39,7 +40,7 @@ class ReconciledPublishJob implements ShouldQueue
     private $expeditionId;
 
     /**
-     * ReconciledPublishJob constructor.
+     * NfnExpertReviewPublishJob constructor.
      *
      * @param string $expeditionId
      */
@@ -59,9 +60,7 @@ class ReconciledPublishJob implements ShouldQueue
 
         try {
             $service->publishReconciled($this->expeditionId);
-
-            return;
-        } catch (Exception $e) {
+        } catch (CannotInsertRecord | Exception $e) {
             $user = User::find(1);
             $messages = [
                 'Expedition Id: '.$this->expeditionId,
@@ -71,7 +70,5 @@ class ReconciledPublishJob implements ShouldQueue
         }
 
         $this->delete();
-
-        return;
     }
 }

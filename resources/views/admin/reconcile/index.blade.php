@@ -1,7 +1,7 @@
 @extends('admin.layout.popup')
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Reconcile') }}
+    {{ __('pages.expert_review') }}
 @stop
 
 @section('content')
@@ -18,32 +18,33 @@
         </div>
         <div class="col-6">
             <form method="post" id="frmReconcile"
-                  action="{{ route('admin.reconciles.update', [$projectId, $expeditionId]) }}" role="form">
+                  action="{{ route('admin.reconciles.update', [$expedition->id]) }}" role="form">
                 {!! method_field('put') !!}
                 @csrf
                 <input type="hidden" name="_id" value="{{ $reconciles->first()->_id }}">
                 <div class="row">
                     <h2 id="output"></h2>
                 </div>
-                @foreach($data[$reconciles->first()->subject_id] as $column)
+                @foreach($columns as $mask => $column)
                     <div class="row">
                         <div class="input-group mt-5">
                             <div class="col-7">
-                                <label for="{{ $column }}" class="col-form-label">{{ __('pages.expert_opinion') }}
+                                <label for="{{ $mask }}" class="col-form-label">{{ __('pages.expert_review_opinion') }}
                                     <br> {{ $column }}:</label>
                                 <textarea class="form-control" rows="3"
-                                          id="{{ $column }}"
-                                          name="{{ $column }}">{{ $reconciles->first()->{$column} }}</textarea>
+                                          id="{{ $mask }}"
+                                          name="{{ $mask }}">{{ $reconciles->first()->{$column} }}</textarea>
                             </div>
                             <div class="col-5">
-                                <label class="col-form-label">{{ __('pages.participants_entered') }} {{ $column }}
+                                <label class="col-form-label">{{ __('pages.expert_review_participants_entered') }} {{ $column }}
                                     :</label>
-                                @foreach($reconciles->first()->transcriptions->sortByDesc($column) as $transcription)
+                                @foreach($reconciles->first()->transcriptions as $transcription)
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="{{ $column }}_radio"
+                                        <input class="form-check-input" type="radio" name="radio"
+                                               data-column="{{ $mask }}"
                                                id="{{ $transcription->_id }}" value="{{ $transcription->{$column} }}">
                                         <label class="form-check-label" for="{{ $transcription->_id }}">
-                                            {!! $transcription->{$column} ?: '<i>participant left blank</i>' !!}
+                                            {!! $transcription->{$column} ?: __('pages.expert_review_blank') !!}
                                         </label>
                                     </div>
                                 @endforeach
@@ -66,19 +67,19 @@
             @if(!$reconciles->hasMorePages())
                 <div class="row mt-5">
                     <div class="col-12 m-auto justify-content-center text-center">
-                        <a href="{{ route('admin.reconciles.publish', [$projectId, $expeditionId]) }}"
+                        <a href="{{ route('admin.reconciles.publish', [$expedition->project_id, $expedition->id]) }}"
                            class="btn btn-primary p-2 m-1 prevent-default text-uppercase"
                            data-method="post"
                            data-confirm="confirmation"
-                           data-title="Publish Reconciled File"
-                           data-content="This will publish a new reconciled.csv file containing your edits in the Expedition downloads section.">
-                            {{__('pages.publish_reconciled')}}</a>
+                           data-title="{{ __('pages.expert_review_pub_data_title') }}"
+                           data-content="{{ __('pages.expert_review_pub_data_content') }}">
+                            {{__('pages.expert_review_pub_btn')}}</a>
                     </div>
                 </div>
             @else
                 <div class="row mt-5">
                     <div class="col-12 m-auto justify-content-center text-center">
-                        <p>{{ __('pages.reconciled_message') }}</p>
+                        <p>{{ __('pages.expert_review_pub_message') }}</p>
                     </div>
                 </div>
             @endif
@@ -92,43 +93,5 @@
 @section('custom-script')
     <script src="{{ secure_asset('admin/js/jquery.panzoom.min.js') }}"></script>
     <script src="{{ secure_asset('admin/js/jquery.form.min.js') }}"></script>
-    <script>
-        $(function () {
-            let $panzoom = $('.panzoom').panzoom();
-            $panzoom.parent().on('mousewheel.focal', function (e) {
-                e.preventDefault();
-                let delta = e.delta || e.originalEvent.wheelDelta;
-                let zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
-                $panzoom.panzoom('zoom', zoomOut, {
-                    animate: false,
-                    focal: e
-                });
-            });
-
-            let options = {
-                beforeSubmit: function () {
-                    $('#output').removeClass().html('<div class="loader mx-auto"></div>');
-                },
-                success: function (response) {
-                    let css = response.result === 'false' ? 'alert-danger' : 'alert-success';
-                    $('#output').addClass(css).html(response.message);
-                }
-            };
-
-            $('#frmReconcile').ajaxForm(options);
-            $(':radio').on('click', function () {
-                let id = $(this).attr('name').replace('_radio', '');
-                $('#' + id).val($(this).val());
-            });
-
-            $('img.lazy').one('load', function () {
-                $('.loader').remove();
-            }).each(function () {
-                if (this.complete) {
-                    $(this).trigger('load');
-                }
-            });
-        });
-
-    </script>
+    <script src="{{ secure_asset('admin/js/expertReview.min.js') }}"></script>
 @endsection

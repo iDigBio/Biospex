@@ -46,7 +46,7 @@ class Kernel extends ConsoleKernel
             ->dailyAt('06:30');
 
         if ($this->app->environment('prod')) {
-            // Create Notes From Nature csv files
+            // Create Zooniverse csv files
             $schedule->command('nfn:csvcreate')
                 ->timezone('America/New_York')
                 ->daily()->before(function () {

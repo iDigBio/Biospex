@@ -66,7 +66,7 @@ class PanoptesApiService extends HttpRequest
     }
 
     /**
-     * Set provider for Notes From Nature
+     * Set provider for Zooniverse
      *
      * @param bool $auth
      */

@@ -23,6 +23,7 @@ use App\Jobs\NfnClassificationReconciliationJob;
 use File;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Storage;
 
 class NfnClassificationReconciliation extends Command
 {
@@ -71,7 +72,7 @@ class NfnClassificationReconciliation extends Command
     private function readDirectory()
     {
         $expeditionIds = [];
-        $files = File::files(config('config.nfn_downloads_classification'));
+        $files = File::files(Storage::path(config('config.nfn_downloads_classification')));
         foreach ($files as $file)
         {
             $expeditionIds[] = basename($file, '.csv');
