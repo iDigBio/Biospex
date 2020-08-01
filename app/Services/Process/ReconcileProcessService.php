@@ -75,6 +75,16 @@ class ReconcileProcessService
     private $reconcilePath;
 
     /**
+     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    private $oldReconcile;
+
+    /**
+     * @var string
+     */
+    private $command;
+
+    /**
      * ReconcileProcessService constructor.
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
@@ -84,6 +94,8 @@ class ReconcileProcessService
     {
         $this->expeditionContract = $expeditionContract;
         $this->downloadContract = $downloadContract;
+
+        $this->oldReconcile = config('config.old_reconcile');
     }
 
     /**
@@ -100,15 +112,23 @@ class ReconcileProcessService
             $this->setPaths($expeditionId);
 
             if (! File::exists($this->csvPath) || ! isset($expedition->panoptesProject)) {
-                throw new Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $this->csvPath]));
+                throw new Exception(__('pages.file_does_not_exist_error_msg', [
+                    'method' => __METHOD__,
+                    'path'   => $this->csvPath,
+                ]));
             }
+
+            $this->setCommand();
 
             $this->runCommand();
 
             $expeditionIds[] = $expedition->id;
 
             if (! $this->checkFilesExist()) {
-                throw new Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $expeditionId]));
+                throw new Exception(__('pages.file_does_not_exist_error_msg', [
+                    'method' => __METHOD__,
+                    'path'   => $expeditionId,
+                ]));
             }
 
             $this->updateOrCreateDownloads($expeditionId);
@@ -132,18 +152,28 @@ class ReconcileProcessService
         $this->setPaths($expedition->id);
 
         if (! File::exists($this->csvPath) || $expedition->nfnActor->pivot->completed === 0) {
-            throw new Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $this->csvPath]));
+            throw new Exception(__('pages.file_does_not_exist_error_msg', [
+                'method' => __METHOD__,
+                'path'   => $this->csvPath,
+            ]));
         }
 
-        $this->runCommand(true);
+        $this->setCommand(true);
+
+        $this->runCommand();
 
         if (! File::exists($this->expPath)) {
-            throw new Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $this->expPath]));
+            throw new Exception(__('pages.file_does_not_exist_error_msg', [
+                'method' => __METHOD__,
+                'path'   => $this->expPath,
+            ]));
         }
     }
 
     /**
      * Set paths.
+     *
+     * @TODO Remove old reconcile once everything is working before updatinig master branch
      *
      * @param $expeditionId
      */
@@ -154,8 +184,9 @@ class ReconcileProcessService
         $this->tranPath = Storage::path(config('config.nfn_downloads_transcript').'/'.$expeditionId.'.csv');
         $this->sumPath = Storage::path(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html');
         $this->expPath = Storage::path(config('config.nfn_downloads_explained').'/'.$expeditionId.'.csv');
-        $this->pythonPath = config('config.python_path');
-        $this->reconcilePath = config('config.reconcile_path');
+
+        $this->pythonPath = $this->oldReconcile ? config('config.old_python_path') : config('config.python_path');
+        $this->reconcilePath = $this->oldReconcile ? config('config.old_reconcile_path') : config('config.reconcile_path');
     }
 
     /**
@@ -175,21 +206,39 @@ class ReconcileProcessService
     /**
      * Run reconcile command.
      *
-     * @param bool $explained
+     * @TODO Refactor after removing old reconcile process.
+     *
      * @throws \Exception
      */
-    protected function runCommand($explained = false)
+    protected function runCommand()
     {
-        $command = ! $explained ? "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->recPath} --unreconciled {$this->tranPath} --summary {$this->sumPath} {$this->csvPath}" : $command = "{$this->pythonPath} {$this->reconcilePath} --explanations --reconciled {$this->expPath} {$this->csvPath}";
-        exec($command, $output, $return);
+        exec($this->command, $output, $return);
 
         if ($return) {
-            $message = $explained ?
-                'Error processing reconcile explained command: ' . $command :
-                'Error processing reconcile command: ' . $command;
+            $message = 'Error processing reconcile command: '.$this->command;
             throw new Exception($message);
         }
+    }
 
+    /**
+     * Set command string.
+     *
+     * @TODO Simplify after fixing old reconcile to new.
+     *
+     * @param bool $explained
+     * @return string|void
+     */
+    protected function setCommand($explained = false)
+    {
+        if ($explained) {
+            $this->command = "{$this->pythonPath} {$this->reconcilePath} --explanations --reconciled {$this->expPath} {$this->csvPath}";
+
+            return;
+        }
+
+        $this->command = $this->oldReconcile ?
+            "{$this->pythonPath} {$this->reconcilePath} -r {$this->recPath} -u {$this->tranPath} -s {$this->sumPath} {$this->csvPath}" :
+            "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->recPath} --unreconciled {$this->tranPath} --summary {$this->sumPath} {$this->csvPath}";
     }
 
     /**
@@ -201,9 +250,7 @@ class ReconcileProcessService
     protected function updateOrCreateDownloads($expeditionId, $explained = false)
     {
         collect(config('config.nfn_file_types'))->filter(function ($type) use ($explained) {
-            return $explained ?
-                $type === 'reconciled_with_expert_opinion':
-                $type !== 'reconciled_with_expert_opinion';
+            return $explained ? $type === 'reconciled_with_expert_opinion' : $type !== 'reconciled_with_expert_opinion';
         })->each(function ($type) use ($expeditionId) {
             $values = [
                 'expedition_id' => $expeditionId,

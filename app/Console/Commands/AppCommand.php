@@ -26,6 +26,7 @@ use App\Services\MongoDbService;
 use App\Services\Process\ReconcilePublishService;
 use Illuminate\Console\Command;
 use MongoDB\Operation\FindOneAndReplace;
+use Storage;
 
 class AppCommand extends Command
 {
@@ -89,12 +90,40 @@ class AppCommand extends Command
     public function handle()
     {
         //$this->checkPanoptesWithPusher();
-        //$this->checkPanoptesToPanoptes();
+        $this->checkPanoptesToPanoptes();
         //$this->findWorkflowsMissingCsv();
+        //$this->generateCounts();
 
-        $this->publishService->publishReconciled(80);
     }
 
+    public function generateCounts()
+    {
+        $expeditionIds = $this->readDirectory();
+        $this->service->setCollection('panoptes_transcriptions_nfndownloads', 'biospex');
+        $expeditionIds->each(function ($expeditionId) {
+            $counts = $this->getExpeditionCounts($expeditionId);
+            if (! empty($counts)) {
+                $this->writeRows($expeditionId, $counts, 'counts');
+            }
+        });
+    }
+
+    public function getExpeditionCounts($expeditionId)
+    {
+        $cursor = $this->service->aggregate([
+            ['$match' => ['subject_expeditionId' => (int) $expeditionId]],
+            ['$group' => ['_id' => '$subject_id', 'count' => ['$sum' => 1]]],
+        ]);
+
+        $counts = [];
+        foreach ($cursor as $object) {
+            if ($object['count'] > 3) {
+                $counts[] = ['subject_id' => $object['_id'], 'count' => $object['count']];
+            }
+        }
+
+        return $counts;
+    }
 
     public function findWorkflowsMissingCsv()
     {
@@ -124,38 +153,71 @@ class AppCommand extends Command
 
     public function checkPanoptesToPanoptes()
     {
-        $rows = [];
+        $results = [];
+        $cursor = $this->getAllOldTranscriptions();
 
-        $this->service->setCollection('panoptes_transcriptions', 'biospex_dev');
-        $dev_cursor = $this->service->find([]);
-        foreach ($dev_cursor as $doc) {
-            $this->service->setCollection('panoptes_transcriptions', 'biospex');
-            $count = $this->service->count(['classification_id' => $doc['classification_id']]);
-            if ($count === 0) {
+        foreach ($cursor as $doc) {
+            $exists = $this->checkTranscriptionExists($doc['classification_id'], 'panoptes_transcriptions', 'biospex');
+            if ($exists === 0) {
                 $expeditionId = isset($doc['subject_expeditionId']) ? $doc['subject_expeditionId'] : 9999;
-                $subject_count = $this->service->count(['subject_id' => $doc['subject_id']]);
+                $origSubjectCount = $this->getSubjectCount($doc['subject_id'], 'panoptes_transcriptions', 'biospex_dev');
+                $newSubjectCount = $this->getSubjectCount($doc['subject_id'], 'panoptes_transcriptions', 'biospex');
+                $oldSubjectCount = $this->getSubjectCount($doc['subject_id'], 'panoptes_transcriptions_nfnoldtest', 'biospex');
                 $values = [
-                    'classification_id' => $doc['classification_id'],
-                    'subject_id'        => $doc['subject_id'],
-                    'subject_count'     => $subject_count,
+                    'classification_id'                => $doc['classification_id'],
+                    'subject_id'                       => $doc['subject_id'],
+                    'old_db_subject_count'             => $origSubjectCount,
+                    'new_reconciliation_subject_count' => $newSubjectCount,
+                    'old_reconciliation_subject_count' => $oldSubjectCount,
                 ];
-                $rows[$expeditionId][] = $values;
+                $results[$expeditionId][] = $values;
             }
         }
 
-        foreach ($rows as $key => $newRows) {
-
-            $this->csv->writerCreateFromPath(storage_path('testing/'.$key.'-missing_transcriptions.csv'));
-
-            $header = array_keys($newRows[0]);
-            $this->csv->insertOne($header);
-
-            foreach ($newRows as $newRow) {
-                $this->csv->insertOne($newRow);
-            }
+        foreach ($results as $id => $rows) {
+            $this->writeRows($id, $rows, 'transcription_counts');
         }
 
         dd('complete');
+    }
+
+    public function writeRows($id, $rows, $dir)
+    {
+        $this->csv->writerCreateFromPath(storage_path($dir.'/'.$id.'-counts_transcriptions.csv'));
+        $header = array_keys($rows[0]);
+        $this->csv->insertOne($header);
+        $this->csv->insertAll($rows);
+    }
+
+    public function getAllOldTranscriptions()
+    {
+        $this->service->setCollection('panoptes_transcriptions', 'biospex_dev');
+
+        return $this->service->find([]);
+    }
+
+    public function getSubjectCount($subjectId, $collection, $db)
+    {
+        $this->service->setCollection($collection, $db);
+        return $this->service->count(['subject_id' => $subjectId]);
+    }
+
+    public function checkTranscriptionExists($classificationId, $collection, $db)
+    {
+        $this->service->setCollection($collection, $db);
+
+        return $this->service->count(['classification_id' => $classificationId]);
+    }
+
+    public function readDirectory()
+    {
+        $expeditionIds = collect();
+        $files = \File::files(\Storage::path(config('config.nfn_downloads_classification')));
+        foreach ($files as $file) {
+            $expeditionIds->push(basename($file, '.csv'));
+        }
+
+        return $expeditionIds;
     }
 
     public function findAndReplace()

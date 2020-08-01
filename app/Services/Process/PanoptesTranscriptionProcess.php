@@ -156,6 +156,7 @@ class PanoptesTranscriptionProcess
         }
 
         if ($this->validateTranscription($row['classification_id'])) {
+            $this->csvError[] = array_merge(['error' => 'Failed unique classification id validation.'], $row);
             return;
         }
 
@@ -173,7 +174,8 @@ class PanoptesTranscriptionProcess
             return;
         }
 
-        $this->locationStateCountyService->buildTranscriptionLocation($row, $subject, $expeditionId);
+        // TODO uncomment before going live
+        //$this->locationStateCountyService->buildTranscriptionLocation($row, $subject, $expeditionId);
 
         $row = array_merge($row, ['subject_projectId' => $subject->project_id]);
 

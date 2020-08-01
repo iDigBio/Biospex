@@ -27,12 +27,12 @@ return [
     'export_dir'                   => 'exports',
     'reports_dir'                  => 'reports',
     'import_dir'                   => 'subjects',
-    'nfn_downloads_dir'            => 'nfndownloads',
-    'nfn_downloads_classification' => 'nfndownloads/classification',
-    'nfn_downloads_reconcile'      => 'nfndownloads/reconcile',
-    'nfn_downloads_reconciled'     => 'nfndownloads/reconciled',
-    'nfn_downloads_summary'        => 'nfndownloads/summary',
-    'nfn_downloads_transcript'     => 'nfndownloads/transcript',
+    'nfn_downloads_dir'            => env('NFN_DOWNLOADS_DIR', 'nfndownloads'),
+    'nfn_downloads_classification' => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/classification',
+    'nfn_downloads_reconcile'      => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/reconcile',
+    'nfn_downloads_reconciled'     => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/reconciled',
+    'nfn_downloads_summary'        => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/summary',
+    'nfn_downloads_transcript'     => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/transcript',
     'nfn_downloads_explained'      => 'nfndownloads/explained',
     'nfn_file_types'               => [
         'classification',
@@ -48,6 +48,7 @@ return [
     'missing_avatar_small'    => env('APP_URL').'/images/avatars/small/missing.png',
     'missing_avatar_medium'   => env('APP_URL').'/images/avatars/medium/missing.png',
 
+    'old_reconcile'      => env('OLD_RECONCILE', false),
     'old_python_path'    => env('OLD_RECONCILIATIONS_PATH').'/venv/bin/python',
     'old_reconcile_path' => env('OLD_RECONCILIATIONS_PATH').'/reconcile.py',
 
