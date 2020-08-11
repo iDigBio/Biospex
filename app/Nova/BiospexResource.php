@@ -6,6 +6,7 @@ use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class BiospexResource extends Resource
@@ -58,6 +59,7 @@ class BiospexResource extends Resource
         return [
             ID::make()->sortable(),
             Text::make('Title'),
+            Textarea::make('Description'),
             File::make('Document')
                 ->store(function (Request $request, $model) {
                     return [
