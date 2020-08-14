@@ -75,11 +75,6 @@ class ReconcileProcessService
     private $reconcilePath;
 
     /**
-     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
-     */
-    private $oldReconcile;
-
-    /**
      * @var string
      */
     private $command;
@@ -94,8 +89,6 @@ class ReconcileProcessService
     {
         $this->expeditionContract = $expeditionContract;
         $this->downloadContract = $downloadContract;
-
-        $this->oldReconcile = config('config.old_reconcile');
     }
 
     /**
@@ -185,8 +178,8 @@ class ReconcileProcessService
         $this->sumPath = Storage::path(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html');
         $this->expPath = Storage::path(config('config.nfn_downloads_explained').'/'.$expeditionId.'.csv');
 
-        $this->pythonPath = $this->oldReconcile ? config('config.old_python_path') : config('config.python_path');
-        $this->reconcilePath = $this->oldReconcile ? config('config.old_reconcile_path') : config('config.reconcile_path');
+        $this->pythonPath = config('config.python_path');
+        $this->reconcilePath = config('config.reconcile_path');
     }
 
     /**
@@ -236,9 +229,7 @@ class ReconcileProcessService
             return;
         }
 
-        $this->command = $this->oldReconcile ?
-            "{$this->pythonPath} {$this->reconcilePath} -r {$this->recPath} -u {$this->tranPath} -s {$this->sumPath} {$this->csvPath}" :
-            "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->recPath} --unreconciled {$this->tranPath} --summary {$this->sumPath} {$this->csvPath}";
+        $this->command = "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->recPath} --unreconciled {$this->tranPath} --summary {$this->sumPath} {$this->csvPath}";
     }
 
     /**

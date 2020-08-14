@@ -17,33 +17,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Interfaces;
+namespace App\Http\Requests;
 
-use App\Repositories\RepositoryInterface;
-
-interface User extends RepositoryInterface
+class MailFormRequest extends Request
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
 
     /**
-     * Get all users.
+     * Get the validation rules that apply to the request.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return array
      */
-    public function getAllUsersOrderByDate();
-
-    /**
-     * Find users by ajax.
-     *
-     * @param $email
-     * @return mixed
-     */
-    public function findUsersByEmailAjax($email);
-
-    /**
-     * Get users for mailer.
-     *
-     * @param string $type
-     * @return mixed
-     */
-    public function getUsersForMailer(string $type);
+    public function rules()
+    {
+        return [
+            'recipients' => 'required',
+            'subject' => 'required|max:100',
+            'message' => 'required'
+        ];
+    }
 }

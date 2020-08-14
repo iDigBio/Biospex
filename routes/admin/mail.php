@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -16,34 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+$router->get('mail')->uses('MailController@index')->name('admin.mail.index');
+$router->post('mail')->uses('MailController@send')->name('admin.mail.send');
 
-namespace App\Repositories\Interfaces;
-
-use App\Repositories\RepositoryInterface;
-
-interface User extends RepositoryInterface
-{
-
-    /**
-     * Get all users.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function getAllUsersOrderByDate();
-
-    /**
-     * Find users by ajax.
-     *
-     * @param $email
-     * @return mixed
-     */
-    public function findUsersByEmailAjax($email);
-
-    /**
-     * Get users for mailer.
-     *
-     * @param string $type
-     * @return mixed
-     */
-    public function getUsersForMailer(string $type);
-}

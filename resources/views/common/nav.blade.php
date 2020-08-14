@@ -58,6 +58,8 @@
                            type="button">{{ __('pages.nova') }}</a>
                         <a href="/admin/telescope" class="dropdown-item text-uppercase"
                            type="button">{{ __('pages.telescope') }}</a>
+                        <a href="{{ route('admin.mail.index') }}" class="dropdown-item text-uppercase"
+                           type="button">{{ __('pages.mail') }}</a>
                     @endcan
                     <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"
                        type="button">{{ __('pages.account') }}</a>

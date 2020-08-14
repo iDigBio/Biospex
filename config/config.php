@@ -48,10 +48,6 @@ return [
     'missing_avatar_small'    => env('APP_URL').'/images/avatars/small/missing.png',
     'missing_avatar_medium'   => env('APP_URL').'/images/avatars/medium/missing.png',
 
-    'old_reconcile'      => env('OLD_RECONCILE', false),
-    'old_python_path'    => env('OLD_RECONCILIATIONS_PATH').'/venv/bin/python',
-    'old_reconcile_path' => env('OLD_RECONCILIATIONS_PATH').'/reconcile.py',
-
     'python_path'    => env('RECONCILIATIONS_PATH').'/venv/bin/python',
     'reconcile_path' => env('RECONCILIATIONS_PATH').'/reconcile.py',
 

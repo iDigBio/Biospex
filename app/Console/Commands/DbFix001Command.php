@@ -52,8 +52,6 @@ class DbFix001Command extends Command
             $this->service->updateOneById($attributes, $resourceId);
         }
 
-        echo 'Completed. Running fix:002' . PHP_EOL;
-
-        \Artisan::call('fix:002');
+        echo 'Completed.' . PHP_EOL;
     }
 }

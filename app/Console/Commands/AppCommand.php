@@ -20,11 +20,14 @@
 namespace App\Console\Commands;
 
 use App\Jobs\Traits\SkipNfn;
+use App\Mail\SiteMailer;
 use App\Models\PanoptesProject;
+use App\Repositories\Interfaces\User;
 use App\Services\Csv\Csv;
 use App\Services\MongoDbService;
 use App\Services\Process\ReconcilePublishService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 use MongoDB\Operation\FindOneAndReplace;
 use Storage;
 
@@ -65,6 +68,11 @@ class AppCommand extends Command
     private $publishService;
 
     /**
+     * @var \App\Console\Commands\User
+     */
+    private $userContract;
+
+    /**
      * AppCommand constructor.
      * 109052 panoptes transcriptions without subject_expeditionId
      *
@@ -73,7 +81,8 @@ class AppCommand extends Command
     public function __construct(
         MongoDbService $service,
         Csv $csv,
-        ReconcilePublishService $publishService
+        ReconcilePublishService $publishService,
+        User $userContract
     ) {
         parent::__construct();
         $this->service = $service;
@@ -82,6 +91,7 @@ class AppCommand extends Command
 
         $this->regex = config('config.nfn_reconcile_problem_regex');
         $this->publishService = $publishService;
+        $this->userContract = $userContract;
     }
 
     /**
@@ -89,11 +99,21 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        //$this->checkPanoptesWithPusher();
-        $this->checkPanoptesToPanoptes();
-        //$this->findWorkflowsMissingCsv();
-        //$this->generateCounts();
+        /*
+        $users = $this->userContract->getUsersForMailer('owners');
+        $recipients = $users->reject(function($user){
+            return $user->email === config('mail.from.address');
+        })->pluck('email');
 
+        dd($recipients);
+        */
+        $recipients = [
+            'cameron_65@yahoo.com',
+            'bruhnrp@yahoo.com',
+            'gingernoelsl@gmail.com'
+        ];
+
+        Mail::to(config('mail.from.address'))->bcc($recipients)->send(new SiteMailer('This is a test', 'This would be the message that is sent'));
     }
 
     public function generateCounts()
