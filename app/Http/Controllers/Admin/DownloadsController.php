@@ -133,43 +133,23 @@ class DownloadsController extends Controller
     }
 
     /**
-     * Display the summary page.
-     *
-     * @param string $projectId
-     * @param string $expeditionId
-     * @return \Illuminate\Http\RedirectResponse|string
-     */
-    public function summary(string $projectId, string $expeditionId)
-    {
-        $expedition = $this->downloadService->getExpeditionById($expeditionId, ['project.group']);
-
-        if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
-            return redirect()->route('webauth.projects.show', [$projectId]);
-        }
-
-        JavaScript::put(['frmUrl' => route('admin.reconciles.reconcile', [$projectId, $expeditionId])]);
-        return view('admin.download.summary', compact('expedition'));
-    }
-
-    /**
-     * Display the summary page.
+     * Display summary.
      *
      * @param string $projectId
      * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse|string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function summaryHtml(string $projectId, string $expeditionId)
+    public function summary(string $projectId, string $expeditionId)
     {
         $expedition = $this->downloadService->getExpeditionById($expeditionId, ['project.group']);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
-            return __('pages.insufficient_permissions');
+            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
 
         if (! Storage::exists(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html')) {
             Flash::warning(trans('pages.file_does_not_exist'));
-
             return redirect()->back();
         }
 
