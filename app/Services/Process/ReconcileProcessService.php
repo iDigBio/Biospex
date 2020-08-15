@@ -166,8 +166,6 @@ class ReconcileProcessService
     /**
      * Set paths.
      *
-     * @TODO Remove old reconcile once everything is working before updatinig master branch
-     *
      * @param $expeditionId
      */
     protected function setPaths($expeditionId)
@@ -199,8 +197,6 @@ class ReconcileProcessService
     /**
      * Run reconcile command.
      *
-     * @TODO Refactor after removing old reconcile process.
-     *
      * @throws \Exception
      */
     protected function runCommand()
@@ -215,8 +211,6 @@ class ReconcileProcessService
 
     /**
      * Set command string.
-     *
-     * @TODO Simplify after fixing old reconcile to new.
      *
      * @param bool $explained
      * @return string|void

@@ -33,7 +33,7 @@ return [
     'nfn_downloads_reconciled'     => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/reconciled',
     'nfn_downloads_summary'        => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/summary',
     'nfn_downloads_transcript'     => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/transcript',
-    'nfn_downloads_explained'      => 'nfndownloads/explained',
+    'nfn_downloads_explained'      => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/explained',
     'nfn_file_types'               => [
         'classification',
         'transcript',

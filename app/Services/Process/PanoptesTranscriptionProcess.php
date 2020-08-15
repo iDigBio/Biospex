@@ -175,7 +175,7 @@ class PanoptesTranscriptionProcess
         }
 
         // TODO uncomment before going live
-        //$this->locationStateCountyService->buildTranscriptionLocation($row, $subject, $expeditionId);
+        $this->locationStateCountyService->buildTranscriptionLocation($row, $subject, $expeditionId);
 
         $row = array_merge($row, ['subject_projectId' => $subject->project_id]);
 
