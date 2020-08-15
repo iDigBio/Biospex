@@ -36,7 +36,7 @@ class BaseMongoModel extends Model
     /**
      * @inheritDoc
      */
-    protected $guarded = ['_id'];
+    protected $guarded = [];
 
     /**
      * @inheritDoc
