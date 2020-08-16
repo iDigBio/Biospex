@@ -156,7 +156,6 @@ class PanoptesTranscriptionProcess
         }
 
         if ($this->validateTranscription($row['classification_id'])) {
-            $this->csvError[] = array_merge(['error' => 'Failed unique classification id validation.'], $row);
             return;
         }
 
