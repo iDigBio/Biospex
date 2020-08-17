@@ -34,13 +34,6 @@ class UserRepository extends EloquentRepository implements User
         return Model::class;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getAllUsersOrderByDate()
-    {
-        return $this->model->with('profile')->orderBy('created_at', 'asc')->get();
-    }
 
     /**
      * @inheritdoc
@@ -50,17 +43,5 @@ class UserRepository extends EloquentRepository implements User
         return $this->model
             ->where('email', 'like', $email . '%')
             ->get(['email as text'])->toArray();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getUsersForMailer(string $type)
-    {
-        if ($type === 'all') {
-            return $this->getAllUsersOrderByDate();
-        }
-
-        return $this->model->has('ownGroups')->with(['profile'])->get();
     }
 }

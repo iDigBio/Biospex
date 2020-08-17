@@ -19,8 +19,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\DateHelper;
-use Flash;
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordFormRequest;
 use App\Repositories\Interfaces\User;
@@ -73,19 +72,18 @@ class UsersController extends Controller
      */
     public function edit()
     {
-        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $user = $this->userContract->findWith(request()->user()->id);
 
         if ($user->cannot('update', $user))
         {
             Flash::warning( trans('pages.insufficient_permissions'));
 
-            return redirect()->route('admin.projects.index');
+            return redirect()->route('admin.get.index');
         }
 
-        $timezones = DateHelper::timeZoneSelect();
-        $cancel = route('admin.projects.index');
+        $cancel = route('admin.get.index');
 
-        return view('admin.user.edit', compact('user', 'timezones', 'cancel'));
+        return view('user.edit', compact('user', 'cancel'));
     }
 
     /**
@@ -96,21 +94,17 @@ class UsersController extends Controller
      */
     public function update(EditUserFormRequest $request, $userId)
     {
-        $user = $this->userContract->findWith($userId, ['profile']);
+        $user = $this->userContract->findWith($userId);
 
         if ($user->cannot('update', $user))
         {
             Flash::warning( trans('pages.insufficient_permissions'));
 
-            return redirect()->route('admin.projects.index');
+            return redirect()->route('admin.get.index');
         }
 
-        $input = $request->all();
-        $input['notification'] = $request->exists('notification') ? 1 : 0;
-        $result = $this->userContract->update($input, $user->id);
+        $result = $this->userContract->update($request->all(), $user->id);
 
-        $user->profile->fill($request->all());
-        $user->profile()->save($user->profile);
 
         if ($result)
         {
@@ -138,7 +132,7 @@ class UsersController extends Controller
         {
             Flash::warning( trans('pages.insufficient_permissions'));
 
-            return redirect()->route('admin.projects.index');
+            return redirect()->route('admin.get.index');
         }
 
         if ( ! Hash::check($request->input('oldPassword'), $user->password))

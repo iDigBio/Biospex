@@ -121,11 +121,6 @@ h2.modal-number>small {
     transition: .25s ease-out;
 }
 
-.btn.btn-primary.green {
-    background-color: #1e7e34; /*red -- link or call to action color */
-    border-color: #1e7e34;
-}
-
 .btn.btn-primary i {
     color: #ffffff;
 }
@@ -138,12 +133,6 @@ h2.modal-number>small {
     background-color: transparent;
     color: #e83f29;
     border-color: #e83f29;
-}
-
-.btn.btn-primary.green:hover {
-    background-color: transparent;
-    color: #1e7e34;
-    border-color: #1e7e34;
 }
 
 .btn-transcription-year, .btn-transcription-year:hover {

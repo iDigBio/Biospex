@@ -19,16 +19,12 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Flash;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\Group;
-use App\Repositories\Interfaces\Invite;
 use App\Http\Requests\RegisterFormRequest;
 use App\Repositories\Interfaces\User;
-use DateHelper;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Hash;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
@@ -58,19 +54,11 @@ class RegisterController extends Controller
     public $loginView = 'auth.login';
 
     /**
-     * @var \App\Repositories\Interfaces\Invite
-     */
-    private $inviteContract;
-
-    /**
      * Create a new controller instance.
-     *
-     * @param \App\Repositories\Interfaces\Invite $inviteContract
      */
-    public function __construct(Invite $inviteContract)
+    public function __construct()
     {
         $this->middleware('guest');
-        $this->inviteContract = $inviteContract;
     }
 
     /**
@@ -85,20 +73,7 @@ class RegisterController extends Controller
             return redirect()->route('home')->with('error', trans('pages.inactive_reg'));
         }
 
-        $code = request('code');
-
-        $invite = $this->inviteContract->findBy('code', $code);
-
-        if ( ! empty($code) && ! $invite)
-        {
-            Flash::warning( trans('pages.invite_not_found'));
-        }
-
-        $code = $invite->code ?? null;
-        $email = $invite->email ?? null;
-        $timezones = ['' => null] + DateHelper::timeZoneSelect();
-
-        return view('auth.register', compact('code', 'email', 'timezones'));
+        return view('auth.register');
     }
 
     /**
@@ -106,25 +81,13 @@ class RegisterController extends Controller
      *
      * @param \App\Http\Requests\RegisterFormRequest $request
      * @param \App\Repositories\Interfaces\User $userContract
-     * @param \App\Repositories\Interfaces\Group $groupContract
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function register(RegisterFormRequest $request, User $userContract, Group $groupContract)
+    public function register(RegisterFormRequest $request, User $userContract)
     {
-        $input = $request->only('email', 'password', 'first_name', 'last_name', 'invite');
+        $input = $request->only('email', 'password');
         $input['password'] = Hash::make($input['password']);
         $user = $userContract->create($input);
-
-        if ( ! empty($input['invite']))
-        {
-            $result = $this->inviteContract->findBy('code', $input['invite']);
-            if ($result->email === $user->email)
-            {
-                $group = $groupContract->find($result->group_id);
-                $user->assignGroup($group);
-                $this->inviteContract->delete($result->id);
-            }
-        }
 
         event(new Registered($user));
 

@@ -19,6 +19,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateUsersTable extends Migration {
 
@@ -32,7 +33,6 @@ class CreateUsersTable extends Migration {
 		Schema::create('users', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->binary('uuid', 16)->nullable();
 			$table->string('email')->nullable()->unique();
 			$table->string('password')->nullable();
 			$table->dateTime('email_verified_at')->nullable();

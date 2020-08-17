@@ -19,11 +19,10 @@
 
 namespace App\Console\Commands;
 
-use App;
-use File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class AppFileDeployment extends Command
 {
@@ -81,35 +80,17 @@ class AppFileDeployment extends Command
      */
     public function handle()
     {
-        // copy needed files to locations
-        $appFiles = File::files($this->resPath.'/apps');
-        $appTargets = collect($appFiles)->reject(function ($file) {
-            return App::environment() === 'dev';
-        })->map(function ($file) {
-            $target = $this->appPath.'/'.File::name($file);
-            File::copy($file, $target);
-
-            return $target;
-        });
-
         $supFiles = File::files($this->resPath.'/supervisord');
-        $subTargets = collect($supFiles)->reject(function ($file) {
-            return (File::name($file) === 'echoserver.conf' || File::name($file) === 'panoptes-pusher.conf')
-                && App::environment() === 'dev';
-        })->map(function ($file) {
-            $target = $this->supPath.'/'.File::name($file);
-            File::copy($file, $target);
-
-            return $target;
-        });
-
-        $files = $appTargets->merge($subTargets);
-
-        $this->apps->each(function ($search) use ($files) {
-            $replace = $this->configureReplace($search);
-            $files->each(function ($file) use ($search, $replace) {
-                exec("sed -i 's*$search*$replace*g' $file");
+        collect($supFiles)->map(function ($file) {
+            $string = File::get($file);
+            $this->apps->each(function ($search) use (&$string) {
+                $replace = $this->configureReplace($search);
+                $string = str_replace($search, $replace, $string);
             });
+
+            $target = $this->supPath.'/'.File::name($file);
+            File::put($target, $string);
+            exec("sudo cp $target /etc/supervisor/conf.d");
         });
     }
 
@@ -129,10 +110,6 @@ class AppFileDeployment extends Command
             return config('config.'.$replace);
         }
 
-        if ($search === 'MAP_PRIVATE_KEY') {
-            return json_encode(base64_decode(config('config.'.strtolower($search))));
-        }
-
         return config('config.'.strtolower($search));
     }
 
@@ -142,33 +119,11 @@ class AppFileDeployment extends Command
     private function setAppsConfigs()
     {
         $this->apps = collect([
-            'APP_URL',
             'APP_ENV',
-
             'SERVER_USER',
             'CURRENT_PATH',
-
-            'ECHO_ID',
-            'ECHO_KEY',
-            'ECHO_SSL_CRT',
-            'ECHO_SSL_KEY',
-
-            'API_URL',
-            'API_VERSION',
-            'API_CLIENT_ID',
-            'API_CLIENT_SECRET',
-
             'NUM_PROCS',
-            'QUEUE_CHART_TUBE',
-            'QUEUE_CLASSIFICATION_TUBE',
-            'QUEUE_DEFAULT_TUBE',
-            'QUEUE_EVENT_TUBE',
-            'QUEUE_IMPORT_TUBE',
-            'QUEUE_EXPORT_TUBE',
-            'QUEUE_STAT_TUBE',
-            'QUEUE_WORKFLOW_TUBE',
-            'QUEUE_OCR_TUBE',
-            'QUEUE_PUSHER_TUBE',
+            'QUEUE_DEFAULT_TUBE'
         ]);
     }
 }

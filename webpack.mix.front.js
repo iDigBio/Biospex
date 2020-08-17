@@ -19,21 +19,6 @@ mix.js("resources/js/front-app.js", "js/front.js")
         "socket.io-client/dist/socket.io",
         "confetti-js/dist/index.min"
     ])
-    .copy('resources/js/amChartMap.js', 'public/js/amChartMap.js')
-    .babel('public/js/amChartMap.js', 'public/js/amChartMap.js')
-    .minify('public/js/amChartMap.js')
-    .copy('resources/js/amChartTranscript.js', 'public/js/amChartTranscript.js')
-    .babel('public/js/amChartTranscript.js', 'public/js/amChartTranscript.js')
-    .minify('public/js/amChartTranscript.js')
-    .copy('resources/js/amChartStat.js', 'public/js/amChartStat.js')
-    .babel('public/js/amChartStat.js', 'public/js/amChartStat.js')
-    .minify('public/js/amChartStat.js')
-    .copy('resources/js/amChartEventRate.js', 'public/js/amChartEventRate.js')
-    .babel('public/js/amChartEventRate.js', 'public/js/amChartEventRate.js')
-    .minify('public/js/amChartEventRate.js')
-    .copy('resources/js/amChartBingo.js', 'public/js/amChartBingo.js')
-    .babel('public/js/amChartBingo.js', 'public/js/amChartBingo.js')
-    .minify('public/js/amChartBingo.js')
     .copy('resources/images', 'public/images');
 /* Production settings */
 

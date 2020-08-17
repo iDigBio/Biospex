@@ -21,10 +21,7 @@ try {
     require("free-jqgrid/dist/plugins/ui.multiselect");
     require("free-jqgrid/js/jquery.jqgrid.min");
 
-    require("summernote/dist/summernote-bs4.min");
-
     window.bootbox = require("./bootbox");
-    require("./common");
     require("./grid");
     require("./admin");
 
@@ -35,6 +32,7 @@ try {
  * for events that are broadcast by Laravel. Echo and event broadcasting
  * allows your team to easily build robust real-time web applications.
  */
+/*
 import Echo from "laravel-echo"
 window.io = require("socket.io-client");
 window.Echo = new Echo({
@@ -42,6 +40,7 @@ window.Echo = new Echo({
     host: window.location.hostname,
     path: '/ws/socket.io',
 });
+*/
 
 /**
  * We"ll load the axios HTTP library which allows us to easily issue requests

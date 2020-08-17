@@ -1,10 +1,5 @@
 <?php
 
-use App\Facades\DateHelper;
-use App\Facades\FlashHelper;
-use App\Facades\GeneralHelper;
-use App\Facades\CountHelper;
-use App\Facades\ActorEventHelper;
 
 return [
 
@@ -182,8 +177,6 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
-        App\Providers\TelescopeServiceProvider::class,
-        App\Providers\NovaServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\BiospexServiceProvider::class,
     ],
@@ -236,13 +229,7 @@ return [
         'URL'              => Illuminate\Support\Facades\URL::class,
         'Validator'        => Illuminate\Support\Facades\Validator::class,
         'View'             => Illuminate\Support\Facades\View::class,
-
-        #### Packages
-        'DateHelper'       => DateHelper::class,
-        'Flash'            => FlashHelper::class,
-        'GeneralHelper'    => GeneralHelper::class,
-        'CountHelper'      => CountHelper::class,
-        'ActorEventHelper' => ActorEventHelper::class
     ],
 
+    'Flash'            => \App\Facades\Flash::class
 ];

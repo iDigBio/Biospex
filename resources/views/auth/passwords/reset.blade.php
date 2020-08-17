@@ -1,4 +1,4 @@
-@extends('front.layout.default')
+@extends('layout.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -11,7 +11,7 @@
         <nav class="header navbar navbar-expand-md box-shadow">
             <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
-            @include('common.nav')
+            @include('partials.nav')
         </nav>
     </header>
 @endsection
@@ -58,10 +58,10 @@
                             </span>
                         @enderror
                     </div>
-                    @include('common.recaptcha')
-                    @include('common.submit-button')
+                    @include('partials.recaptcha')
+                    @include('partials.submit-button')
                 </form>
-                @include('common.back-login', ['route' => route('app.get.login')])
+                @include('partials.back-login', ['route' => route('app.get.login')])
             </div>
         </div>
     </div>

@@ -1,8 +1,6 @@
 <?php
 
-// Home
-/**
- * @param $router Router
- */
-$router->get('/')->uses('HomeController@index')->name('home');
+use Illuminate\Support\Facades\Route;
+
+Route::get('/')->uses('IndexController@index')->name('home');
 

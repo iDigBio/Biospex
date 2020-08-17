@@ -36,7 +36,7 @@ abstract class Repository
     protected $app;
 
     /**
-     * @var
+     * @var \Illuminate\Database\Eloquent\Model
      */
     protected $model;
 
@@ -118,7 +118,8 @@ abstract class Repository
 
     /**
      * @param array $data
-     * @return mixed
+     * @return $this|\Illuminate\Database\Eloquent\Model
+     * @throws \Exception
      */
     public function create(array $data)
     {

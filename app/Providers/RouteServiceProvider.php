@@ -35,108 +35,29 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
-        $this->mapWebRoutes();
-
-        $this->mapApiRoutes();
-
-        $this->mapPassportRoutes();
-    }
-
-    /**
-     * Define the "web" routes for the application.
-     *
-     * These routes all receive session state, CSRF protection, etc.
-     *
-     * @return void
-     */
-    protected function mapWebRoutes()
-    {
         Route::domain(config('config.app_domain'))
-            ->namespace($this->namespace)->middleware('web')->group(function ($router) {
+            ->namespace($this->namespace)->middleware('web')->group(function () {
 
-                $router->namespace('Front')->group(function ($router) {
-                    $this->require_files('routes/front', $router);
+                Route::namespace('Front')->group(function () {
+                    $this->require_files('routes/front');
                 });
 
-                $router->namespace('Auth')->group(function($router){
-                    $this->require_files('routes/front/appauth', $router);
-                    //base_path('routes/front/appauth/auth.php');
+                Route::namespace('Auth')->group(function(){
+                    $this->require_files('routes/auth');
                 });
 
-                $router->namespace('Admin')->prefix('admin')->middleware(['auth', 'verified'])->group(function ($router) {
-                    $this->require_files('routes/admin', $router);
-                });
-
-                $router->prefix('api')->group(function ($router){
-                    $router->namespace('ApiAuth')->group(function ($router) {
-                        $this->require_files('routes/front/apiauth', $router);
-                    });
-                    $router->namespace('Front')->middleware(['auth:apiuser', 'verified:api.verification.notice'])->group(function ($router) {
-                        $router->get('dashboard')->uses('ApiController@dashboard')->name('api.get.dashboard');
-                    });
+                Route::namespace('Admin')->prefix('admin')->middleware(['auth', 'verified'])->group(function () {
+                    $this->require_files('routes/admin');
                 });
             });
-
-    }
-
-    /**
-     * Define the "api" routes for the application.
-     *
-     * These routes are typically stateless.
-     *
-     * @return void
-     */
-    protected function mapApiRoutes()
-    {
-        $router = app('Dingo\Api\Routing\Router');
-
-        $router->version('v0', function ($router) {
-            $options = [
-                'namespace'  => 'App\Http\Controllers\Api\V0',
-                'middleware' => ['api'],
-            ];
-            $router->group($options, function ($router) {
-                $this->require_files('routes/api/v0', $router);
-            });
-        });
-
-        $router->version('v1', function ($router) {
-            $options = [
-                'namespace'  => 'App\Http\Controllers\Api\V1',
-                'middleware' => ['api'],
-            ];
-
-            $router->group($options, function ($router) {
-                $router->group(['middleware' => 'client'], function ($router) {
-                    $this->require_files('routes/api/v1', $router);
-                });
-            });
-        });
-
-    }
-
-    /**
-     * Map Passport routes.
-     */
-    protected function mapPassportRoutes()
-    {
-        $defaultOptions = [
-            'prefix'    => 'oauth',
-            'namespace' => '\Laravel\Passport\Http\Controllers',
-        ];
-
-        Route::group($defaultOptions, function ($router) {
-            $this->require_files('routes/passport', $router);
-        });
     }
 
     /**
      * Load required files.
      *
      * @param $dir
-     * @param $router
      */
-    protected function require_files($dir, $router)
+    protected function require_files($dir)
     {
         $dirPath = base_path().'/'.$dir.'/';
         foreach (new DirectoryIterator($dirPath) as $file) {

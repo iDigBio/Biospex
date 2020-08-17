@@ -1,4 +1,4 @@
-@extends('front.layout.default')
+@extends('layout.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -11,7 +11,7 @@
         <nav class="header navbar navbar-expand-md box-shadow">
             <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
-            @include('common.nav')
+            @include('partials.nav')
         </nav>
     </header>
 @endsection
@@ -25,28 +25,6 @@
                 <form action="{{ route('app.post.register') }}" method="post" role="form" class="form-horizontal">
                     @csrf
                     <input type="hidden" name="apiuser" value="false">
-                    <div class="form-group">
-                        <label for="first_name" class="col-form-label required">{{ __('pages.first_name') }}:</label>
-                        <input type="text" class="form-control @error('first_name') is-invalid @enderror"
-                               id="first_name" name="first_name"
-                               value="{{ old('first_name') }}" required>
-                        @error('first_name')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="last_name" class="col-form-label required">{{ __('pages.last_name') }}:</label>
-                        <input type="text" class="form-control @error('last_name') is-invalid @enderror"
-                               id="last_name" name="last_name"
-                               value="{{ old('last_name') }}" required>
-                        @error('last_name')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
                     <div class="form-group">
                         <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
                         <input type="email" class="form-control @error('email') is-invalid @enderror"
@@ -80,36 +58,8 @@
                             </span>
                         @enderror
                     </div>
-
-                    <div class="form-group">
-                        <label for="group_id"
-                               class="col-form-label required">{{ __('pages.timezone') }}
-                            :</label>
-                        <select name="timezone" id="timezone"
-                                class="form-control custom-select {{ ($errors->has('timezone')) ? 'is-invalid' : '' }}"
-                                required>
-                            @foreach($timezones as $key => $timezone)
-                                {{ $key }}
-                                <option {{ $key == old('timezone') ?
-                                        ' selected=selected' : '' }} value="{{ $key }}">{{ $timezone }}</option>
-                            @endforeach
-                        </select>
-                        <span class="invalid-feedback">{{ $errors->first('timezone') }}</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="invite" class="col-form-label">{{ __('pages.invite_code') }}:</label>
-                        <input type="text" class="form-control @error('invite') is-invalid @enderror"
-                               id="invite" name="invite"
-                               value="{{ old("invite", $code ?? '') }}">
-                        @error('invite')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                    @include('common.recaptcha')
-                    @include('common.submit-button')
+                    @include('partials.recaptcha')
+                    @include('partials.submit-button')
                 </form>
                 <div class="mt-4 text-center">
                     <a href="{{ route('app.get.login') }}">{{ __('pages.already_have_account') }}</a>

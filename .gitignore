@@ -3,7 +3,6 @@ node_modules
 /storage/*.key
 /vendor
 /A-Notes
-storage/testing
 storage/app/classifications/*
 storage/app/exports/*
 storage/app/imports/*

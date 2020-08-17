@@ -1,4 +1,4 @@
-@extends('front.layout.default')
+@extends('layout.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -11,7 +11,7 @@
         <nav class="header navbar navbar-expand-md box-shadow">
             <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
-            @include('common.nav')
+            @include('partials.nav')
         </nav>
     </header>
 @endsection
@@ -50,8 +50,8 @@
                         <input type="checkbox" class="custom-control-input" id="remember" name="remember">
                         <label class="custom-control-label" for="remember">{{ __('pages.remember_me') }}</label>
                     </div>
-                    @include('common.recaptcha')
-                    @include('common.submit-button')
+                    @include('partials.recaptcha')
+                    @include('partials.submit-button')
                 </form>
                 <div class="mt-4 text-center">
                     <a href="{{ route('app.password.request') }}">{{ __('pages.forgot_your_pass') }}</a> ||
