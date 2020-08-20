@@ -19,25 +19,30 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\NfnClassificationsTranscriptJob;
+use App\Jobs\NfnClassificationReconciliationJob;
 use File;
 use Illuminate\Console\Command;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Storage;
 
-class NfnClassificationsTranscript extends Command
+class NfnClassificationReconciliation extends Command
 {
+    use DispatchesJobs;
+
     /**
      * The name and signature of the console command.
+     * Ids are comma delimited expedition expeditionIds.
      *
      * @var string
      */
-    protected $signature = 'nfn:transcript {expeditionIds?}';
+    protected $signature = 'nfn:reconcile {expeditionIds?} {--C|command}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Process reconciled transcriptions and enter into database.';
+    protected $description = 'Process reconciliation on NFN files.';
 
     /**
      * NfNClassificationsCsvRequests constructor.
@@ -52,8 +57,13 @@ class NfnClassificationsTranscript extends Command
      */
     public function handle()
     {
+        $command = $this->option('command');
+
         $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
-        NfnClassificationsTranscriptJob::dispatch($expeditionIds);
+
+        foreach ($expeditionIds as $expeditionId) {
+            NfnClassificationReconciliationJob::dispatch((int) $expeditionId, $command);
+        }
     }
 
     /**
@@ -62,7 +72,7 @@ class NfnClassificationsTranscript extends Command
     private function readDirectory()
     {
         $expeditionIds = [];
-        $files = File::files(config('config.nfn_downloads_transcript'));
+        $files = File::files(Storage::path(config('config.nfn_downloads_classification')));
         foreach ($files as $file)
         {
             $expeditionIds[] = basename($file, '.csv');

@@ -19,73 +19,56 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Interfaces\Expedition;
+use App\Models\User;
+use App\Notifications\JobError;
+use App\Services\Process\ReconcilePublishService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use League\Csv\CannotInsertRecord;
 
-class NfnClassificationsUpdateJob implements ShouldQueue
+class NfnExpertReviewPublishJob implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * The number of seconds the job can run before timing out.
-     *
-     * @var int
-     */
-    public $timeout = 7200;
-
-    /**
-     * @var int
+     * @var null
      */
     private $expeditionId;
 
     /**
-     * NfnClassificationsUpdateJob constructor.
-     * @param int $expeditionId
+     * NfnExpertReviewPublishJob constructor.
+     *
+     * @param string $expeditionId
      */
-    public function __construct($expeditionId)
+    public function __construct(string $expeditionId)
     {
         $this->expeditionId = $expeditionId;
         $this->onQueue(config('config.classification_tube'));
     }
 
     /**
-     * Execute job.
+     * Handle Job.
      *
-     * @param Expedition $expeditionContract
+     * @param \App\Services\Process\ReconcilePublishService $service
      */
-    public function handle(Expedition $expeditionContract)
+    public function handle(ReconcilePublishService $service)
     {
-        $expedition = $expeditionContract->getExpeditionsHavingPanoptesProjects($this->expeditionId);
 
-        if ($this->checkIfExpeditionShouldProcess($expedition))
-        {
-            $this->delete();
-
-            return;
+        try {
+            $service->publishReconciled($this->expeditionId);
+        } catch (CannotInsertRecord | Exception $e) {
+            $user = User::find(1);
+            $messages = [
+                'Expedition Id: '.$this->expeditionId,
+                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
+            ];
+            $user->notify(new JobError(__FILE__, $messages));
         }
 
-        AmChartJob::dispatch($expedition->project_id);
-
         $this->delete();
-    }
-
-    /**
-     * Check needed variables.
-     *
-     * @param $expedition
-     * @return bool
-     */
-    public function checkIfExpeditionShouldProcess($expedition)
-    {
-        return null === $expedition
-            || ! isset($expedition->panoptesProject)
-            || null === $expedition->panoptesProject->panoptes_workflow_id
-            || null === $expedition->panoptesProject->panoptes_project_id
-            || null === $expedition->nfnActor;
     }
 }

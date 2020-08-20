@@ -55,25 +55,24 @@ class MongoDbService
     }
 
     /**
+     * Return cursor as array.
+     *
+     * @param $cursor
+     * @return mixed
+     */
+    public function getArray($cursor)
+    {
+        $cursor->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
+
+        return $cursor->toArray();
+    }
+
+    /**
      * Set connection client.
      */
     public function setClient()
     {
         $this->client = $this->databaseManager->connection('mongodb')->getMongoClient();
-    }
-
-    /**
-     * Get client.
-     *
-     * @return Client
-     */
-    public function getClient()
-    {
-        if (empty($this->client)) {
-            $this->setClient();
-        }
-
-        return $this->client;
     }
 
     /**
@@ -162,19 +161,23 @@ class MongoDbService
      *
      * @param $filter
      * @param $replacement
+     * @param array $options
      * @return array|null|object
      */
-    public function findOneAndReplace($filter, $replacement)
+    public function findOneAndReplace($filter, $replacement, $options = [])
     {
-        return $this->clientCollection->findOneAndReplace($filter, $replacement);
+        return $this->clientCollection->findOneAndReplace($filter, $replacement, $options);
     }
 
     /**
+     * Insert one record.
+     *
      * @param array $attributes
+     * @return \MongoDB\InsertOneResult
      */
     public function insertOne(array $attributes = [])
     {
-        $this->clientCollection->insertOne($attributes);
+        return $this->clientCollection->insertOne($attributes);
     }
 
     /**
@@ -215,6 +218,11 @@ class MongoDbService
     public function deleteMany(array $criteria)
     {
         $this->clientCollection->deleteMany($criteria);
+    }
+
+    public function aggregate($pipline, $options = [])
+    {
+        return $this->clientCollection->aggregate($pipline, $options);
     }
 
     /**

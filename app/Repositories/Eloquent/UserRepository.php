@@ -51,4 +51,16 @@ class UserRepository extends EloquentRepository implements User
             ->where('email', 'like', $email . '%')
             ->get(['email as text'])->toArray();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getUsersForMailer(string $type)
+    {
+        if ($type === 'all') {
+            return $this->getAllUsersOrderByDate();
+        }
+
+        return $this->model->has('ownGroups')->with(['profile'])->get();
+    }
 }

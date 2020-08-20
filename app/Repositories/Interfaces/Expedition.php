@@ -54,7 +54,7 @@ interface Expedition extends RepositoryInterface
     public function getExpeditionAdminIndex($userId = null, $sort = null, $order = null, $projectId = null);
 
     /**
-     * Retrieve expeditions for Notes From Nature classification process.
+     * Retrieve expeditions for Zooniverse classification process.
      *
      * @param array $expeditionIds
      * @param array $attributes
@@ -115,9 +115,18 @@ interface Expedition extends RepositoryInterface
     public function getExpeditionsHavingPanoptesProjects($expeditionId);
 
     /**
+     * Find Expedition having workflow manager.
+     *
      * @param $expeditionId
      * @return mixed
      */
     public function findExpeditionHavingWorkflowManager($expeditionId);
+
+    /**
+     * Return expedition and relations for expert review creation.
+     *
+     * @param int $expeditionId
+     */
+    public function findExpeditionForExpertReview(int $expeditionId);
 
 }

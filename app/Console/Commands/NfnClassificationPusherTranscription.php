@@ -19,29 +19,30 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\NfnClassificationsUpdateJob;
+use File;
+use App\Jobs\NfnClassificationPusherTranscriptionJob;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
+use Storage;
 
-class NfnClassificationsUpdate extends Command
+class NfnClassificationPusherTranscription extends Command
 {
     /**
      * The name and signature of the console command.
+     * expeditionIds are comma delimited expedition expeditionIds.
      *
      * @var string
      */
-    protected $signature = 'nfn:update {expeditionIds?} {--files=}';
+    protected $signature = 'nfn:pusher {expeditionIds?} {--C|command}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update NfN Classifications for Expeditions. Argument is comma separated expeditionIds.';
-
+    protected $description = 'Run WeDigBio dashboard to create/update records';
 
     /**
-     * Create a new command instance.
+     * PusherTranscription constructor.
      */
     public function __construct()
     {
@@ -50,24 +51,16 @@ class NfnClassificationsUpdate extends Command
 
     /**
      * Execute the console command.
+     *
      */
     public function handle()
     {
-        $expeditionIds = $this->argument('expeditionIds') === null ?
-            null : explode(',', $this->argument('expeditionIds'));
+        $command = $this->option('command');
+        $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
 
-        $files = $this->option('files');
-
-        if ($expeditionIds === null && $files === null)
-        {
-            return;
+        foreach ($expeditionIds as $expeditionId) {
+            NfnClassificationPusherTranscriptionJob::dispatch($expeditionId, $command);
         }
-
-        $expeditionIds = $files !== "true" ? $expeditionIds : $this->readDirectory();
-
-        collect($expeditionIds)->each(function ($expeditionId){
-            NfnClassificationsUpdateJob::dispatch($expeditionId);
-        });
     }
 
     /**
@@ -76,7 +69,8 @@ class NfnClassificationsUpdate extends Command
     private function readDirectory()
     {
         $expeditionIds = [];
-        $files = File::files(config('config.nfn_downloads_transcript'));
+        $files = File::files(Storage::path(config('config.nfn_downloads_transcript')));
+
         foreach ($files as $file)
         {
             $expeditionIds[] = basename($file, '.csv');

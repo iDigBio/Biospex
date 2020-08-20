@@ -19,7 +19,7 @@
 
 namespace App\Services\Process;
 
-use App\Notifications\NfnReconciledPublished;
+use App\Notifications\NfnExpertReviewPublished;
 use App\Repositories\Interfaces\Download;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\Reconcile;
@@ -74,17 +74,12 @@ class ReconcilePublishService
      * Publish reconciled file.
      *
      * @param string $expeditionId
-     * @throws \Exception
+     * @throws \League\Csv\CannotInsertRecord
      */
     public function publishReconciled(string $expeditionId)
     {
-        $result = $this->createReconcileCsv($expeditionId);
-        if (! $result) {
-            throw new \Exception(__('Could not create reconcile csv for '.$expeditionId));
-        }
-
+        $this->createReconcileCsv($expeditionId);
         $this->createDownload($expeditionId);
-
         $this->sendEmail($expeditionId);
     }
 
@@ -92,30 +87,27 @@ class ReconcilePublishService
      * Create csv file for reconciled.
      *
      * @param string $expeditionId
-     * @return bool
+     * @throws \League\Csv\CannotInsertRecord|\Exception
      */
-    private function createReconcileCsv(string $expeditionId): bool
+    private function createReconcileCsv(string $expeditionId)
     {
-        try {
-            $results = $this->reconcileContract->getByExpeditionId($expeditionId);
-            $mapped = $results->map(function ($record) {
-                unset($record->_id, $record->updated_at, $record->created_at);
+        $results = $this->reconcileContract->getByExpeditionId($expeditionId);
+        $mapped = $results->map(function ($record) {
+            unset($record->_id, $record->columns, $record->problem, $record->updated_at, $record->created_at);
+            return $record;
+        });
 
-                return $record;
-            });
-
-            $header = array_keys($mapped->first()->toArray());
-
-            $fileName = $expeditionId.'.csv';
-            $file = Storage::path(config('config.nfn_downloads_reconciled').'/'.$fileName);
-            $this->csv->writerCreateFromPath($file);
-            $this->csv->insertOne($header);
-            $this->csv->insertAll($mapped->toArray());
-
-            return true;
-        } catch (CannotInsertRecord $exception) {
-            return false;
+        if ($mapped->isEmpty()) {
+            throw new \Exception(__('pages.expert_review_pub_files_missing', [':id' => $expeditionId]));
         }
+
+        $header = array_keys($mapped->first()->toArray());
+
+        $fileName = $expeditionId.'.csv';
+        $file = Storage::path(config('config.nfn_downloads_reconciled').'/'.$fileName);
+        $this->csv->writerCreateFromPath($file);
+        $this->csv->insertOne($header);
+        $this->csv->insertAll($mapped->toArray());
     }
 
     /**
@@ -129,13 +121,13 @@ class ReconcilePublishService
             'expedition_id' => $expeditionId,
             'actor_id'      => 2,
             'file'          => $expeditionId.'.csv',
-            'type'          => 'reconciled_with_expert_opinion',
+            'type'          => 'reconciled',
         ];
         $attributes = [
             'expedition_id' => $expeditionId,
             'actor_id'      => 2,
             'file'          => $expeditionId.'.csv',
-            'type'          => 'reconciled_with_expert_opinion',
+            'type'          => 'reconciled',
         ];
 
         $this->downloadContract->updateOrCreate($attributes, $values);
@@ -149,6 +141,6 @@ class ReconcilePublishService
     private function sendEmail(string $expeditionId)
     {
         $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group.owner']);
-        $expedition->project->group->owner->notify(new NfnReconciledPublished($expedition->title));
+        $expedition->project->group->owner->notify(new NfnExpertReviewPublished($expedition->title));
     }
 }

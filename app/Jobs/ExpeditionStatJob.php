@@ -30,7 +30,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 class ExpeditionStatJob implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -65,20 +64,14 @@ class ExpeditionStatJob implements ShouldQueue
     public function handle(Expedition $expedition, PanoptesApiService $panoptesApiService)
     {
         $record = $expedition->findWith($this->expeditionId, ['stat', 'nfnActor']);
-        $count = $expedition->getExpeditionSubjectCounts($this->expeditionId);
 
         $workflow = $panoptesApiService->getPanoptesWorkflow($record->panoptesProject->panoptes_workflow_id);
-
-        $subject_count = $workflow['subjects_count'];
-        $transcriptionCompleted = $workflow['classifications_count'];
-        $transcriptionTotal = GeneralHelper::transcriptionsTotal($workflow['subjects_count']);
-        $percentCompleted = GeneralHelper::transcriptionsPercentCompleted($transcriptionTotal, $transcriptionCompleted);
-
-        $record->stat->local_subject_count = $count;
-        $record->stat->subject_count = $subject_count;
-        $record->stat->transcriptions_total = $transcriptionTotal;
-        $record->stat->transcriptions_completed = $transcriptionCompleted;
-        $record->stat->percent_completed = $percentCompleted;
+        $panoptesApiService->calculateTotals($workflow);
+        $record->stat->local_subject_count = $expedition->getExpeditionSubjectCounts($this->expeditionId);
+        $record->stat->subject_count = $panoptesApiService->getSubjectCount();
+        $record->stat->transcriptions_total = $panoptesApiService->getTranscriptionsTotal();
+        $record->stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
+        $record->stat->percent_completed = $panoptesApiService->getPercentCompleted();
 
         $record->stat->save();
 

@@ -37,6 +37,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
+     * @TODO Use expedition_stat table to get sum
      * @inheritDoc
      */
     public function getTotalTranscriptions()
@@ -82,6 +83,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
+     * @TODO Change to sum expedition stat table
      * @inheritdoc
      */
     public function getProjectTranscriptionCount($projectId)
@@ -99,11 +101,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
-     * Retrieve earliest date a transcription was finished for project.
-     *
-     * @param $projectId
-     * @return mixed|null
-     * @throws \Exception
+     * @inheritDoc
      */
     public function getMinFinishedAtDateByProjectId($projectId)
     {
@@ -121,11 +119,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
-     * Retrieve amx date a transcription was finished for project.
-     *
-     * @param $projectId
-     * @return mixed|null
-     * @throws \Exception
+     * @inheritDoc
      */
     public function getMaxFinishedAtDateByProjectId($projectId)
     {
@@ -143,12 +137,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
-     * Retrieve transcription count grouped by date.
-     *
-     * @param $workflowId
-     * @param $begin
-     * @param $end
-     * @return mixed
+     * @inheritDoc
      */
     public function getTranscriptionCountPerDate($workflowId, $begin, $end)
     {
@@ -184,11 +173,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
-     * Get transcription counts per user.
-     *
-     * @param $projectId
-     * @return mixed
-     * @throws \Exception
+     * @inheritDoc
      */
     public function getTranscribersTranscriptionCount($projectId)
     {
@@ -236,12 +221,9 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
-     * @param $expeditionId
-     * @param $timestamp
-     * @return mixed
-     * @throws \Exception
+     * @inheritDoc
      */
-    public function getTranscriptionForDashboardJob($expeditionId, $timestamp)
+    public function getTranscriptionForDashboardJob($expeditionId, $timestamp = null)
     {
         $model = $this->model->with([
             'subject' => function ($query) {

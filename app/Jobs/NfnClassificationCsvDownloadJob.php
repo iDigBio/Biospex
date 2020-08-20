@@ -21,16 +21,17 @@ namespace App\Jobs;
 
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
-use App\Services\Process\PanoptesTranscriptionProcess;
+use App\Services\Api\PanoptesApiService;
 use Exception;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Storage;
 
-class NfnClassificationsTranscriptJob implements ShouldQueue
+class NfnClassificationCsvDownloadJob implements ShouldQueue
 {
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -40,61 +41,69 @@ class NfnClassificationsTranscriptJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 7200;
+    public $timeout = 3600;
 
     /**
      * @var array
      */
-    private $expeditionIds;
+    private $sources;
 
     /**
-     * NfnClassificationsTranscriptJob constructor.
-     *
-     * @param array $expeditionIds
+     * @var array
      */
-    public function __construct(array $expeditionIds = [])
+    private $errorMessages = [];
+
+    /**
+     * NfnClassificationCsvDownloadJob constructor.
+     * @param array $sources
+     */
+    public function __construct(array $sources = [])
     {
-        $this->expeditionIds = collect($expeditionIds);
+        $this->sources = $sources;
         $this->onQueue(config('config.classification_tube'));
     }
 
     /**
      * Execute the job.
      *
-     * @param PanoptesTranscriptionProcess $transcriptionProcess
+     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @param User $userContract
      * @return void
      */
     public function handle(
-        PanoptesTranscriptionProcess $transcriptionProcess,
+        PanoptesApiService $panoptesApiService,
         User $userContract
     )
     {
-        if ($this->expeditionIds->isEmpty())
+        if (count($this->sources) === 0)
         {
-            $this->delete();
-
             return;
         }
 
         try
         {
-            $transcriptDir = config('config.nfn_downloads_transcript');
-
-            $this->expeditionIds->filter(function($expeditionId) use ($transcriptDir) {
-                return Storage::exists($transcriptDir . '/' . $expeditionId . '.csv');
-            })->each(function($expeditionId) use ($transcriptionProcess, $transcriptDir) {
-                $csvFile = Storage::path($transcriptDir . '/' . $expeditionId . '.csv');
-                $transcriptionProcess->process($csvFile, $expeditionId);
-            });
-
-            if ( ! empty($transcriptionProcess->getCsvError()))
+            $responses = $panoptesApiService->panoptesClassificationsDownload($this->sources);
+            $expeditionIds = [];
+            foreach ($responses as $index => $response)
             {
-                $user = $userContract->find(1);
-                $user->notify(new JobError(__FILE__, $transcriptionProcess->getCsvError()));
+                if ($response instanceof ServerException || $response instanceof ClientException)
+                {
+                    $this->errorMessages[] = 'Expedition Id: ' . $index . '<br />' . $response->getMessage();
+                    continue;
+                }
+
+                $expeditionIds[] = $index;
             }
 
-            NfnClassificationPusherTranscriptionsJob::dispatch($this->expeditionIds);
+            if ( ! empty($this->errorMessages))
+            {
+                $user = $userContract->find(1);
+                $user->notify(new JobError(__FILE__, $this->errorMessages));
+            }
+
+            foreach ($expeditionIds as $expeditionId) {
+                NfnClassificationReconciliationJob::dispatch((int) $expeditionId)->delay(1800);
+            }
         }
         catch (Exception $e)
         {

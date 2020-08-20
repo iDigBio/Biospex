@@ -59,31 +59,6 @@ class GeneralHelper
     }
 
     /**
-     * Set count for total transcriptions. 4 per subject.
-     *
-     * @param $count
-     * @return mixed
-     */
-    public function transcriptionsTotal($count)
-    {
-        return (int) $count * (int) config('config.nfnTranscriptionsComplete');
-    }
-
-    /**
-     * Return percentage of completed transcriptions.
-     *
-     * @param $total
-     * @param $completed
-     * @return float|int
-     */
-    public function transcriptionsPercentCompleted($total, $completed)
-    {
-        $value = ($total === 0 || $completed === 0) ? 0 : ($completed / $total) * 100;
-
-        return ($value > 100) ? 100 : round($value, 2);
-    }
-
-    /**
      * Check if table has index.
      *
      * @param $table

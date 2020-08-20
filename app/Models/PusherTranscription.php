@@ -34,6 +34,15 @@ class PusherTranscription extends BaseMongoModel
     protected $dates = ['created_at', 'updated_at', 'timestamp'];
 
     /**
+     * @var string[]
+     */
+    protected $casts = [
+        'classification_id' => 'int',
+        'transcription_id' => 'string',
+        'expedition_id' => 'int'
+    ];
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition()
@@ -47,38 +56,5 @@ class PusherTranscription extends BaseMongoModel
     public function transcription()
     {
         return $this->belongsTo(PanoptesTranscription::class, 'classification_id', 'classification_id');
-    }
-
-    /**
-     * Set expedition_id attribute to integer.
-     *
-     * @param $value
-     */
-    public function setExpeditionIdAttribute($value)
-    {
-        $this->attributes['expedition_id'] = (int) $value;
-    }
-
-    /**
-     * Set transcript as mongo id.
-     *
-     * @param $value
-     */
-    public function setTranscriptionIdAttribute($value)
-    {
-        if (is_string($value) and strlen($value) === 24 and ctype_xdigit($value)) {
-            $this->attributes['transcription_id'] = new ObjectID($value);
-        }
-    }
-
-    /**
-     * Get transcript id.
-     *
-     * @param $value
-     * @return mixed
-     */
-    public function getTranscriptIdAttribute($value)
-    {
-        return $this->getIdAttribute($value);
     }
 }

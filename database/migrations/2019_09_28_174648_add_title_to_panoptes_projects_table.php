@@ -31,7 +31,7 @@ class AddTitleToPanoptesProjectsTable extends Migration
     public function up()
     {
         Schema::table('panoptes_projects', function (Blueprint $table) {
-            $table->string('title')->after('slug')->default('Notes From Nature');
+            $table->string('title')->after('slug')->default('Zooniverse');
         });
     }
 

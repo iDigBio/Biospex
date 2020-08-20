@@ -37,7 +37,10 @@ class Reconcile extends BaseMongoModel
      * @var array
      */
     protected $casts = [
-        'subject_id' => 'integer'
+        'subject_id' => 'integer',
+        'subject_projectId' => 'integer',
+        'subject_expeditionId' => 'integer',
+        'problem' => 'integer'
     ];
 
     /**

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -16,16 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+$router->get('mail')->uses('MailController@index')->name('admin.mail.index');
+$router->post('mail')->uses('MailController@send')->name('admin.mail.send');
 
-/**
- * Not using package until https://github.com/fico7489/laravel-pivot/issues/55 is fixed
- */
-namespace App\Models\Relations;
-
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use App\Models\Traits\FiresPivotEventsTrait;
-
-class MorphToManyCustom extends MorphToMany
-{
-    use FiresPivotEventsTrait;
-}

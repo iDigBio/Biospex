@@ -25,13 +25,25 @@ interface User extends RepositoryInterface
 {
 
     /**
+     * Get all users.
+     *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllUsersOrderByDate();
 
     /**
+     * Find users by ajax.
+     *
      * @param $email
      * @return mixed
      */
     public function findUsersByEmailAjax($email);
+
+    /**
+     * Get users for mailer.
+     *
+     * @param string $type
+     * @return mixed
+     */
+    public function getUsersForMailer(string $type);
 }

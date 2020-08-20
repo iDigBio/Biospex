@@ -24,6 +24,7 @@ use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\PusherTranscription;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
+use Validator;
 
 class PusherTranscriptionService
 {
@@ -116,19 +117,6 @@ class PusherTranscriptionService
     }
 
     /**
-     * Check if dashboard document already exists.
-     *
-     * @param $transcription
-     * @return int
-     */
-    public function checkPusherTranscription($transcription)
-    {
-        $exists = $this->pusherTranscriptionContract->findBy('transcription_id', $transcription->_id);
-
-        return $exists === null;
-    }
-
-    /**
      * Process transcripts
      *
      * @param $transcription
@@ -151,7 +139,7 @@ class PusherTranscriptionService
      */
     private function buildItem($transcription, $expedition, $classification = null)
     {
-        $classification === null ? $this->createClassification($transcription, $expedition) : $this->updateClassification($transcription, $classification);
+        $classification === null ? $this->createClassification($transcription, $expedition) : $this->updateClassification($transcription, $classification, $expedition);
     }
 
     /**
@@ -165,9 +153,14 @@ class PusherTranscriptionService
     {
         $thumbnailUri = $this->setThumbnailUri($transcription);
 
+        $classification_id = (int) $transcription->classification_id;
+
+        if ($this->validateTranscription($classification_id)) {
+            return;
+        }
+
         $item = [
-            'transcription_id'     => $transcription->id,
-            'classification_id'    => $transcription->classification_id,
+            'classification_id'    => $classification_id,
             'expedition_uuid'      => $expedition->uuid,
             'project'              => $expedition->panoptesProject->title,
             'description'          => $expedition->description,
@@ -213,8 +206,9 @@ class PusherTranscriptionService
      *
      * @param $transcription
      * @param $classification
+     * @param $expedition
      */
-    private function updateClassification($transcription, $classification)
+    private function updateClassification($transcription, $classification, $expedition)
     {
         $thumbnailUri = $this->setThumbnailUri($transcription);
 
@@ -233,7 +227,7 @@ class PusherTranscriptionService
         ];
 
         $attributes = [
-            'transcription_id'     => $transcription->_id,
+            'expedition_uuid'      => $expedition->uuid,
             'timestamp'            => $transcription->classification_finished_at,
             'subject'              => array_merge($classification->subject, $subject),
             'contributor'          => array_merge($classification->contributor, ['transcriber' => $transcription->user_name]),
@@ -252,5 +246,23 @@ class PusherTranscriptionService
     private function setThumbnailUri($transcription)
     {
         return (! isset($transcription->subject_imageURL) || empty($transcription->subject_imageURL)) ? $transcription->subject->accessURI : $transcription->subject_imageURL;
+    }
+
+    /**
+     * Validate transcription to prevent duplicates.
+     *
+     * @param $classification_id
+     * @return mixed
+     */
+    public function validateTranscription($classification_id)
+    {
+
+        $rules = ['classification_id' => 'unique:mongodb.pusher_transcriptions,classification_id'];
+        $values = ['classification_id' => $classification_id];
+        $validator = Validator::make($values, $rules);
+        $validator->getPresenceVerifier()->setConnection('mongodb');
+
+        // returns true if failed.
+        return $validator->fails();
     }
 }

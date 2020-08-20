@@ -24,25 +24,32 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class NfnReconciledPublished extends Notification implements ShouldQueue
+class NfnExpertReviewJobComplete extends Notification implements ShouldQueue
 {
 
     use Queueable;
 
     /**
-     * @var
+     * @var string
      */
     private $title;
 
     /**
-     * NfnReconciledPublished constructor.
-     *
-     * @param $title
+     * @var int
      */
-    public function __construct($title)
+    private $expeditionId;
+
+    /**
+     * NfnExpertReviewPublished constructor.
+     *
+     * @param string $title
+     * @param int $expeditionId
+     */
+    public function __construct(string $title, int $expeditionId)
     {
-        $this->title = $title;
         $this->onQueue(config('config.default_tube'));
+        $this->title = $title;
+        $this->expeditionId = $expeditionId;
     }
 
     /**
@@ -64,11 +71,16 @@ class NfnReconciledPublished extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        $mailMessage->subject(__('pages.reconciled_publish_subject'));
+        $mailMessage->subject(__('pages.expert_review_job_create_mail_subject'));
 
-        $message = __('pages.reconciled_publish_complete', ['title' => $this->title]);
+        $attributes = [
+            'title' => __('pages.expert_review_job_mail_title'),
+            'message' => __('pages.expert_review_job_mail_msg', ['title' => $this->title]),
+            'url' => route('admin.reconciles.index', ['expeditions' => $this->expeditionId]),
+            'button' => __('pages.expert_review_job_mail_btn')
+        ];
 
-        return $mailMessage->markdown('mail.nfnreconciledpublish', ['message' => $message]);
+        return $mailMessage->markdown('mail.nfnexpertreviewjobcomplete', $attributes);
     }
 
     /**

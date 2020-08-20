@@ -18,7 +18,7 @@
  */
 
 // Begin Reconcile Controller
-$router->get('projects/{projects}/expeditions/{expeditions}/reconciles')->uses('ReconcilesController@index')->name('admin.reconciles.index');
-$router->post('projects/{projects}/expeditions/{expeditions}/reconciles')->uses('ReconcilesController@reconcile')->name('admin.reconciles.reconcile');
-$router->put('projects/{projects}/expeditions/{expeditions}/reconciles')->uses('ReconcilesController@update')->name('admin.reconciles.update');
-$router->post('projects/{projects}/expeditions/{expeditions}/reconciles/publish')->uses('ReconcilesController@publish')->name('admin.reconciles.publish');
+$router->get('reconciles/{expeditions}')->uses('ReconcilesController@index')->name('admin.reconciles.index');
+$router->get('reconciles/{expeditions}/create')->uses('ReconcilesController@create')->name('admin.reconciles.create');
+$router->put('reconciles/{expeditions}')->uses('ReconcilesController@update')->name('admin.reconciles.update');
+$router->post('reconciles/{projects}/publish/{expeditions}')->uses('ReconcilesController@publish')->name('admin.reconciles.publish');

@@ -19,7 +19,7 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\FlashHelper;
+use Flash;
 use App\Http\Controllers\Controller;
 use App\Mail\ContactForm;
 use App\Http\Requests\ContactFormRequest;
@@ -53,7 +53,7 @@ class ContactController extends Controller
 
         Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
 
-        FlashHelper::success(__('pages.contact_success'));
+        Flash::success(__('pages.contact_success'));
 
         return redirect()->route('home');
     }

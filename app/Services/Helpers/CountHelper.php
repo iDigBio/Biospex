@@ -46,7 +46,7 @@ class CountHelper
 
     /**
      * Return project transcription count.
-     *
+     * @TODO Change to get project total from expedition_stat
      * @param $projectId
      * @return mixed
      */

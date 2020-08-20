@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Jobs\Traits\SkipNfn;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
@@ -32,9 +33,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class NfnClassificationsCsvCreateJob implements ShouldQueue
+class NfnClassificationCsvCreateJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -56,14 +57,22 @@ class NfnClassificationsCsvCreateJob implements ShouldQueue
     private $errorMessages = [];
 
     /**
+     * @var bool
+     */
+    private $command;
+
+    /**
      * Create a new job instance.
      *
      * NfNClassificationsCsvJob constructor.
+     *
      * @param array $expeditionIds
+     * @param bool $command
      */
-    public function __construct(array $expeditionIds = [])
+    public function __construct(array $expeditionIds = [], $command = false)
     {
         $this->expeditionIds = $expeditionIds;
+        $this->command = $command;
         $this->onQueue(config('config.classification_tube'));
     }
 
@@ -80,6 +89,12 @@ class NfnClassificationsCsvCreateJob implements ShouldQueue
         User $userContract
     )
     {
+        foreach ($this->expeditionIds as $key => $expeditionId) {
+            if ($this->skipApi($expeditionId)) {
+                unset($this->expeditionIds[$key]);
+            }
+        }
+
         try
         {
             $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
@@ -103,8 +118,9 @@ class NfnClassificationsCsvCreateJob implements ShouldQueue
                 $user->notify(new JobError(__FILE__, $this->errorMessages));
             }
 
-            empty($expeditionIds) ? $this->delete() :
-                NfnClassificationsCsvFileJob::dispatch($expeditionIds)->delay(14400);
+            (empty($expeditionIds) || $this->command) ?
+                $this->delete() :
+                NfnClassificationCsvFileJob::dispatch($expeditionIds)->delay(14400);
         }
         catch (Exception $e)
         {

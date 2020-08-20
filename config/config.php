@@ -27,20 +27,29 @@ return [
     'export_dir'                   => 'exports',
     'reports_dir'                  => 'reports',
     'import_dir'                   => 'subjects',
-    'nfn_downloads_dir'            => 'nfndownloads',
-    'nfn_downloads_classification' => 'nfndownloads/classification',
-    'nfn_downloads_reconcile'      => 'nfndownloads/reconcile',
-    'nfn_downloads_reconciled'     => 'nfndownloads/reconciled',
-    'nfn_downloads_summary'        => 'nfndownloads/summary',
-    'nfn_downloads_transcript'     => 'nfndownloads/transcript',
+    'nfn_downloads_dir'            => env('NFN_DOWNLOADS_DIR', 'nfndownloads'),
+    'nfn_downloads_classification' => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/classification',
+    'nfn_downloads_reconcile'      => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/reconcile',
+    'nfn_downloads_reconciled'     => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/reconciled',
+    'nfn_downloads_summary'        => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/summary',
+    'nfn_downloads_transcript'     => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/transcript',
+    'nfn_downloads_explained'      => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/explained',
+    'nfn_file_types'               => [
+        'classification',
+        'transcript',
+        'reconcile',
+        'summary',
+        'reconciled_with_expert_opinion',
+    ],
+    'nfn_reconcile_problem_regex'  => env('NFN_RECONCILE_PROBLEM_REGEX'),
 
     'missing_project_logo'    => env('APP_URL').'/images/placeholders/project.png',
     'missing_expedition_logo' => env('APP_URL').'/images/placeholders/card-image-place-holder02.jpg',
     'missing_avatar_small'    => env('APP_URL').'/images/avatars/small/missing.png',
     'missing_avatar_medium'   => env('APP_URL').'/images/avatars/medium/missing.png',
 
-    'python_path'    => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python',
-    'reconcile_path' => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
+    'python_path'    => env('RECONCILIATIONS_PATH').'/venv/bin/python',
+    'reconcile_path' => env('RECONCILIATIONS_PATH').'/reconcile.py',
 
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
     'project_chart_config' => resource_path('json/projectChartConfig.json'),
@@ -98,8 +107,16 @@ return [
         ],
     ],
 
+    'nfnMisMatched' => [
+        'subject_Subject_ID'       => 'subject_subjectId',
+        'subject_Scientific_Name'  => 'subject_scientificName',
+        'subject_Expedition_Title' => 'subject_expeditionTitle',
+    ],
+
     'dwcTranscriptFields' => [
+        'stateProvince'  => 'state_province',
         'StateProvince'  => 'state_province',
+        'State Province' => 'state_province',
         'State_Province' => 'state_province',
         'State'          => 'state_province',
         'County'         => 'county',
@@ -109,6 +126,7 @@ return [
     'dwcOccurrenceFields'   => [
         'stateProvince'  => 'state_province',
         'State_Province' => 'state_province',
+        'State Province' => 'state_province',
         'State'          => 'state_province',
         'County'         => 'county',
     ],
@@ -167,7 +185,10 @@ return [
 
     'nfnActors'                 => env('NFN_ACTORS'),
     'nfnNotify'                 => [1 => 'NewNfnLegacyProject', 2 => 'NewNfnPanoptesProject'],
-    'nfnSkipCsv'                => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
+    'nfnSkipApi'                => env('NFN_SKIP_API'),
+    // Skip csv creation for expedition ids that cause issues
+    'nfnSkipReconcile'          => env('NFN_SKIP_RECONCILE'),
+    // Skip csv reconciliation for expedition ids that cause issues
     'nfnTranscriptionsComplete' => env('NFN_TRANSCRIPTIONS_COMPLETE', 3),
     'nfn_participate_url'       => env('NFN_PARTICIPATE_URL'),
     'nfn_project_url'           => env('NFN_PROJECT_URL'),

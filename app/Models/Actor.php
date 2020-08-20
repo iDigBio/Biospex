@@ -19,8 +19,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
+use App\Presenters\ActorPresenter;
+
 class Actor extends BaseEloquentModel
 {
+    use Presentable;
+
     /**
      * @inheritDoc
      */
@@ -35,6 +40,11 @@ class Actor extends BaseEloquentModel
         'class',
         'private'
     ];
+
+    /**
+     * @var string
+     */
+    protected $presenter = ActorPresenter::class;
 
     /**
      * Workflow relationship.
@@ -72,7 +82,7 @@ class Actor extends BaseEloquentModel
     public function expeditions()
     {
         return $this->belongsToMany(Expedition::class, 'actor_expedition')
-            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'processed', 'error', 'queued', 'completed', 'order')
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'processed', 'error', 'queued', 'completed', 'order', 'expert')
             ->orderBy('order')
             ->withTimestamps();
     }

@@ -162,7 +162,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public function actors()
     {
         return $this->belongsToMany(Actor::class, 'actor_expedition')
-            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'processed', 'error', 'queued', 'completed', 'order')
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'processed', 'error', 'queued', 'completed', 'order', 'expert')
             ->orderBy('order')
             ->withTimestamps();
     }
@@ -182,7 +182,8 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
             'error',
             'queued',
             'completed',
-            'order'
+            'order',
+            'expert'
         ];
 
         return $this->belongsToMany(Actor::class, 'actor_expedition')
@@ -203,10 +204,12 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
+    /*
     public function actor()
     {
         return $this->actors();
     }
+    */
 
     /**
      * NfnClassificationsCount attribute.

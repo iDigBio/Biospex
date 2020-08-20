@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Jobs\Traits\SkipNfn;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Repositories\Interfaces\Expedition;
@@ -32,11 +33,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-
-class NfnClassificationsCsvFileJob implements ShouldQueue
+class NfnClassificationCsvFileJob implements ShouldQueue
 {
-
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -68,14 +67,22 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
     private $errorMessages = [];
 
     /**
+     * @var bool
+     */
+    private $command;
+
+    /**
      * Create a new job instance.
      *
      * NfNClassificationsCsvJob constructor.
+     *
      * @param array $expeditionIds
+     * @param bool $command
      */
-    public function __construct(array $expeditionIds = [])
+    public function __construct(array $expeditionIds = [], $command = false)
     {
         $this->expeditionIds = $expeditionIds;
+        $this->command = $command;
         $this->onQueue(config('config.classification_tube'));
     }
 
@@ -90,16 +97,19 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
         Expedition $expeditionContract,
         PanoptesApiService $panoptesApiService,
         User $userContract
-    )
-    {
-        try
-        {
+    ) {
+
+        foreach ($this->expeditionIds as $key => $expeditionId) {
+            if ($this->skipApi($expeditionId)) {
+                unset($this->expeditionIds[$key]);
+            }
+        }
+
+        try {
             $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
             $responses = $panoptesApiService->panoptesClassificationsFile($expeditions);
-            foreach ($responses as $index => $response)
-            {
-                if ($response instanceof ServerException || $response instanceof ClientException)
-                {
+            foreach ($responses as $index => $response) {
+                if ($response instanceof ServerException || $response instanceof ClientException) {
                     $this->errorMessages[] = $response->getMessage();
                     continue;
                 }
@@ -109,20 +119,23 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
                 $this->checkState($results, $index);
             }
 
-            if ( ! empty($this->errorMessages))
-            {
+            if (! empty($this->errorMessages)) {
                 $user = $userContract->find(1);
                 $user->notify(new JobError(__FILE__, $this->errorMessages));
             }
 
+            if ($this->command) {
+                $this->dumpResults();
+                $this->delete();
+
+                return;
+            }
+
             $this->dispatchSources();
             $this->dispatchReQueued();
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             return;
         }
-
     }
 
     /**
@@ -131,13 +144,11 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
      */
     public function checkState($results, $index)
     {
-        if ($results->media[0]->metadata->state === 'creating')
-        {
+        if ($results->media[0]->metadata->state === 'creating') {
             $this->reQueued[] = $index;
         }
 
-        if ($results->media[0]->metadata->state === 'ready')
-        {
+        if ($results->media[0]->metadata->state === 'ready') {
             $this->sources[$index] = $results->media[0]->src;
         }
     }
@@ -147,12 +158,11 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
      */
     public function dispatchSources()
     {
-        if (empty($this->sources))
-        {
+        if (empty($this->sources)) {
             return;
         }
 
-        NfnClassificationsCsvDownloadJob::dispatch($this->sources);
+        NfnClassificationCsvDownloadJob::dispatch($this->sources);
     }
 
     /**
@@ -160,11 +170,19 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
      */
     public function dispatchReQueued()
     {
-        if (empty($this->reQueued))
-        {
+        if (empty($this->reQueued)) {
             return;
         }
 
-        NfnClassificationsCsvFileJob::dispatch($this->reQueued)->delay(3600);
+        NfnClassificationCsvFileJob::dispatch($this->reQueued)->delay(3600);
+    }
+
+    /**
+     * Dump results if using command line.
+     */
+    protected function dumpResults()
+    {
+        print_r($this->sources);
+        print_r($this->reQueued);
     }
 }

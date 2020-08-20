@@ -5,7 +5,11 @@
 @else
     @foreach ($expedition->actors as $actor)
         <div class="col-md-12">
-            <h3>{{ $actor->title }} {!! $expedition->present()->expedition_regenerate_export_lrg !!}</h3>
+            <h4 class="float-left">{{ $actor->title }}</h4>
+            {!! $expedition->present()->expedition_regenerate_export_btn !!}
+            @if($actor->pivot->completed  && $actor->id === 2)
+                {!! $actor->present()->reconcile_expert_review_btn !!}
+            @endif
             <div class="table-responsive">
                 <table class="table table-sm table-hover">
                     <thead>

@@ -51,7 +51,7 @@ class EventJoinRequest extends FormRequest
     {
         return [
             'team_id.required'        => 'Group Id missing',
-            'nfn_user.required' => 'Notes from Nature username required',
+            'nfn_user.required' => 'Zooniverse username required',
             'nfn_user.between' => 'Username must be between 3-30 characters',
         ];
     }

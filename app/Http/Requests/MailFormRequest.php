@@ -17,16 +17,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * Not using package until https://github.com/fico7489/laravel-pivot/issues/55 is fixed
- */
+namespace App\Http\Requests;
 
-namespace App\Models\Relations;
-
-use App\Models\Traits\FiresPivotEventsTrait;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
-class BelongsToManyCustom extends BelongsToMany
+class MailFormRequest extends Request
 {
-    use FiresPivotEventsTrait;
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'recipients' => 'required',
+            'subject' => 'required|max:100',
+            'message' => 'required'
+        ];
+    }
 }

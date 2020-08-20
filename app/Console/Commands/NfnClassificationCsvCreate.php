@@ -20,23 +20,24 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Jobs\NfnClassificationsCsvFileJob;
+use App\Jobs\NfnClassificationCsvCreateJob;
 
-class NfnClassificationsCsvFile extends Command
+class NfnClassificationCsvCreate extends Command
 {
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'nfn:filerequest {expeditionIds?}';
+    protected $signature = 'nfn:csvcreate {expeditionIds?} {--C|command}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sends requests for Nfn Workflow Classifications CSV files. Argument can be comma separated expeditionIds.';
+    protected $description = 'Sends requests to create Nfn Workflow Classifications CSV files. Argument can be comma separated expeditionIds.';
 
     /**
      * NfNClassificationsCsvRequests constructor.
@@ -51,8 +52,10 @@ class NfnClassificationsCsvFile extends Command
      */
     public function handle()
     {
+        $command = $this->option('command');
+
         $expeditionIds = null ===  $this->argument('expeditionIds') ? [] : explode(',', $this->argument('expeditionIds'));
 
-        NfnClassificationsCsvFileJob::dispatch($expeditionIds);
+        NfnClassificationCsvCreateJob::dispatch($expeditionIds, $command);
     }
 }

@@ -19,7 +19,7 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\FlashHelper;
+use Flash;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\Resource;
 use Storage;
@@ -52,7 +52,7 @@ class ResourcesController extends Controller
         $document = $download->document;
 
         if (! $document->exists() || ! file_exists(public_path('storage' . $document->path()))) {
-            FlashHelper::error('File cannot be found.');
+            Flash::error('File cannot be found.');
 
             return redirect()->route('front.resources.index');
         }

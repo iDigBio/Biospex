@@ -19,59 +19,69 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
-use App\Notifications\JobError;
-use App\Services\Process\ReconcilePublishService;
-use Exception;
+use App\Jobs\Traits\SkipNfn;
+use App\Services\Process\ReconcileProcessService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class ReconciledPublishJob implements ShouldQueue
+class NfnClassificationReconciliationJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
     /**
-     * @var null
-     */
-    private $expeditionId;
-
-    /**
-     * ReconciledPublishJob constructor.
+     * The number of seconds the job can run before timing out.
      *
-     * @param string $expeditionId
+     * @var int
      */
-    public function __construct(string $expeditionId)
+    public $timeout = 7200;
+
+    /**
+     * @var int
+     */
+    public $expeditionId;
+
+    /**
+     * @var bool
+     */
+    private $command;
+
+    /**
+     * NfnClassificationReconciliationJob constructor.
+     *
+     * @param int $expeditionId
+     * @param bool $command
+     */
+    public function __construct(int $expeditionId, $command = false)
     {
         $this->expeditionId = $expeditionId;
+        $this->command = $command;
         $this->onQueue(config('config.classification_tube'));
     }
 
     /**
-     * Handle Job.
+     * Handle the job.
      *
-     * @param \App\Services\Process\ReconcilePublishService $service
+     * @param \App\Services\Process\ReconcileProcessService $service
      */
-    public function handle(ReconcilePublishService $service)
+    public function handle(ReconcileProcessService $service)
     {
-
-        try {
-            $service->publishReconciled($this->expeditionId);
+        if ($this->skipReconcile($this->expeditionId)) {
+            $this->delete();
 
             return;
-        } catch (Exception $e) {
-            $user = User::find(1);
-            $messages = [
-                'Expedition Id: '.$this->expeditionId,
-                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
-            ];
-            $user->notify(new JobError(__FILE__, $messages));
         }
 
-        $this->delete();
+        $service->process($this->expeditionId);
 
-        return;
+        if ($this->command) {
+            $this->delete();
+
+            return;
+        }
+
+        NfnClassificationTranscriptJob::dispatch($this->expeditionId);
     }
 }

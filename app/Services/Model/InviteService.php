@@ -23,7 +23,7 @@ use App\Notifications\GroupInvite;
 use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\Invite;
 use App\Repositories\Interfaces\User;
-use App\Facades\FlashHelper;
+use Flash;
 use Exception;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -88,13 +88,13 @@ class InviteService
             Notification::send($newInvites, new GroupInvite($group));
             Notification::send($group->invites, new GroupInvite($group));
 
-            FlashHelper::success(trans('pages.send_invite_success', ['group' => $group->title]));
+            Flash::success(trans('pages.send_invite_success', ['group' => $group->title]));
 
             return true;
         }
         catch (Exception $e)
         {
-            FlashHelper::error(trans('pages.send_invite_error', ['group' => $group->title]));
+            Flash::error(trans('pages.send_invite_error', ['group' => $group->title]));
 
             return false;
         }

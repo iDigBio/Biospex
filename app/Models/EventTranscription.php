@@ -46,6 +46,16 @@ class EventTranscription extends BaseEloquentModel
     ];
 
     /**
+     * @var array
+     */
+    protected $casts = [
+        'classification_id' => 'int',
+        'event_id' => 'int',
+        'team_id' => 'int',
+        'user_id' => 'int',
+    ];
+
+    /**
      * Transcription relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

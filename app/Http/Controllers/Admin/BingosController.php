@@ -19,7 +19,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\FlashHelper;
+use Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BingoFormRequest;
 use App\Repositories\Interfaces\Bingo;
@@ -85,12 +85,12 @@ class BingosController extends Controller
         $bingo = $this->bingoContract->createBingo($request->all());
 
         if ($bingo) {
-            FlashHelper::success(trans('messages.record_created'));
+            Flash::success(trans('messages.record_created'));
 
             return redirect()->route('admin.bingos.show', [$bingo->id]);
         }
 
-        FlashHelper::error(trans('messages.record_save_error'));
+        Flash::error(trans('messages.record_save_error'));
 
         return redirect()->route('admin.bingos.index');
     }
@@ -146,12 +146,12 @@ class BingosController extends Controller
         $result = $this->bingoContract->updatebingo($request->all(), $bingoId);
 
         if ($result) {
-            FlashHelper::success(trans('messages.record_updated'));
+            Flash::success(trans('messages.record_updated'));
 
             return redirect()->route('admin.bingos.show', [$bingoId]);
         }
 
-        FlashHelper::error(trans('messages.record_updated_error'));
+        Flash::error(trans('messages.record_updated_error'));
 
         return redirect()->route('admin.bingos.edit', [$bingoId]);
     }
@@ -175,12 +175,12 @@ class BingosController extends Controller
 
         if ($result)
         {
-            FlashHelper::success(trans('messages.record_deleted'));
+            Flash::success(trans('messages.record_deleted'));
 
             return redirect()->route('admin.bingos.index');
         }
 
-        FlashHelper::error(trans('messages.record_delete_error'));
+        Flash::error(trans('messages.record_delete_error'));
 
         return redirect()->route('admin.bingos.edit', [$bingoId]);
     }

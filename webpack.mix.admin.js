@@ -39,7 +39,10 @@ mix.webpackConfig({
         "socket.io-client/dist/socket.io",
     ])
     .copy('resources/js/jquery.panzoom.min.js', 'public/admin/js/jquery.panzoom.min.js')
-    .copy('resources/js/jquery.form.min.js', 'public/admin/js/jquery.form.min.js');
+    .copy('resources/js/jquery.form.min.js', 'public/admin/js/jquery.form.min.js')
+    .copy('resources/js/expertReview.js', 'public/admin/js/expertReview.js')
+    .babel('public/admin/js/expertReview.js', 'public/admin/js/expertReview.js')
+    .minify('public/admin/js/expertReview.js');
 
 
 /* Production settings */

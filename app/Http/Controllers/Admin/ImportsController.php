@@ -19,7 +19,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\FlashHelper;
+use Flash;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\Import;
 use App\Jobs\DwcFileImportJob;
@@ -65,13 +65,13 @@ class ImportsController extends Controller
 
             DwcFileImportJob::dispatch($import);
 
-            FlashHelper::success(__('pages.upload_import_success'));
+            Flash::success(__('pages.upload_import_success'));
 
             return redirect()->back();
         }
         catch(Exception $e)
         {
-            FlashHelper::error(__('pages.upload_import_error'));
+            Flash::error(__('pages.upload_import_error'));
 
             return redirect()->back();
         }
@@ -96,13 +96,13 @@ class ImportsController extends Controller
 
             RecordsetImportJob::dispatch($data);
 
-            FlashHelper::success(__('pages.upload_import_success'));
+            Flash::success(__('pages.upload_import_success'));
 
             return redirect()->back();
         }
         catch(Exception $e)
         {
-            FlashHelper::error(__('pages.upload_import_error'));
+            Flash::error(__('pages.upload_import_error'));
 
             return redirect()->back();
         }
@@ -127,13 +127,13 @@ class ImportsController extends Controller
 
             DwcUriImportJob::dispatch($data);
 
-            FlashHelper::success(__('pages.upload_import_success'));
+            Flash::success(__('pages.upload_import_success'));
 
             return redirect()->back();
         }
         catch(Exception $e)
         {
-            FlashHelper::error(__('pages.upload_import_error'));
+            Flash::error(__('pages.upload_import_error'));
 
             return redirect()->back();
         }

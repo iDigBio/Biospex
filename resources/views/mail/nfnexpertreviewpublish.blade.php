@@ -1,5 +1,5 @@
 @component('mail::message')
-# Notes From Nature Reconciled Published
+# {{ $title }}
 
 {!! $message !!}
 
