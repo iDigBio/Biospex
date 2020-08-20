@@ -26,7 +26,6 @@ use Flash;
 use App\Http\Controllers\Controller;
 use GeneralHelper;
 use Illuminate\Support\Facades\Storage;
-use JavaScript;
 
 class DownloadsController extends Controller
 {
