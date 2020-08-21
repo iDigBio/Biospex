@@ -19,7 +19,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\Flash;
+use Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordFormRequest;
 use App\Repositories\Interfaces\User;
@@ -27,7 +27,7 @@ use App\Http\Requests\EditUserFormRequest;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Hash;
 
-class UsersController extends Controller
+class UserController extends Controller
 {
     use ResetsPasswords;
     
@@ -37,7 +37,7 @@ class UsersController extends Controller
     public $userContract;
 
     /**
-     * UsersController constructor.
+     * UserController constructor.
      * @param User $userContract
      */
     public function __construct(User $userContract)

@@ -17,32 +17,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+namespace App\Http\Requests;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use App\Rules\FileUploadNameValidation;
+use Illuminate\Support\Facades\Auth;
 
-class BaseMongoModel extends Model
+class RapidImportFormRequest extends Request
 {
     /**
-     * @inheritDoc
-     */
-    protected $connection = 'mongodb';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = '_id';
-
-    /**
-     * @inheritDoc
-     */
-    public $incrementing = false;
-
-    /**
-     * The attributes that aren't mass assignable.
+     * Determine if the user is authorized to make this request.
      *
-     * @var array
+     * @return bool
      */
-    protected $guarded = [];
+    public function authorize()
+    {
+        return Auth::check();
+    }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'import-file' => 'required|file|mimes:csv,txt|max:500000'
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'import-file.mimes' => 'File type must be CSV.',
+        ];
+    }
 }

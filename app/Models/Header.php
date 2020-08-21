@@ -17,26 +17,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Facades;
+namespace App\Models;
 
-use App\Services\FlashService;
-use Illuminate\Support\Facades\Facade;
-
-/**
- * Class Flash
- *
- * @package App\Facades
- */
-class Flash extends Facade
+class Header extends BaseEloquentModel
 {
+    /**
+     * @inheritDoc
+     */
+    protected $table = 'headers';
 
     /**
-     * Get the registered name of the component.
-     *
-     * @return string
+     * @inheritDoc
      */
-    protected static function getFacadeAccessor()
+    protected $fillable = [
+        'header'
+    ];
+
+    /**
+     * Accessor for header column.
+     * 
+     * @param $value
+     * @return mixed
+     */
+    public function getHeaderAttribute($value)
     {
-        return FlashService::class;
+        return unserialize($value);
+    }
+
+    /**
+     * Mutator for header column.
+     * 
+     * @param $value
+     */
+    public function setHeaderAttribute($value)
+    {
+        $this->attributes['header'] = serialize($value);
     }
 }

@@ -19,11 +19,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Flash;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use JavaScript;
+use Illuminate\Support\Facades\Storage;
 
-class IndexController extends Controller
+class DownloadController extends Controller
 {
 
     /**
@@ -33,28 +33,20 @@ class IndexController extends Controller
 
     }
 
-    /**
-     * Show projects list for admin page.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function index()
+    public function report($fileName)
     {
-        JavaScript::put([
-            'subjectIds'   => [],
-            'maxSubjects'  => 2000,
-            'loadUrl'      => route('admin.grids.load'),
-            'gridUrl'      => route('admin.grids.read'),
-            'explore'      => false,
-        ]);
+        if(! Storage::exists(config('config.reports_dir') . '/' . $fileName)) {
+            Flash::warning(__('Report file does not exist.'));
+            return redirect()->route('admin.get.import');
+        }
 
-        /*
-        JavaScript::put([
-            'loadUrl'      => route('admin.grids.load'),
-            'readUrl'      => route('admin.grids.read')
-        ]);
-        */
+        $headers = [
+            'Content-Type'        => 'application/x-compressed',
+            'Content-disposition' => 'attachment; filename="'.$fileName.'"',
+        ];
 
-        return view('dashboard');
+        $file = Storage::path(config('config.reports_dir') . '/' . $fileName);
+
+        return response()->download($file, $fileName, $headers);
     }
 }

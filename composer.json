@@ -10,7 +10,6 @@
   "require": {
     "php": "^7.2.5",
     "anhskohbo/no-captcha": "^3.0",
-    "felixkiss/uniquewith-validator": "^3.4",
     "fideloper/proxy": "^4.2",
     "fruitcake/laravel-cors": "^1.0",
     "guzzlehttp/guzzle": "^6.3",
@@ -23,7 +22,8 @@
     "league/oauth2-client": "^2.4",
     "neitanod/forceutf8": "~2.0",
     "pda/pheanstalk": "^4.0",
-    "spiritix/lada-cache": "^5.0"
+    "spiritix/lada-cache": "^5.0",
+    "ext-json": "*"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.3",

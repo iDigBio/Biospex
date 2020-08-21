@@ -197,6 +197,16 @@ abstract class Repository
     }
 
     /**
+     * Get first record from model.
+     *
+     * @return mixed
+     */
+    public function first()
+    {
+        return $this->model->first();
+    }
+
+    /**
      * @return mixed
      * @throws \Exception
      */

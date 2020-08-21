@@ -17,28 +17,11 @@ return [
     'default_tube'          => env('QUEUE_DEFAULT_TUBE'),
 
     /**
-     * Visible columns in jqGrid.
-     */
-    'model_columns'         => [
-        'Assigned',
-        'Id',
-        'AccessURI',
-        'Ocr',
-    ],
-
-    /**
      * Columns used in select statement for grid.
      */
     'defaultGridVisible'    => [
-        'id',
-        'accessURI',
-        'ocr',
-    ],
-    'defaultSubGridVisible' => [
-        'id',
-        'institutionCode',
-        'scientificName',
-        'recordId',
-    ],
-
+        '_id',
+        'gbifID_gbif',
+        'idigbio_uuid_idbP',
+    ]
 ];

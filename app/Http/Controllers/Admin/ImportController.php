@@ -19,16 +19,20 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Flash;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\RapidImportFormRequest;
+use App\Http\Requests\RapidUpdateFormRequest;
+use App\Jobs\RapidImportJob;
+use Auth;
 
 class ImportController extends Controller
 {
-
     /**
      * IndexController constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
 
     }
 
@@ -40,5 +44,27 @@ class ImportController extends Controller
     public function index()
     {
         return view('import');
+    }
+
+    /**
+     * Import original rapid data.
+     *
+     * @param \App\Http\Requests\RapidImportFormRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function create(RapidImportFormRequest $request)
+    {
+        $path = $request->file('import-file')->store('imports/rapid');
+
+        RapidImportJob::dispatch(Auth::user(), $path);
+
+        Flash::success(__('pages.rapid_import_success_msg'));
+
+        return redirect()->route('admin.get.index');
+    }
+
+    public function update(RapidUpdateFormRequest $request)
+    {
+
     }
 }

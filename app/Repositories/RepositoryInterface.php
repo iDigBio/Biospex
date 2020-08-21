@@ -47,5 +47,7 @@ interface RepositoryInterface
 
     public function count(array $attributes = []);
 
+    public function first();
+
     public function truncate();
 }

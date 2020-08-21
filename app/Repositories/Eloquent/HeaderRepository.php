@@ -17,32 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+namespace App\Repositories\Eloquent;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use App\Models\Header as Model;
+use App\Repositories\Interfaces\Header;
 
-class BaseMongoModel extends Model
+class HeaderRepository extends EloquentRepository implements Header
 {
     /**
-     * @inheritDoc
-     */
-    protected $connection = 'mongodb';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = '_id';
-
-    /**
-     * @inheritDoc
-     */
-    public $incrementing = false;
-
-    /**
-     * The attributes that aren't mass assignable.
+     * Specify Model class name
      *
-     * @var array
+     * @return \Illuminate\Database\Eloquent\Model|string
      */
-    protected $guarded = [];
-
+    public function model()
+    {
+        return Model::class;
+    }
 }

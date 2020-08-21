@@ -1,6 +1,5 @@
 <?php
 
-
 return [
 
     /*
@@ -229,7 +228,7 @@ return [
         'URL'              => Illuminate\Support\Facades\URL::class,
         'Validator'        => Illuminate\Support\Facades\Validator::class,
         'View'             => Illuminate\Support\Facades\View::class,
-    ],
 
-    'Flash'            => \App\Facades\Flash::class
+        'Flash' => \App\Facades\FlashFacade::class
+    ],
 ];

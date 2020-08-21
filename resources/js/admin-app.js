@@ -16,12 +16,12 @@ try {
     require("jquery-ui/ui/widgets/draggable");
     require("jquery-ui/ui/widgets/droppable");
     require("jquery-ui/ui/widgets/resizable");
-    require("jquery-datetimepicker/build/jquery.datetimepicker.full");
 
     require("free-jqgrid/dist/plugins/ui.multiselect");
     require("free-jqgrid/js/jquery.jqgrid.min");
 
     window.bootbox = require("./bootbox");
+
     require("./grid");
     require("./admin");
 
@@ -41,7 +41,6 @@ window.Echo = new Echo({
     path: '/ws/socket.io',
 });
 */
-
 /**
  * We"ll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the

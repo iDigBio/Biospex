@@ -20,11 +20,14 @@
 namespace App\Providers;
 
 use App\Services\FlashService;
-use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repositories\Interfaces\User;
 use App\Repositories\Eloquent\UserRepository;
+use App\Repositories\Interfaces\RapidRecord;
+use App\Repositories\MongoDb\RapidRecordRepository;
+use App\Repositories\Interfaces\Header;
+use App\Repositories\Eloquent\HeaderRepository;
 
 class BiospexServiceProvider extends ServiceProvider
 {
@@ -53,6 +56,8 @@ class BiospexServiceProvider extends ServiceProvider
     protected function registerRepositories()
     {
         $this->app->bind(User::class, UserRepository::class);
+        $this->app->bind(RapidRecord::class, RapidRecordRepository::class);
+        $this->app->bind(Header::class, HeaderRepository::class);
     }
 
     /**
@@ -60,7 +65,7 @@ class BiospexServiceProvider extends ServiceProvider
      */
     public function registerFacades()
     {
-        $this->app->singleton('flash', function ()
+        $this->app->singleton('flashfacade', function ()
         {
             return new FlashService();
         });

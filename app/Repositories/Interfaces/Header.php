@@ -17,32 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+namespace App\Repositories\Interfaces;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use App\Repositories\RepositoryInterface;
 
-class BaseMongoModel extends Model
+interface Header extends RepositoryInterface
 {
-    /**
-     * @inheritDoc
-     */
-    protected $connection = 'mongodb';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = '_id';
-
-    /**
-     * @inheritDoc
-     */
-    public $incrementing = false;
-
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
-
 }

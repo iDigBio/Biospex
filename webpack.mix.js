@@ -1,4 +1,5 @@
 let mix = require("laravel-mix");
+let path = require("path");
 
 /*
  |--------------------------------------------------------------------------
@@ -29,9 +30,8 @@ mix.webpackConfig({
         "jquery-ui/ui/widgets/draggable",
         "jquery-ui/ui/widgets/droppable",
         "jquery-ui/ui/widgets/resizable",
-        "jquery-datetimepicker/build/jquery.datetimepicker.full",
         "free-jqgrid/dist/plugins/ui.multiselect",
-        "free-jqgrid/js/jquery.jqgrid.min"
+        "free-jqgrid/js/jquery.jqgrid.min",
     ]).copy('resources/images', 'public/images');
 
 

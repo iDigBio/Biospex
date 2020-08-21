@@ -17,38 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Mail;
+namespace App\Models;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class ContactForm extends Mailable implements ShouldQueue
+class BaseEloquentModel extends Model
 {
-    use Queueable, SerializesModels;
-
-    private $contact;
+    use LadaCacheTrait;
+    /**
+     * @inheritDoc
+     */
+    protected $connection = 'mysql';
 
     /**
-     * Create a new message instance.
-     *
-     * @param $contact
+     * @inheritDoc
      */
-    public function __construct($contact)
-    {
-        $this->contact = $contact;
-
-        $this->onQueue(config('config.default_tube'));
-    }
-
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
-    public function build()
-    {
-        return $this->markdown('mail.contact')->with('contact', $this->contact);
-    }
+    protected $primaryKey = 'id';
 }

@@ -19,12 +19,12 @@
 
 namespace App\Models;
 
-class Rapid extends BaseMongoModel
+class RapidRecords extends BaseMongoModel
 {
     /**
      * Set Collection
      */
-    protected $collection = 'rapid';
+    protected $collection = 'rapid_records';
 
     /**
      * @inheritDoc

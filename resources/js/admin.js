@@ -22,6 +22,10 @@ $(function() {
         $(this).toggleClass("is-active");
     });
 
+    $(document).on('change', '.custom-file-input', function () {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).prev('.custom-file-label').addClass("selected").html(fileName);
+    });
 
     if (Laravel.flashMessage.length) {
         notify(Laravel.flashIcon, Laravel.flashMessage, Laravel.flashType);

@@ -17,32 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+namespace App\Facades;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use App\Services\FlashService;
+use Illuminate\Support\Facades\Facade;
 
-class BaseMongoModel extends Model
+/**
+ * Class Flash
+ *
+ * @package App\Facades
+ */
+class FlashFacade extends Facade
 {
-    /**
-     * @inheritDoc
-     */
-    protected $connection = 'mongodb';
 
     /**
-     * @inheritDoc
-     */
-    protected $primaryKey = '_id';
-
-    /**
-     * @inheritDoc
-     */
-    public $incrementing = false;
-
-    /**
-     * The attributes that aren't mass assignable.
+     * Get the registered name of the component.
      *
-     * @var array
+     * @return string
      */
-    protected $guarded = [];
-
+    protected static function getFacadeAccessor()
+    {
+        return FlashService::class;
+    }
 }
