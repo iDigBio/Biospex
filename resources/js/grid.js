@@ -1,15 +1,6 @@
 $.jgrid.defaults.width = 780;
 $.jgrid.defaults.responsive = true;
-$.jgrid.defaults.guiStyle = 'bootstrap';
-$.jgrid.defaults.iconSet = "fontAwesomeSVG";
 $.jgrid.cellattr = $.jgrid.cellattr || {};
-/*
-$.extend($.jgrid.cellattr, {
-    addDataAttr: function (rowId, cellVal, rawObject, cm, rdata) {
-        return 'data-toggle="modal" data-target="#jqGridModal"';
-    }
-});
-*/
 
 let Grid = {};
 
@@ -85,6 +76,8 @@ function jqBuildGrid() {
             pager: "#pager",
             toppager: true,
             editurl: Grid.editUrl,
+            guiStyle: "bootstrap4",
+            iconSet: "fontAwesome",
             beforeSelectRow: function (id, event) {
                 return handleCellSelect(id, event);
             },
