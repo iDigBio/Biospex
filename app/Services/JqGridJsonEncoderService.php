@@ -19,7 +19,7 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\Header;
+use App\Repositories\Interfaces\RapidHeader;
 use App\Repositories\Interfaces\RapidRecord;
 use Exception;
 
@@ -36,7 +36,7 @@ class JqGridJsonEncoderService
     private $rapidRecord;
 
     /**
-     * @var \App\Repositories\Interfaces\Header
+     * @var \App\Repositories\Interfaces\RapidHeader
      */
     private $headerInterface;
 
@@ -44,10 +44,10 @@ class JqGridJsonEncoderService
      * JqGridJsonEncoder constructor.
      *
      * @param \App\Repositories\Interfaces\RapidRecord $rapidRecord
-     * @param \App\Repositories\Interfaces\Header $headerInterface
+     * @param \App\Repositories\Interfaces\RapidHeader $headerInterface
      */
     public function __construct(
-        RapidRecord $rapidRecord, Header $headerInterface
+        RapidRecord $rapidRecord, RapidHeader $headerInterface
     ) {
         $this->defaultGridVisible = config('config.defaultGridVisible');
         $this->rapidRecord = $rapidRecord;

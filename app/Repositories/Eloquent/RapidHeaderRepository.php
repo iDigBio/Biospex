@@ -17,19 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+namespace App\Repositories\Eloquent;
 
-class RapidRecords extends BaseMongoModel
+use App\Models\RapidHeader as Model;
+use App\Repositories\Interfaces\RapidHeader;
+
+class RapidHeaderRepository extends EloquentRepository implements RapidHeader
 {
     /**
-     * Set Collection
+     * Specify Model class name
+     *
+     * @return \Illuminate\Database\Eloquent\Model|string
      */
-    protected $collection = 'rapid_records';
-
-    /**
-     * @inheritDoc
-     */
-    protected $dates = ['created_at', 'updated_at', 'timestamp'];
-
-
+    public function model()
+    {
+        return Model::class;
+    }
 }

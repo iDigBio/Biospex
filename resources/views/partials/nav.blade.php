@@ -12,23 +12,23 @@
         @if(Auth::check())
             <li class="nav-item nav-btn dropdown">
                 <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true"
-                   aria-expanded="false">{{ __('pages.admin') }}</a>
+                   aria-expanded="false">{{ t('Admin') }}</a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown02">
                     <a href="{{ route('admin.get.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ 'Dashboard'  }}</a>
-                    <a href="{{ route('admin.get.import') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ 'Import'  }}</a>
+                       type="button">{{ t('Dashboard')  }}</a>
+                    <a href="{{ route('admin.import.index') }}" class="dropdown-item text-uppercase"
+                       type="button">{{ t('Import')  }}</a>
                     <a href="{{ route('admin.get.export') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ 'Export'  }}</a>
+                       type="button">{{ t('Export')  }}</a>
                     <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.account') }}</a>
+                       type="button">{{ t('Account') }}</a>
                     <a href="{{ route('app.get.logout') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.logout') }}</a>
+                       type="button">{{ t('Logout') }}</a>
                 </div>
             </li>
         @else
             <li class="nav-item nav-btn">
-                <a class="nav-link text-uppercase mx-auto" href="{{ route('app.get.login') }}">{{ __('pages.login') }}</a>
+                <a class="nav-link text-uppercase mx-auto" href="{{ route('app.get.login') }}">{{ t('Login') }}</a>
             </li>
         @endif
     </ul>

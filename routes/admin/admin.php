@@ -2,4 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/')->uses('IndexController@index')->name('admin.get.index');
+Route::get('/')->uses('DashboardController@index')->name('admin.get.index');

@@ -73,16 +73,21 @@ class RapidImportJob implements ShouldQueue
     {
         try {
             if (! Storage::exists($this->path)) {
-                throw new Exception(__('pages.rapid_import_file_not_exist'));
+                throw new Exception(t('Rapid import file does not exist while processing import job.'));
             }
 
             $filePath = Storage::path($this->path);
             $rapidIngestService->loadCsvFile($filePath);
+            $rapidIngestService->setHeader();
+            $rapidIngestService->storeHeader();
+            $rapidIngestService->setRows();
+            $rapidIngestService->processImportRows();
+
 
             if ($rapidIngestService->checkErrors()) {
                 $fileUrl = $rapidIngestService->createCsv();
                 $message = [
-                    __('pages.rapid_import_job_fail_msg')
+                    t('There were errors when ingesting a Rapid Records file. Click the button below to download the rows not ingested.')
                 ];
 
                 $this->sendNotice($message, $fileUrl);
@@ -90,7 +95,7 @@ class RapidImportJob implements ShouldQueue
                 return;
             }
 
-            $message = [__('pages.rapid_import_job_success_msg')];
+            $message = [t('The import for Rapid has completed.')];
             $this->sendNotice($message);
 
             return;

@@ -70,7 +70,7 @@ class RegisterController extends Controller
     public function showRegistrationForm()
     {
         if ( ! config('config.registration')) {
-            return redirect()->route('home')->with('error', trans('pages.inactive_reg'));
+            return redirect()->route('home')->with('error', t('Registration is not available at this time.'));
         }
 
         return view('auth.register');

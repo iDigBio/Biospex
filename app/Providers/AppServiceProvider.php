@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -22,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->setupBlade();
 
-        \Illuminate\Support\Collection::macro('recursive', function () {
+        Collection::macro('recursive', function () {
             return $this->map(function ($value) {
                 if (is_array($value) || is_object($value)) {
                     return collect($value)->recursive();

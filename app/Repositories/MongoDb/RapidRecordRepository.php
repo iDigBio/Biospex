@@ -19,7 +19,7 @@
 
 namespace App\Repositories\MongoDb;
 
-use App\Models\RapidRecords as Model;
+use App\Models\RapidRecord as Model;
 use App\Repositories\Interfaces\RapidRecord;
 
 class RapidRecordRepository extends MongoDbRepository implements RapidRecord
@@ -53,7 +53,7 @@ class RapidRecordRepository extends MongoDbRepository implements RapidRecord
     /**
      * Specify Model class name
      *
-     * @return \App\Models\RapidRecords|string
+     * @return \App\Models\RapidRecord|string
      */
     public function model()
     {
@@ -63,9 +63,13 @@ class RapidRecordRepository extends MongoDbRepository implements RapidRecord
     /**
      * @inheritDoc
      */
-    public function validateRecord(string $gbifID_gbif, string $idigbio_uuid_idbP): bool
+    public function validateRecord(array $attributes): bool
     {
-        return $this->model->where('gbifID_gbif', $gbifID_gbif)->where('idigbio_uuid_idbP', $idigbio_uuid_idbP)->count();
+        return $this->model->where(function($query) use ($attributes){
+            foreach ($attributes as $field => $value) {
+                $query->where($field, $value);
+            }
+        })->count();
     }
 
     /**
@@ -97,7 +101,7 @@ class RapidRecordRepository extends MongoDbRepository implements RapidRecord
             $query->orderBy($field, $sort);
         }
 
-        $rows = $query->get(); //['_id', 'gbif', 'idigbio', 'gbifID_gbif', 'idigbio_uuid_idbP', 'abstract_gbif']
+        $rows = $query->get();
 
         if (! is_array($rows)) {
             $rows = $rows->toArray();

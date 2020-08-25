@@ -19,38 +19,15 @@
 
 namespace App\Models;
 
-class Header extends BaseEloquentModel
+class RapidRecord extends BaseMongoModel
 {
     /**
-     * @inheritDoc
+     * Set Collection
      */
-    protected $table = 'headers';
+    protected $collection = 'rapid_records';
 
     /**
      * @inheritDoc
      */
-    protected $fillable = [
-        'header'
-    ];
-
-    /**
-     * Accessor for header column.
-     * 
-     * @param $value
-     * @return mixed
-     */
-    public function getHeaderAttribute($value)
-    {
-        return unserialize($value);
-    }
-
-    /**
-     * Mutator for header column.
-     * 
-     * @param $value
-     */
-    public function setHeaderAttribute($value)
-    {
-        $this->attributes['header'] = serialize($value);
-    }
+    protected $dates = ['created_at', 'updated_at'];
 }

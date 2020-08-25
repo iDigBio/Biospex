@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRapidRecords extends Migration
+class CreateRapidRecordsCollection extends Migration
 {
     /**
      * The name of the database connection to use.
@@ -22,7 +22,7 @@ class CreateRapidRecords extends Migration
     {
         if (! Schema::connection($this->connection)->hasCollection('rapid_records')) {
             Schema::connection($this->connection)->create('rapid_records', function ($collection) {
-                $collection->unique(['gbifID_gbif', 'idigbio_uuid_idbP']);
+                $collection->unique(['gbifID_gbifR', 'idigbio_uuid_idbP']);
             });
         }
     }

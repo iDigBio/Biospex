@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0cd1c102225cfbf1c56b21b87dad930d",
+    "content-hash": "23d7f8ec79771d900a5d9dcfd4a311bb",
     "packages": [
         {
             "name": "anhskohbo/no-captcha",
@@ -609,6 +609,129 @@
                 }
             ],
             "time": "2020-04-28T08:47:37+00:00"
+        },
+        {
+            "name": "gettext/gettext",
+            "version": "v4.8.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-gettext/Gettext.git",
+                "reference": "e474f872f2c8636cf53fd283ec4ce1218f3d236a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-gettext/Gettext/zipball/e474f872f2c8636cf53fd283ec4ce1218f3d236a",
+                "reference": "e474f872f2c8636cf53fd283ec4ce1218f3d236a",
+                "shasum": ""
+            },
+            "require": {
+                "gettext/languages": "^2.3",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "illuminate/view": "*",
+                "phpunit/phpunit": "^4.8|^5.7|^6.5",
+                "squizlabs/php_codesniffer": "^3.0",
+                "symfony/yaml": "~2",
+                "twig/extensions": "*",
+                "twig/twig": "^1.31|^2.0"
+            },
+            "suggest": {
+                "illuminate/view": "Is necessary if you want to use the Blade extractor",
+                "symfony/yaml": "Is necessary if you want to use the Yaml extractor/generator",
+                "twig/extensions": "Is necessary if you want to use the Twig extractor",
+                "twig/twig": "Is necessary if you want to use the Twig extractor"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gettext\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oscar Otero",
+                    "email": "oom@oscarotero.com",
+                    "homepage": "http://oscarotero.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP gettext manager",
+            "homepage": "https://github.com/oscarotero/Gettext",
+            "keywords": [
+                "JS",
+                "gettext",
+                "i18n",
+                "mo",
+                "po",
+                "translation"
+            ],
+            "time": "2019-12-02T10:21:14+00:00"
+        },
+        {
+            "name": "gettext/languages",
+            "version": "2.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-gettext/Languages.git",
+                "reference": "38ea0482f649e0802e475f0ed19fa993bcb7a618"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-gettext/Languages/zipball/38ea0482f649e0802e475f0ed19fa993bcb7a618",
+                "reference": "38ea0482f649e0802e475f0ed19fa993bcb7a618",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.16.0",
+                "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5 || ^7.5 || ^8.4"
+            },
+            "bin": [
+                "bin/export-plural-rules"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gettext\\Languages\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michele Locati",
+                    "email": "mlocati@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "gettext languages with plural rules",
+            "homepage": "https://github.com/php-gettext/Languages",
+            "keywords": [
+                "cldr",
+                "i18n",
+                "internationalization",
+                "l10n",
+                "language",
+                "languages",
+                "localization",
+                "php",
+                "plural",
+                "plural rules",
+                "plurals",
+                "translate",
+                "translations",
+                "unicode"
+            ],
+            "time": "2019-11-13T10:30:21+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1385,16 +1508,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "63cd8c14708b9544d3f61d3c15b747fda1c95c6e"
+                "reference": "9be3b16c877d477357c015cec057548cf9b2a14a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/63cd8c14708b9544d3f61d3c15b747fda1c95c6e",
-                "reference": "63cd8c14708b9544d3f61d3c15b747fda1c95c6e",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/9be3b16c877d477357c015cec057548cf9b2a14a",
+                "reference": "9be3b16c877d477357c015cec057548cf9b2a14a",
                 "shasum": ""
             },
             "require": {
@@ -1472,7 +1595,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2020-08-18T10:57:55+00:00"
+            "time": "2020-08-23T07:39:11+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -1790,16 +1913,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.38.0",
+            "version": "2.39.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "d8f6a6a91d1eb9304527b040500f61923e97674b"
+                "reference": "0a41ea7f7fedacf307b7a339800e10356a042918"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/d8f6a6a91d1eb9304527b040500f61923e97674b",
-                "reference": "d8f6a6a91d1eb9304527b040500f61923e97674b",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/0a41ea7f7fedacf307b7a339800e10356a042918",
+                "reference": "0a41ea7f7fedacf307b7a339800e10356a042918",
                 "shasum": ""
             },
             "require": {
@@ -1875,7 +1998,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-08-04T19:12:46+00:00"
+            "time": "2020-08-24T12:35:58+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -4975,6 +5098,78 @@
             "time": "2020-07-13T06:12:54+00:00"
         },
         {
+            "name": "tio/laravel",
+            "version": "v1.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/translation/laravel.git",
+                "reference": "855cba70e66b96a365f325c71b25c342f9fed8a4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/translation/laravel/zipball/855cba70e66b96a365f325c71b25c342f9fed8a4",
+                "reference": "855cba70e66b96a365f325c71b25c342f9fed8a4",
+                "shasum": ""
+            },
+            "require": {
+                "gettext/gettext": "^4.4.3",
+                "guzzlehttp/guzzle": "^6.3",
+                "illuminate/config": "^5.1 || ^6.0 || ^7.0",
+                "illuminate/console": "^5.1 || ^6.0 || ^7.0",
+                "illuminate/filesystem": "^5.1 || ^6.0 || ^7.0",
+                "illuminate/support": "^5.1 || ^6.0 || ^7.0",
+                "illuminate/translation": "^5.1 || ^6.0 || ^7.0",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "league/flysystem-vfs": "^1.0",
+                "orchestra/testbench": "^3.1 || ^4.0 || ^5.0",
+                "php-vcr/php-vcr": "^1.3",
+                "phpunit/phpunit": ">=5.7.27",
+                "squizlabs/php_codesniffer": "~3.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Tio\\Laravel\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Tio\\Laravel\\": "src/"
+                },
+                "files": [
+                    "src/Helpers/translator_functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Armands Leinieks",
+                    "email": "armands.leinieks@gmail.com"
+                },
+                {
+                    "name": "Michaël Hoste",
+                    "email": "michael.hoste@gmail.com"
+                }
+            ],
+            "description": "Add this package to localize your Laravel application (PHP, JSON or GetText).",
+            "homepage": "https://github.com/translation/laravel",
+            "keywords": [
+                "gettext",
+                "laravel",
+                "localization",
+                "translation",
+                "translation.io"
+            ],
+            "time": "2020-04-27T13:32:17+00:00"
+        },
+        {
             "name": "vlucas/phpdotenv",
             "version": "v4.1.8",
             "source": {
@@ -5387,16 +5582,16 @@
         },
         {
             "name": "composer/ca-bundle",
-            "version": "1.2.7",
+            "version": "1.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "95c63ab2117a72f48f5a55da9740a3273d45b7fd"
+                "reference": "8a7ecad675253e4654ea05505233285377405215"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/95c63ab2117a72f48f5a55da9740a3273d45b7fd",
-                "reference": "95c63ab2117a72f48f5a55da9740a3273d45b7fd",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/8a7ecad675253e4654ea05505233285377405215",
+                "reference": "8a7ecad675253e4654ea05505233285377405215",
                 "shasum": ""
             },
             "require": {
@@ -5445,11 +5640,15 @@
                     "type": "custom"
                 },
                 {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/composer/composer",
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-04-08T08:27:21+00:00"
+            "time": "2020-08-23T12:54:47+00:00"
         },
         {
             "name": "composer/composer",
@@ -8465,7 +8664,8 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.2.5"
+        "php": "^7.2.5",
+        "ext-json": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "1.1.0"

@@ -20,8 +20,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use JavaScript;
 
-class ExportController extends Controller
+class DashboardController extends Controller
 {
 
     /**
@@ -38,6 +39,11 @@ class ExportController extends Controller
      */
     public function index()
     {
-        return view('export');
+        JavaScript::put([
+            'loadUrl'      => route('admin.grids.load'),
+            'gridUrl'      => route('admin.grids.read')
+        ]);
+
+        return view('dashboard');
     }
 }

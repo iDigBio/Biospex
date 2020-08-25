@@ -76,7 +76,7 @@ class UserController extends Controller
 
         if ($user->cannot('update', $user))
         {
-            Flash::warning( trans('pages.insufficient_permissions'));
+            Flash::warning( t('You do not have sufficient permissions.'));
 
             return redirect()->route('admin.get.index');
         }
@@ -98,7 +98,7 @@ class UserController extends Controller
 
         if ($user->cannot('update', $user))
         {
-            Flash::warning( trans('pages.insufficient_permissions'));
+            Flash::warning( t('You do not have sufficient permissions.'));
 
             return redirect()->route('admin.get.index');
         }
@@ -108,11 +108,11 @@ class UserController extends Controller
 
         if ($result)
         {
-            Flash::success(trans('pages.record_updated'));
+            Flash::success(t('Record was updated successfully.'));
         }
         else
         {
-            Flash::error(trans('pages.record_updated_error'));
+            Flash::error(trans('Error while updating record.'));
         }
 
         return redirect()->route('admin.users.edit', [$user->id]);
@@ -130,21 +130,21 @@ class UserController extends Controller
 
         if ( ! policy($user)->pass($user))
         {
-            Flash::warning( trans('pages.insufficient_permissions'));
+            Flash::warning( t('You do not have sufficient permissions.'));
 
             return redirect()->route('admin.get.index');
         }
 
         if ( ! Hash::check($request->input('oldPassword'), $user->password))
         {
-            Flash::error(trans('pages.old_password'));
+            Flash::error(t('You did not provide the correct original password.'));
 
             return redirect()->route('admin.users.edit', [$user->id]);
         }
 
         $this->resetPassword($user, $request->input('newPassword'));
 
-        Flash::success(trans('pages.password_chg'));
+        Flash::success(t('Your password has been changed.'));
 
         return redirect()->route('admin.users.edit', [$user->id]);
     }

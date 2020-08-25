@@ -17,20 +17,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Models;
 
-use App\Models\Header as Model;
-use App\Repositories\Interfaces\Header;
-
-class HeaderRepository extends EloquentRepository implements Header
+class RapidHeader extends BaseEloquentModel
 {
     /**
-     * Specify Model class name
-     *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @inheritDoc
      */
-    public function model()
+    protected $table = 'rapid_headers';
+
+    /**
+     * @inheritDoc
+     */
+    protected $fillable = ['header'];
+
+    /**
+     * @inheritDoc
+     */
+    public function getHeaderAttribute($value)
     {
-        return Model::class;
+        return unserialize($value);
+    }
+
+    /**
+     * Mutator for header column.
+     *
+     * @param $value
+     */
+    public function setHeaderAttribute($value)
+    {
+        $this->attributes['header'] = serialize($value);
     }
 }

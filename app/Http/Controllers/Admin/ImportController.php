@@ -19,23 +19,20 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\RapidUpdateSelectFormRequest;
+use App\Services\RapidIngestService;
+use Exception;
 use Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RapidImportFormRequest;
 use App\Http\Requests\RapidUpdateFormRequest;
 use App\Jobs\RapidImportJob;
 use Auth;
+use Session;
+use Storage;
 
 class ImportController extends Controller
 {
-    /**
-     * IndexController constructor.
-     */
-    public function __construct()
-    {
-
-    }
-
     /**
      * Show projects list for admin page.
      *
@@ -56,15 +53,100 @@ class ImportController extends Controller
     {
         $path = $request->file('import-file')->store('imports/rapid');
 
+        if (! $path) {
+            Flash::warning(t('The import failed to upload. Please contact the administration to determine the error.'));
+
+            return redirect()->route('admin.import.index');
+        }
+
         RapidImportJob::dispatch(Auth::user(), $path);
 
-        Flash::success(__('pages.rapid_import_success_msg'));
+        Flash::success(t('The import failed to upload. Please contact the administration to determine the error.'));
 
-        return redirect()->route('admin.get.index');
+        return redirect()->route('admin.import.index');
     }
 
+    /**
+     * Import an update file.
+     *
+     * @param \App\Http\Requests\RapidUpdateFormRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(RapidUpdateFormRequest $request)
     {
+        $path = $request->file('update-file')->store('imports/rapid');
 
+        if (! $path) {
+            Flash::warning(t('The update failed to upload. Please contact the administration to determine the error.'));
+
+            return redirect()->route('admin.import.index');
+        }
+
+        Session::put('upload-path', $path);
+
+        Flash::success(t('The update has been uploaded. Please select the fields you wish to update and click UPDATE'));
+
+        return redirect()->route('admin.import.select');
+    }
+
+    public function select(RapidIngestService $rapidIngestService)
+    {
+        $headers = $rapidIngestService->testHeaders();
+        $groupedHeaders = $rapidIngestService->mapColumns($headers);
+
+        $path = 'storage/path/to/some/file/lmakig.csv';
+        return view('update', compact('groupedHeaders','path'));
+
+
+        if (! Session::exists('upload-path') || ! Storage::exists(Session::get('upload-path'))) {
+            Flash::warning(t('The update file path does not exist. Please contact the administration to determine the error.'));
+
+            return redirect()->route('admin.import.index');
+        }
+
+        $path = Storage::path(Session::get('upload-path'));
+
+        try {
+            $rapidIngestService->loadCsvFile($path);
+            $headers = $rapidIngestService->setHeader();
+
+            $groupedHeaders = collect($headers)->reject(function ($item) {
+                return $item === '_id';
+            })->mapToGroups(function ($item) {
+                return $this->groupByColumnTag($item);
+            });
+
+            return view('update', compact('groupedHeaders'));
+        } catch (Exception $e) {
+            Flash::warning(t('The update file path does not exist. Please contact the administration to determine the error.'));
+
+            return redirect()->route('admin.import.index');
+        }
+    }
+
+    public function selected(RapidUpdateSelectFormRequest $request)
+    {
+        dd($request->all());
+    }
+
+    private function groupByColumnTag(string $item)
+    {
+        $match = null;
+
+        if(preg_match('/_idbP/', $item, $matches)) {
+            $match = $matches[0];
+        } elseif(preg_match('/_gbif/', $item, $matches)) {
+            $match = $matches[0];
+        }
+        elseif(preg_match('/_idbR/', $item, $matches)) {
+            $match = $matches[0];
+        }
+        elseif(preg_match('/_rapid/', $item, $matches)) {
+            $match = $matches[0];
+        }
+        else {
+            $match = 'common';
+        }
+        return [$match => $item];
     }
 }

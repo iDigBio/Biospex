@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\RapidIngestService;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -34,11 +35,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Services\RapidIngestService
+     */
+    private $service;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct()
+    public function __construct(RapidIngestService $service)
     {
         parent::__construct();
+        $this->service = $service;
     }
 
     /**
@@ -46,6 +53,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
+        $headers = $this->service->testHeaders();
+        $this->service->mapColumns($headers);
     }
 }

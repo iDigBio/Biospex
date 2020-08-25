@@ -1,8 +1,8 @@
 <!-- Footer -->
 <footer id="footer" class="page-footer font-small blue-grey lighten-5">
     <!-- Copyright -->
-    <div class="footer-copyright text-center py-3">{{ __('pages.copyright') }}
-        <a class="" href="#"> {{ __('pages.copyright_tag') }}</a>
+    <div class="footer-copyright text-center py-3">{{ t('© 2019 Copyright') }}
+        <a class="" href="#"> {{ t('FSU Deptartment of Biological Science') }}</a>
     </div>
     <!-- Copyright -->
 </footer>

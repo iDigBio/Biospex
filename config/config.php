@@ -21,7 +21,22 @@ return [
      */
     'defaultGridVisible'    => [
         '_id',
-        'gbifID_gbif',
+        'gbif',
+        'idigbio',
+        'gbifID_gbifR',
         'idigbio_uuid_idbP',
+    ],
+
+    'validationFields' => [
+        'gbifID_gbifR',
+        'idigbio_uuid_idbP'
+    ],
+
+    'updateColumnTags' => [
+        '_gbifR',
+        '_gbifP',
+        '_idbP',
+        '_idbR',
+        '_rapid'
     ]
 ];

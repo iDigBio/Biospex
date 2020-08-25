@@ -960,3 +960,10 @@ li.nav-btn.show {
 .logo {
     border: none;
 }
+
+.bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary {
+    color: #ffffff;
+}
+.bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:hover {
+    color: #c83f29;
+}

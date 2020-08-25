@@ -26,11 +26,10 @@ interface RapidRecord extends RepositoryInterface
     /**
      * Validate for duplicate.
      *
-     * @param string $gbifID_gbif
-     * @param string $idigbio_uuid_idbP
+     * @param array $attributes
      * @return bool
      */
-    public function validateRecord(string $gbifID_gbif, string $idigbio_uuid_idbP ): bool;
+    public function validateRecord(array $attributes): bool;
 
     /**
      * Calculate the number of rows. It's used for paging the result.

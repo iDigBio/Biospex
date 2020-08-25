@@ -27,7 +27,7 @@ class DownloadController extends Controller
 {
 
     /**
-     * IndexController constructor.
+     * DashboardController constructor.
      */
     public function __construct() {
 
@@ -36,8 +36,8 @@ class DownloadController extends Controller
     public function report($fileName)
     {
         if(! Storage::exists(config('config.reports_dir') . '/' . $fileName)) {
-            Flash::warning(__('Report file does not exist.'));
-            return redirect()->route('admin.get.import');
+            Flash::warning( t('Report file does not exist.'));
+            return redirect()->route('admin.import.index');
         }
 
         $headers = [

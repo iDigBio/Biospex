@@ -17,44 +17,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Requests;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use JavaScript;
 
-class IndexController extends Controller
+class RapidUpdateSelectFormRequest extends Request
 {
-
     /**
-     * IndexController constructor.
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
      */
-    public function __construct() {
-
+    public function authorize()
+    {
+        return Auth::check();
     }
 
     /**
-     * Show projects list for admin page.
+     * Get the validation rules that apply to the request.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return array
      */
-    public function index()
+    public function rules()
     {
-        JavaScript::put([
-            'subjectIds'   => [],
-            'maxSubjects'  => 2000,
-            'loadUrl'      => route('admin.grids.load'),
-            'gridUrl'      => route('admin.grids.read'),
-            'explore'      => false,
-        ]);
-
-        /*
-        JavaScript::put([
-            'loadUrl'      => route('admin.grids.load'),
-            'readUrl'      => route('admin.grids.read')
-        ]);
-        */
-
-        return view('dashboard');
+        return [
+            '_gbifR' => 'required_without_all:_gbifP,_idbP,_idbR,_rapid',
+            '_gbifP' => 'required_without_all:_gbifR,_idbP,_idbR,_rapid',
+            '_idbP' => 'required_without_all:_gbifR,_gbifP,_idbR,_rapid',
+            '_idbR' => 'required_without_all:_gbifR,_gbifP,_idbP,_rapid',
+            '_rapid' => 'required_without_all:_gbifR,_gbifP,_idbP,_idbR'
+        ];
     }
 }

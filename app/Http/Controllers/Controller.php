@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Flash;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -24,9 +25,9 @@ abstract class Controller extends BaseController
         try{
             $this->authorize($ability, $object);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
-            Flash::warning(__('pages.insufficient_permissions'));
+            Flash::warning(t('You do not have sufficient permissions.'));
 
             return false;
         }
