@@ -63,7 +63,7 @@ class ReconcilesController extends Controller
     {
         $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group.owner']);
 
-        if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
+        if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
@@ -92,7 +92,7 @@ class ReconcilesController extends Controller
     {
         $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group.owner']);
 
-        if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
+        if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
