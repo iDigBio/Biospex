@@ -55,7 +55,7 @@ class ReconcileRepository extends MongoDbRepository implements Reconcile
     {
         return $this->model->with(['transcriptions'])
             ->where('subject_expeditionId', $expeditionId)
-            ->where('problem', 1)
+            ->where('problem', 1)->orderBy('subject_id', 'asc')
             ->paginate(1);
     }
 
