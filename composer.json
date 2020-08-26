@@ -32,7 +32,8 @@
     "pda/pheanstalk": "^4.0",
     "ramsey/uuid": "^4.0",
     "spiritix/lada-cache": "^5.0",
-    "thiagoalessio/tesseract_ocr": "^2.9"
+    "thiagoalessio/tesseract_ocr": "^2.9",
+    "tio/laravel": "^1.10"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.3",
