@@ -212,16 +212,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     */
 
     /**
-     * NfnClassificationsCount attribute.
-     *
-     * @return int
-     */
-    public function getActorAttribute()
-    {
-        return $this->getRelationValue('actor')->first();
-    }
-
-    /**
      * PanoptesProject
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
