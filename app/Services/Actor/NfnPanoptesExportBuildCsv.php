@@ -78,7 +78,7 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
     {
         $this->setQueue($queue);
         $this->setExpedition($queue->expedition);
-        $this->setActor($queue->expedition->actor);
+        $this->setActor($queue->expedition->actor->first());
         $this->setOwner($queue->expedition->project->group->owner);
         $this->setFolder();
         $this->setDirectories();
