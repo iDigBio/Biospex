@@ -29,7 +29,6 @@ use App\Jobs\ExportQueueJob;
  */
 class ExportQueueEventSubscriber
 {
-
     /**
      * @var ExportQueue
      */
@@ -52,10 +51,7 @@ class ExportQueueEventSubscriber
      */
     public function subscribe($events)
     {
-        $events->listen(
-            'exportQueue.updated',
-            'App\Listeners\ExportQueueEventSubscriber@updated'
-        );
+        $events->listen('exportQueue.updated', 'App\Listeners\ExportQueueEventSubscriber@updated');
     }
 
     /**
@@ -65,22 +61,20 @@ class ExportQueueEventSubscriber
      */
     public function updated()
     {
+
         $record = $this->exportQueue->getFirstExportWithoutError();
 
-        if ($record === null)
-        {
+        if ($record === null) {
             return;
         }
 
-        if ($record->queued)
-        {
+        if ($record->queued) {
             ExportQueueJob::dispatch($record);
 
             return;
         }
 
-        if ( ! $record->queued)
-        {
+        if (! $record->queued) {
             $record->queued = 1;
             $record->save();
 
@@ -88,8 +82,6 @@ class ExportQueueEventSubscriber
 
             return;
         }
-
     }
-
 }
 

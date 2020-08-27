@@ -65,7 +65,6 @@ class NfnPanoptesExportRetrieveImages extends NfnPanoptesBase
      */
     public function process(ExportQueue $queue)
     {
-        dd();
         $this->setQueue($queue);
         $this->setExpedition($queue->expedition);
         $this->setActor($queue->expedition->actors->first());

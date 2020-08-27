@@ -37,10 +37,9 @@ interface ExportQueue extends RepositoryInterface
      * @param $queueId
      * @param $expeditionId
      * @param $actorId
-     * @param array $attributes
      * @return mixed
      */
-    public function findByIdExpeditionActor($queueId, $expeditionId, $actorId, array $attributes = ['*']);
+    public function findByIdExpeditionActor($queueId, $expeditionId, $actorId);
 
     /**
      * @param $queueId

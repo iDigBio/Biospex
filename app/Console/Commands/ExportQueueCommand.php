@@ -80,8 +80,7 @@ class ExportQueueCommand extends Command
         if (! $record->queued)
         {
             $this->exportQueueContract->update(['queued' => 1], $record->id);
+            event('exportQueue.updated');
         }
-
-        return;
     }
 }

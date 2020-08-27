@@ -86,8 +86,6 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
         ActorEventHelper::fireActorUnQueuedEvent($this->actor);
 
         $this->notify();
-
-        return;
     }
 
     /**
