@@ -48,13 +48,16 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
     public function findByIdExpeditionActor($queueId, $expeditionId, $actorId, array $attributes = ['*'])
     {
         return $this->model->with([
-            'expedition.actor',
+            'expedition.actors' => function($q) use($expeditionId, $actorId) {
+                $q->where('expedition_id', $expeditionId);
+                $q->where('actor_id', $actorId);
+            },
             'expedition.project.group' => function($q){
                 $q->with(['owner', 'users' => function($q){
                     $q->where('notification', 1);
                 }]);
             }
-        ])->whereHas('actor', function ($query) use ($expeditionId, $actorId) {
+        ])->whereHas('expedition.actors', function ($query) use ($expeditionId, $actorId) {
             $query->where('expedition_id', $expeditionId);
             $query->where('actor_id', $actorId);
         })->find($queueId);
@@ -65,11 +68,12 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function findQueueProcessData($queueId, $expeditionId, $actorId, array $attributes = ['*'])
     {
-        return $this->model->with(['expedition.actor', 'expedition.project.group'])->whereHas('actor', function (
-                $query
-            ) use ($expeditionId, $actorId) {
-                $query->where('expedition_id', $expeditionId);
-                $query->where('actor_id', $actorId);
+        return $this->model->with(['expedition.project.group', 'expedition.actors' => function($q) use($expeditionId, $actorId){
+            $q->where('expedition_id', $expeditionId);
+            $q->where('actor_id', $actorId);
+        }])->whereHas('expedition.actors', function ($q) use ($expeditionId, $actorId) {
+                $q->where('expedition_id', $expeditionId);
+                $q->where('actor_id', $actorId);
             })->find($queueId);
     }
 

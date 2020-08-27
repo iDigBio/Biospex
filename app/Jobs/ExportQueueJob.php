@@ -75,12 +75,12 @@ class ExportQueueJob implements ShouldQueue
         }
 
         try {
-            $class = ActorFactory::create($queue->expedition->actor->class);
+            $class = ActorFactory::create($queue->expedition->actors->first()->class);
             $class->processQueue($queue);
             Artisan::call('export:poll');
             $this->delete();
         } catch (Exception $e) {
-            event('actor.pivot.error', $queue->expedition->actor);
+            event('actor.pivot.error', $queue->expedition->actors->first());
 
             $attributes = ['queued' => 0, 'error' => 1];
             $exportQueueContract->updateMany($attributes, 'expedition_id', $this->model->expedition_id);
