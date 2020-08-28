@@ -19,7 +19,7 @@ mix.webpackConfig({
         }
     }
 }).setResourceRoot('../')
-    .setPublicPath(path.normalize("public/admin"))
+    .setPublicPath(path.normalize("public/backend"))
     .js("resources/js/admin-app.js", "js/admin.js")
     .sass("resources/sass/admin.scss", "css/admin.css")
     .extract([
@@ -38,11 +38,11 @@ mix.webpackConfig({
         "summernote/dist/summernote",
         "socket.io-client/dist/socket.io",
     ])
-    .copy('resources/js/jquery.panzoom.min.js', 'public/admin/js/jquery.panzoom.min.js')
-    .copy('resources/js/jquery.form.min.js', 'public/admin/js/jquery.form.min.js')
-    .copy('resources/js/expertReview.js', 'public/admin/js/expertReview.js')
-    .babel('public/admin/js/expertReview.js', 'public/admin/js/expertReview.js')
-    .minify('public/admin/js/expertReview.js');
+    .copy('resources/js/jquery.panzoom.min.js', 'public/backend/js/jquery.panzoom.min.js')
+    .copy('resources/js/jquery.form.min.js', 'public/backend/js/jquery.form.min.js')
+    .copy('resources/js/expertReview.js', 'public/backend/js/expertReview.js')
+    .babel('public/backend/js/expertReview.js', 'public/backend/js/expertReview.js')
+    .minify('public/backend/js/expertReview.js');
 
 
 /* Production settings */

@@ -56,8 +56,10 @@
                     @can('isAdmin', Auth::user())
                         <a href="/admin/nova" class="dropdown-item text-uppercase"
                            type="button">{{ __('pages.nova') }}</a>
+                        @if(config('telescope.enabled') === true)
                         <a href="/admin/telescope" class="dropdown-item text-uppercase"
                            type="button">{{ __('pages.telescope') }}</a>
+                        @endif
                         <a href="{{ route('admin.mail.index') }}" class="dropdown-item text-uppercase"
                            type="button">{{ __('pages.mail') }}</a>
                     @endcan

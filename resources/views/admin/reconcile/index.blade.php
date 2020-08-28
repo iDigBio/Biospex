@@ -91,7 +91,7 @@
 @stop
 
 @section('custom-script')
-    <script src="{{ secure_asset('admin/js/jquery.panzoom.min.js') }}"></script>
-    <script src="{{ secure_asset('admin/js/jquery.form.min.js') }}"></script>
-    <script src="{{ secure_asset('admin/js/expertReview.min.js') }}"></script>
+    <script src="{{ secure_asset('backend/js/jquery.panzoom.min.js') }}"></script>
+    <script src="{{ secure_asset('backend/js/jquery.form.min.js') }}"></script>
+    <script src="{{ secure_asset('backend/js/expertReview.min.js') }}"></script>
 @endsection
