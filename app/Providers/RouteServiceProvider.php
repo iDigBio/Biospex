@@ -65,6 +65,9 @@ class RouteServiceProvider extends ServiceProvider
 
                 $router->namespace('Admin')->prefix('admin')->middleware(['auth', 'verified'])->group(function ($router) {
                     $this->require_files('routes/admin', $router);
+                    $router->get('/', function (){
+                        return redirect()->route('admin.projects.index');
+                    });
                 });
 
                 $router->prefix('api')->group(function ($router){

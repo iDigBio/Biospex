@@ -52,10 +52,9 @@ class ExportPollCommand extends Command
     private $exportStages;
 
     /**
-     * Create a new command instance.
+     * ExportPollCommand constructor.
      *
-     * @param ExportQueue $exportQueueContract
-     * @internal param Actor $actor
+     * @param \App\Repositories\Interfaces\ExportQueue $exportQueueContract
      */
     public function __construct(ExportQueue $exportQueueContract)
     {
@@ -120,7 +119,7 @@ class ExportPollCommand extends Command
     {
         $stage = $this->exportStages[$data->stage];
 
-        $processed = $data->expedition->actor->pivot->processed === 0 ? 1 : $data->expedition->actor->pivot->processed;
+        $processed = $data->expedition->actors->first()->pivot->processed === 0 ? 1 : $data->expedition->actors->first()->pivot->processed;
 
         return trans('html.export_processing', [
             'stage'            => GeneralHelper::camelCaseToWords($stage),

@@ -71,7 +71,7 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
     {
         $this->setQueue($queue);
         $this->setExpedition($queue->expedition);
-        $this->setActor($queue->expedition->actor);
+        $this->setActor($queue->expedition->actors->first());
         $this->setOwner($queue->expedition->project->group->owner);
         $this->setFolder();
         $this->setDirectories();
@@ -86,8 +86,6 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
         ActorEventHelper::fireActorUnQueuedEvent($this->actor);
 
         $this->notify();
-
-        return;
     }
 
     /**

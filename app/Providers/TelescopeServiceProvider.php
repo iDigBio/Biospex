@@ -16,20 +16,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     public function register()
     {
-        // Telescope::night();
-
         $this->hideSensitiveRequestDetails();
-
-        Telescope::filter(function (IncomingEntry $entry) {
-            if (env('TELESCOPE_KEY', false)) {
-                return true;
-            }
-
-            return $entry->isReportableException() ||
-                   $entry->isFailedJob() ||
-                   $entry->isScheduledTask() ||
-                   $entry->hasMonitoredTag();
-        });
     }
 
     /**

@@ -232,8 +232,6 @@ class NfnPanoptesBase
         $queue->save();
 
         event('exportQueue.updated');
-
-        return;
     }
 
     /**
