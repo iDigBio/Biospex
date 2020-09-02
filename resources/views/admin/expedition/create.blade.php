@@ -86,7 +86,7 @@
         <div class="row">
             <h3 class="mx-auto">{{ __('Subjects currently assigned') }}
                 <span id="max">
-                                {{ t('(%s max. per Expedition)', Config::get('config.expedition_size')] }}
+                                {{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}
                             </span>:
                 <span id="subject-count-html">0</span></h3>
 
