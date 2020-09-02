@@ -109,7 +109,7 @@ class ProjectsController extends Controller
         JavaScript::put([
             'max'    => $max,
             'states' => $states->toJson(),
-            'years' => $years->toArray(),
+            'years' => $years === null ? null : $years->toArray(),
             'project' => $project->id
         ]);
 
