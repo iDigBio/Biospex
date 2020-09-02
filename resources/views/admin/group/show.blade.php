@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.group') }} {{ $group->title }}
+    {{ __('Group') }} {{ $group->title }}
 @stop
 
 @section('custom-style')
@@ -16,11 +16,11 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4">{{ __('pages.group') }} {{ __('pages.members') }}</h3>
+                <h3 class="text-center pt-4">{{ __('Group Members') }}</h3>
                 <hr>
-                <div class="color-action text-center">{{ __('pages.table_sort') }}</div>
+                <div class="color-action text-center">{{ __('Use shift + click to multi-sort') }}</div>
                 <div class="row card-body">
-                    <p>{{ __('pages.group') }} {{ __('pages.owner') }}: {{ $group->owner->present()->full_name_or_email }}</p>
+                    <p>{{ __('Group Owner') }}: {{ $group->owner->present()->full_name_or_email }}</p>
                     @if($group->users->isEmpty())
                         <p class="text-center">{{ __('') }}</p>
                     @else
@@ -29,7 +29,7 @@
                             <thead>
                             <tr>
                                 <th style="width: 5%"></th>
-                                <th>{{ __('pages.member') }}</th>
+                                <th>{{ __('Member') }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -42,19 +42,19 @@
         </div>
         <div class="col-md-6 mb-4">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4">{{ __('pages.group') }} {{ __('pages.projects') }}</h3>
+                <h3 class="text-center pt-4">{{ __('Group Projects') }}</h3>
                 <hr>
-                <div class="color-action text-center">{{ __('pages.table_sort') }}</div>
+                <div class="color-action text-center">{{ __('Use shift + click to multi-sort') }}</div>
                 <div class="row card-body">
                     @if($group->projects->isEmpty())
-                        <p class="text-center">{{ __('pages.projects_none') }}</p>
+                        <p class="text-center">{{ __('No Projects Exist') }}</p>
                     @else
                         <table id="projects-tbl" class="table table-striped table-bordered dt-responsive nowrap"
                                style="width:100%; font-size: .8rem">
                             <thead>
                             <tr>
-                                <th>{{ __('pages.title') }}</th>
-                                <th>{{ __('pages.description') }}</th>
+                                <th>{{ __('Title') }}</th>
+                                <th>{{ __('Description') }}</th>
                             </tr>
                             </thead>
                             <tbody>

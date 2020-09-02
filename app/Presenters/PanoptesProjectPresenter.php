@@ -31,7 +31,7 @@ class PanoptesProjectPresenter extends Presenter
         $url = $this->classifyReplace();
 
         return $this->model->panoptes_workflow_id === null ? '#' :
-            '<a href="'.$url.'" data-hover="tooltip" title="'.__('pages.participate').'" target="_blank">
+            '<a href="'.$url.'" data-hover="tooltip" title="'.__('Participate').'" target="_blank">
                 <i class="fas fa-keyboard"></i></a>';
     }
 
@@ -45,7 +45,7 @@ class PanoptesProjectPresenter extends Presenter
         $url = $this->projectReplace();
 
         return $this->model->panoptes_workflow_id === null ? '#' :
-            '<a href="'.$url.'" data-hover="tooltip" title="'.__('pages.participate').'" target="_blank">
+            '<a href="'.$url.'" data-hover="tooltip" title="'.__('Participate').'" target="_blank">
                 <i class="fas fa-keyboard"></i></a>';
     }
 
@@ -59,7 +59,7 @@ class PanoptesProjectPresenter extends Presenter
         $url = $this->projectReplace();
 
         return $this->model->panoptes_workflow_id === null ? '#' :
-            '<a href="'.$url.'" data-hover="tooltip" title="'.__('pages.participate').'" target="_blank">
+            '<a href="'.$url.'" data-hover="tooltip" title="'.__('Participate').'" target="_blank">
                 <i class="fas fa-keyboard fa-2x"></i></a>';
     }
 
@@ -73,7 +73,7 @@ class PanoptesProjectPresenter extends Presenter
         $url = $this->projectReplace();
 
         return $this->model->panoptes_workflow_id === null ? '#' :
-            '<a href="'.$url.'" title="'.__('pages.participate').'" target="_blank">'.__('pages.event_participate').'</a>';
+            '<a href="'.$url.'" title="'.__('Participate').'" target="_blank">'.__('Click here to participate').'</a>';
     }
 
     /**
@@ -86,7 +86,7 @@ class PanoptesProjectPresenter extends Presenter
         $url = $this->classifyReplace();
 
         return $this->model->panoptes_workflow_id === null ? '#' :
-            '<a href="'.$url.'" data-hover="tooltip" title="'.__('pages.participate').'" target="_blank">
+            '<a href="'.$url.'" data-hover="tooltip" title="'.__('Participate').'" target="_blank">
                 <i class="fas fa-keyboard fa-2x"></i></a>';
     }
 

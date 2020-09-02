@@ -1,8 +1,8 @@
 @component('mail::message')
-# {{ $title }}
+    # {{ t('Expert Review Reconciled Published') }}
 
-{!! $message !!}
+    {{ t('The Expert Reviewed Reconciled CSV file has been published for %s', $title) }}
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

@@ -40,7 +40,7 @@ class Actor extends Resource
      */
     public static function label()
     {
-        return __('Actors');
+        return t('Actors');
     }
 
     /**
@@ -50,7 +50,7 @@ class Actor extends Resource
      */
     public static function singularLabel()
     {
-        return __('Actor');
+        return t('Actor');
     }
 
     /**
@@ -62,11 +62,11 @@ class Actor extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make(__('Id'), 'id')->sortable(),
-            Text::make(__('Title'), 'title')->rules('required')->sortable(),
-            Text::make(__('Url'), 'url')->rules('required')->sortable(),
-            Text::make(__('Class'), 'class')->rules('required')->sortable(),
-            Boolean::make(__('Private'), 'private')
+            ID::make(t('Id'), 'id')->sortable(),
+            Text::make(t('Title'), 'title')->rules('required')->sortable(),
+            Text::make(t('Url'), 'url')->rules('required')->sortable(),
+            Text::make(t('Class'), 'class')->rules('required')->sortable(),
+            Boolean::make(t('Private'), 'private')
         ];
     }
 

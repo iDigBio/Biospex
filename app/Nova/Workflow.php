@@ -41,7 +41,7 @@ class Workflow extends Resource
      */
     public static function label()
     {
-        return __('Workflows');
+        return t('Workflows');
     }
 
     /**
@@ -51,7 +51,7 @@ class Workflow extends Resource
      */
     public static function singularLabel()
     {
-        return __('Workflow');
+        return t('Workflow');
     }
 
     /**
@@ -63,9 +63,9 @@ class Workflow extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make(__('Id'), 'id')->sortable(),
-            Text::make(__('Title'), 'title')->rules('required')->sortable(),
-            Boolean::make(__('Enabled'), 'enabled')->sortable(),
+            ID::make(t('Id'), 'id')->sortable(),
+            Text::make(t('Title'), 'title')->rules('required')->sortable(),
+            Boolean::make(t('Enabled'), 'enabled')->sortable(),
         ];
     }
 

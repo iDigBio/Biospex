@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.bingo') }}
+    {{ __('Bingo') }}
 @stop
 
 @section('header')
@@ -17,13 +17,13 @@
 
 {{-- Content --}}
 @section('content')
-    <h2 class="text-center text-uppercase pt-4">{{ __('pages.biospex') }} {{ __('pages.bingo') }}</h2>
+    <h2 class="text-center text-uppercase pt-4">{{ __('Biospex Bingo') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         @if($bingos->isNotEmpty())
             @each('front.bingo.partials.bingo-loop', $bingos, 'bingo')
         @else
-            <h2 class="mx-auto pt-4">{{ __('pages.bingo_none') }}</h2>
+            <h2 class="mx-auto pt-4">{{ __('No Bingo Games exist.') }}</h2>
         @endif
     </div>
 @endsection

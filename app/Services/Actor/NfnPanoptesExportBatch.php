@@ -84,10 +84,9 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
 
         File::deleteDirectory($this->workingDirectory);
 
-        $message = __('html.export_batch_message', ['expedition' => $this->expedition->title]);
         $links = $this->buildLinks();
 
-        $this->owner->notify(new NfnBatchExportComplete($message, $links));
+        $this->owner->notify(new NfnBatchExportComplete($this->expedition->title, $links));
 
         return;
     }
@@ -120,7 +119,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
             return;
         }
 
-        throw new Exception(__('pages.export_file_exist_error'));
+        throw new Exception(__('The archive file does not exist.'));
     }
 
     /**

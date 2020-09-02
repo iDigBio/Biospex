@@ -11,67 +11,67 @@
     <ul class="navbar-nav ml-auto">
         <li class="nav-item mr-2 dropdown">
             <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
-               aria-expanded="false">{{ __('pages.about') }}</a>
+               aria-expanded="false">{{ t('About') }}</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-                <a class="dropdown-item text-uppercase" href="{{ route('front.teams.index') }}">{{ __('pages.team') }}</a>
-                <a class="dropdown-item text-uppercase" href="{{ route('front.faqs.index') }}">{{ __('pages.faq') }}</a>
-                <a class="dropdown-item text-uppercase" href="{{ route('front.resources.index') }}">{{ __('pages.resources') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.teams.index') }}">{{ t('Team') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.faqs.index') }}">{{ t('FAQ') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.resources.index') }}">{{ t('Resources') }}</a>
             </div>
         </li>
         <li class="nav-item active">
-            <a class="nav-link mr-2 text-uppercase" href="{{ route('front.projects.index') }}">{{ __('pages.projects') }} <span
+            <a class="nav-link mr-2 text-uppercase" href="{{ route('front.projects.index') }}">{{ t('Projects') }} <span
                         class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item mr-2">
-            <a class="nav-link text-uppercase" href="{{ route('front.expeditions.index') }}">{{ __('pages.expeditions') }}</a>
+            <a class="nav-link text-uppercase" href="{{ route('front.expeditions.index') }}">{{ t('Expeditions') }}</a>
         </li>
         <li class="nav-item mr-2">
-            <a class="nav-link text-uppercase" href="{{ route('front.events.index') }}">{{ __('pages.events') }}</a>
+            <a class="nav-link text-uppercase" href="{{ route('front.events.index') }}">{{ t('Events') }}</a>
         </li>
         <li class="nav-item mr-2">
-            <a class="nav-link text-uppercase" href="{{ route('front.bingos.index') }}">{{ __('pages.games') }}</a>
+            <a class="nav-link text-uppercase" href="{{ route('front.bingos.index') }}">{{ t('Games') }}</a>
         </li>
         <li class="nav-item mr-2">
-            <a class="nav-link text-uppercase" href="{{ route('front.contact.index') }}">{{ __('pages.contact') }}</a>
+            <a class="nav-link text-uppercase" href="{{ route('front.contact.index') }}">{{ t('Contact') }}</a>
         </li>
         @if(Auth::check())
             <li class="nav-item nav-btn dropdown">
                 <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true"
-                   aria-expanded="false">{{ __('pages.admin') }}</a>
+                   aria-expanded="false">{{ t('Admin') }}</a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown02">
                     <a href="{{ route('admin.groups.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.groups') }}</a>
+                       type="button">{{ __('Groups') }}</a>
                     <a href="{{ route('admin.projects.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.projects') }}</a>
+                       type="button">{{ __('Projects') }}</a>
                     <a href="{{ route('admin.expeditions.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.expeditions') }}</a>
+                       type="button">{{ __('Expeditions') }}</a>
                     <a href="{{ route('admin.events.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.events') }}</a>
+                       type="button">{{ __('Events') }}</a>
                     <a href="{{ route('admin.bingos.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.games') }}</a>
+                       type="button">{{ __('Games') }}</a>
                     <a href="#" class="preventDefault dropdown-item text-uppercase"
                        type="button"
                        data-toggle="modal"
-                       data-target="#process-modal">{{ __('pages.processes') }}</a>
+                       data-target="#process-modal">{{ __('Processes') }}</a>
                     @can('isAdmin', Auth::user())
                         <a href="/admin/nova" class="dropdown-item text-uppercase"
-                           type="button">{{ __('pages.nova') }}</a>
+                           type="button">{{ __('Nova') }}</a>
                         @if(config('telescope.enabled') === true)
                         <a href="/admin/telescope" class="dropdown-item text-uppercase"
-                           type="button">{{ __('pages.telescope') }}</a>
+                           type="button">{{ __('Telescope') }}</a>
                         @endif
                         <a href="{{ route('admin.mail.index') }}" class="dropdown-item text-uppercase"
-                           type="button">{{ __('pages.mail') }}</a>
+                           type="button">{{ __('Mail') }}</a>
                     @endcan
                     <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.account') }}</a>
+                       type="button">{{ t('Account') }}</a>
                     <a href="{{ route('app.get.logout') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.logout') }}</a>
+                       type="button">{{ __('Logout') }}</a>
                 </div>
             </li>
         @else
             <li class="nav-item nav-btn">
-                <a class="nav-link text-uppercase mx-auto" href="{{ route('app.get.login') }}">{{ __('pages.login') }}</a>
+                <a class="nav-link text-uppercase mx-auto" href="{{ route('app.get.login') }}">{{ __('Login') }}</a>
             </li>
         @endif
     </ul>

@@ -100,7 +100,7 @@ class NfnClassificationPusherTranscriptionJob implements ShouldQueue
         {
             $user = User::find(1);
             $message = [
-                'Message: ' => trans('pages.nfn_pusher_job_error', [':expeditionId' => $this->expeditionId]),
+                'Message: ' => t('An error occurred while processing pusher job for Expedition Id: %s', $this->expeditionId),
                 'File: ' => $e->getFile(),
                 'Line: ' => $e->getLine(),
                 'Error: ' => $e->getMessage(),

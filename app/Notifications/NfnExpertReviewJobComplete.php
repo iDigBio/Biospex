@@ -26,7 +26,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class NfnExpertReviewJobComplete extends Notification implements ShouldQueue
 {
-
     use Queueable;
 
     /**
@@ -71,13 +70,10 @@ class NfnExpertReviewJobComplete extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        $mailMessage->subject(__('pages.expert_review_job_create_mail_subject'));
+        $mailMessage->subject(__('Expert Review Job Complete'));
 
         $attributes = [
-            'title' => __('pages.expert_review_job_mail_title'),
-            'message' => __('pages.expert_review_job_mail_msg', ['title' => $this->title]),
-            'url' => route('admin.reconciles.index', ['expeditions' => $this->expeditionId]),
-            'button' => __('pages.expert_review_job_mail_btn')
+            'url'     => route('admin.reconciles.index', ['expeditions' => $this->expeditionId]),
         ];
 
         return $mailMessage->markdown('mail.nfnexpertreviewjobcomplete', $attributes);
@@ -90,8 +86,7 @@ class NfnExpertReviewJobComplete extends Notification implements ShouldQueue
      */
     public function toArray()
     {
-        return [
-            //
+        return [//
         ];
     }
 }

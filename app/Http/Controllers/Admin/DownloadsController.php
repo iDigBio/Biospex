@@ -77,7 +77,7 @@ class DownloadsController extends Controller
             $download = $this->downloadService->getDownload($downloadId);
 
             if (! $download) {
-                Flash::error(trans('pages.missing_download_file'));
+                Flash::error(t("The file appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."));
 
                 return redirect()->back();
             }
@@ -95,7 +95,7 @@ class DownloadsController extends Controller
             }
 
             if (! GeneralHelper::downloadFileExists($download->type, $download->file)) {
-                Flash::error(trans('pages.missing_download_file'));
+                Flash::error(t("The file appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."));
 
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
@@ -123,9 +123,9 @@ class DownloadsController extends Controller
         try {
             $this->downloadService->resetExpeditionData($expeditionId);
 
-            Flash::success(trans('pages.download_regeneration_success'));
+            Flash::success(t('Download regeneration has started. You will be notified when completed.'));
         } catch (Exception $e) {
-            Flash::error(trans('pages.download_regeneration_error', ['error' => $e->getMessage()]));
+            Flash::error(t('An error occurred while trying to regenerate the download. The Admin has been notified.'));
         }
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
@@ -148,7 +148,7 @@ class DownloadsController extends Controller
         }
 
         if (! Storage::exists(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html')) {
-            Flash::warning(trans('pages.file_does_not_exist'));
+            Flash::warning(t('File does not exist'));
             return redirect()->back();
         }
 
@@ -194,7 +194,7 @@ class DownloadsController extends Controller
     {
         ExportDownloadBatchJob::dispatch($downloadId);
 
-        Flash::success(trans('pages.download_batch_success'));
+        Flash::success(t('Your batch request has been submitted. You will receive an email with download links when the process is complete.'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
@@ -219,7 +219,7 @@ class DownloadsController extends Controller
             }
 
             if (! GeneralHelper::downloadFileExists('export', $file)) {
-                Flash::error(trans('pages.missing_download_file'));
+                Flash::error(t("The file appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."));
 
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }

@@ -115,13 +115,7 @@ class DwcFileImportJob implements ShouldQueue
             $fileService->filesystem->cleanDirectory($scratchFileDir);
             $fileService->filesystem->deleteDirectory($scratchFileDir);
 
-            $message = trans('pages.import_process', [
-                'title'   => $project->title,
-                'id'      => $project->id,
-                'message' => $e->getMessage()
-            ]);
-
-            Notification::send($users, new DarwinCoreImportError($message));
+            Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
 
             $this->delete();
         }

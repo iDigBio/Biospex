@@ -29,25 +29,39 @@ class NfnExportError extends Notification implements ShouldQueue
     use Queueable;
 
     /**
-     * @var string
-     */
-    private $message;
-
-    /**
      * @var \Illuminate\Config\Repository|mixed
      */
     private $adminEmail;
 
     /**
+     * @var string
+     */
+    private $title;
+
+    /**
+     * @var int
+     */
+    private $identifier;
+
+    /**
+     * @var string
+     */
+    private $message;
+
+    /**
      * Create a new notification instance.
      *
+     * @param string $title
+     * @param int $identifier
      * @param string $message
      */
-    public function __construct($message)
+    public function __construct(string $title, int $identifier, string $message)
     {
-        $this->message = $message;
         $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.default_tube'));
+        $this->title = $title;
+        $this->identifier = $identifier;
+        $this->message = $message;
     }
 
     /**
@@ -67,9 +81,15 @@ class NfnExportError extends Notification implements ShouldQueue
      */
     public function toMail()
     {
+        $attributes = [
+            'title' => $this->title,
+            'id' => $this->identifier,
+            'message' => $this->message
+        ];
+
         return (new MailMessage)
             ->bcc($this->adminEmail)
-            ->markdown('mail.nfnexporterror', ['message' => $this->message]);
+            ->markdown('mail.nfnexporterror', $attributes);
     }
 
     /**

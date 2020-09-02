@@ -30,9 +30,9 @@ class NfnExportComplete extends Notification implements ShouldQueue
     use Queueable;
 
     /**
-     * @var array
+     * @var string
      */
-    private $message;
+    private $title;
 
     /**
      * @var null
@@ -42,12 +42,12 @@ class NfnExportComplete extends Notification implements ShouldQueue
     /**
      * Create a new notification instance.
      *
-     * @param array $message
+     * @param string $title
      * @param null $csv
      */
-    public function __construct($message, $csv = null)
+    public function __construct(string $title, $csv = null)
     {
-        $this->message = $message;
+        $this->title = $title;
         $this->csv = $csv;
         $this->onQueue(config('config.default_tube'));
     }
@@ -71,8 +71,6 @@ class NfnExportComplete extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        $mailMessage->subject(__('pages.notice_subject_export_complete'));
-
         if ($this->csv !== null)
         {
             $mailMessage->attach($this->csv, [
@@ -81,9 +79,7 @@ class NfnExportComplete extends Notification implements ShouldQueue
             ]);
         }
 
-        $message = implode('<br />', $this->message);
-
-        return $mailMessage->markdown('mail.nfnexportcomplete', ['message' => $message]);
+        return $mailMessage->subject(t('BIOSPEX Export Completed'))->markdown('mail.nfnexportcomplete', ['title' => $this->title]);
     }
 
     /**

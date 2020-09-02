@@ -82,7 +82,7 @@ class RegisterController extends Controller
     public function showRegistrationForm()
     {
         if ( ! config('config.registration')) {
-            return redirect()->route('home')->with('error', trans('pages.inactive_reg'));
+            return redirect()->route('home')->with('error', t('Registration is not available at this time.'));
         }
 
         $code = request('code');
@@ -91,7 +91,7 @@ class RegisterController extends Controller
 
         if ( ! empty($code) && ! $invite)
         {
-            Flash::warning( trans('pages.invite_not_found'));
+            Flash::warning( t('Your invite was unable to be found. Please contact the administration.'));
         }
 
         $code = $invite->code ?? null;

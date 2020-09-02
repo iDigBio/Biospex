@@ -26,7 +26,6 @@ use Illuminate\Console\Command;
 
 class ExportPollCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -71,27 +70,25 @@ class ExportPollCommand extends Command
     {
         $queues = $this->exportQueueContract->getAllExportQueueOrderByIdAsc();
 
-        $data = ['message' => trans('pages.processes_none'), 'payload' => []];
+        $data = ['message' => t('No processes running at this time'), 'payload' => []];
 
-        if ($queues->isEmpty())
-        {
+        if ($queues->isEmpty()) {
             PollExportEvent::dispatch($data);
+
             return;
         }
 
         $count = 0;
-        $data['payload'] = $queues->map(function($queue) use(&$count) {
+        $data['payload'] = $queues->map(function ($queue) use (&$count) {
             $data = $this->getFirstQueueData($queue);
 
-            $notice = $queue->queued ?
-                $this->setProcessNotice($data) :
-                $this->setQueuedNotice($data, $count);
+            $notice = $queue->queued ? $this->setProcessNotice($data) : $this->setQueuedNotice($data, $count);
 
             $count++;
 
             return [
                 'groupId' => $data->expedition->project->group->id,
-                'notice'  => $notice
+                'notice'  => $notice,
             ];
         })->values();
 
@@ -114,6 +111,7 @@ class ExportPollCommand extends Command
      *
      * @param \App\Models\ExportQueue $data
      * @return string
+     * @throws \Throwable
      */
     private function setProcessNotice(\App\Models\ExportQueue $data): string
     {
@@ -121,14 +119,14 @@ class ExportPollCommand extends Command
 
         $processed = $data->expedition->actors->first()->pivot->processed === 0 ? 1 : $data->expedition->actors->first()->pivot->processed;
 
-        return trans('html.export_processing', [
-            'stage'            => GeneralHelper::camelCaseToWords($stage),
-            'title'            => $data->expedition->title,
-            'processedRecords' => trans_choice('html.processed_records', $processed, [
-                'processed' => $processed,
-                'total'     => $data->count
-            ])
+        $stage = GeneralHelper::camelCaseToWords($stage);
+        $title = $data->expedition->title;
+        $processedRecords = t(' :processed of :total completed.', [
+            ':processed' => $processed,
+            ':total'     => $data->count,
         ]);
+
+        return view('common.export-process', compact('stage', 'title', 'processedRecords'))->render();
     }
 
     /**
@@ -137,14 +135,13 @@ class ExportPollCommand extends Command
      * @param \App\Models\ExportQueue $data
      * @param int $count
      * @return string
+     * @throws \Throwable
      */
     private function setQueuedNotice(\App\Models\ExportQueue $data, int $count): string
     {
-        return trans('html.export_queued', [
-            'title' => $data->expedition->title,
-            'remainingCount' => trans_choice('html.export_remaining_count', $count, [
-                'count' => $count
-            ]),
-        ]);
+        $title =$data->expedition->title;
+        $remainingCount = t(n(':count export remains in queue before processing begins.', ':count exports remain in queue before processing begins.', $count), [':count' => $count]);
+
+        return view('common.export-process-queued', compact('title', 'remainingCount'))->render();
     }
 }

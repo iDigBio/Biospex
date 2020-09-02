@@ -1,8 +1,8 @@
 @component('mail::message')
-# Zooniverse Export Completed
+    # {{ t('Zooniverse Export Completed') }}
 
-{!! $message !!}
+    {{ t('The export process for "%s" has been completed successfully. If a download file was created during this process, you may access the link on the Expedition view page. If there were errors, an attachment will be included with this email.', $title) }}
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

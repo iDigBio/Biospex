@@ -114,7 +114,7 @@ class NfnClassificationTranscriptJob implements ShouldQueue
             $user = User::find(1);
 
             $message = [
-                trans('pages.nfn_transcript_job_error', ['expeditionId' => $this->expeditionId]),
+                t('An error occurred while processing transcript job for Expedition Id: %s', $this->expeditionId),
                 $e->getMessage(),
                 $e->getFile() . ':' . $e->getLine(),
                 $transcriptionProcess->csvFile

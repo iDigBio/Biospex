@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.clone') }} {{ $expedition->title }}
+    {{ __('Clone') }} {{ $expedition->title }}
 @stop
 
 @section('custom-style')
@@ -28,9 +28,9 @@
             <div class="col-sm-10 mx-auto">
                 <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                     <div class="col-12">
-                        <h2 class="text-center content-header mb-4 text-uppercase">{{ __('pages.clone') }} {{ __('pages.expedition') }}</h2>
+                        <h2 class="text-center content-header mb-4 text-uppercase">{{ __('Clone Expedition') }}</h2>
                         <div class="form-group">
-                            <label for="title" class="col-form-label required">{{ __('pages.title') }}:</label>
+                            <label for="title" class="col-form-label required">{{ __('Title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
                                    id="title" name="title"
                                    value="{{ old('title', $expedition->title) }}" required>
@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="description" class="col-form-label required">{{ __('pages.description') }}:</label>
+                            <label for="description" class="col-form-label required">{{ __('Description') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('description')) ? 'is-invalid' : '' }}"
                                    id="description" name="description"
@@ -47,9 +47,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="keywords" class="col-form-label required">{{ __('pages.keywords') }}:</label>
+                            <label for="keywords" class="col-form-label required">{{ __('Keywords') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('keywords')) ? 'is-invalid' : '' }}"
-                                   id="keywords" name="keywords" placeholder="{{ __('pages.separated_by_commas') }}"
+                                   id="keywords" name="keywords" placeholder="{{ __('Separated by commas') }}"
                                    value="{{ old('keywords', $expedition->keywords) }}" required>
                             <span class="invalid-feedback">{{ $errors->first('keywords') }}</span>
                         </div>
@@ -57,7 +57,7 @@
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
                                 <div class="custom-file">
-                                    <label for="logo" class="custom-file-label">{{ __('pages.logo') }}:</label>
+                                    <label for="logo" class="custom-file-label">{{ __('Logo') }}:</label>
                                     <input type="file"
                                            class="form-control custom-file-input {{ ($errors->has('logo')) ? 'is-invalid' : '' }}"
                                            name="logo" id="logo"
@@ -73,10 +73,10 @@
 
                         @if(in_array($expedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
                             <div class="form-group">
-                                <label for="panoptes_workflow_id" class="col-form-label">{{ __('pages.nfn_workflow_id') }}:</label>
+                                <label for="panoptes_workflow_id" class="col-form-label">{{ __('Zooniverse Workflow Id') }}:</label>
                                 <input type="text" name="panoptes_workflow_id" id="panoptes_workflow_id"
                                        class="form-control {{ ($errors->has('panoptes_workflow_id')) ? 'has-error' : '' }}"
-                                       placeholder="{{ __('pages.nfn_workflow_id_placeholder') }}"
+                                       placeholder="{{ __('Enter Workflow Id after Expedition submitted to Zooniverse') }}"
                                        value="{{ old('panoptes_workflow_id') }}">
                                 <span class="invalid-feedback">{{ $errors->first('panoptes_workflow_id') }}</span>
                             </div>
@@ -91,9 +91,9 @@
         </div>
 
         <div class="row">
-            <h3 class="mx-auto">{{ __('pages.subjects_assigned') }}
+            <h3 class="mx-auto">{{ __('Subjects currently assigned') }}
                 <span id="max">
-                                {{ __('pages.subjects_assigned_max', ['count' => Config::get('config.expedition_size')]) }}
+                                {{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}
                             </span>:
                 <span id="subject-count-html">0</span></h3>
 
@@ -103,8 +103,6 @@
                     <div id="pager"></div>
                     <br/>
                     <input type="hidden" name="subject-ids" id="subject-ids" value="{{ old('subject-ids') }}">
-                    <a href="#" id="savestate" class="mr-2">{{ __('pages.grid_save_state') }}</a>
-                    <a href="#" id="loadstate" class="ml-2">{{ __('pages.grid_load_state') }}</a>
                 </div>
             </div>
             @include('common.cancel-submit-buttons')

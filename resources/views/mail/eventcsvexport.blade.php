@@ -1,8 +1,9 @@
 @component('mail::message')
-#@lang('messages.event_export_csv')
+    # {{ t('Event Export CSV') }}
 
-{!! $message !!}
+    {{ t('Your export is attached. If an attachment is not included, it is due to no records being located for the action. Some records require overnight processing before they are available.') }}
+    {{ t('If you believe this is an error, please contact the Administration.') }}
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

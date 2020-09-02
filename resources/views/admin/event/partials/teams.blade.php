@@ -1,6 +1,6 @@
 @for($i=0; $i < $teamsCount; $i++)
     <div class="entry mb-4">
-        <label class="col-form-label">{{ __('pages.team') }} {{ __('pages.title') }}</label>
+        <label class="col-form-label">{{ __('Team Title') }}</label>
         <div class="input-group">
             <div class="input-group-prepend">
                     <span class="input-group-text btn btn-primary btn-add px-3 py-0" id="basic-addon{{$i}}"><i

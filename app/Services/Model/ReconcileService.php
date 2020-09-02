@@ -82,7 +82,9 @@ class ReconcileService
         $file = config('config.nfn_downloads_reconcile').'/'.$expeditionId.'.csv';
 
         if (!Storage::exists($file)) {
-            throw new Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $file]));
+            $message = t('File does not exist.');
+            $method = __METHOD__;
+            throw new Exception(view('common.exception', compact('message', 'method', 'file')));
         }
 
         $filePath = Storage::path($file);
@@ -226,7 +228,9 @@ class ReconcileService
         $file = config('config.nfn_downloads_explained').'/'.$expeditionId.'.csv';
 
         if (! Storage::exists($file)) {
-            throw new \Exception(__('pages.file_does_not_exist_error_msg', ['method' => __METHOD__, 'path' => $file]));
+            $message = t('File does not exist.');
+            $method = __METHOD__;
+            throw new Exception(view('common.exception', compact('message', 'method', 'file')));
         }
 
         $filePath = Storage::path($file);

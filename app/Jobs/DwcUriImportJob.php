@@ -89,17 +89,17 @@ class DwcUriImportJob implements ShouldQueue
             $file = file_get_contents(GeneralHelper::urlEncode($this->data['url']));
             if ($file === false)
             {
-                throw new Exception(trans('pages.zip_download'));
+                throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
             }
 
             if (!$this->checkFileType($file))
             {
-                throw new Exception(trans('pages.zip_type'));
+                throw new Exception(t('Wrong file type for zip download'));
             }
 
             if (Storage::put($filePath, $file) === false)
             {
-                throw new Exception(trans('pages.save_file', [':file' => $filePath]));
+                throw new Exception(t('An error occurred while attempting to save file: %s', $filePath));
             }
 
             $import = $importContract->create([
@@ -114,13 +114,7 @@ class DwcUriImportJob implements ShouldQueue
         {
             $project = $projectContract->findWith($this->data['id'], ['group.owner']);
 
-            $message = trans('pages.import_process', [
-                'title'   => $project->title,
-                'id'      => $project->id,
-                'message' => $e->getMessage()
-            ]);
-
-            $project->group->owner->notify(new DarwinCoreImportError($message));
+            $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
         }
     }
 

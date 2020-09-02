@@ -78,15 +78,11 @@ class ExportQueueJob implements ShouldQueue
             $attributes = ['queued' => 0, 'error' => 1];
             $exportQueueContract->updateMany($attributes, 'expedition_id', $this->model->expedition_id);
 
-            $message = trans('pages.nfn_export_error', [
-                'title'   => $queue->expedition->title,
-                'id'      => $queue->expedition->id,
-                'message' => $e->getFile().':'.$e->getLine().' - '.$e->getMessage(),
-            ]);
+            $message = $e->getFile().'<br>'.$e->getLine().'<br>'.$e->getMessage();
 
             $users = $queue->expedition->project->group->users->push($queue->expedition->project->group->owner);
 
-            Notification::send($users, new NfnExportError($message));
+            Notification::send($users, new NfnExportError($queue->expedition->title, $queue->expedition->id, $message));
 
             Artisan::call('export:queue');
 

@@ -2,13 +2,13 @@
     <span data-sort="title" data-order="asc" data-url="{{ $route }}"
           data-target="projects"
           class="sort-page mr-2 text-uppercase" style="color: #e83f29; cursor: pointer;">
-        <i class="fas fa-sort"></i> {{ __('pages.title') }}</span>
+        <i class="fas fa-sort"></i> {{ __('Title') }}</span>
     <span data-sort="group" data-order="asc" data-url="{{ $route }}"
           data-target="projects"
           class="sort-page ml-2 text-uppercase" style="color: #e83f29; cursor: pointer;">
-        <i class="fas fa-sort"></i> {{ __('pages.group') }}</span>
+        <i class="fas fa-sort"></i> {{ __('Group') }}</span>
     <span data-sort="date" data-order="asc" data-url="{{ $route }}"
           data-target="projects"
           class="sort-page ml-2 text-uppercase" style="color: #e83f29; cursor: pointer;">
-        <i class="fas fa-sort"></i> {{ __('pages.date') }}</span>
+        <i class="fas fa-sort"></i> {{ __('Date') }}</span>
 </div>

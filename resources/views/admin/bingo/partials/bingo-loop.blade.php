@@ -10,7 +10,7 @@
             <a href="{{ route('front.bingos.generate', [$bingo->id]) }}"
                onclick="return !window.open(this.href, 'com_Biospex_Bingo_Card', 'width=700,height=800')"
                target="_blank"
-               class="btn btn-primary my-4 ml-2 text-uppercase">{{ __('pages.bingo_generate') }}</a>
+               class="btn btn-primary my-4 ml-2 text-uppercase">{{ __('Generate Card') }}</a>
         </div>
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">

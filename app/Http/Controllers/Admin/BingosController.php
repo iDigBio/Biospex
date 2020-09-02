@@ -85,12 +85,12 @@ class BingosController extends Controller
         $bingo = $this->bingoContract->createBingo($request->all());
 
         if ($bingo) {
-            Flash::success(trans('messages.record_created'));
+            Flash::success(t('Record was created successfully.'));
 
             return redirect()->route('admin.bingos.show', [$bingo->id]);
         }
 
-        Flash::error(trans('messages.record_save_error'));
+        Flash::error(t('An error occurred when saving record.'));
 
         return redirect()->route('admin.bingos.index');
     }
@@ -146,12 +146,12 @@ class BingosController extends Controller
         $result = $this->bingoContract->updatebingo($request->all(), $bingoId);
 
         if ($result) {
-            Flash::success(trans('messages.record_updated'));
+            Flash::success(t('Record was updated successfully.'));
 
             return redirect()->route('admin.bingos.show', [$bingoId]);
         }
 
-        Flash::error(trans('messages.record_updated_error'));
+        Flash::error(t('Error while updating record.'));
 
         return redirect()->route('admin.bingos.edit', [$bingoId]);
     }
@@ -175,12 +175,12 @@ class BingosController extends Controller
 
         if ($result)
         {
-            Flash::success(trans('messages.record_deleted'));
+            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
             return redirect()->route('admin.bingos.index');
         }
 
-        Flash::error(trans('messages.record_delete_error'));
+        Flash::error(t('An error occurred when deleting record.'));
 
         return redirect()->route('admin.bingos.edit', [$bingoId]);
     }

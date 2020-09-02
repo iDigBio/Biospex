@@ -1,12 +1,12 @@
 @component('mail::message')
-# @lang('pages.welcome')
+    # {{ t('Welcome') }}
 
-@lang('pages.group_invite_message', ['title' => $title])
+    {{ t('You have been invited to join the BIOSPEX %s group. Click the button to register using this email address with the provided group code.', $title) }}
 
-@component('mail::button', ['url' => $url])
-Join Now
-@endcomponent
+    @component('mail::button', ['url' => $url])
+        {{ t('Join Now') }}
+    @endcomponent
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

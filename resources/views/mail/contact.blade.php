@@ -1,11 +1,10 @@
 @component('mail::message')
-# @lang('pages.contact')
+    # {{ t('Contact') }}
 
-**@lang('pages.contact_name'):** {{ $contact['name'] }}
-**@lang('pages.contact_email'):** {{ $contact['email'] }}
-**@lang('pages.contact_message'):**
-{{ $contact['message'] }}
+    {{ t('Name') }}: {{ $contact['name'] }}
+    {{ t('Email') }}: {{ $contact['email'] }}
+    {{ t('Message') }}: {{ $contact['message'] }}
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

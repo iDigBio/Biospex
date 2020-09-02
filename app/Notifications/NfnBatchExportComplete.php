@@ -32,7 +32,7 @@ class NfnBatchExportComplete extends Notification implements ShouldQueue
     /**
      * @var string
      */
-    private $message;
+    private $title;
 
     /**
      * @var array
@@ -42,12 +42,12 @@ class NfnBatchExportComplete extends Notification implements ShouldQueue
     /**
      * NfnBatchExportComplete constructor.
      *
-     * @param string $message
+     * @param string $title
      * @param array $links
      */
-    public function __construct(string $message, array $links)
+    public function __construct(string $title, array $links)
     {
-        $this->message = $message;
+        $this->title = $title;
         $this->links = $links;
         $this->onQueue(config('config.default_tube'));
     }
@@ -71,14 +71,14 @@ class NfnBatchExportComplete extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        $mailMessage->subject(__('pages.notice_subject_batch_export_complete'));
+        $mailMessage->subject(__('BIOSPEX Batch Export Completed'));
 
-        $content = [
-            'message' => $this->message,
+        $attributes = [
+            'title' => $this->title,
             'links' => implode("<br>", $this->links)
         ];
 
-        return $mailMessage->markdown('mail.nfnbatchexportcomplete', $content);
+        return $mailMessage->markdown('mail.nfnbatchexportcomplete', $attributes);
     }
 
     /**

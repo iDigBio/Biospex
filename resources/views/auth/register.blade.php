@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.register') }}
+    {{ t('Register') }}
 @stop
 
 {{-- Content --}}
@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4">{{ __('pages.register') }} {{ __('pages.account') }}</h2>
+    <h2 class="text-center pt-4">{{ t('Register Account') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
@@ -26,7 +26,7 @@
                     @csrf
                     <input type="hidden" name="apiuser" value="false">
                     <div class="form-group">
-                        <label for="first_name" class="col-form-label required">{{ __('pages.first_name') }}:</label>
+                        <label for="first_name" class="col-form-label required">{{ t('First Name') }}:</label>
                         <input type="text" class="form-control @error('first_name') is-invalid @enderror"
                                id="first_name" name="first_name"
                                value="{{ old('first_name') }}" required>
@@ -37,7 +37,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="last_name" class="col-form-label required">{{ __('pages.last_name') }}:</label>
+                        <label for="last_name" class="col-form-label required">{{ t('Last Name') }}:</label>
                         <input type="text" class="form-control @error('last_name') is-invalid @enderror"
                                id="last_name" name="last_name"
                                value="{{ old('last_name') }}" required>
@@ -48,7 +48,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
+                        <label for="email" class="col-form-label required">{{ t('Email') }}:</label>
                         <input type="email" class="form-control @error('email') is-invalid @enderror"
                                id="email" name="email"
                                value="{{ old('email') }}" required>
@@ -59,7 +59,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="password" class="col-form-label required">{{ __('pages.password') }}:</label>
+                        <label for="password" class="col-form-label required">{{ t('Password') }}:</label>
                         <input type="password" class="form-control @error('password') is-invalid @enderror"
                                id="password" name="password"
                                value="{{ old('password') }}" required>
@@ -70,7 +70,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="password_confirmation" class="col-form-label required">{{ __('pages.password_confirmation') }}:</label>
+                        <label for="password_confirmation" class="col-form-label required">{{ t('Confirm Password') }}:</label>
                         <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror"
                                id="password_confirmation" name="password_confirmation"
                                value="{{ old('password_confirmation') }}" required>
@@ -83,7 +83,7 @@
 
                     <div class="form-group">
                         <label for="group_id"
-                               class="col-form-label required">{{ __('pages.timezone') }}
+                               class="col-form-label required">{{ t('Timezone') }}
                             :</label>
                         <select name="timezone" id="timezone"
                                 class="form-control custom-select {{ ($errors->has('timezone')) ? 'is-invalid' : '' }}"
@@ -98,7 +98,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="invite" class="col-form-label">{{ __('pages.invite_code') }}:</label>
+                        <label for="invite" class="col-form-label">{{ t('Group Invite Code') }}:</label>
                         <input type="text" class="form-control @error('invite') is-invalid @enderror"
                                id="invite" name="invite"
                                value="{{ old("invite", $code ?? '') }}">
@@ -112,7 +112,7 @@
                     @include('common.submit-button')
                 </form>
                 <div class="mt-4 text-center">
-                    <a href="{{ route('app.get.login') }}">{{ __('pages.already_have_account') }}</a>
+                    <a href="{{ route('app.get.login') }}">{{ t('Already have an account? Login') }}</a>
                 </div>
             </div>
         </div>

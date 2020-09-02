@@ -142,12 +142,12 @@ class ProjectsController extends Controller
             $project = $this->projectContract->findWith($model->id, ['workflow.actors.contacts']);
             $this->projectService->notifyActorContacts($project);
 
-            Flash::success(__('pages.record_created'));
+            Flash::success(t('Record was created successfully.'));
 
             return redirect()->route('admin.projects.show', [$project->id]);
         }
 
-        Flash::error(__('pages.record_save_error'));
+        Flash::error(t('An error occurred when saving record.'));
 
         return redirect()->route('admin.projects.create')->withInput();
     }
@@ -163,7 +163,7 @@ class ProjectsController extends Controller
         $project = $this->projectContract->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
         if (! $project) {
-            Flash::error(__('pages.record_get_error'));
+            Flash::error(t('Error retrieving record from database'));
 
             return redirect()->route('admin.projects.show', [$projectId]);
         }
@@ -192,7 +192,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group', 'resources']);
         if (! $project) {
-            Flash::error(__('pages.record_get_error'));
+            Flash::error(t('Error retrieving record from database'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -228,7 +228,7 @@ class ProjectsController extends Controller
 
         $project = $this->projectContract->update($request->all(), $projectId);
 
-        $project ? Flash::success(__('pages.record_updated')) : Flash::error(__('pages.record_updated_error'));
+        $project ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
 
         return redirect()->back();
     }
@@ -301,18 +301,18 @@ class ProjectsController extends Controller
 
         try {
             if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                Flash::error(__('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+                Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
                 redirect()->route('admin.projects.index');
             }
 
             DeleteProject::dispatch($project);
 
-            Flash::success(__('pages.record_deleted'));
+            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
             return redirect()->route('admin.projects.index');
         } catch (Exception $e) {
-            Flash::error(__('pages.record_delete_error'));
+            Flash::error(t('An error occurred when deleting record.'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -334,7 +334,7 @@ class ProjectsController extends Controller
 
         OcrCreateJob::dispatch($projectId);
 
-        Flash::success(__('pages.ocr_process_success'));
+        Flash::success(__('OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete.'));
 
         return redirect()->route('admin.projects.show', [$projectId]);
     }

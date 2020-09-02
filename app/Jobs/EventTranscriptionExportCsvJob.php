@@ -21,6 +21,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\EventCsvExport;
+use App\Notifications\EventCsvExportError;
 use App\Repositories\Interfaces\EventTranscription;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Services\Csv\Csv;
@@ -95,11 +96,11 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
 
             $file = $transcriptions->isEmpty() ? null : $this->setCsv($transcriptions, $csv);
 
-            $this->user->notify(new EventCsvExport(trans('pages.event_export_csv_complete'), $file));
+            $this->user->notify(new EventCsvExport($file));
         }
         catch (Exception $e)
         {
-            $this->user->notify(new EventCsvExport(trans('pages.event_export_csv_error', ['error' => $e->getMessage()])));
+            $this->user->notify(new EventCsvExportError($e->getMessage()));
         }
     }
 

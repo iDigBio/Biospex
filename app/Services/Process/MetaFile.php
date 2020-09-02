@@ -179,7 +179,7 @@ class MetaFile
             return true;
         }
 
-        throw new Exception(trans('pages.missing_meta_extension', ['file' => $this->file]));
+        throw new Exception(t('Unable to determine meta file extension during Darwin Core Archive import. This is typically due to missing required DWC row types. File: %s', $this->file));
     }
 
     /**
@@ -261,8 +261,8 @@ class MetaFile
             return;
         }
 
-        throw new Exception(trans('pages.rowtype_mismatch',
-            ['file' => $this->file, 'row_type' => $rowType, 'type_file' => $this->extension->nodeValue]
+        throw new Exception(t('Row Type mismatch in reading meta xml file. :file, :row_type, :type_file',
+            [':file' => $this->file, ':row_type' => $rowType, ':type_file' => $this->extension->nodeValue]
         ));
     }
 
@@ -286,7 +286,7 @@ class MetaFile
         $this->coreFile = $this->core->nodeValue;
         if ($this->coreFile === '')
         {
-            throw new Exception(trans('pages.core_node_missing'));
+            throw new Exception(t('Core node missing from xml meta file.'));
         }
     }
 
@@ -299,7 +299,7 @@ class MetaFile
         $this->extensionFile = $this->extension->nodeValue;
         if ($this->extensionFile === '')
         {
-            throw new Exception(trans('pages.extension_node_missing'));
+            throw new Exception(t('Extension node missing from xml meta file'));
         }
     }
 
@@ -317,7 +317,7 @@ class MetaFile
 
         if ($this->coreDelimiter === '')
         {
-            throw new Exception(trans('pages.csv_core_delimiter'));
+            throw new Exception(t('CSV core delimiter is empty.'));
         }
     }
 
@@ -335,7 +335,7 @@ class MetaFile
 
         if ($this->extDelimiter === '')
         {
-            throw new Exception(trans('pages.csv_ext_delimiter'));
+            throw new Exception(t('CSV extension delimiter is empty.'));
         }
     }
 
