@@ -19,7 +19,10 @@
 
 namespace App\Console\Commands;
 
-use App\Services\RapidIngestService;
+use App\Models\RapidRecord;
+use App\Repositories\Interfaces\RapidHeader;
+use App\Repositories\Interfaces\RapidUpdate;
+use App\Services\CsvService;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -35,17 +38,29 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\RapidIngestService
+     * @var \App\Services\CsvService
      */
-    private $service;
+    private $csvService;
+
+    /**
+     * @var \App\Repositories\Interfaces\RapidHeader
+     */
+    private $rapidHeader;
+
+    /**
+     * @var \App\Models\RapidUpdate
+     */
+    private $rapidUpdate;
 
     /**
      * AppCommand constructor.
      */
-    public function __construct(RapidIngestService $service)
+    public function __construct(CsvService $csvService, RapidHeader $rapidHeader, RapidUpdate $rapidUpdate)
     {
         parent::__construct();
-        $this->service = $service;
+        $this->csvService = $csvService;
+        $this->rapidHeader = $rapidHeader;
+        $this->rapidUpdate = $rapidUpdate;
     }
 
     /**
@@ -53,7 +68,35 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $headers = $this->service->testHeaders();
-        $this->service->mapColumns($headers);
+
+        $data = [
+            'user_id'       => 1,
+            'file_name'     => 'test.csv',
+            'fields_update' => ['test_rapid', 'test_rapid2'],
+        ];
+
+        $this->rapidUpdate->create($data);
+
+        //$this->export();
+        //$this->checkHeader();
+    }
+
+    public function export()
+    {
+        $records = RapidRecord::limit(10)->get();
+        $first = $records->first();
+
+        $header = array_keys($first->toArray());
+
+        $file = \Storage::path('export-test.csv');
+        $this->csvService->writerCreateFromPath($file);
+        $this->csvService->insertOne($header);
+        $this->csvService->insertAll($records->toArray());
+    }
+
+    public function checkHeader()
+    {
+        $rapidheader = $this->rapidHeader->first();
+        dd($rapidheader->header);
     }
 }

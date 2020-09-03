@@ -17,43 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Http\Requests;
+namespace App\Repositories\Eloquent;
 
-use Illuminate\Support\Facades\Auth;
+use App\Models\RapidUpdate as Model;
+use App\Repositories\Interfaces\RapidUpdate;
 
-class RapidImportFormRequest extends Request
+class RapidUpdateRepository extends EloquentRepository implements RapidUpdate
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Specify Model class name
      *
-     * @return bool
+     * @return \Illuminate\Database\Eloquent\Model|string
      */
-    public function authorize()
+    public function model()
     {
-        return Auth::check();
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            'import-file' => 'required|file|mimes:csv,txt|max:500000'
-        ];
-    }
-
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array
-     */
-    public function messages()
-    {
-        return [
-            'import-file.mimes' => 'File type must be CSV.',
-        ];
+        return Model::class;
     }
 }

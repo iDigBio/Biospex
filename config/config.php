@@ -17,6 +17,11 @@ return [
     'default_tube'          => env('QUEUE_DEFAULT_TUBE'),
 
     /**
+     * Directories
+     */
+    'rapid_import_dir' => 'imports/rapid',
+
+    /**
      * Columns used in select statement for grid.
      */
     'defaultGridVisible'    => [
@@ -27,16 +32,29 @@ return [
         'idigbio_uuid_idbP',
     ],
 
+    /**
+     * Fields used for validation.
+     */
     'validationFields' => [
         'gbifID_gbifR',
         'idigbio_uuid_idbP'
     ],
 
+    /**
+     * Update column field tags.
+     */
     'updateColumnTags' => [
         '_gbifR',
         '_gbifP',
         '_idbP',
         '_idbR',
         '_rapid'
+    ],
+
+    /**
+     * Protected fields.
+     */
+    'protectedFields' => [
+        '_id', 'updated_at', 'created_at'
     ]
 ];

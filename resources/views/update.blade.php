@@ -18,12 +18,12 @@
 @endsection
 {{-- Content --}}
 @section('content')
-    <h2 class="text-center text-uppercase pt-4">{{ t('Rapid Records Import') }}</h2>
+    <h2 class="text-center text-uppercase pt-4">{{ t('Rapid Records Update') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         <div class="col-md-12 m-auto">
             <div class="card white box-shadow py-5 my-5 p-sm-5">
-                <form action="{{ route('admin.import.selected') }}"
+                <form action="{{ route('admin.ingest.selected') }}"
                       method="post" role="form" id="update-rapid-file">
                     @method('PUT')
                     @csrf
@@ -39,7 +39,7 @@
                     <div class="row text-center">
                         <div class="form-group col-md-12">
                         @foreach($groupedHeaders as $index => $column)
-                                <select class="selectpicker col-sm-2 mb-2" name="{{ $index }}"
+                                <select class="selectpicker col-sm-2 mb-2" name="{{ $index }}[]"
                                         data-live-search="true"
                                         data-actions-box="true"
                                         multiple
@@ -55,7 +55,9 @@
                         </div>
                     </div>
                     <div class="row text-center mt-4">
-                        <input type="hidden" name="path" value="{{ $path }}">
+                        <input type="hidden" name="filePath" value="{{ $filePath }}">
+                        <input type="hidden" name="fileName" value="{{ $fileName }}">
+                        <input type="hidden" name="fileOrigName" value="{{ $fileOrigName }}">
                         <button type="submit"
                                 class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto">{{ t('Update') }}</button>
                     </div>

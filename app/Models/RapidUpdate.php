@@ -19,60 +19,52 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
-
-class User extends Authenticatable implements MustVerifyEmail
+class RapidUpdate extends BaseEloquentModel
 {
-    use Notifiable, LadaCacheTrait;
-
     /**
      * @inheritDoc
      */
-    protected $table = 'users';
+    protected $table = 'rapid_updates';
 
     /**
      * @inheritDoc
      */
     protected $fillable = [
-        'email',
-        'password'
+        'user_id',
+        'file_orig_name',
+        'file_name',
+        'fields_updated',
+        'updated_records',
     ];
 
     /**
-     * @var array
-     */
-    protected $casts = ['email_verified_at' => 'datetime'];
-
-    /**
-     * @inheritDoc
-     */
-    protected $hidden = ['password', 'remember_token'];
-
-    /**
-     * Attributes that should be hashed.
+     * Belongs to relation with Users.
      *
-     * @var array
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    protected $hashableAttributes = ['password'];
-
-    /**
-     * Boot functions.
-     */
-    public static function boot()
+    public function user()
     {
-        parent::boot();
+        return $this->belongsTo(User::class);
     }
 
     /**
-     * Has many relation with rapid_updates.
+     * Mutator for fields_updated column.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @param $value
+     * @return mixed
      */
-    public function updates()
+    public function getFieldsUpdatedAttribute($value)
     {
-        return $this->hasMany(RapidUpdate::class);
+        return unserialize($value);
+    }
+
+    /**
+     * Setter for fields_updated column.
+     *
+     * @param $value
+     */
+    public function setFieldsUpdatedAttribute($value)
+    {
+        $this->attributes['fields_updated'] = serialize($value);
     }
 }

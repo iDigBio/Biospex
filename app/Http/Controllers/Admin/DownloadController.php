@@ -37,7 +37,7 @@ class DownloadController extends Controller
     {
         if(! Storage::exists(config('config.reports_dir') . '/' . $fileName)) {
             Flash::warning( t('Report file does not exist.'));
-            return redirect()->route('admin.import.index');
+            return redirect()->route('admin.ingest.index');
         }
 
         $headers = [

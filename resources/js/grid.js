@@ -5,9 +5,8 @@ $.jgrid.cellattr = $.jgrid.cellattr || {};
 let Grid = {};
 
 $(function () {
-    if ($("#jqgrid-modal").length > 0) {
+    if ($("#jqGrid").length > 0) {
         'use strict';
-        Grid.loadSate = false;
         Grid.id = $(".jgrid").prop('id');
         Grid.obj = $("#" + Grid.id);
         Grid.loadUrl = Laravel.loadUrl;
@@ -45,7 +44,7 @@ function jqBuildGrid() {
         },
         myColumnStateName = 'ColumnChooserAndLocalStorage.colState',
         saveColumnState = function (perm) {
-            var colModel = this.jqGrid('getGridParam', 'colModel'), i, l = colModel.length, colItem, cmName,
+            let colModel = this.jqGrid('getGridParam', 'colModel'), i, l = colModel.length, colItem, cmName,
                 postData = this.jqGrid('getGridParam', 'postData'),
                 columnsState = {
                     search: this.jqGrid('getGridParam', 'search'),
@@ -76,7 +75,7 @@ function jqBuildGrid() {
         myColumnsState,
         isColState,
         restoreColumnState = function (colModel) {
-            var colItem, i, l = colModel.length, colStates, cmName,
+            let colItem, i, l = colModel.length, colStates, cmName,
                 columnsState = getObjectFromLocalStorage(myColumnStateName);
 
             if (columnsState) {
@@ -125,8 +124,8 @@ function jqBuildGrid() {
             sortable: true,
             //sortorder: 'asc',
             mulitpleSearch: true,
-            multiselect: true,
-            multiboxonly: true,
+            //multiselect: false,
+            //multiboxonly: true,
             viewrecords: true,
             shrinkToFit: true,
             autowidth: true,
@@ -153,7 +152,7 @@ function jqBuildGrid() {
                 search: true,
                 add: false,
                 edit: false,
-                del: true,
+                del: false,
                 refresh: true,
                 closeOnEscape: true,
                 closeAfterSearch: true,

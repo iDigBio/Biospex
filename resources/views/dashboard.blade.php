@@ -25,7 +25,5 @@
             </div>
         </div>
     </div>
-    @include('partials.jqgrid-modal')
-    </div>
 
 @endsection

@@ -86,6 +86,20 @@ $(function() {
         $(this).find('.modal-body').html('');
     });
 
+    $(window).resize(function() {
+        let docHeight = $(window).height();
+        let footerHeight = $('#footer').height();
+        let footerTop = $('#footer').position().top + footerHeight;
+        let marginTop = (docHeight - footerTop + 0);
+        // When not want the scrollbar if content would fit to screen just change the value of 10 to 0
+        // The scrollbar will show up if content not fits to screen.
+
+        if (footerTop < docHeight)
+            $('#footer').css('margin-top', marginTop + 'px'); // padding of 30 on footer
+        else
+            $('#footer').css('margin-top', '0px');
+    });
+    $(window).resize();
 });
 
 function notify(icon, msg, type) {

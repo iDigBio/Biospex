@@ -16,8 +16,8 @@
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown02">
                     <a href="{{ route('admin.get.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Dashboard')  }}</a>
-                    <a href="{{ route('admin.import.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ t('Import')  }}</a>
+                    <a href="{{ route('admin.ingest.index') }}" class="dropdown-item text-uppercase"
+                       type="button">{{ t('Ingest')  }}</a>
                     <a href="{{ route('admin.get.export') }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Export')  }}</a>
                     <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"

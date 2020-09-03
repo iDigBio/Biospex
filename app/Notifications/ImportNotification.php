@@ -24,37 +24,24 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class JobNotification extends Notification implements ShouldQueue
+class ImportNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * @var array
+     * @var string|null
      */
-    private $messages;
+    private $downloadUrl;
 
     /**
-     * @var string
-     */
-    private $url;
-
-    /**
-     * @var \Illuminate\Config\Repository|mixed
-     */
-    private $adminEmail;
-
-    /**
-     * JobNotification constructor.
+     * ImportNotification constructor.
      *
-     * @param array $messages
-     * @param null|string $url
+     * @param string|null $downloadUrl
      */
-    public function __construct(array $messages, $url = null)
+    public function __construct(string $downloadUrl = null)
     {
-        $this->messages = $messages;
-        $this->url = $url;
-        $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.default_tube'));
+        $this->downloadUrl = $downloadUrl;
     }
 
     /**
@@ -75,16 +62,7 @@ class JobNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $message = implode('<br /><br />', $this->messages);
-
-        $mailMessage = new MailMessage;
-
-        if($notifiable->email !== $this->adminEmail)
-        {
-            $mailMessage->bcc($this->adminEmail);
-        }
-
-        return $mailMessage->markdown('mail.jobnotification', ['message' => $message, 'url' => $this->url]);
+        return (new MailMessage)->markdown('mail.import-notification', ['downloadUrl'    => $this->downloadUrl]);
     }
 
     /**
@@ -94,8 +72,7 @@ class JobNotification extends Notification implements ShouldQueue
      */
     public function toArray()
     {
-        return [
-            //
+        return [//
         ];
     }
 }

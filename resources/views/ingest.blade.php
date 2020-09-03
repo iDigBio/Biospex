@@ -27,7 +27,7 @@
                              aria-labelledby="file-import"
                              data-parent="#import-accordion">
                             <div class="card-body">
-                                <form action="{{ route('admin.import.create') }}"
+                                <form action="{{ route('admin.ingest.create') }}"
                                       method="post" role="form" class="form-horizontal" id="import-rapid-file"
                                       enctype="multipart/form-data">
                                     @csrf
@@ -63,8 +63,9 @@
                              aria-labelledby="file-update"
                              data-parent="#import-accordion">
                             <div class="card-body">
-                                <form action="{{ route('admin.import.update') }}"
-                                      role="form" class="form-horizontal" id="update-rapid-file" enctype="multipart/form-data">
+                                <form action="{{ route('admin.ingest.update') }}"
+                                      method="post" role="form" class="form-horizontal" id="update-rapid-file"
+                                      enctype="multipart/form-data">
                                     @method('PUT')
                                     @csrf
                                     <div class="form-group">
