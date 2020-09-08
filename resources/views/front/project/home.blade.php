@@ -21,7 +21,7 @@
         <div class="col-sm-10 mx-auto">
             <div class="jumbotron box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <h1 class="text-center project-wide text-uppercase">
-                    <small style="font-size:16px;">{{ __('pages.project_page_title') }}</small>
+                    <small style="font-size:16px;">{{ __('Featured BIOSPEX Project') }}</small>
                     <br>{{ $project->title }}</h1>
                 <div class="col-12">
                     <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
@@ -42,14 +42,14 @@
                              alt="{{ $project->title }} logo">
                     </div>
                     @if($project->contact !== null)
-                        <h3>{{ __('pages.contact') }}</h3>
+                        <h3>{{ __('Contact') }}</h3>
                         <p>
                             <a href="mailto:{{ $project->contact_email }}" class="text">{{ $project->contact }}</a>
                         </p>
                     @endif
 
                     @if($project->organization !== null)
-                        <h3>{{ __('pages.organization') }}</h3>
+                        <h3>{{ __('Organization') }}</h3>
                         @if($project->organization_webiste !== null)
                             <p><a href="{{ $project->organization_webiste }}"
                                   target="_blank">{{ $project->organization }}</a></p>
@@ -59,17 +59,17 @@
                     @endif
 
                     @if($project->project_partners !== null)
-                        <h3>{{ __('pages.partners') }}</h3>
+                        <h3>{{ __('Partners') }}</h3>
                         <p>{{ $project->project_partners }}</p>
                     @endif
 
                     @if($project->funding_source !== null)
-                        <h3>{{ __('pages.funding_source') }}</h3>
+                        <h3>{{ __('Funding Source') }}</h3>
                         <p>{{ $project->funding_source  }}</p>
                     @endif
 
                     @if($project->description_long !== null)
-                        <h3>{{ __('pages.description') }}</h3>
+                        <h3>{{ __('Description') }}</h3>
                         @if($project->description_short !== null)
                             <p><strong>{{ $project->description_short  }}</strong></p>
                         @endif
@@ -77,37 +77,37 @@
                     @endif
 
                     @if($project->incentives !== null)
-                        <h3>{{ __('pages.incentives') }}</h3>
+                        <h3>{{ __('Incentives') }}</h3>
                         <p>{{ $project->incentives }}</p>
                     @endif
 
                     @if($project->geographic_scope !== null)
-                        <h3>{{ __('pages.geographic_scope') }}</h3>
+                        <h3>{{ __('Geographic Scope') }}</h3>
                         <p>{{ $project->geographic_scope }}</p>
                     @endif
 
                     @if($project->taxonomic_scope !== null)
-                        <h3>{{ __('pages.taxonomic_scope') }}</h3>
+                        <h3>{{ __('Taxonomic Scope') }}</h3>
                         <p>{{ $project->taxonomic_scope }}</p>
                     @endif
 
                     @if($project->temporal_scope !== null)
-                        <h3>{{ __('pages.temporal_scope') }}</h3>
+                        <h3>{{ __('Temporal Scope') }}</h3>
                         <p>{{ $project->temporal_scope }}</p>
                     @endif
 
                     @if($project->language_skills !== null)
-                        <h3>{{ __('pages.language_skills') }}</h3>
+                        <h3>{{ __('Language Skills Required') }}</h3>
                         <p>{{ $project->language_skills }}</p>
                     @endif
 
                     @if($project->activities !== null)
-                        <h3>{{ __('pages.activities') }}</h3>
+                        <h3>{{ t('Activities') }}</h3>
                         <p>{{ $project->activities }}</p>
                     @endif
 
                     @if($project->resources->isNotEmpty())
-                        <h3>{{ __('pages.resources') }}</h3>
+                        <h3>{{ __('Resources') }}</h3>
                         @foreach($project->resources as $resource)
                             <p>{!! $resource->present()->resource !!}</p>
                         @endforeach
@@ -120,18 +120,18 @@
 
     <div class="row">
         <div class="col-sm-8 offset-md-2 mt-5">
-            <h1 class="text-center content-header text-uppercase mt-5" id="expeditions">{{ __('pages.expeditions') }}</h1>
+            <h1 class="text-center content-header text-uppercase mt-5" id="expeditions">{{ __('Expeditions') }}</h1>
             <div class="text-center mt-4">
                 <button class="toggle-view-btn btn btn-primary text-uppercase"
                         data-toggle="collapse"
                         data-target="#active-expeditions-main,#completed-expeditions-main"
-                        data-value="{{ __('pages.view') }} {{ __('pages.active') }} {{ __('pages.expeditions') }}"
-                >{{ __('pages.view') }} {{ __('pages.completed') }} {{ __('pages.expeditions') }}</button>
+                        data-value="{{ t('view active expeditions') }}"
+                >{{ t('view completed expeditions') }}</button>
             </div>
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                <span class="text">{{ $project->expeditions_count }} {{ __('pages.expeditions') }}</span>
-                <span class="text">{{ $transcriptionsCount }} {{ __('pages.digitizations') }}</span>
-                <span class="text">{{ $transcribersCount }} {{ __('pages.participants') }}</span>
+                <span class="text">{{ $project->expeditions_count }} {{ __('Expeditions') }}</span>
+                <span class="text">{{ $transcriptionsCount }} {{ __('Digitizations') }}</span>
+                <span class="text">{{ $transcribersCount }} {{ __('Participants') }}</span>
             </div>
             <hr class="header mx-auto">
         </div>
@@ -152,13 +152,13 @@
 
     <div class="row">
         <div class="col-sm-8 offset-md-2 mt-5">
-            <h1 class="text-center content-header mt-5" id="events">{{ __('pages.events') }}</h1>
+            <h1 class="text-center content-header mt-5" id="events">{{ __('Events') }}</h1>
             <div class="text-center mt-4">
                 <button class="toggle-view-btn btn btn-primary text-uppercase"
                         data-toggle="collapse"
                         data-target="#active-events-main,#completed-events-main"
-                        data-value="{{ __('pages.view') }} {{ __('pages.active') }} {{ __('pages.events') }}"
-                >{{ __('pages.view') }} {{ __('pages.completed') }} {{ __('pages.events') }}</button>
+                        data-value="{{ t('view active events') }}"
+                >{{ t('view completed events') }}</button>
             </div>
             <hr class="header mx-auto">
         </div>
@@ -182,7 +182,7 @@
     @if($project->bingos->isNotEmpty())
         <div class="row">
             <div class="col-sm-8 offset-md-2 mt-5">
-                <h1 class="text-center content-header mt-5" id="bingos">{{ __('pages.games') }}</h1>
+                <h1 class="text-center content-header mt-5" id="bingos">{{ __('Games') }}</h1>
                 <hr class="header mx-auto">
             </div>
             <div id="bingos-main" class="col-sm-12 show">
@@ -197,7 +197,7 @@
         <div class="row">
             <div class="col-sm-10 mx-auto mt-5">
                 <h1 class="text-center content-header text-uppercase mt-5"
-                    id="expeditions">{{ __('pages.digitizations') }}</h1>
+                    id="expeditions">{{ __('Digitizations') }}</h1>
                 <div class="text-center mt-4 mb-4">
                     @foreach($years as $year)
                         <button class="btn btn-primary btn-transcription" id="year{{ $year }}"
@@ -216,7 +216,7 @@
         <div class="row">
             <div class="col-sm-10 mx-auto mt-5">
                 <h1 class="text-center content-header text-uppercase mt-5"
-                    id="expeditions">{{ __('pages.project_map_title') }}</h1>
+                    id="expeditions">{{ __('Heat Map Digitized Specimens') }}</h1>
                 <hr class="header mx-auto">
                 <div class="jumbotron box-shadow pt-2 pb-5">
                     <div id="mapDiv" class="d-flex" style="width:100%; height: 500px"></div>

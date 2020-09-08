@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.login') }}
+    {{ t('Login') }}
 @stop
 
 {{-- Content --}}
@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4 text-uppercase">{{ __('pages.biospex') }} {{ __('pages.login') }}</h2>
+    <h2 class="text-center pt-4 text-uppercase">{{ t('Biospex Login') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
@@ -25,7 +25,7 @@
                 <form action="{{ route('app.post.login') }}" method="post" role="form">
                     @csrf
                     <div class="form-group">
-                        <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
+                        <label for="email" class="col-form-label required">{{ t('Email') }}:</label>
                         <input type="email" class="form-control @error('email') is-invalid @enderror"
                                id="email" name="email"
                                value="{{ old('email') }}" required>
@@ -36,7 +36,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="password" class="col-form-label required">{{ __('pages.password') }}:</label>
+                        <label for="password" class="col-form-label required">{{ t('Password') }}:</label>
                         <input type="password" class="form-control @error('password') is-invalid @enderror"
                                id="password" name="password"
                                value="{{ old('password') }}" required>
@@ -48,14 +48,14 @@
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="remember" name="remember">
-                        <label class="custom-control-label" for="remember">{{ __('pages.remember_me') }}</label>
+                        <label class="custom-control-label" for="remember">{{ t('Remember Me') }}</label>
                     </div>
                     @include('common.recaptcha')
                     @include('common.submit-button')
                 </form>
                 <div class="mt-4 text-center">
-                    <a href="{{ route('app.password.request') }}">{{ __('pages.forgot_your_pass') }}</a> ||
-                    <a href="{{ route('app.get.register') }}">{{ __('pages.register') }}</a>
+                    <a href="{{ route('app.password.request') }}">{{ t('Forgot your Password?') }}</a> ||
+                    <a href="{{ route('app.get.register') }}">{{ __('Register') }}</a>
                 </div>
             </div>
         </div>

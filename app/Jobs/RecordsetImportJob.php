@@ -92,13 +92,7 @@ class RecordsetImportJob implements ShouldQueue
         {
             $project = $projectContract->findWith($this->data['project_id'], ['group.owner']);
 
-            $message = trans('pages.import_process', [
-                'title'   => $project->title,
-                'id'      => $project->id,
-                'message' => $e->getMessage()
-            ]);
-
-            $project->group->owner->notify(new DarwinCoreImportError($message));
+            $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
         }
     }
 
@@ -132,7 +126,7 @@ class RecordsetImportJob implements ShouldQueue
 
         if ($response->getStatusCode() !== 200)
         {
-            throw new Exception(trans('pages.http_status_code', ['url' => $url, 'code' => $response->getStatusCode()]));
+            throw new Exception(t('Http call to :url returned status code :code', [':url' => $url, ':code' => $response->getStatusCode()]));
         }
 
         $this->response = json_decode($response->getBody()->getContents());
@@ -164,7 +158,7 @@ class RecordsetImportJob implements ShouldQueue
 
         if (Storage::put($filePath, $file) === false)
         {
-            throw new Exception(trans('pages.zip_download'));
+            throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
         }
 
         return $this->importContract->create([

@@ -1,8 +1,8 @@
 @component('mail::message')
-## {{ $title }}
+    # {{ $title }}
 
-@lang('pages.ocr_complete_message')<br>
+    {{ t('The OCR processing of your data is complete. If there were any errors in processing images, an attached file will be present.') }}
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

@@ -31,16 +31,16 @@ class GridCsvExport extends Notification implements ShouldQueue
     /**
      * @var string
      */
-    public $message;
+    public $route;
 
     /**
      * GridCsvExport constructor.
      *
-     * @param $message
+     * @param string $route
      */
-    public function __construct($message)
+    public function __construct(string $route)
     {
-        $this->message = $message;
+        $this->route = $route;
         $this->onQueue(config('config.default_tube'));
     }
 
@@ -59,7 +59,7 @@ class GridCsvExport extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        return (new MailMessage)->markdown('mail.gridcsvexport', ['message' => $this->message]);
+        return (new MailMessage)->markdown('mail.gridcsvexport', ['url' => $this->route]);
     }
 
     /**

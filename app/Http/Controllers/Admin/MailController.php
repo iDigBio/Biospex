@@ -67,7 +67,7 @@ class MailController extends Controller
             ->bcc($recipients)
             ->send(new SiteMailer($request->get('subject'), $request->get('message')));
 
-        \Flash::success(__('pages.mailer_sent_msg'));
+        \Flash::success(__('Your message has been sent.'));
 
         return redirect()->route('admin.mail.index');
     }

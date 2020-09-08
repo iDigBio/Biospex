@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.events') }}
+    {{ __('Events') }}
 @stop
 
 @section('header')
@@ -23,12 +23,14 @@
         @include('front.event.partials.event-loop')
     </div>
     @if(GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event))
-    <div class="row">
-        <p class="text-center col-6 mx-auto mt-4">{!! $event->project->lastPanoptesProject->present()->project_link !!}</p>
-    </div>
-    <div class="row">
-        <p class="text-justify col-6 mx-auto mt-4">{!! __('html.event_join_show') !!}</p>
-    </div>
+        <div class="row">
+            <p class="text-center col-6 mx-auto mt-4">{!! $event->project->lastPanoptesProject->present()->project_link !!}</p>
+        </div>
+        <div class="row">
+            <p class="text-justify col-6 mx-auto mt-4"><b>{{ t('Important') }}: </b>
+                {{ t('Transcriptions will only count during the scheduled Event times. Please be sure to log in to Zooniverse when digitizing or your digitization will not count. To participate on a Team, please contact the Event sponsor.') }}
+            </p>
+        </div>
     @endif
     @include('common.scoreboard')
     @include('common.event-step-chart')

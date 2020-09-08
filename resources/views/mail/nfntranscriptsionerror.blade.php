@@ -1,9 +1,13 @@
 @component('mail::message')
-# Error Processing Classifications
+    # {{ t('Error Processing Classifications') }}
 
-{!! $message !!}
+    {{ t('An error occurred while processing the Zooniverse classifications.') }}
+    {{ t('The Biospex Administration has been notified and will investigate the issue. Please do not attempt to restart or perform other functions on this project.') }}
 
+    {{ t('Project') }}: {{ $title }}
+    {{ t('ID') }}: {{ $id }}
+    {{ t('Message') }}: {{ $message }}
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

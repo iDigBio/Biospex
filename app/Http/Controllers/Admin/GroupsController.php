@@ -86,12 +86,12 @@ class GroupsController extends Controller
 
             event('group.saved');
 
-            Flash::success(trans('pages.record_created'));
+            Flash::success(t('Record was created successfully.'));
 
             return redirect()->route('admin.groups.index');
         }
 
-        Flash::warning(trans('pages.loginreq'));
+        Flash::warning(t('Login field required'));
 
         return redirect()->back();
     }
@@ -150,7 +150,7 @@ class GroupsController extends Controller
             return redirect()->back();
         }
 
-        $this->groupContract->update($request->all(), $groupId) ? Flash::success(trans('pages.record_updated')) : Flash::error('pages.record_updated_error');
+        $this->groupContract->update($request->all(), $groupId) ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
 
         return redirect()->route('admin.groups.show', [$groupId]);
     }
@@ -172,7 +172,7 @@ class GroupsController extends Controller
         try {
             foreach ($group->projects as $project) {
                 if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                    Flash::error(trans('pages.expedition_process_exists'));
+                    Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
                     return redirect()->route('admin.groups.index');
                 }
@@ -182,11 +182,11 @@ class GroupsController extends Controller
 
             event('group.deleted', $group->id);
 
-            Flash::success(trans('pages.record_deleted'));
+            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
             return redirect()->route('admin.groups.index');
         } catch (Exception $e) {
-            Flash::error(trans('pages.record_delete_error'));
+            Flash::error(t('An error occurred when deleting record.'));
 
             return redirect()->route('admin.groups.index');
         }
@@ -210,7 +210,7 @@ class GroupsController extends Controller
 
         try {
             if ($group->user_id === (int) $userId) {
-                Flash::error(trans('pages.group_user_deleted_owner'));
+                Flash::error(t('You cannot delete the owner until another owner is selected.'));
 
                 return redirect()->route('admin.groups.show', [$groupId]);
             }
@@ -218,11 +218,11 @@ class GroupsController extends Controller
             $user = $userContract->find($userId);
             $user->detachGroup($group->id);
 
-            Flash::success(trans('pages.group_user_deleted'));
+            Flash::success(t('User was removed from the group'));
 
             return redirect()->route('admin.groups.show', [$groupId]);
         } catch (Exception $e) {
-            Flash::error(trans('pages.group_user_deleted_error'));
+            Flash::error(t('There was an error removing user from the group'));
 
             return redirect()->route('admin.groups.show', [$groupId]);
         }

@@ -5,7 +5,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="empty-icon"><i class="fa fa-fw"></i></div>
-                <h2 class="color-action">{{ __('pages.group') }} {{ __('pages.invite') }}</h2>
+                <h2 class="color-action">{{ __('Group Invite') }}</h2>
                 <div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="far fa-times-circle"></i></span>

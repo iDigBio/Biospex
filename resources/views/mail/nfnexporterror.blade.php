@@ -1,8 +1,13 @@
 @component('mail::message')
-# Error Exporting For Zooniverse
+    # {{ t('Error Exporting For Zooniverse') }}
 
-{!! $message !!}
+    {{ t('An error occurred while exporting.') }}
+    {{ t('The Biospex Administration has been notified and will investigate the issue. Please do not attempt to restart export or perform other functions on this project.') }}
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('Expedition') }}: {{ $title }}
+    {{ t('ID') }}: {{ $id }}
+    {{ t('Message') }}: {{ $message }}
+
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

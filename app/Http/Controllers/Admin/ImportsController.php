@@ -65,13 +65,13 @@ class ImportsController extends Controller
 
             DwcFileImportJob::dispatch($import);
 
-            Flash::success(__('pages.upload_import_success'));
+            Flash::success(__('Upload was successful. You will receive an email when your import data have been processed.'));
 
             return redirect()->back();
         }
         catch(Exception $e)
         {
-            Flash::error(__('pages.upload_import_error'));
+            Flash::error(__('Error uploading file'));
 
             return redirect()->back();
         }
@@ -96,13 +96,13 @@ class ImportsController extends Controller
 
             RecordsetImportJob::dispatch($data);
 
-            Flash::success(__('pages.upload_import_success'));
+            Flash::success(__('Upload was successful. You will receive an email when your import data have been processed.'));
 
             return redirect()->back();
         }
         catch(Exception $e)
         {
-            Flash::error(__('pages.upload_import_error'));
+            Flash::error(__('Error uploading file'));
 
             return redirect()->back();
         }
@@ -127,13 +127,13 @@ class ImportsController extends Controller
 
             DwcUriImportJob::dispatch($data);
 
-            Flash::success(__('pages.upload_import_success'));
+            Flash::success(__('Upload was successful. You will receive an email when your import data have been processed.'));
 
             return redirect()->back();
         }
         catch(Exception $e)
         {
-            Flash::error(__('pages.upload_import_error'));
+            Flash::error(__('Error uploading file'));
 
             return redirect()->back();
         }

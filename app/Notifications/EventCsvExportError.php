@@ -24,32 +24,39 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class OcrQueueCheck extends Notification implements ShouldQueue
+class EventCsvExportError extends Notification implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * @var
+     * @var string
      */
-    private $message;
+    private $error;
+
+    /**
+     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    private $adminEmail;
 
     /**
      * Create a new notification instance.
      *
-     * @param $message
+     * @param string $error
      */
-    public function __construct($message)
+    public function __construct(string $error)
     {
-        $this->message = $message;
+        $this->error = $error;
+        $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.default_tube'));
     }
 
     /**
      * Get the notification's delivery channels.
      *
+     * @param  mixed  $notifiable
      * @return array
      */
-    public function via()
+    public function via($notifiable)
     {
         return ['mail'];
     }
@@ -61,15 +68,19 @@ class OcrQueueCheck extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        return (new MailMessage)->markdown('mail.ocrqueuecheck', ['message' => $this->message]);
+        $mailMessage = new MailMessage;
+        $mailMessage->bcc($this->adminEmail)->markdown('mail.eventcsvexport', ['error' => $this->error]);
+
+        return $mailMessage;
     }
 
     /**
      * Get the array representation of the notification.
      *
+     * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray()
+    public function toArray($notifiable)
     {
         return [
             //

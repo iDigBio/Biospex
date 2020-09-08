@@ -145,9 +145,9 @@ class PanoptesTranscriptionProcess
     {
         if (count($header) !== count($row))
         {
-            $message = trans('pages.csv_row_count', [
-                'headers' => count($header),
-                'rows'    => count($row)
+            $message = t('Header column count does not match row count. :headers headers / :rows rows', [
+                ':headers' => count($header),
+                ':rows'    => count($row)
             ]);
 
             $this->csvError[] = ['error' => $message];

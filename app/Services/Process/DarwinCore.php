@@ -116,7 +116,7 @@ class DarwinCore
     {
         if ( ! file_exists($file))
         {
-            throw new Exception(trans('pages.import_file_missing', ['file' => $file]));
+            throw new Exception(t('Required file missing from Darwin Core Archive. %s', $file));
         }
     }
 

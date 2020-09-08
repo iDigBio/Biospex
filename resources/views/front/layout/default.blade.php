@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <meta name="author" content="{{ _('pages.default_header') }}">
+    <meta name="author" content="{{ _('FSU Department of Biological Science') }}">
     <meta name="csrf-param" content="_token">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="google-site-verification" content="DRVQlYZQo5OkUlUhNG8Re-CgYEB7ELA0I_3qJJlzb0U"/>
@@ -34,7 +34,7 @@ sub footer -->
         <div class="row py-3 align-items-center">
             <!-- Grid column -->
             <div class="col-md-10 col-md-offset-1 text-center d-inline d-sm-flex align-items-start justify-content-between">
-                <h3>{{ __('pages.footer_get_connected') }}</h3>
+                <h3>{{ t('Get Connected') }}</h3>
                 <!-- Instagram -->
                 <a class="figure-img"></a>
                 <!-- Twitter -->
@@ -63,7 +63,7 @@ sub footer -->
 
                 <!-- Content -->
                 <img src="/images/page/biospex_logo.svg" alt="BIOSPEX">
-                <p class="small text-justify pt-2">{{ __('pages.footer_disclaimer') }}</p>
+                <p class="small text-justify pt-2">{{ t("is funded by a grant from the National Science Foundation's Advances in Biological Informatics Program (Award Number 1458550). iDigBio is funded by grants from the National Science Foundation's Advancing Digitization of Biodiversity Collections Program (DBI-1115210 [2011-2018] and DBI-1547229 [2016-2021]). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.") }}</p>
             </div>
             <!-- Grid column -->
             <div class="col-sm-1">
@@ -71,38 +71,38 @@ sub footer -->
             <!-- Grid column -->
             <div class="col-md-2 col-12 mx-auto mb-4">
                 <!-- Links -->
-                <h6 class="text-uppercase font-weight-bold">{{ __('pages.about') }}</h6>
+                <h6 class="text-uppercase font-weight-bold">{{ t('About') }}</h6>
                 <hr class="white mb-2 mt-2 d-inline-block mx-auto" style="width:60px;">
                 <p>
-                    <a href="{{ route('front.teams.index') }}">{{ __('pages.team') }}</a>
+                    <a href="{{ route('front.teams.index') }}">{{ __('Team') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.faqs.index') }}">{{ __('pages.faq') }}</a>
+                    <a href="{{ route('front.faqs.index') }}">{{ __('FAQ') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.resources.index') }}">{{ __('pages.resources') }}</a>
+                    <a href="{{ route('front.resources.index') }}">{{ __('Resources') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.contact.index') }}">{{ __('pages.contact') }}</a>
+                    <a href="{{ route('front.contact.index') }}">{{ __('Contact') }}</a>
                 </p>
 
             </div>
             <!-- Grid column -->
             <!-- Grid column -->
             <div class="col-md-2  mx-auto mb-4">
-                <h6 class="text-uppercase font-weight-bold">{{ __('pages.content') }}</h6>
+                <h6 class="text-uppercase font-weight-bold">{{ __('Content') }}</h6>
                 <hr class="white mb-2 mt-2 d-inline-block mx-auto" style="width:60px;">
                 <p>
-                    <a href="{{ route('front.projects.index') }}">{{ __('pages.projects') }}</a>
+                    <a href="{{ route('front.projects.index') }}">{{ __('Projects') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.expeditions.index') }}">{{ __('pages.expeditions') }}</a>
+                    <a href="{{ route('front.expeditions.index') }}">{{ __('Expeditions') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.events.index') }}">{{ __('pages.events') }}</a>
+                    <a href="{{ route('front.events.index') }}">{{ __('Events') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('api.get.index') }}">{{ __('pages.biospex') }} {{ __('pages.api') }}</a>
+                    <a href="{{ route('api.get.index') }}" class="text-uppercase">{{ t('Biospex API') }}</a>
                 </p>
             </div>
             <!-- Grid column -->
@@ -113,8 +113,8 @@ sub footer -->
     <!-- Footer Links -->
 
     <!-- Copyright -->
-    <div class="text-center py-3" style="color: #e1e1e1;">{{ __('pages.copyright') }}
-        <a href="https://www.bio.fsu.edu/"> {{ __('pages.copyright_tag') }}</a>
+    <div class="text-center py-3" style="color: #e1e1e1;">{{ __('© 2019 Copyright') }}
+        <a href="https://www.bio.fsu.edu/"> {{ __('FSU Deptartment of Biological Science') }}</a>
     </div>
     <!-- Copyright -->
 

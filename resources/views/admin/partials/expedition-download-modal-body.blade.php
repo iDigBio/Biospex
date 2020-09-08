@@ -1,6 +1,6 @@
 @if($error)
     <div class="col-md-12 text-center">
-        <h3>{{ __('pages.insufficient_permissions') }}</h3>
+        <h3>{{ t('You do not have sufficient permissions.') }}</h3>
     </div>
 @else
     @foreach ($expedition->actors as $actor)
@@ -14,11 +14,11 @@
                 <table class="table table-sm table-hover">
                     <thead>
                     <tr>
-                        <th>{{ trans('pages.download_type') }}</th>
-                        <th>{{ trans('pages.filename') }}</th>
-                        <th>{{ trans('pages.filesize') }}</th>
-                        <th>{{ trans('pages.created') }}</th>
-                        <th>{{ trans('pages.updated') }}</th>
+                        <th>{{ t('Download Type') }}</th>
+                        <th>{{ t('Filename') }}</th>
+                        <th>{{ t('File Size') }}</th>
+                        <th>{{ t('Created') }}</th>
+                        <th>{{ t('Updated') }}</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -42,23 +42,23 @@
                                         @can('isOwner', $expedition->project->group)
                                             <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                                data-hover="tooltip"
-                                               title="{{ __('pages.download') }} {{ $download->present()->file_type }}">
+                                               title="{{ t('Download') }} {{ $download->present()->file_type }}">
                                                 <i class="fas fa-file-download fa-2x"></i></a>
                                             @if ($download->type === 'summary')
                                                 <a href="{{ route('admin.downloads.summary', [$expedition->project->id, $expedition->id]) }}"
                                                    data-hover="tooltip" target="_blank"
-                                                   title="{{ __('pages.view') }} {{ $download->type }}">
+                                                   title="{{ t('View') }} {{ $download->type }}">
                                                     <i class="fas fa-eye fa-2x pl-2 ml-2"></i></a>
                                             @endif
                                         @endcan
                                     @else
                                         <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                            data-hover="tooltip"
-                                           title="{{ __('pages.download') }} {{ $download->type }} {{ __('pages.download_archive') }}">
+                                           title="{{ t('Download') }} {{ $download->type }} {{ t('archive') }}">
                                             <i class="fas fa-file-archive fa-2x"></i></a>
                                         <a href="{{ route('admin.downloads.batch', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                            data-hover="tooltip"
-                                           title="{{ __('pages.download') }} {{ $download->type }} {{ __('pages.download_batch') }}">
+                                           title="{{ t('Download') }} {{ $download->type }} {{ t('batch') }}">
                                             <i class="fas fa-file-download fa-2x ml-2"></i></a>
                                     @endif
                                 </td>

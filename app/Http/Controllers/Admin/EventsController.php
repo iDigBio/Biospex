@@ -132,12 +132,12 @@ class EventsController extends Controller
         $event = $this->eventContract->createEvent($request->all());
 
         if ($event) {
-            Flash::success(trans('pages.record_created'));
+            Flash::success(t('Record was created successfully.'));
 
             return redirect()->route('admin.events.show', [$event->id]);
         }
 
-        Flash::error(trans('pages.record_save_error'));
+        Flash::error(t('An error occurred when saving record.'));
 
         return redirect()->route('admin.events.index');
     }
@@ -185,12 +185,12 @@ class EventsController extends Controller
         $result = $this->eventContract->updateEvent($request->all(), $eventId);
 
         if ($result) {
-            Flash::success(trans('pages.record_updated'));
+            Flash::success(t('Record was updated successfully.'));
 
             return redirect()->route('admin.events.show', [$eventId]);
         }
 
-        Flash::error(trans('pages.record_updated_error'));
+        Flash::error(t('Error while updating record.'));
 
         return redirect()->route('admin.events.edit', [$eventId]);
     }
@@ -214,12 +214,12 @@ class EventsController extends Controller
 
         if ($result)
         {
-            Flash::success(trans('pages.record_deleted'));
+            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
             return redirect()->route('admin.events.index');
         }
 
-        Flash::error(trans('pages.record_delete_error'));
+        Flash::error(t('An error occurred when deleting record.'));
 
         return redirect()->route('admin.events.edit', [$eventId]);
     }

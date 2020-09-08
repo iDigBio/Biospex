@@ -1,9 +1,9 @@
 @for($i=0; $i < $resourceCount; $i++)
     <div class="entry mb-4">
         <fieldset class="row border p-2">
-            <legend class="w-auto">{{ __('pages.resources') }} {{ $i+1 }}</legend>
+            <legend class="w-auto">{{ t('Resources') }} {{ $i+1 }}</legend>
             <div class="col-3">
-                <label class="col-form-label">{{ __('pages.type') }}</label>
+                <label class="col-form-label">{{ t('Type') }}</label>
                 <div class="input-group">
                     <div class="input-group-prepend">
                     <span class="input-group-text btn btn-primary btn-add px-3 py-0" id="basic-addon{{$i}}"><i
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="col-4">
-                <label class="col-form-label">{{ __('pages.url_or_name') }}</label>
+                <label class="col-form-label">{{ t('URL or Name') }}</label>
                 <input type="text" class="form-control {{ ($errors->has("resources.$i.name")) ? 'is-invalid' : '' }}"
                        id="resources[{{ $i }}][name]"
                        name="resources[{{ $i }}][name]"
@@ -29,7 +29,7 @@
                 <span class="invalid-feedback">{{ $errors->first("resources.$i.name") }}</span>
             </div>
             <div class="col-5">
-                <label class="col-form-label">{{ __('pages.description') }}</label>
+                <label class="col-form-label">{{ t('Description') }}</label>
                 <input type="text" class="form-control {{ ($errors->has("resources.$i.description")) ? 'is-invalid' : '' }}"
                        id="resources[{{ $i }}][description]"
                        name="resources[{{ $i }}][description]"
@@ -38,14 +38,14 @@
             </div>
             <div class="col-6 mt-2 mx-auto">
                 <div class="custom-file">
-                    <label class="custom-file-label">{{ __('pages.choose_file') }}</label>
+                    <label class="custom-file-label">{{ t('Choose file...') }}</label>
                     <input type="file" class="form-control custom-file-input {{ ($errors->has("resources.$i.download")) ? 'is-invalid' : '' }}"
                            name="resources[{{ $i }}][download]"
                            id="resources[{{ $i }}][download]">
                     <span class="invalid-feedback">{{ $errors->first("resources.$i.download") }}</span>
                 </div>
                 @if ( ! empty($resources[$i]->download_file_name))
-                    <br>{{ __('Current File') }}: {{ $resources[$i]->download_file_name ?? '' }}
+                    <br>{{ t('Current File') }}: {{ $resources[$i]->download_file_name ?? '' }}
                 @endif
             </div>
             <input type="hidden" id="resources[{{ $i }}][id]" name="resources[{{ $i }}][id]"

@@ -30,16 +30,16 @@ class NfnExpertReviewPublished extends Notification implements ShouldQueue
     use Queueable;
 
     /**
-     * @var
+     * @var string
      */
     private $title;
 
     /**
      * NfnExpertReviewPublished constructor.
      *
-     * @param $title
+     * @param string $title
      */
-    public function __construct($title)
+    public function __construct(string $title)
     {
         $this->title = $title;
         $this->onQueue(config('config.default_tube'));
@@ -64,14 +64,9 @@ class NfnExpertReviewPublished extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        $mailMessage->subject(__('pages.expert_review_pub_mail_subject'));
+        $mailMessage->subject(__('Expert Review Reconciled CSV File'));
 
-        $attributes = [
-            'message' => __('pages.expert_review_pub_mail_msg', ['title' => $this->title]),
-            'title' => __('pages.expert_review_pub_mail_title')
-        ];
-
-        return $mailMessage->markdown('mail.nfnexpertreviewpublish', $attributes);
+        return $mailMessage->markdown('mail.nfnexpertreviewpublish', ['title' => $this->title]);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.team') }}
+    {{ __('Team') }}
 @stop
 
 {{-- Content --}}
@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4 text-uppercase">{{ __('pages.biospex') }} {{ __('pages.team') }}</h2>
+    <h2 class="text-center pt-4 text-uppercase">{{ __('Biospex Team') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     @foreach($categories as $category)
         <div class="row col-sm-10 mx-auto mt-4 justify-content-center">

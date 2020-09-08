@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.biospex_title') }}
+    {{ __('Lead Public Digitization Expeditions') }}
 @stop
 
 @section('custom-style')
@@ -20,10 +20,10 @@
         <div class="container text-center">
             <div class="row py-5">
                 <div class="col-12" data-aos="fade-right" data-aos-easing="ease-in" data-aos-duration="2000">
-                    <h1 class="text-white align-middle home-banner-tag">{{ __('pages.biospex_tag') }}
+                    <h1 class="text-white align-middle home-banner-tag">{{ __('Provision, advertise, and lead expeditions.') }}
                         <br>
                         <a href="#learn-more" data-scroll class="btn btn-primary mt-4" data-aos="fade-right"
-                           data-aos-easing="ease-out" data-aos-duration="3000">{{ __('pages.learn_more') }}</a>
+                           data-aos-easing="ease-out" data-aos-duration="3000">{{ __('Learn More') }}</a>
                     </h1>
 
                 </div>
@@ -37,7 +37,15 @@
     <section class="home-heading text-center" id="learn-more">
         <div class="container">
             <img src="/images/page/logo-tagline-action.png" align="Biospex Tag Line">
-            <p class="text-justify mt-4">{{ __('html.biospex_home') }}</p>
+            <p class="text-justify mt-4">{{ t('BIOSPEX is a base camp for launching, advertising, and managing targeted
+            efforts to digitize the world\'s 3 billion biodiversity research specimens in ways that involve the public.
+            Such specimens include fish in jars, plants on sheets, fossils in drawers, insects on pins, and many other
+            types. “Digitization” is a broad reference to creating digital data about the physical specimens and includes
+            things like recording the what, when, where from the specimen label or describing the life stage of the specimen
+            at time of collection. BIOSPEX enables you to package projects in one or a series of digitization expeditions,
+            launch the expeditions at crowdsourcing tools, widely recruit others to participate, and layer resources on
+            the experience to advance science literacy. In the end, you can download the new data for specimen curation,
+            research, conservation, natural resource management, public policy, or other activities.') }}</p>
         </div>
     </section>
     <!-- Carousel Section -->
@@ -46,7 +54,7 @@
             <div class="col d-flex justify-content-center">
                 <div class="col-md-4 text-center" role="group" aria-label="External carousel buttons">
                     <h2>The Process<br>
-                        <span class="smallertext">{{ __('pages.carousel_specimen') }}</span></h2>
+                        <span class="smallertext">{{ __('Specimen digitization is easy as 123') }}</span></h2>
                     <ul id="external-carousel-btns" class="list-inline">
                         <li data-target="#processCarousel" data-slide-to="0"
                             class="carousel-li-0 active list-inline-item">1
@@ -62,20 +70,32 @@
                         <div class="carousel-item active"
                              style="background-image: url(/images/slider/slider1.png);">
                             <div class="circle-slider p-5">
-                                <h3 class="text-center text-uppercase">{{ __('pages.project') }}</h3>
-                                <p>{{ __('pages.carousel_step_1_msg') }}</p>
+                                <h3 class="text-center text-uppercase">{{ __('Project') }}</h3>
+                                <p>{{ __('Establish a project to create data about biodiversity research specimens that have been
+                                digitally imaged and for which you have a compelling use.  As you circumscribe the project,
+                                look for ways to align its goals with the interests of existing organizations (e.g.,
+                                enthusiast groups or educators).  A public page is minted for each project, at which
+                                visualizations and useful resources for participants (e.g., lesson plans) can be shared.') }}</p>
                             </div>
                         </div>
                         <div class="carousel-item" style="background-image: url(/images/slider/slider2.png);">
                             <div class="circle-slider p-5">
-                                <h3 class="text-center text-uppercase">{{ __('pages.expeditions') }}</h3>
-                                <p>{{ __('pages.carousel_step_2_msg') }}</p>
+                                <h3 class="text-center text-uppercase">{{ __('Expeditions') }}</h3>
+                                <p>{{ __('If you have many specimens from which you need data, circumscribe subsets using what you
+                                already know about the specimens or using the output from the BIOSPEX optical character
+                                recognition service, which reads text in images.  These subsets—the “expeditions”—can be
+                                launched one or more at a time at a crowdsourcing platform.  Perhaps you have a planned
+                                public event at which you would like to complete an expedition.  Use the BIOSPEX event
+                                scoreboard to follow progress of your event’s teams.') }}</p>
                             </div>
                         </div>
                         <div class="carousel-item" style="background-image: url(/images/slider/slider3.png);">
                             <div class="circle-slider p-5">
-                                <h3 class="text-center text-uppercase">{{ __('pages.export') }}</h3>
-                                <p>{{ __('pages.carousel_step_3_msg') }}</p>
+                                <h3 class="text-center text-uppercase">{{ __('Export') }}</h3>
+                                <p>{{ __('Use the BIOSPEX admin tools, including leaderboards and summary statistics, to
+                                rally participants and follow progress as expeditions proceed.  Upon expedition completion,
+                                download data for use and export back to the collections that curate the physical specimens
+                                so that everyone can benefit from your project’s work.') }}</p>
                             </div>
                         </div>
                     </div>
@@ -91,7 +111,7 @@
             <div class="row p-5">
 
                 <div class="col-sm-6 mt-5 p-1 pb-md-3">
-                    <h2 class="home-header-cta">{{ __('pages.a_project') }}</h2>
+                    <h2 class="home-header-cta">{{ t('A Project') }}</h2>
 
                     <div class="card mb-5 px-4 box-shadow" data-aos="fade-down" data-aos-easing="ease-in"
                          data-aos-duration="2000" data-aos-once="true">
@@ -108,9 +128,9 @@
 
                             <div class="col-12">
                                 <ul class="text">
-                                    <li class="mt-3">{{ $expedition->project->expeditions_count }} {{ __('pages.expeditions') }}</li>
-                                    <li>{{ CountHelper::projectTranscriberCount($expedition->project->id) }} {{ __('pages.participants') }}</li>
-                                    <li>{{ CountHelper::projectTranscriptionCount($expedition->project->id) }} {{ __('pages.digitizations') }}</li>
+                                    <li class="mt-3">{{ $expedition->project->expeditions_count }} {{ __('Expeditions') }}</li>
+                                    <li>{{ CountHelper::projectTranscriberCount($expedition->project->id) }} {{ __('Participants') }}</li>
+                                    <li>{{ CountHelper::projectTranscriptionCount($expedition->project->id) }} {{ __('Digitizations') }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -128,17 +148,17 @@
                         </div>
                     </div>
 
-                    <h2>{{ __('pages.the_progress') }}</h2>
+                    <h2>{{ __('The Progress') }}</h2>
 
                     <div class="card mb-4 px-4 box-shadow" data-aos="fade-right" data-aos-easing="ease-in"
                          data-aos-duration="2000" data-aos-once="true">
-                        <h2 class="text-center pt-4">{{ __('pages.biospex_stats') }}</h2>
+                        <h2 class="text-center pt-4">{{ __('BIOSPEX Stats') }}</h2>
                         <hr>
                         <div class="row card-body pb-5">
                             <div class="col-12">
                                 <ul class="text">
-                                    <li class="mt-3">{{ $transcriptionCount }} {{ __('pages.launched_digitizations_count') }}</li>
-                                    <li>{{ $contributorCount }} {{ __('pages.launched_participants_count') }}</li>
+                                    <li class="mt-3">{{ $transcriptionCount }} {{ __('Digitizations in Biospex-launched Projects') }}</li>
+                                    <li>{{ $contributorCount }} {{ __('Participants in Biospex-launched Projects') }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -150,7 +170,8 @@
                     <div class="card black mb-4 box-shadow" data-aos="fade-up" data-aos-duration="1500"
                          data-aos-anchor-placement="bottom-bottom" data-aos-once="true">
                         <div class="card-top m-0 p-0">
-                            <img class="card-img-top" style="max-height: 100%" src="{{ $expedition->present()->show_medium_logo }}" alt="Card image cap">
+                            <img class="card-img-top" style="max-height: 100%"
+                                 src="{{ $expedition->present()->show_medium_logo }}" alt="Card image cap">
                             <div class="card-img-overlay">
                                 <h2 class="card-title text-center pt-4">{{ $expedition->title }}</h2>
                                 <i class="card-info fas fa-info-circle fa-2x float-right"
@@ -163,9 +184,10 @@
                              style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                             <div class="d-flex justify-content-between">
                                 <div class="p-2">
-                                    <p>{{ $expedition->stat->transcriptions_completed }} {{ __('pages.digitizations') }}</p>
+                                    <p>{{ $expedition->stat->transcriptions_completed }} {{ __('Digitizations') }}</p>
                                 </div>
-                                <div class="p-2"><p>{{ $expedition->stat->percent_completed }}% {{ __('pages.completed') }}</p>
+                                <div class="p-2"><p>{{ $expedition->stat->percent_completed }}
+                                        % {{ __('Completed') }}</p>
                                 </div>
                             </div>
                             <hr>

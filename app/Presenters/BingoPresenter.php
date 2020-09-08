@@ -40,7 +40,7 @@ class BingoPresenter extends Presenter
     {
         return '<a href="'.route('admin.bingos.show', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.view').' '.__('pages.bingo').'">
+            ]).'" data-hover="tooltip" title="'.__('View Bingo').'">
                 <i class="fas fa-eye"></i></a>';
     }
 
@@ -53,7 +53,7 @@ class BingoPresenter extends Presenter
     {
         return '<a href="'.route('front.bingos.show', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.view').' '.__('pages.bingo').'">
+            ]).'" data-hover="tooltip" title="'.__('View Bingo').'">
                 <i class="fas fa-eye"></i></a>';
     }
 
@@ -66,7 +66,7 @@ class BingoPresenter extends Presenter
     {
         return '<a href="'.route('admin.bingos.edit', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.edit').' '.__('pages.bingo').'">
+            ]).'" data-hover="tooltip" title="'.__('Edit Bingo').'">
                 <i class="fas fa-edit"></i></a>';
     }
 
@@ -79,7 +79,7 @@ class BingoPresenter extends Presenter
     {
         return '<a href="'.route('admin.bingos.edit', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.edit').' '.__('pages.bingo').'">
+            ]).'" data-hover="tooltip" title="'.__('Edit Bingo').'">
                 <i class="fas fa-edit fa-2x"></i></a>';
     }
 
@@ -93,11 +93,11 @@ class BingoPresenter extends Presenter
         return '<a href="'.route('admin.bingos.delete', [
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('pages.delete').' '.__('pages.bingo').'" 
+            title="'.__('Delete Bingo').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.delete').' '.__('pages.bingo').'?" data-content="'.__('messages.record_delete').'">
+            data-title="'.__('Delete Bingo').'?" data-content="'.__('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -111,11 +111,11 @@ class BingoPresenter extends Presenter
         return '<a href="'.route('admin.bingos.delete', [
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('pages.delete').' '.__('pages.bingo').'" 
+            title="'.__('Delete Bingo').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.delete').' '.__('pages.bingo').'?" data-content="'.__('messages.record_delete').'">
+            data-title="'.__('Delete Bingo').'?" data-content="'.__('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -137,7 +137,7 @@ class BingoPresenter extends Presenter
         return '<a href="https://twitter.com/intent/tweet?url='.$url.'" 
             target="_blank" 
             data-hover="tooltip" 
-            title="'.__('pages.twitter_share').'">
+            title="'.__('Share on Twitter').'">
             <i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -156,7 +156,7 @@ class BingoPresenter extends Presenter
         return '<a href="http://www.facebook.com/share.php?u='.$url.'&title='.$title.'" 
             target="_blank" 
             data-hover="tooltip" 
-            title="'.__('pages.facebook_share').'">
+            title="'.__('Share on Facebook').'">
             <i class="fab fa-facebook"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -167,7 +167,7 @@ class BingoPresenter extends Presenter
      */
     public function contactIcon()
     {
-        return '<a href="mailto:'.$this->model->contact.'" data-hover="tooltip" title="'.__('pages.contact').'">
+        return '<a href="mailto:'.$this->model->contact.'" data-hover="tooltip" title="'.__('Contact').'">
                 <i class="fas fa-envelope"></i></a>';
     }
 }

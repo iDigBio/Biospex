@@ -105,9 +105,9 @@ class ReconcileProcessService
             $this->setPaths($expeditionId);
 
             if (! File::exists($this->csvPath) || ! isset($expedition->panoptesProject)) {
-                throw new Exception(__('pages.file_does_not_exist_error_msg', [
-                    'method' => __METHOD__,
-                    'path'   => $this->csvPath,
+                throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
+                    ':method' => __METHOD__,
+                    ':path'   => $this->csvPath,
                 ]));
             }
 
@@ -118,9 +118,9 @@ class ReconcileProcessService
             $expeditionIds[] = $expedition->id;
 
             if (! $this->checkFilesExist()) {
-                throw new Exception(__('pages.file_does_not_exist_error_msg', [
-                    'method' => __METHOD__,
-                    'path'   => $expeditionId,
+                throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
+                    ':method' => __METHOD__,
+                    ':path'   => $expeditionId,
                 ]));
             }
 
@@ -145,9 +145,9 @@ class ReconcileProcessService
         $this->setPaths($expedition->id);
 
         if (! File::exists($this->csvPath) || $expedition->nfnActor->pivot->completed === 0) {
-            throw new Exception(__('pages.file_does_not_exist_error_msg', [
-                'method' => __METHOD__,
-                'path'   => $this->csvPath,
+            throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
+                ':method' => __METHOD__,
+                ':path'   => $this->csvPath,
             ]));
         }
 
@@ -156,9 +156,9 @@ class ReconcileProcessService
         $this->runCommand();
 
         if (! File::exists($this->expPath)) {
-            throw new Exception(__('pages.file_does_not_exist_error_msg', [
-                'method' => __METHOD__,
-                'path'   => $this->expPath,
+            throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
+                ':method' => __METHOD__,
+                ':path'   => $this->expPath,
             ]));
         }
     }

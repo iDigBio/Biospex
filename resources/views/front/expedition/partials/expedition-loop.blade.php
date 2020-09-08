@@ -12,10 +12,10 @@
         <div class="card-body card-body-img-top white text-center">
             <div class="d-flex justify-content-between">
                 <p>
-                    <small>{{ $expedition->stat->transcriptions_completed }} {{ __('pages.digitizations') }}</small>
+                    <small>{{ $expedition->stat->transcriptions_completed }} {{ __('Digitizations') }}</small>
                 </p>
                 <p>
-                    <small>{{ $expedition->stat->percent_completed }}% {{ __('pages.completed') }}</small>
+                    <small>{{ $expedition->stat->percent_completed }}% {{ __('Completed') }}</small>
                 </p>
             </div>
             <hr>

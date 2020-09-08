@@ -47,7 +47,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.show', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.view').' '.__('pages.expedition').'">
+            ]).'" data-hover="tooltip" title="'.__('View Expedition').'">
             <i class="fas fa-eye"></i></a>';
     }
 
@@ -61,7 +61,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.show', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.view').' '.__('pages.expedition').'">
+            ]).'" data-hover="tooltip" title="'.__('View Expedition').'">
             <i class="fas fa-eye fa-2x"></i></a>';
     }
 
@@ -78,7 +78,7 @@ class ExpeditionPresenter extends Presenter
         ]);
 
         return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
-                    data-target="#expedition-download-modal" data-hover="tooltip" title="'.__('pages.expedition_download_files').'">
+                    data-target="#expedition-download-modal" data-hover="tooltip" title="'.__('Download Expedition Files').'">
                     <i class="fas fa-file-download fa-2x"></i></a>';
     }
 
@@ -92,7 +92,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.edit', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.edit').' '.__('pages.expedition').'"><i class="fas fa-edit"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('Edit Expedition').'"><i class="fas fa-edit"></i></a>';
     }
 
     /**
@@ -105,7 +105,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.edit', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.edit').' '.__('pages.expedition').'"><i class="fas fa-edit fa-2x"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('Edit Expedition').'"><i class="fas fa-edit fa-2x"></i></a>';
     }
 
     /**
@@ -118,7 +118,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.clone', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.clone').' '.__('pages.expedition').'"><i class="fas fa-clone"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('Clone Expedition').'"><i class="fas fa-clone"></i></a>';
     }
 
     /**
@@ -131,7 +131,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.clone', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.clone').' '.__('pages.expedition').'"><i class="fas fa-clone fa-2x"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('Clone Expedition').'"><i class="fas fa-clone fa-2x"></i></a>';
     }
 
     /**
@@ -145,11 +145,11 @@ class ExpeditionPresenter extends Presenter
                 $this->model->project_id,
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('pages.delete').' '.__('pages.expedition').'" 
+            title="'.__('Delete Expedition').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.delete').' '.__('pages.expedition').'?" data-content="'.__('pages.record_delete').'">
+            data-title="'.__('Delete Expedition').'?" data-content="'.__('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -164,12 +164,12 @@ class ExpeditionPresenter extends Presenter
                 $this->model->project_id,
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('pages.delete').' '.__('pages.expedition').'" 
+            title="'.__('Delete Expedition').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.delete').' '.__('pages.expedition').'?" 
-            data-content="'.__('pages.record_delete').'">
+            data-title="'.__('Delete Expedition').'?" 
+            data-content="'.__('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -184,12 +184,12 @@ class ExpeditionPresenter extends Presenter
                 $this->model->project_id,
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('pages.ocr_reprocess').'" 
+            title="'.__('Reprocess Subject OCR').'" 
             data-hover="tooltip"        
             data-method="post"
             data-confirm="confirmation"
-            data-title="'.__('pages.ocr_reprocess').'?" 
-            data-content="'.__('pages.ocr_reprocess_message', ['record' => __('pages.expedition')]).'">
+            data-title="'.__('Reprocess Subject OCR').'?" 
+            data-content="'.__('This action will reprocess all ocr for the Expedition.').'">
             <i class="fas fa-redo-alt fa-2x"></i></a>';
     }
 
@@ -204,12 +204,12 @@ class ExpeditionPresenter extends Presenter
                 $this->model->project_id,
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('pages.expedition_process').'" 
+            title="'.__('Start Expedition Processing').'" 
             data-hover="tooltip"        
             data-method="post"
             data-confirm="confirmation"
-            data-title="'.__('pages.expedition_process').'?" 
-            data-content="'.__('pages.expedition_process_message').'">
+            data-title="'.__('Start Expedition Processing').'?" 
+            data-content="'.__('This will begin processing the Expedition. After starting, Subjects cannot be added or removed. Do you wish to Continue?').'">
             <i class="fas fa-play-circle fa-2x"></i></a>';
     }
 
@@ -224,12 +224,12 @@ class ExpeditionPresenter extends Presenter
                 $this->model->project_id,
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('pages.expedition_stop').'" 
+            title="'.__('Stop Expedition Processing').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('pages.expedition_stop').'" 
-            data-content="'.__('pages.expedition_process_stop_message').'">
+            data-title="'.__('Stop Expedition Processing').'" 
+            data-content="'.__('This will stop the Expedition Process. However, Subjects cannot be added since process was already started. Do you wish to Continue?').'">
             <i class="fas fa-stop-circle fa-2x"></i></a>';
     }
 
@@ -245,6 +245,6 @@ class ExpeditionPresenter extends Presenter
             $this->model->id,
         ]);
 
-        return '<a class="btn btn-primary float-right mt-2 mb-2" href="'.$route.'">'.__('pages.regenerate_export').'</a>';
+        return '<a class="btn btn-primary float-right mt-2 mb-2" href="'.$route.'">'.__('Regenerate Export File').'</a>';
     }
 }

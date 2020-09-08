@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.resend') }} {{ __('pages.password') }}
+    {{ __('Resend Password') }}
 @stop
 
 {{-- Content --}}
@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4">{{ __('pages.password_resend_txt') }}</h2>
+    <h2 class="text-center pt-4">{{ __('Send Password Instructions') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
@@ -25,7 +25,7 @@
                 <form action="{{ route('api.password.email') }}" method="post" role="form">
                     @csrf
                     <div class="form-group">
-                        <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
+                        <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
                         <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
                                id="email" name="email"
                                value="{{ old('email') }}" required>

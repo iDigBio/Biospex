@@ -101,18 +101,11 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
             return array_diff_key($file->toArray(), $remove);
         });
 
-        $message = [
-            $this->expedition->title,
-            trans('pages.expedition_export_complete_message', [
-                'expedition' => $this->expedition->title
-                ])
-        ];
-
         $csvPath = storage_path('app/reports/'.md5($this->queue->id).'.csv');
         $csv = GeneralHelper::createCsv($data->toArray(), $csvPath);
 
         $users = $this->expedition->project->group->users->push($this->owner);
 
-        Notification::send($users, new NfnExportComplete($message, $csv));
+        Notification::send($users, new NfnExportComplete($this->expedition->title, $csv));
     }
 }

@@ -98,7 +98,7 @@ class ReconcilePublishService
         });
 
         if ($mapped->isEmpty()) {
-            throw new \Exception(__('pages.expert_review_pub_files_missing', [':id' => $expeditionId]));
+            throw new \Exception(t('Missing reconciled records for Expert Review publish for Expedition Id: %s', $expeditionId));
         }
 
         $header = array_keys($mapped->first()->toArray());

@@ -4,18 +4,18 @@
           data-url="{{ $route }}"
           data-target="{{ $type }}-events" class="sort-page mr-2 text-uppercase"
           style="color: #e83f29; cursor: pointer; display: inline-block">
-        <i class="fas fa-sort"></i> {{ __('pages.title') }}</span>
+        <i class="fas fa-sort"></i> {{ __('Title') }}</span>
     @if( Route::currentRouteName() !== 'front.projects.slug')
     <span data-type="{{ $type }}" data-sort="project" data-order="asc"
           data-url="{{ $route }}"
           data-target="{{ $type }}-events" class="sort-page ml-2 text-uppercase"
           style="color: #e83f29; cursor: pointer;display: inline-block">
-        <i class="fas fa-sort"></i> {{ __('pages.project') }}</span>
+        <i class="fas fa-sort"></i> {{ __('Project') }}</span>
     @endif
     <span data-type="{{ $type }}" data-sort="date" data-order="asc"
           data-id="{{ isset($id) ? $id : null }}"
           data-url="{{ $route }}"
           data-target="{{ $type }}-events" class="sort-page ml-2 text-uppercase"
           style="color: #e83f29; cursor: pointer;display: inline-block">
-        <i class="fas fa-sort"></i> {{ __('pages.date') }}</span>
+        <i class="fas fa-sort"></i> {{ __('Date') }}</span>
 </div>

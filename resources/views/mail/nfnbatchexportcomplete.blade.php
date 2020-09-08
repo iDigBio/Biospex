@@ -1,10 +1,11 @@
 @component('mail::message')
-# Zooniverse Batch Export Completed
+    # {{ t('Zooniverse Batch Export Completed') }}
 
-{!! $message !!}
+    {{ t('The export batches for %s are completed.', $title) }}
+    {{ t('Click the links below to download batch files. You must be logged into your account on Biospex.') }}
 
-{!! $links !!}
+    {!! $links !!}
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

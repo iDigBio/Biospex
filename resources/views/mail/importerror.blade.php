@@ -1,8 +1,12 @@
 @component('mail::message')
-#@lang('pages.import_process_title')
+    # {{ t('An error occurred while importing the Darwin Core Archive.') }}
 
-{!! $message !!}
+    {{ t('Project') }}: {{ $title }}
+    {{ t('ID') }}: {{ $id }}
+    {{ t('Message') }}: {{ $message }}
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('The Biospex Administration has been notified and will investigate the issue. Please do not attempt to restart or perform other functions on this project.') }}
+
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

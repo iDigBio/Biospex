@@ -29,25 +29,39 @@ class NfnTranscriptionsError extends Notification implements ShouldQueue
     use Queueable;
 
     /**
-     * @var string
-     */
-    private $message;
-
-    /**
      * @var \Illuminate\Config\Repository|mixed
      */
     private $adminEmail;
 
     /**
-     * Create a new notification instance.
-     *
-     * @param $message
+     * @var string
      */
-    public function __construct($message)
+    private $title;
+
+    /**
+     * @var int
+     */
+    private $identifier;
+
+    /**
+     * @var string
+     */
+    private $message;
+
+    /**
+     * NfnTranscriptionsError constructor.
+     *
+     * @param string $title
+     * @param int $id
+     * @param string $message
+     */
+    public function __construct(string $title, int $identifier, string $message)
     {
-        $this->message = $message;
         $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.default_tube'));
+        $this->title = $title;
+        $this->identifier = $identifier;
+        $this->message = $message;
     }
 
     /**
@@ -67,9 +81,13 @@ class NfnTranscriptionsError extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        return (new MailMessage)
-            ->bcc($this->adminEmail)
-            ->markdown('mail.nfntranscriptsionerror', ['message' => $this->message]);
+        $attributes = [
+            'title' => $this->title,
+            'id' => $this->identifier,
+            'message' => $this->message
+        ];
+
+        return (new MailMessage)->bcc($this->adminEmail)->markdown('mail.nfntranscriptsionerror', $attributes);
     }
 
     /**
@@ -79,8 +97,7 @@ class NfnTranscriptionsError extends Notification implements ShouldQueue
      */
     public function toArray()
     {
-        return [
-            //
+        return [//
         ];
     }
 }

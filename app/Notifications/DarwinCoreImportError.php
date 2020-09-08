@@ -36,15 +36,29 @@ class DarwinCoreImportError extends Notification implements ShouldQueue
     /**
      * @var string
      */
+    private $title;
+
+    /**
+     * @var int
+     */
+    private $identifier;
+
+    /**
+     * @var string
+     */
     private $message;
 
     /**
-     * Create a new notification instance.
+     * DarwinCoreImportError constructor.
      *
+     * @param string $title
+     * @param int $identifier
      * @param string $message
      */
-    public function __construct($message)
+    public function __construct(string $title, int $identifier, string $message)
     {
+        $this->title = $title;
+        $this->identifier = $identifier;
         $this->message = $message;
         $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.default_tube'));
@@ -67,9 +81,15 @@ class DarwinCoreImportError extends Notification implements ShouldQueue
      */
     public function toMail()
     {
+        $attributes = [
+            'title' => $this->title,
+            'id' => $this->identifier,
+            'message' => $this->message
+        ];
+
         return (new MailMessage)
             ->bcc($this->adminEmail)
-            ->markdown('mail.importerror', ['message' => $this->message]);
+            ->markdown('mail.importerror', $attributes);
     }
 
     /**

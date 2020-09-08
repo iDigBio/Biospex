@@ -85,7 +85,7 @@ class EventsController extends Controller
         $event = $contract->findWith($eventId, ['project.lastPanoptesProject', 'teams:id,title,event_id']);
 
         if ($event === null) {
-            Flash::error(trans('pages.record_get_error'));
+            Flash::error(t('Error retrieving record from database'));
 
             return redirect()->route('front.events.index');
         }
@@ -107,7 +107,7 @@ class EventsController extends Controller
         $active = GeneralHelper::eventBefore($team->event) || GeneralHelper::eventActive($team->event);
 
         if ($team === null) {
-            Flash::error(trans('pages.event_join_team_error'));
+            Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
         }
 
         return view('front.event.signup', compact('team', 'active'));
@@ -135,12 +135,12 @@ class EventsController extends Controller
             $team = $eventTeamContract->findWith($request->get('team_id'), ['event']);
             $team->users()->syncWithoutDetaching([$user->id]);
 
-            Flash::success(trans('pages.event_join_team_success'));
+            Flash::success(t('Thank you for your registration.'));
 
             return redirect()->route('front.events.read', [$team->event->id]);
         }
 
-        Flash::error(trans('pages.event_join_team_error'));
+        Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
 
         return redirect()->route('front.events.signup', [$uuid]);
     }

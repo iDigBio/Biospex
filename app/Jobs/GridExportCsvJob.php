@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Notifications\GridCsvExportError;
 use Exception;
 use Illuminate\Support\Str;
 use App\Facades\DateHelper;
@@ -86,33 +87,31 @@ class GridExportCsvJob implements ShouldQueue
     public function handle(
         MongoDbService $mongoDbService,
         Csv $csv
-    )
-    {
-        try
-        {
+    ) {
+        try {
             $mongoDbService->setCollection('subjects');
 
-            $query = null === $this->expeditionId ?
-                ['project_id' => (int) $this->projectId] :
-                ['project_id' => (int) $this->projectId, 'expedition_ids' => (int) $this->expeditionId];
+            $query = null === $this->expeditionId ? ['project_id' => (int) $this->projectId] : ['project_id'     => (int) $this->projectId,
+                                                                                                'expedition_ids' => (int) $this->expeditionId,
+            ];
 
             $cursor = $mongoDbService->find($query);
             $cursor->setTypeMap([
                 'array'    => 'array',
                 'document' => 'array',
-                'root'     => 'array'
+                'root'     => 'array',
             ]);
 
             $docs = collect($cursor);
             $first = $docs->first();
             $header = array_keys($first);
 
-            $fileName = Str::random() . '.csv';
-            $file = Storage::path(config('config.reports_dir') . '/' . $fileName);
+            $fileName = Str::random().'.csv';
+            $file = Storage::path(config('config.reports_dir').'/'.$fileName);
             $csv->writerCreateFromPath($file);
             $csv->insertOne($header);
 
-            $records = $docs->map(function($doc) use ($csv){
+            $records = $docs->map(function ($doc) use ($csv) {
                 $doc['expedition_ids'] = trim(implode(', ', $doc['expedition_ids']), ',');
                 $doc['updated_at'] = DateHelper::formatMongoDbDate($doc['updated_at'], 'Y-m-d H:i:s');
                 $doc['created_at'] = DateHelper::formatMongoDbDate($doc['created_at'], 'Y-m-d H:i:s');
@@ -124,13 +123,11 @@ class GridExportCsvJob implements ShouldQueue
 
             $csv->insertAll($records->toArray());
 
-            $message = __('pages.grid_export_csv_complete', ['link' => route('admin.downloads.report', $fileName)]);
+            $route = route('admin.downloads.report', $fileName);
 
-            $this->user->notify(new GridCsvExport($message));
-        }
-        catch (Exception $e)
-        {
-            $this->user->notify(new GridCsvExport(__('pages.grid_export_csv_error', ['error' => $e->getMessage()])));
+            $this->user->notify(new GridCsvExport($route));
+        } catch (Exception $e) {
+            $this->user->notify(new GridCsvExportError($e->getMessage()));
         }
     }
 }

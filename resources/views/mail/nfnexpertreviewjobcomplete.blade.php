@@ -1,12 +1,13 @@
 @component('mail::message')
-# {{ $title }}
+    # {{ t('Export Review Job Complete') }}
 
-{!! $message !!}
+    {{ t('The Expert Review job for %s is complete and you may start reviewing the reconciled records.', $title) }}
+    {{ t('You may access the page by going to the Expedition Download modal and clicking the green button or click the button below and be taken to the page directly.') }}
 
-@component('mail::button', ['url' => $url])
-    {{ $button }}
-@endcomponent
+    @component('mail::button', ['url' => $url])
+        {{ t('Expert Review Start') }}
+    @endcomponent
 
-Thank you,<br>
-{{ config('app.name') }}
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

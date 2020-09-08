@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.api') }}
+    {{ t('API') }}
 @stop
 
 {{-- Content --}}
@@ -20,12 +20,12 @@
     <div class="row">
         <div class="col-md-8 my-4 mx-auto">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4 text-uppercase">{{ __('pages.biospex') }} {{ __('pages.api') }}</h3>
+                <h3 class="text-center pt-4 text-uppercase">{{ t('Biospex Api') }}</h3>
                 <hr class="header mx-auto" style="width:300px;">
                 <div class="d-flex align-items-start justify-content-between my-4 mx-auto">
-                    <a class="btn btn-primary mr-4" href="https://biospex.docs.apiary.io/#">API Docs</a>
-                    <a class="btn btn-primary mr-4" href="https://github.com/iDigBio/Biospex">GitHub</a>
-                    <a class="btn btn-primary mr-4" rel="nofollow" data-method="delete" href="{{ route('api.get.logout') }}">Sign Out</a>
+                    <a class="btn btn-primary mr-4" href="https://biospex.docs.apiary.io/#">{{ t('API Docs') }}</a>
+                    <a class="btn btn-primary mr-4" href="https://github.com/iDigBio/Biospex">{{ t('GitHub') }}</a>
+                    <a class="btn btn-primary mr-4" rel="nofollow" data-method="delete" href="{{ route('api.get.logout') }}">{{ t('Log Out') }}</a>
                 </div>
                 <div id="app" class="col-md-10 mx-auto my-4">
                     <!-- let people make clients -->

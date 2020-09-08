@@ -1,8 +1,8 @@
 @component('mail::message')
-    # Failed Job Errors
+    # {{ t('Failed Jobs') }}
 
     {!! $message !!}
 
-    Thank you,<br>
+    {{ t('Thank you') }},
     {{ config('app.name') }}
 @endcomponent

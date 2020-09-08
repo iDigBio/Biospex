@@ -5,7 +5,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="empty-icon"><i class="fa fa-fw"></i></div>
-                <div><h2 class="color-action text-uppercase">{{ __('pages.project') }} {{ __('pages.project') }} {{ __('pages.banner') }}</h2></div>
+                <div><h2 class="color-action text-uppercase">{{ t('Project Banner') }}</h2></div>
                 <div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="far fa-times-circle"></i></span>
@@ -16,48 +16,48 @@
             <div class="modal-body">
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-desert.jpg" data-hover="tooltip"
-                         title="{{ __('pages.banner_click') }}">
-                        <img class="img-fluid" alt="{{ __('pages.banner_desert') }}"
+                         title="{{ t('Click to select banner.') }}">
+                        <img class="img-fluid" alt="{{ t('Desert Banner') }}"
                              src="{{ '/images/habitat-banners/banner-desert.jpg' }}">
                     </div>
                 </div>
 
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-grass.jpg" data-hover="tooltip"
-                         title="{{ __('pages.banner_click') }}">
-                        <img class="img-fluid" alt="{{ __('pages.banner_grass') }}"
+                         title="{{ t('Click to select banner.') }}">
+                        <img class="img-fluid" alt="{{ t('Grass Banner') }}"
                              src="{{ '/images/habitat-banners/banner-grass.jpg' }}">
                     </div>
                 </div>
 
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-meadow.jpg" data-hover="tooltip"
-                         title="{{ __('pages.banner_click') }}">
-                        <img class="img-fluid" alt="{{ __('pages.banner_meadow') }}"
+                         title="{{ t('Click to select banner.') }}">
+                        <img class="img-fluid" alt="{{ t('Meadow Banner') }}"
                              src="{{ '/images/habitat-banners/banner-meadow.jpg' }}">
                     </div>
                 </div>
 
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-mtn-flowers.jpg" data-hover="tooltip"
-                         title="{{ __('pages.banner_click') }}">
-                        <img class="img-fluid" alt="{{ __('pages.banner_mountain') }}"
+                         title="{{ t('Click to select banner.') }}">
+                        <img class="img-fluid" alt="{{ t('Mountain Banner') }}"
                              src="{{ '/images/habitat-banners/banner-mtn-flowers.jpg' }}">
                     </div>
                 </div>
 
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-swamp.jpg" data-hover="tooltip"
-                         title="{{ __('pages.banner_click') }}">
-                        <img class="img-fluid" alt="{{ __('pages.banner_swamp') }}"
+                         title="{{ t('Click to select banner.') }}">
+                        <img class="img-fluid" alt="{{ t('Swamp Banner') }}"
                              src="{{ '/images/habitat-banners/banner-swamp.jpg' }}">
                     </div>
                 </div>
 
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-trees.jpg" data-hover="tooltip"
-                         title="{{ __('pages.banner_click') }}">
-                        <img class="img-fluid" alt="{{ __('pages.banner_trees') }}"
+                         title="{{ t('Click to select banner.') }}">
+                        <img class="img-fluid" alt="{{ t('Trees Banner') }}"
                              src="{{ '/images/habitat-banners/banner-trees.jpg' }}">
                     </div>
                 </div>
@@ -65,7 +65,7 @@
 
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-outline-primary color-action align-self-center text-uppercase"
-                        data-dismiss="modal">{{ __('pages.exit') }}
+                        data-dismiss="modal">{{ t('Exit') }}
                 </button>
             </div>
         </div>

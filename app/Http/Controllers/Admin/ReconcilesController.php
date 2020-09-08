@@ -70,7 +70,7 @@ class ReconcilesController extends Controller
         $reconciles = $this->service->getPagination((int) $expedition->id);
 
         if ($reconciles->isEmpty()) {
-            Flash::error(trans('pages.expert_review_missing_data_flash'));
+            Flash::error(t('Reconcile data for processing is missing.'));
 
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
@@ -98,7 +98,7 @@ class ReconcilesController extends Controller
 
         NfnExpertReviewJob::dispatch($expedition->id);
 
-        Flash::success(__('pages.expert_review_job_create_flash'));
+        Flash::success(__('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
 
         return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
     }
@@ -112,14 +112,14 @@ class ReconcilesController extends Controller
     public function update(string $expeditionId): array
     {
         if (! request()->ajax()) {
-            return ['result' => false, 'message' => __('pages.record_updated_error')];
+            return ['result' => false, 'message' => __('Error while updating record.')];
         }
 
         if (! $this->service->updateRecord(request()->all())) {
-            return ['result' => false, 'message' => __('pages.record_updated_error')];
+            return ['result' => false, 'message' => __('Error while updating record.')];
         }
 
-        return ['result' => true, 'message' => __('pages.record_updated')];
+        return ['result' => true, 'message' => __('Record was updated successfully.')];
     }
 
     /**
@@ -132,7 +132,7 @@ class ReconcilesController extends Controller
     public function publish(string $projectId, string $expeditionId): RedirectResponse
     {
         NfnExpertReviewPublishJob::dispatch($expeditionId);
-        Flash::success(__('pages.expert_review_pub_flash'));
+        Flash::success(__('The Expert Review Publish job has been submitted. You will receive and email when it has completed.'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }

@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.bingo') }}
+    {{ __('Bingo') }}
 @stop
 
 @section('header')

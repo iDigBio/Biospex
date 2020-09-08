@@ -1,8 +1,12 @@
 @component('mail::message')
-#@lang('pages.grid_export_csv')
+    # {{ t('Grid Export CSV') }}
 
-{!! $message !!}
+    {{ t('Your grid export is completed. Click the button provided to download:') }}
+    @component('mail::button', ['url' => $url])
+        {{ t('Download') }}
+    @endcomponent
 
-Thank you,<br>
-{{ config('app.name') }}
+
+    {{ t('Thank you') }},
+    {{ config('app.name') }}
 @endcomponent

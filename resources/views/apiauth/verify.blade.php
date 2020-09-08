@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.verify') }}
+    {{ __('Verify') }}
 @stop
 
 {{-- Content --}}
@@ -17,19 +17,19 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4">{{ __('pages.verify_email') }}</h2>
+    <h2 class="text-center pt-4">{{ __('Verify Your Email Address') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-8 mx-auto">
                 @if (session('resent'))
                     <div class="alert alert-success" role="alert">
-                        {{ __('pages.verify_email_link_msg') }}
+                        {{ __('A fresh verification link has been sent to your email address.') }}
                     </div>
                 @endif
 
-                {{ __('pages.verify_email_warning') }}
-                {{ __('pages.verify_email_again') }}, <a href="{{ route('api.verification.resend') }}">{{ __('pages.verify_email_click_here') }}</a>.
+                {{ __('Before proceeding, please check your email for a verification link.') }}
+                {{ __('If you did not receive the email') }}, <a href="{{ route('api.verification.resend') }}">{{ __('click here to request another') }}</a>.
             </div>
         </div>
     </div>

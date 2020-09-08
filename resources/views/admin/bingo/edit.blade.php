@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('pages.edit') }} {{ $bingo->title }}
+    {{ t('Edit') }} {{ $bingo->title }}
 @stop
 
 {{-- Content --}}
@@ -12,7 +12,7 @@
         <div class="col-sm-10 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
-                    <h2 class="text-center content-header text-uppercase mb-4">{{ __('pages.edit') }} {{ __('pages.bingo') }}</h2>
+                    <h2 class="text-center content-header text-uppercase mb-4">{{ t('Edit Bingo') }}</h2>
 
                     <form id="gridForm" method="post"
                           action="{{ route('admin.bingos.update', [$bingo->id]) }}"
@@ -22,7 +22,7 @@
                         <input type="hidden" name="user_id" value="{{ old('user_id', $bingo->user_id)  }}">
                         <div class="form-group">
                             <div class="col-12 p-0">
-                                <label for="project_id" class="col-form-label required">{{ __('pages.project') }}:</label>
+                                <label for="project_id" class="col-form-label required">{{ __('Project') }}:</label>
                             </div>
                             <div class="col-6 p-0">
                                 <select name="project_id" id="project_id"
@@ -36,7 +36,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="title" class="col-form-label required">{{ __('pages.title') }}:</label>
+                            <label for="title" class="col-form-label required">{{ __('Title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
                                    pattern=".{5,20}" title="5 to 20 characters"
                                    id="title" name="title"
@@ -45,7 +45,7 @@
                             <span class="invalid-feedback">{{ $errors->first('title') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="directions" class="col-form-label required">{{ __('pages.directions') }}:</label>
+                            <label for="directions" class="col-form-label required">{{ __('Directions') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('directions')) ? 'is-invalid' : '' }}"
                                    pattern=".{10,200}" title="10 to 200 characters"
@@ -56,7 +56,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="contact" class="col-form-label required">{{ __('pages.contact') }}:</label>
+                            <label for="contact" class="col-form-label required">{{ __('Contact') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('contact')) ? 'is-invalid' : '' }}"
                                    id="contact" name="contact" title="Email" placeholder="Email"
                                    value="{{ old('contact', $bingo->contact) }}" required>
@@ -64,7 +64,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="words" class="col-form-label">{{ __('pages.words') }}:</label>
+                            <label for="words" class="col-form-label">{{ __('Words') }}:</label>
                             @include('admin.bingo.partials.words', ['words' => $bingo->words])
                         </div>
                         @include('common.cancel-submit-buttons')

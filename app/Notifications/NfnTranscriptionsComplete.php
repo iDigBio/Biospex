@@ -31,16 +31,16 @@ class NfnTranscriptionsComplete extends Notification implements ShouldQueue
     /**
      * @var string
      */
-    private $message;
+    private $title;
 
     /**
      * Create a new notification instance.
      *
-     * @param string $message
+     * @param string $title
      */
-    public function __construct($message)
+    public function __construct(string $title)
     {
-        $this->message = $message;
+        $this->title = $title;
         $this->onQueue(config('config.default_tube'));
     }
 
@@ -61,7 +61,7 @@ class NfnTranscriptionsComplete extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        return (new MailMessage)->markdown('mail.nfntranscriptsioncomplete', ['message' => $this->message]);
+        return (new MailMessage)->markdown('mail.nfntranscriptionscomplete', ['title' => $this->title]);
     }
 
     /**

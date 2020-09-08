@@ -53,7 +53,7 @@ class NfnExpertReviewJob implements ShouldQueue
 
         try {
             if ($this->skipReconcile($this->expeditionId)) {
-                throw new \Exception(__('pages.expert_review_job_create_skip_msg', ['id' => $expedition->id, 'title' => $expedition->title]));
+                throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [':id' => $expedition->id, ':title' => $expedition->title]));
             }
 
             $reconcileProcessService->processExplained($expedition);

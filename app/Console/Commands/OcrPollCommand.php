@@ -75,7 +75,7 @@ class OcrPollCommand extends Command
     {
         $records = $this->ocrQueueContract->getOcrQueuesForPollCommand();
 
-        $data = ['message' => trans('pages.processes_none'), 'payload' => []];
+        $data = ['message' => t('No processes running at this time'), 'payload' => []];
 
         if ($records->isEmpty())
         {
@@ -86,13 +86,14 @@ class OcrPollCommand extends Command
 
         $count = 0;
         $data['payload'] = $records->map(function($record) use (&$count){
-            $batches = $count === 0 ? '' : trans_choice('html.ocr_queue', $count, ['batches_queued' => $count]);
+            $batches = $count === 0 ? '' : t(n(':batches_queued process remains in queue before processing begins', ':batches_queued processes remain in queue before processing begins', $count), [':batches_queued' => $count]);
 
-            $countNumbers = ['processed' => $record->processed, 'total' => $record->total];
-            $ocr = trans_choice('html.ocr_records', $record->processed, $countNumbers);
+            $countNumbers = [':processed' => $record->processed, ':total' => $record->total];
+            $ocr = t(n(':processed record of :total completed.', ':processed records of :total completed.', $record->processed), $countNumbers);
 
             $title = $record->expedition !== null ? $record->expedition->title : $record->project->title;
-            $notice = trans('html.ocr_processing', ['title' => $title, 'ocr' => $ocr, 'batches' => $batches]);
+
+            $notice = view('common.ocr-process', compact('title','ocr', 'batches'))->render();
 
             $count++;
 

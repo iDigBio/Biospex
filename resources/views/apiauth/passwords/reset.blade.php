@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
     @parent
-    {{ __('pages.password_reset') }}
+    {{ __('Reset Password') }}
 @stop
 
 {{-- Content --}}
@@ -18,7 +18,7 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4">{{ __('pages.reset') }} {{ __('pages.password') }}</h2>
+    <h2 class="text-center pt-4">{{ __('Reset Password') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
@@ -27,21 +27,21 @@
                     @csrf
                     <input type="hidden" name="token" value="{{ $token }}">
                     <div class="form-group">
-                        <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
+                        <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
                         <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
                                id="email" name="email"
                                value="{{ old('email') }}" required>
                         <span class="invalid-feedback">{{ $errors->first('email') }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="password" class="col-form-label required">{{ __('pages.password') }}:</label>
+                        <label for="password" class="col-form-label required">{{ __('Password') }}:</label>
                         <input type="password" class="form-control {{ ($errors->has('password')) ? 'is-invalid' : '' }}"
                                id="password" name="password"
                                value="{{ old('password') }}" required>
                         <span class="invalid-feedback">{{ $errors->first('password') }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="password_confirmation" class="col-form-label required">{{ __('pages.password_confirmation') }}:</label>
+                        <label for="password_confirmation" class="col-form-label required">{{ __('Confirm Password') }}:</label>
                         <input type="password" class="form-control {{ ($errors->has('password_confirmation')) ? 'is-invalid' : '' }}"
                                id="password_confirmation" name="password_confirmation"
                                value="" required>

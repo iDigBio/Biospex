@@ -3,6 +3,6 @@
 
 {!! $message !!}
 
-Thank you,<br>
+{{ t('Thank you') }},
 {{ config('app.name') }}
 @endcomponent

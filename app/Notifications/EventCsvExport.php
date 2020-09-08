@@ -29,11 +29,6 @@ class EventCsvExport extends Notification implements ShouldQueue
     use Queueable;
 
     /**
-     * @var string
-     */
-    public $message;
-
-    /**
      * @var null
      */
     public $csv;
@@ -41,12 +36,10 @@ class EventCsvExport extends Notification implements ShouldQueue
     /**
      * Create a new notification instance.
      *
-     * @param $message
      * @param null $csv
      */
-    public function __construct($message, $csv = null)
+    public function __construct($csv = null)
     {
-        $this->message = $message;
         $this->csv = $csv;
         $this->onQueue(config('config.default_tube'));
     }
@@ -70,7 +63,7 @@ class EventCsvExport extends Notification implements ShouldQueue
     public function toMail()
     {
         $mailMessage = new MailMessage;
-        $mailMessage->markdown('mail.eventcsvexport', ['message' => $this->message]);
+        $mailMessage->markdown('mail.eventcsvexport');
 
         if ($this->csv !== null)
         {
