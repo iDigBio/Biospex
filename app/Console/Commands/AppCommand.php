@@ -19,8 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
-use App\Notifications\DarwinCoreImportError;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -47,7 +45,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        $user->notify(new DarwinCoreImportError('My title', 5, 'this is the message'));
+
     }
 }
