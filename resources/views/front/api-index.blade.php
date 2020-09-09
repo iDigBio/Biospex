@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('API') }}
+    {{ t('API') }}
 @stop
 
 {{-- Content --}}
@@ -20,12 +20,12 @@
     <div class="row">
         <div class="col-md-8 my-4 mx-auto">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4 text-uppercase">{{ __('Biospex API') }}</h3>
+                <h3 class="text-center pt-4 text-uppercase">{{ t('Biospex API') }}</h3>
                 <hr class="header mx-auto" style="width:300px;">
                 <div class="d-flex align-items-start justify-content-between my-4 mx-auto">
                     <a class="btn btn-primary mr-4" href="https://biospex.docs.apiary.io/#">{{ t('API Docs') }}</a>
-                    <a class="btn btn-primary mr-4" href="https://github.com/iDigBio/Biospex">{{ __('GitHub') }}</a>
-                    <a class="btn btn-primary mr-4" href="{{ route('api.get.login') }}">{{ __('Login') }}</a>
+                    <a class="btn btn-primary mr-4" href="https://github.com/iDigBio/Biospex">{{ t('GitHub') }}</a>
+                    <a class="btn btn-primary mr-4" href="{{ route('api.get.login') }}">{{ t('Login') }}</a>
                     <a class="btn btn-primary mr-4" href="{{ route('api.get.register') }}">{{ __('Register') }}</a>
                 </div>
             </div>

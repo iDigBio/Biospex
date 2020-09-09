@@ -22,7 +22,7 @@
                         <input type="hidden" name="user_id" value="{{ old('user_id', $bingo->user_id)  }}">
                         <div class="form-group">
                             <div class="col-12 p-0">
-                                <label for="project_id" class="col-form-label required">{{ __('Project') }}:</label>
+                                <label for="project_id" class="col-form-label required">{{ t('Project') }}:</label>
                             </div>
                             <div class="col-6 p-0">
                                 <select name="project_id" id="project_id"
@@ -36,7 +36,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="title" class="col-form-label required">{{ __('Title') }}:</label>
+                            <label for="title" class="col-form-label required">{{ t('Title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
                                    pattern=".{5,20}" title="5 to 20 characters"
                                    id="title" name="title"
@@ -45,7 +45,7 @@
                             <span class="invalid-feedback">{{ $errors->first('title') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="directions" class="col-form-label required">{{ __('Directions') }}:</label>
+                            <label for="directions" class="col-form-label required">{{ t('Directions') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('directions')) ? 'is-invalid' : '' }}"
                                    pattern=".{10,200}" title="10 to 200 characters"
@@ -56,7 +56,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="contact" class="col-form-label required">{{ __('Contact') }}:</label>
+                            <label for="contact" class="col-form-label required">{{ t('Contact') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('contact')) ? 'is-invalid' : '' }}"
                                    id="contact" name="contact" title="Email" placeholder="Email"
                                    value="{{ old('contact', $bingo->contact) }}" required>
@@ -64,7 +64,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="words" class="col-form-label">{{ __('Words') }}:</label>
+                            <label for="words" class="col-form-label">{{ t('Words') }}:</label>
                             @include('admin.bingo.partials.words', ['words' => $bingo->words])
                         </div>
                         @include('common.cancel-submit-buttons')

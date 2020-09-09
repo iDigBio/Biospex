@@ -105,7 +105,7 @@ class DownloadsController extends Controller
             return response()->download($file, $download->present()->file_type.'-'.$download->file, $headers);
 
         } catch (Exception $e) {
-            Flash::error(__($e->getMessage()));
+            Flash::error($e->getMessage());
 
             return redirect()->back();
         }
@@ -229,7 +229,7 @@ class DownloadsController extends Controller
             return response()->download($filePath, $file, $headers);
 
         } catch (Exception $e) {
-            Flash::error(__($e->getMessage()));
+            Flash::error($e->getMessage());
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }

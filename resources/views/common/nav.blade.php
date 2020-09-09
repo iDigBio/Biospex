@@ -40,38 +40,38 @@
                    aria-expanded="false">{{ t('Admin') }}</a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown02">
                     <a href="{{ route('admin.groups.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('Groups') }}</a>
+                       type="button">{{ t('Groups') }}</a>
                     <a href="{{ route('admin.projects.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('Projects') }}</a>
+                       type="button">{{ t('Projects') }}</a>
                     <a href="{{ route('admin.expeditions.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('Expeditions') }}</a>
+                       type="button">{{ t('Expeditions') }}</a>
                     <a href="{{ route('admin.events.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('Events') }}</a>
+                       type="button">{{ t('Events') }}</a>
                     <a href="{{ route('admin.bingos.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('Games') }}</a>
+                       type="button">{{ t('Games') }}</a>
                     <a href="#" class="preventDefault dropdown-item text-uppercase"
                        type="button"
                        data-toggle="modal"
-                       data-target="#process-modal">{{ __('Processes') }}</a>
+                       data-target="#process-modal">{{ t('Processes') }}</a>
                     @can('isAdmin', Auth::user())
                         <a href="/admin/nova" class="dropdown-item text-uppercase"
-                           type="button">{{ __('Nova') }}</a>
+                           type="button">{{ t('Nova') }}</a>
                         @if(config('telescope.enabled') === true)
                         <a href="/admin/telescope" class="dropdown-item text-uppercase"
-                           type="button">{{ __('Telescope') }}</a>
+                           type="button">{{ t('Telescope') }}</a>
                         @endif
                         <a href="{{ route('admin.mail.index') }}" class="dropdown-item text-uppercase"
-                           type="button">{{ __('Mail') }}</a>
+                           type="button">{{ t('Mail') }}</a>
                     @endcan
                     <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Account') }}</a>
                     <a href="{{ route('app.get.logout') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('Logout') }}</a>
+                       type="button">{{ t('Logout') }}</a>
                 </div>
             </li>
         @else
             <li class="nav-item nav-btn">
-                <a class="nav-link text-uppercase mx-auto" href="{{ route('app.get.login') }}">{{ __('Login') }}</a>
+                <a class="nav-link text-uppercase mx-auto" href="{{ route('app.get.login') }}">{{ t('Login') }}</a>
             </li>
         @endif
     </ul>

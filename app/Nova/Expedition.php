@@ -43,7 +43,7 @@ class Expedition extends Resource
      */
     public static function label()
     {
-        return __('Expeditions');
+        return t('Expeditions');
     }
 
     /**
@@ -53,7 +53,7 @@ class Expedition extends Resource
      */
     public static function singularLabel()
     {
-        return __('Expedition');
+        return t('Expedition');
     }
 
     /**
@@ -65,12 +65,12 @@ class Expedition extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make(__('Id'), 'id')->sortable(),
-            Text::make(__('Uuid'), 'uuid')->rules('required')->onlyOnDetail(),
+            ID::make(t('Id'), 'id')->sortable(),
+            Text::make(t('Uuid'), 'uuid')->rules('required')->onlyOnDetail(),
             BelongsTo::make('Project')->rules('required')->searchable()->hideFromIndex(),
-            Text::make(__('Title'), 'title')->rules('required')->sortable(),
-            Text::make(__('Description'), 'description')->rules('required')->hideFromIndex(),
-            Text::make(__('Keywords'), 'keywords')->rules('required')->hideFromIndex(),
+            Text::make(t('Title'), 'title')->rules('required')->sortable(),
+            Text::make(t('Description'), 'description')->rules('required')->hideFromIndex(),
+            Text::make(t('Keywords'), 'keywords')->rules('required')->hideFromIndex(),
         ];
     }
 

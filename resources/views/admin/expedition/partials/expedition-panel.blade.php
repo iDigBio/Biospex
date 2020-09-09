@@ -28,10 +28,10 @@
                 </div>
                 <hr class="header mx-auto" style="width:300px;">
                 <div class="d-flex justify-content-between mt-4">
-                    <span class="text">{{ __('Biospex Subjects') }} {{ $expedition->stat->local_subject_count }}</span>
-                    <span class="text">{{ __('Zooniverse Subjects') }} {{ $expedition->stat->subject_count }}</span>
-                    <span class="text">{{ __('Digitization Goal') }} {{ $expedition->stat->transcriptions_total }}</span>
-                    <span class="text">{{ __('Digitizations Completed') }} {{ $expedition->stat->percent_completed }}%</span>
+                    <span class="text">{{ t('Biospex Subjects') }} {{ $expedition->stat->local_subject_count }}</span>
+                    <span class="text">{{ t('Zooniverse Subjects') }} {{ $expedition->stat->subject_count }}</span>
+                    <span class="text">{{ t('Digitization Goal') }} {{ $expedition->stat->transcriptions_total }}</span>
+                    <span class="text">{{ t('Digitizations Completed') }} {{ $expedition->stat->percent_completed }}%</span>
                 </div>
             </div>
         </div>

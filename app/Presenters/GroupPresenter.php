@@ -30,7 +30,7 @@ class GroupPresenter extends Presenter
     {
         return '<a href="'.route('admin.groups.show', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('View Group').'">
+            ]).'" data-hover="tooltip" title="'. t('View Group').'">
             <i class="fas fa-eye"></i></a>';
     }
 
@@ -43,7 +43,7 @@ class GroupPresenter extends Presenter
     {
         return '<a href="'.route('admin.groups.edit', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('Edit Group').'">
+            ]).'" data-hover="tooltip" title="'. t('Edit Group').'">
             <i class="fas fa-edit"></i></a>';
     }
 
@@ -56,7 +56,7 @@ class GroupPresenter extends Presenter
     {
         return '<a href="'.route('admin.groups.edit', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('Edit Group').'">
+            ]).'" data-hover="tooltip" title="'. t('Edit Group').'">
             <i class="fas fa-edit fa-2x"></i></a>';
     }
 
@@ -70,11 +70,11 @@ class GroupPresenter extends Presenter
         return '<a href="'.route('admin.groups.delete', [
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('Delete Group').'" 
+            title="'. t('Delete Group').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('Delete Group').'?" data-content="'.__('This will permanently delete the record and all associated records.').'">
+            data-title="'. t('Delete Group').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -88,11 +88,11 @@ class GroupPresenter extends Presenter
         return '<a href="'.route('admin.groups.delete', [
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('Delete Group').'" 
+            title="'. t('Delete Group').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('Delete Group').'?" data-content="'.__('This will permanently delete the record and all associated records.').'">
+            data-title="'. t('Delete Group').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 

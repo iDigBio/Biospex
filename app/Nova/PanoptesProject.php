@@ -45,7 +45,7 @@ class PanoptesProject extends Resource
      */
     public static function label()
     {
-        return __('Panoptes Projects');
+        return t('Panoptes Projects');
     }
 
     /**
@@ -55,7 +55,7 @@ class PanoptesProject extends Resource
      */
     public static function singularLabel()
     {
-        return __('Panoptes Project');
+        return t('Panoptes Project');
     }
 
     /**
@@ -67,10 +67,10 @@ class PanoptesProject extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make(__('Id'), 'id')->sortable(),
+            ID::make(t('Id'), 'id')->sortable(),
             BelongsTo::make('Biospex Project', 'project', Project::class)->searchable()->nullable(),
             BelongsTo::make('Biospex Expedition', 'expedition', Expedition::class)->searchable()->nullable(),
-            Number::make(__('Panoptes Project Id'), 'panoptes_project_id'),
+            Number::make(t('Panoptes Project Id'), 'panoptes_project_id'),
             Number::make(__('Panoptes Workflow Id'), 'panoptes_workflow_id')->rules('required'),
             Text::make(__('Subject Sets'), 'subject_sets')->onlyOnDetail(),
             Text::make(__('Slug'), 'slug')->onlyOnDetail(),
