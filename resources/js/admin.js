@@ -77,14 +77,14 @@ $(function () {
     });
     $(window).resize();
 
-    $('#exportSelect input:radio').on('click', function () {
-        $('#ajaxResult').html('<div class="loader mx-auto"></div>');
+    $('.export-btn').on('click', function () {
+        $('#export-results').html('<div class="mt-5 loader mx-auto"></div>');
         $.get($(this).data('url'), function (data) {
-            $('#ajaxResult').html(data).find('div.entry select').selectpicker();
+            $('#export-results').html(data).find('div.entry select').selectpicker();
         });
     });
 
-    $('#ajaxResult').on('click', '.btn-add', function (e) {
+    $('#export-results').on('click', '.btn-add', function (e) {
         //e.preventDefault();
         $('#controls .default').clone()
             .appendTo($('#controls')).removeClass('default')

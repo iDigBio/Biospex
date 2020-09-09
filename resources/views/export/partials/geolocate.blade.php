@@ -1,3 +1,4 @@
+<hr class="header mx-auto" style="width:500px;">
 <form action="{{ route('admin.export.geolocate.post') }}"
       method="post" role="form" id="update-rapid-file">
     @csrf

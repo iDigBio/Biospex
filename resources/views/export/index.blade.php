@@ -12,31 +12,23 @@
     <div class="row">
         <div class="col-12 m-auto">
             <div class="card white box-shadow py-5 my-5 p-sm-5">
-                <div class="col-sm-6 m-auto">
-                    <h3 class="mb-5">{{ t('Select the export type below.') }}</h3>
-                    <form id="exportSelect" class="form-inline justify-content-between">
-                        <div class="form-check-inline">
-                            <label class="form-check-label">
-                                <input type="radio" class="form-check-input" name="exportType"
-                                       data-url="{{ route('admin.export.geolocate') }}"
-                                       value="geolocate">{{ t('GeoLocate') }}
-                            </label>
-                        </div>
-                        <div class="form-check-inline disabled">
-                            <label class="form-check-label">
-                                <input type="radio" class="form-check-input" name="exportType"
-                                       disabled>{{ t('Taxonomic Name Standardization') }}
-                            </label>
-                        </div>
-                        <div class="form-check-inline disabled">
-                            <label class="form-check-label">
-                                <input type="radio" class="form-check-input" name="exportType"
-                                       disabled>{{ t('Darwin Core Archive') }}
-                            </label>
-                        </div>
-                    </form>
+                <h3 class="mb-5 mx-auto">{{ t('Select the export type below') }}:</h3>
+                <div class="col-sm-10 mx-auto text-center">
+                    <button type="button" class="export-btn btn btn-primary pl-4 pr-4 text-uppercase"
+                            data-url="{{ route('admin.export.geolocate') }}"
+                            data-hover="tooltip" title="{{ t('Export to GeoLocate') }}"
+                    >{{ t('GeoLocate') }}</button>
+                    <button type="button" disabled class="export-btn btn btn-primary pl-4 pr-4 text-uppercase"
+                            data-url="#"
+                            data-hover="tooltip" title="{{ t('Export to Taxonomic Name Standardization') }}"
+                    >{{ t('Taxonomic Name Standardization') }}</button>
+                    <button type="button" disabled class="export-btn btn btn-primary pl-4 pr-4 text-uppercase"
+                            data-url="#"
+                            data-hover="tooltip" title="{{ t('Export to Darwin Core Archive') }}"
+                            data-value="{{ t('Darwin Core Archive') }}"
+                    >{{ t('Darwin Core Archive') }}</button>
                 </div>
-                <div id="ajaxResult"></div>
+                <div id="export-results"></div>
             </div>
         </div>
     </div>
