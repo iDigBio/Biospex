@@ -92,6 +92,9 @@ $(function () {
 
         renumber_prefix();
     }).on('click', '.btn-remove', function (e) {
+        if ($('#controls').children('div.entry').length === 1) {
+            return;
+        }
         $('#controls div.entry:last').remove();
         renumber_prefix();
     })
