@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
 
     // Add token to any ajax requests.
     $.ajaxSetup({
@@ -62,31 +62,7 @@ $(function() {
         });
     });
 
-    $('#import-modal').on('show.bs.modal', function (e) {
-        let $button = $(e.relatedTarget);
-        let $modal = $(this).find('.modal-body');
-        $modal.html('<div class="loader mx-auto"></div>');
-        $modal.load($button.data("remote"));
-
-    }).on('hidden.bs.modal', function () {
-        $(this).find('.modal-body').html('');
-    });
-
-    $('#jqgrid-modal').on('show.bs.modal', function (e) {
-        let $button = $(e.relatedTarget);
-        let $modal = $(this).find('.modal-body');
-        $modal.html('<div class="loader mx-auto"></div>');
-        if ($button.attr('class') === 'url-view') {
-            $modal.html($button.data("remote"));
-        } else {
-            $modal.load($button.data("remote"));
-        }
-
-    }).on('hidden.bs.modal', function () {
-        $(this).find('.modal-body').html('');
-    });
-
-    $(window).resize(function() {
+    $(window).resize(function () {
         let docHeight = $(window).height();
         let footerHeight = $('#footer').height();
         let footerTop = $('#footer').position().top + footerHeight;
@@ -100,6 +76,25 @@ $(function() {
             $('#footer').css('margin-top', '0px');
     });
     $(window).resize();
+
+    $('#exportSelect input:radio').on('click', function () {
+        $('#ajaxResult').html('<div class="loader mx-auto"></div>');
+        $.get($(this).data('url'), function (data) {
+            $('#ajaxResult').html(data).find('div.entry select').selectpicker();
+        });
+    });
+
+    $('#ajaxResult').on('click', '.btn-add', function (e) {
+        //e.preventDefault();
+        $('#controls .default').clone()
+            .appendTo($('#controls')).removeClass('default')
+            .addClass('entry').show().find('select').selectpicker();
+
+        renumber_prefix();
+    }).on('click', '.btn-remove', function (e) {
+        $('#controls div.entry:last').remove();
+        renumber_prefix();
+    })
 });
 
 function notify(icon, msg, type) {
@@ -119,4 +114,15 @@ function notify(icon, msg, type) {
             exit: 'animated fadeOutUp'
         }
     });
+}
+
+function renumber_prefix() {
+    let controls = $('#controls');
+    controls.children('div.entry').each(function (index) {
+        $(this).find('select').each(function () {
+            //$(this).attr('id', $(this).attr('id').replace(/\[[0-9]+\]/g, '[' + index + ']'));
+            $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
+        });
+    });
+    $('[name="entries"]').val(controls.children('div.entry').length);
 }

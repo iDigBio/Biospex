@@ -25,8 +25,8 @@ mix.webpackConfig({
     .extract([
         "jquery",
         "bootstrap",
-        "bootstrap-notify/bootstrap-notify",
         "bootstrap-select/dist/js/bootstrap-select.min",
+        "bootstrap-notify/bootstrap-notify",
         "jquery-ui/ui/widgets/dialog",
         "jquery-ui/ui/widgets/draggable",
         "jquery-ui/ui/widgets/droppable",

@@ -10,8 +10,8 @@ try {
 
     require('bootstrap');
 
-    require("bootstrap-notify/bootstrap-notify");
     require("bootstrap-select/dist/js/bootstrap-select.min");
+    require("bootstrap-notify/bootstrap-notify");
 
     require("jquery-ui/ui/widgets/dialog");
     require("jquery-ui/ui/widgets/draggable");

@@ -18,7 +18,7 @@
                        type="button">{{ t('Dashboard')  }}</a>
                     <a href="{{ route('admin.ingest.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Ingest')  }}</a>
-                    <a href="{{ route('admin.get.export') }}" class="dropdown-item text-uppercase"
+                    <a href="{{ route('admin.export.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Export')  }}</a>
                     <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Account') }}</a>

@@ -20,24 +20,56 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\RapidExportService;
 
 class ExportController extends Controller
 {
+    /**
+     * @var \App\Services\RapidExportService
+     */
+    private $rapidExportService;
 
     /**
      * DashboardController constructor.
+     *
+     * @param \App\Services\RapidExportService $rapidExportService
      */
-    public function __construct() {
+    public function __construct(RapidExportService $rapidExportService) {
 
+        $this->rapidExportService = $rapidExportService;
     }
 
     /**
      * Show projects list for admin page.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Throwable
      */
     public function index()
     {
-        return view('export');
+        return view('export.index');
+    }
+
+    public function geolocate()
+    {
+        if (! request()->ajax()) {
+            return response()->json([t('Request must be ajax')]);
+        }
+
+        $count = old('entries', 1);
+
+        $exportSelect = $this->rapidExportService->createExportFieldSelect($count);
+
+        $headers = $this->rapidExportService->getHeader();
+        $mapped =  $this->rapidExportService->mapColumns($headers);
+        $groupedHeaders = view('partials.grouped-headers', compact('mapped', 'count'))->render();
+
+        return view('export.partials.geolocate', compact('exportSelect', 'groupedHeaders', 'count'));
+    }
+
+
+    public function geolocateCreate()
+    {
+        dd(request()->all());
     }
 }

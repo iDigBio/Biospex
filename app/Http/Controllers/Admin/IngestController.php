@@ -41,7 +41,7 @@ class IngestController extends Controller
      */
     public function index()
     {
-        return view('ingest');
+        return view('ingest.index');
     }
 
     /**
@@ -117,7 +117,7 @@ class IngestController extends Controller
 
             $groupedHeaders = $rapidIngestService->mapColumns($headers);
 
-            return view('update', compact('groupedHeaders', 'filePath', 'fileName', 'fileOrigName'));
+            return view('ingest.update', compact('groupedHeaders', 'filePath', 'fileName', 'fileOrigName'));
         } catch (Exception $e) {
             Flash::warning(t('An error occurred while loading the csv file. Please contact the administration to determine the error.'));
 

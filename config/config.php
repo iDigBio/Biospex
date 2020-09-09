@@ -56,5 +56,10 @@ return [
      */
     'protectedFields' => [
         '_id', 'updated_at', 'created_at'
-    ]
+    ],
+
+    /**
+     * Export fields
+     */
+    'exportFieldsFile' => 'export-fields.json'
 ];

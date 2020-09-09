@@ -68,14 +68,13 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
-        $data = [
-            'user_id'       => 1,
-            'file_name'     => 'test.csv',
-            'fields_update' => ['test_rapid', 'test_rapid2'],
-        ];
-
-        $this->rapidUpdate->create($data);
+        $fields = $this->fields();
+        $results = collect($fields)->forget('_token')->mapToGroups(function($array, $index){
+            foreach ($array as $index => $value) {
+                return
+                dd($value);
+            }
+        });
 
         //$this->export();
         //$this->checkHeader();
@@ -98,5 +97,48 @@ class AppCommand extends Command
     {
         $rapidheader = $this->rapidHeader->first();
         dd($rapidheader->header);
+    }
+
+    public function fields()
+    {
+        return [
+            "_token"      => "PRRiJSRfTTZmRnGK1ZTsglByT8PwhwLWeGOuRLfT",
+            "exportField" => [
+                "catalogNumber",
+                "continent",
+                null,
+                null,
+            ],
+            "_gbifR"      => [
+                "gbifID_gbifR",
+                "acceptedNameUsageID_gbifR",
+                null,
+                null,
+            ],
+            "_idbP"       => [
+                "idigbio_uuid_idbP",
+                "bed_idbP",
+                null,
+                null,
+            ],
+            "_gbifP"      => [
+                "abstract_gbifP",
+                "acceptedScientificName_gbifP",
+                null,
+                null,
+            ],
+            "_idbR"       => [
+                "acceptedNameUsage_idbR",
+                "associatedMedia_idbR",
+                null,
+                null,
+            ],
+            "_rapid"      => [
+                "country_rapid",
+                "countryCode_rapid",
+                null,
+                null,
+            ]
+        ];
     }
 }
