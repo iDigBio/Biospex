@@ -53,6 +53,11 @@ class AppFileDeployment extends Command
     /**
      * @var string
      */
+    private $storagePath;
+
+    /**
+     * @var string
+     */
     private $supPath;
 
     /**
@@ -69,8 +74,9 @@ class AppFileDeployment extends Command
     {
         parent::__construct();
 
-        $this->resPath = base_path('resources');
+        $this->resPath = base_path('resources/');
         $this->appPath = base_path();
+        $this->storagePath = Storage::path('');
         $this->supPath = Storage::path('supervisord');
         $this->setAppsConfigs();
     }
@@ -80,7 +86,9 @@ class AppFileDeployment extends Command
      */
     public function handle()
     {
-        $supFiles = File::files($this->resPath.'/supervisord');
+        File::copy($this->resPath.'files/exports/geolocate-fields.json', $this->storagePath.'exports/geolocate-fields.json');
+
+        $supFiles = File::files($this->resPath.'files/supervisord');
         collect($supFiles)->map(function ($file) {
             $string = File::get($file);
             $this->apps->each(function ($search) use (&$string) {
@@ -90,7 +98,6 @@ class AppFileDeployment extends Command
 
             $target = $this->supPath.'/'.File::name($file);
             File::put($target, $string);
-            exec("sudo cp $target /etc/supervisor/conf.d");
         });
     }
 

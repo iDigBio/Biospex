@@ -5,17 +5,6 @@
     {{ t('Rapid Records Import') }}
 @stop
 
-@section('custom-style')
-    <style>
-        .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary {
-            color: #ffffff;
-        }
-
-        .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:hover {
-            color: #c83f29;
-        }
-    </style>
-@endsection
 {{-- Content --}}
 @section('content')
     <h2 class="text-center text-uppercase pt-4">{{ t('Rapid Records Update') }}</h2>
@@ -24,7 +13,7 @@
         <div class="col-md-12 m-auto">
             <div class="card white box-shadow py-5 my-5 p-sm-5">
                 <form action="{{ route('admin.ingest.selected') }}"
-                      method="post" role="form" id="update-rapid-file">
+                      method="post" role="form" id="updateRapidFrm">
                     @method('PUT')
                     @csrf
                     <div class="row mb-5">
@@ -38,7 +27,7 @@
                     </div>
                     <div class="row text-center">
                         <div class="form-group col-md-12">
-                        @foreach($groupedHeaders as $index => $column)
+                        @foreach($tags as $index => $column)
                                 <select class="selectpicker col-sm-2 mb-2" name="{{ $index }}[]"
                                         data-live-search="true"
                                         data-actions-box="true"

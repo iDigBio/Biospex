@@ -1,5 +1,5 @@
 <div class="col-sm-2 m-auto">
-    <select class="export-field" name="exportFields[{{$i}}][field]"
+    <select class="export-field" name="exportFields[999][field]"
             data-live-search="true"
             data-actions-box="true"
             title="{{ t('Field') }}"
@@ -7,9 +7,7 @@
             data-width="200"
             data-style="btn-primary">
         @foreach($data['geoLocateFields'] as $value)
-            <option value="{{ str_replace('*', '', $value) }}"
-                    {{ isset($data['frmData']) && $data['frmData'][$i]['field'] === str_replace('*', '', $value) ? ' selected': '' }}>
-                {{ $value }}</option>
+            <option value="{{ $value }}">{{ $value }}</option>
         @endforeach
     </select>
 </div>

@@ -25,7 +25,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class RapidIngestService
+class RapidIngestService extends RapidServiceBase
 {
     /**
      * @var \App\Services\CsvService
@@ -246,28 +246,6 @@ class RapidIngestService
     public function checkErrors()
     {
         return ! empty($this->errors);
-    }
-
-    /**
-     * Map header columns to tags.
-     *
-     * @param $headers
-     * @return \Illuminate\Support\Collection
-     */
-    public function mapColumns($headers)
-    {
-        $tags = config('config.updateColumnTags');
-
-        $mapped = collect($headers)->mapToGroups(function($header) use($tags){
-            foreach ($tags as $tag) {
-                if (preg_match('/'.$tag.'/', $header, $matches)) {
-                    return [$matches[0] => $header];
-                }
-            }
-            return ['unused' => $header];
-        });
-
-        return $mapped->forget('unused');
     }
 
     /**

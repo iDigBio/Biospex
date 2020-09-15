@@ -61,5 +61,10 @@ return [
     /**
      * Export fields
      */
-    'exportFieldsFile' => 'export-fields.json'
+    'geoLocateFields' => 'exports/geolocate-fields.json',
+
+    /**
+     * Forms
+     */
+    'geolocateFrmsDir' => 'exports/geolocate-frms',
 ];

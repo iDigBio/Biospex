@@ -31,6 +31,7 @@ use App\Jobs\RapidImportJob;
 use Auth;
 use Session;
 use Storage;
+use Str;
 
 class IngestController extends Controller
 {
@@ -62,7 +63,7 @@ class IngestController extends Controller
 
         RapidImportJob::dispatch(Auth::user(), $path);
 
-        Flash::success(t('The import failed to upload. Please contact the administration to determine the error.'));
+        Flash::success(t('The import uploaded successfully. You will be notified by email when it\'s completed.'));
 
         return redirect()->route('admin.ingest.index');
     }
@@ -75,9 +76,9 @@ class IngestController extends Controller
      */
     public function update(RapidUpdateFormRequest $request)
     {
-        $file     = request()->file('update-file');
+        $file     = $request->file('update-file');
         $fileOrigName = $file->getClientOriginalName();
-        $fileName = \Str::random(10) .'-'. $fileOrigName;
+        $fileName = Str::random(10) .'-'. $fileOrigName;
         $filePath = $file->storeAs(config('config.rapid_import_dir'), $fileName);
 
         if (! $filePath) {
@@ -115,9 +116,9 @@ class IngestController extends Controller
             $rapidIngestService->loadCsvFile(Storage::path($filePath));
             $headers = $rapidIngestService->setHeader();
 
-            $groupedHeaders = $rapidIngestService->mapColumns($headers);
+            $tags = $rapidIngestService->mapColumns($headers);
 
-            return view('ingest.update', compact('groupedHeaders', 'filePath', 'fileName', 'fileOrigName'));
+            return view('ingest.update', compact('tags', 'filePath', 'fileName', 'fileOrigName'));
         } catch (Exception $e) {
             Flash::warning(t('An error occurred while loading the csv file. Please contact the administration to determine the error.'));
 

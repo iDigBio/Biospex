@@ -64,7 +64,7 @@
                              data-parent="#import-accordion">
                             <div class="card-body">
                                 <form action="{{ route('admin.ingest.update') }}"
-                                      method="post" role="form" class="form-horizontal" id="update-rapid-file"
+                                      method="post" role="form" class="form-horizontal" id="importRapidFrm"
                                       enctype="multipart/form-data">
                                     @method('PUT')
                                     @csrf

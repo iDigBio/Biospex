@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ExportForm;
 use App\Models\RapidRecord;
 use App\Repositories\Interfaces\RapidHeader;
 use App\Repositories\Interfaces\RapidUpdate;
@@ -68,14 +69,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $fields = $this->fields();
-        $results = collect($fields)->forget('_token')->mapToGroups(function($array, $index){
-            foreach ($array as $index => $value) {
-                return
-                dd($value);
-            }
-        });
-
         //$this->export();
         //$this->checkHeader();
     }

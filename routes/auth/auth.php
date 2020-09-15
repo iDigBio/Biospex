@@ -14,7 +14,7 @@ Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->n
 Route::post('password/reset', 'ResetPasswordController@reset')->name('password.update');
 
 // Registration Routes...
-Route::get('register/{code?}', 'RegisterController@showRegistrationForm')->name('app.get.register');
+Route::get('register', 'RegisterController@showRegistrationForm')->name('app.get.register');
 Route::post('register', 'RegisterController@register')->name('app.post.register');
 
 // Register email

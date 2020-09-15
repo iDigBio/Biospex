@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\RapidExportService;
+use Flash;
 
 class ExportController extends Controller
 {
@@ -34,7 +35,8 @@ class ExportController extends Controller
      *
      * @param \App\Services\RapidExportService $rapidExportService
      */
-    public function __construct(RapidExportService $rapidExportService) {
+    public function __construct(RapidExportService $rapidExportService)
+    {
 
         $this->rapidExportService = $rapidExportService;
     }
@@ -47,29 +49,93 @@ class ExportController extends Controller
      */
     public function index()
     {
-        return view('export.index');
+        $geolocateFrms = $this->rapidExportService->getFormsByDestination('geolocate');
+
+        return view('export.index', compact('geolocateFrms'));
     }
 
+    /**
+     * Show geolocate forms.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function geolocate()
     {
+        /*
         if (! request()->ajax()) {
             return response()->json([t('Request must be ajax')]);
         }
+        */
 
-        $count = old('entries', 1);
+        $data = $this->rapidExportService->showGeoLocateFrm(request()->get('frm')); // request()->get('frm')
 
-        $exportSelect = $this->rapidExportService->createExportFieldSelect($count);
-
-        $headers = $this->rapidExportService->getHeader();
-        $mapped =  $this->rapidExportService->mapColumns($headers);
-        $groupedHeaders = view('partials.grouped-headers', compact('mapped', 'count'))->render();
-
-        return view('export.partials.geolocate', compact('exportSelect', 'groupedHeaders', 'count'));
+        return view('export.partials.geolocate', compact('data'));
     }
 
-
+    /**
+     * Dispatch the export to process.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function geolocateCreate()
     {
-        dd(request()->all());
+        $fields = $this->rapidExportService->mapExportFields(request()->all());
+
+        $this->rapidExportService->saveForm($fields);
+
+        //RapidExportJob::dispatch(Auth::user(), $this->example());
+
+        Flash::success(t('The export is processing. You will be notified by email when it\'s complete.'));
+
+        return redirect()->route('admin.export.index');
+    }
+
+    public function example()
+    {
+        return [
+            "_token"            => "mZiAuiRMGz91yza9fx9tfP3MI2X81r5dfI7mDsSI",
+            "exportDestination" => "geolocate",
+            "exportType"        => "csv",
+            "entries"           => "4",
+            "exportFields"      => [
+                [
+                    "order"  => null,
+                    "field"  => "CatalogNumber",
+                    "_gbifP" => "catalogNumber_gbifP",
+                    "_gbifR" => null,
+                    "_idbR"  => null,
+                    "_idbP"  => null,
+                    "_rapid" => null,
+                ],
+                [
+                    "order"  => "_gbifR,_gbifP,_idbR,_idbP,_rapid",
+                    "field"  => "ScientificName",
+                    "_gbifR" => "scientificName_gbifR",
+                    "_gbifP" => "scientificName_gbifP",
+                    "_idbR"  => null,
+                    "_idbP"  => null,
+                    "_rapid" => null,
+                ],
+                [
+                    "order"  => "_idbR,_idbP,_gbifP,_gbifR,_rapid",
+                    "field"  => "Country",
+                    "_idbR"  => "country_idbR",
+                    "_idbP"  => "country_idbP",
+                    "_gbifP" => null,
+                    "_gbifR" => null,
+                    "_rapid" => null,
+                ],
+                [
+                    "order"  => "_rapid,_gbifP,_gbifR,_idbR,_idbP",
+                    "field"  => "Locality",
+                    "_rapid" => "country_rapid",
+                    "_gbifP" => "locality_gbifP",
+                    "_gbifR" => "locality_gbifR",
+                    "_idbR"  => null,
+                    "_idbP"  => null,
+                ],
+            ],
+        ];
     }
 }
