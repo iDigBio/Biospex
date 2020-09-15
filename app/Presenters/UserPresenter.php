@@ -47,7 +47,7 @@ class UserPresenter extends Presenter
         return $this->model->email === null ? '' :
             '<a href="mailto:'.$this->model->email.'" 
             data-hover="tooltip" 
-            title="'.__('Contact').'">
+            title="'.t('Contact').'">
             <i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -62,11 +62,11 @@ class UserPresenter extends Presenter
                 $this->model->pivot->group_id,
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('Delete Member').'" 
+            title="'.t('Delete Member').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('Delete Member').'?" data-content="'.__('This will permanently delete the member').'">
+            data-title="'.t('Delete Member').'?" data-content="'.t('This will permanently delete the member').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 }

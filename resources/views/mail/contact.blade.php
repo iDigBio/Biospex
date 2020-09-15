@@ -1,10 +1,10 @@
 @component('mail::message')
-    # {{ t('Contact') }}
+# {{ t('Contact') }}
 
-    {{ t('Name') }}: {{ $contact['name'] }}
-    {{ t('Email') }}: {{ $contact['email'] }}
-    {{ t('Message') }}: {{ $contact['message'] }}
+{{ t('Name') }}: {{ $contact['name'] }}
+{{ t('Email') }}: {{ $contact['email'] }}
+{{ t('Message') }}: {{ $contact['message'] }}
 
-    {{ t('Thank you') }},
-    {{ config('app.name') }}
+{{ t('Thank you') }},
+{{ config('app.name') }}
 @endcomponent

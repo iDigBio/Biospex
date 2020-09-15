@@ -47,7 +47,7 @@ class Project extends Resource
      */
     public static function label()
     {
-        return __('Projects');
+        return t('Projects');
     }
 
     /**
@@ -57,7 +57,7 @@ class Project extends Resource
      */
     public static function singularLabel()
     {
-        return __('Project');
+        return t('Project');
     }
 
     /**
@@ -69,36 +69,36 @@ class Project extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make(__('Id'), 'id')->onlyOnDetail()->sortable(),
-            Text::make(__('Uuid'), 'uuid')->onlyOnDetail(),
+            ID::make(t('Id'), 'id')->onlyOnDetail()->sortable(),
+            Text::make(t('Uuid'), 'uuid')->onlyOnDetail(),
             BelongsTo::make('Group')->rules('required')->sortable(),
-            Select::make(__('Status'), 'status')->rules('required')->hideFromIndex()->options([
+            Select::make(t('Status'), 'status')->rules('required')->hideFromIndex()->options([
                 'starting' => 'Starting',
                 'active'   => 'Active',
                 'complete' => 'Complete',
                 'hiatus'   => 'Hiatus',
             ]),
-            Text::make(__('Title'), 'title')->rules('required')->sortable(),
-            Text::make(__('Slug'), 'slug')->onlyOnDetail(),
-            Text::make(__('Contact'), 'contact')->rules('required')->hideFromIndex(),
-            Text::make(__('Contact Email'), 'contact_email')->rules('required')->hideFromIndex(),
-            Text::make(__('Contact Title'), 'contact_title')->rules('required')->hideFromIndex(),
-            Text::make(__('Organization Website'), 'organization_website')->onlyOnDetail(),
-            Text::make(__('Organization'), 'organization')->onlyOnDetail(),
-            Textarea::make(__('Project Partners'), 'project_partners')->onlyOnDetail(),
-            Textarea::make(__('Funding Source'), 'funding_source')->onlyOnDetail(),
-            Text::make(__('Description Short'), 'description_short')->rules('required')->hideFromIndex(),
-            Textarea::make(__('Description Long'), 'description_long')->rules('required')->hideFromIndex(),
-            Textarea::make(__('Incentives'), 'incentives')->onlyOnDetail(),
-            Text::make(__('Geographic Scope'), 'geographic_scope')->onlyOnDetail(),
-            Text::make(__('Taxonomic Scope'), 'taxonomic_scope')->onlyOnDetail(),
-            Text::make(__('Temporal Scope'), 'temporal_scope')->onlyOnDetail(),
-            Text::make(__('Keywords'), 'keywords')->rules('required')->hideFromIndex(),
-            Text::make(__('Blog Url'), 'blog_url')->onlyOnDetail(),
-            Text::make(__('Facebook'), 'facebook')->onlyOnDetail(),
-            Text::make(__('Twitter'), 'twitter')->onlyOnDetail(),
-            Text::make(__('Activities'), 'activities')->onlyOnDetail(),
-            Text::make(__('Language Skills'), 'language_skills')->onlyOnDetail(),
+            Text::make(t('Title'), 'title')->rules('required')->sortable(),
+            Text::make(t('Slug'), 'slug')->onlyOnDetail(),
+            Text::make(t('Contact'), 'contact')->rules('required')->hideFromIndex(),
+            Text::make(t('Contact Email'), 'contact_email')->rules('required')->hideFromIndex(),
+            Text::make(t('Contact Title'), 'contact_title')->rules('required')->hideFromIndex(),
+            Text::make(t('Organization Website'), 'organization_website')->onlyOnDetail(),
+            Text::make(t('Organization'), 'organization')->onlyOnDetail(),
+            Textarea::make(t('Project Partners'), 'project_partners')->onlyOnDetail(),
+            Textarea::make(t('Funding Source'), 'funding_source')->onlyOnDetail(),
+            Text::make(t('Description Short'), 'description_short')->rules('required')->hideFromIndex(),
+            Textarea::make(t('Description Long'), 'description_long')->rules('required')->hideFromIndex(),
+            Textarea::make(t('Incentives'), 'incentives')->onlyOnDetail(),
+            Text::make(t('Geographic Scope'), 'geographic_scope')->onlyOnDetail(),
+            Text::make(t('Taxonomic Scope'), 'taxonomic_scope')->onlyOnDetail(),
+            Text::make(t('Temporal Scope'), 'temporal_scope')->onlyOnDetail(),
+            Text::make(t('Keywords'), 'keywords')->rules('required')->hideFromIndex(),
+            Text::make(t('Blog Url'), 'blog_url')->onlyOnDetail(),
+            Text::make(t('Facebook'), 'facebook')->onlyOnDetail(),
+            Text::make(t('Twitter'), 'twitter')->onlyOnDetail(),
+            Text::make(t('Activities'), 'activities')->onlyOnDetail(),
+            Text::make(t('Language Skills'), 'language_skills')->onlyOnDetail(),
             HasOne::make('Workflow')->rules('required')->hideFromIndex(),
         ];
     }

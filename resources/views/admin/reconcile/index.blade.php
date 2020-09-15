@@ -71,15 +71,15 @@
                            class="btn btn-primary p-2 m-1 prevent-default text-uppercase"
                            data-method="post"
                            data-confirm="confirmation"
-                           data-title="{{ __('Publish Reconciled File') }}"
-                           data-content="{{ __('This will publish a new reconciled_with_expert_opinion.csv file containing your edits in the Expedition downloads section.') }}">
-                            {{__('Publish Expert Review')}}</a>
+                           data-title="{{ t('Publish Reconciled File') }}"
+                           data-content="{{ t('This will publish a new reconciled_with_expert_opinion.csv file containing your edits in the Expedition downloads section.') }}">
+                            {{t('Publish Expert Review')}}</a>
                     </div>
                 </div>
             @else
                 <div class="row mt-5">
                     <div class="col-12 m-auto justify-content-center text-center">
-                        <p>{{ __('Once you have submitted your expert opinion for each page, go to the last page and click "Publish Reconciled."') }}</p>
+                        <p>{{ t('Once you have submitted your expert opinion for each page, go to the last page and click "Publish Reconciled."') }}</p>
                     </div>
                 </div>
             @endif

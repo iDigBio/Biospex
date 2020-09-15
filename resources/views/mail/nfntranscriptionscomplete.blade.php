@@ -1,8 +1,8 @@
 @component('mail::message')
-    # {{ t('Zooniverse Transcriptions Completed') }}
+# {{ t('Zooniverse Transcriptions Completed') }}
 
-    {{ t('The Zooniverse digitization process for "%s" has been completed.', $title) }}
+{{ t('The Zooniverse digitization process for "%s" has been completed.', $title) }}
 
-    {{ t('Thank you') }},
-    {{ config('app.name') }}
+{{ t('Thank you') }},
+{{ config('app.name') }}
 @endcomponent

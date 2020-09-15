@@ -80,7 +80,7 @@ class BingosController extends Controller
     {
         $bingo = $this->bingoService->findBingoWith($bingoId, ['project', 'words']);
         if (!$bingo) {
-            return __('message.bingo_not_found');
+            return t('Bingo Game could not be found.');
         }
 
         $rows = $this->bingoService->generateBingoCard($bingo);

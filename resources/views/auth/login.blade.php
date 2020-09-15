@@ -55,7 +55,7 @@
                 </form>
                 <div class="mt-4 text-center">
                     <a href="{{ route('app.password.request') }}">{{ t('Forgot your Password?') }}</a> ||
-                    <a href="{{ route('app.get.register') }}">{{ __('Register') }}</a>
+                    <a href="{{ route('app.get.register') }}">{{ t('Register') }}</a>
                 </div>
             </div>
         </div>
