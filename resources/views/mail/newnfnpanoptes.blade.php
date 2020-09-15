@@ -1,12 +1,12 @@
 @component('mail::message')
-    # {{ t('A new project implementing the Zooniverse workflow has been submitted to Biospex.') }}
+# {{ t('A new project implementing the Zooniverse workflow has been submitted to Biospex.') }}
 
 
-    {{ $contact }}
-    {{ $email }}
-    {{ $title }}
-    {{ $description }}
+{{ $contact }}
+{{ $email }}
+{{ $title }}
+{{ $description }}
 
-    {{ t('Thank you') }},
-    {{ config('app.name') }}
+{{ t('Thank you') }},
+{{ config('app.name') }}
 @endcomponent
