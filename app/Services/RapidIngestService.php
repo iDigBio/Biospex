@@ -80,7 +80,7 @@ class RapidIngestService extends RapidServiceBase
         $this->csvService = $csvService;
         $this->rapidInterface = $rapidInterface;
         $this->rapidHeaderInterface = $rapidHeaderInterface;
-        $this->validationFields = config('config.validationFields');
+        $this->validationFields = config('config.validation_fields');
     }
 
     /**
@@ -120,7 +120,7 @@ class RapidIngestService extends RapidServiceBase
      */
     public function updateHeader()
     {
-        $protected = config('config.protectedFields');
+        $protected = config('config.protected_fields');
 
         $rapidHeader = $this->rapidHeaderInterface->first();
         $diff = collect($this->header)->diff($rapidHeader->header)->reject(function ($field) use($protected) {

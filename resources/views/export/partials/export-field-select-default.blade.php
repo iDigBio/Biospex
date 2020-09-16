@@ -5,9 +5,10 @@
             title="{{ t('Field') }}"
             data-header="{{ t('Select Export Field') }}"
             data-width="200"
-            data-style="btn-primary">
+            data-style="btn-primary"
+            required>
         @foreach($data['geoLocateFields'] as $value)
-            <option value="{{ $value }}">{{ $value }}</option>
+            <option value="{{ str_replace('*', '', $value) }}">{{ $value }}</option>
         @endforeach
     </select>
 </div>

@@ -19,31 +19,139 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\ExportForm;
+use Exception;
+use Illuminate\Support\Facades\Storage;
 
 class GeoLocateExportService
 {
     /**
-     * @var \App\Repositories\Interfaces\ExportForm
+     * @var \App\Services\MongoDbService
      */
-    private $exportFormInterface;
+    private $mongoDbService;
+
+    /**
+     * @var \App\Services\CsvService
+     */
+    private $csvService;
 
     /**
      * GeoLocateExportService constructor.
      *
-     * @param \App\Repositories\Interfaces\ExportForm $exportFormInterface
+     * @param \App\Services\MongoDbService $mongoDbService
+     * @param \App\Services\CsvService $csvService
      */
-    public function __construct(ExportForm $exportFormInterface)
+    public function __construct(MongoDbService $mongoDbService, CsvService $csvService)
     {
-
-        $this->exportFormInterface = $exportFormInterface;
+        $this->mongoDbService = $mongoDbService;
+        $this->csvService = $csvService;
     }
 
     /**
-     * @param int|null $frm
+     * Determine export type and process.
+     *
+     * @param array $fields
+     * @return string|null
+     * @throws \League\Csv\CannotInsertRecord|\Exception
      */
-    public function showForm(int $frm = null)
+    public function buildGeoLocateExport(array $fields)
     {
+        if ($fields['exportType'] === 'csv') {
+            $csvData = $this->buildCsvData($fields);
+            if (!isset($csvData[0])) {
+                throw new Exception(t('Csv data returned empty while exporting for GEOLocate'));
+            }
 
+            return $this->buildCsvFile($csvData, $fields['frmName']);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get cursor for rapid documents
+     * @return mixed
+     */
+    public function getRapidRecordsCursor()
+    {
+        $this->mongoDbService->setCollection('rapid_records');
+
+        $cursor = $this->mongoDbService->find();
+        $cursor->setTypeMap([
+            'array'    => 'array',
+            'document' => 'array',
+            'root'     => 'array',
+        ]);
+
+        return $cursor;
+    }
+
+
+    /**
+     * Build csv data for GeoLocate export.
+     *
+     * @param array $fields
+     * @return array
+     */
+    public function buildCsvData(array $fields): array
+    {
+        $cursor = $this->getRapidRecordsCursor();
+
+        $csvData = [];
+
+        foreach ($cursor as $doc) {
+            $csvData[] = $this->setColumnData($doc, $fields);
+        }
+
+        return $csvData;
+    }
+
+    /**
+     * Set column headers and data according to what was selected.
+     *
+     * @param $doc
+     * @param $fields
+     * @return mixed
+     */
+    public function setColumnData($doc, $fields)
+    {
+        $data['CatalogNumber'] = (string) $doc['_id'];
+
+        foreach ($fields['exportFields'] as $fieldArray) {
+            $field = $fieldArray['field'];
+
+            // unset to make foreach easier to deal with
+            unset($fieldArray['field'], $fieldArray['order']);
+
+            // indexes are the tags
+            foreach ($fieldArray as $index => $value) {
+                if (isset($fieldArray[$index]) && !empty($doc[$value])) {
+                    $data[$field] = $doc[$value];
+                }
+
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Build csv file and return it.
+     *
+     * @param array $csvData
+     * @param string $frmName
+     * @return string
+     * @throws \League\Csv\CannotInsertRecord
+     */
+    public function buildCsvFile(array $csvData, string $frmName): string
+    {
+        $header = array_keys($csvData[0]);
+
+        $fileName = $frmName . '.csv';
+        $file = Storage::path(config('config.rapid_export_dir').'/'.$fileName);
+        $this->csvService->writerCreateFromPath($file);
+        $this->csvService->insertOne($header);
+        $this->csvService->insertAll($csvData);
+
+        return route('admin.download.export', ['fileName' => $fileName]);
     }
 }

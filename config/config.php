@@ -20,11 +20,13 @@ return [
      * Directories
      */
     'rapid_import_dir' => 'imports/rapid',
+    'rapid_export_dir' => 'exports/rapid',
+    'geolocate_fields_file' => 'exports/rapid/geolocate-fields.json',
 
     /**
      * Columns used in select statement for grid.
      */
-    'defaultGridVisible'    => [
+    'default_grid_visible'    => [
         '_id',
         'gbif',
         'idigbio',
@@ -35,7 +37,7 @@ return [
     /**
      * Fields used for validation.
      */
-    'validationFields' => [
+    'validation_fields' => [
         'gbifID_gbifR',
         'idigbio_uuid_idbP'
     ],
@@ -43,7 +45,7 @@ return [
     /**
      * Update column field tags.
      */
-    'updateColumnTags' => [
+    'column_tags' => [
         '_gbifR',
         '_gbifP',
         '_idbP',
@@ -54,17 +56,7 @@ return [
     /**
      * Protected fields.
      */
-    'protectedFields' => [
+    'protected_fields' => [
         '_id', 'updated_at', 'created_at'
     ],
-
-    /**
-     * Export fields
-     */
-    'geoLocateFields' => 'exports/geolocate-fields.json',
-
-    /**
-     * Forms
-     */
-    'geolocateFrmsDir' => 'exports/geolocate-frms',
 ];

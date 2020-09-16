@@ -134,7 +134,7 @@ class IngestController extends Controller
      */
     public function selected(RapidUpdateSelectFormRequest $request)
     {
-        $updateColumnTags = config('config.updateColumnTags');
+        $updateColumnTags = config('config.column_tags');
 
         $fields = collect($request->all())->filter(function($item, $key) use ($updateColumnTags){
             return in_array($key, $updateColumnTags);

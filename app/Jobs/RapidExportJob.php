@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Notifications\ImportNotification;
+use App\Notifications\ExportNotification;
 use App\Notifications\JobErrorNotification;
 use App\Services\RapidExportService;
 use Exception;
@@ -72,11 +72,15 @@ class RapidExportJob implements ShouldQueue
     public function handle(RapidExportService $rapidExportService)
     {
         try {
-            $fields = $rapidExportService->mapExportFields($this->data);
-            $rapidExportService->saveForm($fields);
+            $fields = $rapidExportService->mapOrderFields($this->data);
 
+            $form = $rapidExportService->saveForm($fields);
 
-            $this->user->notify(new ImportNotification(''));
+            $fields['frmName'] = $form->present()->form_name;
+
+            $downloadUrl = $rapidExportService->buildExport($fields);
+
+            $this->user->notify(new ExportNotification($downloadUrl));
 
             return;
 

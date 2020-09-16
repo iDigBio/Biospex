@@ -19,11 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\ExportForm;
-use App\Models\RapidRecord;
-use App\Repositories\Interfaces\RapidHeader;
-use App\Repositories\Interfaces\RapidUpdate;
-use App\Services\CsvService;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -39,29 +34,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\CsvService
-     */
-    private $csvService;
-
-    /**
-     * @var \App\Repositories\Interfaces\RapidHeader
-     */
-    private $rapidHeader;
-
-    /**
-     * @var \App\Models\RapidUpdate
-     */
-    private $rapidUpdate;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(CsvService $csvService, RapidHeader $rapidHeader, RapidUpdate $rapidUpdate)
+    public function __construct()
     {
         parent::__construct();
-        $this->csvService = $csvService;
-        $this->rapidHeader = $rapidHeader;
-        $this->rapidUpdate = $rapidUpdate;
     }
 
     /**
@@ -69,69 +46,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        //$this->export();
-        //$this->checkHeader();
-    }
 
-    public function export()
-    {
-        $records = RapidRecord::limit(10)->get();
-        $first = $records->first();
-
-        $header = array_keys($first->toArray());
-
-        $file = \Storage::path('export-test.csv');
-        $this->csvService->writerCreateFromPath($file);
-        $this->csvService->insertOne($header);
-        $this->csvService->insertAll($records->toArray());
-    }
-
-    public function checkHeader()
-    {
-        $rapidheader = $this->rapidHeader->first();
-        dd($rapidheader->header);
-    }
-
-    public function fields()
-    {
-        return [
-            "_token"      => "PRRiJSRfTTZmRnGK1ZTsglByT8PwhwLWeGOuRLfT",
-            "exportField" => [
-                "catalogNumber",
-                "continent",
-                null,
-                null,
-            ],
-            "_gbifR"      => [
-                "gbifID_gbifR",
-                "acceptedNameUsageID_gbifR",
-                null,
-                null,
-            ],
-            "_idbP"       => [
-                "idigbio_uuid_idbP",
-                "bed_idbP",
-                null,
-                null,
-            ],
-            "_gbifP"      => [
-                "abstract_gbifP",
-                "acceptedScientificName_gbifP",
-                null,
-                null,
-            ],
-            "_idbR"       => [
-                "acceptedNameUsage_idbR",
-                "associatedMedia_idbR",
-                null,
-                null,
-            ],
-            "_rapid"      => [
-                "country_rapid",
-                "countryCode_rapid",
-                null,
-                null,
-            ]
-        ];
     }
 }

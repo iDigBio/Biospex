@@ -49,7 +49,7 @@ class JqGridJsonEncoderService
     public function __construct(
         RapidRecord $rapidRecord, RapidHeader $headerInterface
     ) {
-        $this->defaultGridVisible = config('config.defaultGridVisible');
+        $this->defaultGridVisible = config('config.default_grid_visible');
         $this->rapidRecord = $rapidRecord;
         $this->headerInterface = $headerInterface;
     }

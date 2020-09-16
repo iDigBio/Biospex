@@ -29,7 +29,7 @@ class RapidServiceBase
      */
     public function mapColumns($headers)
     {
-        $tags = config('config.updateColumnTags');
+        $tags = config('config.column_tags');
 
         $mapped = collect($headers)->mapToGroups(function($header) use($tags){
             foreach ($tags as $tag) {

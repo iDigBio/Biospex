@@ -1,11 +1,11 @@
 @component('mail::message')
-    # {{ t('Job Error') }}
+# {{ t('Job Error') }}
 
-    {{ t('Message') }}: {{ $message }}
-    {{ t('File') }}: {{ $file }}
-    {{ t('Line') }}: {{ $line }}
-    {{ t('Trace') }}: {{ $trace }}
+{{ t('Message') }}: {{ $message }}
+{{ t('File') }}: {{ $file }}
+{{ t('Line') }}: {{ $line }}
+{{ t('Trace') }}: {{ $trace }}
 
-    {{ t('Thank you') }},
-    {{ config('app.name') }}
+{{ t('Thank you') }},
+{{ config('app.name') }}
 @endcomponent

@@ -5,7 +5,8 @@
             title="{{ t('Field') }}"
             data-header="{{ t('Select Export Field') }}"
             data-width="200"
-            data-style="btn-primary">
+            data-style="btn-primary"
+            required>
         @foreach($data['geoLocateFields'] as $value)
             <option value="{{ str_replace('*', '', $value) }}"
                     {{ isset($data['frmData']) && $data['frmData'][$i]['field'] === str_replace('*', '', $value) ? ' selected': '' }}>

@@ -27,12 +27,11 @@ class DownloadController extends Controller
 {
 
     /**
-     * DashboardController constructor.
+     * Download report.
+     *
+     * @param $fileName
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function __construct() {
-
-    }
-
     public function report($fileName)
     {
         if(! Storage::exists(config('config.reports_dir') . '/' . $fileName)) {
@@ -46,6 +45,29 @@ class DownloadController extends Controller
         ];
 
         $file = Storage::path(config('config.reports_dir') . '/' . $fileName);
+
+        return response()->download($file, $fileName, $headers);
+    }
+
+    /**
+     * Download export file.
+     *
+     * @param $fileName
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function export($fileName)
+    {
+        if(! Storage::exists(config('config.rapid_export_dir') . '/' . $fileName)) {
+            Flash::warning( t('RAPID export file does not exist.'));
+            return redirect()->route('admin.export.index');
+        }
+
+        $headers = [
+            'Content-Type'        => 'application/x-compressed',
+            'Content-disposition' => 'attachment; filename="'.$fileName.'"',
+        ];
+
+        $file = Storage::path(config('config.rapid_export_dir') . '/' . $fileName);
 
         return response()->download($file, $fileName, $headers);
     }

@@ -19,36 +19,34 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\ExportForm;
-use App\Repositories\Interfaces\RapidHeader;
+use App\Models\ExportForm;
 use Storage;
 
 class RapidExportService extends RapidServiceBase
 {
     /**
-     * @var \App\Repositories\Interfaces\RapidHeader
+     * @var \App\Services\RapidExportDbService
      */
-    private $rapidHeaderInterface;
+    private $rapidExportDbService;
 
     /**
-     * @var \App\Repositories\Interfaces\ExportForm
+     * @var \App\Services\GeoLocateExportService
      */
-    private $exportFormInterface;
-
+    private $geoLocateExportService;
 
     /**
      * RapidExportService constructor.
      *
-     * @param \App\Repositories\Interfaces\RapidHeader $rapidHeaderInterface
-     * @param \App\Repositories\Interfaces\ExportForm $exportFormInterface
+     * @param \App\Services\RapidExportDbService $rapidExportDbService
+     * @param \App\Services\GeoLocateExportService $geoLocateExportService
      */
     public function __construct(
-        RapidHeader $rapidHeaderInterface,
-        ExportForm $exportFormInterface
+        RapidExportDbService $rapidExportDbService,
+        GeoLocateExportService $geoLocateExportService
     )
     {
-        $this->rapidHeaderInterface = $rapidHeaderInterface;
-        $this->exportFormInterface = $exportFormInterface;
+        $this->rapidExportDbService = $rapidExportDbService;
+        $this->geoLocateExportService = $geoLocateExportService;
     }
 
     /**
@@ -58,9 +56,9 @@ class RapidExportService extends RapidServiceBase
      */
     public function getHeader()
     {
-        $protected = config('config.protectedFields');
+        $protected = config('config.protected_fields');
 
-        $rapidHeader = $this->rapidHeaderInterface->first();
+        $rapidHeader = $this->rapidExportDbService->getFirstRapidHeader();
 
         return collect($rapidHeader->header)->reject(function ($field) use ($protected) {
             return in_array($field, $protected);
@@ -68,33 +66,26 @@ class RapidExportService extends RapidServiceBase
     }
 
     /**
-     * Map the posted export form data.
+     * Map the posted export order data.
      *
      * @param array $data
      * @return array
      */
-    public function mapExportFields(array $data): array
+    public function mapOrderFields(array $data): array
     {
-        $fields = collect($data)->recursive();
-        $fields->forget(['_token']);
-
-        return $fields->map(function ($item, $key) {
-            if ($key !== 'exportFields') {
-                return $item;
-            }
-
-            return $item->map(function ($array) {
-                if ($array['order'] === null) {
-                    $array['order'] = null;
-
-                    return $array;
+        $data['exportFields'] = collect($data['exportFields'])->map(function($array){
+            return collect($array)->map(function ($item, $key) {
+                if ($key === 'order') {
+                    return $item === null ? null : explode(',', $item);
                 }
 
-                $array['order'] = explode(',', $array['order']);
-
-                return $array;
+                return $item;
             });
-        })->toArray();
+        })->forget(['_token'])->toArray();
+
+        unset($data['_token']);
+
+        return $data;
     }
 
     /**
@@ -103,14 +94,9 @@ class RapidExportService extends RapidServiceBase
      * @param array $fields
      * @return \App\Models\ExportForm
      */
-    public function saveForm(array $fields): \App\Models\ExportForm
+    public function saveForm(array $fields): ExportForm
     {
-        $data = [
-            'destination' => $fields['exportDestination'],
-            'data'        => $fields,
-        ];
-
-        return $this->exportFormInterface->create($data);
+        return $this->rapidExportDbService->saveRapidForm($fields);
     }
 
     /**
@@ -121,7 +107,7 @@ class RapidExportService extends RapidServiceBase
      */
     public function getFormsByDestination(string $destination)
     {
-        return $this->exportFormInterface->getFormsByDestination($destination);
+        return $this->rapidExportDbService->getRapidFormsByDestination($destination);
     }
 
     /**
@@ -133,10 +119,10 @@ class RapidExportService extends RapidServiceBase
      */
     public function showGeoLocateFrm(int $id = null)
     {
-        $form = $id === null ? null : $this->exportFormInterface->find($id);
+        $form = $id === null ? null : $this->rapidExportDbService->findRapidFormById($id);
 
         $count = $form === null ? old('entries', 1) : $form->data['entries'];
-        $geoLocateFields = json_decode(Storage::get(config('config.geoLocateFields')), true);
+        $geoLocateFields = json_decode(Storage::get(config('config.geolocate_fields_file')), true);
         $headers = $this->getHeader();
         $tags = $this->mapColumns($headers);
 
@@ -162,4 +148,21 @@ class RapidExportService extends RapidServiceBase
 
         return $data;
     }
+
+    /**
+     * Choose export type and build data.
+     *
+     * @param array $fields
+     * @return string|null
+     * @throws \League\Csv\CannotInsertRecord
+     */
+    public function buildExport(array $fields)
+    {
+        if ($fields['exportDestination'] === 'geolocate') {
+            return $this->geoLocateExportService->buildGeoLocateExport($fields);
+        }
+
+        return null;
+    }
+
 }
