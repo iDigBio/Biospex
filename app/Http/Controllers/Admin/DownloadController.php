@@ -22,16 +22,19 @@ namespace App\Http\Controllers\Admin;
 use Flash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use League\Csv\Reader;
+
 
 class DownloadController extends Controller
 {
 
     /**
-     * Download report.
-     *
-     * @param $fileName
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     * DashboardController constructor.
      */
+    public function __construct() {
+
+    }
+
     public function report($fileName)
     {
         if(! Storage::exists(config('config.reports_dir') . '/' . $fileName)) {
@@ -39,22 +42,20 @@ class DownloadController extends Controller
             return redirect()->route('admin.ingest.index');
         }
 
+        $filePath = Storage::path(config('config.reports_dir') . '/' . $fileName);
+        $reader = Reader::createFromPath($filePath, 'r');
+        $reader->setOutputBOM(Reader::BOM_UTF8);
+
         $headers = [
-            'Content-Type'        => 'application/x-compressed',
-            'Content-disposition' => 'attachment; filename="'.$fileName.'"',
+            'Content-Encoding' => 'UTF-8',
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+            'Content-Description' => 'File Transfer',
         ];
 
-        $file = Storage::path(config('config.reports_dir') . '/' . $fileName);
-
-        return response()->download($file, $fileName, $headers);
+        return response()->download($reader->output($fileName), $fileName, $headers);
     }
 
-    /**
-     * Download export file.
-     *
-     * @param $fileName
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
     public function export($fileName)
     {
         if(! Storage::exists(config('config.rapid_export_dir') . '/' . $fileName)) {
@@ -62,13 +63,21 @@ class DownloadController extends Controller
             return redirect()->route('admin.export.index');
         }
 
+        $filePath = Storage::path(config('config.rapid_export_dir') . '/' . $fileName);
+        $reader = Reader::createFromPath($filePath, 'r');
+        $reader->setOutputBOM(Reader::BOM_UTF8);
+
         $headers = [
-            'Content-Type'        => 'application/x-compressed',
-            'Content-disposition' => 'attachment; filename="'.$fileName.'"',
+            'Content-Encoding' => 'UTF-8',
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+            'Content-Description' => 'File Transfer',
         ];
 
-        $file = Storage::path(config('config.rapid_export_dir') . '/' . $fileName);
+        return response()->download($reader->output($fileName), $fileName, $headers);
 
-        return response()->download($file, $fileName, $headers);
+        //$file = Storage::path(config('config.rapid_export_dir') . '/' . $fileName);
+
+        //return response()->download($file, $fileName, $headers);
     }
 }

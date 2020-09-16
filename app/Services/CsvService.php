@@ -19,6 +19,7 @@
 
 namespace App\Services;
 
+use League\Csv\CharsetConverter;
 use League\Csv\Writer;
 use League\Csv\Reader;
 
@@ -137,5 +138,17 @@ class CsvService
     public function insertAll($rows)
     {
         $this->writer->insertAll($rows);
+    }
+
+    /**
+     * Set encoding.
+     *
+     * @return \League\Csv\CharsetConverter
+     */
+    public function setEncoding()
+    {
+        return (new CharsetConverter())
+            ->inputEncoding('utf-8')
+            ->outputEncoding('utf-8');
     }
 }

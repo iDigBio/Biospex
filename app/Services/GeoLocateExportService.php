@@ -149,6 +149,8 @@ class GeoLocateExportService
         $fileName = $frmName . '.csv';
         $file = Storage::path(config('config.rapid_export_dir').'/'.$fileName);
         $this->csvService->writerCreateFromPath($file);
+        $this->csvService->writer->addFormatter($this->csvService->setEncoding());
+
         $this->csvService->insertOne($header);
         $this->csvService->insertAll($csvData);
 
