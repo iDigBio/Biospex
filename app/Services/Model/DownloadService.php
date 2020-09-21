@@ -147,10 +147,19 @@ class DownloadService
      */
     public function createDownloadFile(\App\Models\Download $download)
     {
-        $headers = [
-            'Content-Type'        => 'application/x-compressed',
-            'Content-disposition' => 'attachment; filename="'.$download->present()->file_type.'-'.$download->file.'"',
-        ];
+        if ($download->type === 'export') {
+            $headers = [
+                'Content-Type'        => 'application/x-compressed',
+                'Content-disposition' => 'attachment; filename="'.$download->present()->file_type.'-'.$download->file.'"',
+            ];
+        } else {
+            $headers = [
+                'Content-Encoding' => 'UTF-8',
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Content-Disposition' => 'attachment; filename="'.$download->present()->file_type.'-'.$download->file.'"',
+                'Content-Description' => 'File Transfer',
+            ];
+        }
 
         $path = $download->type === 'export' ?
             config('config.export_dir') :
