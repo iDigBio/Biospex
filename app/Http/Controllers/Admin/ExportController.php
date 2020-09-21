@@ -82,6 +82,6 @@ class ExportController extends Controller
 
         Flash::success(t('The export is processing. You will be notified by email when completed.'));
 
-        return redirect()->route('admin.export.index');
+        return redirect()->route('admin.get.index');
     }
 }

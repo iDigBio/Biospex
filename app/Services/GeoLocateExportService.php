@@ -118,16 +118,16 @@ class GeoLocateExportService
 
         foreach ($fields['exportFields'] as $fieldArray) {
             $field = $fieldArray['field'];
+            $data[$field] = '';
 
             // unset to make foreach easier to deal with
             unset($fieldArray['field'], $fieldArray['order']);
 
-            // indexes are the tags
+            // indexes are the tags. isset skips index values that are null
             foreach ($fieldArray as $index => $value) {
-                if (isset($fieldArray[$index]) && !empty($doc[$value])) {
-                    $data[$field] = $doc[$value];
+                if (isset($fieldArray[$index])) {
+                    $data[$field] = !empty($doc[$value]) ? $doc[$value]: '';
                 }
-
             }
         }
 
