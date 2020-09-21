@@ -25,6 +25,7 @@ function jqBuildGrid() {
 
     return function (result) {
         let cm = result.colModel;
+        mapFormatter(cm);
         let cn = result.colNames;
 
         let saveObjectInLocalStorage = function (storageItemName, object) {
@@ -227,3 +228,22 @@ function jqBuildGrid() {
     };
 }
 
+/**
+ * Map formatter
+ * @param column
+ */
+function mapFormatter(column) {
+    let functionsMapping = {
+        "link": function (cellValue, opts, rowObjects) {
+            return '<a href="/record/' + cellValue + '" target="_new">' + cellValue + '</a>';
+        }
+    };
+
+    for (let i = 0; i < column.length; i++) {
+        let col = column[i];
+        if (col.hasOwnProperty("formatter") &&
+            functionsMapping.hasOwnProperty(col.formatter)) {
+            col.formatter = functionsMapping[col.formatter];
+        }
+    }
+}

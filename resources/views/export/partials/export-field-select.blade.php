@@ -7,6 +7,7 @@
             data-width="200"
             data-style="btn-primary"
             required>
+        <option value="">{{ t('None') }}</option>
         @foreach($data['geoLocateFields'] as $value)
             <option value="{{ str_replace('*', '', $value) }}"
                     {{ isset($data['frmData']) && $data['frmData'][$i]['field'] === str_replace('*', '', $value) ? ' selected': '' }}>

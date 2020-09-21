@@ -24,7 +24,8 @@
     "neitanod/forceutf8": "~2.0",
     "pda/pheanstalk": "^4.0",
     "spiritix/lada-cache": "^5.0",
-    "tio/laravel": "^1.10"
+    "tio/laravel": "^1.10",
+    "yajra/laravel-datatables-oracle": "~9.0"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.3",

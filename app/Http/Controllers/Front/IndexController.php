@@ -20,7 +20,9 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\Interfaces\RapidRecord;
 use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
 
 class IndexController extends Controller
 {
@@ -34,5 +36,45 @@ class IndexController extends Controller
         }
 
         return redirect()->route('app.get.login');
+    }
+
+    /**
+     * Show rapid record
+     *
+     * @param string $id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function show(string $id)
+    {
+        return view('show', compact('id'));
+    }
+
+    /**
+     *
+     * @param \App\Repositories\Interfaces\RapidRecord $rapidRecordInterface
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function data(RapidRecord $rapidRecordInterface, string $id)
+    {
+        if (! request()->ajax()) {
+            return response()->json(['error' => t('Request must be ajax')]);
+        }
+
+        $record = $rapidRecordInterface->find($id);
+
+        $mapped = collect($record->getAttributes())->map(function($value, $field){
+            if ($field === '_id') {
+                return [$field, (string)$value];
+            }
+
+            if ($field === 'updated_at' || $field === 'created_at'){
+                return [$field, $value->toDateTime()->format('Y-m-d')];
+            }
+
+            return [$field, $value];
+        })->values();
+
+        return DataTables::collection($mapped)->toJson();
     }
 }

@@ -98,10 +98,41 @@ class JqGridJsonEncoderService
     {
         $colModel = [];
         foreach ($colNames as $column) {
-            $colModel[] = $this->setNormalColumnProperties($column);($column);
+            $colModel[] = $this->formatGridColumn($column);
         }
 
         return $colModel;
+    }
+
+    /**
+     * Format the given column for grid model.
+     *
+     * @param $column
+     * @return array
+     */
+    protected function formatGridColumn($column)
+    {
+        $col = $this->setNormalColumnProperties($column);
+
+        if ($column === '_id')
+        {
+            $col = $this->addUriLink($col);
+        }
+
+        return $col;
+    }
+
+    /**
+     * Add uri link.
+     * @param $col
+     * @return array
+     */
+    protected function addUriLink($col)
+    {
+        return array_merge($col, [
+            'formatter' => 'link'
+        ]);
+
     }
 
     /**
@@ -137,20 +168,6 @@ class JqGridJsonEncoderService
                 'value' => ':Any;true:Yes;false:No',
             ],
         ];
-    }
-
-    /**
-     * Add uri link.
-     *
-     * @param $col
-     * @return array
-     */
-    protected function addUriLink($col)
-    {
-        return array_merge($col, [
-            'classes'   => 'thumbPreview',
-            'formatter' => 'imagePreview',
-        ]);
     }
 
     /**

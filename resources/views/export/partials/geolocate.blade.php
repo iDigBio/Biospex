@@ -35,8 +35,13 @@
         </div>
     </div>
     <div class="row">
-        <button type="submit"
+        <button type="button" id="geolocateSubmit"
                 class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto">{{ t('Submit') }}</button>
+    </div>
+    <div class="row">
+            <div id="duplicateWarning" class="col-sm-10 mx-auto text-center text-danger collapse">
+                {{ t('Field select dropdowns cannot contain duplicate values.') }}
+            </div>
     </div>
 </form>
 <div class="row default mt-2" style="display: none">

@@ -26,11 +26,6 @@
                                 data-url="#"
                                 data-hover="tooltip" title="{{ t('Export to Taxonomic Name Standardization') }}"
                         >{{ t('Taxonomic Name Standardization') }}</button>
-                        <button type="button" disabled class="export-btn btn btn-primary pl-4 pr-4 text-uppercase"
-                                data-url="#"
-                                data-hover="tooltip" title="{{ t('Export to Darwin Core Archive') }}"
-                                data-value="{{ t('Darwin Core Archive') }}"
-                        >{{ t('Darwin Core Archive') }}</button>
                     </div>
                 </div>
                 <div class="row">

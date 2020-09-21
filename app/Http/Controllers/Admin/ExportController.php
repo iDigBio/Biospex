@@ -78,6 +78,7 @@ class ExportController extends Controller
      */
     public function geolocateCreate()
     {
+        dd(request()->all());
         RapidExportJob::dispatch(Auth::user(), request()->all());
 
         Flash::success(t('The export is processing. You will be notified by email when completed.'));

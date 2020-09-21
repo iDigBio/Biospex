@@ -82,21 +82,22 @@ $(function () {
     $('#geolocateSelect').on('change', function () {
         $('#geolocate').collapse('hide');
         $exportResults.html('<div class="mt-5 loader mx-auto"></div>');
-        $.post( $(this).data('url'), { frm: $(this).val() })
-            .done(function( data ) {
-                $exportResults.html(data).find('div.entry select').selectpicker();
-                sortable();
+        $.post($(this).data('url'), {frm: $(this).val()})
+            .done(function (data) {
+                $exportResults.html(data).find("div.entry").each(function () {
+                    makeSortable($(this));
+                });
             });
     });
 
     $exportResults.on('click', '.btn-add', function () {
-        //e.preventDefault();
-        $('.default').clone()
-            .appendTo($('#controls')).removeClass('default')
-            .addClass('entry').show().find('select').selectpicker();
+        let $entry = $('.default').clone();
+        $entry.appendTo($('#controls')).removeClass('default')
+            .addClass('entry').show()
+            .find('.export-field-default').removeClass('export-field-default').addClass('export-field');
 
+        makeSortable($entry);
         renumber_prefix();
-        sortable();
 
     }).on('click', '.btn-remove', function () {
         if ($('#controls').children('div.entry').length === 1) {
@@ -104,8 +105,15 @@ $(function () {
         }
         $('#controls div.entry:last').remove();
         renumber_prefix();
+    }).on('click', '#geolocateSubmit', function(e){
+        if (checkDuplicates()) {
+            $('#duplicateWarning').show();
+            return;
+        }
+        $('#exportGeoLocateFrm').submit();
+    }).on('change', 'select.export-field', function (){
+        $('#duplicateWarning').hide();
     });
-
 });
 
 function notify(icon, msg, type) {
@@ -127,31 +135,31 @@ function notify(icon, msg, type) {
     });
 }
 
-function sortable() {
-    $(".entry").each(function () {
-        $(this).sortable({
-            items: '> div.sort',
-            placeholder: "sort-highlight",
-            tolerance: 'pointer',
-            stop: function (event, ui) {
-                let idsInOrder = $(this).sortable('toArray', {
-                    attribute: 'data-id'
-                });
+// Make select box rows sortable
+function makeSortable($entry, options) {
+    $entry.sortable({
+        items: '> div.sort',
+        placeholder: "sort-highlight",
+        tolerance: 'pointer',
+        stop: function (event, ui) {
+            let idsInOrder = $(this).sortable('toArray', {
+                attribute: 'data-id'
+            });
 
-                console.log(idsInOrder);
-
-                let $input = $('input#order'+ui.item.attr('data-count'));
-                $input.val(idsInOrder);
-            }
-        }).disableSelection();
-    });
+            let $input = $('input#order' + ui.item.attr('data-count'));
+            $input.val(idsInOrder);
+        }
+    }).find('select').each(function () {
+        $(this).selectpicker();
+    }).disableSelection();
 }
 
+// Renumber prefixes when rows add and removed.
 function renumber_prefix() {
     let controls = $('#controls');
     controls.children('div.entry').each(function (index) {
         $(this).find('.hidden').each(function () {
-            $(this).attr('id', 'order'+index);
+            $(this).attr('id', 'order' + index);
             $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
         });
 
@@ -165,4 +173,19 @@ function renumber_prefix() {
         });
     });
     $('[name="entries"]').val(controls.children('div.entry').length);
+}
+
+// Check duplicate export field selection before submitting form.
+function checkDuplicates() {
+    let dup = false;
+    let fieldOptions = [];
+    $('select.export-field').each(function (){
+        if ($.inArray($(this).val(), fieldOptions) > -1) {
+            dup = true;
+        }
+
+        fieldOptions.push($(this).val());
+    });
+
+    return dup;
 }
