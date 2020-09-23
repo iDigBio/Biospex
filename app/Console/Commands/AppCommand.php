@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\GeoLocateExportService;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -34,11 +35,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Services\GeoLocateExportService
+     */
+    private $service;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct()
+    public function __construct(GeoLocateExportService $service)
     {
         parent::__construct();
+        $this->service = $service;
     }
 
     /**
@@ -46,6 +53,13 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $fields = $this->example();
 
+        $this->service->buildGeoLocateExport($fields);
+    }
+
+    public function example()
+    {
+        return json_decode(\Storage::get('test.json'), true);
     }
 }
