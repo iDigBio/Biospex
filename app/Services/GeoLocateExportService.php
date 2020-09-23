@@ -125,8 +125,9 @@ class GeoLocateExportService
 
             // indexes are the tags. isset skips index values that are null
             foreach ($fieldArray as $index => $value) {
-                if (isset($fieldArray[$index])) {
-                    $data[$field] = !empty($doc[$value]) ? $doc[$value]: '';
+                if (isset($fieldArray[$index]) && !empty($doc[$value])) {
+                    $data[$field] = $doc[$value];
+                    break;
                 }
             }
         }
