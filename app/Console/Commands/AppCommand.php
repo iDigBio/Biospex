@@ -19,7 +19,8 @@
 
 namespace App\Console\Commands;
 
-use App\Services\GeoLocateExportService;
+use App\Jobs\RapidImportJob;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -35,17 +36,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\GeoLocateExportService
-     */
-    private $service;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(GeoLocateExportService $service)
+    public function __construct()
     {
         parent::__construct();
-        $this->service = $service;
     }
 
     /**
@@ -53,13 +48,9 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $fields = $this->example();
-
-        $this->service->buildGeoLocateExport($fields);
+        $user = User::find(1);
+        $path = $path = config('config.rapid_import_dir') . '/rapid-joined-records_country-cleanup_2020-09-23.csv';
+        RapidImportJob::dispatch($user, $path);
     }
 
-    public function example()
-    {
-        return json_decode(\Storage::get('test.json'), true);
-    }
 }
