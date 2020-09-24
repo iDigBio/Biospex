@@ -22,6 +22,11 @@ namespace App\Presenters;
 
 class ExportFormPresenter extends Presenter
 {
+    /**
+     * Set form name.
+     *
+     * @return string
+     */
     public function formName()
     {
         return strtoupper($this->model->destination) . '_' . $this->model->id . '_' . $this->model->created_at->format('Y-m-d');
