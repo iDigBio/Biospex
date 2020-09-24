@@ -27,14 +27,12 @@ use League\Csv\Reader;
 
 class DownloadController extends Controller
 {
-
     /**
-     * DashboardController constructor.
+     * Download report csv.
+     *
+     * @param $fileName
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function __construct() {
-
-    }
-
     public function report($fileName)
     {
         if(! Storage::exists(config('config.reports_dir') . '/' . $fileName)) {
@@ -42,20 +40,23 @@ class DownloadController extends Controller
             return redirect()->route('admin.ingest.index');
         }
 
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Description: File Transfer');
+        header('Content-Disposition: attachment; filename="'.$fileName.'"');
+
         $filePath = Storage::path(config('config.reports_dir') . '/' . $fileName);
         $reader = Reader::createFromPath($filePath, 'r');
         $reader->setOutputBOM(Reader::BOM_UTF8);
 
-        $headers = [
-            'Content-Encoding' => 'UTF-8',
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
-            'Content-Description' => 'File Transfer',
-        ];
-
-        return response()->download($reader->output($fileName), $fileName, $headers);
+        die;
     }
 
+    /**
+     * Download export csv.
+     *
+     * @param $fileName
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function export($fileName)
     {
         if(! Storage::exists(config('config.rapid_export_dir') . '/' . $fileName)) {
@@ -63,21 +64,14 @@ class DownloadController extends Controller
             return redirect()->route('admin.export.index');
         }
 
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Description: File Transfer');
+        header('Content-Disposition: attachment; filename="'.$fileName.'"');
+
         $filePath = Storage::path(config('config.rapid_export_dir') . '/' . $fileName);
         $reader = Reader::createFromPath($filePath, 'r');
         $reader->setOutputBOM(Reader::BOM_UTF8);
-
-        $headers = [
-            'Content-Encoding' => 'UTF-8',
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
-            'Content-Description' => 'File Transfer',
-        ];
-
-        return response()->download($reader->output($fileName), $fileName, $headers);
-
-        //$file = Storage::path(config('config.rapid_export_dir') . '/' . $fileName);
-
-        //return response()->download($file, $fileName, $headers);
+        $reader->output();
+        die;
     }
 }
