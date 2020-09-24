@@ -41,7 +41,7 @@ class RapidImportFormRequest extends Request
     public function rules()
     {
         return [
-            'import-file' => 'required|file|mimes:csv,txt|max:500000'
+            'import-file' => 'required|file|mimes:zip|max:500000'
         ];
     }
 
@@ -53,7 +53,7 @@ class RapidImportFormRequest extends Request
     public function messages()
     {
         return [
-            'import-file.mimes' => 'File type must be CSV.',
+            'import-file.mimes' => 'File type must be Zip.',
         ];
     }
 }

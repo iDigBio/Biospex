@@ -16,7 +16,7 @@
                     <div class="card">
                         <div class="card-header" id="file-import">
                             <h5 class="mb-0">
-                                <button class="import btn" data-toggle="collapse" data-target=""
+                                <button class="import btn" data-toggle="collapse" data-target="#rapid-import"
                                         aria-expanded="true" aria-controls="rapid-import">
                                     {{ t('Import Rapid Records Data') }}
                                 </button>
@@ -37,7 +37,7 @@
                                                    for="import-file">{{ t('Choose file...') }}</label>
                                             <input type="file" name="import-file" class="custom-file-input"
                                                    id="import-file"
-                                                   accept=".csv" required>
+                                                   accept=".zip" required>
                                             <span class="text-danger">{{ $errors->first('import-file') }}</span>
                                         </div>
                                     </div>
@@ -73,7 +73,7 @@
                                             <label class="custom-file-label"
                                                    for="update-file">{{ t('Choose file...') }}</label>
                                             <input type="file" name="update-file" class="custom-file-input" id="update-file"
-                                                   accept=".csv" required>
+                                                   accept=".zip" required>
                                             <span class="text-danger">{{ $errors->first('update-file') }}</span>
                                         </div>
                                     </div>

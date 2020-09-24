@@ -42,7 +42,7 @@ class RapidUpdateFormRequest extends Request
     public function rules()
     {
         return [
-            'update-file' => 'required|file|mimes:csv,txt|max:500000'
+            'update-file' => 'required|file|mimes:zip|max:500000'
         ];
     }
 
@@ -54,7 +54,7 @@ class RapidUpdateFormRequest extends Request
     public function messages()
     {
         return [
-            'update-file.mimes' => 'File type must be CSV.',
+            'update-file.mimes' => 'File type must be Zip.',
         ];
     }
 }
