@@ -6,7 +6,7 @@
 @stop
 
 @section('custom-style')
-    <link rel="stylesheet" href="//cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.22/b-1.6.4/b-colvis-1.6.4/sb-1.0.0/sp-1.2.0/datatables.min.css"/>
 @endsection
 
 {{-- Content --}}
@@ -23,7 +23,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-10 mx-auto">
-                    <table id="record" class="display" data-route="{{ route('front.data.get', ['id' => $record->_id]) }}">
+                    <table id="record" class="table table-striped table-bordered dt-responsive" data-route="{{ route('front.data.get', ['id' => $record->_id]) }}">
                         <thead>
                         <tr>
                             <th>Field</th>
@@ -38,11 +38,25 @@
 @endsection
 
 @section('custom-script')
-<script src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/b-1.6.4/b-colvis-1.6.4/sb-1.0.0/sp-1.2.0/datatables.min.js"></script>
     <script>
         $(function(){
-            $("#record").DataTable({
-                "ajax": $('#record').data('route')
+            let dt = $("#record").DataTable({
+                "ajax": $('#record').data('route'),
+                /*
+                dom:  "<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                buttons: [
+                    {
+                        text: 'GEOLocate',
+                        action: function ( e, dt, node, config ) {
+                            console.log('here');
+                            dt.ajax.url($('#record').data('route') + '/geolocate').load();
+                        }
+                    }
+                ]
+                 */
             });
         });
     </script>
