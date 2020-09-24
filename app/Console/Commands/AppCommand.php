@@ -48,9 +48,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        $path = $path = config('config.rapid_import_dir') . '/rapid-joined-records_country-cleanup_2020-09-23.csv';
-        RapidImportJob::dispatch($user, $path);
     }
 
 }
