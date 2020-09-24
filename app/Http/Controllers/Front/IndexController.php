@@ -56,9 +56,10 @@ class IndexController extends Controller
      *
      * @param \App\Repositories\Interfaces\RapidRecord $rapidRecordInterface
      * @param string $id
+     * @param string|null $view
      * @return \Illuminate\Http\JsonResponse
      */
-    public function data(RapidRecord $rapidRecordInterface, string $id)
+    public function data(RapidRecord $rapidRecordInterface, string $id, string $view = null)
     {
         if (! request()->ajax()) {
             return response()->json(['error' => t('Request must be ajax')]);
