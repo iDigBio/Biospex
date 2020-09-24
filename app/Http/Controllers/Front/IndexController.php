@@ -41,12 +41,15 @@ class IndexController extends Controller
     /**
      * Show rapid record
      *
+     * @param \App\Repositories\Interfaces\RapidRecord $rapidRecord
      * @param string $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(string $id)
+    public function show(RapidRecord $rapidRecord, string $id)
     {
-        return view('show', compact('id'));
+        $record = $rapidRecord->find($id);
+
+        return view('show', compact('record'));
     }
 
     /**

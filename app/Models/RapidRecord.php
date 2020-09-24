@@ -19,8 +19,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
+use App\Presenters\RapidRecordPresenter;
+
 class RapidRecord extends BaseMongoModel
 {
+    use Presentable;
+
     /**
      * Set Collection
      */
@@ -30,4 +35,9 @@ class RapidRecord extends BaseMongoModel
      * @inheritDoc
      */
     protected $dates = ['created_at', 'updated_at'];
+
+    /**
+     * @var string
+     */
+    protected $presenter = RapidRecordPresenter::class;
 }

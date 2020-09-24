@@ -11,13 +11,19 @@
 
 {{-- Content --}}
 @section('content')
-    <h2 class="text-center pt-4">{{ t('Record') }} {{ $id }}</h2>
+    <h2 class="text-center pt-4">{{ t('Record') }} {{ $record->_id }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="row">
+                <div class="col-sm-10 mx-auto mb-5">
+                    {!! $record->present()->gbif_link !!}
+                    {!! $record->present()->idigbio_link !!}
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-sm-10 mx-auto">
-                    <table id="record" class="display" data-route="{{ route('front.data.get', ['id' => $id]) }}">
+                    <table id="record" class="display" data-route="{{ route('front.data.get', ['id' => $record->_id]) }}">
                         <thead>
                         <tr>
                             <th>Field</th>
