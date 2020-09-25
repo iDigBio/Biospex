@@ -35,7 +35,7 @@
         </div>
     </div>
     <div class="row">
-        <button type="button" id="geolocateSubmit"
+        <button type="submit" id="geolocateSubmit"
                 class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto">{{ t('Submit') }}</button>
     </div>
     <div class="row">
@@ -45,7 +45,7 @@
     </div>
 </form>
 <div class="row default mt-2" style="display: none">
-    <input type="hidden" class="hidden" id="order" name="exportFields[999][order]" value="">
+    <input type="hidden" class="hidden" id="order" data-id="999" name="exportFields[999][order]" value="">
     @include('export.partials.export-field-select-default')
     @include('partials.tags-select-fields-default')
 </div>

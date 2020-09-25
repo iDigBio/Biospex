@@ -105,12 +105,19 @@ $(function () {
         }
         $('#controls div.entry:last').remove();
         renumber_prefix();
-    }).on('click', '#geolocateSubmit', function(e){
+    }).on('submit', '#exportGeoLocateFrm', function (e) {
         if (checkDuplicates()) {
             $('#duplicateWarning').show();
-            return;
+            return false;
         }
-        $('#exportGeoLocateFrm').submit();
+
+        $('div.entry').each(function (){
+            let idsInOrder = $(this).sortable('toArray', {
+                attribute: 'data-id'
+            });
+            let $order = $(this).children(":first-child");
+            $order.val(idsInOrder);
+        });
     }).on('change', 'select.export-field', function (){
         $('#duplicateWarning').hide();
     });
@@ -135,20 +142,12 @@ function notify(icon, msg, type) {
     });
 }
 
-// Make select box rows sortable
+// Make select box rows sortable and bootstrap-select
 function makeSortable($entry, options) {
     $entry.sortable({
         items: '> div.sort',
         placeholder: "sort-highlight",
-        tolerance: 'pointer',
-        stop: function (event, ui) {
-            let idsInOrder = $(this).sortable('toArray', {
-                attribute: 'data-id'
-            });
-
-            let $input = $('input#order' + ui.item.attr('data-count'));
-            $input.val(idsInOrder);
-        }
+        tolerance: 'pointer'
     }).find('select').each(function () {
         $(this).selectpicker();
     }).disableSelection();
@@ -158,14 +157,9 @@ function makeSortable($entry, options) {
 function renumber_prefix() {
     let controls = $('#controls');
     controls.children('div.entry').each(function (index) {
-        $(this).find('.hidden').each(function () {
-            $(this).attr('id', 'order' + index);
-            $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
-        });
-
-        $(this).find('.sort').each(function () {
-            $(this).attr('data-count', index);
-        });
+        $(this).children(":first-child")
+            .attr('id', 'order' + index)
+            .attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
 
         $(this).find('select').each(function () {
             //$(this).attr('id', $(this).attr('id').replace(/\[[0-9]+\]/g, '[' + index + ']'));
