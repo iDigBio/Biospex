@@ -42,6 +42,16 @@ class ExportForm extends BaseEloquentModel
     protected $presenter = ExportFormPresenter::class;
 
     /**
+     * Belongs to relation with Users.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
      * @inheritDoc
      */
     public function getDataAttribute($value)

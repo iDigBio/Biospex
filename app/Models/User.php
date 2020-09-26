@@ -75,4 +75,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(RapidUpdate::class);
     }
+
+    /**
+     * Has many relation with export_forms.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function forms()
+    {
+        return $this->hasMany(ExportForm::class);
+    }
 }

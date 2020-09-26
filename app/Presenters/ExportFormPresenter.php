@@ -29,6 +29,15 @@ class ExportFormPresenter extends Presenter
      */
     public function formName()
     {
-        return strtoupper($this->model->destination) . '_' . $this->model->id . '_' . $this->model->created_at->format('Y-m-d');
+        $user = explode('@', $this->model->user->email);
+
+        $formName = [
+            strtoupper($this->model->destination),
+            $this->model->id,
+            $this->model->created_at->format('Y-m-d'),
+            $user[0]
+        ];
+
+        return implode('_', $formName);
     }
 }

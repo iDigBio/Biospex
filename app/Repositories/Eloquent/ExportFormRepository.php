@@ -40,6 +40,9 @@ class ExportFormRepository extends EloquentRepository implements ExportForm
      */
     public function getFormsByDestination(string $destination): Collection
     {
-        return $this->model->where('destination', $destination)->orderBy('created_at')->get();
+        return $this->model->with('user')
+            ->where('destination', $destination)
+            ->orderBy('created_at')
+            ->get(['id', 'user_id', 'destination', 'created_at']);
     }
 }
