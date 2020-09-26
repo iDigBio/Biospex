@@ -27,8 +27,7 @@ interface ExportForm extends RepositoryInterface
     /**
      * Get export forms by destination.
      *
-     * @param string $destination
      * @return \Illuminate\Support\Collection
      */
-    public function getFormsByDestination(string $destination): Collection;
+    public function getFormsSelect(): Collection;
 }

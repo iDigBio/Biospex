@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,7 +22,12 @@ namespace App\Services;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 
-class GeoLocateExportService
+/**
+ * Class ExportService
+ *
+ * @package App\Services
+ */
+class ExportService
 {
     /**
      * @var \App\Services\MongoDbService
@@ -33,6 +38,16 @@ class GeoLocateExportService
      * @var \App\Services\CsvService
      */
     private $csvService;
+
+    /**
+     * @var string
+     */
+    private $destination;
+
+    /**
+     * @var array
+     */
+    private $reserved;
 
     /**
      * GeoLocateExportService constructor.
@@ -47,13 +62,32 @@ class GeoLocateExportService
     }
 
     /**
+     * Set destination.
+     *
+     * @param string $destination
+     */
+    public function setDestination(string $destination)
+    {
+        $this->destination = $destination;
+    }
+
+    /**
+     * Set reserved columns according to destination.
+     */
+    public function setReservedColumns()
+    {
+        $reserved = config('config.reserved_columns');
+        $this->reserved = $reserved[$this->destination];
+    }
+
+    /**
      * Determine export type and process.
      *
      * @param array $fields
      * @return string|null
      * @throws \League\Csv\CannotInsertRecord|\Exception
      */
-    public function buildGeoLocateExport(array $fields)
+    public function buildExport(array $fields)
     {
         if ($fields['exportType'] === 'csv') {
             $csvData = $this->buildCsvData($fields);
@@ -114,7 +148,10 @@ class GeoLocateExportService
      */
     public function setColumnData($doc, $fields)
     {
-        $data['CatalogNumber'] = (string) $doc['_id'];
+        $data = [];
+        foreach ($this->reserved as $column => $item) {
+            $data[$column] = (string) $doc[$item];
+        }
 
         foreach ($fields['exportFields'] as $fieldArray) {
             $field = $fieldArray['field'];

@@ -76,8 +76,7 @@ class RapidExportJob implements ShouldQueue
 
             $form = $rapidExportService->saveForm($fields, $this->user->id);
 
-            $user = explode('@', $this->user->email);
-            $fields['frmName'] = $form->present()->form_name . '_' . $user[0];
+            $fields['frmName'] = $this->createName($form);
 
             $downloadUrl = $rapidExportService->buildExport($fields);
 
@@ -95,5 +94,18 @@ class RapidExportJob implements ShouldQueue
 
             $this->user->notify(new JobErrorNotification($attributes));
         }
+    }
+
+    /**
+     * Create form name using user and form data.
+     *
+     * @param $form
+     * @return string
+     */
+    private function createName($form)
+    {
+        $user = explode('@', $this->user->email);
+
+        return $form->present()->form_name . '_' . $user[0];
     }
 }

@@ -22,7 +22,8 @@ return [
     'reports_dir' => 'reports',
     'rapid_import_dir' => 'imports/rapid',
     'rapid_export_dir' => 'exports/rapid',
-    'geolocate_fields_file' => 'exports/rapid/geolocate-fields.json',
+    'geolocate_fields_file' => resource_path('files/rapid-exports/geolocate-fields.json'),
+    'people_fields_file' => resource_path('files/rapid-exports/people-fields.json'),
 
     /**
      * Columns used in select statement for grid.
@@ -60,4 +61,9 @@ return [
     'protected_fields' => [
         '_id', 'updated_at', 'created_at'
     ],
+
+    'reserved_columns' => [
+        'geolocate' => ['CatalogNumber' => '_id'],
+        'people' => ['BIOSPEXid' => '_id']
+    ]
 ];

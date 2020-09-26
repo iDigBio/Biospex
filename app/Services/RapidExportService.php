@@ -20,8 +20,13 @@
 namespace App\Services;
 
 use App\Models\ExportForm;
-use Storage;
+use Illuminate\Support\Facades\File;
 
+/**
+ * Class RapidExportService
+ *
+ * @package App\Services
+ */
 class RapidExportService extends RapidServiceBase
 {
     /**
@@ -30,23 +35,23 @@ class RapidExportService extends RapidServiceBase
     private $rapidExportDbService;
 
     /**
-     * @var \App\Services\GeoLocateExportService
+     * @var \App\Services\ExportService
      */
-    private $geoLocateExportService;
+    private $exportService;
 
     /**
      * RapidExportService constructor.
      *
      * @param \App\Services\RapidExportDbService $rapidExportDbService
-     * @param \App\Services\GeoLocateExportService $geoLocateExportService
+     * @param \App\Services\ExportService $exportService
      */
     public function __construct(
         RapidExportDbService $rapidExportDbService,
-        GeoLocateExportService $geoLocateExportService
+        ExportService $exportService
     )
     {
         $this->rapidExportDbService = $rapidExportDbService;
-        $this->geoLocateExportService = $geoLocateExportService;
+        $this->exportService = $exportService;
     }
 
     /**
@@ -103,56 +108,90 @@ class RapidExportService extends RapidServiceBase
     /**
      * Get forms by destination.
      *
-     * @param string $destination
      * @return \Illuminate\Support\Collection
      */
-    public function getFormsByDestination(string $destination)
+    public function getFormsSelect()
     {
-        return $this->rapidExportDbService->getRapidFormsByDestination($destination);
+        $forms = $this->rapidExportDbService->getRapidFormsSelect();
+
+        return $forms->mapToGroups(function($item, $index){
+            return [$item->destination => $item];
+        });
     }
 
     /**
-     * Show GeoLocate form. If exists, build correct data.
+     * Get the form based on new or existing.
      *
+     * @param string $destination
      * @param int|null $id
      * @return array
-     * @throws \Exception
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function showGeoLocateFrm(int $id = null)
+    public function getForm(string $destination, int $id = null)
     {
-        $form = $id === null ? null : $this->rapidExportDbService->findRapidFormById($id);
+        return $id === null ? $this->newForm($destination) : $this->existingForm($destination, $id);
+    }
 
-        $count = $form === null ? old('entries', 1) : $form->data['entries'];
-        $geoLocateFields = json_decode(Storage::get(config('config.geolocate_fields_file')), true);
+    /**
+     * Return form for selected destination.
+     *
+     * @param string $destination
+     * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function newForm(string $destination )
+    {
         $headers = $this->getHeader();
         $tags = $this->mapColumns($headers);
 
-        $data = [
-            'count' => $count,
+        return [
+            'count' => old('entries', 1),
             'exportType' => null,
-            'geoLocateFields' => $geoLocateFields,
+            'fields' => $this->getFields($destination),
             'tags' => $tags,
             'frmData' => null
         ];
+    }
 
-        if ($form === null) {
-            return $data;
-        }
+    /**
+     * Return form from existing form.
+     *
+     * @param string $destination
+     * @param int $id
+     * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function existingForm(string $destination, int $id)
+    {
+        $form = $this->rapidExportDbService->findRapidFormById($id);
+        $headers = $this->getHeader();
+        $tags = $this->mapColumns($headers);
 
         $frmData = null;
-        for($i=0; $i < $count; $i++) {
+        for($i=0; $i < $form->data['entries']; $i++) {
             $frmData[$i] = $form->data['exportFields'][$i];
             $frmData[$i]['order'] = collect($frmData[$i]['order'])->flip()->merge($tags)->toArray();
         }
 
-        if (!isset($form->data['exportType'])) {
-            throw new \Exception(t('Form export type does not exist.'));
-        }
+        return [
+            'count' => $form->data['entries'],
+            'exportType' => $form->data['exportType'],
+            'fields' => $this->getFields($destination),
+            'tags' => $tags,
+            'frmData' => $frmData
+        ];
+    }
 
-        $data['exportType'] = $form->data['exportType'];
-        $data['frmData'] = $frmData;
-
-        return $data;
+    /**
+     * Get fields according to destination.
+     *
+     * @param string $destination
+     * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function getFields(string $destination): array
+    {
+        return json_decode(File::get(config('config.'.$destination.'_fields_file')), true);
     }
 
     /**
@@ -164,11 +203,10 @@ class RapidExportService extends RapidServiceBase
      */
     public function buildExport(array $fields)
     {
-        if ($fields['exportDestination'] === 'geolocate') {
-            return $this->geoLocateExportService->buildGeoLocateExport($fields);
-        }
+        $this->exportService->setDestination($fields['exportDestination']);
+        $this->exportService->setReservedColumns();
 
-        return null;
+        return $this->exportService->buildExport($fields);
     }
 
 }

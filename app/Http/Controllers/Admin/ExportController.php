@@ -50,26 +50,27 @@ class ExportController extends Controller
      */
     public function index()
     {
-        $geolocateFrms = $this->rapidExportService->getFormsByDestination('geolocate');
+        $forms = $this->rapidExportService->getFormsSelect();
 
-        return view('export.index', compact('geolocateFrms'));
+        return view('export.index', compact('forms'));
     }
 
     /**
-     * Show geolocate forms.
+     * Show export forms.
      *
+     * @param string $destination
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
-    public function geolocate()
+    public function show(string $destination = null)
     {
         if (! request()->ajax()) {
             return response()->json([t('Request must be ajax')]);
         }
 
         try {
-            $data = $this->rapidExportService->showGeoLocateFrm(request()->get('frm'));
+            $data = $this->rapidExportService->getForm($destination, request()->get('frm'));
 
-            return view('export.partials.geolocate', compact('data'));
+            return view('export.partials.export-form', compact('data', 'destination'));
         }
         catch (\Exception $e) {
             return response()->json([$e->getMessage()]);
@@ -81,7 +82,7 @@ class ExportController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function geolocateCreate()
+    public function create()
     {
         RapidExportJob::dispatch(Auth::user(), request()->all());
 

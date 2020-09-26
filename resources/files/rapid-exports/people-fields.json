@@ -1,0 +1,16 @@
+[
+  "catalogNumber",
+  "collectionCode",
+  "country",
+  "countryCode",
+  "datasetKey",
+  "dateIdentified",
+  "eventDate",
+  "family",
+  "gbifID",
+  "identifiedBy",
+  "institutionCode",
+  "occurrenceID",
+  "recordedBy",
+  "scientificName"
+]

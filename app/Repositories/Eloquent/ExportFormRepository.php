@@ -38,10 +38,9 @@ class ExportFormRepository extends EloquentRepository implements ExportForm
     /**
      * @inheritDoc
      */
-    public function getFormsByDestination(string $destination): Collection
+    public function getFormsSelect(): Collection
     {
         return $this->model->with('user')
-            ->where('destination', $destination)
             ->orderBy('created_at')
             ->get(['id', 'user_id', 'destination', 'created_at']);
     }

@@ -1,9 +1,9 @@
 <hr class="header mx-auto" style="width:500px;">
-<form action="{{ route('admin.export.geolocate.create') }}"
-      method="post" role="form" id="exportGeoLocateFrm">
+<form action="{{ route('admin.export.create', [$destination]) }}"
+      method="post" role="form" class="exportFrm">
     @csrf
     <input type="hidden" name="entries" value="{{ old('entries', $data['count']) }}">
-    <input type="hidden" name="exportDestination" value="geolocate">
+    <input type="hidden" name="exportDestination" value="{{ $destination }}">
     <div class="row">
         <div class="col-sm-10 mx-auto text-center">
             @include('partials.export-type')

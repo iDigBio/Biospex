@@ -93,11 +93,10 @@ class RapidExportDbService
     /**
      * Get forms by destination.
      *
-     * @param string $destination
      * @return \Illuminate\Support\Collection
      */
-    public function getRapidFormsByDestination(string $destination): Collection
+    public function getRapidFormsSelect(): Collection
     {
-        return $this->exportFormInterface->getFormsByDestination($destination);
+        return $this->exportFormInterface->getFormsSelect();
     }
 }

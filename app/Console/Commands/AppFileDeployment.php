@@ -86,8 +86,6 @@ class AppFileDeployment extends Command
      */
     public function handle()
     {
-        File::copy($this->resPath.'files/exports/rapid/geolocate-fields.json', $this->storagePath.'exports/rapid/geolocate-fields.json');
-
         $supFiles = File::files($this->resPath.'files/supervisord');
         collect($supFiles)->map(function ($file) {
             $string = File::get($file);

@@ -78,9 +78,8 @@ $(function () {
     });
     $(window).resize();
 
-    let $exportResults = $('#exportResults');
-    $('#geolocateSelect').on('change', function () {
-        $('#geolocate').collapse('hide');
+    $('.form-select').on('change', function () {
+        $($(this).data('target')).collapse('hide');
         $exportResults.html('<div class="mt-5 loader mx-auto"></div>');
         $.post($(this).data('url'), {frm: $(this).val()})
             .done(function (data) {
@@ -90,6 +89,7 @@ $(function () {
             });
     });
 
+    let $exportResults = $('#exportResults');
     $exportResults.on('click', '.btn-add', function () {
         let $entry = $('.default').clone();
         $entry.appendTo($('#controls')).removeClass('default')
@@ -98,14 +98,13 @@ $(function () {
 
         makeSortable($entry);
         renumber_prefix();
-
     }).on('click', '.btn-remove', function () {
         if ($('#controls').children('div.entry').length === 1) {
             return;
         }
         $('#controls div.entry:last').remove();
         renumber_prefix();
-    }).on('submit', '#exportGeoLocateFrm', function (e) {
+    }).on('submit', '.exportFrm', function (e) {
         if (checkDuplicates()) {
             $('#duplicateWarning').show();
             return false;
@@ -159,10 +158,10 @@ function renumber_prefix() {
     controls.children('div.entry').each(function (index) {
         $(this).children(":first-child")
             .attr('id', 'order' + index)
-            .attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
+            .attr('data-id', index)
+            .attr('name', 'exportFields['+index+'][order]');
 
         $(this).find('select').each(function () {
-            //$(this).attr('id', $(this).attr('id').replace(/\[[0-9]+\]/g, '[' + index + ']'));
             $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
         });
     });
