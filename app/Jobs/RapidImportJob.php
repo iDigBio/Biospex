@@ -94,7 +94,14 @@ class RapidImportJob implements ShouldQueue
             return;
 
         } catch (Exception $exception) {
-            $this->user->notify(new JobErrorNotification($exception));
+            $attributes = [
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => $exception->getTraceAsString()
+            ];
+
+            $this->user->notify(new JobErrorNotification($attributes));
         }
     }
 }
