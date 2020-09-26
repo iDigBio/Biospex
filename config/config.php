@@ -19,6 +19,7 @@ return [
     /**
      * Directories
      */
+    'reports_dir' => 'reports',
     'rapid_import_dir' => 'imports/rapid',
     'rapid_export_dir' => 'exports/rapid',
     'geolocate_fields_file' => 'exports/rapid/geolocate-fields.json',

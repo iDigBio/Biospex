@@ -76,11 +76,13 @@ class RapidExportDbService
      * Save rapid export form.
      *
      * @param array $fields
+     * @param int $userId
      * @return \App\Models\ExportForm
      */
-    public function saveRapidForm(array $fields): ExportFormModel
+    public function saveRapidForm(array $fields, int $userId): ExportFormModel
     {
         $data = [
+            'user_id' => $userId,
             'destination' => $fields['exportDestination'],
             'data'        => $fields,
         ];

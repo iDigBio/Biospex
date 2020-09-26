@@ -29,9 +29,9 @@ class JobErrorNotification extends Notification implements ShouldQueue
     use Queueable;
 
     /**
-     * @var \Exception
+     * @var array
      */
-    private $exception;
+    private $attributes;
 
     /**
      * @var string
@@ -41,11 +41,11 @@ class JobErrorNotification extends Notification implements ShouldQueue
     /**
      * JobErrorNotification constructor.
      *
-     * @param \Exception $exception
+     * @param array $attributes
      */
-    public function __construct(\Exception $exception)
+    public function __construct(array $attributes)
     {
-        $this->exception = $exception;
+        $this->attributes = $attributes;
         $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.default_tube'));
     }
@@ -68,16 +68,9 @@ class JobErrorNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $attributes = [
-            'message' => $this->exception->getMessage(),
-            'file' => $this->exception->getFile(),
-            'line' => $this->exception->getLine(),
-            'trace' => $this->exception->getTraceAsString()
-        ];
-
         return (new MailMessage)
             ->bcc($this->adminEmail)
-            ->markdown('mail.job-error-notification', $attributes);
+            ->markdown('mail.job-error-notification', $this->attributes);
     }
 
     /**

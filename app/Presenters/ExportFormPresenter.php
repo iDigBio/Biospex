@@ -23,11 +23,11 @@ namespace App\Presenters;
 class ExportFormPresenter extends Presenter
 {
     /**
-     * Set form name.
+     * Set form name with user.
      *
      * @return string
      */
-    public function formName()
+    public function formNameUser()
     {
         $user = explode('@', $this->model->user->email);
 
@@ -36,6 +36,23 @@ class ExportFormPresenter extends Presenter
             $this->model->id,
             $this->model->created_at->format('Y-m-d'),
             $user[0]
+        ];
+
+        return implode('_', $formName);
+    }
+
+    /**
+     * Set form name without user.
+     *
+     * @see \App\Jobs\RapidExportJob
+     * @return string
+     */
+    public function formName()
+    {
+        $formName = [
+            strtoupper($this->model->destination),
+            $this->model->id,
+            $this->model->created_at->format('Y-m-d'),
         ];
 
         return implode('_', $formName);

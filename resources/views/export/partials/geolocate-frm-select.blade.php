@@ -8,6 +8,6 @@
         data-style="btn-primary">
     <option value="" class="text-uppercase">{{ t('New') }}</option>
     @foreach($geolocateFrms as $frm)
-        <option value="{{ $frm->id }}">{{ $frm->present()->form_name }}</option>
+        <option value="{{ $frm->id }}">{{ $frm->present()->form_name_user }}</option>
     @endforeach
 </select>

@@ -89,14 +89,15 @@ class RapidExportService extends RapidServiceBase
     }
 
     /**
-     * Safe the export form data.
+     * Save the export form data.
      *
      * @param array $fields
+     * @param int $userId
      * @return \App\Models\ExportForm
      */
-    public function saveForm(array $fields): ExportForm
+    public function saveForm(array $fields, int $userId): ExportForm
     {
-        return $this->rapidExportDbService->saveRapidForm($fields);
+        return $this->rapidExportDbService->saveRapidForm($fields, $userId);
     }
 
     /**

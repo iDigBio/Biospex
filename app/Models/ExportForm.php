@@ -34,7 +34,7 @@ class ExportForm extends BaseEloquentModel
     /**
      * @inheritDoc
      */
-    protected $fillable = ['destination', 'data'];
+    protected $fillable = ['uesr_id', 'destination', 'data'];
 
     /**
      * @var string

@@ -74,9 +74,10 @@ class RapidExportJob implements ShouldQueue
         try {
             $fields = $rapidExportService->mapOrderFields($this->data);
 
-            $form = $rapidExportService->saveForm($fields);
+            $form = $rapidExportService->saveForm($fields, $this->user->id);
 
-            $fields['frmName'] = $form->present()->form_name;
+            $user = explode('@', $this->user->email);
+            $fields['frmName'] = $form->present()->form_name . '_' . $user[0];
 
             $downloadUrl = $rapidExportService->buildExport($fields);
 
@@ -85,7 +86,14 @@ class RapidExportJob implements ShouldQueue
             return;
 
         } catch (Exception $exception) {
-            $this->user->notify(new JobErrorNotification($exception));
+            $attributes = [
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => $exception->getTraceAsString()
+            ];
+
+            $this->user->notify(new JobErrorNotification($attributes));
         }
     }
 }
