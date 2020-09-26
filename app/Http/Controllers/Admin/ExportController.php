@@ -66,9 +66,14 @@ class ExportController extends Controller
             return response()->json([t('Request must be ajax')]);
         }
 
-        $data = $this->rapidExportService->showGeoLocateFrm(request()->get('frm'));
+        try {
+            $data = $this->rapidExportService->showGeoLocateFrm(request()->get('frm'));
 
-        return view('export.partials.geolocate', compact('data'));
+            return view('export.partials.geolocate', compact('data'));
+        }
+        catch (\Exception $e) {
+            return response()->json([$e->getMessage()]);
+        }
     }
 
     /**

@@ -115,7 +115,7 @@ class RapidExportService extends RapidServiceBase
      *
      * @param int|null $id
      * @return array
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \Exception
      */
     public function showGeoLocateFrm(int $id = null)
     {
@@ -143,6 +143,11 @@ class RapidExportService extends RapidServiceBase
             $frmData[$i] = $form->data['exportFields'][$i];
             $frmData[$i]['order'] = collect($frmData[$i]['order'])->flip()->merge($tags)->toArray();
         }
+
+        if (!isset($form->data['exportType'])) {
+            throw new \Exception(t('Form export type does not exist.'));
+        }
+
         $data['exportType'] = $form->data['exportType'];
         $data['frmData'] = $frmData;
 
