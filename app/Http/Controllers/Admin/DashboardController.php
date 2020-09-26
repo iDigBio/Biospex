@@ -24,14 +24,6 @@ use JavaScript;
 
 class DashboardController extends Controller
 {
-
-    /**
-     * DashboardController constructor.
-     */
-    public function __construct() {
-
-    }
-
     /**
      * Show projects list for admin page.
      *
