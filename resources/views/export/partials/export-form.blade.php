@@ -4,6 +4,25 @@
     @csrf
     <input type="hidden" name="entries" value="{{ old('entries', $data['count']) }}">
     <input type="hidden" name="exportDestination" value="{{ $destination }}">
+    @isset($data['frmName'])
+        <div class="row">
+            <div class="col-sm-10 mx-auto text-center">
+                <button type="button" id="downloadExport" class="btn btn-primary pl-4 pr-4"
+                        data-hover="tooltip"
+                        data-url="{{ route('admin.download.export', ['file' => $data['frmName']]) }}"
+                        title="{{ t('Download the Export File') }}">{{ t('Download Export') }}</button>
+                <button type="button" id="deleteExport" class="btn btn-primary pl-4 pr-4"
+                        data-href=" {{ route('admin.export.delete', ['id' => $data['frmId']]) }}"
+                        data-hover="tooltip"
+                        data-method="delete"
+                        data-confirm="confirmation"
+                        title="{{ t('Delete Export File and Data') }}"
+                        data-title="{{ t('Delete Export File') }}?"
+                        data-content="{{t('This will permanently delete the export file and data.') }}">
+                    {{ t('Delete Export') }}</button>
+            </div>
+        </div>
+    @endisset
     <div class="row">
         <div class="col-sm-10 mx-auto text-center">
             @include('partials.export-type')
@@ -16,11 +35,11 @@
     <div class="row">
         <div id="controls" class="col-sm-12">
             @for($i=0; $i < $data['count']; $i++)
-            <div class="row entry mt-2">
-                <input type="hidden" class="hidden" id="order{{ $i }}" name="exportFields[{{$i}}][order]" value="">
-                @include('export.partials.export-field-select')
-                @include('partials.tags-select-fields')
-            </div>
+                <div class="row entry mt-2">
+                    <input type="hidden" class="hidden" id="order{{ $i }}" name="exportFields[{{$i}}][order]" value="">
+                    @include('export.partials.export-field-select')
+                    @include('partials.tags-select-fields')
+                </div>
             @endfor
         </div>
     </div>
@@ -39,9 +58,9 @@
                 class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto">{{ t('Submit') }}</button>
     </div>
     <div class="row">
-            <div id="duplicateWarning" class="col-sm-10 mx-auto text-center text-danger collapse">
-                {{ t('Field select dropdowns cannot contain duplicate values.') }}
-            </div>
+        <div id="duplicateWarning" class="col-sm-10 mx-auto text-center text-danger collapse">
+            {{ t('Field select dropdowns cannot contain duplicate values.') }}
+        </div>
     </div>
 </form>
 <div class="row default mt-2" style="display: none">

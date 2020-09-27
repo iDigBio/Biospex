@@ -62,8 +62,18 @@ return [
         '_id', 'updated_at', 'created_at'
     ],
 
+    /**
+     * Columns reserved for _id field.
+     */
     'reserved_columns' => [
         'geolocate' => ['CatalogNumber' => '_id'],
         'people' => ['BIOSPEXid' => '_id']
+    ],
+
+    /**
+     * Export types and extensions.
+     */
+    'export_extensions' => [
+        'csv' => '.csv'
     ]
 ];

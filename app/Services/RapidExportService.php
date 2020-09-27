@@ -20,7 +20,10 @@
 namespace App\Services;
 
 use App\Models\ExportForm;
+use App\Models\User;
+use Flash;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class RapidExportService
@@ -40,6 +43,11 @@ class RapidExportService extends RapidServiceBase
     private $exportService;
 
     /**
+     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    private $exportExtensions;
+
+    /**
      * RapidExportService constructor.
      *
      * @param \App\Services\RapidExportDbService $rapidExportDbService
@@ -52,6 +60,7 @@ class RapidExportService extends RapidServiceBase
     {
         $this->rapidExportDbService = $rapidExportDbService;
         $this->exportService = $exportService;
+        $this->exportExtensions = config('config.export_extensions');
     }
 
     /**
@@ -94,6 +103,17 @@ class RapidExportService extends RapidServiceBase
     }
 
     /**
+     * Find rapid form by id.
+     *
+     * @param int $id
+     * @return \App\Models\ExportForm
+     */
+    public function findFormById(int $id)
+    {
+        return $this->rapidExportDbService->findRapidFormById($id);
+    }
+
+    /**
      * Save the export form data.
      *
      * @param array $fields
@@ -103,6 +123,20 @@ class RapidExportService extends RapidServiceBase
     public function saveForm(array $fields, int $userId): ExportForm
     {
         return $this->rapidExportDbService->saveRapidForm($fields, $userId);
+    }
+
+    /**
+     * Create form name using user and form data.
+     *
+     * @param \App\Models\ExportForm $form
+     * @param \App\Models\User $user
+     * @param array $fields
+     */
+    public function createFileName(ExportForm $form, User $user, array &$fields)
+    {
+        $user = explode('@', $user->email);
+        $form->file = $fields['frmFile'] = $form->present()->form_name . '_' . $user[0] . $this->exportExtensions[$fields['exportType']];
+        $form->save();
     }
 
     /**
@@ -178,7 +212,9 @@ class RapidExportService extends RapidServiceBase
             'exportType' => $form->data['exportType'],
             'fields' => $this->getFields($destination),
             'tags' => $tags,
-            'frmData' => $frmData
+            'frmData' => $frmData,
+            'frmName' => base64_encode($form->file),
+            'frmId' => $form->id
         ];
     }
 
@@ -207,6 +243,47 @@ class RapidExportService extends RapidServiceBase
         $this->exportService->setReservedColumns();
 
         return $this->exportService->buildExport($fields);
+    }
+
+    /**
+     * Delete export.
+     *
+     * @param \App\Models\ExportForm $form
+     * @param int $userId
+     */
+    public function deleteExport(ExportForm $form, int $userId)
+    {
+        try {
+            if ($form === null) {
+                Flash::warning(t('The export you would like to delete does not exist.'));
+
+                return;
+            }
+
+            if ($form->user_id !== $userId) {
+                Flash::warning(t('You do not have sufficient permissions.'));
+
+                return;
+            }
+
+            if(! Storage::exists(config('config.rapid_export_dir') . '/' . $form->file)) {
+                Flash::warning( t('RAPID export file does not exist.'));
+
+                return;
+            }
+
+            Storage::delete(config('config.rapid_export_dir') . '/' . $form->file);
+            $form->delete();
+
+            Flash::success( t('RAPID export file and data has been deleted.'));
+
+            return;
+        }
+        catch(\Exception $exception) {
+            Flash::warning( $exception->getMessage());
+
+            return;
+        }
     }
 
 }

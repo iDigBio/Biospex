@@ -95,7 +95,7 @@ class ExportService
                 throw new Exception(t('Csv data returned empty while exporting for GEOLocate'));
             }
 
-            return $this->buildCsvFile($csvData, $fields['frmName']);
+            return $this->buildCsvFile($csvData, $fields['frmFile']);
         }
 
         return null;
@@ -176,22 +176,21 @@ class ExportService
      * Build csv file and return it.
      *
      * @param array $csvData
-     * @param string $frmName
+     * @param string $frmFile
      * @return string
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function buildCsvFile(array $csvData, string $frmName): string
+    public function buildCsvFile(array $csvData, string $frmFile): string
     {
         $header = array_keys($csvData[0]);
 
-        $fileName = $frmName . '.csv';
-        $file = Storage::path(config('config.rapid_export_dir').'/'.$fileName);
+        $file = Storage::path(config('config.rapid_export_dir').'/'.$frmFile);
         $this->csvService->writerCreateFromPath($file);
         $this->csvService->writer->addFormatter($this->csvService->setEncoding());
 
         $this->csvService->insertOne($header);
         $this->csvService->insertAll($csvData);
 
-        return route('admin.download.export', ['fileName' => $fileName]);
+        return route('admin.download.export', ['file' => base64_encode($frmFile)]);
     }
 }

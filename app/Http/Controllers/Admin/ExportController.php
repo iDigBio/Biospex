@@ -24,6 +24,7 @@ use App\Jobs\RapidExportJob;
 use App\Services\RapidExportService;
 use Flash;
 use Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ExportController extends Controller
 {
@@ -89,5 +90,20 @@ class ExportController extends Controller
         Flash::success(t('The export is processing. You will be notified by email when completed.'));
 
         return redirect()->route('admin.get.index');
+    }
+
+    /**
+     * Delete export.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete(int $id)
+    {
+        $form = $this->rapidExportService->findFormById($id);
+
+        $this->rapidExportService->deleteExport($form, Auth::id());
+
+        return redirect()->route('admin.export.index');
     }
 }

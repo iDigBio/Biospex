@@ -19,10 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\RapidImportJob;
-use App\Models\User;
-use App\Repositories\Interfaces\ExportForm;
-use App\Services\RapidExportService;
+use App\Models\ExportForm;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -38,22 +35,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\Interfaces\ExportForm
-     */
-    private $exportForm;
-
-    /**
-     * @var \App\Services\RapidExportService
-     */
-    private $service;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(RapidExportService $service)
+    public function __construct()
     {
         parent::__construct();
-        $this->service = $service;
     }
 
     /**
@@ -61,9 +47,12 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $reserved = config('config.reserved_columns');
-        $test = $reserved['people'];
-        dd($test);
+        $forms = ExportForm::all();
+        $forms->each(function ($form){
+            $form->file = $form->present()->form_name_user.'.csv';
+            $form->save();
+        });
+
     }
 
 }

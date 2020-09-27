@@ -69,7 +69,7 @@ class RapidExportDbService
      */
     public function findRapidFormById(int $id): ExportFormModel
     {
-        return $this->exportFormInterface->find($id);
+        return $this->exportFormInterface->findWith($id, ['user']);
     }
 
     /**

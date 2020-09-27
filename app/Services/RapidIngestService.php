@@ -235,7 +235,7 @@ class RapidIngestService extends RapidServiceBase
         $this->csvService->insertAll($errors->toArray());
 
 
-        return route('admin.download.report', ['fileName' => $fileName]);
+        return route('admin.download.report', ['fileName' => base64_encode($fileName)]);
     }
 
     /**

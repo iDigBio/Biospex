@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Models\ExportForm;
 use App\Models\User;
 use App\Notifications\ExportNotification;
 use App\Notifications\JobErrorNotification;
@@ -75,8 +76,7 @@ class RapidExportJob implements ShouldQueue
             $fields = $rapidExportService->mapOrderFields($this->data);
 
             $form = $rapidExportService->saveForm($fields, $this->user->id);
-
-            $fields['frmName'] = $this->createName($form);
+            $rapidExportService->createFileName($form, $this->user, $fields);
 
             $downloadUrl = $rapidExportService->buildExport($fields);
 
@@ -94,18 +94,5 @@ class RapidExportJob implements ShouldQueue
 
             $this->user->notify(new JobErrorNotification($attributes));
         }
-    }
-
-    /**
-     * Create form name using user and form data.
-     *
-     * @param $form
-     * @return string
-     */
-    private function createName($form)
-    {
-        $user = explode('@', $this->user->email);
-
-        return $form->present()->form_name . '_' . $user[0];
     }
 }

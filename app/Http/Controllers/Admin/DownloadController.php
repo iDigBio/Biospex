@@ -28,50 +28,60 @@ use League\Csv\Reader;
 class DownloadController extends Controller
 {
     /**
-     * Download report csv.
+     * Download report.
      *
-     * @param $fileName
-     * @return \Illuminate\Http\RedirectResponse
+     * @param string $file
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function report($fileName)
+    public function report(string $file)
     {
+        $fileName = base64_decode($file);
+
         if(! Storage::exists(config('config.reports_dir') . '/' . $fileName)) {
             Flash::warning( t('Report file does not exist.'));
             return redirect()->route('admin.ingest.index');
         }
 
-        header('Content-Type: text/csv; charset=UTF-8');
-        header('Content-Description: File Transfer');
-        header('Content-Disposition: attachment; filename="'.$fileName.'"');
-
         $filePath = Storage::path(config('config.reports_dir') . '/' . $fileName);
         $reader = Reader::createFromPath($filePath, 'r');
         $reader->setOutputBOM(Reader::BOM_UTF8);
 
-        die;
+        $headers = [
+            'Content-Encoding' => 'none',
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Description' => 'File Transfer',
+            'Content-Disposition' => 'attachment; filename="'.$fileName.'"'
+        ];
+
+        return response($reader->getContent(), 200, $headers);
     }
 
     /**
-     * Download export csv.
+     * Download export file.
      *
-     * @param $fileName
-     * @return \Illuminate\Http\RedirectResponse
+     * @param string $file
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function export($fileName)
+    public function export(string $file)
     {
+        $fileName = base64_decode($file);
+
         if(! Storage::exists(config('config.rapid_export_dir') . '/' . $fileName)) {
             Flash::warning( t('RAPID export file does not exist.'));
             return redirect()->route('admin.export.index');
         }
 
-        header('Content-Type: text/csv; charset=UTF-8');
-        header('Content-Description: File Transfer');
-        header('Content-Disposition: attachment; filename="'.$fileName.'"');
-
         $filePath = Storage::path(config('config.rapid_export_dir') . '/' . $fileName);
         $reader = Reader::createFromPath($filePath, 'r');
         $reader->setOutputBOM(Reader::BOM_UTF8);
-        $reader->output();
-        die;
+
+        $headers = [
+            'Content-Encoding' => 'none',
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Description' => 'File Transfer',
+            'Content-Disposition' => 'attachment; filename="'.$fileName.'"'
+        ];
+
+        return response($reader->getContent(), 200, $headers);
     }
 }

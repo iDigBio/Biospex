@@ -31,37 +31,6 @@ $(function () {
         notify(Laravel.flashIcon, Laravel.flashMessage, Laravel.flashType);
     }
 
-    $('[data-confirm=confirmation]').on('click', function () {
-        let url = $(this).is("[data-href]") ? $(this).data("href") : $(this).attr('href');
-        let method = $(this).data('method');
-        bootbox.confirm({
-            title: $(this).data('title'),
-            message: $(this).data('content'),
-            buttons: {
-                cancel: {
-                    label: '<i class="fas fa-times-circle"></i> Cancel',
-                    className: 'btn btn-primary'
-                },
-                confirm: {
-                    label: '<i class="fas fa-check-circle"></i> Confirm',
-                    className: 'btn btn-primary'
-                }
-            },
-            callback: function (result) {
-                if (result) {
-                    $(this).append(function () {
-                        let methodForm = "\n";
-                        methodForm += "<form action='" + url + "' method='POST' style='display:none'>\n";
-                        methodForm += "<input type='hidden' name='_method' value='" + method + "'>\n";
-                        methodForm += "<input type='hidden' name='_token' value='" + $('meta[name=csrf-token]').attr('content') + "'>\n";
-                        methodForm += "</form>\n";
-                        return methodForm;
-                    }).find('form').submit();
-                }
-            }
-        });
-    });
-
     $(window).resize(function () {
         let $footer = $('#footer');
         let docHeight = $(window).height();
@@ -110,15 +79,46 @@ $(function () {
             return false;
         }
 
-        $('div.entry').each(function (){
+        $('div.entry').each(function () {
             let idsInOrder = $(this).sortable('toArray', {
                 attribute: 'data-id'
             });
             let $order = $(this).children(":first-child");
             $order.val(idsInOrder);
         });
-    }).on('change', 'select.export-field', function (){
+    }).on('change', 'select.export-field', function () {
         $('#duplicateWarning').hide();
+    }).on('click', '#downloadExport', function () {
+        window.open($(this).data('url'));
+    }).on('click', '[data-confirm=confirmation]', function () {
+        let url = $(this).is("[data-href]") ? $(this).data("href") : $(this).attr('href');
+        let method = $(this).data('method');
+        bootbox.confirm({
+            title: $(this).data('title'),
+            message: $(this).data('content'),
+            buttons: {
+                cancel: {
+                    label: '<i class="fas fa-times-circle"></i> Cancel',
+                    className: 'btn btn-primary'
+                },
+                confirm: {
+                    label: '<i class="fas fa-check-circle"></i> Confirm',
+                    className: 'btn btn-primary'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    $(this).append(function () {
+                        let methodForm = "\n";
+                        methodForm += "<form action='" + url + "' method='POST' style='display:none'>\n";
+                        methodForm += "<input type='hidden' name='_method' value='" + method + "'>\n";
+                        methodForm += "<input type='hidden' name='_token' value='" + $('meta[name=csrf-token]').attr('content') + "'>\n";
+                        methodForm += "</form>\n";
+                        return methodForm;
+                    }).find('form').submit();
+                }
+            }
+        });
     });
 });
 
@@ -159,7 +159,7 @@ function renumber_prefix() {
         $(this).children(":first-child")
             .attr('id', 'order' + index)
             .attr('data-id', index)
-            .attr('name', 'exportFields['+index+'][order]');
+            .attr('name', 'exportFields[' + index + '][order]');
 
         $(this).find('select').each(function () {
             $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
@@ -172,7 +172,7 @@ function renumber_prefix() {
 function checkDuplicates() {
     let dup = false;
     let fieldOptions = [];
-    $('select.export-field').each(function (){
+    $('select.export-field').each(function () {
         if ($.inArray($(this).val(), fieldOptions) > -1) {
             dup = true;
         }
