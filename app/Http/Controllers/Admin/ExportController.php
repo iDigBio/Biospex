@@ -56,9 +56,9 @@ class ExportController extends Controller
     }
 
     /**
-     * Show export forms.
+     * Show exports forms.
      *
-     * @param string $destination
+     * @param string|null $destination
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
     public function show(string $destination = null)
