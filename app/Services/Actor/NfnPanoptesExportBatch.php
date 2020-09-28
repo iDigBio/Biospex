@@ -19,19 +19,14 @@
 
 namespace App\Services\Actor;
 
-use App\Models\Download;
 use App\Notifications\NfnBatchExportComplete;
+use App\Repositories\Interfaces\Download;
 use App\Services\Csv\Csv;
-use App\Services\Model\DownloadService;
 use Exception;
 use File;
 
 class NfnPanoptesExportBatch extends NfnPanoptesBase
 {
-    /**
-     * @var \App\Services\Model\DownloadService
-     */
-    private $downloadService;
 
     /**
      * @var \App\Services\Csv\Csv
@@ -44,29 +39,34 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
     private $fileNames = [];
 
     /**
+     * @var \App\Repositories\Interfaces\Download
+     */
+    private $downloadContract;
+
+    /**
      * DownloadBatchService constructor.
      *
-     * @param \App\Services\Model\DownloadService $downloadService
+     * @param \App\Repositories\Interfaces\Download $downloadContract
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
-        DownloadService $downloadService,
+        Download $downloadContract,
         Csv $csv
     )
     {
-        $this->downloadService = $downloadService;
+        $this->downloadContract = $downloadContract;
         $this->csv = $csv;
     }
 
     /**
-     * Get download.
+     * Get Download.
      *
      * @param string $downloadId
      * @return \App\Models\Download
      */
-    public function getDownload(string $downloadId): Download
+    public function getDownload(string $downloadId): \App\Models\Download
     {
-        return $this->downloadService->getDownload($downloadId);
+        return $this->downloadContract->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
     }
 
     /**
@@ -75,7 +75,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
      * @param \App\Models\Download $download
      * @throws \Exception
      */
-    public function process(Download $download)
+    public function process(\App\Models\Download $download)
     {
         $this->setProperties($download);
         $this->extractFile();
@@ -87,8 +87,6 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
         $links = $this->buildLinks();
 
         $this->owner->notify(new NfnBatchExportComplete($this->expedition->title, $links));
-
-        return;
     }
 
     /**
@@ -97,7 +95,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
      * @param \App\Models\Download $download
      * @throws \Exception
      */
-    private function setProperties(Download $download)
+    private function setProperties(\App\Models\Download $download)
     {
         $this->setExpedition($download->expedition);
         $this->setActor($download->actor);
@@ -219,10 +217,10 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
     {
         $links = [];
         foreach ($this->fileNames as $fileName) {
-            $url = route('admin.downloads.batchDownload', [
+            $url = route('admin.downloads.downloadTarBatch', [
                 'projects' => $this->expedition->project_id,
                 'expeditions' => $this->expedition->id,
-                'files' => $fileName
+                'files' => base64_encode($fileName)
             ]);
 
             $links[] = '<a href="'.$url.'">' . $fileName . '</a>';

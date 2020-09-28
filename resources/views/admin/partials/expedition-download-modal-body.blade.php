@@ -52,7 +52,7 @@
                                             @endif
                                         @endcan
                                     @else
-                                        <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                        <a href="{{ route('admin.downloads.downloadTar', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                            data-hover="tooltip"
                                            title="{{ t('Download') }} {{ $download->type }} {{ t('archive') }}">
                                             <i class="fas fa-file-archive fa-2x"></i></a>

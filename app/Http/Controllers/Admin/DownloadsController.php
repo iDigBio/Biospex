@@ -20,28 +20,45 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Jobs\ExportDownloadBatchJob;
-use App\Services\Model\DownloadService;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\User;
+use App\Services\Download\DownloadService;
 use Exception;
 use Flash;
 use App\Http\Controllers\Controller;
-use GeneralHelper;
 use Illuminate\Support\Facades\Storage;
-use League\Csv\Reader;
 
 class DownloadsController extends Controller
 {
     /**
-     * @var \App\Services\Model\DownloadService
+     * @var \App\Repositories\Interfaces\User
+     */
+    private $userContract;
+
+    /**
+     * @var \App\Repositories\Interfaces\Expedition
+     */
+    private $expeditionContract;
+
+    /**
+     * @var \App\Services\Download\DownloadService
      */
     private $downloadService;
 
     /**
      * DownloadsController constructor.
      *
-     * @param \App\Services\Model\DownloadService $downloadService
+     * @param \App\Repositories\Interfaces\User $userContract
+     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Download\DownloadService $downloadService
      */
-    public function __construct(DownloadService $downloadService)
+    public function __construct(
+        User $userContract,
+        Expedition $expeditionContract,
+        DownloadService $downloadService)
     {
+        $this->userContract = $userContract;
+        $this->expeditionContract = $expeditionContract;
         $this->downloadService = $downloadService;
     }
 
@@ -54,8 +71,8 @@ class DownloadsController extends Controller
      */
     public function index(string $projectId, string $expeditionId)
     {
-        $user = $this->downloadService->getUserProfile(request()->user()->id);
-        $expedition = $this->downloadService->getExpeditionByActor($projectId, $expeditionId);
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $expedition = $this->expeditionContract->expeditionDownloadsByActor($projectId, $expeditionId);
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group);
 
@@ -63,13 +80,32 @@ class DownloadsController extends Controller
     }
 
     /**
-     * Show downloads.
+     * Download report.
+     *
+     * @param string $fileName
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     */
+    public function report(string $fileName)
+    {
+        try {
+            [$reader, $headers] = $this->downloadService->createReportDownload($fileName);
+
+            return response($reader->getContent(), 200, $headers);
+
+        } catch (Exception $e) {
+            Flash::error($e->getMessage());
+
+            return redirect()->route('admin.projects.index');
+        }
+    }
+
+    /**
+     * Create downloads for csv and html.
      *
      * @param string $projectId
      * @param string $expeditionId
      * @param string $downloadId
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
-     * @throws \Throwable
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function download(string $projectId, string $expeditionId, string $downloadId)
     {
@@ -78,37 +114,82 @@ class DownloadsController extends Controller
             $download = $this->downloadService->getDownload($downloadId);
 
             if (! $download) {
-                Flash::error(t("The file appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."));
+                Flash::error(t("The file record appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."));
 
                 return redirect()->back();
             }
 
-            if ($download->type !== 'export' && ! $this->checkPermissions('isOwner', $download->expedition->project->group)) {
-                return redirect()->back();
+            if ($download->type === 'summary') {
+
+                [$filePath, $headers] = $this->downloadService->createHtmlDownload($download);
+
+                return response()->download($filePath, null, $headers);
             }
 
-            $this->downloadService->updateDownloadCount($download);
+            [$reader, $headers] = $this->downloadService->createCsvDownload($download);
 
-            if (! empty($download->data)) {
-                [$view, $headers] = $this->downloadService->createDataView($download);
-
-                return response()->make(stripslashes($view), 200, $headers);
-            }
-
-            if (! GeneralHelper::downloadFileExists($download->type, $download->file)) {
-                Flash::error(t("The file appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."));
-
-                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-            }
-
-            [$headers, $file] = $this->downloadService->createDownloadFile($download);
-
-            return response()->download($file, $download->present()->file_type.'-'.$download->file, $headers);
+            return response($reader->getContent(), 200, $headers);
 
         } catch (Exception $e) {
             Flash::error($e->getMessage());
 
             return redirect()->back();
+        }
+    }
+
+    /**
+     * Create download for tar files.
+     *
+     * @param string $projectId
+     * @param string $expeditionId
+     * @param string $downloadId
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function downloadTar(string $projectId, string $expeditionId, string $downloadId)
+    {
+        try {
+            $download = $this->downloadService->getDownload($downloadId);
+
+            if ($this->checkPermissions('isOwner', $download->expedition->project->group)) {
+               return redirect()->back();
+            }
+
+            [$filePath, $headers] = $this->downloadService->createTarDownload($download);
+
+            return response()->download($filePath, null, $headers);
+        } catch (Exception $e) {
+            Flash::error($e->getMessage());
+
+            return redirect()->back();
+        }
+    }
+
+    /**
+     * Download batch export file.
+     *
+     * @param string $projectId
+     * @param string $expeditionId
+     * @param string $fileName
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function downloadTarBatch(string $projectId, string $expeditionId, string $fileName)
+    {
+        try {
+            $file = base64_decode($fileName) . '.tar.gz';
+            $expedition = $this->expeditionContract->findwith($expeditionId, ['project.group']);
+
+            if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
+                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            }
+
+            [$headers, $filePath] = $this->downloadService->createBatchTarDownload($file);
+
+            return response()->download($filePath, $file, $headers);
+
+        } catch (Exception $e) {
+            Flash::error($e->getMessage());
+
+            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
     }
 
@@ -122,7 +203,9 @@ class DownloadsController extends Controller
     public function regenerate(string $projectId, string $expeditionId)
     {
         try {
-            $this->downloadService->resetExpeditionData($expeditionId);
+            $expedition = $this->expeditionContract->findwith($expeditionId, ['nfnActor', 'stat']);
+
+            $this->downloadService->resetExpeditionData($expedition);
 
             Flash::success(t('Download regeneration has started. You will be notified when completed.'));
         } catch (Exception $e) {
@@ -142,7 +225,7 @@ class DownloadsController extends Controller
      */
     public function summary(string $projectId, string $expeditionId)
     {
-        $expedition = $this->downloadService->getExpeditionById($expeditionId, ['project.group']);
+        $expedition = $this->expeditionContract->findwith($expeditionId, ['project.group']);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
@@ -154,36 +237,6 @@ class DownloadsController extends Controller
         }
 
         return Storage::get(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html');
-    }
-
-    /**
-     * Download report.
-     *
-     * @param string $fileName
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
-    public function report(string $fileName)
-    {
-        try {
-
-            $filePath = Storage::path(config('config.reports_dir') . '/' . $fileName);
-            $reader = Reader::createFromPath($filePath, 'r');
-            $reader->setOutputBOM(Reader::BOM_UTF8);
-
-            $headers = [
-                'Content-Encoding' => 'UTF-8',
-                'Content-Type' => 'text/csv; charset=UTF-8',
-                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
-                'Content-Description' => 'File Transfer',
-            ];
-
-            return response()->download($reader->output($fileName), $fileName, $headers);
-
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
-
-            return redirect()->route('admin.projects.index');
-        }
     }
 
     /**
@@ -201,41 +254,5 @@ class DownloadsController extends Controller
         Flash::success(t('Your batch request has been submitted. You will receive an email with download links when the process is complete.'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-    }
-
-    /**
-     * Download batch export file.
-     *
-     * @param string $projectId
-     * @param string $expeditionId
-     * @param string $fileName
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
-    public function batchDownload(string $projectId, string $expeditionId, string $fileName)
-    {
-        $file = $fileName . '.tar.gz';
-
-        try {
-            $expedition = $this->downloadService->getExpeditionById($expeditionId, ['project.group']);
-
-            if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
-                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-            }
-
-            if (! GeneralHelper::downloadFileExists('export', $file)) {
-                Flash::error(t("The file appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."));
-
-                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-            }
-
-            [$headers, $filePath] = $this->downloadService->createBatchDownloadFile($file);
-
-            return response()->download($filePath, $file, $headers);
-
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
-
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-        }
     }
 }
