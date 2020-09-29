@@ -24,7 +24,6 @@ use App\Jobs\RapidExportJob;
 use App\Services\RapidExportService;
 use Flash;
 use Auth;
-use Illuminate\Support\Facades\Storage;
 
 class ExportController extends Controller
 {

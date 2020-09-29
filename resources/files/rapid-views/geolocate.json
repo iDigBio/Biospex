@@ -1,0 +1,23 @@
+[
+  "locationRemarks_gbifP",
+  "recordedBy_gbifP",
+  "recordNumber_gbifP",
+  "fieldNumber_gbifP",
+  "georeferencedBy_gbifP",
+  "georeferencedDate_gbifP",
+  "georeferenceVerificationStatus_gbifP",
+  "georeferenceRemarks_gbifP",
+  "georeferenceProtocol_gbifP",
+  "georeferenceSources_gbifP",
+  "habitat_gbifP",
+  "dataGeneralizations_gbifP",
+  "hasGeospatialIssues_gbifP",
+  "issue_gbifP",
+  "idigbio_flags_idbP",
+  "verbatimCoordinates_gbifR",
+  "verbatimCoordinateSystem_gbifP",
+  "verbatimElevation_gbifP",
+  "verbatimLatitude_gbifR",
+  "verbatimLongitude_gbifR",
+  "verbatimLocality"
+]

@@ -21,7 +21,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\RapidRecord;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Yajra\DataTables\Facades\DataTables;
 
 class IndexController extends Controller
@@ -43,42 +45,68 @@ class IndexController extends Controller
      *
      * @param \App\Repositories\Interfaces\RapidRecord $rapidRecord
      * @param string $id
+     * @param string|null $view
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(RapidRecord $rapidRecord, string $id)
+    public function show(RapidRecord $rapidRecord, string $id, string $view = null)
     {
         $record = $rapidRecord->find($id);
 
-        return view('show', compact('record'));
+        $routeVars = isset($view) ? ['id' => $id, 'view' => $view] : ['id' => $id];
+
+        return view('show', compact('record', 'routeVars', 'view'));
     }
 
     /**
-     *
      * @param \App\Repositories\Interfaces\RapidRecord $rapidRecordInterface
      * @param string $id
      * @param string|null $view
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     *
+     * "idigbio_flags_gbifP", // not available
+     * "verbatimCoordinates_gbifP", // not available
+     * "verbatimLatitude_gbifP", // not available
+     * "verbatimLongitude_gbifP", // not available
+     *
      */
     public function data(RapidRecord $rapidRecordInterface, string $id, string $view = null)
     {
+        response()->json(['error' => t('Request must be ajax')]);
+        /*
         if (! request()->ajax()) {
             return response()->json(['error' => t('Request must be ajax')]);
         }
+        */
 
         $record = $rapidRecordInterface->find($id);
 
-        $mapped = collect($record->getAttributes())->map(function($value, $field){
+        $mapped = collect($record->getAttributes())->map(function ($value, $field) {
             if ($field === '_id') {
-                return [$field, (string)$value];
+                return [$field, (string) $value];
             }
 
-            if ($field === 'updated_at' || $field === 'created_at'){
+            if ($field === 'updated_at' || $field === 'created_at') {
                 return [$field, $value->toDateTime()->format('Y-m-d')];
             }
 
             return [$field, $value];
-        })->values();
+        });
 
-        return DataTables::collection($mapped)->toJson();
+        if (!isset($view)) {
+            return DataTables::collection($mapped->values())->toJson();
+        }
+
+        $order = json_decode(File::get(config('config.'.$view.'_view_file')), true);
+
+        $transformed = collect($order)->filter(function($item) use($mapped) {
+            return isset($mapped[$item]);
+        })->mapWithKeys(function($item) use ($mapped){
+            return [$item => $mapped[$item]];
+        });
+
+        $merged = $transformed->merge($mapped);
+
+        return DataTables::collection($merged->values())->toJson();
     }
 }
