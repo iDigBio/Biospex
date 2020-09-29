@@ -113,7 +113,8 @@ class IngestController extends Controller
             $fileName = Session::get('fileName');
             $fileOrigName = Session::get('fileOrigName');
 
-            $rapidIngestService->loadCsvFile(Storage::path($filePath));
+            $csvFilePath = $rapidIngestService->unzipFile($filePath);
+            $rapidIngestService->loadCsvFile($csvFilePath);
             $headers = $rapidIngestService->setHeader();
 
             $tags = $rapidIngestService->mapColumns($headers);
