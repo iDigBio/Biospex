@@ -72,12 +72,9 @@ class IndexController extends Controller
      */
     public function data(RapidRecord $rapidRecordInterface, string $id, string $view = null)
     {
-        response()->json(['error' => t('Request must be ajax')]);
-        /*
         if (! request()->ajax()) {
             return response()->json(['error' => t('Request must be ajax')]);
         }
-        */
 
         $record = $rapidRecordInterface->find($id);
 
