@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\ExportForm;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -47,11 +46,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $forms = ExportForm::all();
-        $forms->each(function ($form){
-            $form->file = $form->present()->form_name_user.'.csv';
-            $form->save();
-        });
 
     }
 

@@ -24,6 +24,7 @@ use App\Repositories\Interfaces\RapidRecord;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use ZipArchive;
 
 class RapidIngestService extends RapidServiceBase
 {
@@ -81,6 +82,43 @@ class RapidIngestService extends RapidServiceBase
         $this->rapidInterface = $rapidInterface;
         $this->rapidHeaderInterface = $rapidHeaderInterface;
         $this->validationFields = config('config.validation_fields');
+    }
+
+    /**
+     * Unzip file.
+     *
+     * @param string $filePath
+     * @return string|null
+     */
+    public function unzipFile(string $filePath)
+    {
+        $importsPath = config('config.rapid_import_dir');
+        $tmpPath = $importsPath . '/tmp';
+
+        Storage::makeDirectory($tmpPath);
+
+        $csvFilePath = null;
+
+        $zipArchive = new ZipArchive();
+        $result = $zipArchive->open(Storage::path($filePath));
+        if ($result === TRUE) {
+            $zipArchive->extractTo(Storage::path($tmpPath));
+            $zipArchive->close();
+
+            $files = \File::allFiles(Storage::path($tmpPath));
+            foreach ($files as $file) {
+                if($file->getExtension() === 'csv') {
+                    $csvFilePath = Storage::path($importsPath . '/' . $file->getFilename());
+                    \File::move($file->getPathname(), $csvFilePath);
+                    break;
+                }
+            }
+
+            Storage::deleteDirectory($tmpPath);
+            Storage::delete($filePath);
+        }
+
+        return isset($csvFilePath) ? $csvFilePath : null;
     }
 
     /**
