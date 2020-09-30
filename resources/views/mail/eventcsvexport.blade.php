@@ -1,8 +1,14 @@
 @component('mail::message')
 # {{ t('Event Export CSV') }}
 
-{{ t('Your export is attached. If an attachment is not included, it is due to no records being located for the action. Some records require overnight processing before they are available.') }}
+{{ t('Your export is completed. If a report was generated, you may click the download button to download the file. If no button is included, it is due to no records being located for the export. Some records require overnight processing before they are available.') }}
 {{ t('If you believe this is an error, please contact the Administration.') }}
+
+@isset($url)
+@component('mail::button', ['url' => $url])
+    {{ t('Download Event CSV') }}
+@endcomponent
+@endisset
 
 {{ t('Thank you') }},
 {{ config('app.name') }}

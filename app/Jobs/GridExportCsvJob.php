@@ -91,8 +91,9 @@ class GridExportCsvJob implements ShouldQueue
         try {
             $mongoDbService->setCollection('subjects');
 
-            $query = null === $this->expeditionId ? ['project_id' => (int) $this->projectId] : ['project_id'     => (int) $this->projectId,
-                                                                                                'expedition_ids' => (int) $this->expeditionId,
+            $query = null === $this->expeditionId ? ['project_id' => (int) $this->projectId] : [
+                'project_id'     => (int) $this->projectId,
+                'expedition_ids' => (int) $this->expeditionId,
             ];
 
             $cursor = $mongoDbService->find($query);
@@ -103,14 +104,6 @@ class GridExportCsvJob implements ShouldQueue
             ]);
 
             $docs = collect($cursor);
-            $first = $docs->first();
-            $header = array_keys($first);
-
-            $fileName = Str::random().'.csv';
-            $file = Storage::path(config('config.reports_dir').'/'.$fileName);
-            $csv->writerCreateFromPath($file);
-            $csv->insertOne($header);
-
             $records = $docs->map(function ($doc) use ($csv) {
                 $doc['expedition_ids'] = trim(implode(', ', $doc['expedition_ids']), ',');
                 $doc['updated_at'] = DateHelper::formatMongoDbDate($doc['updated_at'], 'Y-m-d H:i:s');
@@ -121,11 +114,11 @@ class GridExportCsvJob implements ShouldQueue
                 return $doc;
             });
 
-            $csv->insertAll($records->toArray());
+            $csvName = Str::random().'.csv';
+            $fileName = $csv->createReportCsv($records->toArray(), $csvName);
 
-            $route = route('admin.downloads.report', $fileName);
+            $this->user->notify(new GridCsvExport($fileName));
 
-            $this->user->notify(new GridCsvExport($route));
         } catch (Exception $e) {
             $this->user->notify(new GridCsvExportError($e->getMessage()));
         }

@@ -37,18 +37,18 @@ class NfnExportComplete extends Notification implements ShouldQueue
     /**
      * @var null
      */
-    private $csv;
+    private $fileName;
 
     /**
      * Create a new notification instance.
      *
      * @param string $title
-     * @param null $csv
+     * @param null $fileName
      */
-    public function __construct(string $title, $csv = null)
+    public function __construct(string $title, $fileName = null)
     {
         $this->title = $title;
-        $this->csv = $csv;
+        $this->fileName = $fileName;
         $this->onQueue(config('config.default_tube'));
     }
 
@@ -71,15 +71,12 @@ class NfnExportComplete extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        if ($this->csv !== null)
-        {
-            $mailMessage->attach($this->csv, [
-                'as' => 'missingImages.csv',
-                'mime' => 'text/csv',
-            ]);
-        }
+        $attributes = [
+            'title' => $this->title,
+            'url' => isset($this->fileName) ? route('admin.downloads.report', ['file' => $this->fileName]) : null,
+        ];
 
-        return $mailMessage->subject(t('BIOSPEX Export Completed'))->markdown('mail.nfnexportcomplete', ['title' => $this->title]);
+        return $mailMessage->subject(t('BIOSPEX Export Completed'))->markdown('mail.nfnexportcomplete', $attributes);
     }
 
     /**

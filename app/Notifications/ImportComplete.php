@@ -36,25 +36,25 @@ class ImportComplete extends Notification implements ShouldQueue
     /**
      * @var string|null
      */
-    public $duplicates;
+    public $dupName;
 
     /**
      * @var string|null
      */
-    public $rejects;
+    public $rejName;
 
     /**
-     * Create a new notification instance.
+     * ImportComplete constructor.
      *
-     * @param $project
-     * @param $duplicates
-     * @param $rejects
+     * @param string $project
+     * @param string|null $dupName
+     * @param string|null $rejName
      */
-    public function __construct($project, $duplicates, $rejects)
+    public function __construct(string $project, string $dupName = null, string $rejName = null)
     {
         $this->project = $project;
-        $this->duplicates = $duplicates;
-        $this->rejects = $rejects;
+        $this->dupName = $dupName;
+        $this->rejName = $rejName;
         $this->onQueue(config('config.default_tube'));
     }
 
@@ -76,23 +76,11 @@ class ImportComplete extends Notification implements ShouldQueue
     public function toMail()
     {
         $mailMessage = new MailMessage;
-        $mailMessage->markdown('mail.importcomplete', ['project' => $this->project]);
-
-        if (file_exists($this->duplicates))
-        {
-            $mailMessage->attach($this->duplicates, [
-                'as' => 'duplicates.csv',
-                'mime' => 'text/csv',
-            ]);
-        }
-
-        if (file_exists($this->rejects))
-        {
-            $mailMessage->attach($this->rejects, [
-                'as' => 'rejects.csv',
-                'mime' => 'text/csv',
-            ]);
-        }
+        $mailMessage->markdown('mail.importcomplete', [
+            'project' => $this->project,
+            'dupUrl' => isset($this->dupName) ? route('admin.downloads.report', ['file' => $this->dupName]) : null,
+            'rejUrl' => isset($this->rejName) ? route('admin.downloads.report', ['file' => $this->dupName]) : null
+        ]);
 
         return $mailMessage;
     }

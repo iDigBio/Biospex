@@ -150,7 +150,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
                 $this->moveFile($row['imageName']);
             }
 
-            $this->fileNames[] = $fileName =$batch . '-' . $this->actor->id . '-' . $this->expedition->uuid;
+            $this->fileNames[] = $fileName = $batch . '-' . $this->actor->id . '-' . $this->expedition->uuid;
 
             $this->createCsv($chunk, $fileName);
 

@@ -94,9 +94,10 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
                 return $transcription === null;
             });
 
-            $file = $transcriptions->isEmpty() ? null : $this->setCsv($transcriptions, $csv);
+            $csvFileName = $fileName = Str::random() . '.csv';
+            $fileName = $transcriptions->isEmpty() ? null : $csv->createReportCsv($transcriptions->toArray(), $csvFileName);
 
-            $this->user->notify(new EventCsvExport($file));
+            $this->user->notify(new EventCsvExport($fileName));
         }
         catch (Exception $e)
         {
@@ -114,11 +115,13 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
         $first = $transcriptions->first()->toArray();
         $header = array_keys($first);
 
-        $file = Storage::path(config('config.reports_dir') . '/' . Str::random() . '.csv');
+        $fileName = Str::random() . '.csv';
+
+        $file = Storage::path(config('config.reports_dir') . '/' . $fileName);
         $csv->writerCreateFromPath($file);
         $csv->insertOne($header);
         $csv->insertAll($transcriptions->toArray());
 
-        return $file;
+        return base64_encode($fileName);
     }
 }

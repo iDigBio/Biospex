@@ -36,18 +36,18 @@ class OcrProcessComplete extends Notification implements ShouldQueue
     /**
      * @var string Csv of ocr results.
      */
-    private $csv;
+    private $fileName;
 
     /**
      * Create a new notification instance.
      *
      * @param $title
-     * @param $csv
+     * @param $fileName
      */
-    public function __construct($title, $csv = null)
+    public function __construct(string $title, string $fileName = null)
     {
         $this->title = $title;
-        $this->csv = $csv;
+        $this->fileName = $fileName;
         $this->onQueue(config('config.default_tube'));
     }
 
@@ -69,16 +69,10 @@ class OcrProcessComplete extends Notification implements ShouldQueue
     public function toMail()
     {
         $mailMessage = new MailMessage;
-        $mailMessage->markdown('mail.ocrprocesscomplete', ['title' => $this->title]);
-
-        if ($this->csv !== null)
-        {
-            $mailMessage->attach($this->csv, [
-                'mime' => 'text/csv',
-            ]);
-        }
-
-        return $mailMessage;
+        return $mailMessage->markdown('mail.ocrprocesscomplete', [
+            'title' => $this->title,
+            'url' => isset($this->fileName) ? route('admin.downloads.report', ['file' => $this->fileName]) : null,
+        ]);
     }
 
     /**

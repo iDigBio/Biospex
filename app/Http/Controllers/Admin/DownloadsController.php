@@ -88,7 +88,7 @@ class DownloadsController extends Controller
     public function report(string $fileName)
     {
         try {
-            [$reader, $headers] = $this->downloadService->createReportDownload($fileName);
+            [$reader, $headers] = $this->downloadService->createReportDownload(base64_decode($fileName));
 
             return response($reader->getContent(), 200, $headers);
 

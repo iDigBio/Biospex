@@ -31,16 +31,16 @@ class EventCsvExport extends Notification implements ShouldQueue
     /**
      * @var null
      */
-    public $csv;
+    public $fileName;
 
     /**
-     * Create a new notification instance.
+     * EventCsvExport constructor.
      *
-     * @param null $csv
+     * @param string|null $fileName
      */
-    public function __construct($csv = null)
+    public function __construct(string $fileName = null)
     {
-        $this->csv = $csv;
+        $this->fileName = $fileName;
         $this->onQueue(config('config.default_tube'));
     }
 
@@ -63,14 +63,9 @@ class EventCsvExport extends Notification implements ShouldQueue
     public function toMail()
     {
         $mailMessage = new MailMessage;
-        $mailMessage->markdown('mail.eventcsvexport');
-
-        if ($this->csv !== null)
-        {
-            $mailMessage->attach($this->csv, [
-                'mime' => 'text/csv',
-            ]);
-        }
+        $mailMessage->markdown('mail.eventcsvexport', [
+            'url' => isset($this->fileName) ? route('admin.downloads.report', ['file' => $this->fileName]) : null
+        ]);
 
         return $mailMessage;
     }

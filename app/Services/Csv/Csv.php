@@ -19,6 +19,7 @@
 
 namespace App\Services\Csv;
 
+use Illuminate\Support\Facades\Storage;
 use League\Csv\Writer;
 use League\Csv\Reader;
 
@@ -115,6 +116,7 @@ class Csv
 
     /**
      * Insert one row.
+     *
      * @param $row
      * @throws \League\Csv\CannotInsertRecord
      */
@@ -125,11 +127,36 @@ class Csv
 
     /**
      * Insert all rows.
+     *
      * @param $rows
      * @throws \TypeError
      */
     public function insertAll($rows)
     {
         $this->writer->insertAll($rows);
+    }
+
+    /**
+     * Create Report Csv.
+     *
+     * @param array $data
+     * @param string $fileName
+     * @return string|null
+     * @throws \League\Csv\CannotInsertRecord
+     */
+    public function createReportCsv(array $data, string $fileName)
+    {
+        if (! isset($data) || empty($data)) {
+            return null;
+        }
+
+        $header = array_keys($data[0]);
+
+        $file = Storage::path(config('config.reports_dir').'/'.$fileName);
+        $this->writerCreateFromPath($file);
+        $this->insertOne($header);
+        $this->insertAll($data);
+
+        return base64_encode($fileName);
     }
 }

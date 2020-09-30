@@ -166,50 +166,6 @@ class GeneralHelper
     }
 
     /**
-     * Create a csv file in memory.
-     *
-     * @param $data
-     * @param null $storage
-     * @return null|string
-     * @throws \Exception
-     */
-    public function createCsv($data, $storage = null)
-    {
-        if ($data === null || empty($data)) {
-            return null;
-        }
-
-        $fd = $storage === null ? fopen('php://temp/maxmemory:1048576', 'w') : fopen($storage, 'w');
-
-        if ($fd === false) {
-            throw new Exception('Failed to open temporary file while creating csv file');
-        }
-
-        if ($storage === null) {
-            $headers = array_keys($data[0]);
-            fputcsv($fd, $headers);
-            foreach ($data as $record) {
-                fputcsv($fd, $record);
-            }
-
-            rewind($fd);
-            $csv = stream_get_contents($fd);
-            fclose($fd); // releases the memory (or tempfile)
-
-            return $csv;
-        }
-
-        $headers = array_keys($data[0]);
-        fputcsv($fd, $headers);
-        foreach ($data as $record) {
-            fputcsv($fd, $record);
-        }
-        fclose($fd);
-
-        return $storage;
-    }
-
-    /**
      * Check for UTF-8 compatibility
      *
      * Regex from Martin Dürst

@@ -60,8 +60,7 @@ class OcrService
         OcrQueue $ocrQueueContract,
         MongoDbService $mongoDbService,
         Csv $csvService
-    )
-    {
+    ) {
         $this->ocrQueueContract = $ocrQueueContract;
         $this->mongoDbService = $mongoDbService;
         $this->csvService = $csvService;
@@ -193,19 +192,13 @@ class OcrService
             $subjects[] = [
                 'subject_id' => (string) $doc['_id'],
                 'url'        => $doc['accessURI'],
-                'ocr' => $doc['ocr']
+                'ocr'        => $doc['ocr'],
             ];
         }
 
-        $csv = null;
-        if (count($subjects) > 0) {
-            $csv = Storage::path(config('config.reports_dir')).'/'.Str::random().'.csv';
-            $this->csvService->writerCreateFromPath($csv);
-            $headers = array_keys($subjects[0]);
-            $this->csvService->insertOne($headers);
-            $this->csvService->insertAll($subjects);
-        }
+        $csvName = Str::random().'.csv';
+        $fileName = $this->csvService->createReportCsv($subjects, $csvName);
 
-        $queue->project->group->owner->notify(new OcrProcessComplete($queue->project->title, $csv));
+        $queue->project->group->owner->notify(new OcrProcessComplete($queue->project->title, $fileName));
     }
 }

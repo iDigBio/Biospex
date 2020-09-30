@@ -25,6 +25,7 @@ use App\Notifications\NfnExportComplete;
 
 use App\Repositories\Interfaces\ExportQueue;
 use App\Repositories\Interfaces\ExportQueueFile;
+use App\Services\Csv\Csv;
 use File;
 use Notification;
 
@@ -47,18 +48,26 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
     private $exportQueueFileContract;
 
     /**
+     * @var \App\Services\Csv\Csv
+     */
+    private $csv;
+
+    /**
      * NfnPanoptesExportReport constructor.
      *
      * @param \App\Repositories\Interfaces\ExportQueue $exportQueueContract
      * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFileContract
+     * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
         ExportQueue $exportQueueContract,
-        ExportQueueFile $exportQueueFileContract
+        ExportQueueFile $exportQueueFileContract,
+        Csv $csv
     )
     {
         $this->exportQueueContract = $exportQueueContract;
         $this->exportQueueFileContract = $exportQueueFileContract;
+        $this->csv = $csv;
     }
 
     /**
@@ -101,11 +110,11 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
             return array_diff_key($file->toArray(), $remove);
         });
 
-        $csvPath = storage_path('app/reports/'.md5($this->queue->id).'.csv');
-        $csv = GeneralHelper::createCsv($data->toArray(), $csvPath);
+        $csvName = md5($this->queue->id).'.csv';
+        $fileName = $this->csv->createReportCsv($data->toArray(), $csvName);
 
         $users = $this->expedition->project->group->users->push($this->owner);
 
-        Notification::send($users, new NfnExportComplete($this->expedition->title, $csv));
+        Notification::send($users, new NfnExportComplete($this->expedition->title, $fileName));
     }
 }

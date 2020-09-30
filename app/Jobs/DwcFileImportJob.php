@@ -24,6 +24,7 @@ use App\Repositories\Interfaces\Project;
 use App\Models\Import;
 use App\Notifications\DarwinCoreImportError;
 use App\Notifications\ImportComplete;
+use App\Services\Csv\Csv;
 use App\Services\File\FileService;
 use App\Services\Process\DarwinCore;
 use Exception;
@@ -72,16 +73,15 @@ class DwcFileImportJob implements ShouldQueue
     public function handle(
         Project $projectContract,
         DarwinCore $dwcProcess,
-        FileService $fileService
-    )
-    {
-        $scratchFileDir = Storage::path(config('config.scratch_dir') . '/' . md5($this->import->file));
+        FileService $fileService,
+        Csv $csv
+    ) {
+        $scratchFileDir = Storage::path(config('config.scratch_dir').'/'.md5($this->import->file));
 
         $project = $projectContract->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
 
-        try
-        {
+        try {
             $fileService->makeDirectory($scratchFileDir);
             $importFilePath = Storage::path($this->import->file);
 
@@ -89,16 +89,15 @@ class DwcFileImportJob implements ShouldQueue
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
-            $dupsCsv = Storage::path('reports/'. md5($this->import->id) . 'dup.csv');
-            $rejCsv = Storage::path('reports/'. md5($this->import->id) . 'rej.csv');
+            $dupsCsvName = md5($this->import->id).'dup.csv';
+            $dupName = $csv->createReportCsv($dwcProcess->getDuplicates(), $dupsCsvName);
 
-            GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
-            GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);
+            $rejCsvName = md5($this->import->id).'rej.csv';
+            $rejName = $csv->createReportCsv($dwcProcess->getDuplicates(), $rejCsvName);
 
-            Notification::send($users, new ImportComplete($project->title, $dupsCsv, $rejCsv));
+            Notification::send($users, new ImportComplete($project->title, $dupName, $rejName));
 
-            if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0)
-            {
+            if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0) {
                 OcrCreateJob::dispatch($project->id);
             }
 
@@ -107,9 +106,7 @@ class DwcFileImportJob implements ShouldQueue
             $fileService->filesystem->delete($importFilePath);
             $this->import->delete();
             $this->delete();
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->import->error = 1;
             $this->import->save();
             $fileService->filesystem->cleanDirectory($scratchFileDir);

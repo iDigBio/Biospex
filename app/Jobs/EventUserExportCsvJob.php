@@ -83,34 +83,20 @@ class EventUserExportCsvJob implements ShouldQueue
             $rows = $event->teams->flatMap(function ($team) {
                 return $team->users->map(function ($user) use ($team) {
                     return [
-                        $team->title,
-                        $user->nfn_user,
-                        $user->transcriptions_count,
+                        'Team' => $team->title,
+                        'User' => $user->nfn_user,
+                        'Transcriptions' => $user->transcriptions_count,
                     ];
                 });
             })->toArray();
 
-            $file = empty($rows) ? null : $this->setCsv($csv, $rows);
+            $csvName = Str::random().'.csv';
+            $fileName = $csv->createReportCsv($rows, $csvName);
 
-            $this->user->notify(new EventCsvExport($file));
+            $this->user->notify(new EventCsvExport($fileName));
+
         } catch (Exception $e) {
             $this->user->notify(new EventCsvExportError($e->getMessage()));
         }
-    }
-
-    /**
-     * @param \App\Services\Csv\Csv $csv
-     * @param $rows
-     * @return string
-     * @throws \League\Csv\CannotInsertRecord
-     */
-    private function setCsv(Csv $csv, $rows)
-    {
-        $file = Storage::path(config('config.reports_dir').'/'.Str::random().'.csv');
-        $csv->writerCreateFromPath($file);
-        $csv->insertOne(['Team', 'User', 'Transcriptions']);
-        $csv->insertAll($rows);
-
-        return $file;
     }
 }
