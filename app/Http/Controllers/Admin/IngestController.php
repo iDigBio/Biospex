@@ -78,8 +78,7 @@ class IngestController extends Controller
     {
         $file     = $request->file('update-file');
         $fileOrigName = $file->getClientOriginalName();
-        $fileName = Str::random(10) .'-'. $fileOrigName;
-        $filePath = $file->storeAs(config('config.rapid_import_dir'), $fileName);
+        $filePath = $file->storeAs(config('config.rapid_import_dir'), Str::random(10) .'-'. $fileOrigName);
 
         if (! $filePath) {
             Flash::warning(t('The update failed to upload. Please contact the administration to determine the error.'));
@@ -87,7 +86,7 @@ class IngestController extends Controller
             return redirect()->route('admin.ingest.index');
         }
 
-        Session::put(['filePath' => $filePath, 'fileName' => $fileName, 'fileOrigName' => $fileOrigName]);
+        Session::put(['filePath' => $filePath, 'fileOrigName' => $fileOrigName]);
 
         Flash::success(t('The update has been uploaded. Please select the fields you wish to update and click UPDATE'));
 
@@ -110,10 +109,10 @@ class IngestController extends Controller
             }
 
             $filePath = Session::get('filePath');
-            $fileName = Session::get('fileName');
             $fileOrigName = Session::get('fileOrigName');
 
-            $csvFilePath = $rapidIngestService->unzipFile($filePath);
+            [$fileName, $csvFilePath] = $rapidIngestService->unzipFile($filePath);
+
             $rapidIngestService->loadCsvFile($csvFilePath);
             $headers = $rapidIngestService->setHeader();
 

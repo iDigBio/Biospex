@@ -88,7 +88,7 @@ class RapidIngestService extends RapidServiceBase
      * Unzip file.
      *
      * @param string $filePath
-     * @return string|null
+     * @return array|null
      */
     public function unzipFile(string $filePath)
     {
@@ -98,6 +98,7 @@ class RapidIngestService extends RapidServiceBase
         Storage::makeDirectory($tmpPath);
 
         $csvFilePath = null;
+        $fileName = null;
 
         $zipArchive = new ZipArchive();
         $result = $zipArchive->open(Storage::path($filePath));
@@ -108,7 +109,8 @@ class RapidIngestService extends RapidServiceBase
             $files = \File::allFiles(Storage::path($tmpPath));
             foreach ($files as $file) {
                 if($file->getExtension() === 'csv') {
-                    $csvFilePath = Storage::path($importsPath . '/' . $file->getFilename());
+                    $fileName = date('d-m-Y_H-i-s') . '_' . $file->getFilename();
+                    $csvFilePath = Storage::path($importsPath . '/' . $fileName);
                     \File::move($file->getPathname(), $csvFilePath);
                     break;
                 }
@@ -118,7 +120,7 @@ class RapidIngestService extends RapidServiceBase
             Storage::delete($filePath);
         }
 
-        return isset($csvFilePath) ? $csvFilePath : null;
+        return isset($csvFilePath) ? [$fileName, $csvFilePath] : null;
     }
 
     /**

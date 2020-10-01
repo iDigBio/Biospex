@@ -77,7 +77,7 @@ class RapidImportJob implements ShouldQueue
                 throw new Exception(t('Rapid import file does not exist while processing import job.'));
             }
 
-            $csvFilePath = $rapidIngestService->unzipFile($this->path);
+            [$csvFilePath, $fileName] = $rapidIngestService->unzipFile($this->path);
 
             if (!isset($csvFilePath)) {
                 throw new Exception(t('CSV file could not be extracted from zip file.'));
