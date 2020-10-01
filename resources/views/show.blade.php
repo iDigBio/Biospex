@@ -25,8 +25,8 @@
             <div class="row">
                 <div class="col-sm-10 mx-auto">
                     <table id="record" class="table table-striped table-bordered dt-responsive"
-                           data-show="{{ route('front.show.get', ['id' => $record->_id]) }}"
-                           data-route="{{ route('front.data.get', $routeVars) }}">
+                           data-id="{{ $record->_id }}"
+                           data-route="{{ route('front.data.get', $dataVars) }}">
                         <thead>
                         <tr>
                             <th>Field</th>
@@ -46,6 +46,7 @@
     <script>
         $(function () {
             let table = $("#record").DataTable({
+                "iDisplayLength": 50,
                 "ajax": $('#record').data('route'),
 
                 dom: "<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>>" +
@@ -55,7 +56,7 @@
                     {
                         text: 'GEOLocate',
                         action: function (e, dt, node, config) {
-                            window.location.replace($('#record').data('show') + '/geolocate');
+                            window.location.replace('/record/geolocate/' + $('#record').data('id'));
                             /*
                             table.ajax.url($('#record').data('show') + '/data/geolocate').load(function (result) {
                                 console.log(result);

@@ -41,20 +41,22 @@ class IndexController extends Controller
     }
 
     /**
-     * Show rapid record
+     * Show rapid record.
      *
      * @param \App\Repositories\Interfaces\RapidRecord $rapidRecord
-     * @param string $id
-     * @param string|null $view
+     * @param string $view
+     * @param string|null $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(RapidRecord $rapidRecord, string $id, string $view = null)
+    public function show(RapidRecord $rapidRecord, string $view, string $id = null)
     {
-        $record = $rapidRecord->find($id);
+        $newId = $id === null ? $view : $id;
 
-        $routeVars = isset($view) ? ['id' => $id, 'view' => $view] : ['id' => $id];
+        $record = $rapidRecord->find($newId);
 
-        return view('show', compact('record', 'routeVars', 'view'));
+        $dataVars = isset($id) ? ['id' => $id, 'view' => $view] : ['id' => $view];
+
+        return view('show', compact('record', 'dataVars'));
     }
 
     /**
