@@ -55,8 +55,8 @@ class DownloadsController extends Controller
     public function __construct(
         User $userContract,
         Expedition $expeditionContract,
-        DownloadService $downloadService)
-    {
+        DownloadService $downloadService
+    ) {
         $this->userContract = $userContract;
         $this->expeditionContract = $expeditionContract;
         $this->downloadService = $downloadService;
@@ -91,7 +91,6 @@ class DownloadsController extends Controller
             [$reader, $headers] = $this->downloadService->createReportDownload(base64_decode($fileName));
 
             return response($reader->getContent(), 200, $headers);
-
         } catch (Exception $e) {
             Flash::error($e->getMessage());
 
@@ -129,7 +128,6 @@ class DownloadsController extends Controller
             [$reader, $headers] = $this->downloadService->createCsvDownload($download);
 
             return response($reader->getContent(), 200, $headers);
-
         } catch (Exception $e) {
             Flash::error($e->getMessage());
 
@@ -150,8 +148,8 @@ class DownloadsController extends Controller
         try {
             $download = $this->downloadService->getDownload($downloadId);
 
-            if ($this->checkPermissions('isOwner', $download->expedition->project->group)) {
-               return redirect()->back();
+            if (! $this->checkPermissions('isOwner', $download->expedition->project->group)) {
+                return redirect()->back();
             }
 
             [$filePath, $headers] = $this->downloadService->createTarDownload($download);
@@ -175,7 +173,7 @@ class DownloadsController extends Controller
     public function downloadTarBatch(string $projectId, string $expeditionId, string $fileName)
     {
         try {
-            $file = base64_decode($fileName) . '.tar.gz';
+            $file = base64_decode($fileName).'.tar.gz';
             $expedition = $this->expeditionContract->findwith($expeditionId, ['project.group']);
 
             if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
@@ -185,7 +183,6 @@ class DownloadsController extends Controller
             [$headers, $filePath] = $this->downloadService->createBatchTarDownload($file);
 
             return response()->download($filePath, $file, $headers);
-
         } catch (Exception $e) {
             Flash::error($e->getMessage());
 
@@ -233,6 +230,7 @@ class DownloadsController extends Controller
 
         if (! Storage::exists(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html')) {
             Flash::warning(t('File does not exist'));
+
             return redirect()->back();
         }
 
