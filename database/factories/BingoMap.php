@@ -35,9 +35,7 @@ use Faker\Generator as Faker;
 $factory->define(BingoMap::class, function (Faker $faker) {
 
     return [
-        'bingo_id' => function() {
-            return factory(Bingo::class)->create()->id;
-        },
+        'bingo_id' => factory(Bingo::class),
         'ip' => $this->faker->ipv6(), // ipv4()
         'uuid' => $this->faker->uuid(),
         'latitude' => $this->faker->latitude(),

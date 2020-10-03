@@ -113,8 +113,8 @@ sub footer -->
     <!-- Footer Links -->
 
     <!-- Copyright -->
-    <div class="text-center py-3" style="color: #e1e1e1;">{{ __('© 2019 Copyright') }}
-        <a href="https://www.bio.fsu.edu/"> {{ __('FSU Deptartment of Biological Science') }}</a>
+    <div class="text-center py-3" style="color: #e1e1e1;">{{ __('© 2014–2020 Copyright') }}
+        <a href="https://www.bio.fsu.edu/"> {{ __('FSU Department of Biological Science') }}</a>
     </div>
     <!-- Copyright -->
 

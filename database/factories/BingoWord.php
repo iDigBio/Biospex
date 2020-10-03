@@ -35,9 +35,7 @@ use Faker\Generator as Faker;
 $factory->define(BingoWord::class, function (Faker $faker) {
 
     return [
-        'bingo_id' => function() {
-            return factory(Bingo::class)->create()->id;
-        },
+        'bingo_id' => factory(Bingo::class),
         'word' => $this->faker->unique()->words(3, true),
         'definition' => $this->faker->sentences(2, true)
     ];
