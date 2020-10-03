@@ -89,6 +89,7 @@ class PanoptesTranscriptionProcess
         $this->locationStateCountyService = $locationStateCountyService;
         $this->csv = $csv;
 
+        // TODO can be removed after fixing Charles issue
         $this->nfnMisMatched = config('config.nfnMisMatched');
     }
 
