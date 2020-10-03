@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-09-15T20:42:52+00:00\n"
-"PO-Revision-Date: 2020-09-15 22:42+0200\n"
+"POT-Creation-Date: 2020-10-03T15:54:03+00:00\n"
+"PO-Revision-Date: 2020-10-03 17:54+0200\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
@@ -94,25 +94,23 @@ msgstr ""
 msgid "An error occurred when deleting record."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadsController.php:80
-#: app/Http/Controllers/Admin/DownloadsController.php:98
-#: app/Http/Controllers/Admin/DownloadsController.php:222
-msgid "The file appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."
+#: app/Http/Controllers/Admin/DownloadsController.php:116
+msgid "The file record appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadsController.php:126
+#: app/Http/Controllers/Admin/DownloadsController.php:207
 msgid "Download regeneration has started. You will be notified when completed."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadsController.php:128
+#: app/Http/Controllers/Admin/DownloadsController.php:209
 msgid "An error occurred while trying to regenerate the download. The Admin has been notified."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadsController.php:151
+#: app/Http/Controllers/Admin/DownloadsController.php:232
 msgid "File does not exist"
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadsController.php:197
+#: app/Http/Controllers/Admin/DownloadsController.php:252
 msgid "Your batch request has been submitted. You will receive an email with download links when the process is complete."
 msgstr ""
 
@@ -268,7 +266,7 @@ msgstr ""
 msgid "Biospex - New Zooniverse Project Submitted"
 msgstr ""
 
-#: app/Notifications/NfnExportComplete.php:82
+#: app/Notifications/NfnExportComplete.php:79
 msgid "BIOSPEX Export Completed"
 msgstr ""
 
@@ -792,7 +790,7 @@ msgid "Must be valid URL"
 msgstr ""
 
 #: app/Services/Csv/DarwinCoreCsvImport.php:239
-#: app/Services/Process/PanoptesTranscriptionProcess.php:148
+#: app/Services/Process/PanoptesTranscriptionProcess.php:149
 msgid "Header column count does not match row count. :headers headers / :rows rows"
 msgstr ""
 
@@ -802,6 +800,29 @@ msgstr ""
 
 #: app/Services/Csv/DarwinCoreCsvImport.php:394
 msgid "The Darwin Core Archive is missing the required identifier column inside the csv file. Accepted identifiers: %s"
+msgstr ""
+
+#: app/Services/Download/DownloadFileBase.php:78
+#: app/Services/Download/DownloadFileBase.php:92
+msgid "File path must be set."
+msgstr ""
+
+#: app/Services/Download/DownloadFileBase.php:107
+msgid "Storage file path must be set."
+msgstr ""
+
+#: app/Services/Download/DownloadFileBase.php:121
+#: app/Services/Download/DownloadFileBase.php:141
+#: app/Services/Download/DownloadFileBase.php:161
+msgid "File name must be set."
+msgstr ""
+
+#: app/Services/Download/DownloadFileBase.php:179
+msgid "Storage path must be set."
+msgstr ""
+
+#: app/Services/Download/DownloadService.php:66
+msgid "The file appears to be missing though the records exist. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."
 msgstr ""
 
 #: app/Services/File/FileService.php:50
@@ -1052,7 +1073,7 @@ msgstr ""
 #: resources/views/admin/partials/expedition-download-modal-body.blade.php:49
 #: resources/views/admin/partials/expedition-download-modal-body.blade.php:61
 #: resources/views/admin/partials/expedition-download-modal-body.blade.php:65
-#: resources/views/mail/gridcsvexport.blade.php:8
+#: resources/views/mail/gridcsvexport.blade.php:9
 msgid "Download"
 msgstr ""
 
@@ -1568,12 +1589,12 @@ msgid "Message"
 msgstr ""
 
 #: resources/views/mail/contact.blade.php:12
-#: resources/views/mail/eventcsvexport.blade.php:10
+#: resources/views/mail/eventcsvexport.blade.php:21
 #: resources/views/mail/eventcsvexporterror.blade.php:11
 #: resources/views/mail/failedjob.blade.php:8
-#: resources/views/mail/gridcsvexport.blade.php:17
+#: resources/views/mail/gridcsvexport.blade.php:22
 #: resources/views/mail/gridcsvexporterror.blade.php:11
-#: resources/views/mail/importcomplete.blade.php:10
+#: resources/views/mail/importcomplete.blade.php:33
 #: resources/views/mail/importerror.blade.php:15
 #: resources/views/mail/invite.blade.php:17
 #: resources/views/mail/joberror.blade.php:8
@@ -1582,11 +1603,10 @@ msgstr ""
 #: resources/views/mail/nfnbatchexportcomplete.blade.php:13
 #: resources/views/mail/nfnexpertreviewjobcomplete.blade.php:19
 #: resources/views/mail/nfnexpertreviewpublish.blade.php:8
-#: resources/views/mail/nfnexportcomplete.blade.php:8
 #: resources/views/mail/nfnexporterror.blade.php:17
 #: resources/views/mail/nfntranscriptionscomplete.blade.php:8
 #: resources/views/mail/nfntranscriptsionerror.blade.php:17
-#: resources/views/mail/ocrprocesscomplete.blade.php:8
+#: resources/views/mail/ocrprocesscomplete.blade.php:21
 #: resources/views/mail/sitemailer.blade.php:7
 msgid "Thank you"
 msgstr ""
@@ -1596,11 +1616,15 @@ msgid "Event Export CSV"
 msgstr ""
 
 #: resources/views/mail/eventcsvexport.blade.php:5
-msgid "Your export is attached. If an attachment is not included, it is due to no records being located for the action. Some records require overnight processing before they are available."
+msgid "Your export is completed. If a report was generated, you may click the download button to download the file. If no button is included, it is due to no records being located for the export. Some records require overnight processing before they are available."
 msgstr ""
 
 #: resources/views/mail/eventcsvexport.blade.php:7
 msgid "If you believe this is an error, please contact the Administration."
+msgstr ""
+
+#: resources/views/mail/eventcsvexport.blade.php:12
+msgid "Download Event CSV"
 msgstr ""
 
 #: resources/views/mail/eventcsvexporterror.blade.php:2
@@ -1625,8 +1649,12 @@ msgstr ""
 msgid "Grid Export CSV"
 msgstr ""
 
-#: resources/views/mail/gridcsvexport.blade.php:5
+#: resources/views/mail/gridcsvexport.blade.php:6
 msgid "Your grid export is completed. Click the button provided to download:"
+msgstr ""
+
+#: resources/views/mail/gridcsvexport.blade.php:17
+msgid "Grid export could not be completed. Please contact the Admin."
 msgstr ""
 
 #: resources/views/mail/gridcsvexporterror.blade.php:5
@@ -1638,11 +1666,23 @@ msgid "The subject import for %s has been completed."
 msgstr ""
 
 #: resources/views/mail/importcomplete.blade.php:5
-msgid "If duplicates or rejects exist, you will find the information in an attached csv file. Duplicates or rejects mean the subjects where not imported into the database."
+msgid "OCR processing may take longer, and you will receive an email when it is complete."
 msgstr ""
 
 #: resources/views/mail/importcomplete.blade.php:8
-msgid "OCR processing may take longer, and you will receive an email when it is complete."
+msgid "Duplicate records found during import can be downloaded using the button below. These records were not entered into the database."
+msgstr ""
+
+#: resources/views/mail/importcomplete.blade.php:11
+msgid "Download Duplicates"
+msgstr ""
+
+#: resources/views/mail/importcomplete.blade.php:21
+msgid "Rejected records found during import can be downloaded using the button below. These records were not entered into the database."
+msgstr ""
+
+#: resources/views/mail/importcomplete.blade.php:24
+msgid "Download Rejected"
 msgstr ""
 
 #: resources/views/mail/importerror.blade.php:2
@@ -1718,7 +1758,16 @@ msgid "Zooniverse Export Completed"
 msgstr ""
 
 #: resources/views/mail/nfnexportcomplete.blade.php:5
-msgid "The export process for \"%s\" has been completed successfully. If a download file was created during this process, you may access the link on the Expedition view page. If there were errors, an attachment will be included with this email."
+msgid "The export process for \"%s\" has been completed successfully."
+msgstr ""
+
+#: resources/views/mail/nfnexportcomplete.blade.php:7
+msgid ""
+"If a download file was created during this process, you may access the link on the Expedition view page.)); ?>\r\n"
+"\r\n"
+"\r\n"
+"<?php if(isset($url)): ?>\r\n"
+"<?php echo e(t("
 msgstr ""
 
 #: resources/views/mail/nfnexporterror.blade.php:2
@@ -1750,7 +1799,15 @@ msgid "An error occurred while processing the Zooniverse classifications."
 msgstr ""
 
 #: resources/views/mail/ocrprocesscomplete.blade.php:5
-msgid "The OCR processing of your data is complete. If there were any errors in processing images, an attached file will be present."
+msgid "The OCR processing of your data is complete."
+msgstr ""
+
+#: resources/views/mail/ocrprocesscomplete.blade.php:9
+msgid "Errors during OCR processing were detected. Click button to download error file."
+msgstr ""
+
+#: resources/views/mail/ocrprocesscomplete.blade.php:12
+msgid "Download OCR Errors"
 msgstr ""
 
 #: resources/views/mail/sitemailer.blade.php:2
