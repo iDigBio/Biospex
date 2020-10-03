@@ -1,7 +1,7 @@
 <!-- Footer -->
 <footer id="footer" class="page-footer font-small blue-grey lighten-5">
     <!-- Copyright -->
-    <div class="footer-copyright text-center py-3">{{ t('© 2019 Copyright') }}
+    <div class="footer-copyright text-center py-3">{{ t('© 2014-2020 Copyright') }}
         <a class="" href="#"> {{ t('FSU Department of Biological Science') }}</a>
     </div>
     <!-- Copyright -->
