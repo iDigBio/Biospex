@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-09-30T14:41:41+00:00\n"
-"PO-Revision-Date: 2020-09-30 16:41+0200\n"
+"POT-Creation-Date: 2020-10-03T15:52:35+00:00\n"
+"PO-Revision-Date: 2020-10-03 17:52+0200\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
@@ -22,7 +22,7 @@ msgid "RAPID export file does not exist."
 msgstr ""
 
 #: app/Http/Controllers/Admin/ExportController.php:67
-#: app/Http/Controllers/Front/IndexController.php:76
+#: app/Http/Controllers/Front/IndexController.php:78
 msgid "Request must be ajax"
 msgstr ""
 
@@ -38,23 +38,23 @@ msgstr ""
 msgid "The import uploaded successfully. You will be notified by email when it's completed."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:85
+#: app/Http/Controllers/Admin/IngestController.php:84
 msgid "The update failed to upload. Please contact the administration to determine the error."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:92
+#: app/Http/Controllers/Admin/IngestController.php:91
 msgid "The update has been uploaded. Please select the fields you wish to update and click UPDATE"
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:107
+#: app/Http/Controllers/Admin/IngestController.php:106
 msgid "The update file path does not exist. Please contact the administration to determine the error."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:124
+#: app/Http/Controllers/Admin/IngestController.php:123
 msgid "An error occurred while loading the csv file. Please contact the administration to determine the error."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:152
+#: app/Http/Controllers/Admin/IngestController.php:151
 msgid "Your selections for the update are being processed. You will be notified by email when complete."
 msgstr ""
 
@@ -355,11 +355,11 @@ msgid "At least one selection needs to be made."
 msgstr ""
 
 #: resources/views/layout/foot.blade.php:4
-msgid "© 2019 Copyright"
+msgid "© 2014-2020 Copyright"
 msgstr ""
 
 #: resources/views/layout/foot.blade.php:6
-msgid "FSU Deptartment of Biological Science"
+msgid "FSU Department of Biological Science"
 msgstr ""
 
 #: resources/views/mail/export-notification.blade.php:2
