@@ -66,10 +66,11 @@ class ExpeditionStatJob implements ShouldQueue
         $record = $expedition->findWith($this->expeditionId, ['stat', 'nfnActor']);
 
         $workflow = $panoptesApiService->getPanoptesWorkflow($record->panoptesProject->panoptes_workflow_id);
-        $panoptesApiService->calculateTotals($workflow);
+        $panoptesApiService->calculateTotals($workflow, $this->expeditionId);
         $record->stat->local_subject_count = $expedition->getExpeditionSubjectCounts($this->expeditionId);
         $record->stat->subject_count = $panoptesApiService->getSubjectCount();
-        $record->stat->transcriptions_total = $panoptesApiService->getTranscriptionsTotal();
+        $record->stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
+        $record->stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
         $record->stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
         $record->stat->percent_completed = $panoptesApiService->getPercentCompleted();
 

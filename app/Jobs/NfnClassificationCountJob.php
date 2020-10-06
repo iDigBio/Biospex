@@ -2,9 +2,12 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
+use App\Notifications\JobError;
 use App\Repositories\Interfaces\ExpeditionStat;
 use App\Repositories\Interfaces\PanoptesProject;
 use App\Services\Api\PanoptesApiService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -46,23 +49,38 @@ class NfnClassificationCountJob implements ShouldQueue
     )
     {
 
-        $record = $panoptesProject->findBy('expedition_id', $this->expeditionId);
+        try {
+            $record = $panoptesProject->findBy('expedition_id', $this->expeditionId);
 
-        if ($record === null) {
-            $this->delete();
+            if ($record === null) {
+                $this->delete();
 
-            return;
+                return;
+            }
+
+            $workflow = $panoptesApiService->getPanoptesWorkflow($record->panoptes_workflow_id);
+            $panoptesApiService->calculateTotals($workflow, $this->expeditionId);
+
+            $stat = $expeditionStat->findBy('expedition_id', $this->expeditionId);
+            $stat->subject_count = $panoptesApiService->getSubjectCount();
+            $stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
+            $stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
+            $stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
+            $stat->percent_completed = $panoptesApiService->getPercentCompleted();
+
+            $stat->save();
         }
+        catch (Exception $e) {
+            $messages = [
+                'Message: ' .  $e->getMessage(),
+                'File : ' . $e->getFile() . ': ' . $e->getLine()
+            ];
 
-        $workflow = $panoptesApiService->getPanoptesWorkflow($record->panoptes_workflow_id);
-        $panoptesApiService->calculateTotals($workflow);
+            $user = User::find(1);
+            $user->notify(new JobError(__FILE__, $messages));
 
-        $stat = $expeditionStat->findBy('expedition_id', $this->expeditionId);
-        $stat->subject_count = $panoptesApiService->getSubjectCount();
-        $stat->transcriptions_total = $panoptesApiService->getTranscriptionsTotal();
-        $stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
-        $stat->percent_completed = $panoptesApiService->getPercentCompleted();
+            return $this->deleteJob();
 
-        $stat->save();
+        }
     }
 }

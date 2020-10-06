@@ -34,7 +34,8 @@ class ExpeditionStat extends BaseEloquentModel
         'expedition_id',
         'local_subject_count',
         'subject_count',
-        'transcriptions_total',
+        'transcriptions_goal',
+        'local_transcriptions_completed',
         'transcriptions_completed',
         'percentage_completed',
         'retirement_count'

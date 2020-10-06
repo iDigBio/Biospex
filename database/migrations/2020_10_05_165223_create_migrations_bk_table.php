@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddExpertToActorExpeditionTable extends Migration
+class CreateMigrationsBkTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddExpertToActorExpeditionTable extends Migration
      */
     public function up()
     {
-        Schema::table('actor_expedition', function (Blueprint $table) {
-            $table->integer('expert')->default(0)->after('order');
+        Schema::create('migrations_bk', function (Blueprint $table) {
+            $table->string('migration', 255)->nullable();
+            $table->integer('batch');
         });
     }
 
@@ -25,8 +26,6 @@ class AddExpertToActorExpeditionTable extends Migration
      */
     public function down()
     {
-        Schema::table('actor_expedition', function (Blueprint $table) {
-            $table->dropColumn('expert');
-        });
+        Schema::dropIfExists('migrations_bk');
     }
 }

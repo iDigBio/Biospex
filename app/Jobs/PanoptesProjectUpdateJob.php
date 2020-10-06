@@ -20,6 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\PanoptesProject;
+use App\Repositories\Interfaces\ExpeditionStat;
 use App\Services\Api\PanoptesApiService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -52,11 +53,22 @@ class PanoptesProjectUpdateJob implements ShouldQueue
      * Execute job.
      *
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
+     * @param \App\Repositories\Interfaces\ExpeditionStat $expeditionStat
      */
-    public function handle(PanoptesApiService $panoptesApiService)
+    public function handle(PanoptesApiService $panoptesApiService, ExpeditionStat $expeditionStat)
     {
         try {
             $workflow = $panoptesApiService->getPanoptesWorkflow($this->panoptesProject->panoptes_workflow_id);
+
+            $panoptesApiService->calculateTotals($workflow, $this->panoptesProject->expedition_id);
+
+            $stat = $expeditionStat->findBy('expedition_id', $this->panoptesProject->expedition_id);
+            $stat->subject_count = $panoptesApiService->getSubjectCount();
+            $stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
+            $stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
+            $stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
+            $stat->percent_completed = $panoptesApiService->getPercentCompleted();
+            $stat->save();
 
             $panoptes_project_id = $workflow['links']['project'];
             $subject_sets = isset($workflow['links']['subject_sets']) ? $workflow['links']['subject_sets'] : '';

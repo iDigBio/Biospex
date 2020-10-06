@@ -54,6 +54,14 @@ interface PanoptesTranscription extends RepositoryInterface
     public function getProjectTranscriptionCount($projectId);
 
     /**
+     * Return expedition transcription count.
+     *
+     * @param int $expeditionId
+     * @return mixed
+     */
+    public function getExpeditionTranscriptionCount(int $expeditionId);
+
+    /**
      * Get min finished at date for project.
      *
      * @param $projectId

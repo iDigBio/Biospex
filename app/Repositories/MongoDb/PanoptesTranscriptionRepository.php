@@ -103,6 +103,23 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     /**
      * @inheritDoc
      */
+    public function getExpeditionTranscriptionCount(int $expeditionId)
+    {
+        $result = Cache::remember(md5(__METHOD__.$expeditionId), 14440, function () use ($expeditionId) {
+            return $this->model->raw(function ($collection) use ($expeditionId) {
+                return $collection->aggregate([
+                    ['$match' => ['subject_expeditionId' => $expeditionId]],
+                    ['$count' => 'count'],
+                ]);
+            })->first();
+        });
+
+        return $result === null ? 0 : $result->count;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getMinFinishedAtDateByProjectId($projectId)
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {

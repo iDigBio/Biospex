@@ -76,9 +76,10 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
         try
         {
             $workflow = $this->panoptesApiService->getPanoptesWorkflow($record->panoptesProject->panoptes_workflow_id);
-            $this->panoptesApiService->calculateTotals($workflow);
+            $this->panoptesApiService->calculateTotals($workflow, $record->id);
             $record->stat->subject_count = $this->panoptesApiService->getSubjectCount();
-            $record->stat->transcriptions_total = $this->panoptesApiService->getTranscriptionsTotal();
+            $record->stat->transcriptions_goal = $this->panoptesApiService->getTranscriptionsGoal();
+            $record->stat->local_transcriptions_completed = $this->panoptesApiService->getLocalTranscriptionsCompleted();
             $record->stat->transcriptions_completed = $this->panoptesApiService->getTranscriptionsCompleted();
             $record->stat->percent_completed = $this->panoptesApiService->getPercentCompleted();
 

@@ -56,6 +56,17 @@ class CountHelper
     }
 
     /**
+     * Return expedition transcription count.
+     *
+     * @param int $expeditionId
+     * @return mixed
+     */
+    public function expeditionTranscriptionCount(int $expeditionId)
+    {
+        return $this->panoptesTranscription->getExpeditionTranscriptionCount($expeditionId);
+    }
+
+    /**
      * Return unique transcriber count for project.
      *
      * @param $projectId

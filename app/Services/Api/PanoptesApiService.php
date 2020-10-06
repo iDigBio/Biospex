@@ -19,6 +19,7 @@
 
 namespace App\Services\Api;
 
+use App\Facades\CountHelper;
 use App\Services\Requests\HttpRequest;
 use Cache;
 use GuzzleHttp\Exception\GuzzleException;
@@ -50,7 +51,12 @@ class PanoptesApiService extends HttpRequest
     /**
      * @var int
      */
-    private $transcriptions_total;
+    private $transcriptions_goal;
+
+    /**
+     * @var int
+     */
+    private $local_transcriptions_completed;
 
     /**
      * @var float
@@ -334,12 +340,14 @@ class PanoptesApiService extends HttpRequest
      * Calculates totals for transcripts and sets properties.
      *
      * @param $workflow
+     * @param $expeditionId
      */
-    public function calculateTotals($workflow)
+    public function calculateTotals($workflow, $expeditionId)
     {
         $this->subject_count = (int) $workflow['subjects_count'];
+        $this->transcriptions_goal = (int) $workflow['subjects_count'] * (int) $workflow['retirement']['options']['count'];
         $this->transcriptions_completed = (int) $workflow['classifications_count'];
-        $this->transcriptions_total = (int) $workflow['subjects_count'] * (int) $workflow['retirement']['options']['count'];
+        $this->local_transcriptions_completed = CountHelper::expeditionTranscriptionCount($expeditionId);
         $this->percent_completed = $this->percentCompleted();
     }
 
@@ -350,8 +358,8 @@ class PanoptesApiService extends HttpRequest
      */
     private function percentCompleted()
     {
-        $value = ($this->transcriptions_total === 0 || $this->transcriptions_completed === 0) ? 0 :
-            ($this->transcriptions_completed / $this->transcriptions_total) * 100;
+        $value = ($this->local_transcriptions_completed === 0) ? 0 :
+            ($this->local_transcriptions_completed / $this->transcriptions_goal) * 100;
 
         return ($value > 100) ? 100 : round($value, 2);
     }
@@ -377,13 +385,23 @@ class PanoptesApiService extends HttpRequest
     }
 
     /**
-     * Return transcriptions_total.
+     * Return transcriptions_goal.
      *
      * @return int
      */
-    public function getTranscriptionsTotal()
+    public function getTranscriptionsGoal()
     {
-        return $this->transcriptions_total;
+        return $this->transcriptions_goal;
+    }
+
+    /**
+     * Return local_transcriptions_completed.
+     *
+     * @return int
+     */
+    public function getLocalTranscriptionsCompleted()
+    {
+        return $this->local_transcriptions_completed;
     }
 
     /**

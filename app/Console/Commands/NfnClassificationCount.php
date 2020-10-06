@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\NfnClassificationCountJob;
+use App\Models\Expedition;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\File;
@@ -41,7 +42,7 @@ class NfnClassificationCount extends Command
      */
     public function handle()
     {
-        $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
+        $expeditionIds = null === $this->argument('expeditionIds') ? $this->getExpeditionIds() : explode(',', $this->argument('expeditionIds'));
 
         foreach ($expeditionIds as $expeditionId) {
             NfnClassificationCountJob::dispatch((int) $expeditionId);
@@ -49,17 +50,12 @@ class NfnClassificationCount extends Command
     }
 
     /**
-     * Read directory files to process.
+     * Get expedition ids having panoptes project.
+     *
+     * @return mixed
      */
-    private function readDirectory()
+    private function getExpeditionIds()
     {
-        $expeditionIds = [];
-        $files = File::files(Storage::path(config('config.nfn_downloads_classification')));
-        foreach ($files as $file)
-        {
-            $expeditionIds[] = basename($file, '.csv');
-        }
-
-        return $expeditionIds;
+        return Expedition::whereHas('panoptesProject')->get('id')->pluck('id')->toArray();
     }
 }

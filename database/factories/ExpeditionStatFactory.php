@@ -9,7 +9,7 @@ $factory->define(App\Models\ExpeditionStat::class, function (Faker $faker) {
         'expedition_id' => factory(App\Models\Expedition::class),
         'local_subject_count' => $faker->randomNumber(),
         'subject_count' => $faker->randomNumber(),
-        'transcriptions_total' => $faker->randomNumber(),
+        'transcriptions_goal' => $faker->randomNumber(),
         'transcriptions_completed' => $faker->randomNumber(),
         'percent_completed' => $faker->randomFloat(),
     ];
