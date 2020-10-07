@@ -16,3 +16,4 @@ $router->post('projects/sort')->uses('ProjectsController@sort')->name('admin.pro
 $router->post('projects/{projects}/ocr')->uses('ProjectsController@ocr')->name('admin.projects.ocr');
 
 $router->delete('projects/{projects}')->uses('ProjectsController@delete')->name('admin.projects.delete');
+$router->delete('projects/{projects}/subject')->uses('ProjectsController@deleteSubjects')->name('admin.projects.deleteSubjects');

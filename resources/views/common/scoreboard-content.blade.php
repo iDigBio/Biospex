@@ -27,26 +27,26 @@
 
 <!-- countdown clock -->
 @if(GeneralHelper::eventActive($event))
-<h2 class="text-center color-action pt-4">{{ __('Time Remaining') }}</h2>
+<h2 class="text-center color-action pt-4">{{ t('Time Remaining') }}</h2>
 <div class="clockdiv mx-auto">
     <div>
         <span class="days"></span>
-        <div class="smalltext">{{ __('Days') }}</div>
+        <div class="smalltext">{{ t('Days') }}</div>
     </div>
     <div>
         <span class="hours"></span>
-        <div class="smalltext">{{ __('Hours') }}</div>
+        <div class="smalltext">{{ t('Hours') }}</div>
     </div>
     <div>
         <span class="minutes"></span>
-        <div class="smalltext">{{ __('Minutes') }}</div>
+        <div class="smalltext">{{ t('Minutes') }}</div>
     </div>
     <div>
         <span class="seconds"></span>
-        <div class="smalltext">{{ __('Seconds') }}</div>
+        <div class="smalltext">{{ t('Seconds') }}</div>
     </div>
 </div>
 <div id="date" style="display: none">{{ $event->present()->scoreboard_date }}</div>
 @else
-    <h2 class="text-center pt-4">{{ __('Completed') }}</h2>
+    <h2 class="text-center pt-4">{{ t('Completed') }}</h2>
 @endif

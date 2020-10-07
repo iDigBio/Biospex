@@ -4,7 +4,7 @@
             <h5 class="mb-0">
                 <button class="import btn" data-toggle="collapse" data-target="#dwc-upload"
                         aria-expanded="true" aria-controls="dwc-upload">
-                    {{ __('Import Darwin Core File') }}
+                    {{ t('Import Darwin Core File') }}
                 </button>
             </h5>
         </div>
@@ -21,22 +21,22 @@
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
                            data-toggle="collapse" data-target="#dwc-file-instruction"
                            aria-expanded="true"
-                           aria-controls="dwc-file-instruction">{{ __('Instructions') }}</a>
+                           aria-controls="dwc-file-instruction">{{ t('Instructions') }}</a>
                         <span id="dwc-file-instruction" class="collapse">
-                                            {{ __('Only zipped Darwin Core files are accepted.') }}
+                                            {{ t('Only zipped Darwin Core files are accepted.') }}
                                             <a href="{{ '/darwin-core-example.zip' }}"
-                                               class="link">{{ __('Download Example DWC File.') }}</a>
+                                               class="link">{{ t('Download Example DWC File.') }}</a>
                                         </span>
                     </div>
                     <div class="custom-file">
                         <label class="custom-file-label"
-                               for="customFile">{{ __('Choose file...') }}</label>
+                               for="customFile">{{ t('Choose file...') }}</label>
                         <input type="file" name="dwc-file" class="custom-file-input" id="dwc-file" accept=".zip"
                                required>
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit"
-                                class="btn btn-primary pl-4 pr-4 text-uppercase">{{ __('Import') }}</button>
+                                class="btn btn-primary pl-4 pr-4 text-uppercase">{{ t('Import') }}</button>
                     </div>
                 </form>
             </div>
@@ -47,7 +47,7 @@
             <h5 class="mb-0">
                 <button class="import btn collapsed" data-toggle="collapse"
                         data-target="#recordset" aria-expanded="false" aria-controls="recordset">
-                    {{ __('Record Set Id/Url') }}
+                    {{ t('Record Set Id/Url') }}
                 </button>
             </h5>
         </div>
@@ -63,7 +63,7 @@
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
                            data-toggle="collapse" data-target="#recordset-instruction"
                            aria-expanded="true"
-                           aria-controls="recordset-instruction">{{ __('Instructions') }}</a>
+                           aria-controls="recordset-instruction">{{ t('Instructions') }}</a>
                         <span id="recordset-instruction" class="collapse">
                             <ol class="mt-2">
                                 <li>{{ p('directions', 'Go to') }} <a
@@ -82,7 +82,7 @@
                         </span>
                     </div>
                     <div class="form-group">
-                        <label for="recordset" class="mb-0">{{ __('Record Set Id/Url') }} <span
+                        <label for="recordset" class="mb-0">{{ t('Record Set Id/Url') }} <span
                                     class="color-action">*</span></label>
                         <input type="text" name="recordset" id="dwc-recordset" class="form-control"
                                title="Must be valid UUID"
@@ -91,7 +91,7 @@
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit"
-                                class="btn btn-primary pl-4 pr-4 text-uppercase">{{ __('Import') }}</button>
+                                class="btn btn-primary pl-4 pr-4 text-uppercase">{{ t('Import') }}</button>
                     </div>
                 </form>
             </div>
@@ -103,7 +103,7 @@
                 <button class="import btn collapsed" data-toggle="collapse"
                         data-target="#dwc-uri" aria-expanded="false"
                         aria-controls="dwc-uri">
-                    {{ __('Import Darwin Core Url') }}
+                    {{ t('Import Darwin Core Url') }}
                 </button>
             </h5>
         </div>
@@ -118,21 +118,21 @@
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
                            data-toggle="collapse" data-target="#dwc-uri-instruction"
                            aria-expanded="true"
-                           aria-controls="dwc-uri-instruction">{{ __('Instructions') }}</a>
+                           aria-controls="dwc-uri-instruction">{{ t('Instructions') }}</a>
                         <span id="dwc-uri-instruction" class="collapse">
-                                            {{ __('Copy and paste a url link to the zip file. Only zipped Darwin Core files are accepted.') }}
+                                            {{ t('Copy and paste a url link to the zip file. Only zipped Darwin Core files are accepted.') }}
                                             <a href="{{ '/darwin-core-example.zip' }}"
-                                               class="link">{{ __('Download Example DWC File.') }}</a>
+                                               class="link">{{ t('Download Example DWC File.') }}</a>
                                         </span>
                     </div>
                     <div class="form-group">
-                        <label for="data-url" class="mb-0">{{ __('URL') }} <span
+                        <label for="data-url" class="mb-0">{{ t('URL') }} <span
                                     class="color-action">*</span></label>
                         <input type="url" name="dwc-url" id="dwc-url" class="form-control" required>
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit"
-                                class="btn btn-primary pl-4 pr-4 text-uppercase">{{ __('Import') }}</button>
+                                class="btn btn-primary pl-4 pr-4 text-uppercase">{{ t('Import') }}</button>
                     </div>
                 </form>
             </div>

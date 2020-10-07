@@ -70,7 +70,7 @@ class NfnExpertReviewJobComplete extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        $mailMessage->subject(__('Expert Review Job Complete'));
+        $mailMessage->subject(t('Expert Review Job Complete'));
 
         $attributes = [
             'url'     => route('admin.reconciles.index', ['expeditions' => $this->expeditionId]),

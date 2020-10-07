@@ -17,7 +17,7 @@
 @section('content')
     @include('admin.expedition.partials.expedition-panel')
     <div class="row">
-        <h3 class="mx-auto">{{ __('Subjects currently assigned') }}:
+        <h3 class="mx-auto">{{ t('Subjects currently assigned') }}:
             {{ $expedition->stat->local_subject_count }}
         </h3>
 

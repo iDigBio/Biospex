@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Lead Public Digitization Expeditions') }}
+    {{ t('Lead Public Digitization Expeditions') }}
 @stop
 
 @section('custom-style')
@@ -20,10 +20,10 @@
         <div class="container text-center">
             <div class="row py-5">
                 <div class="col-12" data-aos="fade-right" data-aos-easing="ease-in" data-aos-duration="2000">
-                    <h1 class="text-white align-middle home-banner-tag">{{ __('Provision, advertise, and lead expeditions.') }}
+                    <h1 class="text-white align-middle home-banner-tag">{{ t('Provision, advertise, and lead expeditions.') }}
                         <br>
                         <a href="#learn-more" data-scroll class="btn btn-primary mt-4" data-aos="fade-right"
-                           data-aos-easing="ease-out" data-aos-duration="3000">{{ __('Learn More') }}</a>
+                           data-aos-easing="ease-out" data-aos-duration="3000">{{ t('Learn More') }}</a>
                     </h1>
 
                 </div>
@@ -54,7 +54,7 @@
             <div class="col d-flex justify-content-center">
                 <div class="col-md-4 text-center" role="group" aria-label="External carousel buttons">
                     <h2>The Process<br>
-                        <span class="smallertext">{{ __('Specimen digitization is easy as 123') }}</span></h2>
+                        <span class="smallertext">{{ t('Specimen digitization is easy as 123') }}</span></h2>
                     <ul id="external-carousel-btns" class="list-inline">
                         <li data-target="#processCarousel" data-slide-to="0"
                             class="carousel-li-0 active list-inline-item">1
@@ -70,8 +70,8 @@
                         <div class="carousel-item active"
                              style="background-image: url(/images/slider/slider1.png);">
                             <div class="circle-slider p-5">
-                                <h3 class="text-center text-uppercase">{{ __('Project') }}</h3>
-                                <p>{{ __('Establish a project to create data about biodiversity research specimens that have been
+                                <h3 class="text-center text-uppercase">{{ t('Project') }}</h3>
+                                <p>{{ t('Establish a project to create data about biodiversity research specimens that have been
                                 digitally imaged and for which you have a compelling use.  As you circumscribe the project,
                                 look for ways to align its goals with the interests of existing organizations (e.g.,
                                 enthusiast groups or educators).  A public page is minted for each project, at which
@@ -80,8 +80,8 @@
                         </div>
                         <div class="carousel-item" style="background-image: url(/images/slider/slider2.png);">
                             <div class="circle-slider p-5">
-                                <h3 class="text-center text-uppercase">{{ __('Expeditions') }}</h3>
-                                <p>{{ __('If you have many specimens from which you need data, circumscribe subsets using what you
+                                <h3 class="text-center text-uppercase">{{ t('Expeditions') }}</h3>
+                                <p>{{ t('If you have many specimens from which you need data, circumscribe subsets using what you
                                 already know about the specimens or using the output from the BIOSPEX optical character
                                 recognition service, which reads text in images.  These subsets—the “expeditions”—can be
                                 launched one or more at a time at a crowdsourcing platform.  Perhaps you have a planned
@@ -91,8 +91,8 @@
                         </div>
                         <div class="carousel-item" style="background-image: url(/images/slider/slider3.png);">
                             <div class="circle-slider p-5">
-                                <h3 class="text-center text-uppercase">{{ __('Export') }}</h3>
-                                <p>{{ __('Use the BIOSPEX admin tools, including leaderboards and summary statistics, to
+                                <h3 class="text-center text-uppercase">{{ t('Export') }}</h3>
+                                <p>{{ t('Use the BIOSPEX admin tools, including leaderboards and summary statistics, to
                                 rally participants and follow progress as expeditions proceed.  Upon expedition completion,
                                 download data for use and export back to the collections that curate the physical specimens
                                 so that everyone can benefit from your project’s work.') }}</p>
@@ -128,9 +128,9 @@
 
                             <div class="col-12">
                                 <ul class="text">
-                                    <li class="mt-3">{{ $expedition->project->expeditions_count }} {{ __('Expeditions') }}</li>
-                                    <li>{{ CountHelper::projectTranscriberCount($expedition->project->id) }} {{ __('Participants') }}</li>
-                                    <li>{{ CountHelper::projectTranscriptionCount($expedition->project->id) }} {{ __('Digitizations') }}</li>
+                                    <li class="mt-3">{{ $expedition->project->expeditions_count }} {{ t('Expeditions') }}</li>
+                                    <li>{{ CountHelper::projectTranscriberCount($expedition->project->id) }} {{ t('Participants') }}</li>
+                                    <li>{{ CountHelper::projectTranscriptionCount($expedition->project->id) }} {{ t('Digitizations') }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -148,17 +148,17 @@
                         </div>
                     </div>
 
-                    <h2>{{ __('The Progress') }}</h2>
+                    <h2>{{ t('The Progress') }}</h2>
 
                     <div class="card mb-4 px-4 box-shadow" data-aos="fade-right" data-aos-easing="ease-in"
                          data-aos-duration="2000" data-aos-once="true">
-                        <h2 class="text-center pt-4">{{ __('BIOSPEX Stats') }}</h2>
+                        <h2 class="text-center pt-4">{{ t('BIOSPEX Stats') }}</h2>
                         <hr>
                         <div class="row card-body pb-5">
                             <div class="col-12">
                                 <ul class="text">
-                                    <li class="mt-3">{{ $transcriptionCount }} {{ __('Digitizations in Biospex-launched Projects') }}</li>
-                                    <li>{{ $contributorCount }} {{ __('Participants in Biospex-launched Projects') }}</li>
+                                    <li class="mt-3">{{ $transcriptionCount }} {{ t('Digitizations in Biospex-launched Projects') }}</li>
+                                    <li>{{ $contributorCount }} {{ t('Participants in Biospex-launched Projects') }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -184,10 +184,10 @@
                              style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                             <div class="d-flex justify-content-between">
                                 <div class="p-2">
-                                    <p>{{ $expedition->stat->local_transcriptions_completed }} {{ __('Digitizations') }}</p>
+                                    <p>{{ $expedition->stat->local_transcriptions_completed }} {{ t('Digitizations') }}</p>
                                 </div>
                                 <div class="p-2"><p>{{ $expedition->stat->percent_completed }}
-                                        % {{ __('Completed') }}</p>
+                                        % {{ t('Completed') }}</p>
                                 </div>
                             </div>
                             <hr>

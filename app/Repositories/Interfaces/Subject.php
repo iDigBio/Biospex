@@ -88,4 +88,12 @@ interface Subject extends RepositoryInterface
      * @return mixed
      */
     public function findByAccessUri($accessURI);
+
+    /**
+     * Delete all unassigned subjects from project.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function deleteUnassignedSubjects($projectId);
 }

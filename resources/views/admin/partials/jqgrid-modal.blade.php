@@ -6,7 +6,7 @@
             <div class="modal-body text-center p-4"></div>
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-outline-primary color-action align-self-center"
-                        data-dismiss="modal">{{ __('Exit') }}
+                        data-dismiss="modal">{{ t('Exit') }}
                 </button>
             </div>
         </div>

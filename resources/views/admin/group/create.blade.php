@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Create Group') }}
+    {{ t('Create Group') }}
 @stop
 
 {{-- Content --}}
@@ -16,9 +16,9 @@
                     @csrf
                     <input type="hidden" value="{{ Auth::id() }}" name="user_id" id="user_id">
                     <div class="col-12">
-                        <h2 class="text-center content-header mb-4 text-uppercase">{{ __('Create Group') }}</h2>
+                        <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Create Group') }}</h2>
                         <div class="form-group">
-                            <label for="title" class="col-form-label required">{{ __('Title') }}:</label>
+                            <label for="title" class="col-form-label required">{{ t('Title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
                                    id="title" name="title"
                                    value="{{ old('title') }}" required>

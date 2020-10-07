@@ -71,10 +71,10 @@ class PanoptesProject extends Resource
             BelongsTo::make('Biospex Project', 'project', Project::class)->searchable()->nullable(),
             BelongsTo::make('Biospex Expedition', 'expedition', Expedition::class)->searchable()->nullable(),
             Number::make(t('Panoptes Project Id'), 'panoptes_project_id'),
-            Number::make(__('Panoptes Workflow Id'), 'panoptes_workflow_id')->rules('required'),
-            Text::make(__('Subject Sets'), 'subject_sets')->onlyOnDetail(),
-            Text::make(__('Slug'), 'slug')->onlyOnDetail(),
-            Text::make(__('Panoptes Title'), 'title'),
+            Number::make(t('Panoptes Workflow Id'), 'panoptes_workflow_id')->rules('required'),
+            Text::make(t('Subject Sets'), 'subject_sets')->onlyOnDetail(),
+            Text::make(t('Slug'), 'slug')->onlyOnDetail(),
+            Text::make(t('Panoptes Title'), 'title'),
         ];
     }
 

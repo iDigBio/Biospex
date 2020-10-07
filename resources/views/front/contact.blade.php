@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Contact') }}
+    {{ t('Contact') }}
 @stop
 
 
@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4 text-uppercase">{{ __('Biospex Contact') }}</h2>
+    <h2 class="text-center pt-4 text-uppercase">{{ t('Biospex Contact') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="jumbotron box-shadow py-5 my-5 p-sm-5">
@@ -25,21 +25,21 @@
                 <form action="{{ route('front.contact.create') }}" method="post" role="form">
                     @csrf
                     <div class="form-group">
-                        <label for="name" class="col-form-label required">{{ __('Name') }}:</label>
+                        <label for="name" class="col-form-label required">{{ t('Name') }}:</label>
                         <input type="text" class="form-control {{ ($errors->has('name')) ? 'is-invalid' : '' }}"
                                id="name" name="name"
                                value="{{ old('name') }}" required>
                         <span class="invalid-feedback">{{ $errors->first('name') }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
+                        <label for="email" class="col-form-label required">{{ t('Email') }}:</label>
                         <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
                                id="email" name="email"
                                value="{{ old('email') }}" required>
                         <span class="invalid-feedback">{{ $errors->first('email') }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="message" class="col-form-label required">{{ __('Message') }}:</label>
+                        <label for="message" class="col-form-label required">{{ t('Message') }}:</label>
                         <textarea rows="6" class="form-control {{ ($errors->has('message')) ? 'is-invalid' : '' }}"
                                   id="message" name="message" required>{{ old('message') }}</textarea>
                         <span class="invalid-feedback">{{ $errors->first('message') }}</span>

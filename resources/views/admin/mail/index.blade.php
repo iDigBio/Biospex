@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Mail') }}
+    {{ t('Mail') }}
 @stop
 
 {{-- Content --}}
@@ -11,14 +11,14 @@
         <div class="col-sm-10 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
-                    <h2 class="text-center content-header mb-4 text-uppercase">{{ __('Mail') }}</h2>
+                    <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Mail') }}</h2>
                     <form method="post" action="{{ route('admin.mail.send') }}" role="form"
                           enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-sm-6">
                                 <label for="recipients"
-                                       class="col-form-label required">{{ __('Recipients') }}
+                                       class="col-form-label required">{{ t('Recipients') }}
                                     :</label>
                                 <select name="recipients" id="recipients"
                                         class="form-control custom-select {{ ($errors->has('recipients')) ? 'is-invalid' : '' }}"
@@ -31,7 +31,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="subject" class="col-form-label required">{{ __('Subject') }}:</label>
+                            <label for="subject" class="col-form-label required">{{ t('Subject') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('subject')) ? 'is-invalid' : '' }}"
                                    id="subject" name="subject"
                                    value="{{ old('subject') }}" required>
@@ -39,7 +39,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="message" class="col-form-label required">{{ __('Message') }}
+                            <label for="message" class="col-form-label required">{{ t('Message') }}
                                 :</label>
                             <textarea id="message" name="message"
                                       class="form-control textarea {{ ($errors->has('message')) ? 'is-invalid' : '' }}"

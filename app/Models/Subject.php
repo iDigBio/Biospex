@@ -38,7 +38,7 @@ class Subject extends BaseMongoModel
     }
 
     /**
-     * @return \Jenssegers\Mongodb\Relations\EmbedsOne
+     * @return mixed
      */
     public function occurrence()
     {

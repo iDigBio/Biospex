@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Projects') }}
+    {{ t('Projects') }}
 @stop
 
 @section('header')
@@ -17,7 +17,7 @@
 
 {{-- Content --}}
 @section('content')
-    <h2 class="text-center pt-4 text-uppercase">{{ __('Biospex Projects') }}</h2>
+    <h2 class="text-center pt-4 text-uppercase">{{ t('Biospex Projects') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         @include('common.project-sort', ['route' => route('front.projects.sort')])

@@ -133,6 +133,16 @@ class SubjectRepository extends MongoDbRepository implements Subject
     }
 
     /**
+     * @inheritDoc
+     */
+    public function deleteUnassignedSubjects($projectId)
+    {
+        $this->model->where('project_id', (int) $projectId)
+            ->where('expedition_ids', 'size', 0)
+            ->delete();
+    }
+
+    /**
      * Calculate the number of rows. It's used for paging the result.
      *
      * @param array $vars
@@ -407,7 +417,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
             foreach ($orderBys as $order)
             {
                 $order = trim($order);
-                list($field, $sort) = array_pad(explode(' ', $order, 2), 2, $sord);
+                [$field, $sort] = array_pad(explode(' ', $order, 2), 2, $sord);
                 $orderByRaw [trim($field)] = trim($sort);
             }
         }

@@ -45,7 +45,7 @@ class Profile extends Resource
      */
     public static function label()
     {
-        return __('Profiles');
+        return t('Profiles');
     }
 
     /**
@@ -55,7 +55,7 @@ class Profile extends Resource
      */
     public static function singularLabel()
     {
-        return __('Profile');
+        return t('Profile');
     }
 
     /**
@@ -67,12 +67,12 @@ class Profile extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make(__('Id'), 'id')->sortable(),
+            ID::make(t('Id'), 'id')->sortable(),
             BelongsTo::make('User')->rules('required')->searchable()->sortable(),
-            Text::make(__('First Name'), 'first_name')->rules('required')->sortable(),
-            Text::make(__('Last Name'), 'last_name')->rules('required')->sortable(),
-            Timezone::make(__('Timezone'), 'timezone')->rules('required')->onlyOnForms(),
-            Image::make(__('Avatar File Name'), 'avatar')
+            Text::make(t('First Name'), 'first_name')->rules('required')->sortable(),
+            Text::make(t('Last Name'), 'last_name')->rules('required')->sortable(),
+            Timezone::make(t('Timezone'), 'timezone')->rules('required')->onlyOnForms(),
+            Image::make(t('Avatar File Name'), 'avatar')
                 ->store(function (Request $request, $model) {
                     return [
                         'avatar' => $request->avatar,

@@ -13,9 +13,9 @@
                 </div>
                 <hr class="header mx-auto" style="width:300px;">
                 <div class="d-flex justify-content-between mt-4">
-                    <span class="text">{{ $group->users->count() }} {{ __('Members') }} </span>
-                    <span class="text">{{ $group->projects->count() }} {{ __('Projects') }} </span>
-                    <span class="text">{{ $group->expeditions_count }} {{ __('Expeditions') }} </span>
+                    <span class="text">{{ $group->users->count() }} {{ t('Members') }} </span>
+                    <span class="text">{{ $group->projects->count() }} {{ t('Projects') }} </span>
+                    <span class="text">{{ $group->expeditions_count }} {{ t('Expeditions') }} </span>
                 </div>
             </div>
         </div>

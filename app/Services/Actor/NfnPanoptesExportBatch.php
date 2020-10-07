@@ -117,7 +117,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
             return;
         }
 
-        throw new Exception(__('The archive file does not exist.'));
+        throw new Exception(t('The archive file does not exist.'));
     }
 
     /**

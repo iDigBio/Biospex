@@ -19,7 +19,7 @@
             <div class="modal-footer text-center">
                 <button type="button"
                         class="btn btn-outline-primary color-action align-self-center"
-                        data-dismiss="modal">{{ __('Exit') }}</button>
+                        data-dismiss="modal">{{ t('Exit') }}</button>
             </div>
             <div class="hide" id="state" data-state=""></div>
             <div class="hide" id="statevar" data-statevar=""></div>

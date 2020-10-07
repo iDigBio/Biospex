@@ -21,9 +21,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
+use App\Jobs\DeleteUnassignedSubjectsJob;
 use App\Jobs\OcrCreateJob;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ProjectFormRequest;
+use App\Repositories\Interfaces\Subject;
 use App\Services\Model\ProjectService;
 use Flash;
 use Auth;
@@ -356,5 +358,27 @@ class ProjectsController extends Controller
         JavaScript::put(['transcriptions' => $transcriptions]);
 
         return view('admin.project.statistics', compact('project', 'transcribers', 'transcriptions'));
+    }
+
+    /**
+     * Delete all unassigned subjects for project.
+     *
+     * @param string $projectId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteSubjects(string $projectId)
+    {
+        try {
+            DeleteUnassignedSubjectsJob::dispatch(Auth::user(), (int) $projectId);
+
+            Flash::success(t('Subjects have been set for deletion. You will be notified by email when complete.'));
+
+            return redirect()->route('admin.projects.explore', [$projectId]);
+        }
+        catch (Exception $e) {
+            Flash::warning(t('There was an error setting the job to delete the Subjects.'));
+
+            return redirect()->route('admin.projects.explore', [$projectId]);
+        }
     }
 }

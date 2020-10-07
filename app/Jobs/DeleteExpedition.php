@@ -20,6 +20,9 @@
 namespace App\Jobs;
 
 use App\Models\Expedition;
+use App\Models\User;
+use App\Notifications\JobError;
+use App\Notifications\RecordDeleteComplete;
 use App\Repositories\Interfaces\Expedition as ExpeditionContact;
 use App\Repositories\Interfaces\Subject;
 use App\Services\MongoDbService;
@@ -35,6 +38,11 @@ class DeleteExpedition implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * @var \App\Models\User
+     */
+    private $user;
+
+    /**
      * @var \App\Models\Expedition
      */
     private $expedition;
@@ -42,10 +50,12 @@ class DeleteExpedition implements ShouldQueue
     /**
      * Create a new job instance.
      *
+     * @param \App\Models\User $user
      * @param \App\Models\Expedition $expedition
      */
-    public function __construct(Expedition $expedition)
+    public function __construct(User $user, Expedition $expedition)
     {
+        $this->user = $user;
         $this->expedition = $expedition;
         $this->onQueue(config('config.default_tube'));
     }
@@ -61,27 +71,43 @@ class DeleteExpedition implements ShouldQueue
     public function handle(
         ExpeditionContact $expeditionContract,
         Subject $subjectContract,
-        MongoDbService $mongoDbService)
-    {
+        MongoDbService $mongoDbService
+    ) {
+
         $expedition = $expeditionContract->findWith($this->expedition->id, ['downloads']);
 
-        $expedition->downloads->each(function ($download){
-            Storage::delete(config('config.export_dir').'/'.$download->file);
-        });
+        try {
 
-        $mongoDbService->setCollection('pusher_transcriptions');
-        $mongoDbService->deleteMany(['expedition_uuid' => $expedition->uuid]);
+            $expedition->downloads->each(function ($download) {
+                Storage::delete(config('config.export_dir').'/'.$download->file);
+            });
 
-        $mongoDbService->setCollection('panoptes_transcriptions');
-        $mongoDbService->deleteMany(['subject_expeditionId' => $expedition->id]);
+            $mongoDbService->setCollection('pusher_transcriptions');
+            $mongoDbService->deleteMany(['expedition_uuid' => $expedition->uuid]);
 
-        $subjects = $subjectContract->findSubjectsByExpeditionId($expedition->id);
+            $mongoDbService->setCollection('panoptes_transcriptions');
+            $mongoDbService->deleteMany(['subject_expeditionId' => $expedition->id]);
 
-        if ($subjects->isNotEmpty())
-        {
-            $subjectContract->detachSubjects($subjects, $expedition->id);
+            $subjects = $subjectContract->findSubjectsByExpeditionId($expedition->id);
+
+            if ($subjects->isNotEmpty()) {
+                $subjectContract->detachSubjects($subjects, $expedition->id);
+            }
+
+            $expedition->delete();
+
+            $message = [
+                t('Expedition `%s` and all corresponding records have been deleted.', $expedition->title),
+            ];
+            $this->user->notify(new RecordDeleteComplete($message));
+        } catch (\Exception $e) {
+            $message = [
+                'Error: '.t('Could not delete Expedition %s', $expedition->title),
+                'Message:'.$e->getFile().': '.$e->getLine().' - '.$e->getMessage(),
+            ];
+            $this->user->notify(new JobError(__FILE__, $message));
+
+            $this->delete();
         }
-
-        $expedition->delete();
     }
 }

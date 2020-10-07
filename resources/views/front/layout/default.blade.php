@@ -74,32 +74,32 @@ sub footer -->
                 <h6 class="text-uppercase font-weight-bold">{{ t('About') }}</h6>
                 <hr class="white mb-2 mt-2 d-inline-block mx-auto" style="width:60px;">
                 <p>
-                    <a href="{{ route('front.teams.index') }}">{{ __('Team') }}</a>
+                    <a href="{{ route('front.teams.index') }}">{{ t('Team') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.faqs.index') }}">{{ __('FAQ') }}</a>
+                    <a href="{{ route('front.faqs.index') }}">{{ t('FAQ') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.resources.index') }}">{{ __('Resources') }}</a>
+                    <a href="{{ route('front.resources.index') }}">{{ t('Resources') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.contact.index') }}">{{ __('Contact') }}</a>
+                    <a href="{{ route('front.contact.index') }}">{{ t('Contact') }}</a>
                 </p>
 
             </div>
             <!-- Grid column -->
             <!-- Grid column -->
             <div class="col-md-2  mx-auto mb-4">
-                <h6 class="text-uppercase font-weight-bold">{{ __('Content') }}</h6>
+                <h6 class="text-uppercase font-weight-bold">{{ t('Content') }}</h6>
                 <hr class="white mb-2 mt-2 d-inline-block mx-auto" style="width:60px;">
                 <p>
-                    <a href="{{ route('front.projects.index') }}">{{ __('Projects') }}</a>
+                    <a href="{{ route('front.projects.index') }}">{{ t('Projects') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.expeditions.index') }}">{{ __('Expeditions') }}</a>
+                    <a href="{{ route('front.expeditions.index') }}">{{ t('Expeditions') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.events.index') }}">{{ __('Events') }}</a>
+                    <a href="{{ route('front.events.index') }}">{{ t('Events') }}</a>
                 </p>
                 <p>
                     <a href="{{ route('api.get.index') }}" class="text-uppercase">{{ t('Biospex API') }}</a>
@@ -113,8 +113,8 @@ sub footer -->
     <!-- Footer Links -->
 
     <!-- Copyright -->
-    <div class="text-center py-3" style="color: #e1e1e1;">{{ __('© 2014–2020 Copyright') }}
-        <a href="https://www.bio.fsu.edu/"> {{ __('FSU Department of Biological Science') }}</a>
+    <div class="text-center py-3" style="color: #e1e1e1;">{{ t('© 2014–2020 Copyright') }}
+        <a href="https://www.bio.fsu.edu/"> {{ t('FSU Department of Biological Science') }}</a>
     </div>
     <!-- Copyright -->
 

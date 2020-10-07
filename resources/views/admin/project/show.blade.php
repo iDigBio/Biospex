@@ -10,7 +10,7 @@
     @include('admin.project.partials.project-panel')
     <div class="row">
         <div class="col-sm-8 offset-md-2">
-            <h1 class="text-center content-header text-uppercase" id="expeditions">{{ __('Expeditions') }}</h1>
+            <h1 class="text-center content-header text-uppercase" id="expeditions">{{ t('Expeditions') }}</h1>
             <hr class="header mx-auto" style="width:300px;">
             <div class="text-center mt-4">
                 <button class="toggle-view-btn btn btn-primary pl-4 pr-4 text-uppercase"
@@ -20,9 +20,9 @@
                 >{{ t('view completed expeditions') }}</button>
             </div>
             <div class="d-flex justify-content-between mt-4 mb-3">
-                <span>{{ $project->expeditions_count }} {{ __('Expeditions') }}</span>
-                <span>{{ $transcriptionsCount }} {{ __('Digitizations') }}</span>
-                <span>{{ $transcribersCount }} {{ __('Participants') }}</span>
+                <span>{{ $project->expeditions_count }} {{ t('Expeditions') }}</span>
+                <span>{{ $transcriptionsCount }} {{ t('Digitizations') }}</span>
+                <span>{{ $transcribersCount }} {{ t('Participants') }}</span>
             </div>
         </div>
         <div id="active-expeditions-main" class="col-sm-12 show">

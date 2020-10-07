@@ -21,7 +21,7 @@
         <div class="col-sm-10 mx-auto">
             <div class="jumbotron box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <h1 class="text-center project-wide text-uppercase">
-                    <small style="font-size:16px;">{{ __('Featured BIOSPEX Project') }}</small>
+                    <small style="font-size:16px;">{{ t('Featured BIOSPEX Project') }}</small>
                     <br>{{ $project->title }}</h1>
                 <div class="col-12">
                     <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
@@ -42,14 +42,14 @@
                              alt="{{ $project->title }} logo">
                     </div>
                     @if($project->contact !== null)
-                        <h3>{{ __('Contact') }}</h3>
+                        <h3>{{ t('Contact') }}</h3>
                         <p>
                             <a href="mailto:{{ $project->contact_email }}" class="text">{{ $project->contact }}</a>
                         </p>
                     @endif
 
                     @if($project->organization !== null)
-                        <h3>{{ __('Organization') }}</h3>
+                        <h3>{{ t('Organization') }}</h3>
                         @if($project->organization_webiste !== null)
                             <p><a href="{{ $project->organization_webiste }}"
                                   target="_blank">{{ $project->organization }}</a></p>
@@ -59,17 +59,17 @@
                     @endif
 
                     @if($project->project_partners !== null)
-                        <h3>{{ __('Partners') }}</h3>
+                        <h3>{{ t('Partners') }}</h3>
                         <p>{{ $project->project_partners }}</p>
                     @endif
 
                     @if($project->funding_source !== null)
-                        <h3>{{ __('Funding Source') }}</h3>
+                        <h3>{{ t('Funding Source') }}</h3>
                         <p>{{ $project->funding_source  }}</p>
                     @endif
 
                     @if($project->description_long !== null)
-                        <h3>{{ __('Description') }}</h3>
+                        <h3>{{ t('Description') }}</h3>
                         @if($project->description_short !== null)
                             <p><strong>{{ $project->description_short  }}</strong></p>
                         @endif
@@ -77,27 +77,27 @@
                     @endif
 
                     @if($project->incentives !== null)
-                        <h3>{{ __('Incentives') }}</h3>
+                        <h3>{{ t('Incentives') }}</h3>
                         <p>{{ $project->incentives }}</p>
                     @endif
 
                     @if($project->geographic_scope !== null)
-                        <h3>{{ __('Geographic Scope') }}</h3>
+                        <h3>{{ t('Geographic Scope') }}</h3>
                         <p>{{ $project->geographic_scope }}</p>
                     @endif
 
                     @if($project->taxonomic_scope !== null)
-                        <h3>{{ __('Taxonomic Scope') }}</h3>
+                        <h3>{{ t('Taxonomic Scope') }}</h3>
                         <p>{{ $project->taxonomic_scope }}</p>
                     @endif
 
                     @if($project->temporal_scope !== null)
-                        <h3>{{ __('Temporal Scope') }}</h3>
+                        <h3>{{ t('Temporal Scope') }}</h3>
                         <p>{{ $project->temporal_scope }}</p>
                     @endif
 
                     @if($project->language_skills !== null)
-                        <h3>{{ __('Language Skills Required') }}</h3>
+                        <h3>{{ t('Language Skills Required') }}</h3>
                         <p>{{ $project->language_skills }}</p>
                     @endif
 
@@ -107,7 +107,7 @@
                     @endif
 
                     @if($project->resources->isNotEmpty())
-                        <h3>{{ __('Resources') }}</h3>
+                        <h3>{{ t('Resources') }}</h3>
                         @foreach($project->resources as $resource)
                             <p>{!! $resource->present()->resource !!}</p>
                         @endforeach
@@ -120,7 +120,7 @@
 
     <div class="row">
         <div class="col-sm-8 offset-md-2 mt-5">
-            <h1 class="text-center content-header text-uppercase mt-5" id="expeditions">{{ __('Expeditions') }}</h1>
+            <h1 class="text-center content-header text-uppercase mt-5" id="expeditions">{{ t('Expeditions') }}</h1>
             <div class="text-center mt-4">
                 <button class="toggle-view-btn btn btn-primary text-uppercase"
                         data-toggle="collapse"
@@ -129,9 +129,9 @@
                 >{{ t('view completed expeditions') }}</button>
             </div>
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                <span class="text">{{ $project->expeditions_count }} {{ __('Expeditions') }}</span>
-                <span class="text">{{ $transcriptionsCount }} {{ __('Digitizations') }}</span>
-                <span class="text">{{ $transcribersCount }} {{ __('Participants') }}</span>
+                <span class="text">{{ $project->expeditions_count }} {{ t('Expeditions') }}</span>
+                <span class="text">{{ $transcriptionsCount }} {{ t('Digitizations') }}</span>
+                <span class="text">{{ $transcribersCount }} {{ t('Participants') }}</span>
             </div>
             <hr class="header mx-auto">
         </div>
@@ -152,7 +152,7 @@
 
     <div class="row">
         <div class="col-sm-8 offset-md-2 mt-5">
-            <h1 class="text-center content-header mt-5" id="events">{{ __('Events') }}</h1>
+            <h1 class="text-center content-header mt-5" id="events">{{ t('Events') }}</h1>
             <div class="text-center mt-4">
                 <button class="toggle-view-btn btn btn-primary text-uppercase"
                         data-toggle="collapse"
@@ -182,7 +182,7 @@
     @if($project->bingos->isNotEmpty())
         <div class="row">
             <div class="col-sm-8 offset-md-2 mt-5">
-                <h1 class="text-center content-header mt-5" id="bingos">{{ __('Games') }}</h1>
+                <h1 class="text-center content-header mt-5" id="bingos">{{ t('Games') }}</h1>
                 <hr class="header mx-auto">
             </div>
             <div id="bingos-main" class="col-sm-12 show">
@@ -197,7 +197,7 @@
         <div class="row">
             <div class="col-sm-10 mx-auto mt-5">
                 <h1 class="text-center content-header text-uppercase mt-5"
-                    id="expeditions">{{ __('Digitizations') }}</h1>
+                    id="expeditions">{{ t('Digitizations') }}</h1>
                 <div class="text-center mt-4 mb-4">
                     @foreach($years as $year)
                         <button class="btn btn-primary btn-transcription" id="year{{ $year }}"
@@ -216,7 +216,7 @@
         <div class="row">
             <div class="col-sm-10 mx-auto mt-5">
                 <h1 class="text-center content-header text-uppercase mt-5"
-                    id="expeditions">{{ __('Heat Map Digitized Specimens') }}</h1>
+                    id="expeditions">{{ t('Heat Map Digitized Specimens') }}</h1>
                 <hr class="header mx-auto">
                 <div class="jumbotron box-shadow pt-2 pb-5">
                     <div id="mapDiv" class="d-flex" style="width:100%; height: 500px"></div>

@@ -24,24 +24,23 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class NfnExpertReviewPublished extends Notification implements ShouldQueue
+class RecordDeleteComplete extends Notification implements ShouldQueue
 {
-
     use Queueable;
 
     /**
      * @var string
      */
-    private $title;
+    private $message;
 
     /**
-     * NfnExpertReviewPublished constructor.
+     * Create a new notification instance.
      *
-     * @param string $title
+     * @param array $message
      */
-    public function __construct(string $title)
+    public function __construct(array $message)
     {
-        $this->title = $title;
+        $this->message = $message;
         $this->onQueue(config('config.default_tube'));
     }
 
@@ -58,15 +57,13 @@ class NfnExpertReviewPublished extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      *
+     * @param $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail()
+    public function toMail($notifiable)
     {
-        $mailMessage = new MailMessage;
-
-        $mailMessage->subject(t('Expert Review Reconciled CSV File'));
-
-        return $mailMessage->markdown('mail.nfnexpertreviewpublish', ['title' => $this->title]);
+        $message = implode('<br />', $this->message);
+        return (new MailMessage)->markdown('mail.recorddeletecomplete', ['message' => $message]);
     }
 
     /**

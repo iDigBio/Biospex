@@ -2,12 +2,12 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Events') }}
+    {{ t('Events') }}
 @stop
 
 {{-- Content --}}
 @section('content')
-    <h2 class="text-center text-uppercase pt-4">{{ __('Biospex Events') }}</h2>
+    <h2 class="text-center text-uppercase pt-4">{{ t('Biospex Events') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         <div class="col-sm-8 offset-md-2 text-center">
@@ -17,7 +17,7 @@
                         data-value="{{ t('view active events') }}"
                 >{{ t('view completed events') }}</button>
                 <a href="{{ route('admin.events.create') }}" type="submit"
-                   class="btn btn-primary my-4 ml-2 text-uppercase"><i class="fas fa-plus-circle"></i> {{ __('New Event') }}</a>
+                   class="btn btn-primary my-4 ml-2 text-uppercase"><i class="fas fa-plus-circle"></i> {{ t('New Event') }}</a>
         </div>
     </div>
 

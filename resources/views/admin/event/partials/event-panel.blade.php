@@ -5,19 +5,19 @@
             <p class="text-center">{{ $event->description }}</p>
             <div class="col-md-12 d-flex">
                 <div class="col-md-6">
-                    <p>{{ __('Project') }}
+                    <p>{{ t('Project') }}
                         :
                         <a href="{{ route('front.projects.slug', ['slug' => $event->project->slug]) }}">{{ $event->project->title }}</a>
                     </p>
-                    {{ __('Start Date') }}
+                    {{ t('Start Date') }}
                     : {{ $event->present()->start_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}
                     <br>
-                    {{ __('End Date') }}
+                    {{ t('End Date') }}
                     : {{ $event->present()->end_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}
                 </div>
                 <div class="col-md-6">
-                    <p>{{ __('Digitizations') }}: {{ $event->transcriptions_count }}</p>
-                    <p>{{ __('Team Invite Links') }}:</p>
+                    <p>{{ t('Digitizations') }}: {{ $event->transcriptions_count }}</p>
+                    <p>{{ t('Team Invite Links') }}:</p>
                     @foreach($event->teams as $team)
                         {!! $team->present()->team_join_url_icon !!}
                     @endforeach

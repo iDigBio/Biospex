@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Group') }} {{ $group->title }}
+    {{ t('Group') }} {{ $group->title }}
 @stop
 
 @section('custom-style')
@@ -16,20 +16,20 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4">{{ __('Group Members') }}</h3>
+                <h3 class="text-center pt-4">{{ t('Group Members') }}</h3>
                 <hr>
-                <div class="color-action text-center">{{ __('Use shift + click to multi-sort') }}</div>
+                <div class="color-action text-center">{{ t('Use shift + click to multi-sort') }}</div>
                 <div class="row card-body">
-                    <p>{{ __('Group Owner') }}: {{ $group->owner->present()->full_name_or_email }}</p>
+                    <p>{{ t('Group Owner') }}: {{ $group->owner->present()->full_name_or_email }}</p>
                     @if($group->users->isEmpty())
-                        <p class="text-center">{{ __('') }}</p>
+                        <p class="text-center">{{ t('') }}</p>
                     @else
                         <table id="members-tbl" class="table table-striped table-bordered dt-responsive nowrap"
                                style="width:100%; font-size: .8rem">
                             <thead>
                             <tr>
                                 <th style="width: 5%"></th>
-                                <th>{{ __('Member') }}</th>
+                                <th>{{ t('Member') }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -42,19 +42,19 @@
         </div>
         <div class="col-md-6 mb-4">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4">{{ __('Group Projects') }}</h3>
+                <h3 class="text-center pt-4">{{ t('Group Projects') }}</h3>
                 <hr>
-                <div class="color-action text-center">{{ __('Use shift + click to multi-sort') }}</div>
+                <div class="color-action text-center">{{ t('Use shift + click to multi-sort') }}</div>
                 <div class="row card-body">
                     @if($group->projects->isEmpty())
-                        <p class="text-center">{{ __('No Projects Exist') }}</p>
+                        <p class="text-center">{{ t('No Projects Exist') }}</p>
                     @else
                         <table id="projects-tbl" class="table table-striped table-bordered dt-responsive nowrap"
                                style="width:100%; font-size: .8rem">
                             <thead>
                             <tr>
-                                <th>{{ __('Title') }}</th>
-                                <th>{{ __('Description') }}</th>
+                                <th>{{ t('Title') }}</th>
+                                <th>{{ t('Description') }}</th>
                             </tr>
                             </thead>
                             <tbody>

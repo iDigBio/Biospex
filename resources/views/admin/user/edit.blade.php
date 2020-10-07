@@ -18,7 +18,7 @@
                         {!! method_field('put') !!}
                         @csrf
                         <div class="form-group">
-                            <label for="first_name" class="col-form-label required">{{ __('First Name') }}
+                            <label for="first_name" class="col-form-label required">{{ t('First Name') }}
                                 :</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('first_name')) ? 'is-invalid' : '' }}"
@@ -27,7 +27,7 @@
                             <span class="invalid-feedback">{{ $errors->first('first_name') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="last_name" class="col-form-label required">{{ __('Last Name') }}:</label>
+                            <label for="last_name" class="col-form-label required">{{ t('Last Name') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('last_name')) ? 'is-invalid' : '' }}"
                                    id="last_name" name="last_name"
@@ -35,7 +35,7 @@
                             <span class="invalid-feedback">{{ $errors->first('last_name') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
+                            <label for="email" class="col-form-label required">{{ t('Email') }}:</label>
                             <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
                                    id="email" name="email"
                                    value="{{ old('email', $user->email) }}" required>
@@ -43,7 +43,7 @@
                         </div>
                         <div class="form-group">
                             <div class="col-12 p-0">
-                                <label for="timezone" class="col-form-label required">{{ __('Timezone') }}
+                                <label for="timezone" class="col-form-label required">{{ t('Timezone') }}
                                     :</label>
                             </div>
                             <div class="col-6 p-0">
@@ -91,14 +91,14 @@
         <div class="col-sm-8 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
-                    <h2 class="text-center content-header mb-4 text-uppercase">{{ __('Change Password') }}</h2>
+                    <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Change Password') }}</h2>
                     <form id="gridForm" method="post"
                           action="{{ route('admin.users.password', [$user->id]) }}" role="form">
                         {!! method_field('put') !!}
                         @csrf
                         <input type="hidden" id="id" name="id" value="{{ $user->id }}">
                         <div class="form-group">
-                            <label for="oldPassword" class="col-form-label required">{{ __('Old Password') }}
+                            <label for="oldPassword" class="col-form-label required">{{ t('Old Password') }}
                                 :</label>
                             <input type="password"
                                    class="form-control {{ ($errors->has('oldPassword')) ? 'is-invalid' : '' }}"
@@ -107,7 +107,7 @@
                             <span class="invalid-feedback">{{ $errors->first('oldPassword') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="newPassword" class="col-form-label required">{{ __('New Password') }}
+                            <label for="newPassword" class="col-form-label required">{{ t('New Password') }}
                                 :</label>
                             <input type="password"
                                    class="form-control {{ ($errors->has('newPassword')) ? 'is-invalid' : '' }}"
@@ -117,7 +117,7 @@
                         </div>
                         <div class="form-group">
                             <label for="newPassword_confirmation"
-                                   class="col-form-label required">{{ __('Confirm Password') }}:</label>
+                                   class="col-form-label required">{{ t('Confirm Password') }}:</label>
                             <input type="password"
                                    class="form-control {{ ($errors->has('newPassword_confirmation')) ? 'is-invalid' : '' }}"
                                    id="newPassword_confirmation" name="newPassword_confirmation"

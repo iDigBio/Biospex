@@ -71,7 +71,7 @@ class NfnBatchExportComplete extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        $mailMessage->subject(__('BIOSPEX Batch Export Completed'));
+        $mailMessage->subject(t('BIOSPEX Batch Export Completed'));
 
         $attributes = [
             'title' => $this->title,

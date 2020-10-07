@@ -143,7 +143,7 @@ class ActorImageService
     public function getImages()
     {
         if ($this->propertiesCheck()) {
-            throw new Exception(__('Missing needed properties for ActorImageService'));
+            throw new Exception(t('Missing needed properties for ActorImageService'));
         }
 
         $this->httpRequest->setHttpProvider();

@@ -43,7 +43,7 @@ class Group extends Resource
      */
     public static function label()
     {
-        return __('Groups');
+        return t('Groups');
     }
 
     /**
@@ -53,7 +53,7 @@ class Group extends Resource
      */
     public static function singularLabel()
     {
-        return __('Group');
+        return t('Group');
     }
 
     /**
@@ -65,10 +65,10 @@ class Group extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make(__('Id'), 'id')->sortable(),
-            Text::make(__('Uuid'), 'uuid')->onlyOnDetail(),
+            ID::make(t('Id'), 'id')->sortable(),
+            Text::make(t('Uuid'), 'uuid')->onlyOnDetail(),
             BelongsTo::make('Owner', 'owner', User::class)->rules('required')->searchable()->sortable(),
-            Text::make(__('Title'), 'title')->rules('required')->sortable(),
+            Text::make(t('Title'), 'title')->rules('required')->sortable(),
         ];
     }
 

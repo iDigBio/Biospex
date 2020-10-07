@@ -512,9 +512,9 @@ class ExpeditionsController extends Controller
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            DeleteExpedition::dispatch($expedition);
+            DeleteExpedition::dispatch(Auth::user(), $expedition);
 
-            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
+            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete.'));
 
             return redirect()->route('admin.projects.index');
         } catch (Exception $e) {

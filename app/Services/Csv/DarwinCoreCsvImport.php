@@ -435,7 +435,7 @@ class DarwinCoreCsvImport
             });
 
         if ($identifierColumnValues->isEmpty()) {
-            $rejected = ['Reason' => __('All identifier columns empty or identifier is URL.')] + $row;
+            $rejected = ['Reason' => t('All identifier columns empty or identifier is URL.')] + $row;
             $this->reject($rejected);
 
             return false;
@@ -493,14 +493,14 @@ class DarwinCoreCsvImport
     private function checkColumns($row)
     {
         if (! trim($row['id'])) {
-            $rejected = ['Reason' => __('Missing required ID value.')] + $row;
+            $rejected = ['Reason' => t('Missing required ID value.')] + $row;
             $this->reject($rejected);
 
             return true;
         }
 
         if (empty($row['accessURI'])) {
-            $rejected = ['Reason' => __('Missing accessURI.')] + $row;
+            $rejected = ['Reason' => t('Missing accessURI.')] + $row;
             $this->reject($rejected);
 
             return true;

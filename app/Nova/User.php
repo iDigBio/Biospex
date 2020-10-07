@@ -42,7 +42,7 @@ class User extends Resource
      */
     public static function label()
     {
-        return __('Users');
+        return t('Users');
     }
 
     /**
@@ -52,7 +52,7 @@ class User extends Resource
      */
     public static function singularLabel()
     {
-        return __('User');
+        return t('User');
     }
 
     /**
@@ -64,17 +64,17 @@ class User extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make(__('Id'), 'id')->sortable(),
-            Text::make(__('Uuid'), 'uuid')->onlyOnDetail(),
-            Text::make(__('Email'), 'email')->rules('required')->sortable(),
-            Password::make(__('Password'),'password')
+            ID::make(t('Id'), 'id')->sortable(),
+            Text::make(t('Uuid'), 'uuid')->onlyOnDetail(),
+            Text::make(t('Email'), 'email')->rules('required')->sortable(),
+            Password::make(t('Password'),'password')
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:6', 'confirmed')
                 ->updateRules('nullable', 'string', 'min:6', 'confirmed'),
 
-            PasswordConfirmation::make(__('Password Confirmation')),
-            DateTime::make(__('Email Verified At'), 'email_verified_at')->onlyOnDetail()->sortable(),
-            Text::make(__('Remember Token'), 'remember_token')->onlyOnDetail()->sortable(),
+            PasswordConfirmation::make(t('Password Confirmation')),
+            DateTime::make(t('Email Verified At'), 'email_verified_at')->onlyOnDetail()->sortable(),
+            Text::make(t('Remember Token'), 'remember_token')->onlyOnDetail()->sortable(),
         ];
     }
 

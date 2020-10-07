@@ -1,6 +1,6 @@
 @if($error)
     <div class="col-md-8 mx-auto">
-        <h3 class="text-center">{{ __('You do not have sufficient permissions.') }}</h3>
+        <h3 class="text-center">{{ t('You do not have sufficient permissions.') }}</h3>
     </div>
 @else
     <div class="col-sm-8 mx-auto">
@@ -20,7 +20,7 @@
                                class="form-control {{ ($errors->has("invites.$i.email")) ? 'is-invalid' : '' }}"
                                id="invites[][email]" name="invites[][email]"
                                value="{{ old("invites.$i.email", $group->invites[$i]->email ?? '') }}"
-                               placeholder="{{ __('Email') }}" required>
+                               placeholder="{{ t('Email') }}" required>
                         <span class="invalid-feedback">{{ $errors->first("invites.$i.email") }}</span>
                     </div>
                 </div>
@@ -28,9 +28,9 @@
             </div>
             <div class="form-group col-md-8 d-flex align-items-start justify-content-between mx-auto">
                 <button type="button" class="btn btn-primary mr-4 text-uppercase"
-                        data-dismiss="modal">{{ __('Cancel') }}
+                        data-dismiss="modal">{{ t('Cancel') }}
                 </button>
-                <button type="submit" class="btn btn-primary text-uppercase">{{ __('Submit') }}</button>
+                <button type="submit" class="btn btn-primary text-uppercase">{{ t('Submit') }}</button>
             </div>
         </form>
     </div>

@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Events') }}
+    {{ t('Events') }}
 @stop
 
 @section('header')

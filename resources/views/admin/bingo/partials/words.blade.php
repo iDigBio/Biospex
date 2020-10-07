@@ -3,7 +3,7 @@
         <div class="col-sm-12">
             <div class="input-group">
                 <div class="col-4 mb-2">
-                    <label for="word" class="col-form-label required">{{ __('Word') }}:</label>
+                    <label for="word" class="col-form-label required">{{ t('Word') }}:</label>
                     <input type="text"
                            class="form-control {{ ($errors->has("words.$i.word")) ? 'is-invalid' : '' }}"
                            id="words[{{ $i }}][word]"
@@ -16,7 +16,7 @@
                            value="{{ old("words.$i.id", $words[$i]->id ?? '') }}">
                 </div>
                 <div class="col-8 mb-2">
-                    <label for="definition" class="col-form-label">{{ __('Mouseover Text') }}:</label>
+                    <label for="definition" class="col-form-label">{{ t('Mouseover Text') }}:</label>
                     <input type="text"
                            class="form-control"
                            id="words[{{ $i }}][definition]"

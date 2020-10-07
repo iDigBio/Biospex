@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Event Team Registration') }}
+    {{ t('Event Team Registration') }}
 @stop
 
 @section('header')
@@ -18,7 +18,7 @@
 {{-- Content --}}
 @section('content')
     <h2 class="text-center pt-4 text-uppercase">
-        {{ __('Biospex Event Team Registration') }}
+        {{ t('Biospex Event Team Registration') }}
     </h2>
     <hr class="header mx-auto" style="width:300px;">
 
@@ -27,12 +27,12 @@
             <div class="col-8 mx-auto">
                 <div class="row">
                     <div class="col-md-10 col-md-offset-2">
-                        <h4>{{ __('Event') }}: <small>{{ $team->event->title }}</small></h4>
+                        <h4>{{ t('Event') }}: <small>{{ $team->event->title }}</small></h4>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-10 col-md-offset-2">
-                        <h4>{{ __('Team') }}: <small>{{ $team->title }}</small></h4>
+                        <h4>{{ t('Team') }}: <small>{{ $team->title }}</small></h4>
                     </div>
                 </div>
                 <div class="row">
@@ -46,13 +46,13 @@
                     @csrf
                     <input type="hidden" name="team_id" value="{{ $team->id }}">
                     <div class="form-group {{ ($errors->has('nfn_user')) ? 'has-error' : '' }}">
-                        <label for="name" class="col-form-label required">{{ __('Zooniverse Username') }}:</label>
+                        <label for="name" class="col-form-label required">{{ t('Zooniverse Username') }}:</label>
                         @if($active)
                             <input type="text" class="form-control {{ ($errors->has('nfn_user')) ? 'is-invalid' : '' }}"
                                    id="nfn_user" name="nfn_user" value="{{ old('nfn_user') }}" required>
                         @else
                             <input type="text" class="form-control {{ ($errors->has('nfn_user')) ? 'is-invalid' : '' }}"
-                                   id="nfn_user" name="nfn_user" value="" placeholder="{{ __('Event Closed') }}"
+                                   id="nfn_user" name="nfn_user" value="" placeholder="{{ t('Event Closed') }}"
                                    disabled="disabled">
                         @endif
                         <span class="invalid-feedback">{{ $errors->first('nfn_user') }}</span>

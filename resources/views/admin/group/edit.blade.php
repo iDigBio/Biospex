@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('edit') }} {{ __('group') }}
+    {{ t('edit') }} {{ t('group') }}
 @stop
 
 {{-- Content --}}
@@ -16,9 +16,9 @@
                     {!! method_field('put') !!}
                     @csrf
                     <div class="col-12">
-                        <h2 class="text-center content-header mb-4 text-uppercase">{{ __('Edit Group') }}</h2>
+                        <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Edit Group') }}</h2>
                         <div class="form-group">
-                            <label for="title" class="col-form-label required">{{ __('Title') }}:</label>
+                            <label for="title" class="col-form-label required">{{ t('Title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
                                    id="title" name="title"
                                    value="{{ old('title', $group->title) }}" required>
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <div class="form-group col-sm-6">
-                        <label for="user_id" class="col-form-label required">{{ __('Owner') }}:</label>
+                        <label for="user_id" class="col-form-label required">{{ t('Owner') }}:</label>
                         <select name="user_id" id="user_id"
                                 class="form-control custom-select {{ ($errors->has('user_id')) ? 'is-invalid' : '' }}"
                                 required>

@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ $project->title }} {{ __('Statistics') }}
+    {{ $project->title }} {{ t('Statistics') }}
 @stop
 
 @section('custom-style')
@@ -14,21 +14,21 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4">{{ __('Participant Summary') }}</h3>
+                <h3 class="text-center pt-4">{{ t('Participant Summary') }}</h3>
                 <hr>
                 @if($transcribers->isEmpty())
-                    <p class="text-center">{{ __('No digitizations exist.') }}</p>
+                    <p class="text-center">{{ t('No digitizations exist.') }}</p>
                 @else
-                    <div class="color-action text-center">{{ __('Use shift + click to multi-sort') }}</div>
+                    <div class="color-action text-center">{{ t('Use shift + click to multi-sort') }}</div>
                     <div class="row card-body">
                         <table id="transcribers-tbl" class="table table-striped table-bordered dt-responsive nowrap"
                                style="width:100%; font-size: .8rem">
                             <thead>
                             <tr>
-                                <th>{{ __('User') }}</th>
-                                <th>{{ __('Expeditions') }}</th>
-                                <th>{{ __('Digitizations') }}</th>
-                                <th>{{ __('Last Date') }}</th>
+                                <th>{{ t('User') }}</th>
+                                <th>{{ t('Expeditions') }}</th>
+                                <th>{{ t('Digitizations') }}</th>
+                                <th>{{ t('Last Date') }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -41,14 +41,14 @@
         </div>
         <div class="col-md-6 mb-4">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4">{{ __('Digitizations') }}</h3>
+                <h3 class="text-center pt-4">{{ t('Digitizations') }}</h3>
                 <hr>
                 @if(isset($transcriptions))
                     <div class="row card-body">
                         <div id="statDiv" style="width: 100%; height: 600px; color: #000000; font-size: 0.8em"></div>
                     </div>
                 @else
-                    <p class="text-center">{{ __('No digitizations exist.') }}</p>
+                    <p class="text-center">{{ t('No digitizations exist.') }}</p>
                 @endif
             </div>
         </div>

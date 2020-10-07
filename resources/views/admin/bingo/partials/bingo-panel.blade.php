@@ -5,7 +5,7 @@
             <p class="text-center">{{ $bingo->directions }}</p>
             <div class="col-md-12 d-flex">
                 <div class="col-md-6">
-                    <p>{{ __('Project') }}
+                    <p>{{ t('Project') }}
                         :
                         <a href="{{ route('front.projects.slug', ['slug' => $bingo->project->slug]) }}">{{ $bingo->project->title }}</a>
                     </p>

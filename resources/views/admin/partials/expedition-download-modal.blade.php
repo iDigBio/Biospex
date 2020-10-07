@@ -5,7 +5,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="empty-icon"><i class="fa fa-fw"></i></div>
-                <div><h2 class="color-action">{{ __('Expedition Downloads') }}</h2></div>
+                <div><h2 class="color-action">{{ t('Expedition Downloads') }}</h2></div>
                 <div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="far fa-times-circle"></i></span>
@@ -16,7 +16,7 @@
 
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-outline-primary color-action align-self-center"
-                        data-dismiss="modal">{{ __('Exit') }}
+                        data-dismiss="modal">{{ t('Exit') }}
                 </button>
             </div>
         </div>

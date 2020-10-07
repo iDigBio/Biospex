@@ -25,14 +25,14 @@
                 <form action="{{ route('api.post.login') }}" method="post" role="form">
                     @csrf
                     <div class="form-group">
-                        <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
+                        <label for="email" class="col-form-label required">{{ t('Email') }}:</label>
                         <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
                                id="email" name="email"
                                value="{{ old('email') }}" required>
                         <span class="invalid-feedback">{{ $errors->first('email') }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="password" class="col-form-label required">{{ __('Password') }}:</label>
+                        <label for="password" class="col-form-label required">{{ t('Password') }}:</label>
                         <input type="password" class="form-control {{ ($errors->has('password')) ? 'is-invalid' : '' }}"
                                id="password" name="password"
                                value="{{ old('password') }}" required>
@@ -40,14 +40,14 @@
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="remember" name="remember">
-                        <label class="custom-control-label" for="remember">{{ __('Remember Me') }}</label>
+                        <label class="custom-control-label" for="remember">{{ t('Remember Me') }}</label>
                     </div>
                     @include('common.recaptcha')
                     @include('common.submit-button')
                 </form>
                 <div class="mt-4 text-center">
-                    <a href="{{ route('api.password.request') }}">{{ __('Forgot your Password?') }}</a> ||
-                    <a href="{{ route('api.get.register') }}">{{ __('Register') }}</a>
+                    <a href="{{ route('api.password.request') }}">{{ t('Forgot your Password?') }}</a> ||
+                    <a href="{{ route('api.get.register') }}">{{ t('Register') }}</a>
                 </div>
             </div>
         </div>
