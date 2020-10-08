@@ -120,7 +120,7 @@ function jqBuildGrid() {
             colModel: cm,
             rowNum: 20,
             gridview: true,
-            rowList: [20, 50, 100],
+            rowList: [20, 50, 100, 500],
             multiSort: true,
             sortable: true,
             //sortorder: 'asc',

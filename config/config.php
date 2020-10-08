@@ -5,12 +5,12 @@ return [
     /**
      * Site variables
      */
-    'current_path'    => env('CURRENT_PATH'),
-    'server_user'     => env('SERVER_USER'),
-    'registration'    => env('REGISTRATION'),
+    'current_path' => env('CURRENT_PATH'),
+    'server_user'  => env('SERVER_USER'),
+    'registration' => env('REGISTRATION'),
 
-    'cache_enabled' => env('CACHE_ENABLED', true),
-    'cache_minutes' => env('CACHE_MINUTES', 60),
+    'cache_enabled'         => env('CACHE_ENABLED', true),
+    'cache_minutes'         => env('CACHE_MINUTES', 60),
 
     /* Beanstalk Tubes */
     'num_procs'             => env('NUM_PROCS'),
@@ -19,62 +19,65 @@ return [
     /**
      * Directories
      */
-    'reports_dir' => 'reports',
-    'rapid_import_dir' => 'imports/rapid',
-    'rapid_export_dir' => 'exports/rapid',
+    'reports_dir'           => 'reports',
+    'rapid_import_dir'      => 'imports/rapid',
+    'rapid_export_dir'      => 'exports/rapid',
     'geolocate_fields_file' => resource_path('files/rapid-exports/geolocate-fields.json'),
-    'people_fields_file' => resource_path('files/rapid-exports/people-fields.json'),
-    'geolocate_view_file' => resource_path('files/rapid-views/geolocate.json'),
+    'people_fields_file'    => resource_path('files/rapid-exports/people-fields.json'),
+    'geolocate_view_file'   => resource_path('files/rapid-views/geolocate.json'),
 
     /**
      * Columns used in select statement for grid.
      */
-    'default_grid_visible'    => [
+    'default_grid_visible'  => [
         '_id',
-        'gbif',
-        'idigbio',
-        'gbifID_gbifR',
-        'idigbio_uuid_idbP',
+        'country_rapid',
+        'locality_gbifR',
+        'locality_idbR',
+        'recordedBy_gbifR',
+        'recordedBy_idbR'
     ],
 
     /**
      * Fields used for validation.
      */
-    'validation_fields' => [
+    'validation_fields'     => [
         'gbifID_gbifR',
-        'idigbio_uuid_idbP'
+        'idigbio_uuid_idbP',
     ],
 
     /**
      * Update column field tags.
      */
-    'column_tags' => [
+    'column_tags'           => [
         '_gbifR',
         '_gbifP',
         '_idbP',
         '_idbR',
-        '_rapid'
+        '_rapid',
     ],
 
     /**
      * Protected fields.
      */
-    'protected_fields' => [
-        '_id', 'updated_at', 'created_at'
+    'protected_fields'      => [
+        '_id',
+        'updated_at',
+        'created_at',
     ],
 
     /**
      * Columns reserved for _id field.
      */
-    'reserved_columns' => [
+    'reserved_columns'      => [
         'geolocate' => ['CatalogNumber' => '_id'],
-        'people' => ['BIOSPEXid' => '_id']
+        'people'    => ['BIOSPEXid' => '_id'],
     ],
 
     /**
      * Export types and extensions.
      */
-    'export_extensions' => [
-        'csv' => '.csv'
-    ]
+    'export_extensions'     => [
+        'csv' => '.csv',
+    ],
 ];
