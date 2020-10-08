@@ -93,7 +93,7 @@ class DwcFileImportJob implements ShouldQueue
             $dupName = $csv->createReportCsv($dwcProcess->getDuplicates(), $dupsCsvName);
 
             $rejCsvName = md5($this->import->id).'rej.csv';
-            $rejName = $csv->createReportCsv($dwcProcess->getDuplicates(), $rejCsvName);
+            $rejName = $csv->createReportCsv($dwcProcess->getRejectedMedia(), $rejCsvName);
 
             Notification::send($users, new ImportComplete($project->title, $dupName, $rejName));
 

@@ -80,14 +80,14 @@ class DarwinCoreCsvImport
      *
      * @var array
      */
-    public $rejectedMultimedia;
+    public $rejectedMultimedia = [];
 
     /**
      * Duplicate images array
      *
      * @var array
      */
-    public $duplicateArray;
+    public $duplicateArray = [];
 
     /**
      * @var Validation
