@@ -180,7 +180,7 @@ class DownloadsController extends Controller
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            [$headers, $filePath] = $this->downloadService->createBatchTarDownload($file);
+            [$filePath, $headers] = $this->downloadService->createBatchTarDownload($file);
 
             return response()->download($filePath, $file, $headers);
         } catch (Exception $e) {
