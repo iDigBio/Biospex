@@ -139,6 +139,7 @@ return [
     'event_tube'            => env('QUEUE_EVENT_TUBE'),
     'import_tube'           => env('QUEUE_IMPORT_TUBE'),
     'export_tube'           => env('QUEUE_EXPORT_TUBE'),
+    'reconcile_tube'        => env('QUEUE_RECONCILE_TUBE'),
     'stat_tube'             => env('QUEUE_STAT_TUBE'),
     'workflow_tube'         => env('QUEUE_WORKFLOW_TUBE'),
     'ocr_tube'              => env('QUEUE_OCR_TUBE'),

@@ -49,7 +49,7 @@ class JobError extends Notification implements ShouldQueue
      * @param string $file
      * @param array $messages
      */
-    public function __construct($file, array $messages = [])
+    public function __construct(string $file, array $messages = [])
     {
         $this->messages = $messages;
         $this->file = $file;

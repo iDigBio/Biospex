@@ -104,12 +104,12 @@ class HttpRequest
     /**
      * Build authenticated request
      *
-     * @param $method
-     * @param $uri
+     * @param string $method
+     * @param string $uri
      * @param array $options
      * @return \Psr\Http\Message\RequestInterface
      */
-    protected function buildAuthenticatedRequest($method, $uri, array $options = [])
+    protected function buildAuthenticatedRequest(string $method, string $uri, array $options = [])
     {
         return $this->provider->getAuthenticatedRequest(
             $method,

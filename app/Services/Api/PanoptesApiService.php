@@ -102,12 +102,12 @@ class PanoptesApiService extends HttpRequest
     /**
      * Build authorized request.
      *
-     * @param $uri
      * @param string $method
+     * @param string $uri
      * @param array $extra
      * @return \Psr\Http\Message\RequestInterface
      */
-    public function buildAuthorizedRequest($method, $uri, array $extra = [])
+    public function buildAuthorizedRequest(string $method, string $uri, array $extra = [])
     {
         $options = array_merge([
             'headers' => [
@@ -262,28 +262,27 @@ class PanoptesApiService extends HttpRequest
     /**
      * Download csv panoptes classifications.
      *
-     * @param $sources
+     * @param $index
+     * @param $source
      * @return array
      */
-    public function panoptesClassificationsDownload($sources)
+    public function panoptesClassificationsDownload($index, $source)
     {
-        $requests = function () use ($sources)
+        $requests = function () use ($index, $source)
         {
-            foreach ($sources as $index => $source)
+            yield $index => function ($poolOpts) use ($index, $source)
             {
-                yield $index => function ($poolOpts) use ($source, $index)
-                {
-                    $reqOpts = [
-                        'sink' => Storage::path(config('config.nfn_downloads_classification') . '/' . $index . '.csv')
-                    ];
-                    if (is_array($poolOpts) && count($poolOpts) > 0)
-                    {
-                        $reqOpts = array_merge($poolOpts, $reqOpts); // req > pool
-                    }
+                $reqOpts = [
+                    'sink' => Storage::path(config('config.nfn_downloads_classification') . '/' . $index . '.csv')
+                ];
 
-                    return $this->getHttpClient()->getAsync($source, $reqOpts);
-                };
-            }
+                if (is_array($poolOpts) && count($poolOpts) > 0)
+                {
+                    $reqOpts = array_merge($poolOpts, $reqOpts); // req > pool
+                }
+
+                return $this->getHttpClient()->getAsync($source, $reqOpts);
+            };
         };
 
         $this->setProvider(false);

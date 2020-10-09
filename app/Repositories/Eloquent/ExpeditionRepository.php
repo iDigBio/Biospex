@@ -85,17 +85,26 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
-    public function getExpeditionsForNfnClassificationProcess(array $expeditionIds = [], array $attributes = ['*'])
+    public function getExpeditionForZooniverseProcess(int $expeditionId)
     {
-        $model = $this->model->with([
+        return $this->model->with(['panoptesProject', 'stat', 'nfnActor'])
+            ->has('panoptesProject')->whereHas('nfnActor', function ($query) {
+            $query->where('completed', 0);
+        })->find($expeditionId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExpeditionsForZooniverseProcess()
+    {
+        return $this->model->with([
             'panoptesProject',
             'stat',
             'nfnActor',
         ])->has('panoptesProject')->whereHas('nfnActor', function ($query) {
             $query->where('completed', 0);
-        });
-
-        return empty($expeditionIds) ? $model->get($attributes) : $model->whereIn('id', $expeditionIds)->get($attributes);
+        })->get();
     }
 
     /**

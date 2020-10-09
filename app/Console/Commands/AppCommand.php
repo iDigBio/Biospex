@@ -19,6 +19,9 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\ZooniverseCsvJob;
+use App\Repositories\Interfaces\Expedition;
+use App\Services\Csv\ZooniverseCsvService;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -34,10 +37,29 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * AppCommand constructor.
+     * @var \App\Repositories\Interfaces\Expedition
      */
-    public function __construct() {
+    private $contract;
+
+    /**
+     * @var \App\Services\Api\PanoptesApiService
+     */
+    private $service;
+
+    /**
+     * @var \App\Repositories\Interfaces\Expedition
+     */
+    private $expeditionContract;
+
+    /**
+     * AppCommand constructor.
+     *
+     * @param \App\Services\Csv\ZooniverseCsvService $service
+     */
+    public function __construct(ZooniverseCsvService $service, Expedition $expeditionContract) {
         parent::__construct();
+        $this->service = $service;
+        $this->expeditionContract = $expeditionContract;
     }
 
     /**
@@ -45,6 +67,18 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        //$expedition = $this->expeditionContract->getExpeditionForZooniverseProcess(254);
+        //$result = $this->checkForRequiredVariables($expedition);
+        //dd($result);
 
+        ZooniverseCsvJob::dispatch([254], true);
+    }
+
+    public function checkForRequiredVariables($expedition)
+    {
+        return null === $expedition ||
+            ! isset($expedition->panoptesProject) ||
+            null === $expedition->panoptesProject->panoptes_workflow_id ||
+            null === $expedition->panoptesProject->panoptes_project_id;
     }
 }

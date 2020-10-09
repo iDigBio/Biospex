@@ -54,13 +54,19 @@ interface Expedition extends RepositoryInterface
     public function getExpeditionAdminIndex($userId = null, $sort = null, $order = null, $projectId = null);
 
     /**
-     * Retrieve expeditions for Zooniverse classification process.
+     * Get expedition for processing Zooniverse csv creation.
      *
-     * @param array $expeditionIds
-     * @param array $attributes
+     * @param int $expeditionId
      * @return mixed
      */
-    public function getExpeditionsForNfnClassificationProcess(array $expeditionIds = [], array $attributes = ['*']);
+    public function getExpeditionForZooniverseProcess(int $expeditionId);
+
+    /**
+     * Retrieve all expeditions for Zooniverse classification process.
+     *
+     * @return mixed
+     */
+    public function getExpeditionsForZooniverseProcess();
 
     /**
      * Get count of Expedition Subjects.
