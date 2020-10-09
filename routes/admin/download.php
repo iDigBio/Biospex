@@ -3,7 +3,7 @@ $router->get('projects/{projects}/expeditions/{expeditions}/downloads')->uses('D
 $router->get('reports/{file}')->uses('DownloadsController@report')->name('admin.downloads.report');
 $router->get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}')->uses('DownloadsController@download')->name('admin.downloads.download');
 $router->get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/tar')->uses('DownloadsController@downloadTar')->name('admin.downloads.downloadTar');
-$router->get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/tar-batch')->uses('DownloadsController@downloadTarBatch')->name('admin.downloads.downloadTarBatch');
+$router->get('projects/{projects}/expeditions/{expeditions}/downloads/{files}/tar-batch')->uses('DownloadsController@downloadTarBatch')->name('admin.downloads.downloadTarBatch');
 $router->get('projects/{projects}/expeditions/{expeditions}/regenerate')->uses('DownloadsController@regenerate')->name('admin.downloads.regenerate');
 $router->get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/batch')->uses('DownloadsController@batch')->name('admin.downloads.batch');
 $router->get('projects/{projects}/expeditions/{expeditions}/summary')->uses('DownloadsController@summary')->name('admin.downloads.summary');
