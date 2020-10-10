@@ -54,6 +54,15 @@ class ReportCleanCommand extends Command
      */
     public function handle()
     {
-        File::cleanDirectory(Storage::path(config('config.reports_dir')));
+        $time = now()->subMonth()->getTimestamp();
+
+        $path = Storage::path(config('config.nfn_downloads_classification'));
+        $files = \Illuminate\Support\Facades\File::files($path);
+
+        foreach ($files as $file) {
+            if ($file->getMTime() < $time) {
+                File::delete($file->getRealPath());
+            }
+        }
     }
 }
