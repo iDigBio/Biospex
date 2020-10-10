@@ -47,7 +47,7 @@ class Kernel extends ConsoleKernel
 
         if ($this->app->environment('prod')) {
             // Create Zooniverse csv files
-            $schedule->command('nfn:csvcreate')
+            $schedule->command('zooniverse:csv')
                 ->timezone('America/New_York')
                 ->daily()->before(function () {
                     Artisan::call('lada-cache:flush');
