@@ -105,7 +105,7 @@ numprocs=NUM_PROCS
 [program:QUEUE_RECONCILE_TUBE]
 process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_RECONCILE_TUBE --tries=3
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_RECONCILE_TUBE --tries=3 --timeout=3600
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_RECONCILE_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB

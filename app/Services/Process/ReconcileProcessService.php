@@ -115,8 +115,6 @@ class ReconcileProcessService
 
             $this->runCommand();
 
-            $expeditionIds[] = $expedition->id;
-
             if (! $this->checkFilesExist()) {
                 throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
                     ':method' => __METHOD__,
