@@ -66,7 +66,6 @@ class ZooniverseCsvJob implements ShouldQueue
             $expeditionId = $filteredIds->shift();
 
             if (! $this->delayed) {
-                \Log::alert('Sending create request');
                 $service->createCsvRequest($expeditionId);
                 ZooniverseCsvJob::dispatch($filteredIds->prepend($expeditionId)->toArray(), true)->delay(now()->addMinutes(5));
                 $this->delete();
@@ -76,26 +75,22 @@ class ZooniverseCsvJob implements ShouldQueue
 
             $uri = $service->checkCsvRequest($expeditionId);
             if (! isset($uri)) {
-                \Log::alert('Missing uri');
                 ZooniverseCsvJob::dispatch($filteredIds->prepend($expeditionId)->toArray(), true)->delay(now()->addMinutes(5));
                 $this->delete();
 
                 return;
             }
 
-            \Log::alert('Start chain');
             ZooniverseCsvDownloadJob::withChain([
-                (new ZooniverseReconcileJob($expeditionId)),
-                (new ZooniverseTranscriptionJob($expeditionId)),
-                (new ZooniversePusherJob($expeditionId))
+                new ZooniverseReconcileJob($expeditionId),
+                new ZooniverseTranscriptionJob($expeditionId),
+                new ZooniversePusherJob($expeditionId)
             ])->dispatch($expeditionId, $uri);
 
             if ($filteredIds->isNotEmpty()) {
-                \Log::alert('Ids not empty');
                 ZooniverseCsvJob::dispatch($filteredIds->toArray());
             }
 
-            \Log::alert('Deleting');
             $this->delete();
 
             return;

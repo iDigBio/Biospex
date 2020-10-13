@@ -47,7 +47,6 @@ class ZooniverseCsvDownloadJob implements ShouldQueue
     public function handle(ZooniverseCsvService $service)
     {
         try {
-            \Log::alert('Downloading');
             $service->downloadCsv($this->expeditionId, $this->uri);
         }
         catch (\Exception $e) {
