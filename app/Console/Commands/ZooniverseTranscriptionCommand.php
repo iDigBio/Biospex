@@ -12,7 +12,7 @@ class ZooniverseTranscriptionCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'zooniiverse:transcription {expeditionId}';
+    protected $signature = 'zooniverse:transcription {expeditionId}';
 
     /**
      * The console command description.
