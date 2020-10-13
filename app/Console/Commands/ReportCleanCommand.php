@@ -56,7 +56,7 @@ class ReportCleanCommand extends Command
     {
         $time = now()->subMonth()->getTimestamp();
 
-        $path = Storage::path(config('config.nfn_downloads_classification'));
+        $path = Storage::path(config('config.reports_dir'));
         $files = \Illuminate\Support\Facades\File::files($path);
 
         foreach ($files as $file) {
