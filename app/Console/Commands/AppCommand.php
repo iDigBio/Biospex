@@ -48,8 +48,4 @@ class AppCommand extends Command
 
     }
 
-    public function checkForRequiredVariables($expedition)
-    {
-
-    }
 }

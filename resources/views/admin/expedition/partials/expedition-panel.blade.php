@@ -30,7 +30,7 @@
                 <div class="d-flex justify-content-between mt-4">
                     <span class="text">{{ t('Biospex Subjects') }} {{ $expedition->stat->local_subject_count }}</span>
                     <span class="text">{{ t('Zooniverse Subjects') }} {{ $expedition->stat->subject_count }}</span>
-                    <span class="text">{{ t('Digitization Goal') }} {{ $expedition->stat->local_transcriptions_completed }}</span>
+                    <span class="text">{{ t('Digitization Goal') }} {{ $expedition->stat->transcriptions_goal }}</span>
                     <span class="text">{{ t('Digitizations Completed') }} {{ $expedition->stat->percent_completed }}%</span>
                 </div>
             </div>

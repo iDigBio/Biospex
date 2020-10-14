@@ -18,7 +18,7 @@ class NfnClassificationCount extends Command
      *
      * @var string
      */
-    protected $signature = 'nfn:count {expeditionIds?}';
+    protected $signature = 'nfn:count {expeditionIds?*}';
 
     /**
      * The console command description.
@@ -42,7 +42,8 @@ class NfnClassificationCount extends Command
      */
     public function handle()
     {
-        $expeditionIds = null === $this->argument('expeditionIds') ? $this->getExpeditionIds() : explode(',', $this->argument('expeditionIds'));
+        $expeditionIds = empty($this->argument('expeditionIds')) ?
+            $this->getExpeditionIds() : $this->argument('expeditionIds');
 
         foreach ($expeditionIds as $expeditionId) {
             NfnClassificationCountJob::dispatch((int) $expeditionId);
