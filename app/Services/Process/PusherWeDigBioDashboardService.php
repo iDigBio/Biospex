@@ -140,7 +140,7 @@ class PusherWeDigBioDashboardService
     {
         $imageUrl = (array) $data->subject_urls[0];
 
-        return $imageUrl['image/jpeg'];
+        return isset($imageUrl['image/jpeg']) ? $imageUrl['image/jpeg'] : (isset($imageUrl['image/png']) ? $imageUrl['image/png'] : null);
     }
 
     /**
