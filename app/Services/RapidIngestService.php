@@ -19,7 +19,6 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\RapidHeader;
 use App\Repositories\Interfaces\RapidRecord;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -39,11 +38,6 @@ class RapidIngestService extends RapidServiceBase
     private $rapidInterface;
 
     /**
-     * @var \App\Repositories\Interfaces\RapidHeader
-     */
-    private $rapidHeaderInterface;
-
-    /**
      * @var array
      */
     private $errors = [];
@@ -51,7 +45,7 @@ class RapidIngestService extends RapidServiceBase
     /**
      * @var array
      */
-    private $header = [];
+    private $csvHeader = [];
 
     /**
      * @var
@@ -59,29 +53,50 @@ class RapidIngestService extends RapidServiceBase
     private $rows;
 
     /**
-     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
-     */
-    private $validationFields;
-
-    /**
      * @var int
      */
     private $updatedRecordsCount = 0;
+
+    /**
+     * @var \App\Services\RapidFileService
+     */
+    private $rapidFileService;
 
     /**
      * RapidIngestService constructor.
      *
      * @param \App\Services\CsvService $csvService
      * @param \App\Repositories\Interfaces\RapidRecord $rapidInterface
-     * @param \App\Repositories\Interfaces\RapidHeader $rapidHeaderInterface
+     * @param \App\Services\RapidFileService $rapidFileService
      */
-    public function __construct(CsvService $csvService, RapidRecord $rapidInterface, RapidHeader $rapidHeaderInterface)
+    public function __construct(
+        CsvService $csvService,
+        RapidRecord $rapidInterface,
+        RapidFileService $rapidFileService
+    )
     {
 
         $this->csvService = $csvService;
         $this->rapidInterface = $rapidInterface;
-        $this->rapidHeaderInterface = $rapidHeaderInterface;
-        $this->validationFields = config('config.validation_fields');
+        $this->rapidFileService = $rapidFileService;
+    }
+
+    /**
+     * Process ingest file.
+     *
+     * @param string $csvFilePath
+     * @param bool $import
+     * @param \Illuminate\Support\Collection|null $fields
+     * @throws \League\Csv\Exception
+     */
+    public function process(string $csvFilePath, bool $import = false, Collection $fields = null)
+    {
+        $this->loadCsvFile($csvFilePath);
+        $this->setCsvHeader();
+        $this->storeHeader();
+        $this->setRows();
+
+        $import ? $this->processImportRows() : $this->processUpdateRows($fields);
     }
 
     /**
@@ -142,9 +157,9 @@ class RapidIngestService extends RapidServiceBase
      *
      * @return array
      */
-    public function setHeader(): array
+    public function setCsvHeader(): array
     {
-        return $this->header = $this->csvService->getHeader();
+        return $this->csvHeader = $this->csvService->getHeader();
     }
 
     /**
@@ -152,7 +167,7 @@ class RapidIngestService extends RapidServiceBase
      */
     public function storeHeader()
     {
-        $this->rapidHeaderInterface->create(['header' => $this->header]);
+        $this->rapidFileService->storeHeader($this->csvHeader);
     }
 
     /**
@@ -160,15 +175,7 @@ class RapidIngestService extends RapidServiceBase
      */
     public function updateHeader()
     {
-        $protected = config('config.protected_fields');
-
-        $rapidHeader = $this->rapidHeaderInterface->first();
-        $diff = collect($this->header)->diff($rapidHeader->header)->reject(function ($field) use($protected) {
-            return in_array($field, $protected);
-        });
-
-        $rapidHeader->header = collect($rapidHeader->header)->concat($diff)->toArray();
-        $rapidHeader->save();
+        $this->rapidFileService->updateHeader($this->csvHeader);
     }
 
     /**
@@ -176,7 +183,7 @@ class RapidIngestService extends RapidServiceBase
      */
     public function setRows()
     {
-        $this->rows = $this->csvService->getRecords($this->header);
+        $this->rows = $this->csvService->getRecords($this->csvHeader);
     }
 
     /**
@@ -206,14 +213,15 @@ class RapidIngestService extends RapidServiceBase
     /**
      * Validate imports being created.
      *
-     * Fields frrom config.
      * @param $row
      * @return mixed
      */
     public function validateRow($row)
     {
         $attributes = [];
-        foreach ($this->validationFields as $field) {
+        $validationFields = $this->rapidFileService->getValidationFields();
+
+        foreach ($validationFields as $field) {
             $attributes[$field] = $row[$field];
         }
 
@@ -232,7 +240,6 @@ class RapidIngestService extends RapidServiceBase
      */
     public function processUpdateRows(Collection $fields)
     {
-
         foreach ($this->rows as $offset => $row) {
             $intersect = collect($row)->intersectByKeys($fields->flip())->toArray();
 
