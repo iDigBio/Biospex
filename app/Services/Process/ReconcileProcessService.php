@@ -23,8 +23,10 @@ use App\Models\User;
 use App\Notifications\JobError;
 use App\Repositories\Interfaces\Download;
 use App\Repositories\Interfaces\Expedition;
+use App\Services\Csv\Csv;
 use Exception;
 use File;
+use Illuminate\Support\Carbon;
 use Storage;
 
 class ReconcileProcessService
@@ -80,15 +82,22 @@ class ReconcileProcessService
     private $command;
 
     /**
+     * @var \App\Services\Csv\Csv
+     */
+    private $csvService;
+
+    /**
      * ReconcileProcessService constructor.
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Repositories\Interfaces\Download $downloadContract
+     * @param \App\Services\Csv\Csv $csvService
      */
-    public function __construct(Expedition $expeditionContract, Download $downloadContract)
+    public function __construct(Expedition $expeditionContract, Download $downloadContract, Csv $csvService)
     {
         $this->expeditionContract = $expeditionContract;
         $this->downloadContract = $downloadContract;
+        $this->csvService = $csvService;
     }
 
     /**
@@ -109,6 +118,10 @@ class ReconcileProcessService
                     ':method' => __METHOD__,
                     ':path'   => $this->csvPath,
                 ]));
+            }
+
+            if (! $this->checkFileEmpty()) {
+                return;
             }
 
             $this->setCommand();
@@ -179,6 +192,23 @@ class ReconcileProcessService
     }
 
     /**
+     * Check if classification file has any rows.
+     *
+     * @return int
+     * @throws \League\Csv\Exception
+     */
+    protected function checkFileEmpty()
+    {
+        $this->csvService->readerCreateFromPath($this->csvPath);
+        $this->csvService->setDelimiter();
+        $this->csvService->setEnclosure();
+        $this->csvService->setEscape('"');
+        $this->csvService->setHeaderOffset();
+
+        return $this->csvService->getReaderCount(); // false if 0
+    }
+
+    /**
      * Check files exist.
      *
      * @return bool
@@ -240,6 +270,7 @@ class ReconcileProcessService
                 'actor_id'      => 2,
                 'file'          => $type !== 'summary' ? $expeditionId.'.csv' : $expeditionId.'.html',
                 'type'          => $type,
+                'updated_at'    => Carbon::now()->format('Y-m-d H:i:s'),
             ];
             $attributes = [
                 'expedition_id' => $expeditionId,
