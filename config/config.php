@@ -22,7 +22,7 @@ return [
     'reports_dir'           => 'reports',
     'rapid_import_dir'      => 'imports/rapid',
     'rapid_export_dir'      => 'exports/rapid',
-    'header_import'         => 'imports/rapid/header.json',
+    'header_import_file'    => 'imports/rapid/header.json',
     'geolocate_fields_file' => resource_path('files/rapid-exports/geolocate-fields.json'),
     'people_fields_file'    => resource_path('files/rapid-exports/people-fields.json'),
     'taxonomic_fields_file' => resource_path('files/rapid-exports/taxonomic-fields.json'),
