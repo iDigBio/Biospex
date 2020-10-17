@@ -60,6 +60,7 @@ class JqGridJsonEncoderService
     public function loadGridModel()
     {
         $header = $this->rapidFileService->getHeader();
+        array_unshift($header, '_id');
         $this->defaultGridVisible = $this->rapidFileService->getDefaultGridView();
 
         return [
