@@ -114,7 +114,7 @@ class IngestController extends Controller
             [$fileName, $csvFilePath] = $rapidIngestService->unzipFile($filePath);
 
             $rapidIngestService->loadCsvFile($csvFilePath);
-            $headers = $rapidIngestService->setHeader();
+            $headers = $rapidIngestService->setCsvHeader();
 
             $tags = $rapidIngestService->mapColumns($headers);
 
