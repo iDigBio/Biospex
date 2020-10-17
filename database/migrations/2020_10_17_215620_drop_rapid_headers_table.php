@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRapidHeadersTable extends Migration
+class DropRapidHeadersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,8 @@ class CreateRapidHeadersTable extends Migration
      */
     public function up()
     {
-        Schema::create('rapid_headers', function(Blueprint $table)
-        {
-            $table->increments('id');
-            $table->text('header')->nullable();
-            $table->timestamps();
-        });
+        Schema::drop('rapid_headers');
     }
-
 
     /**
      * Reverse the migrations.
@@ -29,6 +23,11 @@ class CreateRapidHeadersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('rapid_headers');
+        Schema::create('rapid_headers', function(Blueprint $table)
+        {
+            $table->increments('id');
+            $table->text('header')->nullable();
+            $table->timestamps();
+        });
     }
 }
