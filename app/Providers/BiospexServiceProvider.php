@@ -26,8 +26,6 @@ use App\Repositories\Interfaces\User;
 use App\Repositories\Eloquent\UserRepository;
 use App\Repositories\Interfaces\RapidRecord;
 use App\Repositories\MongoDb\RapidRecordRepository;
-use App\Repositories\Interfaces\RapidHeader;
-use App\Repositories\Eloquent\RapidHeaderRepository;
 use App\Repositories\Interfaces\RapidUpdate;
 use App\Repositories\Eloquent\RapidUpdateRepository;
 use App\Repositories\Interfaces\ExportForm;
@@ -61,7 +59,6 @@ class BiospexServiceProvider extends ServiceProvider
     {
         $this->app->bind(User::class, UserRepository::class);
         $this->app->bind(RapidRecord::class, RapidRecordRepository::class);
-        $this->app->bind(RapidHeader::class, RapidHeaderRepository::class);
         $this->app->bind(RapidUpdate::class, RapidUpdateRepository::class);
         $this->app->bind(ExportForm::class, ExportFormRepository::class);
     }

@@ -20,16 +20,11 @@
 namespace App\Services;
 
 use App\Repositories\Interfaces\ExportForm;
-use App\Repositories\Interfaces\RapidHeader;
 use App\Models\ExportForm as ExportFormModel;
 use Illuminate\Support\Collection;
 
 class RapidExportDbService
 {
-    /**
-     * @var \App\Repositories\Interfaces\RapidHeader
-     */
-    private $rapidHeaderInterface;
 
     /**
      * @var \App\Repositories\Interfaces\ExportForm
@@ -39,26 +34,13 @@ class RapidExportDbService
     /**
      * RapidExportDbService constructor.
      *
-     * @param \App\Repositories\Interfaces\RapidHeader $rapidHeaderInterface
      * @param \App\Repositories\Interfaces\ExportForm $exportFormInterface
      */
     public function __construct(
-        RapidHeader $rapidHeaderInterface,
         ExportForm $exportFormInterface
     )
     {
-        $this->rapidHeaderInterface = $rapidHeaderInterface;
         $this->exportFormInterface = $exportFormInterface;
-    }
-
-    /**
-     * Get RAPID header.
-     *
-     * @return \App\Models\RapidHeader
-     */
-    public function getFirstRapidHeader(): \App\Models\RapidHeader
-    {
-        return $rapidHeader = $this->rapidHeaderInterface->first();
     }
 
     /**

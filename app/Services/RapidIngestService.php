@@ -163,7 +163,7 @@ class RapidIngestService extends RapidServiceBase
     }
 
     /**
-     * Store the header in mongo database.
+     * Store the header file.
      */
     public function storeHeader()
     {

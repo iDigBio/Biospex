@@ -4,7 +4,7 @@
         <input type="radio"
                class="form-check-input"
                name="exportType" value="csv"
-               {{ $data['exportType'] === 'csv' ? 'checked' : '' }}
+               {{ isset($data['exportType']) && $data['exportType'] === 'csv' ? 'checked' : '' }}
                required>{{ t('CSV') }}
     </label>
 </div>
@@ -13,7 +13,7 @@
         <input type="radio"
                class="form-check-input"
                name="exportType" value="dwc"
-               {{ $data['exportType'] === 'dwc' ? 'checked' : '' }}
+               {{ isset($data['exportType']) && $data['exportType'] === 'dwc' ? 'checked' : '' }}
                required disabled>{{ t('Darwin Core Archive') }}
     </label>
 </div>

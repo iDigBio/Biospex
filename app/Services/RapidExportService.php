@@ -21,6 +21,7 @@ namespace App\Services;
 
 use App\Models\ExportForm;
 use App\Models\User;
+use Exception;
 use Flash;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -38,45 +39,159 @@ class RapidExportService extends RapidServiceBase
     private $rapidExportDbService;
 
     /**
-     * @var \App\Services\ExportService
+     * @var \App\Services\RapidFileService
      */
-    private $exportService;
+    private $rapidFileService;
 
     /**
-     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     * @var \App\Services\MongoDbService
      */
-    private $exportExtensions;
+    private $mongoDbService;
+
+    /**
+     * @var \App\Services\CsvService
+     */
+    private $csvService;
+
+    /**
+     * @var string
+     */
+    private $destination;
+
+    /**
+     * @var array
+     */
+    private $reserved;
 
     /**
      * RapidExportService constructor.
      *
      * @param \App\Services\RapidExportDbService $rapidExportDbService
-     * @param \App\Services\ExportService $exportService
+     * @param \App\Services\RapidFileService $rapidFileService
+     * @param \App\Services\MongoDbService $mongoDbService
+     * @param \App\Services\CsvService $csvService
      */
     public function __construct(
         RapidExportDbService $rapidExportDbService,
-        ExportService $exportService
+        RapidFileService $rapidFileService,
+        MongoDbService $mongoDbService, CsvService $csvService
     )
     {
         $this->rapidExportDbService = $rapidExportDbService;
-        $this->exportService = $exportService;
-        $this->exportExtensions = config('config.export_extensions');
+        $this->rapidFileService = $rapidFileService;
+        $this->mongoDbService = $mongoDbService;
+        $this->csvService = $csvService;
     }
 
     /**
-     * Get header.
+     * Set destination.
      *
+     * @param string $destination
+     */
+    public function setDestination(string $destination)
+    {
+        $this->destination = $destination;
+    }
+
+    /**
+     * Set reserved columns according to destination.
+     */
+    public function setReservedColumns()
+    {
+        $reserved = config('config.reserved_columns');
+        $this->reserved = $reserved[$this->destination];
+    }
+
+    /**
+     * Get cursor for rapid documents
      * @return mixed
      */
-    public function getHeader()
+    public function getRapidRecordsCursor()
     {
-        $protected = config('config.protected_fields');
+        $this->mongoDbService->setCollection('rapid_records');
 
-        $rapidHeader = $this->rapidExportDbService->getFirstRapidHeader();
+        $cursor = $this->mongoDbService->find();
+        $cursor->setTypeMap([
+            'array'    => 'array',
+            'document' => 'array',
+            'root'     => 'array',
+        ]);
 
-        return collect($rapidHeader->header)->reject(function ($field) use ($protected) {
-            return in_array($field, $protected);
-        });
+        return $cursor;
+    }
+
+    /**
+     * Build csv data for GeoLocate export.
+     *
+     * @param array $fields
+     * @return array
+     */
+    public function buildCsvData(array $fields): array
+    {
+        $cursor = $this->getRapidRecordsCursor();
+
+        $csvData = [];
+
+        foreach ($cursor as $doc) {
+            $csvData[] = $this->setColumnData($doc, $fields);
+        }
+
+        return $csvData;
+    }
+
+    /**
+     * Set column headers and data according to what was selected.
+     *
+     * @param $doc
+     * @param $fields
+     * @return mixed
+     */
+    public function setColumnData($doc, $fields)
+    {
+        $data = [];
+        foreach ($this->reserved as $column => $item) {
+            $data[$column] = (string) $doc[$item];
+        }
+
+        foreach ($fields['exportFields'] as $fieldArray) {
+            $field = $fieldArray['field'];
+            $data[$field] = '';
+
+            // unset to make foreach easier to deal with
+            unset($fieldArray['field'], $fieldArray['order']);
+
+            // indexes are the tags. isset skips index values that are null
+            foreach ($fieldArray as $index => $value) {
+                if (isset($fieldArray[$index]) && !empty($doc[$value])) {
+                    $data[$field] = $doc[$value];
+                    break;
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Build csv file and return it.
+     *
+     * @param array $csvData
+     * @param string $frmFile
+     * @return string
+     * @throws \League\Csv\CannotInsertRecord
+     */
+    public function buildCsvFile(array $csvData, string $frmFile): string
+    {
+        $header = array_keys($csvData[0]);
+
+        $file = Storage::path(config('config.rapid_export_dir').'/'.$frmFile);
+        $this->csvService->writerCreateFromPath($file);
+        $this->csvService->writer->addFormatter($this->csvService->setEncoding());
+
+        $this->csvService->insertOne($header);
+        $this->csvService->insertAll($csvData);
+
+        return route('admin.download.export', ['file' => base64_encode($frmFile)]);
     }
 
     /**
@@ -134,8 +249,10 @@ class RapidExportService extends RapidServiceBase
      */
     public function createFileName(ExportForm $form, User $user, array &$fields)
     {
+        $exportExtensions = $this->rapidFileService->getExportExtensions();
+
         $user = explode('@', $user->email);
-        $form->file = $fields['frmFile'] = $form->present()->form_name . '_' . $user[0] . $this->exportExtensions[$fields['exportType']];
+        $form->file = $fields['frmFile'] = $form->present()->form_name . '_' . $user[0] . $exportExtensions[$fields['exportType']];
         $form->save();
     }
 
@@ -175,7 +292,7 @@ class RapidExportService extends RapidServiceBase
      */
     public function newForm(string $destination )
     {
-        $headers = $this->getHeader();
+        $headers = collect($this->rapidFileService->getHeader());
         $tags = $this->mapColumns($headers);
 
         return [
@@ -198,7 +315,7 @@ class RapidExportService extends RapidServiceBase
     public function existingForm(string $destination, int $id)
     {
         $form = $this->rapidExportDbService->findRapidFormById($id);
-        $headers = $this->getHeader();
+        $headers = collect($this->rapidFileService->getHeader());
         $tags = $this->mapColumns($headers);
 
         $frmData = null;
@@ -239,10 +356,19 @@ class RapidExportService extends RapidServiceBase
      */
     public function buildExport(array $fields)
     {
-        $this->exportService->setDestination($fields['exportDestination']);
-        $this->exportService->setReservedColumns();
+        $this->setDestination($fields['exportDestination']);
+        $this->setReservedColumns();
 
-        return $this->exportService->buildExport($fields);
+        if ($fields['exportType'] === 'csv') {
+            $csvData = $this->buildCsvData($fields);
+            if (!isset($csvData[0])) {
+                throw new Exception(t('Csv data returned empty while exporting for GEOLocate'));
+            }
+
+            return $this->buildCsvFile($csvData, $fields['frmFile']);
+        }
+
+        return null;
     }
 
     /**

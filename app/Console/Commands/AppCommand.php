@@ -19,6 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\RapidRecord;
+use App\Services\RapidFileService;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -34,11 +36,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Services\RapidFileService
+     */
+    private $service;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct()
+    public function __construct(RapidFileService $service)
     {
         parent::__construct();
+        $this->service = $service;
     }
 
     /**
@@ -46,7 +54,16 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $this->createHeaderFile();
+    }
 
+    private function createHeaderFile()
+    {
+        $record = RapidRecord::first()->getAttributes();
+        unset($record['_id'], $record['created_at'], $record['updated_at']);
+        $keys = array_keys($record);
+        $this->service->storeHeader($keys);
+        dd($this->service->getHeader());
     }
 
 }

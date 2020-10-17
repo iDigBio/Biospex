@@ -19,39 +19,37 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\RapidHeader;
 use App\Repositories\Interfaces\RapidRecord;
 use Exception;
 
 class JqGridJsonEncoderService
 {
     /**
-     * @var array
-     */
-    protected $defaultGridVisible;
-
-    /**
      * @var \App\Repositories\Interfaces\RapidRecord
      */
     private $rapidRecord;
 
     /**
-     * @var \App\Repositories\Interfaces\RapidHeader
+     * @var \App\Services\RapidFileService
      */
-    private $headerInterface;
+    private $rapidFileService;
+
+    /**
+     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    private $defaultGridVisible;
 
     /**
      * JqGridJsonEncoder constructor.
      *
      * @param \App\Repositories\Interfaces\RapidRecord $rapidRecord
-     * @param \App\Repositories\Interfaces\RapidHeader $headerInterface
+     * @param \App\Services\RapidFileService $rapidFileService
      */
     public function __construct(
-        RapidRecord $rapidRecord, RapidHeader $headerInterface
+        RapidRecord $rapidRecord, RapidFileService $rapidFileService
     ) {
-        $this->defaultGridVisible = config('config.default_grid_visible');
         $this->rapidRecord = $rapidRecord;
-        $this->headerInterface = $headerInterface;
+        $this->rapidFileService = $rapidFileService;
     }
 
     /**
@@ -61,9 +59,8 @@ class JqGridJsonEncoderService
      */
     public function loadGridModel()
     {
-        $result = $this->headerInterface->first();
-        $header = $result->header;
-        array_unshift($header, '_id');
+        $header = $this->rapidFileService->getHeader();
+        $this->defaultGridVisible = $this->rapidFileService->getDefaultGridView();
 
         return [
             'colNames' => $header,

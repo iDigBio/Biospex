@@ -27,6 +27,12 @@
                                 data-hover="tooltip" title="{{ t('Export to People Standardization') }}"
                                 aria-expanded="false" aria-controls="collapsePeople"
                         >{{ t('People') }}</button>
+                        <button type="button" class="btn btn-primary pl-4 pr-4 text-uppercase"
+                                data-toggle="collapse"
+                                data-target="#taxonomic"
+                                data-hover="tooltip" title="{{ t('Export Taxonomic') }}"
+                                aria-expanded="false" aria-controls="collapseTaxonomic"
+                        >{{ t('Taxonomic') }}</button>
                     </div>
                 </div>
                 <div class="row">
@@ -37,6 +43,11 @@
                 <div class="row">
                     <div id="people" data-parent="#accordion" class="col-sm-6 mx-auto text-center mt-5 collapse">
                         @include('export.partials.people-frm-select')
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="taxonomic" data-parent="#accordion" class="col-sm-6 mx-auto text-center mt-5 collapse">
+                        @include('export.partials.taxonomic-frm-select')
                     </div>
                 </div>
                 <div class="row">
