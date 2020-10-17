@@ -88,11 +88,9 @@ class RapidUpdateJob implements ShouldQueue
             }
 
             $filePath = Storage::path($this->fileInfo['filePath']);
-            $rapidIngestService->loadCsvFile($filePath);
-            $rapidIngestService->setHeader();
-            $rapidIngestService->updateHeader();
-            $rapidIngestService->setRows();
-            $rapidIngestService->processUpdateRows($this->fields);
+
+            $rapidIngestService->process($filePath, false, $this->fields);
+
             $recordsUpdated = $rapidIngestService->getUpdatedRecordsCount();
 
             $data = [

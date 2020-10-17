@@ -83,11 +83,7 @@ class RapidImportJob implements ShouldQueue
                 throw new Exception(t('CSV file could not be extracted from zip file.'));
             }
 
-            $rapidIngestService->loadCsvFile($csvFilePath);
-            $rapidIngestService->setHeader();
-            $rapidIngestService->storeHeader();
-            $rapidIngestService->setRows();
-            $rapidIngestService->processImportRows();
+            $rapidIngestService->process($csvFilePath, true);
 
             $downloadUrl = null;
             if ($rapidIngestService->checkErrors()) {
