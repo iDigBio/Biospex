@@ -40,7 +40,8 @@ class Download extends BaseEloquentModel
         'expedition_id',
         'actor_id',
         'file',
-        'type'
+        'type',
+        'updated_at'
     ];
 
     /**
