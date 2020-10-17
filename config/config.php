@@ -17,13 +17,15 @@ return [
     'default_tube'          => env('QUEUE_DEFAULT_TUBE'),
 
     /**
-     * Directories
+     * Directories and files
      */
     'reports_dir'           => 'reports',
     'rapid_import_dir'      => 'imports/rapid',
     'rapid_export_dir'      => 'exports/rapid',
+    'header_import'         => 'imports/rapid/header.json',
     'geolocate_fields_file' => resource_path('files/rapid-exports/geolocate-fields.json'),
     'people_fields_file'    => resource_path('files/rapid-exports/people-fields.json'),
+    'taxonomic_fields_file' => resource_path('files/rapid-exports/taxonomic-fields.json'),
     'geolocate_view_file'   => resource_path('files/rapid-views/geolocate.json'),
 
     /**
@@ -35,7 +37,7 @@ return [
         'locality_gbifR',
         'locality_idbR',
         'recordedBy_gbifR',
-        'recordedBy_idbR'
+        'recordedBy_idbR',
     ],
 
     /**
