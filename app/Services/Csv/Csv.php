@@ -137,6 +137,15 @@ class Csv
     }
 
     /**
+     * Return the count. If header is offset, then header not counted.
+     *
+     * @return int
+     */
+    public function getReaderCount(): int {
+        return count($this->reader);
+    }
+
+    /**
      * Create Report Csv.
      *
      * @param array $data
