@@ -50,6 +50,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('zooniverse:csv')
                 ->timezone('America/New_York')
                 ->daily()->before(function () {
+                    Cache::flush();
                     Artisan::call('lada-cache:flush');
                 });
 
