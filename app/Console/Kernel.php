@@ -25,44 +25,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // Failed jobs report used to check ocr
-        $schedule->command('report:failed')
-            ->timezone('America/New_York')
-            ->dailyAt('05:30');
 
-        // Clean imports directory
-        $schedule->command('download:clean')
-            ->timezone('America/New_York')
-            ->dailyAt('06:00');
-
-        // Clean bingo maps
-        $schedule->command('bingo:clean')
-            ->timezone('America/New_York')
-            ->dailyAt('06:05');
-
-        // Clean report directory
-        $schedule->command('report:clean')
-            ->timezone('America/New_York')
-            ->dailyAt('06:30');
-
-        if ($this->app->environment('prod')) {
-            // Create Notes From Nature csv files
-            $schedule->command('nfn:csvcreate')
-                ->timezone('America/New_York')
-                ->daily()->before(function () {
-                    Artisan::call('lada-cache:flush');
-                });
-
-            // Trigger workflow manager to update expeditions and projects
-            $schedule->command('workflow:manage')
-                ->timezone('America/New_York')
-                ->dailyAt('04:00')->before(function () {
-                    Cache::flush();
-                    Artisan::call('lada-cache:flush');
-                });
-        }
-
-        $schedule->command('telescope:prune --hours=48')->daily();
     }
 
     /**
