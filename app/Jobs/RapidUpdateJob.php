@@ -25,13 +25,13 @@ use App\Notifications\UpdateNotification;
 use App\Repositories\Interfaces\RapidUpdate;
 use App\Services\RapidIngestService;
 use Exception;
+use File;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
-use Storage;
 
 class RapidUpdateJob implements ShouldQueue
 {
@@ -83,13 +83,11 @@ class RapidUpdateJob implements ShouldQueue
     public function handle(RapidIngestService $rapidIngestService, RapidUpdate $rapidUpdate)
     {
         try {
-            if (! Storage::exists($this->fileInfo['filePath'])) {
+            if (! File::exists($this->fileInfo['filePath'])) {
                 throw new Exception(t('Rapid import file does not exist while processing import job.'));
             }
 
-            $filePath = Storage::path($this->fileInfo['filePath']);
-
-            $rapidIngestService->process($filePath, false, $this->fields);
+            $rapidIngestService->process($this->fileInfo['filePath'], false, $this->fields);
 
             $recordsUpdated = $rapidIngestService->getUpdatedRecordsCount();
 

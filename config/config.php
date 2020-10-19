@@ -17,12 +17,16 @@ return [
     'default_tube'          => env('QUEUE_DEFAULT_TUBE'),
 
     /**
-     * Directories and files
+     * Directories
      */
     'reports_dir'           => 'reports',
     'rapid_import_dir'      => 'imports/rapid',
     'rapid_export_dir'      => 'exports/rapid',
     'header_import_file'    => 'imports/rapid/header.json',
+
+    /**
+     * Rapid field files
+     */
     'geolocate_fields_file' => resource_path('files/rapid-exports/geolocate-fields.json'),
     'people_fields_file'    => resource_path('files/rapid-exports/people-fields.json'),
     'taxonomic_fields_file' => resource_path('files/rapid-exports/taxonomic-fields.json'),
@@ -74,6 +78,7 @@ return [
     'reserved_columns'      => [
         'geolocate' => ['CatalogNumber' => '_id'],
         'people'    => ['BIOSPEXid' => '_id'],
+        'taxonomic' => ['BIOSPEXid' => '_id'],
     ],
 
     /**

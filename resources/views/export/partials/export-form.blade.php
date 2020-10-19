@@ -54,8 +54,7 @@
         </div>
     </div>
     <div class="row">
-        <button type="submit" id="geolocateSubmit"
-                class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto">{{ t('Submit') }}</button>
+        <button type="submit" class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto">{{ t('Submit') }}</button>
     </div>
     <div class="row">
         <div id="duplicateWarning" class="col-sm-10 mx-auto text-center text-danger collapse">

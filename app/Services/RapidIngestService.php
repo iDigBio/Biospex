@@ -107,7 +107,7 @@ class RapidIngestService extends RapidServiceBase
      */
     public function unzipFile(string $filePath)
     {
-        $importsPath = config('config.rapid_import_dir');
+        $importsPath = $this->rapidFileService->getImportsPath();
         $tmpPath = $importsPath . '/tmp';
 
         Storage::makeDirectory($tmpPath);
@@ -176,6 +176,16 @@ class RapidIngestService extends RapidServiceBase
     public function updateHeader()
     {
         $this->rapidFileService->updateHeader($this->csvHeader);
+    }
+
+    /**
+     * Return column tags.
+     *
+     * @return array|\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application
+     */
+    public function getColumnTags()
+    {
+        return $this->rapidFileService->getColumnTags();
     }
 
     /**

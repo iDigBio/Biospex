@@ -20,8 +20,12 @@
 namespace App\Console\Commands;
 
 use App\Models\RapidRecord;
+use App\Models\User;
+use App\Notifications\UpdateNotification;
+use App\Services\RapidExportService;
 use App\Services\RapidFileService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
 class AppCommand extends Command
 {
@@ -41,12 +45,18 @@ class AppCommand extends Command
     private $service;
 
     /**
+     * @var \App\Services\RapidExportService
+     */
+    private $rapidExportService;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct(RapidFileService $service)
+    public function __construct(RapidFileService $service, RapidExportService $rapidExportService)
     {
         parent::__construct();
         $this->service = $service;
+        $this->rapidExportService = $rapidExportService;
     }
 
     /**
@@ -54,7 +64,27 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $this->createHeaderFile();
+        $fields = [
+            "georeferenceVerificationStatus_rapid", "georeferenceProtocol_rapid", "georeferencedBy_rapid"
+        ];
+        $user = User::find(1);
+        $user->notify(new UpdateNotification('Name_of_file', 500, $fields, null));
+        //$this->exportTest();
+        //$this->createHeaderFile();
+    }
+
+    private function exportTest()
+    {
+        $data = [
+            "_token"            => "KF8Rvxxp8hI7k04VKcHlYvphN1nZitP9EQr1WPvD",
+            "exportDestination" => "taxonomic",
+            "exportType"        => "csv",
+        ];
+
+        $fields = $this->rapidExportService->mapDirectFields($data);
+        $this->rapidExportService->buildExport($fields, true);
+        dd($fields);
+
     }
 
     private function createHeaderFile()
@@ -65,5 +95,4 @@ class AppCommand extends Command
         $this->service->storeHeader($keys);
         dd($this->service->getHeader());
     }
-
 }

@@ -25,12 +25,11 @@ class RapidServiceBase
      * Map header columns to tags.
      *
      * @param $headers
+     * @param array $tags
      * @return \Illuminate\Support\Collection
      */
-    public function mapColumns($headers)
+    public function mapColumns($headers, array $tags)
     {
-        $tags = config('config.column_tags');
-
         $mapped = collect($headers)->mapToGroups(function($header) use($tags){
             foreach ($tags as $tag) {
                 if (preg_match('/'.$tag.'/', $header, $matches)) {

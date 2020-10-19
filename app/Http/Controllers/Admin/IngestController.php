@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\RapidUpdateSelectFormRequest;
 use App\Jobs\RapidUpdateJob;
+use App\Services\RapidFileService;
 use App\Services\RapidIngestService;
 use Exception;
 use Flash;
@@ -108,15 +109,15 @@ class IngestController extends Controller
                 return redirect()->route('admin.ingest.index');
             }
 
-            $filePath = Session::get('filePath');
             $fileOrigName = Session::get('fileOrigName');
 
-            [$fileName, $csvFilePath] = $rapidIngestService->unzipFile($filePath);
+            [$fileName, $filePath] = $rapidIngestService->unzipFile(Session::get('filePath'));
 
-            $rapidIngestService->loadCsvFile($csvFilePath);
+            $rapidIngestService->loadCsvFile($filePath);
             $headers = $rapidIngestService->setCsvHeader();
+            $columnTags = $rapidIngestService->getColumnTags();
 
-            $tags = $rapidIngestService->mapColumns($headers);
+            $tags = $rapidIngestService->mapColumns($headers, $columnTags);
 
             return view('ingest.update', compact('tags', 'filePath', 'fileName', 'fileOrigName'));
         } catch (Exception $e) {
@@ -130,11 +131,12 @@ class IngestController extends Controller
      * Process selected fields for update and send to job.
      *
      * @param \App\Http\Requests\RapidUpdateSelectFormRequest $request
+     * @param \App\Services\RapidFileService $service
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function selected(RapidUpdateSelectFormRequest $request)
+    public function selected(RapidUpdateSelectFormRequest $request, RapidFileService $service)
     {
-        $updateColumnTags = config('config.column_tags');
+        $updateColumnTags = $service->getColumnTags();
 
         $fields = collect($request->all())->filter(function($item, $key) use ($updateColumnTags){
             return in_array($key, $updateColumnTags);
@@ -146,6 +148,7 @@ class IngestController extends Controller
             'fileOrigName' => $request->get('fileOrigName')
         ];
 
+        \Log::alert(print_r($fileInfo, true));
         RapidUpdateJob::dispatch(Auth::user(), $fileInfo, $fields);
 
         Flash::success(t('Your selections for the update are being processed. You will be notified by email when complete.'));

@@ -19,6 +19,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\File;
 use Storage;
 
 class RapidFileService
@@ -53,6 +54,16 @@ class RapidFileService
      */
     private $defaultGridView;
 
+    /**
+     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    private $columnTags;
+
+    /**
+     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    private $importsPath;
+
     public function __construct()
     {
         $this->headerFilePath = config('config.header_import_file');
@@ -61,6 +72,8 @@ class RapidFileService
         $this->exportExtensions = config('config.export_extensions');
         $this->reservedColumns = config('config.reserved_columns');
         $this->defaultGridView = config('config.default_grid_visible');
+        $this->columnTags = config('config.column_tags');
+        $this->importsPath = config('config.rapid_import_dir');
     }
 
     /**
@@ -105,6 +118,7 @@ class RapidFileService
      * Return headers from file.
      *
      * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getHeader(): array
     {
@@ -146,10 +160,11 @@ class RapidFileService
      *
      * @param string $destination
      * @return mixed
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getDestinationFieldFile(string $destination)
     {
-        return json_decode(Storage::get(config('config.'.$destination.'_fields_file')), true);
+        return json_decode(File::get(config('config.'.$destination.'_fields_file')), true);
     }
 
     /**
@@ -160,5 +175,25 @@ class RapidFileService
     public function getDefaultGridView()
     {
         return $this->defaultGridView;
+    }
+
+    /**
+     * Return column tags.
+     * 
+     * @return array|\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application
+     */
+    public function getColumnTags(): array
+    {
+        return $this->columnTags;
+    }
+
+    /**
+     * Return import path.
+     *
+     * @return \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    public function getImportsPath()
+    {
+        return $this->importsPath;
     }
 }

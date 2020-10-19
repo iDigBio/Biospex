@@ -72,7 +72,9 @@ class RapidExportJob implements ShouldQueue
     public function handle(RapidExportService $rapidExportService)
     {
         try {
-            $fields = $rapidExportService->mapOrderFields($this->data);
+            $fields = isset($this->data['exportFields']) ?
+                $rapidExportService->mapFormFields($this->data) :
+                $rapidExportService->mapDirectFields($this->data);
 
             $form = $rapidExportService->saveForm($fields, $this->user->id);
             $rapidExportService->createFileName($form, $this->user, $fields);

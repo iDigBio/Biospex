@@ -2,7 +2,9 @@
 # {{ t('RAPID Update Completed') }}
 
 {{ t('File Name') }}: {{ $fileName }}
-{{ t('Records Updated') }}: {{ $recordsUpdated }}
+
+{{ t('Rows Updated') }}: {{ $recordsUpdated }}
+
 {{ t('Update Fields ') }}: {{ $fields }}
 
 
