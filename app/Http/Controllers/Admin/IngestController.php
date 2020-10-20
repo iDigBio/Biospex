@@ -148,7 +148,6 @@ class IngestController extends Controller
             'fileOrigName' => $request->get('fileOrigName')
         ];
 
-        \Log::alert(print_r($fileInfo, true));
         RapidUpdateJob::dispatch(Auth::user(), $fileInfo, $fields);
 
         Flash::success(t('Your selections for the update are being processed. You will be notified by email when complete.'));
