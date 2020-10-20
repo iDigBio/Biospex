@@ -78,18 +78,9 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function findSubjectsByExpeditionId($expeditionId, array $attributes = ['*'])
     {
-        return $this->model->where('expedition_ids', $expeditionId)->get($attributes);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getSubjectsByProjectOccurrence($projectId, $occurrenceId)
-    {
-        return $this->model
-            ->where('project_id', (int) $projectId)
-            ->where('occurrence.id', trim((string) $occurrenceId))
-            ->get();
+        return \Cache::tags((string) $expeditionId)->remember(__METHOD__, 14440, function () use ($expeditionId, $attributes) {
+            return $this->model->where('expedition_ids', $expeditionId)->get($attributes);
+        });
     }
 
     /**
@@ -122,6 +113,8 @@ class SubjectRepository extends MongoDbRepository implements Subject
             $subject->expedition_ids = collect($subject->expedition_ids)->diff($expeditionId)->toArray();
             $subject->save();
         });
+
+        event('cache.flush', $expeditionId);
     }
 
     /**

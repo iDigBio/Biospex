@@ -6,6 +6,7 @@ use App\Listeners\ActorExpeditionPivotEventSubscriber;
 use App\Listeners\ExportQueueEventSubscriber;
 use App\Listeners\GroupEventSubscriber;
 use App\Listeners\OcrEventSubscriber;
+use App\Listeners\CacheEventSubscriber;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -32,7 +33,8 @@ class EventServiceProvider extends ServiceProvider
         GroupEventSubscriber::class,
         ActorExpeditionPivotEventSubscriber::class,
         ExportQueueEventSubscriber::class,
-        OcrEventSubscriber::class
+        OcrEventSubscriber::class,
+        CacheEventSubscriber::class
     ];
 
     /**

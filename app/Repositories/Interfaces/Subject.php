@@ -34,15 +34,6 @@ interface Subject extends RepositoryInterface
     public function findSubjectsByExpeditionId($expeditionId, array $attributes = ['*']);
 
     /**
-     * Get subjects by project and occurrence id.
-     *
-     * @param $projectId
-     * @param $occurrenceId
-     * @return mixed
-     */
-    public function getSubjectsByProjectOccurrence($projectId, $occurrenceId);
-
-    /**
      * Get Unassigned count.
      *
      * @param $projectId

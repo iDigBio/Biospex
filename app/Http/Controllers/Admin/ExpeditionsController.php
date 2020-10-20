@@ -343,8 +343,7 @@ class ExpeditionsController extends Controller
             if ($request->filled('panoptes_workflow_id')) {
                 $attributes = $attributes = [
                     'project_id'           => $project->id,
-                    'expedition_id'        => $expedition->id,
-                    'panoptes_workflow_id' => $request->get('panoptes_workflow_id'),
+                    'expedition_id'        => $expedition->id
                 ];
 
                 $values = [
