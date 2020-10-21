@@ -101,7 +101,7 @@ class RapidRecordRepository extends MongoDbRepository implements RapidRecord
             $query->orderBy($field, $sort);
         }
 
-        $rows = $query->get();
+        $rows = $query->options(['allowDiskUse' => true])->get();
 
         if (! is_array($rows)) {
             $rows = $rows->toArray();
