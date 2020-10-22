@@ -100,6 +100,7 @@ class RapidFileService
      * Update header.
      *
      * @param array $csvHeader
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function updateHeader(array $csvHeader = [])
     {

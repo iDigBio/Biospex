@@ -93,7 +93,7 @@ class RapidIngestService extends RapidServiceBase
     {
         $this->loadCsvFile($csvFilePath);
         $this->setCsvHeader();
-        $this->storeHeader();
+        $this->updateHeader();
         $this->setRows();
 
         $import ? $this->processImportRows() : $this->processUpdateRows($fields);

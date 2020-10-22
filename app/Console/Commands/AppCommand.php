@@ -19,13 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\RapidRecord;
-use App\Models\User;
-use App\Notifications\UpdateNotification;
-use App\Services\RapidExportService;
-use App\Services\RapidFileService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
 
 class AppCommand extends Command
 {
@@ -40,23 +34,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\RapidFileService
-     */
-    private $service;
-
-    /**
-     * @var \App\Services\RapidExportService
-     */
-    private $rapidExportService;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(RapidFileService $service, RapidExportService $rapidExportService)
+    public function __construct()
     {
-        parent::__construct();
-        $this->service = $service;
-        $this->rapidExportService = $rapidExportService;
+       parent::__construct();
     }
 
     /**
@@ -64,16 +46,5 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $this->createHeaderFile();
-    }
-
-
-    private function createHeaderFile()
-    {
-        $record = RapidRecord::first()->getAttributes();
-        unset($record['_id'], $record['created_at'], $record['updated_at']);
-        $keys = array_keys($record);
-        $this->service->storeHeader($keys);
-        dd($this->service->getHeader());
     }
 }
