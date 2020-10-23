@@ -22,26 +22,28 @@ class ZooniverseCsvJob implements ShouldQueue
     private $expeditionIds;
 
     /**
-     * @var int|null
-     */
-    private $expeditionId;
-
-    /**
      * @var bool
      */
     private $delayed;
 
     /**
+     * @var int
+     */
+    private $tries;
+
+    /**
      * Create a new job instance.
      *
      * @param array $expeditionIds
+     * @param int $tries
      * @param bool $delayed
      */
-    public function __construct(array $expeditionIds = [], bool $delayed = false)
+    public function __construct(array $expeditionIds = [], int $tries = 0, bool $delayed = false)
     {
         $this->onQueue(config('config.classification_tube'));
         $this->expeditionIds = collect($expeditionIds);
         $this->delayed = $delayed;
+        $this->tries = $tries;
     }
 
     /**
@@ -67,7 +69,8 @@ class ZooniverseCsvJob implements ShouldQueue
 
             if (! $this->delayed) {
                 $service->createCsvRequest($expeditionId);
-                ZooniverseCsvJob::dispatch($filteredIds->prepend($expeditionId)->toArray(), true)->delay(now()->addMinutes(5));
+                $this->tries++;
+                $this->dispatchJob($filteredIds->prepend($expeditionId)->toArray(), $this->tries, true);
                 $this->delete();
 
                 return;
@@ -75,7 +78,13 @@ class ZooniverseCsvJob implements ShouldQueue
 
             $uri = $service->checkCsvRequest($expeditionId);
             if (! isset($uri)) {
-                ZooniverseCsvJob::dispatch($filteredIds->prepend($expeditionId)->toArray(), true)->delay(now()->addMinutes(5));
+                if($this->tries === 3) {
+                    $this->dispatchJob($filteredIds->toArray());
+                    throw new \Exception(t('Zooniverse csv creation for Expedition Id %s failed', $expeditionId));
+                }
+
+                $this->tries++;
+                $this->dispatchJob($filteredIds->prepend($expeditionId)->toArray(), $this->tries, true);
                 $this->delete();
 
                 return;
@@ -88,7 +97,7 @@ class ZooniverseCsvJob implements ShouldQueue
             ])->dispatch($expeditionId, $uri);
 
             if ($filteredIds->isNotEmpty()) {
-                ZooniverseCsvJob::dispatch($filteredIds->toArray());
+                $this->dispatchJob($filteredIds->toArray());
             }
 
             $this->delete();
@@ -104,5 +113,18 @@ class ZooniverseCsvJob implements ShouldQueue
             ];
             $user->notify(new JobError(__FILE__, $messages));
         }
+    }
+
+    /**
+     * Dispatch job again.
+     *
+     * @param array $expeditionIds
+     * @param int $tries
+     * @param bool $delay
+     */
+    private function dispatchJob(array $expeditionIds, int $tries = 0, bool $delay = false)
+    {
+        $delay ? ZooniverseCsvJob::dispatch($expeditionIds, $tries, $delay)->delay(now()->addMinutes(3))
+            : ZooniverseCsvJob::dispatch($expeditionIds, $tries, $delay);
     }
 }
