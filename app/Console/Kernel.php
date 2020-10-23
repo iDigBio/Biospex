@@ -46,10 +46,10 @@ class Kernel extends ConsoleKernel
             ->dailyAt('06:30');
 
         if ($this->app->environment('prod')) {
-            // Create Zooniverse csv files
+            // Create Zooniverse csv files Mon, Wed, Fri
             $schedule->command('zooniverse:csv')
                 ->timezone('America/New_York')
-                ->daily()->before(function () {
+                ->days([1,3,5])->at('01:00')->before(function () {
                     Cache::flush();
                     Artisan::call('lada-cache:flush');
                 });
