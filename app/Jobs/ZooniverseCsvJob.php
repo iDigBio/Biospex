@@ -64,8 +64,9 @@ class ZooniverseCsvJob implements ShouldQueue
             return;
         }
 
+        $expeditionId = $filteredIds->shift();
+
         try {
-            $expeditionId = $filteredIds->shift();
 
             if (! $this->delayed) {
                 $service->createCsvRequest($expeditionId);
@@ -79,7 +80,6 @@ class ZooniverseCsvJob implements ShouldQueue
             $uri = $service->checkCsvRequest($expeditionId);
             if (! isset($uri)) {
                 if($this->tries === 3) {
-                    $this->dispatchJob($filteredIds->toArray());
                     throw new \Exception(t('Zooniverse csv creation for Expedition Id %s failed', $expeditionId));
                 }
 
@@ -112,6 +112,8 @@ class ZooniverseCsvJob implements ShouldQueue
                 t('Line: %s', $e->getLine()),
             ];
             $user->notify(new JobError(__FILE__, $messages));
+
+            $this->dispatchJob($filteredIds->toArray());
         }
     }
 

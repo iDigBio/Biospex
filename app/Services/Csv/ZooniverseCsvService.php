@@ -71,7 +71,7 @@ class ZooniverseCsvService
         $expedition = $this->getExpedition($expeditionId);
 
         if ($this->panoptesApiService->checkForRequiredVariables($expedition)) {
-            throw new \Exception(t('Missing required expedition variables for Zooniverse classification create.'));
+            throw new \Exception(t('Missing required expedition variables for Zooniverse classification create. Expedition %s', $expeditionId));
         }
 
         $this->sendRequest($expedition->panoptesProject->panoptes_workflow_id, 'POST', ['body' => '{"media":{"content_type":"text/csv"}}']);
