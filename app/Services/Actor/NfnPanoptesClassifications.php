@@ -24,7 +24,6 @@ use App\Jobs\NfnClassificationUpdateJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
-use App\Facades\GeneralHelper;
 use App\Services\Api\PanoptesApiService;
 use Exception;
 
