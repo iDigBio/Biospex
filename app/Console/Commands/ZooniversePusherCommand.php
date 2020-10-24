@@ -12,7 +12,7 @@ class ZooniversePusherCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'zooniverse:pusher {expeditionId} {--D|days=}';
+    protected $signature = 'zooniverse:pusher {expeditionIds?*} {--D|days=}';
 
     /**
      * The console command description.
@@ -36,6 +36,11 @@ class ZooniversePusherCommand extends Command
      */
     public function handle()
     {
-        ZooniversePusherJob::dispatch($this->argument('expeditionId'), (int) $this->option('days'));
+        $expeditionIds = $this->argument('expeditionId');
+        $days = $this->option('days') === null ? null : (int) $this->option('days');
+
+        foreach ($expeditionIds as $expeditionId) {
+            ZooniversePusherJob::dispatch($expeditionId, $days);
+        }
     }
 }
