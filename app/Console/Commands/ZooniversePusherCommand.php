@@ -36,6 +36,6 @@ class ZooniversePusherCommand extends Command
      */
     public function handle()
     {
-        ZooniversePusherJob::dispatch($this->argument('expeditionId'), $this->option('days'));
+        ZooniversePusherJob::dispatch($this->argument('expeditionId'), (int) $this->option('days'));
     }
 }
