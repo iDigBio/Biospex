@@ -36,7 +36,7 @@ class ZooniversePusherCommand extends Command
      */
     public function handle()
     {
-        $expeditionIds = $this->argument('expeditionId');
+        $expeditionIds = $this->argument('expeditionIds');
         $days = $this->option('days') === null ? null : (int) $this->option('days');
 
         foreach ($expeditionIds as $expeditionId) {
