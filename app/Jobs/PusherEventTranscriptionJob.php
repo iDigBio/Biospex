@@ -37,34 +37,30 @@ class PusherEventTranscriptionJob implements ShouldQueue
     public $timeout = 7200;
 
     /**
-     * @var
+     * @var array
      */
     private $data;
 
     /**
      * Create a new job instance.
      *
-     * @param $data
+     * @param array $data
      */
-    public function __construct($data)
+    public function __construct(array $data)
     {
         $this->data = $data;
         $this->onQueue(config('config.pusher_tube'));
     }
 
     /**
-     * Execute the job.
+     * Execute job.
      *
      * @param \App\Services\Process\PusherEventService $service
-     * @return void
      */
     public function handle(PusherEventService $service)
     {
         $service->process($this->data);
 
         $this->delete();
-
-        return;
-
     }
 }

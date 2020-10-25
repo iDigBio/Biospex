@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Models\PanoptesProject;
 use App\Services\Process\PusherWeDigBioDashboardService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -37,7 +38,7 @@ class PusherWeDigBioDashboardJob implements ShouldQueue
     public $timeout = 7200;
 
     /**
-     * @var
+     * @var array
      */
     private $data;
 
@@ -49,10 +50,10 @@ class PusherWeDigBioDashboardJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param $data
-     * @param $panoptesProject
+     * @param array $data
+     * @param PanoptesProject $panoptesProject
      */
-    public function __construct($data, $panoptesProject)
+    public function __construct(array $data, PanoptesProject $panoptesProject)
     {
         $this->data = $data;
         $this->panoptesProject = $panoptesProject;
@@ -70,7 +71,5 @@ class PusherWeDigBioDashboardJob implements ShouldQueue
         $service->process($this->data, $this->panoptesProject);
 
         $this->delete();
-
-        return;
     }
 }
