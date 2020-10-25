@@ -12,7 +12,7 @@ class ZooniverseReconcileCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'zooniverse:reconcile {expeditionId}';
+    protected $signature = 'zooniverse:reconcile {expeditionIds?*}';
 
     /**
      * The console command description.
@@ -36,8 +36,10 @@ class ZooniverseReconcileCommand extends Command
      */
     public function handle()
     {
-        $expeditionId = $this->argument('expeditionId');
+        $expeditionIds = $this->argument('expeditionIds');
 
-        ZooniverseReconcileJob::dispatch($expeditionId);
+        foreach ($expeditionIds as $expeditionId) {
+            ZooniverseReconcileJob::dispatch($expeditionId);
+        }
     }
 }

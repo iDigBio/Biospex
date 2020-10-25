@@ -12,7 +12,7 @@ class ZooniversePusherCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'zooniverse:pusher {expeditionIds?*} {--D|days=}';
+    protected $signature = 'zooniverse:pusher {expeditionIds?*} {--days=}';
 
     /**
      * The console command description.

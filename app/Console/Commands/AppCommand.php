@@ -19,12 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Facades\DateHelper;
-use App\Repositories\Interfaces\Expedition;
-use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Services\Model\EventTranscriptionService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 
 class AppCommand extends Command
 {
@@ -39,30 +34,10 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\Interfaces\PanoptesTranscription
-     */
-    private $transcription;
-
-    /**
-     * @var \App\Services\Model\EventTranscriptionService
-     */
-    private $service;
-
-    /**
-     * @var \App\Repositories\Interfaces\Expedition
-     */
-    private $expeditionContract;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(
-        PanoptesTranscription $transcription,
-        EventTranscriptionService $service, Expedition $expeditionContract) {
+    public function __construct() {
         parent::__construct();
-        $this->transcription = $transcription;
-        $this->service = $service;
-        $this->expeditionContract = $expeditionContract;
     }
 
     /**
@@ -70,26 +45,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        // 127514383
-        $transcript = $this->transcription->findBy('classification_id', 280166500);
-        $expedition = $this->expeditionContract->find($transcript->subject_expeditionId);
-
-        $count = $this->service->classificationIdExists($transcript->classification_id);
-        if ($count) {
-            return;
-        }
-
-        $user = 'Austinmast';
-        $projectId = 13;
-        // $transcript->classification_finshed_at
-        $finishedDate = Carbon::parse(, 'UTC')->format('Y-m-d H:i:s');
-
-        $result = $this->service->checkEventsExist($user, $projectId, $finishedDate);
-
-        dd($count);
-
-
 
     }
-
 }

@@ -8,14 +8,14 @@ use App\Jobs\ZooniverseTranscriptionJob;
 use App\Repositories\Interfaces\Expedition;
 use Illuminate\Console\Command;
 
-class ZooniverseReconcileMultiCommand extends Command
+class ZooniverseReconcileChainedCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'zooniverse:multi {expeditionIds?*}';
+    protected $signature = 'zooniverse:reconcile-chain {expeditionIds?*}';
 
     /**
      * The console command description.

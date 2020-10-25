@@ -13,7 +13,7 @@ class ZooniverseCsvCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'zooniverse:csv {expeditionIds?*} {--D|delayed}';
+    protected $signature = 'zooniverse:csv {expeditionIds?*} {--delayed}';
 
     /**
      * The console command description.

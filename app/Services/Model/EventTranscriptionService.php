@@ -23,8 +23,9 @@ use App\Jobs\ScoreboardJob;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventTranscription;
 use App\Repositories\Interfaces\EventUser;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
+use MongoDB\BSON\UTCDateTime;
 use Validator;
 
 class EventTranscriptionService
@@ -55,48 +56,51 @@ class EventTranscriptionService
         Event $eventContract,
         EventTranscription $eventTranscriptionContract,
         EventUser $eventUserContract
-    )
-    {
+    ) {
         $this->eventContract = $eventContract;
         $this->eventTranscriptionContract = $eventTranscriptionContract;
         $this->eventUserContract = $eventUserContract;
     }
 
     /**
-     * Update or create event transcription for user.
+     * Create event transcription for user.
      *
-     * @param $data
-     * @param $projectId
-     * @param $user
+     * @param int $classification_id
+     * @param int $projectId
+     * @param string $userName
+     * @param \MongoDB\BSON\UTCDateTime|null $date
      */
-    public function updateOrCreateEventTranscription($data, $projectId, $user)
-    {
-        $user = $this->eventUserContract->getEventUserByName($user['login']);
+    public function createEventTranscription(
+        int $classification_id,
+        int $projectId,
+        string $userName,
+        UTCDateTime $date = null
+    ) {
+        $user = $this->eventUserContract->getEventUserByName($userName);
 
         if ($user === null) {
             return;
         }
 
-        $events = $this->eventContract->checkEventExistsForClassificationUser($projectId, $user);
+        $timestamp = $this->setDate($date);
 
-        $events->filter(function ($event) {
-            $start_date = $event->start_date->setTimezone($event->timezone);
-            $end_date = $event->end_date->setTimezone($event->timezone);
+        $events = $this->eventContract->checkEventExistsForClassificationUserByDate($projectId, $user->id, $timestamp);
 
-            return Carbon::now($event->timezone)->between($start_date, $end_date);
-        })->each(function ($event) use ($data, $user) {
-            $event->teams->each(function ($team) use ($event, $data, $user) {
+        $events->each(function ($event) use ($classification_id, $user) {
+            $event->teams->each(function ($team) use ($event, $classification_id, $user) {
                 $values = [
-                    'classification_id' => $data->classification_id,
+                    'classification_id' => $classification_id,
                     'event_id'          => $event->id,
                     'team_id'           => $team->id,
                     'user_id'           => $user->id,
                 ];
 
                 if ($this->validateClassification($values)) {
+                    \Log::alert('Failed: ' . $classification_id);
                     return;
                 }
 
+                \Log::alert('Created: ' . $classification_id);
                 $this->eventTranscriptionContract->create($values);
             });
         });
@@ -116,24 +120,23 @@ class EventTranscriptionService
     {
         $validator = Validator::make($values, [
             'classification_id' => Rule::unique('event_transcriptions')->where(function ($query) use ($values) {
-                return $query->where('classification_id', $values['classification_id'])
-                    ->where('event_id', $values['event_id'])
-                    ->where('team_id', $values['team_id'])
-                    ->where('user_id', $values['user_id']);
-            })
+                return $query->where('classification_id', $values['classification_id'])->where('event_id', $values['event_id'])->where('team_id', $values['team_id'])->where('user_id', $values['user_id']);
+            }),
         ]);
 
         return $validator->fails();
     }
 
-    public function classificationIdExists(int $classificationId)
+    /**
+     * Set date for creating event transcriptions.
+     *
+     * @param \MongoDB\BSON\UTCDateTime|null $date
+     * @return string
+     */
+    private function setDate(UTCDateTime $date = null)
     {
-        return $this->eventTranscriptionContract->count(['classification_id' => $classificationId]);
-    }
+        $timestamp = ! isset($date) ? Carbon::now('UTC') : $date->toDateTime();
 
-    public function eventExists(string $user, int $projectId, string $finishedDate)
-    {
-        $result = $this->eventUserContract->getEventsByUser($user, $projectId, $finishedDate);
-        dd($result);
+        return $timestamp->format('Y-m-d H:i:s');
     }
 }

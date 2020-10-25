@@ -30,7 +30,7 @@ class AmChartUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'amchart:update {projectIds?}';
+    protected $signature = 'amchart:update {projectIds?*}';
 
     /**
      * The console command description.
@@ -63,12 +63,11 @@ class AmChartUpdate extends Command
      */
     public function handle()
     {
-        $projectIds = $this->argument('projectIds') === null ?
-            $this->chartContract->all(['project_id'])->pluck('project_id') :
-            collect(explode(',', $this->argument('projectIds')));
+        $projectIds = empty($this->argument('projectIds')) ?
+            $this->chartContract->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
 
         $projectIds->each(function($projectId) {
-            AmChartJob::dispatch($projectId);
+            AmChartJob::dispatch((int) $projectId);
         });
     }
 }

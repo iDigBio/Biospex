@@ -19,6 +19,7 @@
 
 namespace App\Services\Process;
 
+use App\Models\PanoptesProject;
 use App\Repositories\Interfaces\PusherTranscription;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
@@ -52,38 +53,37 @@ class PusherWeDigBioDashboardService
     /**
      * Process pusher data for dashboard.
      *
-     * @param $data
-     * @param $panoptesProject
+     * @param array $data
+     * @param PanoptesProject $panoptesProject
      * @throws \Exception
      */
-    public function process($data, $panoptesProject)
+    public function process(array $data, PanoptesProject $panoptesProject)
     {
-        $subject = $this->apiService->getPanoptesSubject($data->subject_ids[0]);
-        $user = $data->user_id !== null ? $this->apiService->getPanoptesUser($data->user_id) : null;
+        $subject = $this->apiService->getPanoptesSubject($data['subject_ids'][0]);
+        $user = $data['user_id'] !== null ? $this->apiService->getPanoptesUser($data['user_id']) : null;
 
         if ($subject === null) {
             return;
         }
 
-        $this->createDashboardFromPusher($data, $subject, $user, $panoptesProject);
+        $this->createDashboardFromPusher($panoptesProject, $data, $subject, $user);
     }
 
     /**
      * Build item for dashboard.
      * This is built during the posted data from Pusher
      * $this->buildItem($data, $workflow, $subject, $expedition);
-     *
-     * @param $data
-     * @param $subject
-     * @param $user
-     * @param $panoptesProject
-     * @throws \Exception
+     * @param \App\Models\PanoptesProject $panoptesProject
+     * @param array $data
+     * @param array $subject
+     * @param array|null $user
      */
-    private function createDashboardFromPusher($data, $subject, $user, $panoptesProject)
+    private function createDashboardFromPusher(PanoptesProject $panoptesProject, array $data, array $subject, array $user = null)
     {
+
         $thumbnailUri = $this->setPusherThumbnailUri($data);
 
-        $classification_id = (int) $data->classification_id;
+        $classification_id = (int) $data['classification_id'];
 
         if ($this->validateTranscription($classification_id)) {
             return;
@@ -92,7 +92,7 @@ class PusherWeDigBioDashboardService
         $attributes = [
             'classification_id'    => $classification_id,
             'project'              => $panoptesProject->title,
-            'description'          => 'Classification Id ' . $data->classification_id,
+            'description'          => 'Classification Id ' . $data['classification_id'],
             'guid'                 => Uuid::uuid4()->toString(),
             'timestamp'            => Carbon::now(),
             'subject'              => [
@@ -100,15 +100,15 @@ class PusherWeDigBioDashboardService
                 'thumbnailUri' => $thumbnailUri,
             ],
             'contributor'          => [
-                'decimalLatitude'  => $data->geo->latitude,
-                'decimalLongitude' => $data->geo->longitude,
+                'decimalLatitude'  => $data['geo']['latitude'],
+                'decimalLongitude' => $data['geo']['longitude'],
                 'ipAddress'        => '',
                 'transcriber'      => $user === null ? '' : $user['login'],
                 'physicalLocation' => [
-                    'country'      => $data->geo->country_name,
+                    'country'      => $data['geo']['country_name'],
                     'province'     => '',
                     'county'       => '',
-                    'municipality' => $data->geo->city_name,
+                    'municipality' => $data['geo']['city_name'],
                     'locality'     => '',
                 ],
             ],
@@ -133,12 +133,12 @@ class PusherWeDigBioDashboardService
     /**
      * Determine image url.
      *
-     * @param $data
+     * @param array $data
      * @return mixed
      */
-    public function setPusherThumbnailUri($data)
+    public function setPusherThumbnailUri(array $data)
     {
-        $imageUrl = (array) $data->subject_urls[0];
+        $imageUrl = $data['subject_urls'][0];
 
         return isset($imageUrl['image/jpeg']) ? $imageUrl['image/jpeg'] : (isset($imageUrl['image/png']) ? $imageUrl['image/png'] : null);
     }

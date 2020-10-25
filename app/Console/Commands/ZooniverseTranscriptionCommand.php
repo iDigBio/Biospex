@@ -12,7 +12,7 @@ class ZooniverseTranscriptionCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'zooniverse:transcription {expeditionId}';
+    protected $signature = 'zooniverse:transcription {expeditionIds?*}';
 
     /**
      * The console command description.
@@ -36,8 +36,10 @@ class ZooniverseTranscriptionCommand extends Command
      */
     public function handle()
     {
-        $expeditionId = $this->argument('expeditionId');
+        $expeditionIds = $this->argument('expeditionIds');
 
-        ZooniverseTranscriptionJob::dispatch($expeditionId);
+        foreach ($expeditionIds as $expeditionId) {
+            ZooniverseTranscriptionJob::dispatch($expeditionId);
+        }
     }
 }

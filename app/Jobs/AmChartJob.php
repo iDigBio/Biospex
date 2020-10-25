@@ -50,7 +50,7 @@ class AmChartJob implements ShouldQueue
      *
      * @param int $projectId
      */
-    public function __construct($projectId)
+    public function __construct(int $projectId)
     {
         $this->projectId = $projectId;
         $this->onQueue(config('config.chart_tube'));

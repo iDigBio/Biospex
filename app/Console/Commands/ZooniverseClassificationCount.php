@@ -19,30 +19,33 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\NfnClassificationUpdateJob;
+use App\Jobs\ZooniverseClassificationCountJob;
+use App\Models\Expedition;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
-use Storage;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 
-class NfnClassificationUpdate extends Command
+class ZooniverseClassificationCount extends Command
 {
+    use DispatchesJobs;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'nfn:update {expeditionIds?} {--files=}';
+    protected $signature = 'zooniverse:count {expeditionIds?*}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update NfN Classifications for Expeditions. Argument is comma separated expeditionIds.';
-
+    protected $description = 'Updates Classification counts';
 
     /**
      * Create a new command instance.
+     *
+     * @return void
      */
     public function __construct()
     {
@@ -50,39 +53,25 @@ class NfnClassificationUpdate extends Command
     }
 
     /**
-     * Execute the console command.
+     * Process command.
      */
     public function handle()
     {
-        $expeditionIds = $this->argument('expeditionIds') === null ?
-            null : explode(',', $this->argument('expeditionIds'));
+        $expeditionIds = empty($this->argument('expeditionIds')) ?
+            $this->getExpeditionIds() : $this->argument('expeditionIds');
 
-        $files = $this->option('files');
-
-        if ($expeditionIds === null && $files === null)
-        {
-            return;
+        foreach ($expeditionIds as $expeditionId) {
+            ZooniverseClassificationCountJob::dispatch((int) $expeditionId);
         }
-
-        $expeditionIds = $files !== "true" ? $expeditionIds : $this->readDirectory();
-
-        collect($expeditionIds)->each(function ($expeditionId){
-            NfnClassificationUpdateJob::dispatch($expeditionId);
-        });
     }
 
     /**
-     * Read directory files to process.
+     * Get expedition ids having panoptes project.
+     *
+     * @return mixed
      */
-    private function readDirectory()
+    private function getExpeditionIds()
     {
-        $expeditionIds = [];
-        $files = File::files(Storage::path(config('config.nfn_downloads_transcript')));
-        foreach ($files as $file)
-        {
-            $expeditionIds[] = basename($file, '.csv');
-        }
-
-        return $expeditionIds;
+        return Expedition::whereHas('panoptesProject')->get('id')->pluck('id')->toArray();
     }
 }

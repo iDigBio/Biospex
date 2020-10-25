@@ -28,6 +28,4 @@ interface EventUser extends RepositoryInterface
      * @return mixed
      */
     public function getEventUserByName($name);
-
-    public function getEventsByUser(string $user, int $projectId, string $finishedDate);
 }

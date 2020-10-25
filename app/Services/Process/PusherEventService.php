@@ -61,11 +61,11 @@ class PusherEventService
     /**
      * Process pusher data.
      *
-     * @param $data
+     * @param array $data
      */
-    public function process($data)
+    public function process(array $data)
     {
-        $subject = $this->apiService->getPanoptesSubject($data->subject_ids[0]);
+        $subject = $this->apiService->getPanoptesSubject($data['subject_ids'][0]);
 
         $expedition = $this->getExpeditionBySubject($subject);
 
@@ -73,13 +73,13 @@ class PusherEventService
             return;
         }
 
-        $user = $data->user_id !== null ? $this->apiService->getPanoptesUser($data->user_id) : null;
+        $user = $data['user_id'] !== null ? $this->apiService->getPanoptesUser($data['user_id']) : null;
 
         if ($user === null) {
             return;
         }
 
-        $this->eventTranscriptionService->updateOrCreateEventTranscription($data, $expedition->project_id, $user);
+        $this->eventTranscriptionService->createEventTranscription((int) $data['classification_id'], $expedition->project_id, $user['login']);
     }
 
     /**

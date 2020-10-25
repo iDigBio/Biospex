@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
+use App\Services\Model\EventTranscriptionService;
 use App\Services\Model\PusherTranscriptionService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -45,9 +46,10 @@ class ZooniversePusherJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Model\PusherTranscriptionService $pusherTranscriptionService
+     * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
      * @return void
      */
-    public function handle(PusherTranscriptionService $pusherTranscriptionService)
+    public function handle(PusherTranscriptionService $pusherTranscriptionService, EventTranscriptionService $eventTranscriptionService)
     {
         if ($this->skipReconcile($this->expeditionId)) {
             return;
@@ -61,8 +63,9 @@ class ZooniversePusherJob implements ShouldQueue
 
             $transcriptions = $pusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
 
-            $transcriptions->each(function ($transcription) use ($pusherTranscriptionService, $expedition) {
+            $transcriptions->each(function ($transcription) use ($pusherTranscriptionService, $eventTranscriptionService, $expedition) {
                 $pusherTranscriptionService->processTranscripts($transcription, $expedition);
+                $eventTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
             });
 
             return;
