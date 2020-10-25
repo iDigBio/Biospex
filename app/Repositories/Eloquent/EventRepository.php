@@ -131,17 +131,19 @@ class EventRepository extends EloquentRepository implements Event
     /**
      * @inheritDoc
      */
-    public function checkEventExistsForClassificationUser($projectId, $user): Collection
+    public function checkEventExistsForClassificationUserByDate(int $projectId, int $userId, string $date)
     {
-        return $this->model->with(['teams' => function($q) use($user) {
-            $q->whereHas('users', function($query) use ($user){
-                $query->where('user_id', $user->id);
-            });
-        }])->whereHas('teams', function($q) use ($user, $projectId) {
-            $q->whereHas('users', function($query) use ($user){
-                $query->where('user_id', $user->id);
-            });
-        })->where('project_id', $projectId)->get();
+        $callback = function ($q) use($userId){
+            $q->where('user_id', $userId);
+        };
+
+        return $this->model->with(['teams' => function($q) use($callback) {
+                $q->whereHas('users', $callback);
+                $q->with(['users' => $callback]);
+            }])
+            ->where('project_id', $projectId)
+            ->where('start_date', '<', $date)
+            ->where('end_date', '>', $date)->get();
     }
 
     /**
