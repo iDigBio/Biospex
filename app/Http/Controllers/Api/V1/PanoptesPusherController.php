@@ -41,7 +41,6 @@ class PanoptesPusherController extends ApiController
      *
      * @param Request $request
      * @param \App\Repositories\Interfaces\PanoptesProject $panoptesProject
-     * @return mixed|void
      * [2017-10-15 00:12:45] lumen.INFO: {"classification_id":"74498341","project_id":"1558","workflow_id":"2838","user_id":null,"subject_ids":["4002829"],"subject_urls":[{"image/jpeg":"https://panoptes-uploads.zooniverse.org/production/subject_location/0640d1cd-6c4f-43b4-9a10-726ebd43fedb.jpeg"}],"geo":{"country_name":"United States","country_code":"US","city_name":"Tallahassee","coordinates":[-84.2539,30.4203],"latitude":30.4203,"longitude":-84.2539}}
      */
     public function create(Request $request, PanoptesProject $panoptesProject)
@@ -50,14 +49,14 @@ class PanoptesPusherController extends ApiController
             return;
         }
 
-        $data = json_decode($request->getContent());
+        $data = json_decode($request->getContent(), true);
 
-        if ( ! isset($data->workflow_id))
+        if ( ! isset($data['workflow_id']))
         {
             return;
         }
 
-        $result = $panoptesProject->findByProjectIdAndWorkflowId($data->project_id, $data->workflow_id);
+        $result = $panoptesProject->findByProjectIdAndWorkflowId($data['project_id'], $data['workflow_id']);
 
         if ($result === null){
             return;
@@ -65,8 +64,6 @@ class PanoptesPusherController extends ApiController
 
         PusherEventTranscriptionJob::dispatch($data);
         PusherWeDigBioDashboardJob::dispatch($data, $result);
-
-        return;
     }
 
     /**
