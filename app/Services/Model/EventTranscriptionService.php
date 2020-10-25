@@ -125,4 +125,15 @@ class EventTranscriptionService
 
         return $validator->fails();
     }
+
+    public function classificationIdExists(int $classificationId)
+    {
+        return $this->eventTranscriptionContract->count(['classification_id' => $classificationId]);
+    }
+
+    public function eventExists(string $user, int $projectId, string $finishedDate)
+    {
+        $result = $this->eventUserContract->getEventsByUser($user, $projectId, $finishedDate);
+        dd($result);
+    }
 }

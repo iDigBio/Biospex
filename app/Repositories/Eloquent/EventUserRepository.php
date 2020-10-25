@@ -46,4 +46,15 @@ class EventUserRepository extends EloquentRepository implements EventUser
     {
         return $this->model->where('nfn_user', $name)->first(['id']);
     }
+
+    public function getEventsByUser(string $user, int $projectId, string $finishedDate)
+    {
+        return $this->model->whereHas(['team' => function($q) use($projectId, $finishedDate) {
+            $q->whereHas(['event' => function($q2) use($projectId, $finishedDate) {
+                $q2->where('project_id', $projectId)
+                    ->where('start_date', '<', $finishedDate)
+                    ->where('end_date', '>', $finishedDate);
+            }]);
+        }])->get();
+    }
 }
