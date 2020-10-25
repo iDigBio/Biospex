@@ -42,6 +42,11 @@ class ExportQueueJob implements ShouldQueue
     private $model;
 
     /**
+     * @var int
+     */
+    public $timeout = 36000;
+
+    /**
      * ExportQueueJob constructor.
      *
      * @param Model $model

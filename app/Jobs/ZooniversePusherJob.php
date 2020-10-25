@@ -30,6 +30,11 @@ class ZooniversePusherJob implements ShouldQueue
     private $days;
 
     /**
+     * @var int
+     */
+    public $timeout = 3600;
+
+    /**
      * Create a new job instance.
      *
      * @param int $expeditionId

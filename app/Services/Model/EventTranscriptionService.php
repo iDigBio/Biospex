@@ -96,16 +96,14 @@ class EventTranscriptionService
                 ];
 
                 if ($this->validateClassification($values)) {
-                    \Log::alert('Failed: ' . $classification_id);
                     return;
                 }
 
-                \Log::alert('Created: ' . $classification_id);
                 $this->eventTranscriptionContract->create($values);
             });
         });
 
-        if ($events->isNotEmpty()) {
+        if ($events->isNotEmpty() && !isset($date)) {
             ScoreboardJob::dispatch($projectId);
         }
     }
