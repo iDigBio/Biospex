@@ -78,13 +78,14 @@ interface Event extends RepositoryInterface
     public function getEventShow($eventId);
 
     /**
-     * Check if an event exists with team and user.
+     * Get any events by id, user, and date for overnight event_transcription update.
      *
-     * @param $projectId
-     * @param $user
-     * @return \Illuminate\Support\Collection
+     * @param int $projectId
+     * @param int $userId
+     * @param string $finishedDate
+     * @return mixed
      */
-    public function checkEventExistsForClassificationUser($projectId, $user): Collection;
+    public function checkEventExistsForClassificationUserByDate(int $projectId, int $userId, string $finishedDate);
 
     /**
      * Get events using project id.
