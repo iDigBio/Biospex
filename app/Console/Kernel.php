@@ -40,11 +40,6 @@ class Kernel extends ConsoleKernel
             ->timezone('America/New_York')
             ->dailyAt('06:05');
 
-        // Clean report directory
-        $schedule->command('report:clean')
-            ->timezone('America/New_York')
-            ->dailyAt('06:30');
-
         if ($this->app->environment('prod')) {
             // Create Zooniverse csv files Mon, Wed, Fri
             $schedule->command('zooniverse:csv')

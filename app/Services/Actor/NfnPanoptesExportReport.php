@@ -23,6 +23,7 @@ use App\Facades\ActorEventHelper;
 use App\Facades\GeneralHelper;
 use App\Notifications\NfnExportComplete;
 
+use App\Repositories\Interfaces\Download;
 use App\Repositories\Interfaces\ExportQueue;
 use App\Repositories\Interfaces\ExportQueueFile;
 use App\Services\Csv\Csv;
@@ -53,21 +54,29 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
     private $csv;
 
     /**
+     * @var \App\Repositories\Interfaces\Download
+     */
+    private $downloadContract;
+
+    /**
      * NfnPanoptesExportReport constructor.
      *
      * @param \App\Repositories\Interfaces\ExportQueue $exportQueueContract
      * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFileContract
      * @param \App\Services\Csv\Csv $csv
+     * @param \App\Repositories\Interfaces\Download $downloadContract
      */
     public function __construct(
         ExportQueue $exportQueueContract,
         ExportQueueFile $exportQueueFileContract,
-        Csv $csv
+        Csv $csv,
+        Download $downloadContract
     )
     {
         $this->exportQueueContract = $exportQueueContract;
         $this->exportQueueFileContract = $exportQueueFileContract;
         $this->csv = $csv;
+        $this->downloadContract = $downloadContract;
     }
 
     /**
@@ -113,8 +122,34 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
         $csvName = md5($this->queue->id).'.csv';
         $fileName = $this->csv->createReportCsv($data->toArray(), $csvName);
 
+        if(isset($fileName)) {
+            $this->saveReport($csvName);
+        }
+
         $users = $this->expedition->project->group->users->push($this->owner);
 
         Notification::send($users, new NfnExportComplete($this->expedition->title, $fileName));
+    }
+
+    /**
+     * Save report.
+     *
+     * @param string $csvName
+     */
+    private function saveReport(string $csvName)
+    {
+        $attributes = [
+            'expedition_id' => $this->expedition->id,
+            'actor_id' => $this->actor->id,
+            'type' => 'report'
+        ];
+        $values = [
+            'expedition_id' => $this->expedition->id,
+            'actor_id' => $this->actor->id,
+            'file' => $csvName,
+            'type' => 'report'
+        ];
+
+        $this->downloadContract->updateOrCreate($attributes, $values);
     }
 }

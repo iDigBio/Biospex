@@ -40,15 +40,22 @@
                                 <td class="d-flex justify-content-between">
                                     @if ($download->type != 'export')
                                         @can('isOwner', $expedition->project->group)
-                                            <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
-                                               data-hover="tooltip"
-                                               title="{{ t('Download') }} {{ $download->present()->file_type }}">
-                                                <i class="fas fa-file-download fa-2x"></i></a>
-                                            @if ($download->type === 'summary')
-                                                <a href="{{ route('admin.downloads.summary', [$expedition->project->id, $expedition->id]) }}"
+                                            @if ($download->type === 'report')
+                                                <a href="{{ route('admin.downloads.report', ['file' => base64_encode($download->file)]) }}"
                                                    data-hover="tooltip" target="_blank"
-                                                   title="{{ t('View') }} {{ $download->type }}">
-                                                    <i class="fas fa-eye fa-2x pl-2 ml-2"></i></a>
+                                                   title="{{ t('Download') }} {{ $download->type }}">
+                                                    <i class="fas fa-file-download fa-2x pl-2 ml-2"></i></a>
+                                            @else
+                                                <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                                   data-hover="tooltip"
+                                                   title="{{ t('Download') }} {{ $download->present()->file_type }}">
+                                                    <i class="fas fa-file-download fa-2x"></i></a>
+                                                @if ($download->type === 'summary')
+                                                    <a href="{{ route('admin.downloads.summary', [$expedition->project->id, $expedition->id]) }}"
+                                                       data-hover="tooltip" target="_blank"
+                                                       title="{{ t('View') }} {{ $download->type }}">
+                                                        <i class="fas fa-eye fa-2x pl-2 ml-2"></i></a>
+                                                @endif
                                             @endif
                                         @endcan
                                     @else

@@ -379,9 +379,15 @@ class GeneralHelper
      */
     public function downloadFileExists($type, $file)
     {
-        return $type === 'export' ?
-            Storage::exists(config('config.export_dir').'/'.$file) :
-            Storage::exists(config('config.nfn_downloads_dir').'/'.$type.'/'.$file);
+        if ($type === 'export') {
+            return Storage::exists(config('config.export_dir').'/'.$file);
+        }
+
+        if ($type === 'report') {
+            return Storage::exists(config('config.reports_dir').'/'.$file);
+        }
+
+        return Storage::exists(config('config.nfn_downloads_dir').'/'.$type.'/'.$file);
     }
 
     /**
@@ -393,8 +399,14 @@ class GeneralHelper
      */
     public function downloadFileSize($type, $file)
     {
-        return $type === 'export' ?
-            Storage::size(config('config.export_dir').'/'.$file) :
-            Storage::size(config('config.nfn_downloads_dir').'/'.$type.'/'.$file);
+        if ($type === 'export') {
+            return Storage::size(config('config.export_dir').'/'.$file);
+        }
+
+        if ($type === 'report') {
+            return Storage::size(config('config.reports_dir').'/'.$file);
+        }
+
+        return Storage::size(config('config.nfn_downloads_dir').'/'.$type.'/'.$file);
     }
 }
