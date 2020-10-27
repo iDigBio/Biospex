@@ -279,6 +279,14 @@ class SubjectRepository extends MongoDbRepository implements Subject
                 continue;
             }
 
+            if ($rule['field'] === 'transcribed')
+            {
+                if ($rule['data'] === 'all') {
+                    continue;
+                }
+                $rule['data'] = $rule['data'] === 'true' ? (bool) true : (bool) false;
+            }
+
             $this->buildWhere($query, $rule);
         }
     }
@@ -464,6 +472,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     protected function setWhere(&$query, $field, $operation, $data)
     {
+
         ($this->groupAnd || ! $this->groupOpProcessed) ?
             $query->where($field, $operation, $data) : $query->orWhere($field, $operation, $data);
 

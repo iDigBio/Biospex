@@ -155,20 +155,11 @@ return [
     'banner'                => '1200x250',
 
     /**
-     * Visible columns in jqGrid.
-     */
-    'model_columns'         => [
-        'Assigned',
-        'Id',
-        'AccessURI',
-        'Ocr',
-    ],
-
-    /**
      * Columns used in select statement for grid.
      */
     'defaultGridVisible'    => [
         'id',
+        'transcribed',
         'accessURI',
         'ocr',
     ],
