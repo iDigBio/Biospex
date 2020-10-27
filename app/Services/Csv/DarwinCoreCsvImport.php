@@ -472,7 +472,7 @@ class DarwinCoreCsvImport
             return;
         }
 
-        $fields = ['project_id' => (int) $this->projectId, 'ocr' => '', 'expedition_ids' => []];
+        $fields = ['project_id' => (int) $this->projectId, 'ocr' => '', 'expedition_ids' => [], 'transcribed' => false];
 
         $occurrence = is_null($occurrenceId) ? [] : ['occurrence' => ['id' => (string) $occurrenceId]];
         $subject = $fields + $row + $occurrence;
