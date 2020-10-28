@@ -228,7 +228,8 @@ function notify(icon, msg, type) {
         animate: {
             enter: 'animated fadeInDown',
             exit: 'animated fadeOutUp'
-        }
+        },
+        timer: 5000,
     });
 }
 

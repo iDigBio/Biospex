@@ -118,11 +118,14 @@ class SubjectRepository extends MongoDbRepository implements Subject
         event('cache.flush', $expeditionId);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function attachSubjects($subjectIds, $expeditionId)
     {
         $subjectIds->each(function($subjectId) use($expeditionId){
             $subject = $this->model->find($subjectId);
-            $subject->expeditionIds[] = $expeditionId;
+            $subject->expedition_ids = collect($subject->expedition_ids)->push($expeditionId)->toArray();
             $subject->save();
         });
 

@@ -352,9 +352,9 @@ class ExpeditionsController extends Controller
                     'panoptes_workflow_id' => $request->get('panoptes_workflow_id'),
                 ];
 
-                //$panoptesProject = $this->panoptesProjectContract->updateOrCreate($attributes, $values);
+                $panoptesProject = $this->panoptesProjectContract->updateOrCreate($attributes, $values);
 
-                //PanoptesProjectUpdateJob::dispatch($panoptesProject);
+                PanoptesProjectUpdateJob::dispatch($panoptesProject);
             }
 
             // If process already in place, do not update subjects.
