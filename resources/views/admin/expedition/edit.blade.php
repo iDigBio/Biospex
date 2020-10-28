@@ -80,10 +80,6 @@
                                        value="{{ old('panoptes_workflow_id', $expedition->panoptesProject->panoptes_workflow_id ?? '') }}">
                                 <span class="invalid-feedback">{{ $errors->first('workflow') }}</span>
                             </div>
-                            @if(isset($expedition->panoptesProject->panoptes_workflow_id))
-                                <input type="hidden" name="current_panoptes_workflow_id"
-                                       value="{{ old('panoptes_workflow_id', $expedition->panoptesProject->panoptes_workflow_id ?? '') }}">
-                            @endif
                         @endif
                     </div>
                 </div>
