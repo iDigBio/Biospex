@@ -5,16 +5,16 @@
     {{ t('Explore Subjects') }}
 @stop
 
-@section('custom-style')
+@push('styles')
     <style>
         .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
             font-size: 1rem;
         }
-        #searchmodfbox_jqGridExplore{
+        #searchmodfbox_jqGridExpedition {
             top:auto;
         }
     </style>
-@endsection
+@endpush
 
 {{-- Content --}}
 @section('content')

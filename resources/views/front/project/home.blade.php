@@ -230,7 +230,7 @@
     @endif
 
 @endsection
-@section('custom-script')
+@push('scripts')
     <script src="//www.amcharts.com/lib/4/core.js"></script>
     <script src="//www.amcharts.com/lib/4/charts.js"></script>
     <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
@@ -248,5 +248,5 @@
         let eventConfetti = new ConfettiGenerator({ target: 'event-conffeti' });
         eventConfetti.render();
     </script>
-@endsection
+@endpush
 

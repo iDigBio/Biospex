@@ -7,12 +7,12 @@ let Grid = {};
 $(function () {
     if ($("#jqgrid-modal").length > 0) {
         'use strict';
+        Grid.model = JSON.parse(Laravel.model);
         Grid.loadSate = false;
         Grid.id = $(".jgrid").prop('id');
         Grid.obj = $("#" + Grid.id);
         Grid.projectId = Laravel.projectId;
         Grid.expeditionId = Laravel.expeditionId;
-        Grid.loadUrl = Laravel.loadUrl;
         Grid.gridUrl = Laravel.gridUrl;
         Grid.exportUrl = Laravel.exportUrl;
         Grid.editUrl = Laravel.editUrl;
@@ -23,26 +23,9 @@ $(function () {
         Grid.explore = Laravel.explore;
         Grid.subjectIdsObj.data('ids', Laravel.subjectIds);
 
-        $.ajax({
-            type: "GET",
-            url: Grid.loadUrl,
-            dataType: "json",
-            success: jqBuildGrid()
-        });
-
-        $('#gridForm').submit(function () {
-            $('#subject-ids').val(Grid.subjectIdsObj.data('ids').toString());
-
-            return true;
-        });
-    }
-});
-
-function jqBuildGrid() {
-
-        return function (result) {
-        let cm = result.colModel;
+        let cm = Grid.model.colModel;
         mapFormatter(cm);
+
         Grid.obj.jqGrid({
             jsonReader: {
                 repeatitems: false,
@@ -57,7 +40,7 @@ function jqBuildGrid() {
             mtype: "GET",
             datatype: "json",
             page: 1,
-            colNames: result.colNames,
+            colNames: Grid.model.colNames,
             colModel: cm,
             rowNum: 20,
             gridview: true,
@@ -241,8 +224,24 @@ function jqBuildGrid() {
             $.jgrid.loadState(Grid.id);
             setMultipleSelect();
         });
-    };
-}
+
+        //jqBuildGrid();
+        /*
+        $.ajax({
+            type: "GET",
+            url: Grid.loadUrl,
+            dataType: "json",
+            success: jqBuildGrid()
+        });
+         */
+
+        $('#gridForm').submit(function () {
+            $('#subject-ids').val(Grid.subjectIdsObj.data('ids').toString());
+
+            return true;
+        });
+    }
+});
 
 /**
  * Switch checkbox column

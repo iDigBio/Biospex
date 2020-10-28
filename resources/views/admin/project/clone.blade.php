@@ -5,6 +5,17 @@
     {{ t('Clone Project') }}
 @stop
 
+@push('styles')
+    <style>
+        .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
+            font-size: 1rem;
+        }
+        #searchmodfbox_jqGridExpedition {
+            top:auto;
+        }
+    </style>
+@endpush
+
 {{-- Content --}}
 @section('content')
 
@@ -285,8 +296,8 @@
     </div>
     @include('admin.partials.project-banner-modal')
 @endsection
-@section('custom-script')
+@push('scripts')
     <script>
 
     </script>
-@endsection
+@endpush

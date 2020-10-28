@@ -26,6 +26,7 @@ use App\Jobs\OcrCreateJob;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ProjectFormRequest;
 use App\Repositories\Interfaces\Subject;
+use App\Services\Grid\JqGridJsonEncoder;
 use App\Services\Model\ProjectService;
 use Flash;
 use Auth;
@@ -258,9 +259,10 @@ class ProjectsController extends Controller
      * Display project explore page.
      *
      * @param $projectId
+     * @param \App\Services\Grid\JqGridJsonEncoder $grid
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function explore($projectId)
+    public function explore($projectId, JqGridJsonEncoder $grid)
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
@@ -268,12 +270,14 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
+        $model = $grid->loadGridModel($projectId, request()->route()->getName());
+
         JavaScript::put([
+            'model' => $model,
             'projectId'    => $projectId,
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'loadUrl'      => route('admin.grids.load', [$projectId]),
             'gridUrl'      => route('admin.grids.explore', [$projectId]),
             'exportUrl'    => route('admin.grids.export', [$projectId]),
             'editUrl'      => route('admin.grids.delete', [$projectId]),

@@ -45,9 +45,9 @@
     </div>
 @endsection
 
-@section('custom-script')
+@push('scripts')
     <script>
         let expeditionConfetti = new ConfettiGenerator({target: 'expedition-conffeti'});
         expeditionConfetti.render();
     </script>
-@endsection
+@endpush

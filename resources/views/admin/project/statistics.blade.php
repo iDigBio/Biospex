@@ -5,10 +5,10 @@
     {{ $project->title }} {{ t('Statistics') }}
 @stop
 
-@section('custom-style')
+@push('styles')
     <link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css"
           rel="stylesheet"/>
-@endsection
+@endpush
 @section('content')
     @include('admin.project.partials.project-panel')
     <div class="row">
@@ -54,7 +54,7 @@
         </div>
     </div>
 @endsection
-@section('custom-script')
+@push('scripts')
     @if($transcribers->isNotEmpty())
         <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
@@ -67,4 +67,4 @@
         <script src="//www.amcharts.com/lib/4/charts.js"></script>
         <script src="{{ asset('js/amChartStat.min.js')}}"></script>
     @endif
-@endsection
+@endpush

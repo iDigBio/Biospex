@@ -5,9 +5,9 @@
     {{ t('Lead Public Digitization Expeditions') }}
 @stop
 
-@section('custom-style')
+@push('styles')
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-@endsection
+@endpush
 
 {{-- Content --}}
 @section('header')
@@ -204,7 +204,7 @@
         </div>
     </section>
 @endsection
-@section('custom-script')
+@push('scripts')
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
@@ -214,4 +214,4 @@
     <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
     <script>var scroll = new SmoothScroll('a[href*="#"]');</script>
 
-@endsection
+@endpush

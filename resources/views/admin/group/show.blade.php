@@ -5,10 +5,10 @@
     {{ t('Group') }} {{ $group->title }}
 @stop
 
-@section('custom-style')
+@push('styles')
     <link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css"
           rel="stylesheet"/>
-@endsection
+@endpush
 {{-- Content --}}
 @section('content')
     @include('admin.group.partials.group-panel')
@@ -68,7 +68,7 @@
     </div>
     @include('admin.partials.invite-modal')
 @endsection
-@section('custom-script')
+@push('scripts')
     <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
     @if($group->users->isNotEmpty())
@@ -81,4 +81,4 @@
             $('#projects-tbl').DataTable();
         </script>
     @endif
-@endsection
+@endpush

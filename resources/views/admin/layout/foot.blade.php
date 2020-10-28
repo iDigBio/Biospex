@@ -10,4 +10,4 @@
 <script src="{{ mix('/js/manifest.js', 'backend') }}"></script>
 <script src="{{ mix('/js/vendor.js', 'backend') }}"></script>
 <script src="{{ mix('/js/admin.js', 'backend') }}"></script>
-@yield('custom-script')
+@push('scripts')

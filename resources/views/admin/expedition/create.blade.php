@@ -5,7 +5,7 @@
     {{ t('Create Expedition') }}
 @stop
 
-@section('custom-style')
+@push('styles')
     <style>
         .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
             font-size: 1rem;
@@ -14,7 +14,7 @@
             top:auto;
         }
     </style>
-@endsection
+@endpush
 
 {{-- Content --}}
 @section('content')
