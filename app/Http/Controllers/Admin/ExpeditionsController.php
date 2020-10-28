@@ -352,9 +352,9 @@ class ExpeditionsController extends Controller
                     'panoptes_workflow_id' => $request->get('panoptes_workflow_id'),
                 ];
 
-                $panoptesProject = $this->panoptesProjectContract->updateOrCreate($attributes, $values);
+                //$panoptesProject = $this->panoptesProjectContract->updateOrCreate($attributes, $values);
 
-                PanoptesProjectUpdateJob::dispatch($panoptesProject);
+                //PanoptesProjectUpdateJob::dispatch($panoptesProject);
             }
 
             // If process already in place, do not update subjects.
@@ -363,8 +363,15 @@ class ExpeditionsController extends Controller
                 $expedition->load('subjects');
                 $subjectIds = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
                 $count = count($subjectIds);
-                $this->subjectContract->detachSubjects($expedition->subjects, $expedition->id);
-                $expedition->subjects()->attach($subjectIds);
+
+                $oldIds = collect($expedition->subjects->pluck('_id'));
+                $newIds = collect($subjectIds);
+
+                $detachIds = $oldIds->diff($newIds);
+                $attachIds = $newIds->diff($oldIds);
+
+                $this->subjectContract->detachSubjects($detachIds, $expedition->id);
+                $this->subjectContract->attachSubjects($attachIds, $expedition->id);
 
                 $values = [
                     'local_subject_count' => $count,

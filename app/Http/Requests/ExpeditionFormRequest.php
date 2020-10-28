@@ -46,7 +46,7 @@ class ExpeditionFormRequest extends Request
                 new FileUploadNameValidation(),
             ],
             'subjectCount' => 'integer|max:' . Config::get('config.expedition_size'),
-            'panoptes_workflow_id' => 'integer|nullable|required_with:current_panoptes_workflow_id:same:current_panoptes_workflow_id'
+            'panoptes_workflow_id' => 'integer|nullable'
         ];
     }
 

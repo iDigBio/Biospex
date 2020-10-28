@@ -37,7 +37,7 @@ class CacheEventSubscriber
     {
         $events->listen(
             'cache.flush',
-            'App\Listeners\SubjectEventSubscriber@flush'
+            'App\Listeners\CacheEventSubscriber@flush'
         );
     }
 

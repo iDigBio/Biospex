@@ -50,11 +50,18 @@ interface Subject extends RepositoryInterface
     /**
      * Detach subjects.
      *
-     * @param array $subjects
+     * @param $subjectIds
      * @param $expeditionId
      * @return mixed
      */
-    public function detachSubjects($subjects, $expeditionId);
+    public function detachSubjects($subjectIds, $expeditionId);
+
+    /**
+     * @param $subjectIds
+     * @param $expeditionId
+     * @return mixed
+     */
+    public function attachSubjects($subjectIds, $expeditionId);
 
     /**
      * Get total row count.
