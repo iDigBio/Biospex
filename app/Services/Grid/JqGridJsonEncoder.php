@@ -241,7 +241,7 @@ class JqGridJsonEncoder
         return [
             'name'          => 'expedition_ids',
             'index'         => 'expedition_ids',
-            'width'         => 100,
+            'width'         => 50,
             'align'         => 'center',
             'hidedlg'       => true,
             'stype'         => 'select',
@@ -256,7 +256,7 @@ class JqGridJsonEncoder
      * @param $route
      * @param $projectId
      * @param null $expeditionId
-     * @return string
+     * @return
      * @throws Exception
      */
     public function encodeGridRequestedData($postedData, $route, $projectId, $expeditionId = null)
@@ -319,12 +319,12 @@ class JqGridJsonEncoder
             unset($rows[$key]['occurrence']);
         }
 
-        return json_encode([
+        return [
             'page'    => $vars['page'],
             'total'   => $totalPages,
             'records' => $vars['count'],
             'rows'    => $rows,
-        ]);
+        ];
     }
 
     /**

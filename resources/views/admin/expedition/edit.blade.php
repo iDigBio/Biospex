@@ -10,9 +10,7 @@
         .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
             font-size: 1rem;
         }
-        #searchmodfbox_jqGridExpedition {
-            top:auto;
-        }
+
     </style>
 @endpush
 
@@ -94,7 +92,7 @@
                 <span id="subject-count-html"></span></h3>
 
             <div class="col-md-12 d-flex">
-                <div class="table-responsive mb-4" id="jqtable">
+                <div class="table mb-4" id="jqtable">
                     <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                     <div id="pager"></div>
                     <br/>

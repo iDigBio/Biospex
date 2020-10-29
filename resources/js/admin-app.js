@@ -25,7 +25,7 @@ try {
 
     window.bootbox = require("./bootbox");
     require("./common");
-    require("./grid");
+    require("./jqgrid");
     require("./admin");
 
 } catch (e) {}
