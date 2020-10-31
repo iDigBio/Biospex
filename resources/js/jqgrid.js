@@ -1,0 +1,297 @@
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+$.jgrid = $.jgrid || {};
+$.jgrid.no_legacy_api = true;
+$.jgrid.useJSON = true;
+$.jgrid.defaults.responsive = true;
+$.jgrid.cellattr = $.jgrid.cellattr || {};
+
+$(function () {
+    "use strict";
+    let dataUrl = Laravel.dataUrl;
+    let delUrl = Laravel.delUrl;
+    let maxCount = Laravel.maxCount;
+    let checkbox = Laravel.checkbox;
+
+    let model = JSON.parse(Laravel.model);
+    let cm = model.colModel;
+
+    let $grid = $("#jqGridTable");
+
+    mapFormatter(cm);
+
+    let saveObjectInLocalStorage = function (storageItemName, object) {
+            if (typeof window.localStorage !== 'undefined') {
+                window.localStorage.setItem(storageItemName, JSON.stringify(object));
+            }
+        },
+        removeObjectFromLocalStorage = function (storageItemName) {
+            if (typeof window.localStorage !== 'undefined') {
+                window.localStorage.removeItem(storageItemName);
+            }
+        },
+        getObjectFromLocalStorage = function (storageItemName) {
+            if (typeof window.localStorage !== 'undefined') {
+                return JSON.parse(window.localStorage.getItem(storageItemName));
+            }
+        },
+        myColumnStateName = 'ColumnChooserAndLocalStorage.colState',
+        saveColumnState = function (perm) {
+            let colModel = this.jqGrid('getGridParam', 'colModel'), i, l = colModel.length, colItem, cmName,
+                postData = this.jqGrid('getGridParam', 'postData'),
+                columnsState = {
+                    search: this.jqGrid('getGridParam', 'search'),
+                    page: this.jqGrid('getGridParam', 'page'),
+                    sortname: this.jqGrid('getGridParam', 'sortname'),
+                    sortorder: this.jqGrid('getGridParam', 'sortorder'),
+                    permutation: perm,
+                    colStates: {}
+                },
+                colStates = columnsState.colStates;
+
+            if (typeof (postData.filters) !== 'undefined') {
+                columnsState.filters = postData.filters;
+            }
+
+            for (i = 0; i < l; i++) {
+                colItem = colModel[i];
+                cmName = colItem.name;
+                if (cmName !== 'rn' && cmName !== 'cb' && cmName !== 'subgrid') {
+                    colStates[cmName] = {
+                        width: colItem.width,
+                        hidden: colItem.hidden
+                    };
+                }
+            }
+            saveObjectInLocalStorage(myColumnStateName, columnsState);
+        },
+        myColumnsState,
+        isColState,
+        restoreColumnState = function (colModel) {
+            let colItem, i, l = colModel.length, colStates, cmName,
+                columnsState = getObjectFromLocalStorage(myColumnStateName);
+
+            if (columnsState) {
+                colStates = columnsState.colStates;
+                for (i = 0; i < l; i++) {
+                    colItem = colModel[i];
+                    cmName = colItem.name;
+                    if (cmName !== 'rn' && cmName !== 'cb' && cmName !== 'subgrid') {
+                        colModel[i] = $.extend(true, {}, colModel[i], colStates[cmName]);
+                    }
+                }
+            }
+            return columnsState;
+        },
+        deleteSettings = function () {
+            if(!checkbox) {
+                bootbox.alert("Delete has been disabled.");
+                return;
+            }
+
+            let rows = $grid.getGridParam('selarrrow');
+
+            if (rows.length === 0) {
+                bootbox.alert("Please select at least one row.");
+                return false;
+            }
+
+            bootbox.confirm({
+                title: "Delete Rows",
+                message: "Are you sure you wish to delete rows?",
+                buttons: {
+                    cancel: {
+                        label: '<i class="fas fa-times-circle"></i> Cancel',
+                        className: 'btn btn-primary'
+                    },
+                    confirm: {
+                        label: '<i class="fas fa-check-circle"></i> Confirm',
+                        className: 'btn btn-primary'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: delUrl,
+                            type: 'POST',
+                            data: {ids: rows},
+                        }).done(function (data) {
+                            $grid.trigger('reloadGrid');
+                        }).fail(function () {
+                            bootbox.alert("The request failed.");
+                        });
+                    }
+                }
+            });
+        },
+        columnChooser = function () {
+            $grid.jqGrid('columnChooser', {
+                classname: "columnChooser",
+                modal: true,
+                width: 600,
+                done: function (perm) {
+                    if (perm) {
+                        this.jqGrid("remapColumns", perm, true);
+                    }
+                }
+            });
+            $('.ui-multiselect ul.selected').height('500px');
+            $('.ui-multiselect ul.available').height('500px');
+        },
+        eraseSettings = function () {
+            removeObjectFromLocalStorage(myColumnStateName);
+            window.location.reload();
+        },
+        exportSettings = function (event) {
+            $.get(Grid.exportUrl, function (data) {
+                alert("The export will be emailed when compiled.");
+            });
+            return false;
+        },
+        setSelectedCount = function () {
+            let rows = $grid.getGridParam('selarrrow');
+            $('#subject-count-html').html(rows.length);
+        },
+        firstLoad = true;
+
+    myColumnsState = restoreColumnState(cm);
+    isColState = typeof (myColumnsState) !== 'undefined' && myColumnsState !== null;
+
+
+    $grid.jqGrid({
+        jsonReader: {
+            repeatitems: false,
+            root: "rows",
+            page: "page",
+            total: "total",
+            records: "records",
+            cell: "",
+            id: "_id"
+        },
+        url: dataUrl,
+        editurl: "/admin/projects/17/expeditions/312/delete",
+        mtype: "GET",
+        datatype: "json",
+        //colNames: model.colNames,
+        colModel: cm,
+        cmTemplate: {autoResizable: true, editable: true},
+        guiStyle: "bootstrap4",
+        iconSet: "fontAwesome",
+        rowNum: 20,
+        page: isColState ? myColumnsState.page : 1,
+        search: isColState ? myColumnsState.search : false,
+        postData: isColState ? {filters: myColumnsState.filters} : {},
+        sortname: isColState ? myColumnsState.sortname : '_id',
+        sortorder: isColState ? myColumnsState.sortorder : 'desc',
+        autoResizing: {compact: true},
+        autoWidthColumns: true,
+        autowidth: true,
+        rowList: [20, 50, 100, 500],
+        viewrecords: true,
+        autoencode: true,
+        sortable: true,
+        toppager: true,
+        pager: true,
+        multiselect: checkbox,
+        multiPageSelection: checkbox,
+        selarrrow: Laravel.subjectIds,
+        //reloadGridOptions: { current: true },
+        navOptions: {add: false, edit: false, del: false, search: false},
+        searching: {searchOnEnter: true, searchOperators: true},
+        loadComplete: function () {
+            if (firstLoad) {
+                firstLoad = false;
+                if (isColState) {
+                    $(this).jqGrid("remapColumns", myColumnsState.permutation, true);
+                }
+            }
+            saveColumnState.call($(this), this.p.remapColumns);
+            setSelectedCount();
+        },
+        onSelectRow: function (id, isSelected) {
+            setSelectedCount();
+        },
+        onSelectAll: function (rowIds, isSelected) {
+            setSelectedCount();
+        },
+    })
+        .jqGrid("navGrid")
+        .jqGrid("navButtonAdd", {
+            caption: '',
+            buttonicon: "fas fa-trash",
+            title: "Delete selected rows",
+            onClickButton: deleteSettings
+        })
+        .jqGrid("navButtonAdd", {
+            caption: '',
+            buttonicon: "fas fa-columns",
+            title: "Choose columns",
+            onClickButton: columnChooser
+        })
+        .jqGrid("navButtonAdd", {
+            caption: '',
+            buttonicon: "fas fa-eraser",
+            title: "Clear saved grid's settings",
+            onClickButton: eraseSettings
+        })
+        .jqGrid("navButtonAdd", {
+            caption: '',
+            buttonicon: "fas fa-file-export",
+            title: "Export to CSV",
+            onClickButton: exportSettings
+        })
+        .jqGrid("filterToolbar")
+        .jqGrid("gridResize");
+
+    $('#gridForm').submit(function () {
+        let rows = $grid.getGridParam('selarrrow');
+        if (rows.length > maxCount) {
+            $('#max').addClass('red');
+            return false;
+        }
+
+        $('#subject-ids').val(rows);
+
+        return false;
+    });
+
+});
+
+/**
+ * Map formatter
+ * @param column
+ */
+function mapFormatter(column) {
+    let functionsMapping = {
+        "imagePreview": function (cellValue, opts, rowObjects) {
+            let url = encodeURIComponent(cellValue);
+            return '<a href="' + cellValue + '" target="_new" data-hover="tooltip" title="View Image">View Image</a>&nbsp;&nbsp;'
+                + '<a href="#" class="thumb-view" data-remote="/admin/images/preview?url=' + url + '" data-toggle="modal" data-target="#jqgrid-modal" data-hover="tooltip" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'
+                + '<a href="#" class="url-view" data-remote="' + cellValue + '" data-toggle="modal" data-target="#jqgrid-modal" data-hover="tooltip" title="Preview URL">View URL</a>'
+        }
+    };
+
+    for (let i = 0; i < column.length; i++) {
+        let col = column[i];
+        if (col.hasOwnProperty("formatter") &&
+            functionsMapping.hasOwnProperty(col.formatter)) {
+            col.formatter = functionsMapping[col.formatter];
+        }
+    }
+}

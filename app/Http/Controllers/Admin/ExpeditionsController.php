@@ -131,7 +131,10 @@ class ExpeditionsController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        [$active, $completed] = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
+        [
+            $active,
+            $completed,
+        ] = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
             $expedition
         ) {
             return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
@@ -160,7 +163,7 @@ class ExpeditionsController extends Controller
         $model = $grid->loadGridModel($projectId, request()->route()->getName());
 
         JavaScript::put([
-            'model' => $model,
+            'model'        => $model,
             'projectId'    => $project->id,
             'expeditionId' => 0,
             'subjectIds'   => [],
@@ -239,7 +242,7 @@ class ExpeditionsController extends Controller
         $model = $grid->loadGridModel($projectId, request()->route()->getName());
 
         JavaScript::put([
-            'model' => $model,
+            'model'        => $model,
             'projectId'    => $expedition->project->id,
             'expeditionId' => $expedition->id,
             'subjectIds'   => [],
@@ -275,7 +278,7 @@ class ExpeditionsController extends Controller
         $model = $grid->loadGridModel($projectId, request()->route()->getName());
 
         JavaScript::put([
-            'model' => $model,
+            'model'        => $model,
             'projectId'    => $expedition->project->id,
             'expeditionId' => 0,
             'subjectIds'   => [],
@@ -320,15 +323,14 @@ class ExpeditionsController extends Controller
         $model = $grid->loadGridModel($projectId, request()->route()->getName());
 
         JavaScript::put([
-            'model' => $model,
-            'projectId'    => $expedition->project->id,
-            'expeditionId' => $expedition->id,
-            'subjectIds'   => $subjectIds,
-            'maxSubjects'  => config('config.expedition_size'),
-            'gridUrl'      => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
-            'exportUrl'    => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'showCheckbox' => $expedition->workflowManager === null,
-            'explore'      => false,
+            'model'      => $model,
+            'subjectIds' => $subjectIds,
+            'maxCount'   => config('config.expedition_size'),
+            'dataUrl'    => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
+            'delUrl'     => route('admin.expeditions.delete.subjects', [$expedition->project->id, $expedition->id]),
+            'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'checkbox'   => $expedition->workflowManager === null,
+            'explore'    => false,
         ]);
 
         return view('admin.expedition.edit', compact('expedition'));
@@ -355,8 +357,8 @@ class ExpeditionsController extends Controller
 
             if ($request->filled('panoptes_workflow_id')) {
                 $attributes = $attributes = [
-                    'project_id'           => $project->id,
-                    'expedition_id'        => $expedition->id
+                    'project_id'    => $project->id,
+                    'expedition_id' => $expedition->id,
                 ];
 
                 $values = [
@@ -541,5 +543,10 @@ class ExpeditionsController extends Controller
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
+    }
+
+    public function deleteSubject(string $projectId, string $expeditionId)
+    {
+        return request()->all();
     }
 }

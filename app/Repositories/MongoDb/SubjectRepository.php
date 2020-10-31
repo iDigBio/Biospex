@@ -227,8 +227,6 @@ class SubjectRepository extends MongoDbRepository implements Subject
 
         $this->setRowCheckbox($rows);
 
-
-
         return $rows;
     }
 
@@ -288,10 +286,22 @@ class SubjectRepository extends MongoDbRepository implements Subject
     {
         foreach ($rules as $rule)
         {
-            if ($rule['field'] === 'expedition_ids')
+            if ($rule['field'] === 'assigned')
             {
                 $this->assignedRule($query, $rule);
                 continue;
+            }
+
+            if ($rule['field'] === 'expedition_ids') {
+                $rule['data'] = (int) $rule['data'];
+            }
+
+            if ($rule['field'] === 'transcribed')
+            {
+                if ($rule['data'] === 'all') {
+                    continue;
+                }
+                $rule['data'] = $rule['data'] === 'true' ? (bool) true : (bool) false;
             }
 
             $this->buildWhere($query, $rule);
@@ -442,7 +452,8 @@ class SubjectRepository extends MongoDbRepository implements Subject
     {
         foreach ($rows as &$row)
         {
-            $row['expedition_ids'] = ! empty($row['expedition_ids']) ? 'Yes' : 'No';
+            $row['assigned'] =! empty($row['expedition_ids']) ? 'Yes' : 'No';
+            //$row['expedition_ids'] = ! empty($row['expedition_ids']) ? 'Yes' : 'No';
         }
     }
 

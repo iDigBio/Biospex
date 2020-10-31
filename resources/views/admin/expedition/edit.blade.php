@@ -10,7 +10,6 @@
         .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
             font-size: 1rem;
         }
-
     </style>
 @endpush
 
@@ -71,7 +70,8 @@
 
                         @if(in_array($expedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
                             <div class="form-group">
-                                <label for="panoptes_workflow_id" class="col-form-label">{{ t('Zooniverse Workflow Id') }}:</label>
+                                <label for="panoptes_workflow_id"
+                                       class="col-form-label">{{ t('Zooniverse Workflow Id') }}:</label>
                                 <input type="text" name="panoptes_workflow_id" id="panoptes_workflow_id"
                                        class="form-control {{ ($errors->has('panoptes_workflow_id')) ? 'has-error' : '' }}"
                                        placeholder="{{ t('Enter Workflow Id after Expedition submitted to Zooniverse') }}"
@@ -91,13 +91,10 @@
                             </span>:
                 <span id="subject-count-html"></span></h3>
 
-            <div class="col-md-12 d-flex">
-                <div class="table mb-4" id="jqtable">
-                    <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
-                    <div id="pager"></div>
-                    <br/>
-                    <input type="hidden" name="subject-ids" id="subject-ids">
-                </div>
+            <div class="col-md-12">
+                <table class="table table-bordered" id="jqGridTable"></table>
+                <br/>
+                <input type="hidden" name="subject-ids" id="subject-ids">
             </div>
             @include('common.cancel-submit-buttons')
         </div>

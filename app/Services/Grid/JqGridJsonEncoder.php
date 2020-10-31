@@ -101,6 +101,7 @@ class JqGridJsonEncoder
         {
             $headers['image'] = [
                 'assigned',
+                'expedition_ids',
                 'id',
                 'accessURI',
                 'ocr'
@@ -109,7 +110,7 @@ class JqGridJsonEncoder
         else
         {
             $headers = $result->header;
-            array_unshift($headers['image'], 'assigned', 'id');
+            array_unshift($headers['image'], 'assigned', 'expedition_ids', 'id');
             array_push($headers['image'], 'ocr');
         }
 
@@ -167,7 +168,7 @@ class JqGridJsonEncoder
     {
         if ($column === 'assigned')
         {
-            return $this->buildExpeditionCheckbox();
+            return $this->buildAssigned();
         }
 
         $col = $this->setNormalColumnProperties($column);
@@ -189,6 +190,23 @@ class JqGridJsonEncoder
         return $col;
     }
 
+    /**
+     * Build expedition checkbox.
+     * @return array
+     */
+    protected function buildAssigned()
+    {
+        return [
+            'name'          => 'assigned',
+            'index'         => 'assigned',
+            'width'         => 35,
+            'align'         => 'center',
+            'hidedlg'       => false,
+            'stype'         => 'select',
+            'searchoptions' => ['sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No']
+        ];
+    }
+
     protected function setNormalColumnProperties($column, $image = true)
     {
         $default = $image ? $this->defaultGridVisible : $this->defaultSubGridVisible;
@@ -198,24 +216,21 @@ class JqGridJsonEncoder
             'index'         => $column,
             'key'           => false,
             'resizable'     => true,
-            'search'        => true,
+            'search'        => $column === 'accessURI' ? false : true,
             'sortable'      => true,
             'editable'      => false,
             'hidden'        => in_array($column, $default) ? false : true,
-            'searchoptions' => [
-                'sopt'     => [
-                    'eq',
-                    'ne',
-                    'bw',
-                    'bn',
-                    'ew',
-                    'en',
-                    'cn',
-                    'nc',
-                    'nu',
-                    'nn'
-                ], 'value' => ':Any;true:Yes;false:No']
+            'searchoptions' => $this->searchOps($column)
         ];
+    }
+
+    protected function searchOps($column)
+    {
+        if ($column === 'expedition_ids') {
+            return ['sopt' => ['eq','ne']];
+        }
+
+        return ['sopt' => ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn']];
     }
 
     /**
@@ -230,23 +245,6 @@ class JqGridJsonEncoder
             'formatter' => 'imagePreview'
         ]);
 
-    }
-
-    /**
-     * Build expedition checkbox.
-     * @return array
-     */
-    protected function buildExpeditionCheckbox()
-    {
-        return [
-            'name'          => 'expedition_ids',
-            'index'         => 'expedition_ids',
-            'width'         => 50,
-            'align'         => 'center',
-            'hidedlg'       => true,
-            'stype'         => 'select',
-            'searchoptions' => ['sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No']
-        ];
     }
 
     /**
