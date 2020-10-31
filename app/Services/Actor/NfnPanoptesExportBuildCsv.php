@@ -100,6 +100,8 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
         })->map(function ($file) {
             ActorEventHelper::fireActorProcessedEvent($this->actor);
 
+
+
             return $this->mapNfnCsvColumns($file);
         });
 
@@ -162,6 +164,9 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
                 }
             }
         }
+
+        $subject->exported = true;
+        $subject->save();
 
         return $csvArray;
     }
