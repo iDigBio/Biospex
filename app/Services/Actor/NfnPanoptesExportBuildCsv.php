@@ -112,8 +112,6 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
         ActorEventHelper::fireActorQueuedEvent($this->actor);
 
         $this->advanceQueue($queue);
-
-        return;
     }
 
     /**
