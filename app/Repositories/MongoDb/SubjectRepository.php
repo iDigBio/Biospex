@@ -296,7 +296,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
                 $rule['data'] = (int) $rule['data'];
             }
 
-            if ($rule['field'] === 'transcribed')
+            if ($rule['field'] === 'exported')
             {
                 if ($rule['data'] === 'all') {
                     continue;

@@ -100,14 +100,14 @@ class JqGridJsonEncoder
             $headers['image'] = [
                 'assigned',
                 'expedition_ids',
-                'transcribed',
+                'exported',
                 'id',
                 'accessURI',
                 'ocr'
             ];
         } else {
             $headers = $result->header;
-            array_unshift($headers['image'], 'assigned', 'transcribed', 'expedition_ids', 'id');
+            array_unshift($headers['image'], 'assigned', 'exported', 'expedition_ids', 'id');
             array_push($headers['image'], 'ocr');
         }
 
@@ -167,7 +167,7 @@ class JqGridJsonEncoder
             return $this->buildAssigned();
         }
 
-        if ($column === 'transcribed') {
+        if ($column === 'exported') {
             return $this->buildTranscribedColumn();
         }
 
