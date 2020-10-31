@@ -19,6 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Project;
+use App\Services\MongoDbService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -37,11 +39,17 @@ class UpdateQueries extends Command
     protected $description = 'Used for custom queries when updating database';
 
     /**
+     * @var \App\Services\MongoDbService
+     */
+    private $service;
+
+    /**
      * UpdateQueries constructor.
      */
-    public function __construct()
+    public function __construct(MongoDbService $service)
     {
         parent::__construct();
+        $this->service = $service;
     }
 
     /**
@@ -49,7 +57,49 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-
+        $this->setTranscribed();
+        echo 'starting to fix subjects' . PHP_EOL;
+        $this->fixSubjects();
     }
 
+    private function setTranscribed()
+    {
+        $this->service->setCollection('subjects');
+        $cursor = $this->service->find();
+        $i=0;
+        foreach ($cursor as $doc) {
+            $this->service->updateOneById(['transcribed' => false], $doc['_id']);
+            $i++;
+        }
+        echo 'updated docs: ' . $i . PHP_EOL;
+    }
+
+    private function fixSubjects()
+    {
+        $this->service->setCollection('panoptes_transcriptions');
+        $cursor = $this->service->find();
+
+        $count = 0;
+        foreach ($cursor as $doc) {
+            $this->updateSubject($doc['_id'], $doc['subject_subjectId'], $count);
+        }
+        echo 'updated docs: ' . $count . PHP_EOL;
+    }
+
+    private function updateSubject($id, $subjectId, &$count)
+    {
+        if ($subjectId === null) {
+            echo 'SubjectId is null: ' . $id . PHP_EOL;
+        }
+        $this->service->setCollection('subjects');
+        $criteria = ['_id' => $this->service->setMongoObjectId($subjectId)];
+        $doc = $this->service->findOne($criteria);
+
+        if ($doc === null) {
+            echo 'Cannot find doc ' . $subjectId . PHP_EOL;
+        }
+
+        $this->service->updateOneById(['transcribed' => true], $doc['_id']);
+        $count++;
+    }
 }

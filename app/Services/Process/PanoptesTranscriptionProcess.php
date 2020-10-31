@@ -167,12 +167,13 @@ class PanoptesTranscriptionProcess
 
         $subject = $this->subjectContract->find(trim($row['subject_subjectId']));
 
-        if ($subject === null)
-        {
+        if ($subject === null) {
             $this->csvError[] = array_merge(['error' => 'Could not find subject id for classification'], $row);
-
             return;
         }
+
+        $subject->transcribed = true;
+        $subject->save();
 
         $this->locationStateCountyService->buildTranscriptionLocation($row, $subject, $expeditionId);
 
