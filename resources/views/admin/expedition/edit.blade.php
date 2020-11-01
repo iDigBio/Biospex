@@ -5,14 +5,6 @@
     {{ t('Edit') }} {{ $expedition->title }}
 @stop
 
-@push('styles')
-    <style>
-        .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
-            font-size: 1rem;
-        }
-    </style>
-@endpush
-
 {{-- Content --}}
 @section('content')
     @include('admin.expedition.partials.expedition-panel')

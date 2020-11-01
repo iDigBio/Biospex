@@ -131,12 +131,8 @@ class ExpeditionsController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        [
-            $active,
-            $completed,
-        ] = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
-            $expedition
-        ) {
+        [$active, $completed] = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)
+            ->partition(function ($expedition) {
             return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
         });
 
@@ -160,19 +156,15 @@ class ExpeditionsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $model = $grid->loadGridModel($projectId, request()->route()->getName());
+        $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
             'model'        => $model,
-            'projectId'    => $project->id,
-            'expeditionId' => 0,
             'subjectIds'   => [],
-            'maxSubjects'  => config('config.expedition_size'),
-            'gridUrl'      => route('admin.grids.create', [$project->id]),
-            'exportUrl'    => '',
-            'editUrl'      => route('admin.grids.delete', [$projectId]),
-            'showCheckbox' => true,
-            'explore'      => false,
+            'maxCount'     => config('config.expedition_size'),
+            'dataUrl'      => route('admin.grids.create', [$project->id]),
+            'exportUrl'    => route('admin.grids.export', [$projectId]),
+            'checkbox' => true
         ]);
 
         return view('admin.expedition.create', compact('project'));
@@ -239,24 +231,18 @@ class ExpeditionsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $model = $grid->loadGridModel($projectId, request()->route()->getName());
+        $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
-            'model'        => $model,
-            'projectId'    => $expedition->project->id,
-            'expeditionId' => $expedition->id,
-            'subjectIds'   => [],
-            'maxSubjects'  => config('config.expedition_size'),
-            'gridUrl'      => route('admin.grids.show', [$expedition->project->id, $expedition->id]),
-            'exportUrl'    => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'editUrl'      => route('admin.grids.delete', [$projectId]),
-            'showCheckbox' => false,
-            'explore'      => false,
+            'model'      => $model,
+            'subjectIds' => [],
+            'maxCount'   => config('config.expedition_size'),
+            'dataUrl'    => route('admin.grids.show', [$expedition->project->id, $expedition->id]),
+            'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'checkbox'   => false,
         ]);
 
-        $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->local_subject_count === 0);
-
-        return view('admin.expedition.show', compact('expedition', 'btnDisable'));
+        return view('admin.expedition.show', compact('expedition'));
     }
 
     /**
@@ -275,19 +261,15 @@ class ExpeditionsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $model = $grid->loadGridModel($projectId, request()->route()->getName());
+        $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
             'model'        => $model,
-            'projectId'    => $expedition->project->id,
-            'expeditionId' => 0,
             'subjectIds'   => [],
-            'maxSubjects'  => config('config.expedition_size'),
-            'gridUrl'      => route('admin.grids.create', [$expedition->project->id]),
-            'exportUrl'    => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'editUrl'      => route('admin.grids.delete', [$projectId]),
-            'showCheckbox' => true,
-            'explore'      => false,
+            'maxCount'     => config('config.expedition_size'),
+            'dataUrl'      => route('admin.grids.create', [$expedition->project->id]),
+            'exportUrl'    => route('admin.grids.export', [$projectId]),
+            'checkbox' => true
         ]);
 
         return view('admin.expedition.clone', compact('expedition'));
@@ -327,10 +309,8 @@ class ExpeditionsController extends Controller
             'subjectIds' => $subjectIds,
             'maxCount'   => config('config.expedition_size'),
             'dataUrl'    => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
-            'delUrl'     => route('admin.expeditions.delete.subjects', [$expedition->project->id, $expedition->id]),
             'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'checkbox'   => $expedition->workflowManager === null,
-            'explore'    => false,
         ]);
 
         return view('admin.expedition.edit', compact('expedition'));
@@ -543,10 +523,5 @@ class ExpeditionsController extends Controller
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
-    }
-
-    public function deleteSubject(string $projectId, string $expeditionId)
-    {
-        return request()->all();
     }
 }

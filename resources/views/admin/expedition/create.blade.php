@@ -5,17 +5,6 @@
     {{ t('Create Expedition') }}
 @stop
 
-@push('styles')
-    <style>
-        .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
-            font-size: 1rem;
-        }
-        #searchmodfbox_jqGridExpedition {
-            top:auto;
-        }
-    </style>
-@endpush
-
 {{-- Content --}}
 @section('content')
     @include('admin.project.partials.project-panel', ['project' => $project])
@@ -98,13 +87,10 @@
                             </span>:
                 <span id="subject-count-html">0</span></h3>
 
-            <div class="col-md-12 d-flex">
-                <div class="table-responsive mb-4" id="jqtable">
-                    <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
-                    <div id="pager"></div>
-                    <br/>
-                    <input type="hidden" name="subject-ids" id="subject-ids">
-                </div>
+            <div class="col-md-12">
+                <table class="table table-bordered" id="jqGridTable"></table>
+                <br/>
+                <input type="hidden" name="subject-ids" id="subject-ids">
             </div>
             @include('common.cancel-submit-buttons')
         </div>

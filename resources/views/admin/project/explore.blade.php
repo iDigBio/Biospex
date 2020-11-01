@@ -5,17 +5,6 @@
     {{ t('Explore Subjects') }}
 @stop
 
-@push('styles')
-    <style>
-        .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
-            font-size: 1rem;
-        }
-        #searchmodfbox_jqGridExpedition {
-            top:auto;
-        }
-    </style>
-@endpush
-
 {{-- Content --}}
 @section('content')
     @include('admin.project.partials.project-panel')
@@ -35,13 +24,8 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12 d-flex">
-            <div class="table-responsive mb-4" id="jqtable">
-                <table class="table table-bordered jgrid" id="jqGridExplore"></table>
-                <div id="pager"></div>
-                <br/>
-                <input type="hidden" name="subject-ids" id="subject-ids">
-            </div>
+        <div class="col-md-12">
+            <table class="table table-bordered" id="jqGridTable"></table>
         </div>
     </div>
     @include('admin.partials.jqgrid-modal')

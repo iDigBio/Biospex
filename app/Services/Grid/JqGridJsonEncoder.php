@@ -86,14 +86,10 @@ class JqGridJsonEncoder
      * Load grid model.
      *
      * @param $projectId
-     * @param $route
      * @return string
      */
-    public function loadGridModel($projectId, $route)
+    public function loadGridModel($projectId)
     {
-
-        $this->route = $route;
-
         $result = $this->headerContract->findBy('project_id', $projectId);
 
         if (empty($result)) {
@@ -168,7 +164,7 @@ class JqGridJsonEncoder
         }
 
         if ($column === 'exported') {
-            return $this->buildTranscribedColumn();
+            return $this->buildExportedColumn();
         }
 
         $col = $this->setNormalColumnProperties($column);
@@ -201,7 +197,25 @@ class JqGridJsonEncoder
             'align'         => 'center',
             'hidedlg'       => false,
             'stype'         => 'select',
-            'searchoptions' => ['sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No']
+            'sortable'      => false,
+            'searchoptions' => ['defaultValue' => 'all', 'sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No']
+        ];
+    }
+
+    /**
+     * Build expedition checkbox.
+     *
+     * @return array
+     */
+    protected function buildExportedColumn()
+    {
+        return [
+            'name'          => 'exported',
+            'index'         => 'exported',
+            'width'         => 40,
+            'align'         => 'center',
+            'stype'         => 'select',
+            'searchoptions' => ['defaultValue' => 'all', 'sopt' => ['eq'], 'value' => 'all:All;true:true;false:false'],
         ];
     }
 

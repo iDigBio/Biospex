@@ -52,7 +52,7 @@ class GridExportCsvJob implements ShouldQueue
     private $user;
 
     /**
-     * @var
+     * @var int
      */
     private $projectId;
 
@@ -62,17 +62,22 @@ class GridExportCsvJob implements ShouldQueue
     private $expeditionId;
 
     /**
+     * @var mixed
+     */
+    private $filter;
+
+    /**
      * Create a new job instance.
      *
      * @param User $user
-     * @param $projectId
-     * @param null $expeditionId
+     * @param array $data
      */
-    public function __construct(User $user, $projectId, $expeditionId = null)
+    public function __construct(User $user, array $data)
     {
         $this->user = $user;
-        $this->projectId = $projectId;
-        $this->expeditionId = $expeditionId;
+        $this->projectId = $data['projectId'];
+        $this->expeditionId = $data['expeditionId'];
+        $this->filter = $data['filter'];
         $this->onQueue(config('config.default_tube'));
     }
 

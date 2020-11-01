@@ -33,12 +33,14 @@ class SubjectRepository extends MongoDbRepository implements Subject
 
     /**
      * Group op value: AND/OR = true/false
+     *
      * @var
      */
     protected $groupAnd;
 
     /**
      * Sets whether first filter created (where vs orWhere)
+     *
      * @var bool
      */
     protected $groupOpProcessed = false;
@@ -78,7 +80,10 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function findSubjectsByExpeditionId($expeditionId, array $attributes = ['*'])
     {
-        return \Cache::tags((string) $expeditionId)->remember(__METHOD__, 14440, function () use ($expeditionId, $attributes) {
+        return \Cache::tags((string) $expeditionId)->remember(__METHOD__, 14440, function () use (
+            $expeditionId,
+            $attributes
+        ) {
             return $this->model->where('expedition_ids', $expeditionId)->get($attributes);
         });
     }
@@ -88,9 +93,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function getUnassignedCount($projectId)
     {
-        return $this->model->where('expedition_ids', 'size', 0)
-            ->where('project_id', (int) $projectId)
-            ->count();
+        return $this->model->where('expedition_ids', 'size', 0)->where('project_id', (int) $projectId)->count();
     }
 
     /**
@@ -98,10 +101,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function getSubjectAssignedCount($projectId)
     {
-        return $this->model
-            ->whereRaw(['expedition_ids.0' => ['$exists' => true]])
-            ->where('project_id', '=', (int) $projectId)
-            ->count();
+        return $this->model->whereRaw(['expedition_ids.0' => ['$exists' => true]])->where('project_id', '=', (int) $projectId)->count();
     }
 
     /**
@@ -109,7 +109,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function detachSubjects($subjectIds, $expeditionId)
     {
-        $subjectIds->each(function($subjectId) use($expeditionId){
+        $subjectIds->each(function ($subjectId) use ($expeditionId) {
             $subject = $this->model->find($subjectId);
             $subject->expedition_ids = collect($subject->expedition_ids)->diff($expeditionId)->toArray();
             $subject->save();
@@ -123,7 +123,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function attachSubjects($subjectIds, $expeditionId)
     {
-        $subjectIds->each(function($subjectId) use($expeditionId){
+        $subjectIds->each(function ($subjectId) use ($expeditionId) {
             $subject = $this->model->find($subjectId);
             $subject->expedition_ids = collect($subject->expedition_ids)->push($expeditionId)->toArray();
             $subject->save();
@@ -137,7 +137,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function findByAccessUri($accessURI)
     {
-        return $this->model->where('accessURI', 'like', '%' . $accessURI . '%')->first();
+        return $this->model->where('accessURI', 'like', '%'.$accessURI.'%')->first();
     }
 
     /**
@@ -145,9 +145,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function deleteUnassignedSubjects($projectId)
     {
-        $this->model->where('project_id', (int) $projectId)
-            ->where('expedition_ids', 'size', 0)
-            ->delete();
+        $this->model->where('project_id', (int) $projectId)->where('expedition_ids', 'size', 0)->delete();
     }
 
     /**
@@ -169,15 +167,14 @@ class SubjectRepository extends MongoDbRepository implements Subject
      *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
      *  The 'data' key will contain the string searched by the user.
      *
-     * @throws \Exception
      * @return int Total number of rows
+     * @throws \Exception
      */
     public function getTotalRowCount(array $vars = [])
     {
-        $count = $this->model->whereNested(function ($query) use ($vars)
-        {
+        $count = $this->model->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
-        })->count();
+        })->options(['allowDiskUse' => true])->count();
 
         return (int) $count;
     }
@@ -205,23 +202,17 @@ class SubjectRepository extends MongoDbRepository implements Subject
 
         $vars['limit'] = ($vars['limit'] === 0) ? 1 : $vars['limit'];
 
-        $query = $this->model->whereNested(function ($query) use ($vars)
-        {
+        $query = $this->model->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
-        })
-            ->take($vars['limit'])
-            ->skip($vars['offset']);
+        })->options(['allowDiskUse' => true])->take($vars['limit'])->skip($vars['offset']);
 
-        foreach ($orderByRaw as $field => $sort)
-        {
+        foreach ($orderByRaw as $field => $sort) {
             $query->orderBy($field, $sort);
         }
 
         $rows = $query->get();
 
-
-        if ( ! is_array($rows))
-        {
+        if (! is_array($rows)) {
             $rows = $rows->toArray();
         }
 
@@ -242,11 +233,9 @@ class SubjectRepository extends MongoDbRepository implements Subject
 
         $this->setWhere($query, 'project_id', '=', $vars['projectId']);
 
-        if (isset($vars['filters']['rules']) && is_array($vars['filters']['rules']))
-        {
+        if (isset($vars['filters']['rules']) && is_array($vars['filters']['rules'])) {
             $rules = $vars['filters']['rules'];
-            $query->where(function ($query) use ($rules)
-            {
+            $query->where(function ($query) use ($rules) {
                 $this->handleRules($query, $rules);
             });
         }
@@ -262,32 +251,27 @@ class SubjectRepository extends MongoDbRepository implements Subject
         // admin.grids.show: Expedition Show page (show only assigned)
         // admin.grids.edit: Expedition edit (show all)
         // admin.grids.create: Expedition create (show not assigned)
-        if ($vars['route'] === 'admin.grids.edit')
-        {
-            if ($this->assignedRuleData === '' || $this->assignedRuleData === 'all')
+        if ($vars['route'] === 'admin.grids.edit') {
+            if ($this->assignedRuleData === 'all') {
                 return;
-        }
-        elseif ($vars['route'] === 'admin.grids.show')
-        {
+            }
+        } elseif ($vars['route'] === 'admin.grids.show') {
             $this->setWhereIn($query, 'expedition_ids', [$vars['expeditionId']]);
-        }
-        elseif ($vars['route'] === 'admin.grids.create')
-        {
+        } elseif ($vars['route'] === 'admin.grids.create') {
             $this->setWhere($query, 'expedition_ids', 'size', 0);
         }
     }
 
     /**
      * Handle the passed filters.
+     *
      * @param $query
      * @param $rules
      */
     protected function handleRules(&$query, $rules)
     {
-        foreach ($rules as $rule)
-        {
-            if ($rule['field'] === 'assigned')
-            {
+        foreach ($rules as $rule) {
+            if ($rule['field'] === 'assigned') {
                 $this->assignedRule($query, $rule);
                 continue;
             }
@@ -296,8 +280,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
                 $rule['data'] = (int) $rule['data'];
             }
 
-            if ($rule['field'] === 'exported')
-            {
+            if ($rule['field'] === 'exported') {
                 if ($rule['data'] === 'all') {
                     continue;
                 }
@@ -332,25 +315,24 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     protected function buildWhere(&$query, $rule)
     {
-        switch ($rule['op'])
-        {
+        switch ($rule['op']) {
             case 'bw':
-                $this->setWhere($query, $rule['field'], 'regexp', '/^' . $rule['data'] . '/i');
+                $this->setWhere($query, $rule['field'], 'regexp', '/^'.$rule['data'].'/i');
                 break;
             case 'bn':
-                $this->setWhere($query, $rule['field'], 'regexp', '/^(?!' . $rule['data'] . ').+/i');
+                $this->setWhere($query, $rule['field'], 'regexp', '/^(?!'.$rule['data'].').+/i');
                 break;
             case 'ew':
-                $this->setWhere($query, $rule['field'], 'regexp', '/^(?!' . '/' . $rule['data'] . '$/i');
+                $this->setWhere($query, $rule['field'], 'regexp', '/^(?!'.'/'.$rule['data'].'$/i');
                 break;
             case 'en':
-                $this->setWhere($query, $rule['field'], 'regexp', '/.*(?<!' . $rule['data'] . ')$/i');
+                $this->setWhere($query, $rule['field'], 'regexp', '/.*(?<!'.$rule['data'].')$/i');
                 break;
             case 'cn':
-                $this->setWhere($query, $rule['field'], 'like', '%' . $rule['data'] . '%');
+                $this->setWhere($query, $rule['field'], 'like', '%'.$rule['data'].'%');
                 break;
             case 'nc':
-                $this->setWhere($query, $rule['field'], 'not regexp', '/' . $rule['data'] . '/i');
+                $this->setWhere($query, $rule['field'], 'not regexp', '/'.$rule['data'].'/i');
                 break;
             case 'nu':
                 $this->setWhereNull($query, $rule['field']);
@@ -383,12 +365,12 @@ class SubjectRepository extends MongoDbRepository implements Subject
                 $this->setWhere($query, $rule['field'], '>=', $rule['data']);
                 break;
         }
-
     }
 
     /**
      * Filter for if subject is assigned to an expedition.
      * data = all, true, false
+     *
      * @param $rule
      * @param $query
      *
@@ -397,8 +379,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
     {
         $this->assignedRuleData = $rule['data'];
 
-        if ($rule['data'] === 'all')
-        {
+        if ($rule['data'] === 'all') {
             return;
         }
 
@@ -411,13 +392,10 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     protected function setWhereForAssigned(&$query, $rule)
     {
-        if ($rule['data'] === 'true')
-        {
-            $this->setWhereRaw($query, $rule['field'], ['$not' => ['$size' => 0]]);
-        }
-        else
-        {
-            $this->setWhere($query, $rule['field'], 'size', 0);
+        if ($rule['data'] === 'true') {
+            $this->setWhereRaw($query, 'expedition_ids', ['$not' => ['$size' => 0]]);
+        } else {
+            $this->setWhere($query, 'expedition_ids', 'size', 0);
         }
     }
 
@@ -429,11 +407,9 @@ class SubjectRepository extends MongoDbRepository implements Subject
     public function setOrderBy($orderBy, $sord)
     {
         $orderByRaw = [];
-        if ($orderBy !== null)
-        {
+        if ($orderBy !== null) {
             $orderBys = explode(',', $orderBy);
-            foreach ($orderBys as $order)
-            {
+            foreach ($orderBys as $order) {
                 $order = trim($order);
                 [$field, $sort] = array_pad(explode(' ', $order, 2), 2, $sord);
                 $orderByRaw [trim($field)] = trim($sort);
@@ -450,15 +426,14 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     protected function setRowCheckbox(&$rows)
     {
-        foreach ($rows as &$row)
-        {
-            $row['assigned'] =! empty($row['expedition_ids']) ? 'Yes' : 'No';
-            //$row['expedition_ids'] = ! empty($row['expedition_ids']) ? 'Yes' : 'No';
+        foreach ($rows as &$row) {
+            $row['assigned'] = ! empty($row['expedition_ids']) ? 'Yes' : 'No';
         }
     }
 
     /**
      * Set group operator.
+     *
      * @param $filters
      * @internal param $groupOp
      */
@@ -466,14 +441,14 @@ class SubjectRepository extends MongoDbRepository implements Subject
     {
         $this->groupAnd = true;
 
-        if (isset($filters['groupOp']))
-        {
+        if (isset($filters['groupOp'])) {
             $this->groupAnd = ($filters['groupOp'] === 'AND');
         }
     }
 
     /**
      * Set groupOp process
+     *
      * @param $bool
      */
     protected function setGroupOpProcessed($bool = false)
@@ -483,6 +458,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
 
     /**
      * Set where/orWhere clause for query
+     *
      * @param $query
      * @param $field
      * @param $operation
@@ -491,13 +467,15 @@ class SubjectRepository extends MongoDbRepository implements Subject
     protected function setWhere(&$query, $field, $operation, $data)
     {
         ($this->groupAnd || ! $this->groupOpProcessed) ?
-            $query->where($field, $operation, $data) : $query->orWhere($field, $operation, $data);
+            $query->where($field, $operation, $data) :
+            $query->orWhere($field, $operation, $data);
 
         $this->setGroupOpProcessed(true);
     }
 
     /**
      * Set whereRaw/orWhereRaw for query
+     *
      * @param $query
      * @param $field
      * @param $data
@@ -505,61 +483,62 @@ class SubjectRepository extends MongoDbRepository implements Subject
     protected function setWhereRaw(&$query, $field, $data)
     {
         ($this->groupAnd || ! $this->groupOpProcessed) ?
-            $query->whereRaw([$field => $data]) : $query->orWhereRaw([$field => $data]);
+            $query->whereRaw([$field => $data]) :
+            $query->orWhereRaw([$field => $data]);
 
         $this->setGroupOpProcessed(true);
     }
 
     /**
      * Set whereIn/orWhereIn for query
+     *
      * @param $query
      * @param $field
      * @param $data
      */
     protected function setWhereIn(&$query, $field, $data)
     {
-        ($this->groupAnd || ! $this->groupOpProcessed) ?
-            $query->whereIn($field, $data) : $query->orWhereIn($field, $data);
+        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereIn($field, $data) : $query->orWhereIn($field, $data);
 
         $this->setGroupOpProcessed(true);
     }
 
     /**
      * Set whereIn/orWhereIn for query
+     *
      * @param $query
      * @param $field
      * @param $data
      */
     protected function setWhereNotIn(&$query, $field, $data)
     {
-        ($this->groupAnd || ! $this->groupOpProcessed) ?
-            $query->whereNotIn($field, $data) : $query->orWhereNotIn($field, $data);
+        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereNotIn($field, $data) : $query->orWhereNotIn($field, $data);
 
         $this->setGroupOpProcessed(true);
     }
 
     /**
      * Set whereNull/orWhereNull for query
+     *
      * @param $query
      * @param $field
      */
     protected function setWhereNull(&$query, $field)
     {
-        ($this->groupAnd || ! $this->groupOpProcessed) ?
-            $query->whereNull($field) : $query->orWhereNull($field);
+        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereNull($field) : $query->orWhereNull($field);
 
         $this->setGroupOpProcessed(true);
     }
 
     /**
      * Set whereNotNull/orWhereNotNull for query
+     *
      * @param $query
      * @param $field
      */
     protected function setWhereNotNull(&$query, $field)
     {
-        ($this->groupAnd || ! $this->groupOpProcessed) ?
-            $query->whereNotNull($field) : $query->orWhereNotNull($field);
+        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereNotNull($field) : $query->orWhereNotNull($field);
 
         $this->setGroupOpProcessed(true);
     }

@@ -270,19 +270,15 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $model = $grid->loadGridModel($projectId, request()->route()->getName());
+        $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
             'model' => $model,
-            'projectId'    => $projectId,
-            'expeditionId' => 0,
             'subjectIds'   => [],
-            'maxSubjects'  => config('config.expedition_size'),
-            'gridUrl'      => route('admin.grids.explore', [$projectId]),
+            'maxCount'     => config('config.expedition_size'),
+            'dataUrl'      => route('admin.grids.explore', [$projectId]),
             'exportUrl'    => route('admin.grids.export', [$projectId]),
-            'editUrl'      => route('admin.grids.delete', [$projectId]),
-            'showCheckbox' => true,
-            'explore'      => true,
+            'checkbox' => false
         ]);
 
         // @TODO Should we use expedition_stat for count?

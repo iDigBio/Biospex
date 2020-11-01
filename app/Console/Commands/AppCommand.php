@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Grid\JqGridJsonEncoder;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -34,10 +35,16 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Services\Grid\JqGridJsonEncoder
+     */
+    private $grid;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct() {
+    public function __construct(JqGridJsonEncoder $grid) {
         parent::__construct();
+        $this->grid = $grid;
     }
 
     /**
@@ -45,6 +52,8 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
+        $postedData = null;
+        $rows = $this->grid->encodeGridRequestedData($postedData, null, 17, null);
+        dd(count($rows));
     }
 }

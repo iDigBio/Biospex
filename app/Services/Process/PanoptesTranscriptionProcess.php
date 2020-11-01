@@ -172,9 +172,6 @@ class PanoptesTranscriptionProcess
             return;
         }
 
-        $subject->transcribed = true;
-        $subject->save();
-
         $this->locationStateCountyService->buildTranscriptionLocation($row, $subject, $expeditionId);
 
         $row = array_merge($row, ['subject_projectId' => $subject->project_id]);

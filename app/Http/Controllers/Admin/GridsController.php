@@ -30,7 +30,6 @@ use Exception;
 
 class GridsController extends Controller
 {
-
     /**
      * @var
      */
@@ -77,8 +76,7 @@ class GridsController extends Controller
         JqGridJsonEncoder $grid,
         Csv $csv,
         Expedition $expeditionContract
-    )
-    {
+    ) {
         $this->grid = $grid;
         $this->csv = $csv;
 
@@ -92,22 +90,19 @@ class GridsController extends Controller
      */
     public function load()
     {
-        return $this->grid->loadGridModel($this->projectId, request()->route()->getName());
+        return $this->grid->loadGridModel($this->projectId);
     }
 
     /**
      * Load grid data.
      *
-     * @return string
+     * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function explore()
     {
-        try
-        {
+        try {
             return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             return response($e->getMessage(), 404);
         }
     }
@@ -115,16 +110,13 @@ class GridsController extends Controller
     /**
      * Show grid in expeditions.
      *
-     * @return string
+     * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function expeditionsShow()
     {
-        try
-        {
+        try {
             return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             return response($e->getMessage(), 404);
         }
     }
@@ -132,16 +124,13 @@ class GridsController extends Controller
     /**
      * Show grid in expeditions edit.
      *
-     * @return string
+     * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function expeditionsEdit()
     {
-        try
-        {
+        try {
             return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             return response($e->getMessage(), 404);
         }
     }
@@ -153,12 +142,9 @@ class GridsController extends Controller
      */
     public function expeditionsCreate()
     {
-        try
-        {
+        try {
             return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             return response($e->getMessage(), 404);
         }
     }
@@ -171,48 +157,52 @@ class GridsController extends Controller
      */
     public function export($projectId, $expeditionId = null)
     {
-        GridExportCsvJob::dispatch(Auth::user(), $projectId, $expeditionId);
+        $attributes = [
+            'projectId' => $projectId,
+            'expeditionId' => $expeditionId,
+            'filter' => request()->get('filter')
+        ];
 
-        return;
+        GridExportCsvJob::dispatch(Auth::user(), $attributes);
+
+        return response()->json(['success' => true], 200);
     }
 
     /**
      * Delete subject if not part of expedition process.
      *
+     * @note Removed from jqGrid but keep code in case we need it again.
      * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @return \Illuminate\Http\JsonResponse
      */
     public function delete(Subject $subjectContract)
     {
-        if ( ! request()->ajax())
-        {
+        if (! request()->ajax()) {
             return response()->json(['error' => 'Delete must be performed via ajax.'], 404);
         }
 
-        if ( ! request()->get('oper'))
-        {
+        if (! request()->get('ids')) {
             return response()->json(['error' => 'Only delete operation allowed.'], 404);
         }
 
-        $subjectIds = explode(',', request()->get('id'));
+        $subjectIds = explode(',', request()->get('ids'));
 
         $subjects = $subjectContract->whereIn('_id', $subjectIds);
 
         $subjects->reject(function ($subject) {
-            foreach ($subject->expedition_ids as $expeditionId)
-            {
+            foreach ($subject->expedition_ids as $expeditionId) {
                 $expedition = $this->expeditionContract->findExpeditionHavingWorkflowManager($expeditionId);
-                if ($expedition !== null)
+                if ($expedition !== null) {
                     return true;
+                }
             }
 
             return false;
-        })->each(function ($subject) use($subjectContract) {
+        })->each(function ($subject) use ($subjectContract) {
             $subjectContract->delete($subject->_id);
         });
 
         return response()->json(['success']);
-
     }
 }
 

@@ -57,18 +57,18 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        $this->setTranscribed();
+        $this->setExported();
         echo 'starting to fix subjects' . PHP_EOL;
         $this->fixSubjects();
     }
 
-    private function setTranscribed()
+    private function setExported()
     {
         $this->service->setCollection('subjects');
         $cursor = $this->service->find();
         $i=0;
         foreach ($cursor as $doc) {
-            $this->service->updateOneById(['transcribed' => false], $doc['_id']);
+            $this->service->updateOneById(['exported' => false], $doc['_id']);
             $i++;
         }
         echo 'updated docs: ' . $i . PHP_EOL;
@@ -99,7 +99,7 @@ class UpdateQueries extends Command
             echo 'Cannot find doc ' . $subjectId . PHP_EOL;
         }
 
-        $this->service->updateOneById(['transcribed' => true], $doc['_id']);
+        $this->service->updateOneById(['exported' => true], $doc['_id']);
         $count++;
     }
 }

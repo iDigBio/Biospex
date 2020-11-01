@@ -159,7 +159,7 @@ return [
      */
     'defaultGridVisible'    => [
         'id',
-        'transcribed',
+        'exported',
         'accessURI',
         'ocr',
     ],
