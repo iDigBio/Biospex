@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,68 +17,58 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\MongoDb;
+namespace App\Services\Model;
 
-use App\Models\Subject as Model;
-use App\Repositories\Interfaces\Subject;
+use App\Models\Subject;
+use App\Services\Model\Traits\ModelTrait;
 
-class SubjectRepository extends MongoDbRepository implements Subject
+/**
+ * Class SubjectService
+ *
+ * @package App\Services\Model
+ */
+class SubjectService
 {
+    use ModelTrait;
+
     /**
-     * OrderBy
+     * @var \App\Models\Subject
+     */
+    private $model;
+
+    /**
+     * @var 
+     */
+    private $groupAnd;
+
+    /**
+     * @var 
+     */
+    private $groupOpProcessed;
+
+    /**
+     * @var mixed
+     */
+    private $assignedRuleData;
+
+    /**
+     * SubjectService constructor.
      *
-     * @var array
+     * @param \App\Models\Subject $subject
      */
-    protected $orderBy = [[]];
-
-    /**
-     * Group op value: AND/OR = true/false
-     *
-     * @var
-     */
-    protected $groupAnd;
-
-    /**
-     * Sets whether first filter created (where vs orWhere)
-     *
-     * @var bool
-     */
-    protected $groupOpProcessed = false;
-
-    /**
-     * @var
-     */
-    protected $projectId;
-
-    /**
-     * @var
-     */
-    protected $expeditionId;
-
-    /**
-     * @var
-     */
-    protected $route;
-
-    /**
-     * @var
-     */
-    protected $assignedRuleData;
-
-    /**
-     * Specify Model class name
-     *
-     * @return \App\Models\Subject|string
-     */
-    public function model()
+    public function __construct(Subject $subject)
     {
-        return Model::class;
+        $this->model = $subject;
     }
 
     /**
-     * @inheritdoc
+     * Find by expedition id.
+     *
+     * @param $expeditionId
+     * @param array|string[] $attributes
+     * @return array|mixed
      */
-    public function findSubjectsByExpeditionId($expeditionId, array $attributes = ['*'])
+    public function findByExpeditionId($expeditionId, array $attributes = ['*'])
     {
         return \Cache::tags((string) $expeditionId)->remember(__METHOD__, 14440, function () use (
             $expeditionId,
@@ -89,23 +79,10 @@ class SubjectRepository extends MongoDbRepository implements Subject
     }
 
     /**
-     * @inheritdoc
-     */
-    public function getUnassignedCount($projectId)
-    {
-        return $this->model->where('expedition_ids', 'size', 0)->where('project_id', (int) $projectId)->count();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getSubjectAssignedCount($projectId)
-    {
-        return $this->model->whereRaw(['expedition_ids.0' => ['$exists' => true]])->where('project_id', '=', (int) $projectId)->count();
-    }
-
-    /**
-     * @inheritdoc
+     * Detach subjects from expedition.
+     *
+     * @param $subjectIds
+     * @param $expeditionId
      */
     public function detachSubjects($subjectIds, $expeditionId)
     {
@@ -119,7 +96,10 @@ class SubjectRepository extends MongoDbRepository implements Subject
     }
 
     /**
-     * @inheritDoc
+     * Attach subjects to expedition.
+     *
+     * @param $subjectIds
+     * @param $expeditionId
      */
     public function attachSubjects($subjectIds, $expeditionId)
     {
@@ -133,19 +113,24 @@ class SubjectRepository extends MongoDbRepository implements Subject
     }
 
     /**
-     * @inheritdoc
+     * Get assigned count for project.
+     *
+     * @param $projectId
+     * @return mixed
      */
-    public function findByAccessUri($accessURI)
+    public function getAssignedCountByProject($projectId)
     {
-        return $this->model->where('accessURI', 'like', '%'.$accessURI.'%')->first();
+        return $this->model->whereRaw(['expedition_ids.0' => ['$exists' => true]])->where('project_id', '=', (int) $projectId)->count();
     }
 
     /**
-     * @inheritDoc
+     * Delete unassigned by project id.
+     *
+     * @param int $projectId
      */
-    public function deleteUnassignedSubjects($projectId)
+    public function deleteUnassignedByProject(int $projectId)
     {
-        $this->model->where('project_id', (int) $projectId)->where('expedition_ids', 'size', 0)->delete();
+        $this->model->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->delete();
     }
 
     /**
@@ -170,7 +155,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      * @return int Total number of rows
      * @throws \Exception
      */
-    public function getTotalRowCount(array $vars = [])
+    public function getGridTotalRowCount(array $vars = [])
     {
         $count = $this->model->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
@@ -196,17 +181,13 @@ class SubjectRepository extends MongoDbRepository implements Subject
      * $limit, $start, $sidx, $sord, $filters
      * @throws \Exception
      */
-    public function getRows(array $vars = [])
+    public function getGridRows(array $vars = [])
     {
-        $orderByRaw = $this->setOrderBy($vars['sidx'], $vars['sord']);
-
-        $vars['limit'] = ($vars['limit'] === 0) ? 1 : $vars['limit'];
-
         $query = $this->model->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true])->take($vars['limit'])->skip($vars['offset']);
 
-        foreach ($orderByRaw as $field => $sort) {
+        foreach ($vars['orderBy'] as $field => $sort) {
             $query->orderBy($field, $sort);
         }
 
@@ -219,6 +200,25 @@ class SubjectRepository extends MongoDbRepository implements Subject
         $this->setRowCheckbox($rows);
 
         return $rows;
+    }
+
+    /**
+     * Return query used to chunk rows for export.
+     *
+     * @param array $vars
+     * @return \Jenssegers\Mongodb\Eloquent\Builder
+     */
+    public function chunkExportGridRows(array $vars)
+    {
+        $query = $this->model->whereNested(function ($query) use ($vars) {
+            $this->buildQuery($query, $vars);
+        })->options(['allowDiskUse' => true]);
+
+        foreach ($vars['orderBy'] as $field => $sort) {
+            $query->orderBy($field, $sort);
+        }
+
+        return $query;
     }
 
     /**
@@ -240,24 +240,26 @@ class SubjectRepository extends MongoDbRepository implements Subject
             });
         }
 
-        if ($vars['route'] !== 'admin.grids.explore') {
-            $this->setExpeditionWhere($query, $vars);
-        }
+        $this->setExpeditionWhere($query, $vars);
     }
 
+    /**
+     * Set where for expedition ids depending on route.
+     *
+     * @param $query
+     * @param $vars
+     */
     protected function setExpeditionWhere(&$query, $vars)
     {
-        // admin.grids.explore: Project Explore (show all)
-        // admin.grids.show: Expedition Show page (show only assigned)
-        // admin.grids.edit: Expedition edit (show all)
-        // admin.grids.create: Expedition create (show not assigned)
-        if ($vars['route'] === 'admin.grids.edit') {
-            if ($this->assignedRuleData === 'all') {
-                return;
-            }
-        } elseif ($vars['route'] === 'admin.grids.show') {
+        // explore: Project Explore (show all)
+        // show: Expedition Show page (show only assigned)
+        // edit: Expedition edit (show all)
+        // create: Expedition create (show not assigned)
+        if ($vars['route'] === 'explore' || ($vars['route'] === 'edit' && $this->assignedRuleData === 'all')) {
+            return;
+        } elseif ($vars['route'] === 'show') {
             $this->setWhereIn($query, 'expedition_ids', [$vars['expeditionId']]);
-        } elseif ($vars['route'] === 'admin.grids.create') {
+        } elseif ($vars['route'] === 'create') {
             $this->setWhere($query, 'expedition_ids', 'size', 0);
         }
     }

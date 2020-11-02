@@ -20,7 +20,7 @@
 namespace App\Services\Process;
 
 use App\Services\Model\TranscriptionLocationStateCountyService;
-use App\Repositories\Interfaces\Subject;
+use App\Services\Model\SubjectService;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use Exception;
 use Storage;
@@ -36,9 +36,9 @@ class PanoptesTranscriptionProcess
     protected $collection;
 
     /**
-     * @var Subject
+     * @var SubjectService
      */
-    protected $subjectContract;
+    protected $subjectService;
 
     /**
      * @var PanoptesTranscription
@@ -73,18 +73,18 @@ class PanoptesTranscriptionProcess
     /**
      * PanoptesTranscriptionProcess constructor.
      *
-     * @param Subject $subjectContract
+     * @param SubjectService $subjectService
      * @param PanoptesTranscription $panoptesTranscriptionContract
      * @param \App\Services\Model\TranscriptionLocationStateCountyService $locationStateCountyService
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
-        Subject $subjectContract,
+        SubjectService $subjectService,
         PanoptesTranscription $panoptesTranscriptionContract,
         TranscriptionLocationStateCountyService $locationStateCountyService,
         Csv $csv
     ) {
-        $this->subjectContract = $subjectContract;
+        $this->subjectService = $subjectService;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
         $this->locationStateCountyService = $locationStateCountyService;
         $this->csv = $csv;
@@ -165,7 +165,7 @@ class PanoptesTranscriptionProcess
          */
         $this->fixMisMatched($row, $expeditionId);
 
-        $subject = $this->subjectContract->find(trim($row['subject_subjectId']));
+        $subject = $this->subjectService->find(trim($row['subject_subjectId']));
 
         if ($subject === null) {
             $this->csvError[] = array_merge(['error' => 'Could not find subject id for classification'], $row);

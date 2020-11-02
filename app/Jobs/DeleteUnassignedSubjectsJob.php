@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Notifications\RecordDeleteComplete;
-use App\Repositories\Interfaces\Subject;
+use App\Services\Model\SubjectService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -43,13 +43,13 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\Interfaces\Subject $subjectContract
+     * @param \App\Services\Model\SubjectService $subjectService
      * @return void
      */
-    public function handle(Subject $subjectContract)
+    public function handle(SubjectService $subjectService)
     {
         try {
-            $subjectContract->deleteUnassignedSubjects($this->projectId);
+            $subjectService->deleteUnassignedByProject($this->projectId);
 
             $message = [
                 t('All unassigned subjects for project id %s have been deleted.', $this->projectId)

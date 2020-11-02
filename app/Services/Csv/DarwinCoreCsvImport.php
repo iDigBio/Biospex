@@ -21,7 +21,7 @@ namespace App\Services\Csv;
 
 use App\Repositories\Interfaces\Header;
 use App\Repositories\Interfaces\Property;
-use App\Repositories\Interfaces\Subject;
+use App\Services\Model\SubjectService;
 use App\Services\MongoDbService;
 use Carbon\Carbon;
 use Exception;
@@ -38,9 +38,9 @@ class DarwinCoreCsvImport
     public $propertyContract;
 
     /**
-     * @var Subject
+     * @var SubjectService
      */
-    public $subjectContract;
+    public $subjectService;
 
     /**
      * @var Header
@@ -123,7 +123,7 @@ class DarwinCoreCsvImport
      * Construct
      *
      * @param Property $propertyContract
-     * @param Subject $subjectContract
+     * @param SubjectService $subjectService
      * @param Header $headerContract
      * @param Validation $factory
      * @param \App\Services\Csv\Csv $csv
@@ -131,7 +131,7 @@ class DarwinCoreCsvImport
      */
     public function __construct(
         Property $propertyContract,
-        Subject $subjectContract,
+        SubjectService $subjectService,
         Header $headerContract,
         Validation $factory,
         Csv $csv,
@@ -139,7 +139,7 @@ class DarwinCoreCsvImport
     ) {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
         $this->propertyContract = $propertyContract;
-        $this->subjectContract = $subjectContract;
+        $this->subjectService = $subjectService;
         $this->headerContract = $headerContract;
         $this->factory = $factory;
         $this->csv = $csv;
@@ -521,7 +521,7 @@ class DarwinCoreCsvImport
             unset($subject['language']);
         }
 
-        $this->subjectContract->create($subject);
+        $this->subjectService->create($subject);
         $this->subjectCount++;
     }
 

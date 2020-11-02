@@ -20,7 +20,7 @@
 namespace App\Services\Helpers;
 
 use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Repositories\Interfaces\Subject;
+use App\Services\Model\SubjectService;
 use Illuminate\Support\Facades\Cache;
 
 class CountHelper
@@ -31,17 +31,20 @@ class CountHelper
     private $panoptesTranscription;
 
     /**
-     * @var \App\Repositories\Interfaces\Subject
+     * @var \App\Services\Model\SubjectService|\Illuminate\Contracts\Foundation\Application|mixed
      */
-    private $subject;
+    private $subjectService;
 
     /**
      * CountHelper constructor.
+     *
+     * @param \App\Services\Model\SubjectService $subjectService
+     * @param \App\Repositories\Interfaces\PanoptesTranscription $panoptesTranscription
      */
-    public function __construct()
+    public function __construct(SubjectService $subjectService, PanoptesTranscription $panoptesTranscription)
     {
-        $this->panoptesTranscription = app(PanoptesTranscription::class);
-        $this->subject = app(Subject::class);
+        $this->subjectService = $subjectService;
+        $this->panoptesTranscription = $panoptesTranscription;
     }
 
     /**
@@ -117,7 +120,7 @@ class CountHelper
     public function getProjectSubjectAssignedCount($projectId)
     {
         return Cache::tags('subjects'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use ($projectId) {
-            return $this->subject->getSubjectAssignedCount($projectId);
+            return $this->subjectService->getAssignedCountByProject($projectId);
         });
     }
 

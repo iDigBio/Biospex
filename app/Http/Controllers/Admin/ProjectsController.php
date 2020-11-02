@@ -25,8 +25,7 @@ use App\Jobs\DeleteUnassignedSubjectsJob;
 use App\Jobs\OcrCreateJob;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ProjectFormRequest;
-use App\Repositories\Interfaces\Subject;
-use App\Services\Grid\JqGridJsonEncoder;
+use App\Services\Grid\JqGridEncoder;
 use App\Services\Model\ProjectService;
 use Flash;
 use Auth;
@@ -259,10 +258,10 @@ class ProjectsController extends Controller
      * Display project explore page.
      *
      * @param $projectId
-     * @param \App\Services\Grid\JqGridJsonEncoder $grid
+     * @param \App\Services\Grid\JqGridEncoder $grid
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function explore($projectId, JqGridJsonEncoder $grid)
+    public function explore($projectId, JqGridEncoder $grid)
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
@@ -273,12 +272,13 @@ class ProjectsController extends Controller
         $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
-            'model' => $model,
-            'subjectIds'   => [],
-            'maxCount'     => config('config.expedition_size'),
-            'dataUrl'      => route('admin.grids.explore', [$projectId]),
-            'exportUrl'    => route('admin.grids.export', [$projectId]),
-            'checkbox' => false
+            'model'      => $model,
+            'subjectIds' => [],
+            'maxCount'   => config('config.expedition_size'),
+            'dataUrl'    => route('admin.grids.explore', [$projectId]),
+            'exportUrl'  => route('admin.grids.export', [$projectId]),
+            'checkbox'   => false,
+            'route'      => 'explore', // used for export
         ]);
 
         // @TODO Should we use expedition_stat for count?
@@ -374,8 +374,7 @@ class ProjectsController extends Controller
             Flash::success(t('Subjects have been set for deletion. You will be notified by email when complete.'));
 
             return redirect()->route('admin.projects.explore', [$projectId]);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Flash::warning(t('There was an error setting the job to delete the Subjects.'));
 
             return redirect()->route('admin.projects.explore', [$projectId]);

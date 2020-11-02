@@ -19,7 +19,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Services\Grid\JqGridJsonEncoder;
+use App\Services\Grid\JqGridEncoder;
+use App\Services\Model\SubjectService;
 use Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
@@ -30,7 +31,6 @@ use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExpeditionStat;
 use App\Repositories\Interfaces\PanoptesProject;
 use App\Repositories\Interfaces\Project;
-use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\WorkflowManager;
 use Artisan;
 use Exception;
@@ -55,11 +55,6 @@ class ExpeditionsController extends Controller
     private $panoptesProjectContract;
 
     /**
-     * @var \App\Repositories\Interfaces\Subject
-     */
-    private $subjectContract;
-
-    /**
      * @var \App\Repositories\Interfaces\ExpeditionStat
      */
     private $expeditionStatContract;
@@ -70,12 +65,17 @@ class ExpeditionsController extends Controller
     private $workflowManagerContract;
 
     /**
+     * @var \App\Services\Model\SubjectService
+     */
+    private $subjectService;
+
+    /**
      * ExpeditionsController constructor.
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Repositories\Interfaces\Project $projectContract
      * @param \App\Repositories\Interfaces\PanoptesProject $panoptesProjectContract
-     * @param \App\Repositories\Interfaces\Subject $subjectContract
+     * @param \App\Services\Model\SubjectService $subjectService
      * @param \App\Repositories\Interfaces\ExpeditionStat $expeditionStatContract
      * @param \App\Repositories\Interfaces\WorkflowManager $workflowManagerContract
      */
@@ -83,16 +83,16 @@ class ExpeditionsController extends Controller
         Expedition $expeditionContract,
         Project $projectContract,
         PanoptesProject $panoptesProjectContract,
-        Subject $subjectContract,
+        SubjectService $subjectService,
         ExpeditionStat $expeditionStatContract,
         WorkflowManager $workflowManagerContract
     ) {
         $this->expeditionContract = $expeditionContract;
         $this->projectContract = $projectContract;
         $this->panoptesProjectContract = $panoptesProjectContract;
-        $this->subjectContract = $subjectContract;
         $this->expeditionStatContract = $expeditionStatContract;
         $this->workflowManagerContract = $workflowManagerContract;
+        $this->subjectService = $subjectService;
     }
 
     /**
@@ -145,10 +145,10 @@ class ExpeditionsController extends Controller
      * Show the form for creating a new resource.
      *
      * @param $projectId
-     * @param \App\Services\Grid\JqGridJsonEncoder $grid
+     * @param \App\Services\Grid\JqGridEncoder $grid
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function create($projectId, JqGridJsonEncoder $grid)
+    public function create($projectId, JqGridEncoder $grid)
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
@@ -164,7 +164,8 @@ class ExpeditionsController extends Controller
             'maxCount'     => config('config.expedition_size'),
             'dataUrl'      => route('admin.grids.create', [$project->id]),
             'exportUrl'    => route('admin.grids.export', [$projectId]),
-            'checkbox' => true
+            'checkbox' => true,
+            'route' => 'create', // used for export
         ]);
 
         return view('admin.expedition.create', compact('project'));
@@ -212,10 +213,10 @@ class ExpeditionsController extends Controller
      *
      * @param $projectId
      * @param $expeditionId
-     * @param \App\Services\Grid\JqGridJsonEncoder $grid
+     * @param \App\Services\Grid\JqGridEncoder $grid
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function show($projectId, $expeditionId, JqGridJsonEncoder $grid)
+    public function show($projectId, $expeditionId, JqGridEncoder $grid)
     {
         $relations = [
             'project.group',
@@ -240,6 +241,7 @@ class ExpeditionsController extends Controller
             'dataUrl'    => route('admin.grids.show', [$expedition->project->id, $expedition->id]),
             'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'checkbox'   => false,
+            'route' => 'show', // used for export
         ]);
 
         return view('admin.expedition.show', compact('expedition'));
@@ -250,10 +252,10 @@ class ExpeditionsController extends Controller
      *
      * @param $projectId
      * @param $expeditionId
-     * @param \App\Services\Grid\JqGridJsonEncoder $grid
+     * @param \App\Services\Grid\JqGridEncoder $grid
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function clone($projectId, $expeditionId, JqGridJsonEncoder $grid)
+    public function clone($projectId, $expeditionId, JqGridEncoder $grid)
     {
         $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group']);
 
@@ -269,7 +271,8 @@ class ExpeditionsController extends Controller
             'maxCount'     => config('config.expedition_size'),
             'dataUrl'      => route('admin.grids.create', [$expedition->project->id]),
             'exportUrl'    => route('admin.grids.export', [$projectId]),
-            'checkbox' => true
+            'checkbox' => true,
+            'route' => 'create', // used for export
         ]);
 
         return view('admin.expedition.clone', compact('expedition'));
@@ -280,10 +283,10 @@ class ExpeditionsController extends Controller
      *
      * @param $projectId
      * @param $expeditionId
-     * @param \App\Services\Grid\JqGridJsonEncoder $grid
+     * @param \App\Services\Grid\JqGridEncoder $grid
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function edit($projectId, $expeditionId, JqGridJsonEncoder $grid)
+    public function edit($projectId, $expeditionId, JqGridEncoder $grid)
     {
         $relations = [
             'project.group',
@@ -300,9 +303,9 @@ class ExpeditionsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $subjectIds = $this->subjectContract->findSubjectsByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id');
+        $subjectIds = $this->subjectService->findByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id');
 
-        $model = $grid->loadGridModel($projectId, request()->route()->getName());
+        $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
             'model'      => $model,
@@ -311,6 +314,7 @@ class ExpeditionsController extends Controller
             'dataUrl'    => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
             'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'checkbox'   => $expedition->workflowManager === null,
+            'route' => 'edit', // used for export
         ]);
 
         return view('admin.expedition.edit', compact('expedition'));
@@ -365,8 +369,8 @@ class ExpeditionsController extends Controller
                 $detachIds = $oldIds->diff($newIds);
                 $attachIds = $newIds->diff($oldIds);
 
-                $this->subjectContract->detachSubjects($detachIds, $expedition->id);
-                $this->subjectContract->attachSubjects($attachIds, $expedition->id);
+                $this->subjectService->detachSubjects($detachIds, $expedition->id);
+                $this->subjectService->attachSubjects($attachIds, $expedition->id);
 
                 $values = [
                     'local_subject_count' => $count,

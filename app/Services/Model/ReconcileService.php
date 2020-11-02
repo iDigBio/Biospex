@@ -20,7 +20,7 @@
 namespace App\Services\Model;
 
 use App\Repositories\Interfaces\Reconcile;
-use App\Repositories\Interfaces\Subject;
+use App\Services\Model\SubjectService;
 use App\Services\Csv\Csv;
 use File;
 use Illuminate\Support\Collection;
@@ -42,9 +42,9 @@ class ReconcileService
     private $csv;
 
     /**
-     * @var \App\Repositories\Interfaces\Subject
+     * @var SubjectService
      */
-    private $subjectContract;
+    private $subjectService;
 
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
@@ -56,17 +56,17 @@ class ReconcileService
      *
      * @param \App\Repositories\Interfaces\Reconcile $reconcileContract
      * @param \App\Services\Csv\Csv $csv
-     * @param \App\Repositories\Interfaces\Subject $subjectContract
+     * @param \App\Services\Model\SubjectService $subjectService
      */
     public function __construct(
         Reconcile $reconcileContract,
         Csv $csv,
-        Subject $subjectContract
+        SubjectService $subjectService
     ) {
 
         $this->reconcileContract = $reconcileContract;
         $this->csv = $csv;
-        $this->subjectContract = $subjectContract;
+        $this->subjectService = $subjectService;
 
         $this->problemRegex = config('config.nfn_reconcile_problem_regex');
     }
@@ -168,7 +168,7 @@ class ReconcileService
     public function getAccessUri($imageName)
     {
         $id = File::name($imageName);
-        $subject = $this->subjectContract->find($id, ['accessURI']);
+        $subject = $this->subjectService->find($id, ['accessURI']);
 
         return $subject->accessURI;
     }

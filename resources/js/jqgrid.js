@@ -30,6 +30,7 @@ $(function () {
         let maxCount = Laravel.maxCount;
         let checkbox = Laravel.checkbox;
         let exportUrl = Laravel.exportUrl;
+        let route = Laravel.route;
 
         let model = JSON.parse(Laravel.model), cm = model.colModel, cn = model.colNames;
 
@@ -119,11 +120,11 @@ $(function () {
                 window.location.reload();
             },
             exportSettings = function (event) {
-                let filter = $grid.jqGrid('getGridParam', "postData").filters;
+                let filters = $grid.jqGrid('getGridParam', "postData").filters;
                 $.ajax({
                     type: 'post',
                     url: exportUrl,
-                    data: {'filter': filter}
+                    data: {'filters': filters, 'route': route}
                 }).done(function (data) {
                     bootboxMsg("Export Submitted", "You will receive an email when the export is complete.");
                 }).fail(function () {
@@ -176,8 +177,6 @@ $(function () {
             multiselect: checkbox,
             multiPageSelection: checkbox,
             selarrrow: Laravel.subjectIds,
-            //reloadGridOptions: { current: true },
-            navOptions: {add: false, edit: false, del: false, search: false},
             searching: {searchOnEnter: true, searchOperators: true},
             loadComplete: function () {
                 if (firstLoad) {
@@ -196,7 +195,12 @@ $(function () {
                 setSelectedCount();
             },
         })
-            .jqGrid("navGrid")
+            .jqGrid("navGrid", {add: false, edit: false, del: false, search: true}, {}, {}, {}, {
+                top: 'auto',
+                width: 700,
+                multipleSearch: true,
+                recreateFilter: true
+            })
             .jqGrid("navButtonAdd", {
                 caption: '',
                 buttonicon: "fas fa-columns",

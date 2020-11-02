@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class Subject
+ *
+ * @package App\Models
+ */
 class Subject extends BaseMongoModel
 {
     /**

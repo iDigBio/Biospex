@@ -24,7 +24,7 @@ use App\Models\User;
 use App\Notifications\JobError;
 use App\Notifications\RecordDeleteComplete;
 use App\Repositories\Interfaces\Expedition as ExpeditionContact;
-use App\Repositories\Interfaces\Subject;
+use App\Services\Model\SubjectService;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -64,13 +64,13 @@ class DeleteExpedition implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
-     * @param \App\Repositories\Interfaces\Subject $subjectContract
+     * @param \App\Services\Model\SubjectService $subjectService
      * @param \App\Services\MongoDbService $mongoDbService
      * @return void
      */
     public function handle(
         ExpeditionContact $expeditionContract,
-        Subject $subjectContract,
+        SubjectService $subjectService,
         MongoDbService $mongoDbService
     ) {
 
@@ -88,10 +88,10 @@ class DeleteExpedition implements ShouldQueue
             $mongoDbService->setCollection('panoptes_transcriptions');
             $mongoDbService->deleteMany(['subject_expeditionId' => $expedition->id]);
 
-            $subjects = $subjectContract->findSubjectsByExpeditionId($expedition->id);
+            $subjects = $subjectService->findByExpeditionId($expedition->id);
 
             if ($subjects->isNotEmpty()) {
-                $subjectContract->detachSubjects($subjects, $expedition->id);
+                $subjectService->detachSubjects($subjects, $expedition->id);
             }
 
             $expedition->delete();

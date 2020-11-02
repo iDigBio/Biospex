@@ -21,6 +21,11 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 
+/**
+ * Class BaseMongoModel
+ *
+ * @package App\Models
+ */
 class BaseMongoModel extends Model
 {
     /**

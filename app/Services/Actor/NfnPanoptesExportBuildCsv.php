@@ -22,8 +22,8 @@ namespace App\Services\Actor;
 use App\Facades\ActorEventHelper;
 use App\Models\ExportQueue;
 use App\Repositories\Interfaces\ExportQueueFile;
-use App\Repositories\Interfaces\Subject;
 use App\Services\Csv\Csv;
+use App\Services\Model\SubjectService;
 use Exception;
 
 class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
@@ -44,27 +44,27 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
     private $csvService;
 
     /**
-     * @var \App\Repositories\Interfaces\Subject
+     * @var \App\Services\Model\SubjectService
      */
-    private $subjectContract;
+    private $subjectService;
 
     /**
      * NfnPanoptesExportBuildCsv constructor.
      *
      * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFile
      * @param \App\Services\Csv\Csv $csvService
-     * @param \App\Repositories\Interfaces\Subject $subjectContract
+     * @param \App\Services\Model\SubjectService $subjectService
      */
     public function __construct(
         ExportQueueFile $exportQueueFile,
         Csv $csvService,
-        Subject $subjectContract
+        SubjectService $subjectService
     )
     {
         $this->exportQueueFile = $exportQueueFile;
         $this->nfnCsvMap = config('config.nfnCsvMap');
         $this->csvService = $csvService;
-        $this->subjectContract = $subjectContract;
+        $this->subjectService = $subjectService;
     }
 
     /**
@@ -122,7 +122,7 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
      */
     public function mapNfnCsvColumns(\App\Models\ExportQueueFile $file)
     {
-        $subject = $this->subjectContract->find($file->subject_id);
+        $subject = $this->subjectService->find($file->subject_id);
 
         $csvArray = [];
         foreach ($this->nfnCsvMap as $key => $item) {
