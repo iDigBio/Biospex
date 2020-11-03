@@ -19,6 +19,12 @@
 
 namespace App\Services\Model\Traits;
 
+/**
+ * Trait ModelTrait
+ *
+ * @mixin \Eloquent
+ * @package App\Services\Model\Traits1
+ */
 trait ModelTrait
 {
     /**

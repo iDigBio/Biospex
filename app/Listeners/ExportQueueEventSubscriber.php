@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,7 +19,7 @@
 
 namespace App\Listeners;
 
-use App\Repositories\Interfaces\ExportQueue;
+use App\Services\Model\ExportQueueService;
 use App\Jobs\ExportQueueJob;
 
 /**
@@ -30,18 +30,18 @@ use App\Jobs\ExportQueueJob;
 class ExportQueueEventSubscriber
 {
     /**
-     * @var ExportQueue
+     * @var \App\Services\Model\ExportQueueService
      */
-    private $exportQueue;
+    private $exportQueueService;
 
     /**
      * ExportQueueEventSubscriber constructor.
      *
-     * @param \App\Repositories\Interfaces\ExportQueue $exportQueue
+     * @param \App\Services\Model\ExportQueueService $exportQueueService
      */
-    public function __construct(ExportQueue $exportQueue)
+    public function __construct(ExportQueueService $exportQueueService)
     {
-        $this->exportQueue = $exportQueue;
+        $this->exportQueueService = $exportQueueService;
     }
 
     /**
@@ -62,7 +62,7 @@ class ExportQueueEventSubscriber
     public function updated()
     {
 
-        $record = $this->exportQueue->getFirstExportWithoutError();
+        $record = $this->exportQueueService->findBy('error', 0);
 
         if ($record === null) {
             return;

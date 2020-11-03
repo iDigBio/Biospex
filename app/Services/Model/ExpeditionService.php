@@ -21,6 +21,7 @@ namespace App\Services\Model;
 
 use App\Models\Expedition;
 use App\Services\Model\Traits\ModelTrait;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Class ExpeditionService
@@ -66,11 +67,10 @@ class ExpeditionService
     /**
      * Get expedition download by actor.
      *
-     * @param $projectId
      * @param $expeditionId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|Expedition|null
      */
-    public function expeditionDownloadsByActor($projectId, $expeditionId)
+    public function expeditionDownloadsByActor($expeditionId)
     {
         return $this->model->with([
             'project.group',
@@ -104,6 +104,27 @@ class ExpeditionService
     }
 
     /**
+     * Get expedition for home page visuals.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
+     */
+    public function getHomePageProjectExpedition()
+    {
+        return $this->model->with([
+            'project' => function ($q) {
+                $q->withCount('expeditions');
+                $q->withCount('events');
+            },
+        ])->with('panoptesProject')->whereHas('stat', function ($q) {
+            $q->whereBetween('percent_completed', [0.00, 99.99]);
+        })->with([
+            'stat' => function ($q) {
+                $q->whereBetween('percent_completed', [0.00, 99.99]);
+            },
+        ])->where('project_id', 13)->inRandomOrder()->first();
+    }
+
+    /**
      * Find expedition having workflow manager by id.
      *
      * @param $expeditionId
@@ -112,5 +133,88 @@ class ExpeditionService
     public function findExpeditionHavingWorkflowManager($expeditionId)
     {
         return $this->model->has('workflowManager')->find($expeditionId);
+    }
+
+    /**
+     * Get expeditions for public index.
+     *
+     * @param null $sort
+     * @param null $order
+     * @param null $projectId
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null)
+    {
+        $query = $this->model->with('project')->has('panoptesProject')->has('nfnActor')->with('panoptesProject', 'stat', 'nfnActor');
+
+        return $this->sortResults($projectId, $query, $order, $sort);
+    }
+
+    /**
+     * Find expedition for expert review.
+     *
+     * @param int $expeditionId
+     * @return \App\Models\Expedition|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+     */
+    public function findExpeditionForExpertReview(int $expeditionId)
+    {
+        return $this->model->with([
+            'project' => function ($query) {
+                $query->select('id', 'group_id')->with([
+                    'group' => function ($query) {
+                        $query->select('id', 'user_id')->with('owner');
+                    },
+                ]);
+            },
+            'nfnActor',
+        ])->has('panoptesProject')->find($expeditionId);
+    }
+
+    /**
+     * @param int $expeditionId
+     * @return \App\Models\Expedition|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+     */
+    public function getExpeditionForZooniverseProcess(int $expeditionId)
+    {
+        return $this->model->with(['panoptesProject', 'stat', 'nfnActor'])
+            ->has('panoptesProject')->whereHas('nfnActor', function ($query) {
+                $query->where('completed', 0);
+            })->find($expeditionId);
+    }
+
+    /**
+     * Sort results for expedition indexes.
+     *
+     * @param $projectId
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param $order
+     * @param $sort
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    protected function sortResults($projectId, Builder $query, $order, $sort)
+    {
+        $results = $projectId === null ? $query->get() : $query->where('project_id', $projectId)->get();
+
+        if ($order === null) {
+            return $results;
+        }
+
+        switch ($sort) {
+            case 'title':
+                $results = $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
+                break;
+            case 'project':
+                $results = $order === 'desc' ? $results->sortByDesc(function ($expedition) {
+                    return $expedition->project->title;
+                }) : $results->sortBy(function ($expedition) {
+                    return $expedition->project->title;
+                });
+                break;
+            case 'date':
+                $results = $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
+                break;
+        }
+
+        return $results;
     }
 }

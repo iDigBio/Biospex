@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,35 +17,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Services\Model;
 
-use App\Models\ExportQueueFile as Model;
-use App\Repositories\Interfaces\ExportQueueFile;
+use App\Models\ExportQueueFile;
+use App\Services\Model\Traits\ModelTrait;
 use Illuminate\Support\Collection;
 
-class ExportQueueFileRepository extends EloquentRepository implements ExportQueueFile
+/**
+ * Class ExportQueueFileService
+ *
+ * @package App\Services\Model
+ */
+class ExportQueueFileService
 {
+    use ModelTrait;
 
     /**
-     * Specify Model class name
+     * @var \App\Models\ExportQueueFile
+     */
+    private $model;
+
+    /**
+     * ExportQueueFileService constructor.
      *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @param \App\Models\ExportQueueFile $exportQueueFile
      */
-    public function model()
+    public function __construct(ExportQueueFile $exportQueueFile)
     {
-        return Model::class;
+
+        $this->model = $exportQueueFile;
     }
 
     /**
-     * @inheritDoc
-     */
-    public function getFilesByQueueId(string $queueId): Collection
-    {
-        return $this->model->where('queue_id', $queueId)->where('error', 0)->get();
-    }
-
-    /**
-     * @inheritDoc
+     * Get all files without errors by queue id.
+     *
+     * @param string $queueId
+     * @return \Illuminate\Support\Collection
      */
     public function getFilesWithoutErrorByQueueId(string $queueId): Collection
     {
@@ -54,10 +61,24 @@ class ExportQueueFileRepository extends EloquentRepository implements ExportQueu
     }
 
     /**
-     * @inheritDoc
+     * Get files with errors by queue id.
+     *
+     * @param string $queueId
+     * @return \Illuminate\Support\Collection
      */
     public function getFilesWithErrorsByQueueId(string $queueId): Collection
     {
         return $this->model->where('queue_id', $queueId)->where('error', 1)->get();
+    }
+
+    /**
+     * Get all files by queue id.
+     *
+     * @param string $queueId
+     * @return \Illuminate\Support\Collection
+     */
+    public function getFilesByQueueId(string $queueId): Collection
+    {
+        return $this->model->where('queue_id', $queueId)->where('error', 0)->get();
     }
 }

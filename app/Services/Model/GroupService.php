@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,49 +17,41 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Services\Model;
 
-use App\Models\Group as Model;
-use App\Repositories\Interfaces\Group;
+use App\Models\Group;
+use App\Services\Model\Traits\ModelTrait;
 
-class GroupRepository extends EloquentRepository implements Group
+/**
+ * Class GroupService
+ *
+ * @package App\Services\Model
+ */
+class GroupService
 {
+    use ModelTrait;
+
     /**
-     * Specify Model class name
+     * @var \App\Models\Group
+     */
+    private $model;
+
+    /**
+     * GroupService constructor.
      *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @param \App\Models\Group $group
      */
-    public function model()
+    public function __construct(Group $group)
     {
-        return Model::class;
+
+        $this->model = $group;
     }
 
     /**
-     * @param $user
-     * @return mixed
-     * @throws \Exception
-     */
-    public function getUsersGroupsSelect($user)
-    {
-        return $this->model->whereHas('users', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->pluck('title', 'id')->toArray();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getUserGroupIds($userId)
-    {
-        return $this->model->whereHas('users', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })->get()->map(function ($item) {
-                return $item['id'];
-            });
-    }
-
-    /**
-     * @inheritdoc
+     * Get all groups by user id.
+     *
+     * @param $userId
+     * @return \App\Models\Group[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getGroupsByUserId($userId)
     {
@@ -70,7 +62,10 @@ class GroupRepository extends EloquentRepository implements Group
     }
 
     /**
-     * @inheritdoc
+     * Get group for show page.
+     *
+     * @param $groupId
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
      */
     public function getGroupShow($groupId)
     {
@@ -79,6 +74,34 @@ class GroupRepository extends EloquentRepository implements Group
             'owner.profile',
             'users.profile',
         ])->withCount('expeditions')->find($groupId);
+    }
+
+    /**
+     * Get group ids for user session.
+     *
+     * @param $userId
+     * @return \App\Models\Group[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     */
+    public function getUserGroupIds($userId)
+    {
+        return $this->model->whereHas('users', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->get()->map(function ($item) {
+            return $item['id'];
+        });
+    }
+
+    /**
+     * Get group select for user.
+     *
+     * @param $user
+     * @return array
+     */
+    public function getUsersGroupsSelect($user)
+    {
+        return $this->model->whereHas('users', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->pluck('title', 'id')->toArray();
     }
 
     /**

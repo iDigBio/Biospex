@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipNfn;
 use App\Notifications\JobError;
 use App\Notifications\NfnExpertReviewJobComplete;
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Services\Model\ReconcileService;
 use App\Services\Process\ReconcileProcessService;
 use Illuminate\Bus\Queueable;
@@ -37,18 +37,18 @@ class NfnExpertReviewJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @param \App\Services\Process\ReconcileProcessService $reconcileProcessService
      * @param \App\Services\Model\ReconcileService $reconcileService
      * @return void
      */
     public function handle(
-        Expedition $expeditionContract,
+        ExpeditionService $expeditionService,
         ReconcileProcessService $reconcileProcessService,
         ReconcileService $reconcileService
     )
     {
-        $expedition = $expeditionContract->findExpeditionForExpertReview($this->expeditionId);
+        $expedition = $expeditionService->findExpeditionForExpertReview($this->expeditionId);
         $user = $expedition->project->group->owner;
 
         try {
@@ -65,7 +65,7 @@ class NfnExpertReviewJob implements ShouldQueue
 
             $user->notify(new NfnExpertReviewJobComplete($expedition->title, $expedition->id));
 
-            return $this->deleteJob();
+            $this->delete();
 
         } catch (\Exception $e) {
             $messages = [
@@ -74,17 +74,7 @@ class NfnExpertReviewJob implements ShouldQueue
             ];
             $user->notify(new JobError(__FILE__, $messages));
 
-            return $this->deleteJob();
+            $this->delete();
         }
-    }
-
-    /**
-     * Delete job and return.
-     */
-    private function deleteJob()
-    {
-        $this->delete();
-
-        return;
     }
 }

@@ -20,32 +20,29 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\Faq;
-use App\Repositories\Interfaces\FaqCategory;
+use App\Services\Model\FaqCategoryService;
 
+/**
+ * Class FaqsController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class FaqsController extends Controller
 {
 
     /**
-     * @var Faq
+     * @var \App\Services\Model\FaqCategoryService
      */
-    public $faqContract;
-    
-    /**
-     * @var FaqCategory
-     */
-    public $faqCategoryContract;
+    public $faqCategoryService;
 
     /**
      * FaqController constructor.
      *
-     * @param Faq $faqContract
-     * @param FaqCategory $faqCategoryContract
+     * @param \App\Services\Model\FaqCategoryService $faqCategoryService
      */
-    public function __construct(Faq $faqContract, FaqCategory $faqCategoryContract)
+    public function __construct(FaqCategoryService $faqCategoryService)
     {
-        $this->faqContract = $faqContract;
-        $this->faqCategoryContract = $faqCategoryContract;
+        $this->faqCategoryService = $faqCategoryService;
     }
 
     /**
@@ -55,7 +52,7 @@ class FaqsController extends Controller
      */
     public function index()
     {
-        $categories = $this->faqCategoryContract->getCategoriesWithFaqOrdered();
+        $categories = $this->faqCategoryService->getCategoriesWithFaqOrdered();
 
         return view('front.faq.index', compact('categories'));
     }

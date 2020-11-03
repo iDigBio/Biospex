@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,13 +17,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Model;
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
-use App\Repositories\Interfaces\Group;
+namespace App\Services\Process;
+
+use App\Services\Model\GroupService;
 use App\Repositories\Interfaces\Workflow;
 use Illuminate\Support\Facades\Notification;
 
-class ProjectService
+/**
+ * Class ProjectProcess
+ *
+ * @package App\Services\Model
+ */
+class ProjectProcess
 {
     /**
      * @var \App\Repositories\Interfaces\Workflow
@@ -31,24 +54,24 @@ class ProjectService
     private $workflowContract;
 
     /**
-     * @var \App\Repositories\Interfaces\Group
+     * @var \App\Services\Model\GroupService
      */
-    private $groupContract;
+    private $groupService;
 
     /**
      * CommonVariables constructor.
      *
      * @param \App\Repositories\Interfaces\Workflow $workflowContract
-     * @param \App\Repositories\Interfaces\Group $groupContract
+     * @param \App\Services\Model\GroupService $groupService
      */
     public function __construct(
         Workflow $workflowContract,
-        Group $groupContract
+        GroupService $groupService
     )
     {
 
         $this->workflowContract = $workflowContract;
-        $this->groupContract = $groupContract;
+        $this->groupService = $groupService;
     }
 
     /**
@@ -67,7 +90,7 @@ class ProjectService
      */
     public function findGroup($groupId)
     {
-        return $this->groupContract->find($groupId);
+        return $this->groupService->find($groupId);
     }
 
     /**
@@ -78,7 +101,7 @@ class ProjectService
      */
     public function getUserGroupCount($userId)
     {
-        return $this->groupContract->getGroupsByUserId($userId);
+        return $this->groupService->getGroupsByUserId($userId);
     }
 
     /**
@@ -88,7 +111,7 @@ class ProjectService
      */
     public function userGroupSelectOptions($user)
     {
-        $groups = $this->groupContract->getUsersGroupsSelect($user);
+        $groups = $this->groupService->getUsersGroupsSelect($user);
 
         return ['' => '--Select--'] + $groups;
     }

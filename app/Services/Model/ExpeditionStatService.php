@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,21 +17,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Services\Model;
 
-use App\Models\Faq as Model;
-use App\Repositories\Interfaces\Faq;
+use App\Models\ExpeditionStat;
+use App\Services\Model\Traits\ModelTrait;
 
-class FaqRepository extends EloquentRepository implements Faq
+/**
+ * Class ExpeditionStatService
+ *
+ * @package App\Services\Model
+ */
+class ExpeditionStatService
 {
+    use ModelTrait;
 
     /**
-     * Specify Model class name
-     *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @var \App\Models\ExpeditionStat
      */
-    public function model()
+    private $model;
+
+    /**
+     * ExpeditionStatService constructor.
+     *
+     * @param \App\Models\ExpeditionStat $expeditionStat
+     */
+    public function __construct(ExpeditionStat $expeditionStat)
     {
-        return Model::class;
+
+        $this->model = $expeditionStat;
     }
 }

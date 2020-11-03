@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Model;
+namespace App\Services\Process;
 
 use App\Notifications\GroupInvite;
 use App\Repositories\Interfaces\Group;
@@ -28,7 +28,12 @@ use Exception;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
-class InviteService
+/**
+ * Class InviteProcess
+ *
+ * @package App\Services\Process
+ */
+class InviteProcess
 {
 
     /**
@@ -47,7 +52,8 @@ class InviteService
     private $groupContract;
 
     /**
-     * InviteService constructor.
+     * InviteProcess constructor.
+     *
      * @param User $userContract
      * @param Invite $inviteContract
      * @param Group $groupContract

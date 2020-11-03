@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Auth;
 
 use Flash;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\Group;
+use App\Services\Model\GroupService;
 use App\Repositories\Interfaces\Invite;
 use App\Http\Requests\RegisterFormRequest;
 use App\Repositories\Interfaces\User;
@@ -30,6 +30,11 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Hash;
 
+/**
+ * Class RegisterController
+ *
+ * @package App\Http\Controllers\Auth
+ */
 class RegisterController extends Controller
 {
     /*
@@ -106,10 +111,10 @@ class RegisterController extends Controller
      *
      * @param \App\Http\Requests\RegisterFormRequest $request
      * @param \App\Repositories\Interfaces\User $userContract
-     * @param \App\Repositories\Interfaces\Group $groupContract
+     * @param \App\Services\Model\GroupService $groupService
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function register(RegisterFormRequest $request, User $userContract, Group $groupContract)
+    public function register(RegisterFormRequest $request, User $userContract, GroupService $groupService)
     {
         $input = $request->only('email', 'password', 'first_name', 'last_name', 'invite');
         $input['password'] = Hash::make($input['password']);
@@ -120,7 +125,7 @@ class RegisterController extends Controller
             $result = $this->inviteContract->findBy('code', $input['invite']);
             if ($result->email === $user->email)
             {
-                $group = $groupContract->find($result->group_id);
+                $group = $groupService->find($result->group_id);
                 $user->assignGroup($group);
                 $this->inviteContract->delete($result->id);
             }

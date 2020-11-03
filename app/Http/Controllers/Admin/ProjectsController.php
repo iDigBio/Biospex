@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -26,13 +26,18 @@ use App\Jobs\OcrCreateJob;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Grid\JqGridEncoder;
-use App\Services\Model\ProjectService;
+use App\Services\Process\ProjectProcess;
 use Flash;
 use Auth;
 use CountHelper;
 use Exception;
 use JavaScript;
 
+/**
+ * Class ProjectsController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class ProjectsController extends Controller
 {
     /**
@@ -41,21 +46,21 @@ class ProjectsController extends Controller
     private $projectContract;
 
     /**
-     * @var \App\Services\Model\ProjectService
+     * @var \App\Services\Process\ProjectProcess
      */
-    private $projectService;
+    private $projectProcess;
 
     /**
      * ProjectsController constructor.
      *
      * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param \App\Services\Model\ProjectService $projectService
+     * @param \App\Services\Process\ProjectProcess $projectProcess
      */
     public function __construct(
         Project $projectContract,
-        ProjectService $projectService
+        ProjectProcess $projectProcess
     ) {
-        $this->projectService = $projectService;
+        $this->projectProcess = $projectProcess;
         $this->projectContract = $projectContract;
     }
 
@@ -68,7 +73,7 @@ class ProjectsController extends Controller
     {
         $user = Auth::user();
 
-        $groups = $this->projectService->getUserGroupCount($user->id);
+        $groups = $this->projectProcess->getUserGroupCount($user->id);
         $projects = $this->projectContract->getAdminProjectIndex($user->id);
 
         return $groups === 0 ? view('admin.welcome') : view('admin.project.index', compact('projects'));
@@ -81,9 +86,9 @@ class ProjectsController extends Controller
      */
     public function create()
     {
-        $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectService->workflowSelectOptions();
-        $statusOptions = $this->projectService->statusSelectOptions();
+        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
+        $workflowOptions = $this->projectProcess->workflowSelectOptions();
+        $statusOptions = $this->projectProcess->statusSelectOptions();
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
@@ -132,7 +137,7 @@ class ProjectsController extends Controller
      */
     public function store(ProjectFormRequest $request)
     {
-        $group = $this->projectService->findGroup($request->get('group_id'));
+        $group = $this->projectProcess->findGroup($request->get('group_id'));
 
         if (! $this->checkPermissions('createProject', $group)) {
             return redirect()->route('admin.projects.index');
@@ -142,7 +147,7 @@ class ProjectsController extends Controller
 
         if ($model) {
             $project = $this->projectContract->findWith($model->id, ['workflow.actors.contacts']);
-            $this->projectService->notifyActorContacts($project);
+            $this->projectProcess->notifyActorContacts($project);
 
             Flash::success(t('Record was created successfully.'));
 
@@ -170,9 +175,9 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.show', [$projectId]);
         }
 
-        $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectService->workflowSelectOptions();
-        $statusOptions = $this->projectService->statusSelectOptions();
+        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
+        $workflowOptions = $this->projectProcess->workflowSelectOptions();
+        $statusOptions = $this->projectProcess->statusSelectOptions();
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
@@ -201,9 +206,9 @@ class ProjectsController extends Controller
 
         $disableWorkflow = $project->panoptesProjects()->exists() ? 'disabled' : '';
 
-        $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectService->workflowSelectOptions();
-        $statusOptions = $this->projectService->statusSelectOptions();
+        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
+        $workflowOptions = $this->projectProcess->workflowSelectOptions();
+        $statusOptions = $this->projectProcess->statusSelectOptions();
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', $project->resources->count() ?: 1);
         $resources = $project->resources;
@@ -222,7 +227,7 @@ class ProjectsController extends Controller
      */
     public function update(ProjectFormRequest $request, $projectId)
     {
-        $group = $this->projectService->findGroup($request->get('group_id'));
+        $group = $this->projectProcess->findGroup($request->get('group_id'));
 
         if (! $this->checkPermissions('updateProject', $group)) {
             return redirect()->route('admin.projects.index');

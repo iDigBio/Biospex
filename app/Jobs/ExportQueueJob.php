@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue as Model;
-use App\Repositories\Interfaces\ExportQueue;
+use App\Services\Model\ExportQueueService;
 use App\Services\Actor\ActorFactory;
 use Artisan;
 use Exception;
@@ -32,12 +32,17 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Notifications\NfnExportError;
 use Notification;
 
+/**
+ * Class ExportQueueJob
+ *
+ * @package App\Jobs
+ */
 class ExportQueueJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var ExportQueue
+     * @var \App\Services\Model\ExportQueueService
      */
     private $model;
 
@@ -60,11 +65,11 @@ class ExportQueueJob implements ShouldQueue
     /**
      * Handle ExportQueue Job
      *
-     * @param ExportQueue $exportQueueContract
+     * @param \App\Services\Model\ExportQueueService $exportQueueService
      */
-    public function handle(ExportQueue $exportQueueContract)
+    public function handle(ExportQueueService $exportQueueService)
     {
-        $queue = $exportQueueContract->findByIdExpeditionActor($this->model->id, $this->model->expedition_id, $this->model->actor_id);
+        $queue = $exportQueueService->findByIdExpeditionActor($this->model->id, $this->model->expedition_id, $this->model->actor_id);
 
         if ($queue === null) {
             $this->delete();
@@ -81,7 +86,7 @@ class ExportQueueJob implements ShouldQueue
             event('actor.pivot.error', $queue->expedition->actors->first());
 
             $attributes = ['queued' => 0, 'error' => 1];
-            $exportQueueContract->updateMany($attributes, 'expedition_id', $this->model->expedition_id);
+            $exportQueueService->updateMany($attributes, 'expedition_id', $this->model->expedition_id);
 
             $message = $e->getFile().'<br>'.$e->getLine().'<br>'.$e->getMessage();
 

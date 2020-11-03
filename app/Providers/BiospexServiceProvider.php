@@ -26,13 +26,6 @@ use App\Services\Helpers\GeneralHelper;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
-use App\Repositories\Interfaces\Expedition;
-use App\Repositories\Interfaces\ExpeditionStat;
-use App\Repositories\Interfaces\ExportQueue;
-use App\Repositories\Interfaces\ExportQueueFile;
-use App\Repositories\Interfaces\FaqCategory;
-use App\Repositories\Interfaces\Faq;
-use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\Header;
 use App\Repositories\Interfaces\Import;
 use App\Repositories\Interfaces\Invite;
@@ -55,13 +48,6 @@ use App\Repositories\Interfaces\PusherTranscription;
 use App\Repositories\Interfaces\Workflow;
 use App\Repositories\Interfaces\WorkflowManager;
 
-use App\Repositories\Eloquent\ExpeditionRepository;
-use App\Repositories\Eloquent\ExpeditionStatRepository;
-use App\Repositories\Eloquent\ExportQueueRepository;
-use App\Repositories\Eloquent\ExportQueueFileRepository;
-use App\Repositories\Eloquent\FaqCategoryRepository;
-use App\Repositories\Eloquent\FaqRepository;
-use App\Repositories\Eloquent\GroupRepository;
 use App\Repositories\Eloquent\HeaderRepository;
 use App\Repositories\Eloquent\ImportRepository;
 use App\Repositories\Eloquent\InviteRepository;
@@ -123,16 +109,6 @@ class BiospexServiceProvider extends ServiceProvider
      */
     protected function registerRepositories()
     {
-
-        $this->app->bind(EventTranscription::class, EventTranscriptionRepository::class);
-        $this->app->bind(EventUser::class, EventUserRepository::class);
-        $this->app->bind(Expedition::class, ExpeditionRepository::class);
-        $this->app->bind(ExpeditionStat::class, ExpeditionStatRepository::class);
-        $this->app->bind(ExportQueue::class, ExportQueueRepository::class);
-        $this->app->bind(ExportQueueFile::class, ExportQueueFileRepository::class);
-        $this->app->bind(FaqCategory::class, FaqCategoryRepository::class);
-        $this->app->bind(Faq::class, FaqRepository::class);
-        $this->app->bind(Group::class, GroupRepository::class);
         $this->app->bind(Header::class, HeaderRepository::class);
         $this->app->bind(Import::class, ImportRepository::class);
         $this->app->bind(Invite::class, ImportRepository::class);

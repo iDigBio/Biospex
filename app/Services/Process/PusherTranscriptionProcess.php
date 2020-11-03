@@ -17,16 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Model;
+namespace App\Services\Process;
 
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\PusherTranscription;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 use Validator;
 
-class PusherTranscriptionService
+class PusherTranscriptionProcess
 {
     /**
      * @var PusherTranscription
@@ -34,9 +34,9 @@ class PusherTranscriptionService
     private $pusherTranscriptionContract;
 
     /**
-     * @var Expedition
+     * @var \App\Services\Model\ExpeditionService
      */
-    private $expeditionContract;
+    private $expeditionService;
 
     /**
      * @var PanoptesTranscription
@@ -44,19 +44,19 @@ class PusherTranscriptionService
     private $panoptesTranscriptionContract;
 
     /**
-     * ExpeditionService constructor.
+     * PusherTranscriptionProcess constructor.
      *
-     * @param PusherTranscription $pusherTranscriptionContract
-     * @param Expedition $expeditionContract
-     * @param PanoptesTranscription $panoptesTranscriptionContract
+     * @param \App\Repositories\Interfaces\PusherTranscription $pusherTranscriptionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\Interfaces\PanoptesTranscription $panoptesTranscriptionContract
      */
     public function __construct(
         PusherTranscription $pusherTranscriptionContract,
-        Expedition $expeditionContract,
+        ExpeditionService $expeditionService,
         PanoptesTranscription $panoptesTranscriptionContract
     ) {
         $this->pusherTranscriptionContract = $pusherTranscriptionContract;
-        $this->expeditionContract = $expeditionContract;
+        $this->expeditionService = $expeditionService;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
     }
 
@@ -101,7 +101,7 @@ class PusherTranscriptionService
      */
     public function getExpedition($expeditionId)
     {
-        return $this->expeditionContract->findWith($expeditionId, ['panoptesProject']);
+        return $this->expeditionService->findWith($expeditionId, ['panoptesProject']);
     }
 
     /**

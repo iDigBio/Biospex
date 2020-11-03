@@ -17,26 +17,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Services\Model;
 
-use App\Repositories\Interfaces\FaqCategory;
-use App\Models\FaqCategory as Model;
+use App\Models\FaqCategory;
+use App\Services\Model\Traits\ModelTrait;
 
-class FaqCategoryRepository extends EloquentRepository implements FaqCategory
+/**
+ * Class FaqCategoryService
+ *
+ * @package App\Services\Model
+ */
+class FaqCategoryService
 {
+    use ModelTrait;
 
     /**
-     * Specify Model class name
-     *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @var \App\Models\FaqCategory
      */
-    public function model()
+    private $model;
+
+    /**
+     * FaqCategoryService constructor.
+     *
+     * @param \App\Models\FaqCategory $faqCategory
+     */
+    public function __construct(FaqCategory $faqCategory)
     {
-        return Model::class;
+
+        $this->model = $faqCategory;
     }
 
     /**
-     * @inheritdoc
+     * Get categories with faq ordered.
+     *
+     * @return mixed
      */
     public function getCategoriesWithFaqOrdered()
     {
@@ -45,21 +59,5 @@ class FaqCategoryRepository extends EloquentRepository implements FaqCategory
             ->groupBy('id')
             ->orderBy('id', 'asc')
             ->get();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getFaqCategorySelect()
-    {
-        return $this->model->pluck('name', 'id')->toArray();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getFaqCategoryOrderId()
-    {
-        return $this->model->with('faqs')->groupBy('id')->get();
     }
 }

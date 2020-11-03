@@ -21,9 +21,15 @@ namespace App\Console\Commands;
 
 use App\Events\PollExportEvent;
 use App\Facades\GeneralHelper;
-use App\Repositories\Interfaces\ExportQueue;
+use App\Models\ExportQueue;
+use App\Services\Model\ExportQueueService;
 use Illuminate\Console\Command;
 
+/**
+ * Class ExportPollCommand
+ *
+ * @package App\Console\Commands
+ */
 class ExportPollCommand extends Command
 {
     /**
@@ -41,9 +47,9 @@ class ExportPollCommand extends Command
     protected $description = 'Command description';
 
     /**
-     * @var ExportQueue
+     * @var \App\Services\Model\ExportQueueService
      */
-    private $exportQueueContract;
+    private $exportQueueService;
 
     /**
      * @var array
@@ -53,13 +59,13 @@ class ExportPollCommand extends Command
     /**
      * ExportPollCommand constructor.
      *
-     * @param \App\Repositories\Interfaces\ExportQueue $exportQueueContract
+     * @param \App\Services\Model\ExportQueueService $exportQueueService
      */
-    public function __construct(ExportQueue $exportQueueContract)
+    public function __construct(ExportQueueService $exportQueueService)
     {
         parent::__construct();
 
-        $this->exportQueueContract = $exportQueueContract;
+        $this->exportQueueService = $exportQueueService;
         $this->exportStages = config('config.export_stages');
     }
 
@@ -68,7 +74,7 @@ class ExportPollCommand extends Command
      */
     public function handle()
     {
-        $queues = $this->exportQueueContract->getAllExportQueueOrderByIdAsc();
+        $queues = $this->exportQueueService->getAllExportQueueOrderByIdAsc();
 
         $data = ['message' => t('No processes running at this time'), 'payload' => []];
 
@@ -101,9 +107,9 @@ class ExportPollCommand extends Command
      * @param \App\Models\ExportQueue $queue
      * @return \App\Models\ExportQueue
      */
-    private function getFirstQueueData(\App\Models\ExportQueue $queue): \App\Models\ExportQueue
+    private function getFirstQueueData(ExportQueue $queue): ExportQueue
     {
-        return $this->exportQueueContract->findQueueProcessData($queue->id, $queue->expedition_id, $queue->actor_id);
+        return $this->exportQueueService->findQueueProcessData($queue->id, $queue->expedition_id, $queue->actor_id);
     }
 
     /**
@@ -113,7 +119,7 @@ class ExportPollCommand extends Command
      * @return string
      * @throws \Throwable
      */
-    private function setProcessNotice(\App\Models\ExportQueue $data): string
+    private function setProcessNotice(ExportQueue $data): string
     {
         $stage = $this->exportStages[$data->stage];
 
@@ -137,7 +143,7 @@ class ExportPollCommand extends Command
      * @return string
      * @throws \Throwable
      */
-    private function setQueuedNotice(\App\Models\ExportQueue $data, int $count): string
+    private function setQueuedNotice(ExportQueue $data, int $count): string
     {
         $title =$data->expedition->title;
         $remainingCount = t(n(':count export remains in queue before processing begins.', ':count exports remain in queue before processing begins.', $count), [':count' => $count]);

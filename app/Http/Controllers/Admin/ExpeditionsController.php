@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -28,7 +28,7 @@ use App\Jobs\DeleteExpedition;
 use App\Jobs\OcrCreateJob;
 use App\Jobs\PanoptesProjectUpdateJob;
 use App\Services\Model\ExpeditionService;
-use App\Repositories\Interfaces\ExpeditionStat;
+use App\Services\Model\ExpeditionStatService;
 use App\Repositories\Interfaces\PanoptesProject;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\WorkflowManager;
@@ -55,9 +55,9 @@ class ExpeditionsController extends Controller
     private $panoptesProjectContract;
 
     /**
-     * @var \App\Repositories\Interfaces\ExpeditionStat
+     * @var \App\Services\Model\ExpeditionStatService
      */
-    private $expeditionStatContract;
+    private $expeditionStatService;
 
     /**
      * @var \App\Repositories\Interfaces\WorkflowManager
@@ -76,7 +76,7 @@ class ExpeditionsController extends Controller
      * @param \App\Repositories\Interfaces\Project $projectContract
      * @param \App\Repositories\Interfaces\PanoptesProject $panoptesProjectContract
      * @param \App\Services\Model\SubjectService $subjectService
-     * @param \App\Repositories\Interfaces\ExpeditionStat $expeditionStatContract
+     * @param \App\Services\Model\ExpeditionStatService $expeditionStatService
      * @param \App\Repositories\Interfaces\WorkflowManager $workflowManagerContract
      */
     public function __construct(
@@ -84,13 +84,13 @@ class ExpeditionsController extends Controller
         Project $projectContract,
         PanoptesProject $panoptesProjectContract,
         SubjectService $subjectService,
-        ExpeditionStat $expeditionStatContract,
+        ExpeditionStatService $expeditionStatService,
         WorkflowManager $workflowManagerContract
     ) {
         $this->expeditionService = $expeditionService;
         $this->projectContract = $projectContract;
         $this->panoptesProjectContract = $panoptesProjectContract;
-        $this->expeditionStatContract = $expeditionStatContract;
+        $this->expeditionStatService = $expeditionStatService;
         $this->workflowManagerContract = $workflowManagerContract;
         $this->subjectService = $subjectService;
     }
@@ -376,7 +376,7 @@ class ExpeditionsController extends Controller
                     'local_subject_count' => $count,
                 ];
 
-                $this->expeditionStatContract->updateOrCreate(['expedition_id' => $expedition->id], $values);
+                $this->expeditionStatService->updateOrCreate(['expedition_id' => $expedition->id], $values);
             }
 
             // Success!

@@ -72,7 +72,7 @@ class DownloadsController extends Controller
     public function index(string $projectId, string $expeditionId)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
-        $expedition = $this->expeditionService->expeditionDownloadsByActor($projectId, $expeditionId);
+        $expedition = $this->expeditionService->expeditionDownloadsByActor($expeditionId);
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group);
 

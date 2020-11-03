@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Api\V0;
 
 use App\Repositories\Interfaces\PusherTranscription;
-use App\Services\Model\PusherTranscriptionService;
+use App\Services\Process\PusherTranscriptionProcess;
 use Illuminate\Http\Request;
 use App\Transformers\PusherTranscriptionTransformer;
 
@@ -68,10 +68,10 @@ class PusherTranscriptionsController extends ApiController
      * })
      *
      * @param Request $request
-     * @param PusherTranscriptionService $service
+     * @param PusherTranscriptionProcess $service
      * @return mixed
      */
-    public function index(Request $request, PusherTranscriptionService $service)
+    public function index(Request $request, PusherTranscriptionProcess $service)
     {
         $totalCount = $service->listApiDashboardCount($request);
         $data = $service->listApiDashboard($request);
@@ -113,11 +113,11 @@ class PusherTranscriptionsController extends ApiController
      *     @Parameter("guid", description="GUID of specific resource item", required=true)
      * })
      *
-     * @param PusherTranscriptionService $service
+     * @param PusherTranscriptionProcess $service
      * @param $guid
      * @return mixed
      */
-    public function show(PusherTranscriptionService $service, $guid)
+    public function show(PusherTranscriptionProcess $service, $guid)
     {
         $result = $service->showApiDashboard($guid);
 

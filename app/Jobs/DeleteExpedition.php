@@ -23,7 +23,7 @@ use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Notifications\RecordDeleteComplete;
-use App\Repositories\Interfaces\Expedition as ExpeditionContact;
+use App\Services\Model\ExpeditionService;
 use App\Services\Model\SubjectService;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
@@ -63,18 +63,18 @@ class DeleteExpedition implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @param \App\Services\Model\SubjectService $subjectService
      * @param \App\Services\MongoDbService $mongoDbService
      * @return void
      */
     public function handle(
-        ExpeditionContact $expeditionContract,
+        ExpeditionService $expeditionService,
         SubjectService $subjectService,
         MongoDbService $mongoDbService
     ) {
 
-        $expedition = $expeditionContract->findWith($this->expedition->id, ['downloads']);
+        $expedition = $expeditionService->findWith($this->expedition->id, ['downloads']);
 
         try {
 

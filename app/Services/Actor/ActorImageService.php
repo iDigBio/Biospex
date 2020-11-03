@@ -23,7 +23,7 @@ putenv('MAGICK_THREAD_LIMIT=1');
 
 use App\Facades\ActorEventHelper;
 use App\Models\Actor;
-use App\Repositories\Interfaces\ExportQueueFile;
+use App\Services\Model\ExportQueueFileService;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Pool;
@@ -71,26 +71,26 @@ class ActorImageService
     private $tmpDirectory = null;
 
     /**
-     * @var \App\Repositories\Interfaces\ExportQueueFile
+     * @var \App\Services\Model\ExportQueueFileService
      */
-    private $exportQueueFile;
+    private $exportQueueFileService;
 
     /**
      * ActorImageService constructor.
      *
      * @param ImagickService $imagickService
      * @param HttpRequest $httpRequest
-     * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFile
+     * @param \App\Services\Model\ExportQueueFileService $exportQueueFileService
      * @internal param ImageService $imageService
      */
     public function __construct(
         ImagickService $imagickService,
         HttpRequest $httpRequest,
-        ExportQueueFile $exportQueueFile
+        ExportQueueFileService $exportQueueFileService
     ) {
         $this->imagickService = $imagickService;
         $this->httpRequest = $httpRequest;
-        $this->exportQueueFile = $exportQueueFile;
+        $this->exportQueueFileService = $exportQueueFileService;
     }
 
     /**
@@ -260,7 +260,7 @@ class ActorImageService
             return;
         }
 
-        $result = $this->exportQueueFile->findBy('subject_id', $file);
+        $result = $this->exportQueueFileService->findBy('subject_id', $file);
         $result->error = 1;
         $result->error_message = $message;
         $result->save();

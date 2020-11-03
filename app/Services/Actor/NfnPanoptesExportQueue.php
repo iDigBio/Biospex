@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,22 +19,27 @@
 
 namespace App\Services\Actor;
 
-use App\Repositories\Interfaces\ExportQueue;
-use App\Repositories\Interfaces\ExportQueueFile;
+use App\Services\Model\ExportQueueService;
+use App\Services\Model\ExportQueueFileService;
 use App\Models\Actor;
 use App\Services\MongoDbService;
 
+/**
+ * Class NfnPanoptesExportQueue
+ *
+ * @package App\Services\Actor
+ */
 class NfnPanoptesExportQueue
 {
      /**
-     * @var \App\Repositories\Interfaces\ExportQueue
+     * @var \App\Services\Model\ExportQueueService
      */
-    private $exportQueueContract;
+    private $exportQueueService;
 
     /**
-     * @var \App\Repositories\Interfaces\ExportQueueFile
+     * @var \App\Services\Model\ExportQueueFileService
      */
-    private $exportQueueFileContract;
+    private $exportQueueFileService;
 
     /**
      * @var \App\Services\MongoDbService
@@ -44,17 +49,17 @@ class NfnPanoptesExportQueue
     /**
      * NfnPanoptesExportQueue constructor.
      *
-     * @param \App\Repositories\Interfaces\ExportQueue $exportQueueContract
-     * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFileContract
+     * @param \App\Services\Model\ExportQueueService $exportQueueService
+     * @param \App\Services\Model\ExportQueueFileService $exportQueueFileService
      * @param \App\Services\MongoDbService $mongoDbService
      */
     public function __construct(
-        ExportQueue $exportQueueContract,
-        ExportQueueFile $exportQueueFileContract,
+        ExportQueueService $exportQueueService,
+        ExportQueueFileService $exportQueueFileService,
         MongoDbService $mongoDbService
     ) {
-        $this->exportQueueContract = $exportQueueContract;
-        $this->exportQueueFileContract = $exportQueueFileContract;
+        $this->exportQueueService = $exportQueueService;
+        $this->exportQueueFileService = $exportQueueFileService;
         $this->mongoDbService = $mongoDbService;
     }
 
@@ -76,7 +81,7 @@ class NfnPanoptesExportQueue
             'count'         => count($subjects),
         ];
 
-        $queue = $this->exportQueueContract->firstOrCreate($attributes);
+        $queue = $this->exportQueueService->firstOrCreate($attributes);
 
         foreach ($subjects as $subject) {
             $attributes = [
@@ -85,7 +90,7 @@ class NfnPanoptesExportQueue
             ];
             $subject['queue_id'] = $queue->id;
 
-            $this->exportQueueFileContract->firstOrCreate($attributes, $subject);
+            $this->exportQueueFileService->firstOrCreate($attributes, $subject);
         }
 
         event('exportQueue.updated');

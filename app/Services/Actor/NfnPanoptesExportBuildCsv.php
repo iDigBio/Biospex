@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,17 +21,22 @@ namespace App\Services\Actor;
 
 use App\Facades\ActorEventHelper;
 use App\Models\ExportQueue;
-use App\Repositories\Interfaces\ExportQueueFile;
+use App\Services\Model\ExportQueueFileService;
 use App\Services\Csv\Csv;
 use App\Services\Model\SubjectService;
 use Exception;
 
+/**
+ * Class NfnPanoptesExportBuildCsv
+ *
+ * @package App\Services\Actor
+ */
 class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
 {
     /**
-     * @var \App\Repositories\Interfaces\ExportQueueFile
+     * @var \App\Services\Model\ExportQueueFileService
      */
-    private $exportQueueFile;
+    private $exportQueueFileService;
 
     /**
      * @var \Illuminate\Config\Repository
@@ -51,17 +56,17 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
     /**
      * NfnPanoptesExportBuildCsv constructor.
      *
-     * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFile
+     * @param \App\Services\Model\ExportQueueFileService $exportQueueFileService
      * @param \App\Services\Csv\Csv $csvService
      * @param \App\Services\Model\SubjectService $subjectService
      */
     public function __construct(
-        ExportQueueFile $exportQueueFile,
+        ExportQueueFileService $exportQueueFileService,
         Csv $csvService,
         SubjectService $subjectService
     )
     {
-        $this->exportQueueFile = $exportQueueFile;
+        $this->exportQueueFileService = $exportQueueFileService;
         $this->nfnCsvMap = config('config.nfnCsvMap');
         $this->csvService = $csvService;
         $this->subjectService = $subjectService;
@@ -83,7 +88,7 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
         $this->setFolder();
         $this->setDirectories();
 
-        $files = $this->exportQueueFile->getFilesWithoutErrorByQueueId($queue->id);
+        $files = $this->exportQueueFileService->getFilesWithoutErrorByQueueId($queue->id);
 
         if ($files->isEmpty()) {
             throw new Exception('Missing export subjects for Queue ' . $queue->id);

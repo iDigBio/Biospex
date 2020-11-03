@@ -22,7 +22,7 @@ namespace App\Services\Process;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Model\DownloadService;
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Services\Csv\Csv;
 use Exception;
 use File;
@@ -32,9 +32,9 @@ use Storage;
 class ReconcileProcessService
 {
     /**
-     * @var \App\Repositories\Interfaces\Expedition
+     * @var \App\Services\Model\ExpeditionService
      */
-    private $expeditionContract;
+    private $expeditionService;
 
     /**
      * @var \App\Services\Model\DownloadService
@@ -89,13 +89,13 @@ class ReconcileProcessService
     /**
      * ReconcileProcessService constructor.
      *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @param \App\Services\Model\DownloadService $downloadService
      * @param \App\Services\Csv\Csv $csvService
      */
-    public function __construct(Expedition $expeditionContract, DownloadService $downloadService, Csv $csvService)
+    public function __construct(ExpeditionService $expeditionService, DownloadService $downloadService, Csv $csvService)
     {
-        $this->expeditionContract = $expeditionContract;
+        $this->expeditionService = $expeditionService;
         $this->downloadService = $downloadService;
         $this->csvService = $csvService;
     }
@@ -109,7 +109,7 @@ class ReconcileProcessService
     {
         try {
 
-            $expedition = $this->expeditionContract->findWith($expeditionId, ['panoptesProject']);
+            $expedition = $this->expeditionService->findWith($expeditionId, ['panoptesProject']);
 
             $this->setPaths($expeditionId);
 

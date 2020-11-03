@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\PanoptesProject;
-use App\Repositories\Interfaces\ExpeditionStat;
+use App\Services\Model\ExpeditionStatService;
 use App\Services\Api\PanoptesApiService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -53,16 +53,16 @@ class PanoptesProjectUpdateJob implements ShouldQueue
      * Execute job.
      *
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @param \App\Repositories\Interfaces\ExpeditionStat $expeditionStat
+     * @param \App\Services\Model\ExpeditionStatService $expeditionStatService
      */
-    public function handle(PanoptesApiService $panoptesApiService, ExpeditionStat $expeditionStat)
+    public function handle(PanoptesApiService $panoptesApiService, ExpeditionStatService $expeditionStatService)
     {
         try {
             $workflow = $panoptesApiService->getPanoptesWorkflow($this->panoptesProject->panoptes_workflow_id);
 
             $panoptesApiService->calculateTotals($workflow, $this->panoptesProject->expedition_id);
 
-            $stat = $expeditionStat->findBy('expedition_id', $this->panoptesProject->expedition_id);
+            $stat = $expeditionStatService->findBy('expedition_id', $this->panoptesProject->expedition_id);
             $stat->subject_count = $panoptesApiService->getSubjectCount();
             $stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
             $stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();

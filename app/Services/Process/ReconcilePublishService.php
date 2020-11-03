@@ -21,7 +21,7 @@ namespace App\Services\Process;
 
 use App\Notifications\NfnExpertReviewPublished;
 use App\Services\Model\DownloadService;
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Repositories\Interfaces\Reconcile;
 use App\Services\Csv\Csv;
 use Storage;
@@ -39,9 +39,9 @@ class ReconcilePublishService
     private $downloadService;
 
     /**
-     * @var \App\Repositories\Interfaces\Expedition
+     * @var \App\Services\Model\ExpeditionService
      */
-    private $expeditionContract;
+    private $expeditionService;
 
     /**
      * @var \App\Services\Csv\Csv
@@ -53,19 +53,19 @@ class ReconcilePublishService
      *
      * @param \App\Repositories\Interfaces\Reconcile $reconcileContract
      * @param \App\Services\Model\DownloadService $downloadService
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
         Reconcile $reconcileContract,
         DownloadService $downloadService,
-        Expedition $expeditionContract,
+        ExpeditionService $expeditionService,
         Csv $csv
     )
     {
         $this->reconcileContract = $reconcileContract;
         $this->downloadService = $downloadService;
-        $this->expeditionContract = $expeditionContract;
+        $this->expeditionService = $expeditionService;
         $this->csv = $csv;
     }
 
@@ -139,7 +139,7 @@ class ReconcilePublishService
      */
     private function sendEmail(string $expeditionId)
     {
-        $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group.owner']);
+        $expedition = $this->expeditionService->findWith($expeditionId, ['project.group.owner']);
         $expedition->project->group->owner->notify(new NfnExpertReviewPublished($expedition->title));
     }
 }

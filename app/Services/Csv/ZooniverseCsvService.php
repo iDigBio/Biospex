@@ -19,15 +19,20 @@
 
 namespace App\Services\Csv;
 
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Services\Api\PanoptesApiService;
 
+/**
+ * Class ZooniverseCsvService
+ *
+ * @package App\Services\Csv
+ */
 class ZooniverseCsvService
 {
     /**
-     * @var \App\Repositories\Interfaces\Expedition
+     * @var \App\Services\Model\ExpeditionService
      */
-    private $expeditionContract;
+    private $expeditionService;
 
     /**
      * @var \App\Services\Api\PanoptesApiService
@@ -37,13 +42,13 @@ class ZooniverseCsvService
     /**
      * ZooniverseCsvService constructor.
      *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      */
-    public function __construct(Expedition $expeditionContract, PanoptesApiService $panoptesApiService)
+    public function __construct(ExpeditionService $expeditionService, PanoptesApiService $panoptesApiService)
     {
 
-        $this->expeditionContract = $expeditionContract;
+        $this->expeditionService = $expeditionService;
         $this->panoptesApiService = $panoptesApiService;
     }
 
@@ -55,7 +60,7 @@ class ZooniverseCsvService
      */
     public function getExpedition(int $expeditionId)
     {
-        return $this->expeditionContract->getExpeditionForZooniverseProcess($expeditionId);
+        return $this->expeditionService->getExpeditionForZooniverseProcess($expeditionId);
     }
 
     /**

@@ -26,6 +26,11 @@ use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 
+/**
+ * Class Expedition
+ *
+ * @package App\Models
+ */
 class Expedition extends BaseEloquentModel implements AttachableInterface
 {
     use UuidTrait, HybridRelations, Presentable, PaperclipTrait;

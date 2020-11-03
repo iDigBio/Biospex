@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Repositories\Interfaces\ExpeditionStat;
+use App\Services\Model\ExpeditionStatService;
 use App\Repositories\Interfaces\PanoptesProject;
 use App\Services\Api\PanoptesApiService;
 use Exception;
@@ -56,13 +56,13 @@ class ZooniverseClassificationCountJob implements ShouldQueue
      *
      * @param \App\Repositories\Interfaces\PanoptesProject $panoptesProject
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @param \App\Repositories\Interfaces\ExpeditionStat $expeditionStat
+     * @param \App\Services\Model\ExpeditionStatService $expeditionStatService
      * @return void
      */
     public function handle(
         PanoptesProject $panoptesProject,
         PanoptesApiService $panoptesApiService,
-        ExpeditionStat $expeditionStat
+        ExpeditionStatService $expeditionStatService
     )
     {
 
@@ -78,7 +78,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
             $workflow = $panoptesApiService->getPanoptesWorkflow($record->panoptes_workflow_id);
             $panoptesApiService->calculateTotals($workflow, $this->expeditionId);
 
-            $stat = $expeditionStat->findBy('expedition_id', $this->expeditionId);
+            $stat = $expeditionStatService->findBy('expedition_id', $this->expeditionId);
             $stat->subject_count = $panoptesApiService->getSubjectCount();
             $stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
             $stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
