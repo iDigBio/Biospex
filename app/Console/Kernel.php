@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
             // Trigger workflow manager to update expeditions and projects
             $schedule->command('workflow:manage')
                 ->timezone('America/New_York')
-                ->dailyAt('04:00')->before(function () {
+                ->days([1,3,5])->at('04:00')->before(function () {
                     Cache::flush();
                     Artisan::call('lada-cache:flush');
                 });
