@@ -21,14 +21,13 @@ namespace App\Services\Process;
 
 use App\Repositories\Interfaces\Expedition;
 use App\Services\Api\PanoptesApiService;
-use App\Services\Model\EventTranscriptionService;
 
 class PusherEventService
 {
     /**
-     * @var \App\Services\Model\EventTranscriptionService
+     * @var \App\Services\Process\EventTranscriptionProcess
      */
-    private $eventTranscriptionService;
+    private $eventTranscriptionProcess;
 
     /**
      * @var \App\Repositories\Interfaces\Expedition
@@ -43,17 +42,17 @@ class PusherEventService
     /**
      * PusherEventService constructor.
      *
-     * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
+     * @param \App\Services\Process\EventTranscriptionProcess $eventTranscriptionProcess
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Services\Api\PanoptesApiService $apiService
      */
     public function __construct(
-        EventTranscriptionService $eventTranscriptionService,
+        EventTranscriptionProcess $eventTranscriptionProcess,
         Expedition $expeditionContract,
         PanoptesApiService $apiService)
     {
 
-        $this->eventTranscriptionService = $eventTranscriptionService;
+        $this->eventTranscriptionProcess = $eventTranscriptionProcess;
         $this->expeditionContract = $expeditionContract;
         $this->apiService = $apiService;
     }
@@ -79,7 +78,7 @@ class PusherEventService
             return;
         }
 
-        $this->eventTranscriptionService->createEventTranscription((int) $data['classification_id'], $expedition->project_id, $user['login']);
+        $this->eventTranscriptionProcess->createEventTranscription((int) $data['classification_id'], $expedition->project_id, $user['login']);
     }
 
     /**

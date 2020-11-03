@@ -17,28 +17,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Interfaces;
+namespace App\Services\Model;
 
-use App\Repositories\RepositoryInterface;
-use Illuminate\Support\Collection;
+use App\Models\Actor;
+use App\Services\Model\Traits\ModelTrait;
 
-interface EventTranscription extends RepositoryInterface
+/**
+ * Class ActorService
+ *
+ * @package App\Services\Model
+ */
+class ActorService
 {
+    use ModelTrait;
+
     /**
-     * Get classification ids by event id.
+     * @var \App\Models\Actor
+     */
+    private $model;
+
+    /**
+     * ActorService constructor.
      *
-     * @param $eventId
+     * @param \App\Models\Actor $actor
+     */
+    public function __construct(Actor $actor)
+    {
+
+        $this->model = $actor;
+    }
+
+    /**
+     * Update actor expedition pivot table.
+     *
+     * @param $actor
+     * @param $expeditionId
+     * @param array $attributes
      * @return mixed
      */
-    public function getEventClassificationIds($eventId);
-
-    /**
-     * Retrieve transcriptions for step chart.
-     *
-     * @param string $eventId
-     * @param string $startLoad
-     * @param string $endLoad
-     * @return \Illuminate\Support\Collection|null
-     */
-    public function getEventStepChartTranscriptions(string $eventId, string $startLoad, string $endLoad): ?Collection;
+    public function updateActorExpeditionPivot($actor, $expeditionId, array $attributes = [])
+    {
+        return $actor->expeditions()->updateExistingPivot($expeditionId, $attributes);
+    }
 }

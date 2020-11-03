@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,9 +21,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Repositories\Interfaces\AmChart;
-use App\Repositories\Interfaces\Event;
-use App\Services\Model\EventStepChartService;
+use App\Services\Model\AmChartService;
+use App\Services\Model\EventService;
+use App\Services\Process\EventStepChartProcess;
 use Artisan;
 use Illuminate\Http\JsonResponse;
 
@@ -41,31 +41,31 @@ class AjaxController extends Controller
     }
 
     /**
-     * Load AmChart for project home page.
+     * Load amChart.
      *
-     * @param AmChart $amChartContract
+     * @param \App\Services\Model\AmChartService $amChartService
      * @param $projectId
-     * @return mixed
+     * @return \Illuminate\Http\JsonResponse|mixed
      */
-    public function loadAmChart(AmChart $amChartContract, $projectId)
+    public function loadAmChart(AmChartService $amChartService, $projectId)
     {
         if (! request()->ajax() || $projectId === null) {
             return response()->json(['html' => 'hitting null']);
         }
 
-        $record = $amChartContract->findBy('project_id', $projectId);
+        $record = $amChartService->findBy('project_id', $projectId);
 
         return json_decode($record->data);
     }
 
     /**
-     * @param \App\Repositories\Interfaces\Event $eventContract
+     * @param \App\Services\Model\EventService $eventService
      * @param string $eventId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
-    public function scoreboard(Event $eventContract, string $eventId)
+    public function scoreboard(EventService $eventService, string $eventId)
     {
-        $event = $eventContract->getEventScoreboard($eventId, ['id']);
+        $event = $eventService->getEventScoreboard($eventId, ['id']);
 
         if (! request()->ajax() || is_null($event)) {
             return response()->json(['html' => 'Error retrieving the Event']);
@@ -77,12 +77,12 @@ class AjaxController extends Controller
     /**
      * Display for event step charts.
      *
-     * @param \App\Services\Model\EventStepChartService $service
+     * @param \App\Services\Process\EventStepChartProcess $service
      * @param string $eventId
      * @param string|null $timestamp
      * @return \Illuminate\Http\JsonResponse
      */
-    public function eventStepChart(EventStepChartService $service, string $eventId, string $timestamp = null): JsonResponse
+    public function eventStepChart(EventStepChartProcess $service, string $eventId, string $timestamp = null): JsonResponse
     {
         $result = $service->eventStepChart($eventId, $timestamp);
 

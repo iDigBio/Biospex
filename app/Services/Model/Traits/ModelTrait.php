@@ -61,15 +61,25 @@ trait ModelTrait
      *
      * @param $attribute
      * @param $value
-     * @param bool $first
      * @param array|string[] $columns
      * @return mixed
      */
-    public function findBy($attribute, $value, bool $first = false, array $columns = ['*'])
+    public function findBy($attribute, $value, array $columns = ['*'])
     {
-        $query = $this->model->where($attribute, '=', $value);
+        return $this->model->where($attribute, '=', $value)->first($columns);
+    }
 
-        return $first ? $query->first($columns) : $query->get($columns);
+    /**
+     * Get all by attribute value.
+     *
+     * @param $attribute
+     * @param $value
+     * @param array|string[] $columns
+     * @return mixed
+     */
+    public function getBy($attribute, $value, array $columns = ['*'])
+    {
+        return $this->model->where($attribute, '=', $value)->get($columns);
     }
 
     /**

@@ -17,22 +17,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Services\Model;
 
-use App\Models\BingoWord as Model;
-use App\Repositories\Interfaces\BingoWord;
+use App\Models\ApiUser;
+use App\Services\Model\Traits\ModelTrait;
 
-class BingoWordRepository extends EloquentRepository implements BingoWord
+/**
+ * Class ApiUserService
+ *
+ * @package App\Services\Model
+ */
+class ApiUserService
 {
+    use ModelTrait;
 
     /**
-     * Specify Model class name
-     *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @var \App\Models\ApiUser
      */
-    public function model()
+    private $model;
+
+    /**
+     * ApiUserService constructor.
+     *
+     * @param \App\Models\ApiUser $apiUser
+     */
+    public function __construct(ApiUser $apiUser)
     {
-        return Model::class;
+
+        $this->model = $apiUser;
     }
+
 
 }

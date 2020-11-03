@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\GridExportCsvJob;
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Services\Grid\JqGridEncoder;
 use App\Services\Csv\Csv;
 use App\Services\Model\SubjectService;
@@ -168,10 +168,10 @@ class GridsController extends Controller
      *
      * @note Removed from jqGrid but keep code in case we need it again.
      * @param \App\Services\Model\SubjectService $subjectService
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete(SubjectService $subjectService, Expedition $expeditionContract)
+    public function delete(SubjectService $subjectService, ExpeditionService $expeditionService)
     {
         if (! request()->ajax()) {
             return response()->json(['error' => 'Delete must be performed via ajax.'], 404);
@@ -185,9 +185,9 @@ class GridsController extends Controller
 
         $subjects = $subjectService->whereIn('_id', $subjectIds);
 
-        $subjects->reject(function ($subject) use($expeditionContract) {
+        $subjects->reject(function ($subject) use($expeditionService) {
             foreach ($subject->expedition_ids as $expeditionId) {
-                $expedition = $expeditionContract->findExpeditionHavingWorkflowManager($expeditionId);
+                $expedition = $expeditionService->findExpeditionHavingWorkflowManager($expeditionId);
                 if ($expedition !== null) {
                     return true;
                 }

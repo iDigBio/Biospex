@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,27 +17,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Services\Model;
 
 use App\Facades\GeneralHelper;
-use App\Models\EventTeam as Model;
-use App\Repositories\Interfaces\EventTeam;
-use Illuminate\Support\Collection;
+use App\Models\EventTeam;
+use App\Services\Model\Traits\ModelTrait;
 
-class EventTeamRepository extends EloquentRepository implements EventTeam
+/**
+ * Class EventTeamService
+ *
+ * @package App\Services\Model
+ */
+class EventTeamService
 {
+    use ModelTrait;
 
     /**
-     * Specify Model class name
-     *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @var \App\Models\EventTeam
      */
-    public function model()
+    private $model;
+
+    /**
+     * EventTeamService constructor.
+     *
+     * @param \App\Models\EventTeam $eventTeam
+     */
+    public function __construct(EventTeam $eventTeam)
     {
-        return Model::class;
+
+        $this->model = $eventTeam;
     }
 
     /**
+     * Get team by uuid.
+     *
      * @param $uuid
      * @return \Illuminate\Database\Eloquent\Model|null|object|static
      * @throws \Exception
@@ -45,13 +58,5 @@ class EventTeamRepository extends EloquentRepository implements EventTeam
     public function getTeamByUuid($uuid)
     {
         return $this->model->with(['event'])->where('uuid', GeneralHelper::uuidToBin($uuid))->first();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getTeamsByEventId(string $eventId): Collection
-    {
-        return $this->model->where('event_id', $eventId)->get();
     }
 }

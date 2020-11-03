@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,7 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
-use App\Repositories\Interfaces\AmChart;
+use App\Services\Model\AmChartService;
 use Illuminate\Console\Command;
 
 class AmChartUpdate extends Command
@@ -40,22 +40,22 @@ class AmChartUpdate extends Command
     protected $description = 'Update AmChart data for projects.';
 
     /**
-     * @var \App\Repositories\Interfaces\AmChart
+     * @var \App\Services\Model\AmChartService
      */
-    private $chartContract;
+    private $amChartService;
 
     /**
      * AmChartNew constructor.
      *
-     * @param \App\Repositories\Interfaces\AmChart $chartContract
+     * @param \App\Services\Model\AmChartService $amChartService
      */
     public function __construct(
-        AmChart $chartContract
+        AmChartService $amChartService
     )
     {
         parent::__construct();
 
-        $this->chartContract = $chartContract;
+        $this->amChartService = $amChartService;
     }
 
     /**
@@ -64,7 +64,7 @@ class AmChartUpdate extends Command
     public function handle()
     {
         $projectIds = empty($this->argument('projectIds')) ?
-            $this->chartContract->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
+            $this->amChartService->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
 
         $projectIds->each(function($projectId) {
             AmChartJob::dispatch((int) $projectId);

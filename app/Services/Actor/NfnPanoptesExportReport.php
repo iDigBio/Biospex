@@ -20,10 +20,8 @@
 namespace App\Services\Actor;
 
 use App\Facades\ActorEventHelper;
-use App\Facades\GeneralHelper;
 use App\Notifications\NfnExportComplete;
-
-use App\Repositories\Interfaces\Download;
+use App\Services\Model\DownloadService;
 use App\Repositories\Interfaces\ExportQueue;
 use App\Repositories\Interfaces\ExportQueueFile;
 use App\Services\Csv\Csv;
@@ -54,9 +52,9 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
     private $csv;
 
     /**
-     * @var \App\Repositories\Interfaces\Download
+     * @var \App\Services\Model\DownloadService
      */
-    private $downloadContract;
+    private $downloadService;
 
     /**
      * NfnPanoptesExportReport constructor.
@@ -64,19 +62,19 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
      * @param \App\Repositories\Interfaces\ExportQueue $exportQueueContract
      * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFileContract
      * @param \App\Services\Csv\Csv $csv
-     * @param \App\Repositories\Interfaces\Download $downloadContract
+     * @param \App\Services\Model\DownloadService $downloadService
      */
     public function __construct(
         ExportQueue $exportQueueContract,
         ExportQueueFile $exportQueueFileContract,
         Csv $csv,
-        Download $downloadContract
+        DownloadService $downloadService
     )
     {
         $this->exportQueueContract = $exportQueueContract;
         $this->exportQueueFileContract = $exportQueueFileContract;
         $this->csv = $csv;
-        $this->downloadContract = $downloadContract;
+        $this->downloadService = $downloadService;
     }
 
     /**
@@ -150,6 +148,6 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
             'type' => 'report'
         ];
 
-        $this->downloadContract->updateOrCreate($attributes, $values);
+        $this->downloadService->updateOrCreate($attributes, $values);
     }
 }

@@ -27,7 +27,7 @@ use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpedition;
 use App\Jobs\OcrCreateJob;
 use App\Jobs\PanoptesProjectUpdateJob;
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Repositories\Interfaces\ExpeditionStat;
 use App\Repositories\Interfaces\PanoptesProject;
 use App\Repositories\Interfaces\Project;
@@ -40,9 +40,9 @@ use JavaScript;
 class ExpeditionsController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\Expedition
+     * @var \App\Services\Model\ExpeditionService
      */
-    private $expeditionContract;
+    private $expeditionService;
 
     /**
      * @var \App\Repositories\Interfaces\Project
@@ -72,7 +72,7 @@ class ExpeditionsController extends Controller
     /**
      * ExpeditionsController constructor.
      *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @param \App\Repositories\Interfaces\Project $projectContract
      * @param \App\Repositories\Interfaces\PanoptesProject $panoptesProjectContract
      * @param \App\Services\Model\SubjectService $subjectService
@@ -80,14 +80,14 @@ class ExpeditionsController extends Controller
      * @param \App\Repositories\Interfaces\WorkflowManager $workflowManagerContract
      */
     public function __construct(
-        Expedition $expeditionContract,
+        ExpeditionService $expeditionService,
         Project $projectContract,
         PanoptesProject $panoptesProjectContract,
         SubjectService $subjectService,
         ExpeditionStat $expeditionStatContract,
         WorkflowManager $workflowManagerContract
     ) {
-        $this->expeditionContract = $expeditionContract;
+        $this->expeditionService = $expeditionService;
         $this->projectContract = $projectContract;
         $this->panoptesProjectContract = $panoptesProjectContract;
         $this->expeditionStatContract = $expeditionStatContract;
@@ -104,7 +104,7 @@ class ExpeditionsController extends Controller
     {
         $user = Auth::user();
 
-        $results = $this->expeditionContract->getExpeditionAdminIndex($user->id);
+        $results = $this->expeditionService->getExpeditionAdminIndex($user->id);
 
         [$expeditions, $expeditionsCompleted] = $results->partition(function ($expedition) {
             return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
@@ -131,7 +131,7 @@ class ExpeditionsController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        [$active, $completed] = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)
+        [$active, $completed] = $this->expeditionService->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)
             ->partition(function ($expedition) {
             return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
         });
@@ -186,7 +186,7 @@ class ExpeditionsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $expedition = $this->expeditionContract->create($request->all());
+        $expedition = $this->expeditionService->create($request->all());
         $subjects = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
         $count = count($subjects);
         $expedition->subjects()->sync($subjects);
@@ -226,7 +226,7 @@ class ExpeditionsController extends Controller
             'stat',
         ];
 
-        $expedition = $this->expeditionContract->findWith($expeditionId, $relations);
+        $expedition = $this->expeditionService->findWith($expeditionId, $relations);
 
         if (! $this->checkPermissions('readProject', $expedition->project->group)) {
             return redirect()->route('admin.projects.index');
@@ -257,7 +257,7 @@ class ExpeditionsController extends Controller
      */
     public function clone($projectId, $expeditionId, JqGridEncoder $grid)
     {
-        $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group']);
+        $expedition = $this->expeditionService->findWith($expeditionId, ['project.group']);
 
         if (! $this->checkPermissions('create', $expedition->project->group)) {
             return redirect()->route('admin.projects.index');
@@ -297,7 +297,7 @@ class ExpeditionsController extends Controller
             'panoptesProject',
         ];
 
-        $expedition = $this->expeditionContract->findWith($expeditionId, $relations);
+        $expedition = $this->expeditionService->findWith($expeditionId, $relations);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return redirect()->route('admin.projects.index');
@@ -337,7 +337,7 @@ class ExpeditionsController extends Controller
         }
 
         try {
-            $expedition = $this->expeditionContract->update($request->all(), $expeditionId);
+            $expedition = $this->expeditionService->update($request->all(), $expeditionId);
 
             if ($request->filled('panoptes_workflow_id')) {
                 $attributes = $attributes = [
@@ -406,7 +406,7 @@ class ExpeditionsController extends Controller
         }
 
         try {
-            $expedition = $this->expeditionContract->findWith($expeditionId, [
+            $expedition = $this->expeditionService->findWith($expeditionId, [
                 'project.workflow.actors',
                 'workflowManager',
             ]);
@@ -505,7 +505,7 @@ class ExpeditionsController extends Controller
         }
 
         try {
-            $expedition = $this->expeditionContract->findWith($expeditionId, [
+            $expedition = $this->expeditionService->findWith($expeditionId, [
                 'panoptesProject',
                 'downloads',
                 'workflowManager',

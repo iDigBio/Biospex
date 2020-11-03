@@ -20,7 +20,7 @@
 namespace App\Services\Actor;
 
 use App\Notifications\NfnBatchExportComplete;
-use App\Repositories\Interfaces\Download;
+use App\Services\Model\DownloadService;
 use App\Services\Csv\Csv;
 use Exception;
 use File;
@@ -39,22 +39,22 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
     private $fileNames = [];
 
     /**
-     * @var \App\Repositories\Interfaces\Download
+     * @var \App\Services\Model\DownloadService
      */
-    private $downloadContract;
+    private $downloadService;
 
     /**
      * DownloadBatchService constructor.
      *
-     * @param \App\Repositories\Interfaces\Download $downloadContract
+     * @param \App\Services\Model\DownloadService $downloadService
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
-        Download $downloadContract,
+        DownloadService $downloadService,
         Csv $csv
     )
     {
-        $this->downloadContract = $downloadContract;
+        $this->downloadService = $downloadService;
         $this->csv = $csv;
     }
 
@@ -66,7 +66,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
      */
     public function getDownload(string $downloadId): \App\Models\Download
     {
-        return $this->downloadContract->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
+        return $this->downloadService->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
     }
 
     /**

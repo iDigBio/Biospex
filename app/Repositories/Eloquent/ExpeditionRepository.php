@@ -65,22 +65,6 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
         return $this->sortResults($projectId, $query, $order, $sort);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getExpeditionAdminIndex($userId = null, $sort = null, $order = null, $projectId = null)
-    {
-        $query = $this->model->with([
-            'project.group',
-            'stat',
-            'nfnActor',
-            'panoptesProject',
-        ])->whereHas('project.group.users', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        });
-
-        return $this->sortResults($projectId, $query, $order, $sort);
-    }
 
     /**
      * @inheritdoc
@@ -93,19 +77,6 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
         })->find($expeditionId);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getExpeditionsForZooniverseProcess()
-    {
-        return $this->model->with([
-            'panoptesProject',
-            'stat',
-            'nfnActor',
-        ])->has('panoptesProject')->whereHas('nfnActor', function ($query) {
-            $query->where('completed', 0);
-        })->get();
-    }
 
     /**
      * @inheritdoc
@@ -127,18 +98,6 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
         })->get();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function expeditionDownloadsByActor($projectId, $expeditionId)
-    {
-        return $this->model->with([
-            'project.group',
-            'actors.downloads' => function ($query) use ($expeditionId) {
-                $query->where('expedition_id', $expeditionId);
-            },
-        ])->find($expeditionId);
-    }
 
     /**
      * @inheritdoc
@@ -164,14 +123,6 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
         $withRelations = ['panoptesProject', 'nfnActor', 'stat'];
 
         return $this->model->has('panoptesProject')->with($withRelations)->find($expeditionId);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function findExpeditionHavingWorkflowManager($expeditionId)
-    {
-        return $this->model->has('workflowManager')->find($expeditionId);
     }
 
     /**

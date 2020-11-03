@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,21 +17,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Services\Model;
 
-use App\Models\ActorContact as Model;
-use App\Repositories\Interfaces\ActorContact;
+use App\Models\EventUser;
+use App\Services\Model\Traits\ModelTrait;
 
-class ActorContactRepository extends EloquentRepository implements ActorContact
+/**
+ * Class EventUserService
+ *
+ * @package App\Services\Model
+ */
+class EventUserService
 {
+    use ModelTrait;
 
     /**
-     * Specify Model class name
-     *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @var \App\Models\EventUser
      */
-    function model()
+    private $eventUser;
+
+    /**
+     * EventUserService constructor.
+     *
+     * @param \App\Models\EventUser $eventUser
+     */
+    public function __construct(EventUser $eventUser)
     {
-        return Model::class;
+
+        $this->eventUser = $eventUser;
     }
+
 }

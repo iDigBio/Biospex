@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\EventCsvExport;
 use App\Notifications\EventCsvExportError;
-use App\Repositories\Interfaces\EventTranscription;
+use App\Services\Model\EventTranscriptionService;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Services\Csv\Csv;
 use Exception;
@@ -31,9 +31,13 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Storage;
 use Str;
 
+/**
+ * Class EventTranscriptionExportCsvJob
+ *
+ * @package App\Jobs
+ */
 class EventTranscriptionExportCsvJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -71,20 +75,20 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\Interfaces\EventTranscription $eventTranscriptionContract
+     * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
      * @param \App\Repositories\Interfaces\PanoptesTranscription $panoptesTranscriptionContract
      * @param Csv $csv
      * @return void
      */
     public function handle(
-        EventTranscription $eventTranscriptionContract,
+        EventTranscriptionService $eventTranscriptionService,
         PanoptesTranscription $panoptesTranscriptionContract,
         Csv $csv
     )
     {
         try
         {
-            $ids = $eventTranscriptionContract->getEventClassificationIds($this->eventId);
+            $ids = $eventTranscriptionService->getEventClassificationIds($this->eventId);
 
             $transcriptions = $ids->map(function($id) use($panoptesTranscriptionContract) {
                 $transcript = $panoptesTranscriptionContract->findBy('classification_id', $id);
@@ -103,25 +107,5 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
         {
             $this->user->notify(new EventCsvExportError($e->getMessage()));
         }
-    }
-
-    /**
-     * @param $transcriptions
-     * @param \App\Services\Csv\Csv $csv
-     * @return string
-     * @throws \League\Csv\CannotInsertRecord
-     */
-    private function setCsv($transcriptions, Csv $csv) {
-        $first = $transcriptions->first()->toArray();
-        $header = array_keys($first);
-
-        $fileName = Str::random() . '.csv';
-
-        $file = Storage::path(config('config.reports_dir') . '/' . $fileName);
-        $csv->writerCreateFromPath($file);
-        $csv->insertOne($header);
-        $csv->insertAll($transcriptions->toArray());
-
-        return base64_encode($fileName);
     }
 }

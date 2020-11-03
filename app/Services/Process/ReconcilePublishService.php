@@ -20,11 +20,10 @@
 namespace App\Services\Process;
 
 use App\Notifications\NfnExpertReviewPublished;
-use App\Repositories\Interfaces\Download;
+use App\Services\Model\DownloadService;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\Reconcile;
 use App\Services\Csv\Csv;
-use League\Csv\CannotInsertRecord;
 use Storage;
 
 class ReconcilePublishService
@@ -35,9 +34,9 @@ class ReconcilePublishService
     private $reconcileContract;
 
     /**
-     * @var \App\Repositories\Interfaces\Download
+     * @var \App\Services\Model\DownloadService
      */
-    private $downloadContract;
+    private $downloadService;
 
     /**
      * @var \App\Repositories\Interfaces\Expedition
@@ -53,19 +52,19 @@ class ReconcilePublishService
      * ExpertReconcilePublishService constructor.
      *
      * @param \App\Repositories\Interfaces\Reconcile $reconcileContract
-     * @param \App\Repositories\Interfaces\Download $downloadContract
+     * @param \App\Services\Model\DownloadService $downloadService
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
         Reconcile $reconcileContract,
-        Download $downloadContract,
+        DownloadService $downloadService,
         Expedition $expeditionContract,
         Csv $csv
     )
     {
         $this->reconcileContract = $reconcileContract;
-        $this->downloadContract = $downloadContract;
+        $this->downloadService = $downloadService;
         $this->expeditionContract = $expeditionContract;
         $this->csv = $csv;
     }
@@ -130,7 +129,7 @@ class ReconcilePublishService
             'type'          => 'reconciled',
         ];
 
-        $this->downloadContract->updateOrCreate($attributes, $values);
+        $this->downloadService->updateOrCreate($attributes, $values);
     }
 
     /**

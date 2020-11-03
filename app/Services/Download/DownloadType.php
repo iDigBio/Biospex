@@ -17,37 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * Copyright (C) 2015  Biospex
- * biospex@gmail.com
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 namespace App\Services\Download;
 
 use App\Jobs\ActorJob;
-use App\Repositories\Interfaces\Download;
+use App\Models\Download;
+use App\Models\Expedition;
+use App\Services\Model\DownloadService;
 use File;
 use Storage;
 
-class DownloadService extends DownloadFileBase
+class DownloadType extends DownloadFileBase
 {
     /**
-     * @var \App\Repositories\Interfaces\Download
+     * @var \App\Services\Model\DownloadService
      */
-    private $downloadContract;
+    private $downloadService;
 
     /**
      * @var string
@@ -55,14 +39,14 @@ class DownloadService extends DownloadFileBase
     private $missingMsg;
 
     /**
-     * DownloadService constructor.
+     * DownloadType constructor.
      *
-     * @param \App\Repositories\Interfaces\Download $downloadContract
+     * @param \App\Services\Model\DownloadService $downloadService
      */
     public function __construct(
-        Download $downloadContract
+        DownloadService $downloadService
     ) {
-        $this->downloadContract = $downloadContract;
+        $this->downloadService = $downloadService;
         $this->missingMsg = t("The file appears to be missing though the records exist. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title.");
     }
 
@@ -97,7 +81,7 @@ class DownloadService extends DownloadFileBase
      * @return array
      * @throws \Exception
      */
-    public function createHtmlDownload(\App\Models\Download $download): array
+    public function createHtmlDownload(Download $download): array
     {
         $this->setFilePath(config('config.nfn_downloads_summary'), $download->file);
 
@@ -120,7 +104,7 @@ class DownloadService extends DownloadFileBase
      * @return array
      * @throws \Exception
      */
-    public function createCsvDownload(\App\Models\Download $download): array
+    public function createCsvDownload(Download $download): array
     {
         $this->setFilePath(config('config.nfn_downloads_'.$download->type), $download->file);
 
@@ -144,7 +128,7 @@ class DownloadService extends DownloadFileBase
      * @return array
      * @throws \Exception
      */
-    public function createTarDownload(\App\Models\Download $download)
+    public function createTarDownload(Download $download)
     {
         $this->setFilePath(config('config.export_dir'), $download->file);
 
@@ -191,9 +175,9 @@ class DownloadService extends DownloadFileBase
      * @param string $downloadId
      * @return \App\Models\Download
      */
-    public function getDownload(string $downloadId): \App\Models\Download
+    public function getDownload(string $downloadId): Download
     {
-        return $this->downloadContract->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
+        return $this->downloadService->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
     }
 
     /**
@@ -203,7 +187,7 @@ class DownloadService extends DownloadFileBase
      */
     public function deleteExportFiles(string $expeditionId)
     {
-        $downloads = $this->downloadContract->getExportFiles($expeditionId);
+        $downloads = $this->downloadService->getExportFiles($expeditionId);
         $nfnExportDir = Storage::path(config('config.export_dir'));
 
         $downloads->each(function ($download) use ($nfnExportDir) {
@@ -212,7 +196,7 @@ class DownloadService extends DownloadFileBase
                 File::delete($file);
             }
 
-            $this->downloadContract->delete($download->id);
+            $download->delete();
         });
     }
 
@@ -221,7 +205,7 @@ class DownloadService extends DownloadFileBase
      *
      * @param \App\Models\Expedition $expedition
      */
-    public function resetExpeditionData(\App\Models\Expedition $expedition)
+    public function resetExpeditionData(Expedition $expedition)
     {
         $this->deleteExportFiles($expedition->id);
 

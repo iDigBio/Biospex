@@ -26,18 +26,6 @@ use App\Services\Helpers\GeneralHelper;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
-use App\Repositories\Interfaces\ActorContact;
-use App\Repositories\Interfaces\Actor;
-use App\Repositories\Interfaces\AmChart;
-use App\Repositories\Interfaces\ApiUser;
-use App\Repositories\Interfaces\Bingo;
-use App\Repositories\Interfaces\BingoMap;
-use App\Repositories\Interfaces\BingoWord;
-use App\Repositories\Interfaces\Download;
-use App\Repositories\Interfaces\Event;
-use App\Repositories\Interfaces\EventTeam;
-use App\Repositories\Interfaces\EventTranscription;
-use App\Repositories\Interfaces\EventUser;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExpeditionStat;
 use App\Repositories\Interfaces\ExportQueue;
@@ -67,18 +55,6 @@ use App\Repositories\Interfaces\PusherTranscription;
 use App\Repositories\Interfaces\Workflow;
 use App\Repositories\Interfaces\WorkflowManager;
 
-use App\Repositories\Eloquent\ActorContactRepository;
-use App\Repositories\Eloquent\ActorRepository;
-use App\Repositories\Eloquent\AmChartRepository;
-use App\Repositories\Eloquent\ApiUserRepository;
-use App\Repositories\Eloquent\BingoRepository;
-use App\Repositories\Eloquent\BingoMapRepository;
-use App\Repositories\Eloquent\BingoWordRepository;
-use App\Repositories\Eloquent\DownloadRepository;
-use App\Repositories\Eloquent\EventRepository;
-use App\Repositories\Eloquent\EventTeamRepository;
-use App\Repositories\Eloquent\EventTranscriptionRepository;
-use App\Repositories\Eloquent\EventUserRepository;
 use App\Repositories\Eloquent\ExpeditionRepository;
 use App\Repositories\Eloquent\ExpeditionStatRepository;
 use App\Repositories\Eloquent\ExportQueueRepository;
@@ -147,16 +123,7 @@ class BiospexServiceProvider extends ServiceProvider
      */
     protected function registerRepositories()
     {
-        $this->app->bind(ActorContact::class, ActorContactRepository::class);
-        $this->app->bind(Actor::class, ActorRepository::class);
-        $this->app->bind(AmChart::class, AmChartRepository::class);
-        $this->app->bind(ApiUser::class, ApiUserRepository::class);
-        $this->app->bind(Bingo::class, BingoRepository::class);
-        $this->app->bind(BingoMap::class, BingoMapRepository::class);
-        $this->app->bind(BingoWord::class, BingoWordRepository::class);
-        $this->app->bind(Download::class, DownloadRepository::class);
-        $this->app->bind(Event::class, EventRepository::class);
-        $this->app->bind(EventTeam::class, EventTeamRepository::class);
+
         $this->app->bind(EventTranscription::class, EventTranscriptionRepository::class);
         $this->app->bind(EventUser::class, EventUserRepository::class);
         $this->app->bind(Expedition::class, ExpeditionRepository::class);

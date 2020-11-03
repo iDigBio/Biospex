@@ -17,28 +17,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Services\Model;
 
-use App\Models\Download as Model;
-use App\Repositories\Interfaces\Download;
+use App\Models\Download;
+use App\Services\Model\Traits\ModelTrait;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-class DownloadRepository extends EloquentRepository implements Download
+class DownloadService
 {
+    use ModelTrait;
 
     /**
-     * Specify Model class name
-     *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @var \App\Models\Download
      */
-    public function model()
+    private $model;
+
+    /**
+     * DownloadService constructor.
+     *
+     * @param \App\Models\Download $download
+     */
+    public function __construct(Download $download)
     {
-        return Model::class;
+
+        $this->model = $download;
     }
 
     /**
-     * @inheritdoc
+     * Get downloads for cleaning.
+     *
+     * @return \Illuminate\Support\Collection
      */
     public function getDownloadsForCleaning(): Collection
     {
@@ -49,7 +58,10 @@ class DownloadRepository extends EloquentRepository implements Download
     }
 
     /**
-     * @inheritdoc
+     * Get export files.
+     *
+     * @param string $expeditionId
+     * @return \Illuminate\Support\Collection
      */
     public function getExportFiles(string $expeditionId): Collection
     {

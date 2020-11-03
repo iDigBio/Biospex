@@ -24,7 +24,7 @@ use App\Jobs\NfnExpertReviewJob;
 use App\Jobs\NfnExpertReviewPublishJob;
 use App\Services\Model\ReconcileService;
 use Illuminate\Http\RedirectResponse;
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Services\Api\PanoptesApiService;
 use Flash;
 
@@ -36,20 +36,20 @@ class ReconcilesController extends Controller
     private $service;
 
     /**
-     * @var \App\Repositories\Interfaces\Expedition
+     * @var \App\Services\Model\ExpeditionService
      */
-    private $expeditionContract;
+    private $expeditionService;
 
     /**
      * ReconcilesController constructor.
      *
      * @param \App\Services\Model\ReconcileService $service
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      */
-    public function __construct(ReconcileService $service, Expedition $expeditionContract)
+    public function __construct(ReconcileService $service, ExpeditionService $expeditionService)
     {
         $this->service = $service;
-        $this->expeditionContract = $expeditionContract;
+        $this->expeditionService = $expeditionService;
     }
 
     /**
@@ -61,7 +61,7 @@ class ReconcilesController extends Controller
      */
     public function index(string $expeditionId, PanoptesApiService $panoptesApiService)
     {
-        $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group.owner']);
+        $expedition = $this->expeditionService->findWith($expeditionId, ['project.group.owner']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
@@ -90,7 +90,7 @@ class ReconcilesController extends Controller
      */
     public function create(string $expeditionId): RedirectResponse
     {
-        $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group.owner']);
+        $expedition = $this->expeditionService->findWith($expeditionId, ['project.group.owner']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,122 +19,61 @@
 
 namespace App\Services\Model;
 
-use App\Jobs\ScoreboardJob;
-use App\Repositories\Interfaces\Event;
-use App\Repositories\Interfaces\EventTranscription;
-use App\Repositories\Interfaces\EventUser;
-use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
-use MongoDB\BSON\UTCDateTime;
-use Validator;
+use App\Models\EventTranscription;
+use App\Services\Model\Traits\ModelTrait;
+use Illuminate\Support\Collection;
 
+/**
+ * Class EventTranscriptionService
+ *
+ * @package App\Services\Model
+ */
 class EventTranscriptionService
 {
-    /**
-     * @var \App\Repositories\Interfaces\Event
-     */
-    private $eventContract;
+    use ModelTrait;
 
     /**
-     * @var \App\Repositories\Interfaces\EventTranscription
+     * @var \App\Models\EventTranscription
      */
-    private $eventTranscriptionContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\EventUser
-     */
-    private $eventUserContract;
+    private $model;
 
     /**
      * EventTranscriptionService constructor.
      *
-     * @param \App\Repositories\Interfaces\Event $eventContract
-     * @param \App\Repositories\Interfaces\EventTranscription $eventTranscriptionContract
-     * @param \App\Repositories\Interfaces\EventUser $eventUserContract
+     * @param \App\Models\EventTranscription $eventTranscription
      */
-    public function __construct(
-        Event $eventContract,
-        EventTranscription $eventTranscriptionContract,
-        EventUser $eventUserContract
-    ) {
-        $this->eventContract = $eventContract;
-        $this->eventTranscriptionContract = $eventTranscriptionContract;
-        $this->eventUserContract = $eventUserContract;
-    }
-
-    /**
-     * Create event transcription for user.
-     *
-     * @param int $classification_id
-     * @param int $projectId
-     * @param string $userName
-     * @param \MongoDB\BSON\UTCDateTime|null $date
-     */
-    public function createEventTranscription(
-        int $classification_id,
-        int $projectId,
-        string $userName,
-        UTCDateTime $date = null
-    ) {
-        $user = $this->eventUserContract->getEventUserByName($userName);
-
-        if ($user === null) {
-            return;
-        }
-
-        $timestamp = $this->setDate($date);
-
-        $events = $this->eventContract->checkEventExistsForClassificationUserByDate($projectId, $user->id, $timestamp);
-
-        $events->each(function ($event) use ($classification_id, $user) {
-            $event->teams->each(function ($team) use ($event, $classification_id, $user) {
-                $values = [
-                    'classification_id' => $classification_id,
-                    'event_id'          => $event->id,
-                    'team_id'           => $team->id,
-                    'user_id'           => $user->id,
-                ];
-
-                if ($this->validateClassification($values)) {
-                    return;
-                }
-
-                $this->eventTranscriptionContract->create($values);
-            });
-        });
-
-        if ($events->isNotEmpty() && !isset($date)) {
-            ScoreboardJob::dispatch($projectId);
-        }
-    }
-
-    /**
-     * Validate classification.
-     *
-     * @param $values
-     * @return bool
-     */
-    private function validateClassification($values)
+    public function __construct(EventTranscription $eventTranscription)
     {
-        $validator = Validator::make($values, [
-            'classification_id' => Rule::unique('event_transcriptions')->where(function ($query) use ($values) {
-                return $query->where('classification_id', $values['classification_id'])->where('event_id', $values['event_id'])->where('team_id', $values['team_id'])->where('user_id', $values['user_id']);
-            }),
-        ]);
 
-        return $validator->fails();
+        $this->model = $eventTranscription;
     }
 
     /**
-     * Set date for creating event transcriptions.
+     * Get event classification ids.
      *
-     * @param \MongoDB\BSON\UTCDateTime|null $date
-     * @return string
+     * @param $eventId
+     * @return mixed
      */
-    private function setDate(UTCDateTime $date = null)
+    public function getEventClassificationIds($eventId)
     {
-        $timestamp = ! isset($date) ? Carbon::now('UTC') : $date->toDateTime();
+        return $this->model->where('event_id', $eventId)->pluck('classification_id');
+    }
 
-        return $timestamp->format('Y-m-d H:i:s');
+    /**
+     * Get transcriptions for event step chart.
+     *
+     * @param string $eventId
+     * @param string $startLoad
+     * @param string $endLoad
+     * @return \Illuminate\Support\Collection|null
+     */
+    public function getEventStepChartTranscriptions(string $eventId, string $startLoad, string $endLoad): ?Collection
+    {
+        return $this->model->with(['team:id,title'])
+            ->selectRaw('event_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, team_id, count(id) as count')
+            ->where('event_id', $eventId)
+            ->where('created_at', '>=', $startLoad)
+            ->where('created_at', '<', $endLoad)
+            ->groupBy('time', 'team_id', 'event_id')->orderBy('time')->get();
     }
 }

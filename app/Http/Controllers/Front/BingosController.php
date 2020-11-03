@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Services\Model\BingoService;
+use App\Services\Process\BingoProcess;
 
 /**
  * Class BingosController
@@ -31,18 +31,18 @@ use App\Services\Model\BingoService;
 class BingosController extends Controller
 {
     /**
-     * @var \App\Services\Model\BingoService
+     * @var \App\Services\Process\BingoProcess
      */
-    private $bingoService;
+    private $bingoProcess;
 
     /**
      * BingosController constructor.
      *
-     * @param \App\Services\Model\BingoService $bingoService
+     * @param \App\Services\Process\BingoProcess $bingoProcess
      */
-    public function __construct(BingoService $bingoService)
+    public function __construct(BingoProcess $bingoProcess)
     {
-        $this->bingoService = $bingoService;
+        $this->bingoProcess = $bingoProcess;
     }
 
     /**
@@ -52,7 +52,7 @@ class BingosController extends Controller
      */
     public function index()
     {
-        $bingos = $this->bingoService->getAllBingos();
+        $bingos = $this->bingoProcess->getAllBingos();
 
         return view('front.bingo.index', compact('bingos'));
     }
@@ -65,7 +65,7 @@ class BingosController extends Controller
      */
     public function show(string $bingoId)
     {
-        [$bingo, $words] = $this->bingoService->showBingo($bingoId);
+        [$bingo, $words] = $this->bingoProcess->showBingo($bingoId);
 
         return view('front.bingo.show', compact('bingo', 'words'));
     }
@@ -78,12 +78,12 @@ class BingosController extends Controller
      */
     public function generate(string $bingoId)
     {
-        $bingo = $this->bingoService->findBingoWith($bingoId, ['project', 'words']);
+        $bingo = $this->bingoProcess->findBingoWith($bingoId, ['project', 'words']);
         if (!$bingo) {
             return t('Bingo Game could not be found.');
         }
 
-        $rows = $this->bingoService->generateBingoCard($bingo);
+        $rows = $this->bingoProcess->generateBingoCard($bingo);
 
         BingoJob::dispatch($bingoId);
 

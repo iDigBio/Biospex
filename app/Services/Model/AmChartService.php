@@ -17,20 +17,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Services\Model;
 
-use App\Models\ApiUser as Model;
-use App\Repositories\Interfaces\ApiUser;
+use App\Models\AmChart;
+use App\Services\Model\Traits\ModelTrait;
 
-class ApiUserRepository extends EloquentRepository implements ApiUser
+/**
+ * Class AmChartService
+ *
+ * @package App\Services\Model
+ */
+class AmChartService
 {
+    use ModelTrait;
+
     /**
-     * Specify Model class name
-     *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @var \App\Models\AmChart
      */
-    public function model()
+    private $model;
+
+    /**
+     * AmChartService constructor.
+     *
+     * @param \App\Models\AmChart $amChart
+     */
+    public function __construct(AmChart $amChart)
     {
-        return Model::class;
+
+        $this->model = $amChart;
     }
 }

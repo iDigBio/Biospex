@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,9 +20,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Jobs\ExportDownloadBatchJob;
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Repositories\Interfaces\User;
-use App\Services\Download\DownloadService;
+use App\Services\Download\DownloadType;
 use Exception;
 use Flash;
 use App\Http\Controllers\Controller;
@@ -36,30 +36,30 @@ class DownloadsController extends Controller
     private $userContract;
 
     /**
-     * @var \App\Repositories\Interfaces\Expedition
+     * @var \App\Services\Model\ExpeditionService
      */
-    private $expeditionContract;
+    private $expeditionService;
 
     /**
-     * @var \App\Services\Download\DownloadService
+     * @var \App\Services\Download\DownloadType
      */
-    private $downloadService;
+    private $downloadType;
 
     /**
      * DownloadsController constructor.
      *
      * @param \App\Repositories\Interfaces\User $userContract
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
-     * @param \App\Services\Download\DownloadService $downloadService
+     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Services\Download\DownloadType $downloadType
      */
     public function __construct(
         User $userContract,
-        Expedition $expeditionContract,
-        DownloadService $downloadService
+        ExpeditionService $expeditionService,
+        DownloadType $downloadType
     ) {
         $this->userContract = $userContract;
-        $this->expeditionContract = $expeditionContract;
-        $this->downloadService = $downloadService;
+        $this->expeditionService = $expeditionService;
+        $this->downloadType = $downloadType;
     }
 
     /**
@@ -72,7 +72,7 @@ class DownloadsController extends Controller
     public function index(string $projectId, string $expeditionId)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
-        $expedition = $this->expeditionContract->expeditionDownloadsByActor($projectId, $expeditionId);
+        $expedition = $this->expeditionService->expeditionDownloadsByActor($projectId, $expeditionId);
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group);
 
@@ -88,7 +88,7 @@ class DownloadsController extends Controller
     public function report(string $fileName)
     {
         try {
-            [$reader, $headers] = $this->downloadService->createReportDownload(base64_decode($fileName));
+            [$reader, $headers] = $this->downloadType->createReportDownload(base64_decode($fileName));
 
             return response($reader->getContent(), 200, $headers);
         } catch (Exception $e) {
@@ -110,7 +110,7 @@ class DownloadsController extends Controller
     {
         try {
 
-            $download = $this->downloadService->getDownload($downloadId);
+            $download = $this->downloadType->getDownload($downloadId);
 
             if (! $download) {
                 Flash::error(t("The file record appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."));
@@ -120,12 +120,12 @@ class DownloadsController extends Controller
 
             if ($download->type === 'summary') {
 
-                [$filePath, $headers] = $this->downloadService->createHtmlDownload($download);
+                [$filePath, $headers] = $this->downloadType->createHtmlDownload($download);
 
                 return response()->download($filePath, null, $headers);
             }
 
-            [$reader, $headers] = $this->downloadService->createCsvDownload($download);
+            [$reader, $headers] = $this->downloadType->createCsvDownload($download);
 
             return response($reader->getContent(), 200, $headers);
         } catch (Exception $e) {
@@ -146,13 +146,13 @@ class DownloadsController extends Controller
     public function downloadTar(string $projectId, string $expeditionId, string $downloadId)
     {
         try {
-            $download = $this->downloadService->getDownload($downloadId);
+            $download = $this->downloadType->getDownload($downloadId);
 
             if (! $this->checkPermissions('isOwner', $download->expedition->project->group)) {
                 return redirect()->back();
             }
 
-            [$filePath, $headers] = $this->downloadService->createTarDownload($download);
+            [$filePath, $headers] = $this->downloadType->createTarDownload($download);
 
             return response()->download($filePath, null, $headers);
         } catch (Exception $e) {
@@ -174,13 +174,13 @@ class DownloadsController extends Controller
     {
         try {
             $file = base64_decode($fileName).'.tar.gz';
-            $expedition = $this->expeditionContract->findwith($expeditionId, ['project.group']);
+            $expedition = $this->expeditionService->findwith($expeditionId, ['project.group']);
 
             if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            [$filePath, $headers] = $this->downloadService->createBatchTarDownload($file);
+            [$filePath, $headers] = $this->downloadType->createBatchTarDownload($file);
 
             return response()->download($filePath, $file, $headers);
         } catch (Exception $e) {
@@ -200,9 +200,9 @@ class DownloadsController extends Controller
     public function regenerate(string $projectId, string $expeditionId)
     {
         try {
-            $expedition = $this->expeditionContract->findwith($expeditionId, ['nfnActor', 'stat']);
+            $expedition = $this->expeditionService->findwith($expeditionId, ['nfnActor', 'stat']);
 
-            $this->downloadService->resetExpeditionData($expedition);
+            $this->downloadType->resetExpeditionData($expedition);
 
             Flash::success(t('Download regeneration has started. You will be notified when completed.'));
         } catch (Exception $e) {
@@ -222,7 +222,7 @@ class DownloadsController extends Controller
      */
     public function summary(string $projectId, string $expeditionId)
     {
-        $expedition = $this->expeditionContract->findwith($expeditionId, ['project.group']);
+        $expedition = $this->expeditionService->findwith($expeditionId, ['project.group']);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);

@@ -17,44 +17,55 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Services\Model;
 
-use App\Models\BingoMap as Model;
-use App\Repositories\Interfaces\BingoMap;
+use App\Models\BingoMap;
+use App\Services\Model\Traits\ModelTrait;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-class BingoMapRepository extends EloquentRepository implements BingoMap
+/**
+ * Class BingoMapService
+ *
+ * @package App\Services\Model
+ */
+class BingoMapService
 {
+    use ModelTrait;
 
     /**
-     * Specify Model class name
+     * @var \App\Models\BingoMap
+     */
+    private $model;
+
+    /**
+     * BingoMapService constructor.
      *
-     * @return \Illuminate\Database\Eloquent\Model|string
+     * @param \App\Models\BingoMap $bingoMap
      */
-    public function model()
+    public function __construct(BingoMap $bingoMap)
     {
-        return Model::class;
+
+        $this->model = $bingoMap;
     }
 
     /**
-     * @inheritDoc
+     * Get bingo map by id and uuid.
+     *
+     * @param int $bingoId
+     * @param string $uuid
+     * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function getBingoMapsByBingoId(string $bingoId): Collection
-    {
-        return $this->model->where('bingo_id', $bingoId)->get();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getBingoMapByBingoIdUuid(int $bingoId, string $uuid): ?\Illuminate\Database\Eloquent\Model
+    public function getBingoMapByBingoIdUuid(int $bingoId, string $uuid): ?Model
     {
         return $this->model->where('bingo_id', $bingoId)->where('uuid', $uuid)->first();
     }
 
     /**
-     * @inheritDoc
+     * Get bingo map for cleaning.
+     *
+     * @return \Illuminate\Support\Collection
      */
     public function getBingoMapForCleaning(): Collection
     {

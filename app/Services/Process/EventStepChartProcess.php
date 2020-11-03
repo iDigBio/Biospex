@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,47 +17,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Model;
+namespace App\Services\Process;
 
 use App\Facades\GeneralHelper;
-use App\Repositories\Interfaces\Event;
-use App\Repositories\Interfaces\EventTeam;
-use App\Repositories\Interfaces\EventTranscription;
+use App\Models\Event;
+use App\Services\Model\EventService;
+use App\Services\Model\EventTranscriptionService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-class EventStepChartService
+/**
+ * Class EventStepChartProcess
+ *
+ * @package App\Services\Process
+ */
+class EventStepChartProcess
 {
     /**
-     * @var \App\Repositories\Interfaces\Event
+     * @var \App\Services\Model\EventService
      */
-    private $eventContract;
+    private $eventService;
 
     /**
-     * @var \App\Repositories\Interfaces\EventTranscription
+     * @var \App\Services\Model\EventTranscriptionService
      */
-    private $eventTranscriptionContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\EventTeam
-     */
-    private $eventTeamContract;
+    private $eventTranscriptionService;
 
     /**
      * AjaxService constructor.
      *
-     * @param \App\Repositories\Interfaces\Event $eventContract
-     * @param \App\Repositories\Interfaces\EventTranscription $eventTranscriptionContract
-     * @param \App\Repositories\Interfaces\EventTeam $eventTeamContract
+     * @param \App\Services\Model\EventService $eventService
+     * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
      */
     public function __construct(
-        Event $eventContract,
-        EventTranscription $eventTranscriptionContract,
-        EventTeam $eventTeamContract
+        EventService $eventService,
+        EventTranscriptionService $eventTranscriptionService
     ) {
-        $this->eventContract = $eventContract;
-        $this->eventTranscriptionContract = $eventTranscriptionContract;
-        $this->eventTeamContract = $eventTeamContract;
+        $this->eventService = $eventService;
+        $this->eventTranscriptionService = $eventTranscriptionService;
     }
 
     /**
@@ -69,7 +66,7 @@ class EventStepChartService
      */
     public function eventStepChart(string $eventId, string $timestamp = null): ?array
     {
-        $event = $this->eventContract->findWith($eventId, ['teams']);
+        $event = $this->eventService->findWith($eventId, ['teams']);
         if ($event === null) {
             return null;
         }
@@ -81,7 +78,7 @@ class EventStepChartService
 
         $intervals = $this->setTimeIntervals($event, $startLoad, $endLoad, $timestamp);
 
-        $transcriptions = $this->eventTranscriptionContract->getEventStepChartTranscriptions($eventId, $startLoad, $endLoad);
+        $transcriptions = $this->eventTranscriptionService->getEventStepChartTranscriptions($eventId, $startLoad, $endLoad);
 
         return $transcriptions->isEmpty() ? $this->processEmptyResult($event, $intervals) : $this->processTranscriptionResult($event, $transcriptions, $intervals);
     }
@@ -93,7 +90,7 @@ class EventStepChartService
      * @param \Illuminate\Support\Collection $intervals
      * @return array
      */
-    public function processEmptyResult(\App\Models\Event $event, Collection $intervals): array
+    public function processEmptyResult(Event $event, Collection $intervals): array
     {
         if (GeneralHelper::eventAfter($event)) {
             return [];
@@ -120,7 +117,7 @@ class EventStepChartService
      * @return array
      */
     protected function processTranscriptionResult(
-        \App\Models\Event $event,
+        Event $event,
         Collection $transcriptions,
         Collection $intervals
     ) {
@@ -141,7 +138,7 @@ class EventStepChartService
      * @param \App\Models\Event $event
      * @return \Illuminate\Support\Collection
      */
-    protected function mapWithDateKeys(Collection $transcriptions, \App\Models\Event $event): Collection
+    protected function mapWithDateKeys(Collection $transcriptions, Event $event): Collection
     {
         $data = [];
         $transcriptions->each(function ($transcription) use (&$data, $event) {
@@ -173,7 +170,7 @@ class EventStepChartService
      * @param \Illuminate\Support\Collection $merged
      * @return \Illuminate\Support\Collection
      */
-    protected function addMissingTeamCount(\App\Models\Event $event, Collection $merged): Collection
+    protected function addMissingTeamCount(Event $event, Collection $merged): Collection
     {
         $teams = collect($event->teams->pluck('title'));
 
@@ -210,7 +207,7 @@ class EventStepChartService
      * @param string|null $timestamp
      * @return \Carbon\Carbon
      */
-    protected function getLoadTime(\App\Models\Event $event, string $timestamp = null): \Carbon\Carbon
+    protected function getLoadTime(Event $event, string $timestamp = null): \Carbon\Carbon
     {
         return $timestamp === null ?
             Carbon::parse($event->start_date) :
@@ -225,7 +222,7 @@ class EventStepChartService
      * @param string|null $timestamp
      * @return string
      */
-    protected function getEndLoad(\App\Models\Event $event, \Carbon\Carbon $loadTime, string $timestamp = null): string
+    protected function getEndLoad(Event $event, \Carbon\Carbon $loadTime, string $timestamp = null): string
     {
         if (GeneralHelper::eventAfter($event)) {
             return Carbon::parse($event->end_date)->format('Y-m-d H:i:s');
@@ -245,7 +242,7 @@ class EventStepChartService
      * @param string|null $timestamp
      * @return \Illuminate\Support\Collection
      */
-    protected function setTimeIntervals(\App\Models\Event $event, string $startLoad, string $endLoad, string $timestamp = null): Collection
+    protected function setTimeIntervals(Event $event, string $startLoad, string $endLoad, string $timestamp = null): Collection
     {
         $start = Carbon::parse($startLoad)->timezone($event->timezone);
         $end = Carbon::parse($endLoad)->timezone($event->timezone);

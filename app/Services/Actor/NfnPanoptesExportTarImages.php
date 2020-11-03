@@ -20,24 +20,24 @@
 namespace App\Services\Actor;
 
 use App\Models\ExportQueue;
-use App\Repositories\Interfaces\Download;
+use App\Services\Model\DownloadService;
 use Exception;
 
 class NfnPanoptesExportTarImages extends NfnPanoptesBase
 {
     /**
-     * @var \App\Repositories\Interfaces\Download
+     * @var \App\Services\Model\DownloadService
      */
-    private $downloadContract;
+    private $downloadService;
 
     /**
      * NfnPanoptesExportTarImages constructor.
      *
-     * @param \App\Repositories\Interfaces\Download $downloadContract
+     * @param \App\Services\Model\DownloadService $downloadService
      */
-    public function __construct(Download $downloadContract)
+    public function __construct(DownloadService $downloadService)
     {
-        $this->downloadContract = $downloadContract;
+        $this->downloadService = $downloadService;
     }
 
     /**
@@ -72,7 +72,7 @@ class NfnPanoptesExportTarImages extends NfnPanoptesBase
                 'type'          => 'export',
             ];
 
-            $this->downloadContract->updateOrCreate($attributes, $values);
+            $this->downloadService->updateOrCreate($attributes, $values);
 
             $this->advanceQueue($queue);
 

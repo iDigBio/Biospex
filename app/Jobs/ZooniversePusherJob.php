@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Model\EventTranscriptionService;
+use App\Services\Process\EventTranscriptionProcess;
 use App\Services\Model\PusherTranscriptionService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -51,10 +51,10 @@ class ZooniversePusherJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Model\PusherTranscriptionService $pusherTranscriptionService
-     * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
+     * @param \App\Services\Process\EventTranscriptionProcess $eventTranscriptionProcess
      * @return void
      */
-    public function handle(PusherTranscriptionService $pusherTranscriptionService, EventTranscriptionService $eventTranscriptionService)
+    public function handle(PusherTranscriptionService $pusherTranscriptionService, EventTranscriptionProcess $eventTranscriptionProcess)
     {
         if ($this->skipReconcile($this->expeditionId)) {
             return;
@@ -68,9 +68,9 @@ class ZooniversePusherJob implements ShouldQueue
 
             $transcriptions = $pusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
 
-            $transcriptions->each(function ($transcription) use ($pusherTranscriptionService, $eventTranscriptionService, $expedition) {
+            $transcriptions->each(function ($transcription) use ($pusherTranscriptionService, $eventTranscriptionProcess, $expedition) {
                 $pusherTranscriptionService->processTranscripts($transcription, $expedition);
-                $eventTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
+                $eventTranscriptionProcess->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
             });
 
             return;

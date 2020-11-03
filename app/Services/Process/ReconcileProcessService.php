@@ -21,7 +21,7 @@ namespace App\Services\Process;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Repositories\Interfaces\Download;
+use App\Services\Model\DownloadService;
 use App\Repositories\Interfaces\Expedition;
 use App\Services\Csv\Csv;
 use Exception;
@@ -37,9 +37,9 @@ class ReconcileProcessService
     private $expeditionContract;
 
     /**
-     * @var \App\Repositories\Interfaces\Download
+     * @var \App\Services\Model\DownloadService
      */
-    private $downloadContract;
+    private $downloadService;
 
     /**
      * @var string
@@ -90,13 +90,13 @@ class ReconcileProcessService
      * ReconcileProcessService constructor.
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
-     * @param \App\Repositories\Interfaces\Download $downloadContract
+     * @param \App\Services\Model\DownloadService $downloadService
      * @param \App\Services\Csv\Csv $csvService
      */
-    public function __construct(Expedition $expeditionContract, Download $downloadContract, Csv $csvService)
+    public function __construct(Expedition $expeditionContract, DownloadService $downloadService, Csv $csvService)
     {
         $this->expeditionContract = $expeditionContract;
-        $this->downloadContract = $downloadContract;
+        $this->downloadService = $downloadService;
         $this->csvService = $csvService;
     }
 
@@ -279,7 +279,7 @@ class ReconcileProcessService
                 'type'          => $type,
             ];
 
-            $this->downloadContract->updateOrCreate($attributes, $values);
+            $this->downloadService->updateOrCreate($attributes, $values);
         });
     }
 }

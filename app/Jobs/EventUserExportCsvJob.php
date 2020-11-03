@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\EventCsvExport;
 use App\Notifications\EventCsvExportError;
-use App\Repositories\Interfaces\Event;
+use App\Services\Model\EventService;
 use App\Services\Csv\Csv;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -70,16 +70,16 @@ class EventUserExportCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\Interfaces\Event $eventContract
+     * @param \App\Services\Model\EventService $eventService
      * @param Csv $csv
      * @return void
      */
     public function handle(
-        Event $eventContract,
+        EventService $eventService,
         Csv $csv
     ) {
         try {
-            $event = $eventContract->getEventShow($this->eventId);
+            $event = $eventService->getEventShow($this->eventId);
             $rows = $event->teams->flatMap(function ($team) {
                 return $team->users->map(function ($user) use ($team) {
                     return [
