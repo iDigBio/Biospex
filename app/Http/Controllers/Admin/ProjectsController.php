@@ -286,8 +286,7 @@ class ProjectsController extends Controller
             'route'      => 'explore', // used for export
         ]);
 
-        // @TODO Should we use expedition_stat for count?
-        $subjectAssignedCount = CountHelper::getProjectSubjectAssignedCount($projectId);
+        $subjectAssignedCount = $this->projectService->find($projectId)->expeditionStats->sum('local_subject_count');
 
         return view('admin.project.explore', compact('project', 'subjectAssignedCount'));
     }
