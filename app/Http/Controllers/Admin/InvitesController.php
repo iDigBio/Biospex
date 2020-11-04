@@ -95,26 +95,4 @@ class InvitesController extends Controller
 
         return redirect()->back();
     }
-
-    /**
-     * Resend a group invite
-     *
-     * @TODO check resend invite method
-     * @param $groupId
-     * @param $inviteId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function resend($groupId, $inviteId)
-    {
-        $group = $this->groupService->find($groupId);
-
-        if ( ! $this->checkPermissions('isOwner', $group))
-        {
-            return redirect()->route('webauth.groups.show', [$groupId]);
-        }
-
-        $this->inviteProcess->resendInvite($group, $inviteId);
-
-        return redirect()->route('webauth.invites.index', [$group->id]);
-    }
 }
