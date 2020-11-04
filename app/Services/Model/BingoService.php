@@ -30,15 +30,8 @@ use Illuminate\Support\Collection;
  *
  * @package App\Services\Model
  */
-class BingoService
+class BingoService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Bingo
-     */
-    private $model;
-
     /**
      * BingoService constructor.
      *

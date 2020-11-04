@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class AmChartService
+class AmChartService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\AmChart
-     */
-    private $model;
-
     /**
      * AmChartService constructor.
      *

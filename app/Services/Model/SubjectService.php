@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class SubjectService
+class SubjectService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Subject
-     */
-    private $model;
-
     /**
      * @var 
      */

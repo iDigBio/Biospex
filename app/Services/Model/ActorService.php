@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class ActorService
+class ActorService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Actor
-     */
-    private $model;
-
     /**
      * ActorService constructor.
      *

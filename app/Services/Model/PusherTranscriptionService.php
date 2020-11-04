@@ -29,15 +29,8 @@ use Illuminate\Http\Request;
  *
  * @package App\Services\Model
  */
-class PusherTranscriptionService
+class PusherTranscriptionService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\PusherTranscription
-     */
-    private $model;
-
     /**
      * PusherTranscriptionService constructor.
      *

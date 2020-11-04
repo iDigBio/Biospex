@@ -28,15 +28,8 @@ use Illuminate\Support\Collection;
  *
  * @package App\Services\Model
  */
-class ExportQueueFileService
+class ExportQueueFileService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\ExportQueueFile
-     */
-    private $model;
-
     /**
      * ExportQueueFileService constructor.
      *

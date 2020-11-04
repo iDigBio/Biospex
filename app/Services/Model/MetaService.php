@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class MetaService
+class MetaService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Meta
-     */
-    private $model;
-
     /**
      * MetaService constructor.
      *

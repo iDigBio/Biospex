@@ -79,15 +79,16 @@ class ProjectProcess
      * Find users groups.
      *
      * @param $userId
-     * @return mixed
+     * @return int
      */
-    public function getUserGroupCount($userId)
+    public function getUserGroupCount($userId): int
     {
-        return $this->groupService->getGroupsByUserId($userId);
+        return $this->groupService->getUserGroupCount($userId);
     }
 
     /**
-     * Return select options for user's groups
+     * Return select options for user's groups.
+     *
      * @param $user
      * @return mixed
      */

@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class PanoptesProjectService
+class PanoptesProjectService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\PanoptesProject
-     */
-    private $model;
-
     /**
      * PanoptesProjectService constructor.
      *

@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class FaqCategoryService
+class FaqCategoryService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\FaqCategory
-     */
-    private $model;
-
     /**
      * FaqCategoryService constructor.
      *

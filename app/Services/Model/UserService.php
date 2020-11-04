@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class UserService
+class UserService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\User
-     */
-    private $model;
-
     /**
      * UserService constructor.
      *

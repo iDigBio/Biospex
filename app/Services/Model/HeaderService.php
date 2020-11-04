@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class HeaderService
+class HeaderService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Header
-     */
-    private $model;
-
     /**
      * HeaderService constructor.
      *

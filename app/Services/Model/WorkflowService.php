@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class WorkflowService
+class WorkflowService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Workflow
-     */
-    private $model;
-
     /**
      * WorkflowService constructor.
      *

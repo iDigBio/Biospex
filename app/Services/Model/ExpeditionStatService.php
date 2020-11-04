@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class ExpeditionStatService
+class ExpeditionStatService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\ExpeditionStat
-     */
-    private $model;
-
     /**
      * ExpeditionStatService constructor.
      *

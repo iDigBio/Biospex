@@ -24,14 +24,8 @@ use App\Services\Model\Traits\ModelTrait;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-class DownloadService
+class DownloadService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Download
-     */
-    private $model;
 
     /**
      * DownloadService constructor.

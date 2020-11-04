@@ -31,14 +31,8 @@ use Illuminate\Support\Collection;
  *
  * @package App\Services\Model
  */
-class EventService
+class EventService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Event
-     */
-    private $model;
 
     /**
      * EventService constructor.

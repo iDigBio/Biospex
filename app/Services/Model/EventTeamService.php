@@ -28,14 +28,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class EventTeamService
+class EventTeamService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\EventTeam
-     */
-    private $model;
 
     /**
      * EventTeamService constructor.

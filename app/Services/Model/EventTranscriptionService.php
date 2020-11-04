@@ -28,15 +28,8 @@ use Illuminate\Support\Collection;
  *
  * @package App\Services\Model
  */
-class EventTranscriptionService
+class EventTranscriptionService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\EventTranscription
-     */
-    private $model;
-
     /**
      * EventTranscriptionService constructor.
      *

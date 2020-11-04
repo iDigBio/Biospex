@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class GroupService
+class GroupService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Group
-     */
-    private $model;
-
     /**
      * GroupService constructor.
      *
@@ -105,9 +98,12 @@ class GroupService
     }
 
     /**
-     * @inheritDoc
+     * Check group count for admin welcome/index page.
+     *
+     * @param $userId
+     * @return int
      */
-    public function getUserGroupCount($userId)
+    public function getUserGroupCount($userId): int
     {
         return $this->model->withCount(['users' => function($q) use($userId) {
             $q->where('user_id', $userId);

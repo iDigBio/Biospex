@@ -17,16 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Model\Traits;
+namespace App\Services\Model;
 
 /**
- * Trait ModelTrait
+ * Class BaseModelService
  *
  * @mixin \Eloquent
- * @package App\Services\Model\Traits1
+ * @package App\Services\Model
  */
-trait ModelTrait
+class BaseModelService
 {
+    /**
+     * @var \Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
+     */
+    protected $model;
+
     /**
      * Get all.
      *

@@ -27,14 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class PropertyService
+class PropertyService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Property
-     */
-    private $model;
 
     /**
      * PropertyService constructor.

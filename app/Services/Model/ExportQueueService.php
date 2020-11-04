@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class ExportQueueService
+class ExportQueueService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\ExportQueue
-     */
-    private $model;
-
     /**
      * ExportQueueService constructor.
      *

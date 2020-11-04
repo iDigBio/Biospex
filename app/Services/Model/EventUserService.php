@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class EventUserService
+class EventUserService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\EventUser
-     */
-    private $eventUser;
-
     /**
      * EventUserService constructor.
      *
@@ -44,7 +37,7 @@ class EventUserService
     public function __construct(EventUser $eventUser)
     {
 
-        $this->eventUser = $eventUser;
+        $this->model = $eventUser;
     }
 
 }

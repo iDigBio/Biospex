@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class ImportService
+class ImportService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Import
-     */
-    private $model;
-
     /**
      * ImportService constructor.
      *

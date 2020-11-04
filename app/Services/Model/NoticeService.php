@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class NoticeService
+class NoticeService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Notice
-     */
-    private $model;
-
     /**
      * NoticeService constructor.
      *

@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class OcrQueueService
+class OcrQueueService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\OcrQueue
-     */
-    private $model;
-
     /**
      * OcrQueueService constructor.
      *

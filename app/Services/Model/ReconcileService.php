@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class ReconcileService
+class ReconcileService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Reconcile
-     */
-    private $model;
-
     /**
      * ReconcileService constructor.
      *

@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class ResourceService
+class ResourceService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Resource
-     */
-    private $model;
-
     /**
      * ResourceService constructor.
      *

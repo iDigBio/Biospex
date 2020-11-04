@@ -28,15 +28,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class ProjectService
+class ProjectService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Project
-     */
-    private $model;
-
     /**
      * ProjectService constructor.
      *

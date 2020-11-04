@@ -28,15 +28,8 @@ use Illuminate\Database\Eloquent\Builder;
  *
  * @package App\Services\Model
  */
-class ExpeditionService
+class ExpeditionService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Expedition
-     */
-    private $model;
-
     /**
      * ExpeditionService constructor.
      *

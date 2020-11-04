@@ -29,15 +29,8 @@ use Illuminate\Support\Facades\Cache;
  *
  * @package App\Services\Model
  */
-class PanoptesTranscriptionService
+class PanoptesTranscriptionService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\PanoptesTranscription
-     */
-    private $model;
-
     /**
      * PanoptesTranscriptionService constructor.
      *

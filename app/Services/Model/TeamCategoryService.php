@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class TeamCategoryService
+class TeamCategoryService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\TeamCategory
-     */
-    private $model;
-
     /**
      * TeamCategoryService constructor.
      *

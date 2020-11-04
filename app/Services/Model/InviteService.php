@@ -27,15 +27,8 @@ use App\Services\Model\Traits\ModelTrait;
  *
  * @package App\Services\Model
  */
-class InviteService
+class InviteService extends BaseModelService
 {
-    use ModelTrait;
-
-    /**
-     * @var \App\Models\Invite
-     */
-    private $model;
-
     /**
      * InviteService constructor.
      *
