@@ -27,8 +27,13 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\ProjectService;
 
+/**
+ * Class AmChartJob
+ *
+ * @package App\Jobs
+ */
 class AmChartJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
@@ -59,13 +64,13 @@ class AmChartJob implements ShouldQueue
     /**
      * Handle job.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      * @param \App\Services\Process\TranscriptionChartService $service
      */
-    public function handle(Project $projectContract, TranscriptionChartService $service)
+    public function handle(ProjectService $projectService, TranscriptionChartService $service)
     {
         try {
-            $project = $projectContract->getProjectForAmChartJob($this->projectId);
+            $project = $projectService->getProjectForAmChartJob($this->projectId);
 
             $service->process($project);
 

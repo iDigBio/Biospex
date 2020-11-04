@@ -17,28 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*
- * Copyright (C) 2015  Biospex
- * biospex@gmail.com
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 namespace App\Services\Process;
 
 use App\Services\Model\GroupService;
-use App\Repositories\Interfaces\Workflow;
+use App\Services\Model\WorkflowService;
 use Illuminate\Support\Facades\Notification;
 
 /**
@@ -49,9 +31,9 @@ use Illuminate\Support\Facades\Notification;
 class ProjectProcess
 {
     /**
-     * @var \App\Repositories\Interfaces\Workflow
+     * @var \App\Services\Model\WorkflowService
      */
-    private $workflowContract;
+    private $workflowService;
 
     /**
      * @var \App\Services\Model\GroupService
@@ -61,16 +43,16 @@ class ProjectProcess
     /**
      * CommonVariables constructor.
      *
-     * @param \App\Repositories\Interfaces\Workflow $workflowContract
+     * @param \App\Services\Model\WorkflowService $workflowService
      * @param \App\Services\Model\GroupService $groupService
      */
     public function __construct(
-        Workflow $workflowContract,
+        WorkflowService $workflowService,
         GroupService $groupService
     )
     {
 
-        $this->workflowContract = $workflowContract;
+        $this->workflowService = $workflowService;
         $this->groupService = $groupService;
     }
 
@@ -79,7 +61,7 @@ class ProjectProcess
      */
     public function workflowSelectOptions()
     {
-        return $this->workflowContract->getWorkflowSelect();
+        return $this->workflowService->getWorkflowSelect();
     }
 
     /**

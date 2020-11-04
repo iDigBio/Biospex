@@ -19,8 +19,8 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Interfaces\Import;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\ImportService;
+use App\Services\Model\ProjectService;
 use App\Notifications\DarwinCoreImportError;
 use Exception;
 use GuzzleHttp\Client;
@@ -31,6 +31,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Storage;
 
+/**
+ * Class RecordsetImportJob
+ *
+ * @package App\Jobs
+ */
 class RecordsetImportJob implements ShouldQueue
 {
 
@@ -49,9 +54,9 @@ class RecordsetImportJob implements ShouldQueue
     public $data;
 
     /**
-     * @var Import
+     * @var \App\Services\Model\ImportService
      */
-    public $importContract;
+    public $importService;
 
     /**
      * Curl response
@@ -73,15 +78,15 @@ class RecordsetImportJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param Import $importContract
-     * @param Project $projectContract
+     * @param \App\Services\Model\ImportService $importService
+     * @param \App\Services\Model\ProjectService $projectService
      */
     public function handle(
-        Import $importContract,
-        Project $projectContract
+        ImportService $importService,
+        ProjectService $projectService
     )
     {
-        $this->importContract = $importContract;
+        $this->importService = $importService;
 
         try
         {
@@ -90,7 +95,7 @@ class RecordsetImportJob implements ShouldQueue
         }
         catch (Exception $e)
         {
-            $project = $projectContract->findWith($this->data['project_id'], ['group.owner']);
+            $project = $projectService->findWith($this->data['project_id'], ['group.owner']);
 
             $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
         }
@@ -161,7 +166,7 @@ class RecordsetImportJob implements ShouldQueue
             throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
         }
 
-        return $this->importContract->create([
+        return $this->importService->create([
             'user_id'    => $this->data['user_id'],
             'project_id' => $this->data['project_id'],
             'file'       => $filePath

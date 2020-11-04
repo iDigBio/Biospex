@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,18 +22,23 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\NfnExpertReviewJob;
 use App\Jobs\NfnExpertReviewPublishJob;
-use App\Services\Model\ReconcileService;
+use App\Services\Process\ExpertReconcileProcess;
 use Illuminate\Http\RedirectResponse;
 use App\Services\Model\ExpeditionService;
 use App\Services\Api\PanoptesApiService;
 use Flash;
 
+/**
+ * Class ReconcilesController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class ReconcilesController extends Controller
 {
     /**
-     * @var \App\Services\Model\ReconcileService
+     * @var \App\Services\Process\ExpertReconcileProcess
      */
-    private $service;
+    private $expertReconcileService;
 
     /**
      * @var \App\Services\Model\ExpeditionService
@@ -43,12 +48,12 @@ class ReconcilesController extends Controller
     /**
      * ReconcilesController constructor.
      *
-     * @param \App\Services\Model\ReconcileService $service
+     * @param \App\Services\Process\ExpertReconcileProcess $expertReconcileService
      * @param \App\Services\Model\ExpeditionService $expeditionService
      */
-    public function __construct(ReconcileService $service, ExpeditionService $expeditionService)
+    public function __construct(ExpertReconcileProcess $expertReconcileService, ExpeditionService $expeditionService)
     {
-        $this->service = $service;
+        $this->expertReconcileService = $expertReconcileService;
         $this->expeditionService = $expeditionService;
     }
 
@@ -67,7 +72,7 @@ class ReconcilesController extends Controller
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        $reconciles = $this->service->getPagination((int) $expedition->id);
+        $reconciles = $this->expertReconcileService->getPagination((int) $expedition->id);
 
         if ($reconciles->isEmpty()) {
             Flash::error(t('Reconcile data for processing is missing.'));
@@ -76,8 +81,8 @@ class ReconcilesController extends Controller
         }
 
         $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
-        $imgUrl = $this->service->getImageUrl($reconciles->first()->subject_imageName, $location);
-        $columns = $this->service->setColumnMasks($reconciles->first()->columns);
+        $imgUrl = $this->expertReconcileService->getImageUrl($reconciles->first()->subject_imageName, $location);
+        $columns = $this->expertReconcileService->setColumnMasks($reconciles->first()->columns);
 
         return view('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition'));
     }
@@ -115,7 +120,7 @@ class ReconcilesController extends Controller
             return ['result' => false, 'message' => t('Error while updating record.')];
         }
 
-        if (! $this->service->updateRecord(request()->all())) {
+        if (! $this->expertReconcileService->updateRecord(request()->all())) {
             return ['result' => false, 'message' => t('Error while updating record.')];
         }
 

@@ -21,20 +21,25 @@ namespace App\Http\Controllers\Front;
 
 use Flash;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\Resource;
+use App\Services\Model\ResourceService;
 use Storage;
 
+/**
+ * Class ResourcesController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class ResourcesController extends Controller
 {
     /**
      * Show resources.
      *
-     * @param \App\Repositories\Interfaces\Resource $resourceContract
+     * @param \App\Services\Model\ResourceService $resourceService
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Resource $resourceContract)
+    public function index(ResourceService $resourceService)
     {
-        $resources = $resourceContract->getResourcesOrdered();
+        $resources = $resourceService->getResourcesOrdered();
 
         return view('front.resource.index', compact('resources'));
     }
@@ -42,13 +47,13 @@ class ResourcesController extends Controller
     /**
      * Download resource file.
      *
-     * @param \App\Repositories\Interfaces\Resource $resourceContract
+     * @param \App\Services\Model\ResourceService $resourceService
      * @param $resourceId
      * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function download(Resource $resourceContract, $resourceId)
+    public function download(ResourceService $resourceService, $resourceId)
     {
-        $download = $resourceContract->find($resourceId);
+        $download = $resourceService->find($resourceId);
         $document = $download->document;
 
         if (! $document->exists() || ! file_exists(public_path('storage' . $document->path()))) {

@@ -21,26 +21,31 @@ namespace App\Http\Controllers\Admin;
 
 use Flash;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\Import;
+use App\Services\Model\ImportService;
 use App\Jobs\DwcFileImportJob;
 use App\Jobs\DwcUriImportJob;
 use App\Jobs\RecordsetImportJob;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\ProjectService;
 use Auth;
 use Exception;
 
+/**
+ * Class ImportsController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class ImportsController extends Controller
 {
     /**
      * Add data to project
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      * @param $projectId
      * @return \Illuminate\View\View
      */
-    public function index(Project $projectContract, $projectId)
+    public function index(ProjectService $projectService, $projectId)
     {
-        $project = $projectContract->find($projectId);
+        $project = $projectService->find($projectId);
 
         return view('admin.partials.import-modal-body', compact('project'));
     }
@@ -48,16 +53,16 @@ class ImportsController extends Controller
     /**
      * Upload DWC file.
      *
-     * @param \App\Repositories\Interfaces\Import $importContract
+     * @param \App\Services\Model\ImportService $importService
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function dwcFile(Import $importContract)
+    public function dwcFile(ImportService $importService)
     {
         try {
             $projectId = request()->input('project_id');
             $path = request()->file('dwc-file')->store('imports/subjects');
 
-            $import = $importContract->create([
+            $import = $importService->create([
                 'user_id'    => Auth::user()->id,
                 'project_id' => $projectId,
                 'file'       => $path

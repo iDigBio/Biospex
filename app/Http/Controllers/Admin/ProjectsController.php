@@ -23,7 +23,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
 use App\Jobs\DeleteUnassignedSubjectsJob;
 use App\Jobs\OcrCreateJob;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\ProjectService;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Grid\JqGridEncoder;
 use App\Services\Process\ProjectProcess;
@@ -41,9 +41,9 @@ use JavaScript;
 class ProjectsController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\Project
+     * @var \App\Services\Model\ProjectService
      */
-    private $projectContract;
+    private $projectService;
 
     /**
      * @var \App\Services\Process\ProjectProcess
@@ -53,15 +53,15 @@ class ProjectsController extends Controller
     /**
      * ProjectsController constructor.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      * @param \App\Services\Process\ProjectProcess $projectProcess
      */
     public function __construct(
-        Project $projectContract,
+        ProjectService $projectService,
         ProjectProcess $projectProcess
     ) {
         $this->projectProcess = $projectProcess;
-        $this->projectContract = $projectContract;
+        $this->projectService = $projectService;
     }
 
     /**
@@ -74,7 +74,7 @@ class ProjectsController extends Controller
         $user = Auth::user();
 
         $groups = $this->projectProcess->getUserGroupCount($user->id);
-        $projects = $this->projectContract->getAdminProjectIndex($user->id);
+        $projects = $this->projectService->getAdminProjectIndex($user->id);
 
         return $groups === 0 ? view('admin.welcome') : view('admin.project.index', compact('projects'));
     }
@@ -105,7 +105,7 @@ class ProjectsController extends Controller
      */
     public function show($projectId)
     {
-        $project = $this->projectContract->getProjectShow($projectId);
+        $project = $this->projectService->getProjectShow($projectId);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -143,10 +143,10 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $model = $this->projectContract->create($request->all());
+        $model = $this->projectService->create($request->all());
 
         if ($model) {
-            $project = $this->projectContract->findWith($model->id, ['workflow.actors.contacts']);
+            $project = $this->projectService->findWith($model->id, ['workflow.actors.contacts']);
             $this->projectProcess->notifyActorContacts($project);
 
             Flash::success(t('Record was created successfully.'));
@@ -167,7 +167,7 @@ class ProjectsController extends Controller
      */
     public function clone($projectId)
     {
-        $project = $this->projectContract->findWith($projectId, ['group', 'expeditions.workflowManager']);
+        $project = $this->projectService->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
         if (! $project) {
             Flash::error(t('Error retrieving record from database'));
@@ -197,7 +197,7 @@ class ProjectsController extends Controller
      */
     public function edit($projectId)
     {
-        $project = $this->projectContract->findWith($projectId, ['group', 'resources']);
+        $project = $this->projectService->findWith($projectId, ['group', 'resources']);
         if (! $project) {
             Flash::error(t('Error retrieving record from database'));
 
@@ -233,7 +233,7 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $project = $this->projectContract->update($request->all(), $projectId);
+        $project = $this->projectService->update($request->all(), $projectId);
 
         $project ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
 
@@ -254,7 +254,7 @@ class ProjectsController extends Controller
         $user = Auth::user();
         $sort = request()->get('sort');
         $order = request()->get('order');
-        $projects = $this->projectContract->getAdminProjectIndex($user->id, $sort, $order);
+        $projects = $this->projectService->getAdminProjectIndex($user->id, $sort, $order);
 
         return view('admin.project.partials.project', compact('projects'));
     }
@@ -268,7 +268,7 @@ class ProjectsController extends Controller
      */
     public function explore($projectId, JqGridEncoder $grid)
     {
-        $project = $this->projectContract->findWith($projectId, ['group']);
+        $project = $this->projectService->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -300,7 +300,7 @@ class ProjectsController extends Controller
      */
     public function delete($projectId)
     {
-        $project = $this->projectContract->getProjectForDelete($projectId);
+        $project = $this->projectService->getProjectForDelete($projectId);
 
         if (! $this->checkPermissions('isOwner', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -333,7 +333,7 @@ class ProjectsController extends Controller
      */
     public function ocr($projectId)
     {
-        $project = $this->projectContract->findWith($projectId, ['group']);
+        $project = $this->projectService->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -349,13 +349,12 @@ class ProjectsController extends Controller
     /**
      * Project Stats.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
      * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function statistics(Project $projectContract, $projectId)
+    public function statistics($projectId)
     {
-        $project = $projectContract->findWith($projectId, ['group']);
+        $project = $this->projectService->findWith($projectId, ['group']);
 
         $transcribers = CountHelper::getTranscribersTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
         $transcriptions = CountHelper::getTranscriptionsPerTranscribers($projectId, $transcribers);

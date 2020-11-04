@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Model\ExpeditionStatService;
-use App\Repositories\Interfaces\PanoptesProject;
+use App\Services\Model\PanoptesProjectService;
 use App\Services\Api\PanoptesApiService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -54,20 +54,20 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\Interfaces\PanoptesProject $panoptesProject
+     * @param \App\Services\Model\PanoptesProjectService $panoptesProjectService
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @param \App\Services\Model\ExpeditionStatService $expeditionStatService
      * @return void
      */
     public function handle(
-        PanoptesProject $panoptesProject,
+        PanoptesProjectService $panoptesProjectService,
         PanoptesApiService $panoptesApiService,
         ExpeditionStatService $expeditionStatService
     )
     {
 
         try {
-            $record = $panoptesProject->findBy('expedition_id', $this->expeditionId);
+            $record = $panoptesProjectService->findBy('expedition_id', $this->expeditionId);
 
             if ($record === null) {
                 $this->delete();

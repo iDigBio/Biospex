@@ -20,9 +20,14 @@
 namespace App\Console\Commands;
 
 use App\Jobs\OcrTesseractJob;
-use App\Repositories\Interfaces\OcrQueue;
+use App\Services\Model\OcrQueueService;
 use Illuminate\Console\Command;
 
+/**
+ * Class OcrProcessCommand
+ *
+ * @package App\Console\Commands
+ */
 class OcrProcessCommand extends Command
 {
     /**
@@ -40,19 +45,19 @@ class OcrProcessCommand extends Command
     protected $description = 'Starts ocr processing if queues exist.';
 
     /**
-     * @var \App\Repositories\Interfaces\OcrQueue
+     * @var \App\Services\Model\OcrQueueService
      */
-    private $ocrQueueContract;
+    private $ocrQueueService;
 
     /**
      * OcrProcessCommand constructor.
      *
-     * @param \App\Repositories\Interfaces\OcrQueue $ocrQueueContract
+     * @param \App\Services\Model\OcrQueueService $ocrQueueService
      */
-    public function __construct(OcrQueue $ocrQueueContract) {
+    public function __construct(OcrQueueService $ocrQueueService) {
         parent::__construct();
 
-        $this->ocrQueueContract = $ocrQueueContract;
+        $this->ocrQueueService = $ocrQueueService;
     }
 
     /**
@@ -62,7 +67,7 @@ class OcrProcessCommand extends Command
      */
     public function handle()
     {
-        $queue = $this->ocrQueueContract->getOcrQueueForOcrProcessCommand();
+        $queue = $this->ocrQueueService->getOcrQueueForOcrProcessCommand();
 
         if ($queue === null || $queue->status === 1) {
             return;

@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,8 +21,8 @@ namespace App\Services\Process;
 
 use App\Models\AmChart;
 use App\Models\Expedition;
-use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Repositories\Interfaces\Project;
+use App\Models\Project;
+use App\Services\Model\PanoptesTranscriptionService;
 use Carbon\CarbonPeriod;
 use File;
 use Illuminate\Support\Carbon;
@@ -36,14 +36,9 @@ use Illuminate\Support\Collection;
 class TranscriptionChartService
 {
     /**
-     * @var \App\Repositories\Interfaces\Project
+     * @var \App\Services\Model\PanoptesTranscriptionService
      */
-    private $projectContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\PanoptesTranscription
-     */
-    private $transcriptionContract;
+    private $panoptesTranscriptionService;
 
     /**
      * @var mixed
@@ -78,16 +73,12 @@ class TranscriptionChartService
     /**
      * TranscriptionChartService constructor.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $transcriptionContract
+     * @param \App\Services\Model\PanoptesTranscriptionService $panoptesTranscriptionService
      */
     public function __construct(
-        Project $projectContract,
-        PanoptesTranscription $transcriptionContract
+        PanoptesTranscriptionService $panoptesTranscriptionService
     ) {
-
-        $this->projectContract = $projectContract;
-        $this->transcriptionContract = $transcriptionContract;
+        $this->panoptesTranscriptionService = $panoptesTranscriptionService;
     }
 
     /**
@@ -95,7 +86,7 @@ class TranscriptionChartService
      *
      * @param \App\Models\Project $project
      */
-    public function process(\App\Models\Project $project)
+    public function process(Project $project)
     {
         $this->checkNewChart($project);
 
@@ -127,7 +118,6 @@ class TranscriptionChartService
 
         $project->amChart->save();
 
-        return;
     }
 
     /**
@@ -135,7 +125,7 @@ class TranscriptionChartService
      *
      * @param \App\Models\Project $project
      */
-    protected function checkNewChart(\App\Models\Project &$project)
+    protected function checkNewChart(Project &$project)
     {
         if ($project->amChart === null) {
             $amChart = new AmChart();
@@ -181,8 +171,8 @@ class TranscriptionChartService
      */
     public function setYearsArray(int $projectId)
     {
-        $earliest_date = $this->transcriptionContract->getMinFinishedAtDateByProjectId($projectId);
-        $latest_date = $this->transcriptionContract->getMaxFinishedAtDateByProjectId($projectId);
+        $earliest_date = $this->panoptesTranscriptionService->getMinFinishedAtDateByProjectId($projectId);
+        $latest_date = $this->panoptesTranscriptionService->getMaxFinishedAtDateByProjectId($projectId);
 
         if (null === $earliest_date || null === $latest_date) {
             return null;
@@ -263,7 +253,7 @@ class TranscriptionChartService
      */
     protected function transcriptionCountPerDate(int $workflowId)
     {
-        return $this->transcriptionContract->getTranscriptionCountPerDate($workflowId, $this->begin, $this->end);
+        return $this->panoptesTranscriptionService->getTranscriptionCountPerDate($workflowId, $this->begin, $this->end);
     }
 
     /**

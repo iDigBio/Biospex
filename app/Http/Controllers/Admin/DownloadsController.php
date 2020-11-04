@@ -21,19 +21,24 @@ namespace App\Http\Controllers\Admin;
 
 use App\Jobs\ExportDownloadBatchJob;
 use App\Services\Model\ExpeditionService;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\UserService;
 use App\Services\Download\DownloadType;
 use Exception;
 use Flash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Class DownloadsController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class DownloadsController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\User
+     * @var \App\Services\Model\UserService
      */
-    private $userContract;
+    private $userService;
 
     /**
      * @var \App\Services\Model\ExpeditionService
@@ -48,16 +53,16 @@ class DownloadsController extends Controller
     /**
      * DownloadsController constructor.
      *
-     * @param \App\Repositories\Interfaces\User $userContract
+     * @param \App\Services\Model\UserService $userService
      * @param \App\Services\Model\ExpeditionService $expeditionService
      * @param \App\Services\Download\DownloadType $downloadType
      */
     public function __construct(
-        User $userContract,
+        UserService $userService,
         ExpeditionService $expeditionService,
         DownloadType $downloadType
     ) {
-        $this->userContract = $userContract;
+        $this->userService = $userService;
         $this->expeditionService = $expeditionService;
         $this->downloadType = $downloadType;
     }
@@ -71,7 +76,7 @@ class DownloadsController extends Controller
      */
     public function index(string $projectId, string $expeditionId)
     {
-        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $user = $this->userService->findWith(request()->user()->id, ['profile']);
         $expedition = $this->expeditionService->expeditionDownloadsByActor($expeditionId);
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group);

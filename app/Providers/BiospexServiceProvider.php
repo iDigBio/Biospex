@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -26,50 +26,11 @@ use App\Services\Helpers\GeneralHelper;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
-use App\Repositories\Interfaces\Header;
-use App\Repositories\Interfaces\Import;
-use App\Repositories\Interfaces\Invite;
-use App\Repositories\Interfaces\Meta;
-use App\Repositories\Interfaces\Notice;
-use App\Repositories\Interfaces\OcrQueue;
-use App\Repositories\Interfaces\PanoptesProject;
-use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Repositories\Interfaces\Project;
-use App\Repositories\Interfaces\ProjectResource;
-use App\Repositories\Interfaces\Property;
-use App\Repositories\Interfaces\Reconcile;
-use App\Repositories\Interfaces\Resource;
-use App\Repositories\Interfaces\StateCounty;
-use App\Repositories\Interfaces\TeamCategory;
-use App\Repositories\Interfaces\Team;
-use App\Repositories\Interfaces\TranscriptionLocation;
-use App\Repositories\Interfaces\User;
-use App\Repositories\Interfaces\PusherTranscription;
-use App\Repositories\Interfaces\Workflow;
-use App\Repositories\Interfaces\WorkflowManager;
-
-use App\Repositories\Eloquent\HeaderRepository;
-use App\Repositories\Eloquent\ImportRepository;
-use App\Repositories\Eloquent\InviteRepository;
-use App\Repositories\Eloquent\MetaRepository;
-use App\Repositories\Eloquent\NoticeRepository;
-use App\Repositories\Eloquent\OcrQueueRepository;
-use App\Repositories\Eloquent\PanoptesProjectRepository;
-use App\Repositories\MongoDb\PanoptesTranscriptionRepository;
-use App\Repositories\Eloquent\ProjectRepository;
-use App\Repositories\Eloquent\ProjectResourceRepository;
-use App\Repositories\Eloquent\PropertyRepository;
-use App\Repositories\MongoDb\ReconcileRepository;
-use App\Repositories\Eloquent\ResourceRepository;
-use App\Repositories\Eloquent\StateCountyRepository;
-use App\Repositories\Eloquent\TeamCategoryRepository;
-use App\Repositories\Eloquent\TeamRepository;
-use App\Repositories\Eloquent\TranscriptionLocationRepository;
-use App\Repositories\Eloquent\UserRepository;
-use App\Repositories\MongoDb\PusherTranscriptionsRepository;
-use App\Repositories\Eloquent\WorkflowManagerRepository;
-use App\Repositories\Eloquent\WorkflowRepository;
-
+/**
+ * Class BiospexServiceProvider
+ *
+ * @package App\Providers
+ */
 class BiospexServiceProvider extends ServiceProvider
 {
     public function boot()
@@ -79,7 +40,6 @@ class BiospexServiceProvider extends ServiceProvider
     
     public function register()
     {
-        $this->registerRepositories();
         $this->registerFacades();
 
         Collection::macro('shuffleWords', function () {
@@ -102,35 +62,6 @@ class BiospexServiceProvider extends ServiceProvider
         view()->composer(
             'common.process-modal', 'App\Http\ViewComposers\PollComposer'
         );
-    }
-
-    /**
-     * Register Repositories
-     */
-    protected function registerRepositories()
-    {
-        $this->app->bind(Header::class, HeaderRepository::class);
-        $this->app->bind(Import::class, ImportRepository::class);
-        $this->app->bind(Invite::class, ImportRepository::class);
-        $this->app->bind(Invite::class, InviteRepository::class);
-        $this->app->bind(Meta::class, MetaRepository::class);
-        $this->app->bind(Notice::class, NoticeRepository::class);
-        $this->app->bind(OcrQueue::class, OcrQueueRepository::class);
-        $this->app->bind(PanoptesProject::class, PanoptesProjectRepository::class);
-        $this->app->bind(PanoptesTranscription::class, PanoptesTranscriptionRepository::class);
-        $this->app->bind(Project::class, ProjectRepository::class);
-        $this->app->bind(Property::class, PropertyRepository::class);
-        $this->app->bind(Reconcile::class, ReconcileRepository::class);
-        $this->app->bind(Resource::class, ResourceRepository::class);
-        $this->app->bind(StateCounty::class, StateCountyRepository::class);
-        $this->app->bind(TeamCategory::class, TeamCategoryRepository::class);
-        $this->app->bind(Team::class, TeamRepository::class);
-        $this->app->bind(TranscriptionLocation::class, TranscriptionLocationRepository::class);
-        $this->app->bind(User::class, UserRepository::class);
-        $this->app->bind(PusherTranscription::class, PusherTranscriptionsRepository::class);
-        $this->app->bind(Workflow::class, WorkflowRepository::class);
-        $this->app->bind(WorkflowManager::class, WorkflowManagerRepository::class);
-        $this->app->bind(ProjectResource::class, ProjectResourceRepository::class);
     }
 
     /**

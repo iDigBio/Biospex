@@ -21,22 +21,27 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Services\Model\ExpeditionService;
-use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Services\Model\PanoptesTranscriptionService;
 
+/**
+ * Class HomeController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class HomeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @param \App\Services\Model\ExpeditionService $expeditionService
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $panoptesTranscription
+     * @param \App\Services\Model\PanoptesTranscriptionService $panoptesTranscriptionService
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(ExpeditionService $expeditionService, PanoptesTranscription $panoptesTranscription)
+    public function index(ExpeditionService $expeditionService, PanoptesTranscriptionService $panoptesTranscriptionService)
     {
         $expedition = $expeditionService->getHomePageProjectExpedition();
-        $contributorCount = $panoptesTranscription->getContributorCount();
-        $transcriptionCount = $panoptesTranscription->getTotalTranscriptions();
+        $contributorCount = $panoptesTranscriptionService->getContributorCount();
+        $transcriptionCount = $panoptesTranscriptionService->getTotalTranscriptions();
 
         return view('front.home', compact('expedition', 'contributorCount', 'transcriptionCount'));
     }

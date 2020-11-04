@@ -6,8 +6,8 @@ use App\Jobs\Traits\SkipNfn;
 use App\Notifications\JobError;
 use App\Notifications\NfnExpertReviewJobComplete;
 use App\Services\Model\ExpeditionService;
-use App\Services\Model\ReconcileService;
-use App\Services\Process\ReconcileProcessService;
+use App\Services\Process\ExpertReconcileProcess;
+use App\Services\Process\ReconcileProcess;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -38,14 +38,14 @@ class NfnExpertReviewJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Model\ExpeditionService $expeditionService
-     * @param \App\Services\Process\ReconcileProcessService $reconcileProcessService
-     * @param \App\Services\Model\ReconcileService $reconcileService
+     * @param \App\Services\Process\ReconcileProcess $reconcileProcessService
+     * @param \App\Services\Process\ExpertReconcileProcess $expertReconcileService
      * @return void
      */
     public function handle(
         ExpeditionService $expeditionService,
-        ReconcileProcessService $reconcileProcessService,
-        ReconcileService $reconcileService
+        ReconcileProcess $reconcileProcessService,
+        ExpertReconcileProcess $expertReconcileService
     )
     {
         $expedition = $expeditionService->findExpeditionForExpertReview($this->expeditionId);
@@ -57,8 +57,8 @@ class NfnExpertReviewJob implements ShouldQueue
             }
 
             $reconcileProcessService->processExplained($expedition);
-            $reconcileService->migrateReconcileCsv($expedition->id);
-            $reconcileService->setReconcileProblems($expedition->id);
+            $expertReconcileService->migrateReconcileCsv($expedition->id);
+            $expertReconcileService->setReconcileProblems($expedition->id);
 
             $expedition->nfnActor->pivot->expert = 1;
             $expedition->nfnActor->pivot->save();

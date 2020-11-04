@@ -23,7 +23,7 @@ use App\Models\User;
 use App\Notifications\EventCsvExport;
 use App\Notifications\EventCsvExportError;
 use App\Services\Model\EventTranscriptionService;
-use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Services\Model\PanoptesTranscriptionService;
 use App\Services\Csv\Csv;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -76,13 +76,13 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $panoptesTranscriptionContract
+     * @param \App\Services\Model\PanoptesTranscriptionService $panoptesTranscriptionService
      * @param Csv $csv
      * @return void
      */
     public function handle(
         EventTranscriptionService $eventTranscriptionService,
-        PanoptesTranscription $panoptesTranscriptionContract,
+        PanoptesTranscriptionService $panoptesTranscriptionService,
         Csv $csv
     )
     {
@@ -90,8 +90,8 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
         {
             $ids = $eventTranscriptionService->getEventClassificationIds($this->eventId);
 
-            $transcriptions = $ids->map(function($id) use($panoptesTranscriptionContract) {
-                $transcript = $panoptesTranscriptionContract->findBy('classification_id', $id);
+            $transcriptions = $ids->map(function($id) use($panoptesTranscriptionService) {
+                $transcript = $panoptesTranscriptionService->findBy('classification_id', $id);
                 unset($transcript['_id']);
                 return $transcript;
             })->reject(function($transcription){

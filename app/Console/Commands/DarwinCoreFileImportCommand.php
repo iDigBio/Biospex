@@ -21,15 +21,20 @@ namespace App\Console\Commands;
 
 use App\Jobs\DwcFileImportJob;
 use Illuminate\Console\Command;
-use App\Repositories\Interfaces\Import;
+use App\Services\Model\ImportService;
 
+/**
+ * Class DarwinCoreFileImportCommand
+ *
+ * @package App\Console\Commands
+ */
 class DarwinCoreFileImportCommand extends Command
 {
 
     /**
-     * @var Import
+     * @var \App\Services\Model\ImportService
      */
-    private $importContract;
+    private $importService;
 
     /**
      * @var mixed
@@ -53,13 +58,13 @@ class DarwinCoreFileImportCommand extends Command
     /**
      * DarwinCoreFileImportCommand constructor.
      * 
-     * @param Import $importContract
+     * @param \App\Services\Model\ImportService $importService
      */
-    public function __construct(Import $importContract)
+    public function __construct(ImportService $importService)
     {
         parent::__construct();
 
-        $this->importContract = $importContract;
+        $this->importService = $importService;
         $this->tube = config('config.import_tube');
     }
 
@@ -70,7 +75,7 @@ class DarwinCoreFileImportCommand extends Command
      */
     public function handle()
     {
-        $import = $this->importContract->getFirstImportWithoutError();
+        $import = $this->importService->findBy('error', 0);
 
         if ($import === null)
             return;

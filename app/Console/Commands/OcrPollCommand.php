@@ -20,13 +20,16 @@
 namespace App\Console\Commands;
 
 use App\Events\PollOcrEvent;
-use App\Repositories\Interfaces\Project;
 use Illuminate\Console\Command;
-use App\Repositories\Interfaces\OcrQueue;
+use App\Services\Model\OcrQueueService;
 
+/**
+ * Class OcrPollCommand
+ *
+ * @package App\Console\Commands
+ */
 class OcrPollCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -42,30 +45,20 @@ class OcrPollCommand extends Command
     protected $description = 'Processes information for OCR Polling event.';
 
     /**
-     * @var OcrQueue
+     * @var \App\Services\Model\OcrQueueService
      */
-    private $ocrQueueContract;
+    private $ocrQueueService;
 
     /**
-     * @var Project
-     */
-    private $projectContract;
-
-    /**
-     * Create a new command instance.
+     * OcrPollCommand constructor.
      *
-     * @param OcrQueue $ocrQueueContract
-     * @param Project $projectContract
+     * @param \App\Services\Model\OcrQueueService $ocrQueueService
      */
-    public function __construct(
-        OcrQueue $ocrQueueContract,
-        Project $projectContract
-    )
+    public function __construct(OcrQueueService $ocrQueueService)
     {
         parent::__construct();
 
-        $this->ocrQueueContract = $ocrQueueContract;
-        $this->projectContract = $projectContract;
+        $this->ocrQueueService = $ocrQueueService;
     }
 
     /**
@@ -73,19 +66,18 @@ class OcrPollCommand extends Command
      */
     public function handle()
     {
-        $records = $this->ocrQueueContract->getOcrQueuesForPollCommand();
+        $records = $this->ocrQueueService->getOcrQueuesForPollCommand();
 
         $data = ['message' => t('No processes running at this time'), 'payload' => []];
 
-        if ($records->isEmpty())
-        {
+        if ($records->isEmpty()) {
             PollOcrEvent::dispatch($data);
 
             return;
         }
 
         $count = 0;
-        $data['payload'] = $records->map(function($record) use (&$count){
+        $data['payload'] = $records->map(function ($record) use (&$count) {
             $batches = $count === 0 ? '' : t(n(':batches_queued process remains in queue before processing begins', ':batches_queued processes remain in queue before processing begins', $count), [':batches_queued' => $count]);
 
             $countNumbers = [':processed' => $record->processed, ':total' => $record->total];
@@ -93,13 +85,13 @@ class OcrPollCommand extends Command
 
             $title = $record->expedition !== null ? $record->expedition->title : $record->project->title;
 
-            $notice = view('common.ocr-process', compact('title','ocr', 'batches'))->render();
+            $notice = view('common.ocr-process', compact('title', 'ocr', 'batches'))->render();
 
             $count++;
 
             return [
                 'groupId' => $record->project->group->id,
-                'notice'   => $notice,
+                'notice'  => $notice,
             ];
         })->toArray();
 

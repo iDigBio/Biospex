@@ -19,7 +19,6 @@
 
 namespace App\Http\Controllers\Api\V0;
 
-use App\Repositories\Interfaces\PusherTranscription;
 use App\Services\Process\PusherTranscriptionProcess;
 use Illuminate\Http\Request;
 use App\Transformers\PusherTranscriptionTransformer;
@@ -34,22 +33,6 @@ use App\Transformers\PusherTranscriptionTransformer;
 
 class PusherTranscriptionsController extends ApiController
 {
-
-    /**
-     * @var PusherTranscription
-     */
-    private $pusherTranscriptionContract;
-
-    /**
-     * PusherTranscriptionsController constructor.
-     *
-     * @param PusherTranscription $pusherTranscriptionContract
-     */
-    public function __construct(PusherTranscription $pusherTranscriptionContract)
-    {
-
-        $this->pusherTranscriptionContract = $pusherTranscriptionContract;
-    }
 
     /**
      * PusherTranscription List.

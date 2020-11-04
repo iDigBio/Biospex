@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Process\ReconcilePublishService;
+use App\Services\Process\ExpertReconcilePublishProcess;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -53,13 +53,13 @@ class NfnExpertReviewPublishJob implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param \App\Services\Process\ReconcilePublishService $service
+     * @param \App\Services\Process\ExpertReconcilePublishProcess $expertReconcilePublishProcess
      */
-    public function handle(ReconcilePublishService $service)
+    public function handle(ExpertReconcilePublishProcess $expertReconcilePublishProcess)
     {
 
         try {
-            $service->publishReconciled($this->expeditionId);
+            $expertReconcilePublishProcess->publishReconciled($this->expeditionId);
         } catch (CannotInsertRecord | Exception $e) {
             $user = User::find(1);
             $messages = [

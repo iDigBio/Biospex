@@ -25,7 +25,7 @@ use Flash;
 use App\Services\Model\GroupService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\UserService;
 use Exception;
 
 /**
@@ -76,17 +76,17 @@ class GroupsController extends Controller
      * Store a newly created group.
      *
      * @param GroupFormRequest $request
-     * @param \App\Repositories\Interfaces\User $userContract
+     * @param \App\Services\Model\UserService $userService
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(GroupFormRequest $request, User $userContract)
+    public function store(GroupFormRequest $request, UserService $userService)
     {
         $user = Auth::user();
         $group = $this->groupService->create(['user_id' => $user->id, 'title' => $request->get('title')]);
 
         if ($group) {
             $user->assignGroup($group);
-            $admin = $userContract->find(1);
+            $admin = $userService->find(1);
             $admin->assignGroup($group);
 
             event('group.saved');
@@ -200,12 +200,12 @@ class GroupsController extends Controller
     /**
      * Delete user from group.
      *
-     * @param \App\Repositories\Interfaces\User $userContract
+     * @param \App\Services\Model\UserService $userService
      * @param $groupId
      * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteUser(User $userContract, $groupId, $userId)
+    public function deleteUser(UserService $userService, $groupId, $userId)
     {
         $group = $this->groupService->find($groupId);
 
@@ -220,7 +220,7 @@ class GroupsController extends Controller
                 return redirect()->route('admin.groups.show', [$groupId]);
             }
 
-            $user = $userContract->find($userId);
+            $user = $userService->find($userId);
             $user->detachGroup($group->id);
 
             Flash::success(t('User was removed from the group'));

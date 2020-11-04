@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\Model\GroupService;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\UserService;
 use App\Http\Requests\InviteFormRequest;
 use App\Services\Process\InviteProcess;
 
@@ -38,9 +38,9 @@ class InvitesController extends Controller
     public $groupService;
 
     /**
-     * @var User
+     * @var \App\Services\Model\UserService
      */
-    public $userContract;
+    public $userService;
 
     /**
      * @var \App\Services\Process\InviteProcess
@@ -52,16 +52,16 @@ class InvitesController extends Controller
      *
      * @param \App\Services\Process\InviteProcess $inviteProcess
      * @param \App\Services\Model\GroupService $groupService
-     * @param User $userContract
+     * @param \App\Services\Model\UserService $userService
      */
     public function __construct(
         InviteProcess $inviteProcess,
         GroupService $groupService,
-        User $userContract
+        UserService $userService
     ) {
         $this->inviteProcess = $inviteProcess;
         $this->groupService = $groupService;
-        $this->userContract = $userContract;
+        $this->userService = $userService;
     }
 
     /**
@@ -98,6 +98,8 @@ class InvitesController extends Controller
 
     /**
      * Resend a group invite
+     *
+     * @TODO check resend invite method
      * @param $groupId
      * @param $inviteId
      * @return \Illuminate\Http\RedirectResponse

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\Project;
-use App\Repositories\Interfaces\Project as ProjectContract;
+use App\Services\Model\ProjectService;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -29,6 +29,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Class DeleteProject
+ *
+ * @package App\Jobs
+ */
 class DeleteProject implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -52,13 +57,13 @@ class DeleteProject implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      * @param \App\Services\MongoDbService $mongoDbService
      * @return void
      */
-    public function handle(ProjectContract $projectContract, MongoDbService $mongoDbService)
+    public function handle(ProjectService $projectService, MongoDbService $mongoDbService)
     {
-        $project = $projectContract->findWith($this->project->id, ['expeditions.downloads']);
+        $project = $projectService->findWith($this->project->id, ['expeditions.downloads']);
 
         $project->expeditions->each(function ($expedition) use ($mongoDbService) {
             $expedition->downloads->each(function ($download){

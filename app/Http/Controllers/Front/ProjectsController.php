@@ -20,29 +20,34 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\Project;
-use App\Repositories\Interfaces\StateCounty;
+use App\Services\Model\ProjectService;
+use App\Services\Model\StateCountyService;
 use App\Services\Process\TranscriptionChartService;
 use CountHelper;
 use GeneralHelper;
 use JavaScript;
 
+/**
+ * Class ProjectsController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class ProjectsController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\Project
+     * @var \App\Services\Model\ProjectService
      */
-    private $projectContract;
+    private $projectService;
 
     /**
      * ProjectsController constructor.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      */
-    public function __construct(Project $projectContract)
+    public function __construct(ProjectService $projectService)
     {
 
-        $this->projectContract = $projectContract;
+        $this->projectService = $projectService;
     }
     /**
      * Public Projects page.
@@ -51,7 +56,7 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $projects = $this->projectContract->getPublicProjectIndex();
+        $projects = $this->projectService->getPublicProjectIndex();
 
         return view('front.project.index', compact('projects'));
     }
@@ -69,7 +74,7 @@ class ProjectsController extends Controller
 
         $sort = request()->get('sort');
         $order = request()->get('order');
-        $projects = $this->projectContract->getPublicProjectIndex($sort, $order);
+        $projects = $this->projectService->getPublicProjectIndex($sort, $order);
 
         return view('front.project.partials.project', compact('projects'));
     }
@@ -78,17 +83,17 @@ class ProjectsController extends Controller
      * Show public project page.
      *
      * @param \App\Services\Process\TranscriptionChartService $chartService
-     * @param \App\Repositories\Interfaces\StateCounty $stateCountyContract
+     * @param \App\Services\Model\StateCountyService $stateCountyService
      * @param $slug
      * @return \Illuminate\View\View
      */
     public function project(
         TranscriptionChartService $chartService,
-        StateCounty $stateCountyContract,
+        StateCountyService $stateCountyService,
         $slug
     )
     {
-        $project = $this->projectContract->getProjectPageBySlug($slug);
+        $project = $this->projectService->getProjectPageBySlug($slug);
 
         [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
             return $expedition->nfnActor->pivot->completed === 0;
@@ -103,7 +108,7 @@ class ProjectsController extends Controller
 
         $years = $chartService->setYearsArray($project->id);
 
-        $states = $stateCountyContract->getStateTranscriptCount($project->id);
+        $states = $stateCountyService->getStateTranscriptCount($project->id);
         $max = abs(round(($states->max('value') + 500), -3));
 
         JavaScript::put([
@@ -121,16 +126,16 @@ class ProjectsController extends Controller
      *
      * @param $projectId
      * @param $stateId
-     * @param \App\Repositories\Interfaces\StateCounty $stateCounty
+     * @param \App\Services\Model\StateCountyService $stateCountyService
      * @return array|\Illuminate\Http\JsonResponse
      */
-    public function state($projectId, $stateId, StateCounty $stateCounty)
+    public function state($projectId, $stateId, stateCountyService $stateCountyService)
     {
         if (! request()->ajax()) {
             return response()->json(['html' => 'Error retrieving the counties.']);
         }
 
-        $counties = $stateCounty->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
+        $counties = $stateCountyService->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
                 return [
                     'id'    => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
                     'value' => $item->transcription_locations_count,

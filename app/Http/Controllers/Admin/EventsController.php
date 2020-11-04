@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -27,13 +27,18 @@ use App\Http\Requests\EventFormRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
 use App\Jobs\EventUserExportCsvJob;
 use App\Services\Model\EventService;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\ProjectService;
 use Auth;
 
+/**
+ * Class EventsController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class EventsController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\Event
+     * @var \App\Services\Model\EventService
      */
     private $eventService;
 
@@ -106,13 +111,13 @@ class EventsController extends Controller
     /**
      * Create event.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @throws \Exception
      */
-    public function create(Project $projectContract)
+    public function create(ProjectService $projectService)
     {
-        $projects = $projectContract->getProjectEventSelect();
+        $projects = $projectService->getProjectEventSelect();
         $timezones = DateHelper::timeZoneSelect();
         $teamsCount = old('entries', 1);
 
@@ -143,12 +148,12 @@ class EventsController extends Controller
     /**
      * Edit event.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      * @param $eventId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      * @throws \Exception
      */
-    public function edit(Project $projectContract, $eventId)
+    public function edit(ProjectService $projectService, $eventId)
     {
         $event = $this->eventService->findWith($eventId, ['teams']);
 
@@ -157,7 +162,7 @@ class EventsController extends Controller
             return redirect()->back();
         }
 
-        $projects = $projectContract->getProjectEventSelect();
+        $projects = $projectService->getProjectEventSelect();
         $timezones = DateHelper::timeZoneSelect();
         $teamsCount = old('entries', $event->teams->count() ?: 1);
 

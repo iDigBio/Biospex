@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,7 +23,7 @@ use Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BingoFormRequest;
 use App\Services\Model\BingoService;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\ProjectService;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -39,20 +39,20 @@ class BingosController extends Controller
     private $bingoService;
 
     /**
-     * @var \App\Repositories\Interfaces\Project
+     * @var \App\Services\Model\ProjectService
      */
-    private $projectContract;
+    private $projectService;
 
     /**
      * BingosController constructor.
      *
      * @param \App\Services\Model\BingoService $bingoService
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      */
-    public function __construct(BingoService $bingoService, Project $projectContract)
+    public function __construct(BingoService $bingoService, ProjectService $projectService)
     {
         $this->bingoService = $bingoService;
-        $this->projectContract = $projectContract;
+        $this->projectService = $projectService;
     }
 
     /**
@@ -74,7 +74,7 @@ class BingosController extends Controller
      */
     public function create()
     {
-        $projects = $this->projectContract->getProjectEventSelect();
+        $projects = $this->projectService->getProjectEventSelect();
 
         return view('admin.bingo.create', compact('projects'));
     }
@@ -127,7 +127,7 @@ class BingosController extends Controller
     public function edit(string $bingoId)
     {
         $bingo = $this->bingoService->findWith($bingoId, ['words', 'project']);
-        $projects = $this->projectContract->getProjectEventSelect();
+        $projects = $this->projectService->getProjectEventSelect();
 
         return view('admin.bingo.edit', compact('bingo', 'projects'));
     }

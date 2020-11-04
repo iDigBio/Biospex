@@ -19,14 +19,19 @@
 
 namespace App\Services\Grid;
 
-use App\Repositories\Interfaces\Header;
+use App\Services\Model\HeaderService;
 
+/**
+ * Class GridModel
+ *
+ * @package App\Services\Grid
+ */
 class GridModel
 {
     /**
-     * @var \App\Repositories\Interfaces\Header
+     * @var \App\Services\Model\HeaderService
      */
-    private $headerContract;
+    private $headerService;
 
     /**
      * @var
@@ -41,11 +46,11 @@ class GridModel
     /**
      * GridModel constructor.
      *
-     * @param \App\Repositories\Interfaces\Header $headerContract
+     * @param \App\Services\Model\HeaderService $headerService
      */
-    public function __construct(Header $headerContract)
+    public function __construct(HeaderService $headerService)
     {
-        $this->headerContract = $headerContract;
+        $this->headerService = $headerService;
         $this->defaultGridVisible = config('config.defaultGridVisible');
         $this->defaultSubGridVisible = config('config.defaultSubGridVisible');
     }
@@ -58,7 +63,7 @@ class GridModel
      */
     public function createGridModel(int $projectId)
     {
-        $result = $this->headerContract->findBy('project_id', $projectId);
+        $result = $this->headerService->findBy('project_id', $projectId);
 
         if (empty($result)) {
             $headers['image'] = [

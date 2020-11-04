@@ -20,9 +20,9 @@
 namespace App\Services\Process;
 
 use App\Notifications\GroupInvite;
-use App\Repositories\Interfaces\Group;
-use App\Repositories\Interfaces\Invite;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\GroupService;
+use App\Services\Model\InviteService;
+use App\Services\Model\UserService;
 use Flash;
 use Exception;
 use Illuminate\Support\Facades\Notification;
@@ -37,36 +37,36 @@ class InviteProcess
 {
 
     /**
-     * @var User
+     * @var \App\Services\Model\UserService
      */
-    private $userContract;
+    private $userService;
 
     /**
-     * @var Invite
+     * @var \App\Services\Model\InviteService
      */
-    private $inviteContract;
+    private $inviteService;
 
     /**
-     * @var Group
+     * @var \App\Services\Model\GroupService
      */
-    private $groupContract;
+    private $groupService;
 
     /**
      * InviteProcess constructor.
      *
-     * @param User $userContract
-     * @param Invite $inviteContract
-     * @param Group $groupContract
+     * @param \App\Services\Model\UserService $userService
+     * @param \App\Services\Model\InviteService $inviteService
+     * @param \App\Services\Model\GroupService $groupService
      */
     public function __construct(
-        User $userContract,
-        Invite $inviteContract,
-        Group $groupContract
+        UserService $userService,
+        InviteService $inviteService,
+        GroupService $groupService
     )
     {
-        $this->userContract = $userContract;
-        $this->inviteContract = $inviteContract;
-        $this->groupContract = $groupContract;
+        $this->userService = $userService;
+        $this->inviteService = $inviteService;
+        $this->groupService = $groupService;
     }
 
     /**
@@ -79,7 +79,7 @@ class InviteProcess
     public function storeInvites($groupId, $request)
     {
         try {
-            $group = $this->groupContract->find($groupId);
+            $group = $this->groupService->find($groupId);
 
             $requestInvites = collect($request->get('invites'))->reject(function($invite){
                 return empty($invite['email']);
@@ -115,7 +115,7 @@ class InviteProcess
      */
     private function checkExistingUser($email, $group)
     {
-        $user = $this->userContract->findBy('email',$email);
+        $user = $this->userService->findBy('email',$email);
 
         if ($user === null)
         {
@@ -147,6 +147,6 @@ class InviteProcess
             'code'     => Str::random(10)
         ];
 
-        return $this->inviteContract->create($inviteData);
+        return $this->inviteService->create($inviteData);
     }
 }

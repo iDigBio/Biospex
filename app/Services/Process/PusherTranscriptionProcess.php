@@ -20,18 +20,23 @@
 namespace App\Services\Process;
 
 use App\Services\Model\ExpeditionService;
-use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Repositories\Interfaces\PusherTranscription;
+use App\Services\Model\PanoptesTranscriptionService;
+use App\Services\Model\PusherTranscriptionService;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 use Validator;
 
+/**
+ * Class PusherTranscriptionProcess
+ *
+ * @package App\Services\Process
+ */
 class PusherTranscriptionProcess
 {
     /**
-     * @var PusherTranscription
+     * @var \App\Services\Model\PusherTranscriptionService
      */
-    private $pusherTranscriptionContract;
+    private $pusherTranscriptionService;
 
     /**
      * @var \App\Services\Model\ExpeditionService
@@ -39,25 +44,25 @@ class PusherTranscriptionProcess
     private $expeditionService;
 
     /**
-     * @var PanoptesTranscription
+     * @var \App\Services\Model\PanoptesTranscriptionService
      */
-    private $panoptesTranscriptionContract;
+    private $panoptesTranscriptionService;
 
     /**
      * PusherTranscriptionProcess constructor.
      *
-     * @param \App\Repositories\Interfaces\PusherTranscription $pusherTranscriptionContract
+     * @param \App\Services\Model\PusherTranscriptionService $pusherTranscriptionService
      * @param \App\Services\Model\ExpeditionService $expeditionService
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $panoptesTranscriptionContract
+     * @param \App\Services\Model\PanoptesTranscriptionService $panoptesTranscriptionService
      */
     public function __construct(
-        PusherTranscription $pusherTranscriptionContract,
+        PusherTranscriptionService $pusherTranscriptionService,
         ExpeditionService $expeditionService,
-        PanoptesTranscription $panoptesTranscriptionContract
+        PanoptesTranscriptionService $panoptesTranscriptionService
     ) {
-        $this->pusherTranscriptionContract = $pusherTranscriptionContract;
+        $this->pusherTranscriptionService = $pusherTranscriptionService;
         $this->expeditionService = $expeditionService;
-        $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
+        $this->panoptesTranscriptionService = $panoptesTranscriptionService;
     }
 
     /**
@@ -113,7 +118,7 @@ class PusherTranscriptionProcess
      */
     public function getTranscriptions($expeditionId, $timestamp = null)
     {
-        return $this->panoptesTranscriptionContract->getTranscriptionForDashboardJob($expeditionId, $timestamp);
+        return $this->panoptesTranscriptionService->getTranscriptionForDashboardJob($expeditionId, $timestamp);
     }
 
     /**

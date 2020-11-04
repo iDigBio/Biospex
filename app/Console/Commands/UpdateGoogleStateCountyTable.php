@@ -19,12 +19,17 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Interfaces\StateCounty;
+use App\Services\Model\StateCountyService;
 use App\Services\Csv\Csv;
 use App\Services\Requests\HttpRequest;
 use Illuminate\Console\Command;
 use Storage;
 
+/**
+ * Class UpdateGoogleStateCountyTable
+ *
+ * @package App\Console\Commands
+ */
 class UpdateGoogleStateCountyTable extends Command
 {
     /**
@@ -54,11 +59,11 @@ class UpdateGoogleStateCountyTable extends Command
      *
      * @param \App\Services\Requests\HttpRequest $httpRequest
      * @param \App\Services\Csv\Csv $csv
-     * @param \App\Repositories\Interfaces\StateCounty $stateCountyContract
+     * @param \App\Services\Model\StateCountyService $stateCountyService
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\Csv\Exception
      */
-    public function handle(HttpRequest $httpRequest, Csv $csv, StateCounty $stateCountyContract)
+    public function handle(HttpRequest $httpRequest, Csv $csv, StateCountyService $stateCountyService)
     {
         $uri = 'https://fusiontables.google.com/exporttable?query=select+*+from+1xdysxZ94uUFIit9eXmnw1fYc6VcQiXhceFd_CVKa&o=csv';
 
@@ -73,7 +78,7 @@ class UpdateGoogleStateCountyTable extends Command
         $csv->setEscape();
         $rows = $csv->fetch();
 
-        $stateCountyContract->truncateTable();
+        $stateCountyService->truncate();
 
         foreach ($rows as $row)
         {
@@ -92,7 +97,7 @@ class UpdateGoogleStateCountyTable extends Command
                 'fips_forumla' => $row[11],
                 'has_error' => $row[12],
             ];
-            $stateCountyContract->create($attributes);
+            $stateCountyService->create($attributes);
         }
     }
 }

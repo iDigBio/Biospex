@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,24 +22,29 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MailFormRequest;
 use App\Mail\SiteMailer;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\UserService;
 use Illuminate\Support\Facades\Mail;
 
+/**
+ * Class MailController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class MailController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\User
+     * @var \App\Services\Model\UserService
      */
-    private $userContract;
+    private $userService;
 
     /**
      * UsersController constructor.
      *
-     * @param \App\Repositories\Interfaces\User $userContract
+     * @param \App\Services\Model\UserService $userService
      */
-    public function __construct(User $userContract)
+    public function __construct(UserService $userService)
     {
-        $this->userContract = $userContract;
+        $this->userService = $userService;
     }
 
     /**
@@ -58,7 +63,7 @@ class MailController extends Controller
      */
     public function send(MailFormRequest $request)
     {
-        $users = $this->userContract->getUsersForMailer($request->get('recipients'));
+        $users = $this->userService->getUsersForMailer($request->get('recipients'));
         $recipients = $users->reject(function($user){
             return $user->email === config('mail.from.address');
         })->pluck('email');
