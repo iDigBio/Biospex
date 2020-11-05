@@ -115,18 +115,4 @@ class CountHelper
                 })->toJson();
         });
     }
-
-    /**
-     * Get assigned subject count for project.
-     *
-     * @param $projectId
-     * @return mixed
-     */
-    public function getProjectSubjectAssignedCount($projectId)
-    {
-        return Cache::tags('subjects'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use ($projectId) {
-            return $this->subjectService->getAssignedCountByProject($projectId);
-        });
-    }
-
 }
