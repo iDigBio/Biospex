@@ -103,6 +103,7 @@ class ProjectsController extends Controller
             return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
         });
 
+        // TODO change to stat table count
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
         $transcribersCount = CountHelper::projectTranscriberCount($project->id);
 
