@@ -170,6 +170,16 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * Expedition Stat relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function expeditionStats()
+    {
+        return $this->hasManyThrough(ExpeditionStat::class, Expedition::class);
+    }
+
+    /**
      * Subject relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

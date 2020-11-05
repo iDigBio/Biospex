@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,8 +21,13 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\ProjectService;
 
+/**
+ * Class AdvertisesController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class AdvertisesController extends Controller
 {
 
@@ -30,13 +35,13 @@ class AdvertisesController extends Controller
      * Show advertise page.
      *
      * @param \Illuminate\Contracts\Routing\ResponseFactory $response
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function index(ResponseFactory $response, Project $projectContract, $projectId)
+    public function index(ResponseFactory $response, ProjectService $projectService, $projectId)
     {
-        $project = $projectContract->findWith($projectId, ['group']);
+        $project = $projectService->findWith($projectId, ['group']);
 
         if ( ! $this->checkPermissions('readProject', $project->group))
         {

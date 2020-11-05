@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,9 +19,16 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
+/**
+ * Class BaseEloquentModel
+ *
+ * @mixin Eloquent
+ * @package App\Models
+ */
 class BaseEloquentModel extends Model
 {
     use LadaCacheTrait;

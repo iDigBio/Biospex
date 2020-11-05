@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,8 +19,23 @@
 
 namespace App\Models;
 
+/**
+ * Class Subject
+ *
+ * @package App\Models
+ */
 class Subject extends BaseMongoModel
 {
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'project_id' => 'integer',
+        'exported' => 'boolean'
+    ];
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

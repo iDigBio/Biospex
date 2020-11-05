@@ -19,21 +19,22 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
+use App\Models\Header;
+use App\Notifications\GridCsvExport;
 use App\Notifications\GridCsvExportError;
-use Exception;
-use Illuminate\Support\Str;
+use App\Services\Grid\JqGridEncoder;
+use App\Services\Csv\Csv;
 use App\Facades\DateHelper;
 use App\Facades\GeneralHelper;
-use App\Models\User;
-use App\Notifications\GridCsvExport;
-use App\Services\Csv\Csv;
-use App\Services\MongoDbService;
+use Exception;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Storage;
 
 class GridExportCsvJob implements ShouldQueue
 {
@@ -52,75 +53,115 @@ class GridExportCsvJob implements ShouldQueue
     private $user;
 
     /**
-     * @var
+     * @var int
      */
     private $projectId;
 
     /**
-     * @var null
+     * @var int|null
      */
     private $expeditionId;
+
+    /**
+     * @var array
+     */
+    private $postData;
+
+    /**
+     * @var string
+     */
+    private $route;
 
     /**
      * Create a new job instance.
      *
      * @param User $user
-     * @param $projectId
-     * @param null $expeditionId
+     * @param array $data
      */
-    public function __construct(User $user, $projectId, $expeditionId = null)
+    public function __construct(User $user, array $data)
     {
         $this->user = $user;
-        $this->projectId = $projectId;
-        $this->expeditionId = $expeditionId;
+        $this->projectId = $data['projectId'];
+        $this->expeditionId = $data['expeditionId'];
+        $this->postData = $data['filters'];
+        $this->route = $data['route'];
         $this->onQueue(config('config.default_tube'));
     }
 
     /**
      * Execute the job.
      *
-     * @param MongoDbService $mongoDbService
+     * @param \App\Services\Grid\JqGridEncoder $jqGridEncoder
      * @param Csv $csv
      * @return void
-     * @throws \Exception
      */
-    public function handle(
-        MongoDbService $mongoDbService,
-        Csv $csv
-    ) {
+    public function handle(JqGridEncoder $jqGridEncoder, Csv $csv)
+    {
         try {
-            $mongoDbService->setCollection('subjects');
 
-            $query = null === $this->expeditionId ? ['project_id' => (int) $this->projectId] : [
-                'project_id'     => (int) $this->projectId,
-                'expedition_ids' => (int) $this->expeditionId,
-            ];
+            $query = $jqGridEncoder->encodeGridExportData($this->postData, $this->route, $this->projectId, $this->expeditionId);
 
-            $cursor = $mongoDbService->find($query);
-            $cursor->setTypeMap([
-                'array'    => 'array',
-                'document' => 'array',
-                'root'     => 'array',
-            ]);
+            if (!$query->count()) {
+                throw new Exception(t('No results were returned for the CSV export.'));
+            }
 
-            $docs = collect($cursor);
-            $records = $docs->map(function ($doc) use ($csv) {
-                $doc['expedition_ids'] = trim(implode(', ', $doc['expedition_ids']), ',');
-                $doc['updated_at'] = DateHelper::formatMongoDbDate($doc['updated_at'], 'Y-m-d H:i:s');
-                $doc['created_at'] = DateHelper::formatMongoDbDate($doc['created_at'], 'Y-m-d H:i:s');
-                $doc['ocr'] = GeneralHelper::forceUtf8($doc['ocr']);
-                $doc['occurrence'] = json_encode($doc['occurrence']);
-
-                return $doc;
-            });
+            $header = $this->buildHeader();
 
             $csvName = Str::random().'.csv';
-            $fileName = $csv->createReportCsv($records->toArray(), $csvName);
+            $file = Storage::path(config('config.reports_dir').'/'.$csvName);
+            $csv->writerCreateFromPath($file);
+            $csv->insertOne($header->keys()->toArray());
 
-            $this->user->notify(new GridCsvExport($fileName));
+            $query->chunk(1000, function($subjects) use($header, $csv) {
+                $mapped = $subjects->map(function($subject) use($header) {
+                    $subject->expedition_ids = trim(implode(', ',$subject->expedition_ids), ',');
+                    $subject->updated_at = DateHelper::formatMongoDbDate($subject->updated_at, 'Y-m-d H:i:s');
+                    $subject->created_at = DateHelper::formatMongoDbDate($subject->created_at, 'Y-m-d H:i:s');
+                    $subject->ocr = GeneralHelper::forceUtf8($subject->ocr);
+                    $subject->occurrence = $this->decodeAndEncode($subject->occurrence);
+
+                    $subject = $header->merge($subject->toArray());
+
+                    return $subject;
+                });
+
+                $csv->insertAll($mapped->toArray());
+            });
+
+            $this->user->notify(new GridCsvExport(base64_encode($csvName)));
 
         } catch (Exception $e) {
             $this->user->notify(new GridCsvExportError($e->getMessage()));
         }
+    }
+
+    /**
+     * Build the header for export.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    private function buildHeader()
+    {
+        $header = Header::where('project_id', $this->projectId)->first()->header['image'];
+        array_unshift($header, '_id', 'project_id', 'id', 'expedition_ids', 'exported');
+        array_push($header, 'ocr', 'occurrence', 'updated_at', 'created_at');
+        return collect($header)->flip()->map(function($value, $key) {
+            return "";
+        });
+    }
+
+    /**
+     * Decode fields from occurrence then encode to avoid errors.
+     *
+     * @param $occurrence
+     * @return false|string
+     */
+    private function decodeAndEncode($occurrence)
+    {
+        foreach ($occurrence as $field => $value){
+            $occurrence[$field] = is_array($value) ? $value : json_decode($value);
+        }
+
+        return json_encode($occurrence);
     }
 }

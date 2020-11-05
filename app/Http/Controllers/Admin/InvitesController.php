@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,43 +20,48 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\Group;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\GroupService;
+use App\Services\Model\UserService;
 use App\Http\Requests\InviteFormRequest;
-use App\Services\Model\InviteService;
+use App\Services\Process\InviteProcess;
 
+/**
+ * Class InvitesController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class InvitesController extends Controller
 {
     /**
-     * @var Group
+     * @var \App\Services\Model\GroupService
      */
-    public $groupContract;
+    public $groupService;
 
     /**
-     * @var User
+     * @var \App\Services\Model\UserService
      */
-    public $userContract;
+    public $userService;
 
     /**
-     * @var InviteService
+     * @var \App\Services\Process\InviteProcess
      */
-    private $inviteService;
+    private $inviteProcess;
 
     /**
      * InvitesController constructor.
      *
-     * @param InviteService $inviteService
-     * @param Group $groupContract
-     * @param User $userContract
+     * @param \App\Services\Process\InviteProcess $inviteProcess
+     * @param \App\Services\Model\GroupService $groupService
+     * @param \App\Services\Model\UserService $userService
      */
     public function __construct(
-        InviteService $inviteService,
-        Group $groupContract,
-        User $userContract
+        InviteProcess $inviteProcess,
+        GroupService $groupService,
+        UserService $userService
     ) {
-        $this->inviteService = $inviteService;
-        $this->groupContract = $groupContract;
-        $this->userContract = $userContract;
+        $this->inviteProcess = $inviteProcess;
+        $this->groupService = $groupService;
+        $this->userService = $userService;
     }
 
     /**
@@ -67,7 +72,7 @@ class InvitesController extends Controller
      */
     public function index($groupId)
     {
-        $group = $this->groupContract->findWith($groupId, ['invites']);
+        $group = $this->groupService->findWith($groupId, ['invites']);
 
         $error = ! $this->checkPermissions('isOwner', $group);
         $inviteCount = old('entries', $group->invites->count() ?: 1);
@@ -84,30 +89,10 @@ class InvitesController extends Controller
      */
     public function store(InviteFormRequest $request, $groupId)
     {
-        $group = $this->groupContract->findWith($groupId, ['invites']);
+        $group = $this->groupService->findWith($groupId, ['invites']);
 
-        $this->inviteService->storeInvites($group->id, $request);
+        $this->inviteProcess->storeInvites($group->id, $request);
 
         return redirect()->back();
-    }
-
-    /**
-     * Resend a group invite
-     * @param $groupId
-     * @param $inviteId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function resend($groupId, $inviteId)
-    {
-        $group = $this->groupContract->find($groupId);
-
-        if ( ! $this->checkPermissions('isOwner', $group))
-        {
-            return redirect()->route('webauth.groups.show', [$groupId]);
-        }
-
-        $this->inviteService->resendInvite($group, $inviteId);
-
-        return redirect()->route('webauth.invites.index', [$group->id]);
     }
 }

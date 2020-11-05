@@ -19,7 +19,7 @@
 
 namespace App\Listeners;
 
-use App\Repositories\Interfaces\Actor;
+use App\Services\Model\ActorService;
 
 /**
  * Class ActorExpeditionPivotEventSubscriber
@@ -28,19 +28,19 @@ use App\Repositories\Interfaces\Actor;
  */
 class ActorExpeditionPivotEventSubscriber
 {
+    /**
+     * @var \App\Services\Model\ActorService
+     */
+    private $actorService;
 
     /**
-     * @var Actor
+     * ActorExpeditionPivotEventSubscriber constructor.
+     *
+     * @param \App\Services\Model\ActorService $actorService
      */
-    private $actorContract;
-
-    /**
-     * Create the event listener.
-     * @param Actor $actorContract
-     */
-    public function __construct(Actor $actorContract)
+    public function __construct(ActorService $actorService)
     {
-        $this->actorContract = $actorContract;
+        $this->actorService = $actorService;
     }
 
     /**
@@ -99,7 +99,7 @@ class ActorExpeditionPivotEventSubscriber
      */
     private function updateActorExpeditions($actor, array $attributes = [])
     {
-        $this->actorContract->updateActorExpeditionPivot($actor, $actor->pivot->expedition_id, $attributes);
+        $this->actorService->updateActorExpeditionPivot($actor, $actor->pivot->expedition_id, $attributes);
     }
 
     /**

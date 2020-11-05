@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,12 +20,17 @@
 namespace App\Services\Process;
 
 use App\Models\PanoptesProject;
-use App\Repositories\Interfaces\PusherTranscription;
+use App\Services\Model\PusherTranscriptionService;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use Validator;
 
+/**
+ * Class PusherWeDigBioDashboardService
+ *
+ * @package App\Services\Process
+ */
 class PusherWeDigBioDashboardService
 {
     /**
@@ -34,20 +39,20 @@ class PusherWeDigBioDashboardService
     private $apiService;
 
     /**
-     * @var \App\Repositories\Interfaces\PusherTranscription
+     * @var \App\Services\Model\PusherTranscriptionService
      */
-    private $pusherTranscriptionContract;
+    private $pusherTranscriptionService;
 
     /**
      * PusherWeDigBioDashboardService constructor.
      *
      * @param \App\Services\Api\PanoptesApiService $apiService
-     * @param \App\Repositories\Interfaces\PusherTranscription $pusherTranscriptionContract
+     * @param \App\Services\Model\PusherTranscriptionService $pusherTranscriptionService
      */
-    public function __construct(PanoptesApiService $apiService, PusherTranscription $pusherTranscriptionContract)
+    public function __construct(PanoptesApiService $apiService, PusherTranscriptionService $pusherTranscriptionService)
     {
         $this->apiService = $apiService;
-        $this->pusherTranscriptionContract = $pusherTranscriptionContract;
+        $this->pusherTranscriptionService = $pusherTranscriptionService;
     }
 
     /**
@@ -127,7 +132,7 @@ class PusherWeDigBioDashboardService
             'discretionaryState'   => 'Transcribed',
         ];
 
-        $this->pusherTranscriptionContract->create($attributes);
+        $this->pusherTranscriptionService->create($attributes);
     }
 
     /**

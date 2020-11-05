@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,8 +21,8 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Repositories\Interfaces\ExpeditionStat;
-use App\Repositories\Interfaces\PanoptesProject;
+use App\Services\Model\ExpeditionStatService;
+use App\Services\Model\PanoptesProjectService;
 use App\Services\Api\PanoptesApiService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -54,20 +54,20 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\Interfaces\PanoptesProject $panoptesProject
+     * @param \App\Services\Model\PanoptesProjectService $panoptesProjectService
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @param \App\Repositories\Interfaces\ExpeditionStat $expeditionStat
+     * @param \App\Services\Model\ExpeditionStatService $expeditionStatService
      * @return void
      */
     public function handle(
-        PanoptesProject $panoptesProject,
+        PanoptesProjectService $panoptesProjectService,
         PanoptesApiService $panoptesApiService,
-        ExpeditionStat $expeditionStat
+        ExpeditionStatService $expeditionStatService
     )
     {
 
         try {
-            $record = $panoptesProject->findBy('expedition_id', $this->expeditionId);
+            $record = $panoptesProjectService->findBy('expedition_id', $this->expeditionId);
 
             if ($record === null) {
                 $this->delete();
@@ -78,7 +78,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
             $workflow = $panoptesApiService->getPanoptesWorkflow($record->panoptes_workflow_id);
             $panoptesApiService->calculateTotals($workflow, $this->expeditionId);
 
-            $stat = $expeditionStat->findBy('expedition_id', $this->expeditionId);
+            $stat = $expeditionStatService->findBy('expedition_id', $this->expeditionId);
             $stat->subject_count = $panoptesApiService->getSubjectCount();
             $stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
             $stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();

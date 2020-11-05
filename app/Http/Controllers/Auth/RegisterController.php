@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,15 +21,20 @@ namespace App\Http\Controllers\Auth;
 
 use Flash;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\Group;
-use App\Repositories\Interfaces\Invite;
+use App\Services\Model\GroupService;
+use App\Services\Model\InviteService;
 use App\Http\Requests\RegisterFormRequest;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\UserService;
 use DateHelper;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Hash;
 
+/**
+ * Class RegisterController
+ *
+ * @package App\Http\Controllers\Auth
+ */
 class RegisterController extends Controller
 {
     /*
@@ -58,19 +63,19 @@ class RegisterController extends Controller
     public $loginView = 'auth.login';
 
     /**
-     * @var \App\Repositories\Interfaces\Invite
+     * @var \App\Services\Model\InviteService
      */
-    private $inviteContract;
+    private $inviteService;
 
     /**
      * Create a new controller instance.
      *
-     * @param \App\Repositories\Interfaces\Invite $inviteContract
+     * @param \App\Services\Model\InviteService $inviteService
      */
-    public function __construct(Invite $inviteContract)
+    public function __construct(InviteService $inviteService)
     {
         $this->middleware('guest');
-        $this->inviteContract = $inviteContract;
+        $this->inviteService = $inviteService;
     }
 
     /**
@@ -87,7 +92,7 @@ class RegisterController extends Controller
 
         $code = request('code');
 
-        $invite = $this->inviteContract->findBy('code', $code);
+        $invite = $this->inviteService->findBy('code', $code);
 
         if ( ! empty($code) && ! $invite)
         {
@@ -105,24 +110,24 @@ class RegisterController extends Controller
      * Register the user. Overrides trait so invite is checked.
      *
      * @param \App\Http\Requests\RegisterFormRequest $request
-     * @param \App\Repositories\Interfaces\User $userContract
-     * @param \App\Repositories\Interfaces\Group $groupContract
+     * @param \App\Services\Model\UserService $userService
+     * @param \App\Services\Model\GroupService $groupService
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function register(RegisterFormRequest $request, User $userContract, Group $groupContract)
+    public function register(RegisterFormRequest $request, UserService $userService, GroupService $groupService)
     {
         $input = $request->only('email', 'password', 'first_name', 'last_name', 'invite');
         $input['password'] = Hash::make($input['password']);
-        $user = $userContract->create($input);
+        $user = $userService->create($input);
 
         if ( ! empty($input['invite']))
         {
-            $result = $this->inviteContract->findBy('code', $input['invite']);
-            if ($result->email === $user->email)
+            $invite = $this->inviteService->findBy('code', $input['invite']);
+            if ($invite->email === $user->email)
             {
-                $group = $groupContract->find($result->group_id);
+                $group = $groupService->find($invite->group_id);
                 $user->assignGroup($group);
-                $this->inviteContract->delete($result->id);
+                $invite->delete();
             }
         }
 

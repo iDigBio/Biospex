@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -26,27 +26,30 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
 use App\Jobs\EventUserExportCsvJob;
-use App\Repositories\Interfaces\Event;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\EventService;
+use App\Services\Model\ProjectService;
 use Auth;
 
+/**
+ * Class EventsController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class EventsController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\Event
+     * @var \App\Services\Model\EventService
      */
-    private $eventContract;
+    private $eventService;
 
     /**
      * EventsController constructor.
      *
-     * @param \App\Repositories\Interfaces\Event $eventContract
+     * @param \App\Services\Model\EventService $eventService
      */
-    public function __construct(
-        Event $eventContract
-    )
+    public function __construct(EventService $eventService)
     {
-        $this->eventContract = $eventContract;
+        $this->eventService = $eventService;
     }
 
     /**
@@ -56,7 +59,7 @@ class EventsController extends Controller
      */
     public function index()
     {
-        $results = $this->eventContract->getEventAdminIndex(Auth::user());
+        $results = $this->eventService->getEventAdminIndex(Auth::user());
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
             return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
@@ -76,7 +79,7 @@ class EventsController extends Controller
             return null;
         }
 
-        $results = $this->eventContract->getEventPublicIndex(request()->get('sort'), request()->get('order'));
+        $results = $this->eventService->getEventPublicIndex(request()->get('sort'), request()->get('order'));
 
         [$active, $completed] = $results->partition(function ($event) {
             return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
@@ -95,7 +98,7 @@ class EventsController extends Controller
      */
     public function show($eventId)
     {
-        $event = $this->eventContract->getEventShow($eventId);
+        $event = $this->eventService->getEventShow($eventId);
 
         if ( ! $this->checkPermissions('read', $event))
         {
@@ -108,13 +111,13 @@ class EventsController extends Controller
     /**
      * Create event.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @throws \Exception
      */
-    public function create(Project $projectContract)
+    public function create(ProjectService $projectService)
     {
-        $projects = $projectContract->getProjectEventSelect();
+        $projects = $projectService->getProjectEventSelect();
         $timezones = DateHelper::timeZoneSelect();
         $teamsCount = old('entries', 1);
 
@@ -129,7 +132,7 @@ class EventsController extends Controller
      */
     public function store(EventFormRequest $request)
     {
-        $event = $this->eventContract->createEvent($request->all());
+        $event = $this->eventService->createEvent($request->all());
 
         if ($event) {
             Flash::success(t('Record was created successfully.'));
@@ -145,21 +148,21 @@ class EventsController extends Controller
     /**
      * Edit event.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\ProjectService $projectService
      * @param $eventId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      * @throws \Exception
      */
-    public function edit(Project $projectContract, $eventId)
+    public function edit(ProjectService $projectService, $eventId)
     {
-        $event = $this->eventContract->findWith($eventId, ['teams']);
+        $event = $this->eventService->findWith($eventId, ['teams']);
 
         if ( ! $this->checkPermissions('update', $event))
         {
             return redirect()->back();
         }
 
-        $projects = $projectContract->getProjectEventSelect();
+        $projects = $projectService->getProjectEventSelect();
         $timezones = DateHelper::timeZoneSelect();
         $teamsCount = old('entries', $event->teams->count() ?: 1);
 
@@ -175,14 +178,14 @@ class EventsController extends Controller
      */
     public function update($eventId, EventFormRequest $request)
     {
-        $event = $this->eventContract->findWith($eventId, ['teams']);
+        $event = $this->eventService->findWith($eventId, ['teams']);
 
         if ( ! $this->checkPermissions('update', $event))
         {
             return redirect()->route('admin.events.index');
         }
 
-        $result = $this->eventContract->updateEvent($request->all(), $eventId);
+        $result = $this->eventService->updateEvent($request->all(), $eventId);
 
         if ($result) {
             Flash::success(t('Record was updated successfully.'));
@@ -203,14 +206,14 @@ class EventsController extends Controller
      */
     public function delete($eventId)
     {
-        $event = $this->eventContract->find($eventId);
+        $event = $this->eventService->find($eventId);
 
         if ( ! $this->checkPermissions('delete', $event))
         {
             return redirect()->route('admin.events.index');
         }
 
-        $result = $this->eventContract->delete($event);
+        $result = $event->delete();
 
         if ($result)
         {

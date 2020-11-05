@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,24 +20,29 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\TeamCategory;
+use App\Services\Model\TeamCategoryService;
 
+/**
+ * Class TeamsController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class TeamsController extends Controller
 {
 
     /**
-     * @var TeamCategory
+     * @var \App\Services\Model\TeamCategoryService
      */
-    public $teamCategoryContract;
+    public $teamCategoryService;
 
     /**
      * TeamsController constructor.
      * 
-     * @param TeamCategory $teamCategoryContract
+     * @param \App\Services\Model\TeamCategoryService $teamCategoryService
      */
-    public function __construct(TeamCategory $teamCategoryContract)
+    public function __construct(TeamCategoryService $teamCategoryService)
     {
-        $this->teamCategoryContract = $teamCategoryContract;
+        $this->teamCategoryService = $teamCategoryService;
     }
 
     /**
@@ -47,7 +52,7 @@ class TeamsController extends Controller
      */
     public function index()
     {
-        $categories = $this->teamCategoryContract->getTeamIndexPage();
+        $categories = $this->teamCategoryService->getTeamIndexPage();
 
         return view('front.team.index', compact('categories'));
     }

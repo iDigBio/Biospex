@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\ApiAuth;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\ApiUser;
+use App\Services\Model\ApiUserService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Http\Requests\RegisterFormRequest;
@@ -56,18 +56,18 @@ class ApiRegisterController extends Controller
     protected $redirectTo = '/api/email/verify';
 
     /**
-     * @var ApiUser
+     * @var \App\Services\Model\ApiUserService
      */
-    private $apiUser;
+    private $apiUserService;
 
     /**
      * Create a new controller instance.
-     * @param ApiUser $apiUser
+     * @param \App\Services\Model\ApiUserService $apiUserService
      */
-    public function __construct(ApiUser $apiUser)
+    public function __construct(ApiUserService $apiUserService)
     {
         $this->middleware('guest:apiuser');
-        $this->apiUser = $apiUser;
+        $this->apiUserService = $apiUserService;
     }
 
     /**
@@ -91,7 +91,7 @@ class ApiRegisterController extends Controller
         $input = $request->only('first_name', 'last_name', 'email', 'password');
         $input['password'] = Hash::make($input['password']);
         $input['name'] = $input['first_name'] . ' ' . $input['last_name'];
-        $user = $this->apiUser->create($input);
+        $user = $this->apiUserService->create($input);
 
         event(new Registered($user));
 

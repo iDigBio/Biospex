@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\AmChart;
+use App\Services\Model\AmChartService;
 use File;
 
 class TranscriptionsController extends Controller
@@ -28,14 +28,14 @@ class TranscriptionsController extends Controller
     /**
      * Return json data for transcription charts.
      *
-     * @param \App\Repositories\Interfaces\AmChart $amChartContract
+     * @param \App\Services\Model\AmChartService $amChartService
      * @param string $projectId
      * @param string $year
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(AmChart $amChartContract, string $projectId, string $year)
+    public function index(AmChartService $amChartService, string $projectId, string $year)
     {
-        $chart = $amChartContract->findBy('project_id', $projectId);
+        $chart = $amChartService->findBy('project_id', $projectId);
 
         $file = json_decode(File::get(config('config.project_chart_config')), true);
         $file['series'] = $chart->series[$year];

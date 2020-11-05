@@ -5,14 +5,6 @@
     {{ $expedition->title }}
 @stop
 
-@push('styles')
-    <style>
-        .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
-            font-size: 1rem;
-        }
-    </style>
-@endpush
-
 {{-- Content --}}
 @section('content')
     @include('admin.expedition.partials.expedition-panel')
@@ -21,13 +13,8 @@
             {{ $expedition->stat->local_subject_count }}
         </h3>
 
-        <div class="col-md-12 d-flex">
-            <div class="table-responsive" id="jqtable">
-                <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
-                <div id="pager"></div>
-                <br/>
-                <input type="hidden" name="subject-ids" id="subject-ids">
-            </div>
+        <div class="col-md-12">
+            <table class="table table-bordered" id="jqGridTable"></table>
         </div>
     </div>
     @include('admin.partials.jqgrid-modal')

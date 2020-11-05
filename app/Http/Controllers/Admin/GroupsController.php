@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,27 +22,32 @@ namespace App\Http\Controllers\Admin;
 use App\Jobs\DeleteGroup;
 use Auth;
 use Flash;
-use App\Repositories\Interfaces\Group;
+use App\Services\Model\GroupService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\UserService;
 use Exception;
 
+/**
+ * Class GroupsController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class GroupsController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\Group
+     * @var \App\Services\Model\GroupService
      */
-    private $groupContract;
+    private $groupService;
 
     /**
      * GroupsController constructor.
      *
-     * @param \App\Repositories\Interfaces\Group $groupContract
+     * @param \App\Services\Model\GroupService $groupService
      */
-    public function __construct(Group $groupContract)
+    public function __construct(GroupService $groupService)
     {
-        $this->groupContract = $groupContract;
+        $this->groupService = $groupService;
     }
 
     /**
@@ -52,7 +57,7 @@ class GroupsController extends Controller
      */
     public function index()
     {
-        $groups = $this->groupContract->getGroupsByUserId(Auth::id());
+        $groups = $this->groupService->getGroupsByUserId(Auth::id());
 
         return view('admin.group.index', compact('groups'));
     }
@@ -71,17 +76,17 @@ class GroupsController extends Controller
      * Store a newly created group.
      *
      * @param GroupFormRequest $request
-     * @param \App\Repositories\Interfaces\User $userContract
+     * @param \App\Services\Model\UserService $userService
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(GroupFormRequest $request, User $userContract)
+    public function store(GroupFormRequest $request, UserService $userService)
     {
         $user = Auth::user();
-        $group = $this->groupContract->create(['user_id' => $user->id, 'title' => $request->get('title')]);
+        $group = $this->groupService->create(['user_id' => $user->id, 'title' => $request->get('title')]);
 
         if ($group) {
             $user->assignGroup($group);
-            $admin = $userContract->find(1);
+            $admin = $userService->find(1);
             $admin->assignGroup($group);
 
             event('group.saved');
@@ -105,7 +110,7 @@ class GroupsController extends Controller
      */
     public function show($groupId)
     {
-        $group = $this->groupContract->getGroupShow($groupId);
+        $group = $this->groupService->getGroupShow($groupId);
 
         if (! $this->checkPermissions('read', $group)) {
             return redirect()->back();
@@ -122,7 +127,7 @@ class GroupsController extends Controller
      */
     public function edit($groupId)
     {
-        $group = $this->groupContract->findWith($groupId, ['owner', 'users.profile']);
+        $group = $this->groupService->findWith($groupId, ['owner', 'users.profile']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->back();
@@ -144,13 +149,13 @@ class GroupsController extends Controller
      */
     public function update(GroupFormRequest $request, $groupId)
     {
-        $group = $this->groupContract->find($groupId);
+        $group = $this->groupService->find($groupId);
 
         if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->back();
         }
 
-        $this->groupContract->update($request->all(), $groupId) ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
+        $this->groupService->update($request->all(), $groupId) ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
 
         return redirect()->route('admin.groups.show', [$groupId]);
     }
@@ -163,7 +168,7 @@ class GroupsController extends Controller
      */
     public function delete($groupId)
     {
-        $group = $this->groupContract->findWith($groupId, ['projects.panoptesProjects', 'projects.workflowManagers']);
+        $group = $this->groupService->findWith($groupId, ['projects.panoptesProjects', 'projects.workflowManagers']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->back();
@@ -195,14 +200,14 @@ class GroupsController extends Controller
     /**
      * Delete user from group.
      *
-     * @param \App\Repositories\Interfaces\User $userContract
+     * @param \App\Services\Model\UserService $userService
      * @param $groupId
      * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteUser(User $userContract, $groupId, $userId)
+    public function deleteUser(UserService $userService, $groupId, $userId)
     {
-        $group = $this->groupContract->find($groupId);
+        $group = $this->groupService->find($groupId);
 
         if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->route('admin.groups.index');
@@ -215,7 +220,7 @@ class GroupsController extends Controller
                 return redirect()->route('admin.groups.show', [$groupId]);
             }
 
-            $user = $userContract->find($userId);
+            $user = $userService->find($userId);
             $user->detachGroup($group->id);
 
             Flash::success(t('User was removed from the group'));

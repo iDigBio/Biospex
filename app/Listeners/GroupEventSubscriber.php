@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,7 +21,7 @@ namespace App\Listeners;
 
 use App\Models\ApiUser;
 use Illuminate\Auth\Events\Login;
-use App\Repositories\Interfaces\Group;
+use App\Services\Model\GroupService;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -35,18 +35,18 @@ class GroupEventSubscriber
 {
 
     /**
-     * @var Group
+     * @var \App\Services\Model\GroupService
      */
-    private $groupContract;
+    private $groupService;
 
     /**
      * GroupSessionEventListener constructor.
      *
-     * @param Group $groupContract
+     * @param \App\Services\Model\GroupService $groupService
      */
-    public function __construct(Group $groupContract)
+    public function __construct(GroupService $groupService)
     {
-        $this->groupContract = $groupContract;
+        $this->groupService = $groupService;
     }
 
     /**
@@ -110,7 +110,7 @@ class GroupEventSubscriber
      */
     public function setUserGroupSession($groupId = null)
     {
-        $groupIds = $this->groupContract->getUserGroupIds(Auth::id());
+        $groupIds = $this->groupService->getUserGroupIds(Auth::id());
 
         $groups = $groupId === null ? $groupIds : $groupIds->diff([$groupId]);
 

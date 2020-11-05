@@ -20,7 +20,7 @@
 namespace App\Services\Actor;
 
 use App\Facades\ActorEventHelper;
-use App\Repositories\Interfaces\ExportQueueFile;
+use App\Services\Model\ExportQueueFileService;
 use App\Models\ExportQueue;
 use Exception;
 
@@ -38,23 +38,23 @@ class NfnPanoptesExportRetrieveImages extends NfnPanoptesBase
     private $actorImageService;
 
     /**
-     * @var \App\Repositories\Interfaces\ExportQueueFile
+     * @var \App\Services\Model\ExportQueueFileService
      */
-    private $exportQueueFileContract;
+    private $exportQueueFileService;
 
     /**
      * NfnPanoptesExportRetrieveImages constructor.
      *
      * @param \App\Services\Actor\ActorImageService $actorImageService
-     * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFileContract
+     * @param \App\Services\Model\ExportQueueFileService $exportQueueFileService
      */
     public function __construct(
         ActorImageService $actorImageService,
-        ExportQueueFile $exportQueueFileContract
+        ExportQueueFileService $exportQueueFileService
     )
     {
         $this->actorImageService = $actorImageService;
-        $this->exportQueueFileContract = $exportQueueFileContract;
+        $this->exportQueueFileService = $exportQueueFileService;
     }
 
     /**
@@ -72,7 +72,7 @@ class NfnPanoptesExportRetrieveImages extends NfnPanoptesBase
         $this->setFolder();
         $this->setDirectories();
 
-        $files = $this->exportQueueFileContract->getFilesByQueueId($queue->id);
+        $files = $this->exportQueueFileService->getFilesByQueueId($queue->id);
         if ($files->isEmpty())
         {
             throw new Exception('Missing export subjects for Expedition ID ' . $queue->expedition_id);

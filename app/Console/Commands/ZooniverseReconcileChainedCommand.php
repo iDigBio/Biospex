@@ -1,11 +1,27 @@
 <?php
-
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 namespace App\Console\Commands;
 
 use App\Jobs\ZooniversePusherJob;
 use App\Jobs\ZooniverseReconcileJob;
 use App\Jobs\ZooniverseTranscriptionJob;
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use Illuminate\Console\Command;
 
 class ZooniverseReconcileChainedCommand extends Command
@@ -37,13 +53,13 @@ class ZooniverseReconcileChainedCommand extends Command
     /**
      * Execute the console command.
      *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @return void
      */
-    public function handle(Expedition $expeditionContract)
+    public function handle(ExpeditionService $expeditionService)
     {
         $expeditionIds = empty($this->argument('expeditionIds')) ?
-            $this->getExpeditionIds($expeditionContract) : $this->argument('expeditionIds');
+            $this->getExpeditionIds($expeditionService) : $this->argument('expeditionIds');
 
         foreach ($expeditionIds as $expeditionId) {
             ZooniverseReconcileJob::withChain([
@@ -56,12 +72,12 @@ class ZooniverseReconcileChainedCommand extends Command
     /**
      * Get all expeditions for process if no ids are passed.
      *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @return array
      */
-    private function getExpeditionIds(Expedition $expeditionContract): array
+    private function getExpeditionIds(ExpeditionService $expeditionService): array
     {
-        $expeditions = $expeditionContract->getExpeditionsForZooniverseProcess();
+        $expeditions = $expeditionService->getExpeditionsForZooniverseProcess();
 
         return $expeditions->pluck('id')->toArray();
     }

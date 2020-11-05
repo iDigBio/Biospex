@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Facades\GeneralHelper;
-use App\Repositories\Interfaces\Import;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\ImportService;
+use App\Services\Model\ProjectService;
 use App\Notifications\DarwinCoreImportError;
 use Exception;
 use finfo;
@@ -32,6 +32,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Class DwcUriImportJob
+ *
+ * @package App\Jobs
+ */
 class DwcUriImportJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -49,14 +54,14 @@ class DwcUriImportJob implements ShouldQueue
     public $data;
 
     /**
-     * @var Import
+     * @var \App\Services\Model\ImportService
      */
-    public $importContract;
+    public $importService;
 
     /**
-     * @var Project
+     * @var \App\Services\Model\ProjectService
      */
-    public $projectContract;
+    public $projectService;
 
     /**
      * Create a new job instance.
@@ -72,13 +77,13 @@ class DwcUriImportJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param Import $importContract
-     * @param Project $projectContract
+     * @param \App\Services\Model\ImportService $importService
+     * @param \App\Services\Model\ProjectService $projectService
      * @return void
      */
     public function handle(
-        Import $importContract,
-        Project $projectContract
+        ImportService $importService,
+        ProjectService $projectService
     )
     {
         try
@@ -102,7 +107,7 @@ class DwcUriImportJob implements ShouldQueue
                 throw new Exception(t('An error occurred while attempting to save file: %s', $filePath));
             }
 
-            $import = $importContract->create([
+            $import = $importService->create([
                 'user_id'    => $this->data['user_id'],
                 'project_id' => $this->data['id'],
                 'file'       => $filePath
@@ -112,7 +117,7 @@ class DwcUriImportJob implements ShouldQueue
         }
         catch (Exception $e)
         {
-            $project = $projectContract->findWith($this->data['id'], ['group.owner']);
+            $project = $projectService->findWith($this->data['id'], ['group.owner']);
 
             $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
         }

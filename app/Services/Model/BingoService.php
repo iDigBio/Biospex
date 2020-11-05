@@ -1,5 +1,5 @@
 <?php declare(strict_types = 1);
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,151 +19,86 @@
 
 namespace App\Services\Model;
 
-use App\Repositories\Interfaces\Bingo;
-use App\Repositories\Interfaces\BingoMap;
-use App\Services\Api\GeoLocation;
-use GeneralHelper;
+use App\Models\Bingo;
+use App\Models\BingoWord;
+use App\Services\Model\Traits\ModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use JavaScript;
-use Session;
 
-class BingoService
+/**
+ * Class BingoService
+ *
+ * @package App\Services\Model
+ */
+class BingoService extends BaseModelService
 {
-    /**
-     * @var \App\Repositories\Interfaces\Bingo
-     */
-    private $bingoContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\BingoMap
-     */
-    private $bingoMapContract;
-
-    /**
-     * @var \App\Services\Api\GeoLocation
-     */
-    private $location;
-
     /**
      * BingoService constructor.
      *
-     * @param \App\Repositories\Interfaces\Bingo $bingoContract
-     * @param \App\Repositories\Interfaces\BingoMap $bingoMapContract
-     * @param \App\Services\Api\GeoLocation $location
+     * @param \App\Models\Bingo $bingo
      */
-    public function __construct(Bingo $bingoContract, BingoMap $bingoMapContract, GeoLocation $location)
+    public function __construct(Bingo $bingo)
     {
-        $this->bingoContract = $bingoContract;
-        $this->bingoMapContract = $bingoMapContract;
-        $this->location = $location;
+
+        $this->model = $bingo;
     }
 
     /**
-     * Get all bingo games.
+     * Get bingo admin index.
      *
+     * @param int $userId
      * @return \Illuminate\Support\Collection
      */
-    public function getAllBingos(): Collection
+    public function getAdminIndex(int $userId): Collection
     {
-        return $this->bingoContract->allWith(['user']);
+        return $this->model->with(['user', 'project', 'words'])
+            ->where('user_id', $userId)->get();
     }
 
     /**
-     * Find bingo resource.
+     * Created bingo.
      *
-     * @param string $id
-     * @param array $with
-     * @return \App\Models\Bingo
-     */
-    public function findBingoWith(string $id, array $with = []): \App\Models\Bingo
-    {
-        return $this->bingoContract->findWith($id, $with);
-    }
-
-    /**
-     * Find bingo map by uuid.
-     *
-     * @param \App\Models\Bingo $bingo
-     * @param string $uuid
+     * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    private function findBingoMapByUuid(\App\Models\Bingo $bingo, string $uuid): Model
+    public function createBingo(array $attributes): Model
     {
-        $map = $this->bingoMapContract->getBingoMapByBingoIdUuid($bingo->id, $uuid);
+        $bingo = $this->create($attributes);
 
-        if ($map === null) {
-            $map = $this->createBingoMap($bingo);
-        }
-
-        return $map;
-    }
-
-    /**
-     * Create bingo map.
-     *
-     * @param \App\Models\Bingo $bingo
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    private function createBingoMap(\App\Models\Bingo $bingo): Model
-    {
-        $values = [
-            'bingo_id' => $bingo->id,
-            'ip' => $this->location->ip,
-            'latitude' => $this->location->latitude,
-            'longitude' => $this->location->longitude,
-            'city' => $this->location->city
-        ];
-
-        return $bingo->maps()->create($values);
-    }
-
-    /**
-     * Show bingo page.
-     *
-     * @param string $bingoId
-     * @return array
-     */
-    public function showBingo(string $bingoId): array
-    {
-        $bingo = $this->findBingoWith($bingoId, ['words', 'user']);
-
-        $words = $bingo->words->chunk(3);
-
-        return [$bingo, $words];
-    }
-
-    /**
-     * Generate bingo card.
-     *
-     * @param \App\Models\Bingo $bingo
-     * @return \Illuminate\Support\Collection
-     */
-    public function generateBingoCard(\App\Models\Bingo $bingo): Collection
-    {
-        $this->location->locate();
-
-        $uuid = GeneralHelper::uuidToBin(Session::get('bingoUuid'));
-
-        $map = $uuid === null ? $this->createBingoMap($bingo) : $this->findBingoMapByUuid($bingo, $uuid);
-
-        Session::put('bingoUuid', $map->uuid);
-
-        JavaScript::put([
-            'channel' => config('config.poll_bingo_channel') . '.' . $bingo->id,
-            'winnerUrl' => route('ajax.get.bingoWinner', ['bingo' => 1, 'map' => $map->id]),
-            'mapUuid' => $map->uuid
-        ]);
-
-        $words = $bingo->words->pluck('definition', 'word')->shuffleWords();
-        $words->splice(12, 0, [['logo', '']]);
-
-        $i = 1;
-        return $words->chunk(5)->map(function($row) use (&$i) {
-            $collection = collect(['a'.$i, 'b'.$i, 'c'.$i, 'd'.$i, 'e'.$i]);
-            $i++;
-
-            return $collection->combine($row)->toArray();
+        $words = collect($attributes['words'])->map(function ($word) {
+            $values = [
+                'word' => $word['word'],
+                'definition' => $word['definition']
+            ];
+            return new BingoWord($values);
         });
+
+        $bingo->words()->saveMany($words->all());
+
+        return $bingo;
+    }
+
+    /**
+     * Update bingo.
+     *
+     * @param array $attributes
+     * @param string $resourceId
+     * @return false
+     */
+    public function updateBingo(array $attributes, string $resourceId)
+    {
+        $bingo = $this->update($attributes, $resourceId);
+
+        $words = collect($attributes['words'])->map(function ($word) {
+            $result = BingoWord::find($word['id']);
+            $result->word = $word['word'];
+            $result->definition = $word['definition'];
+
+            return $result;
+        });
+
+        $bingo->words()->saveMany($words->all());
+
+        return $bingo;
     }
 }

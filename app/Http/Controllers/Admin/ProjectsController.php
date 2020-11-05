@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,41 +23,45 @@ use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
 use App\Jobs\DeleteUnassignedSubjectsJob;
 use App\Jobs\OcrCreateJob;
-use App\Repositories\Interfaces\Project;
-use App\Http\Requests\ProjectFormRequest;
-use App\Repositories\Interfaces\Subject;
-use App\Services\Grid\JqGridJsonEncoder;
 use App\Services\Model\ProjectService;
+use App\Http\Requests\ProjectFormRequest;
+use App\Services\Grid\JqGridEncoder;
+use App\Services\Process\ProjectProcess;
 use Flash;
 use Auth;
 use CountHelper;
 use Exception;
 use JavaScript;
 
+/**
+ * Class ProjectsController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class ProjectsController extends Controller
 {
-    /**
-     * @var \App\Repositories\Interfaces\Project
-     */
-    private $projectContract;
-
     /**
      * @var \App\Services\Model\ProjectService
      */
     private $projectService;
 
     /**
+     * @var \App\Services\Process\ProjectProcess
+     */
+    private $projectProcess;
+
+    /**
      * ProjectsController constructor.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
      * @param \App\Services\Model\ProjectService $projectService
+     * @param \App\Services\Process\ProjectProcess $projectProcess
      */
     public function __construct(
-        Project $projectContract,
-        ProjectService $projectService
+        ProjectService $projectService,
+        ProjectProcess $projectProcess
     ) {
+        $this->projectProcess = $projectProcess;
         $this->projectService = $projectService;
-        $this->projectContract = $projectContract;
     }
 
     /**
@@ -69,8 +73,8 @@ class ProjectsController extends Controller
     {
         $user = Auth::user();
 
-        $groups = $this->projectService->getUserGroupCount($user->id);
-        $projects = $this->projectContract->getAdminProjectIndex($user->id);
+        $groups = $this->projectProcess->getUserGroupCount($user->id);
+        $projects = $this->projectService->getAdminProjectIndex($user->id);
 
         return $groups === 0 ? view('admin.welcome') : view('admin.project.index', compact('projects'));
     }
@@ -82,9 +86,9 @@ class ProjectsController extends Controller
      */
     public function create()
     {
-        $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectService->workflowSelectOptions();
-        $statusOptions = $this->projectService->statusSelectOptions();
+        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
+        $workflowOptions = $this->projectProcess->workflowSelectOptions();
+        $statusOptions = $this->projectProcess->statusSelectOptions();
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
@@ -101,7 +105,7 @@ class ProjectsController extends Controller
      */
     public function show($projectId)
     {
-        $project = $this->projectContract->getProjectShow($projectId);
+        $project = $this->projectService->getProjectShow($projectId);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -133,17 +137,17 @@ class ProjectsController extends Controller
      */
     public function store(ProjectFormRequest $request)
     {
-        $group = $this->projectService->findGroup($request->get('group_id'));
+        $group = $this->projectProcess->findGroup($request->get('group_id'));
 
         if (! $this->checkPermissions('createProject', $group)) {
             return redirect()->route('admin.projects.index');
         }
 
-        $model = $this->projectContract->create($request->all());
+        $model = $this->projectService->create($request->all());
 
         if ($model) {
-            $project = $this->projectContract->findWith($model->id, ['workflow.actors.contacts']);
-            $this->projectService->notifyActorContacts($project);
+            $project = $this->projectService->findWith($model->id, ['workflow.actors.contacts']);
+            $this->projectProcess->notifyActorContacts($project);
 
             Flash::success(t('Record was created successfully.'));
 
@@ -163,7 +167,7 @@ class ProjectsController extends Controller
      */
     public function clone($projectId)
     {
-        $project = $this->projectContract->findWith($projectId, ['group', 'expeditions.workflowManager']);
+        $project = $this->projectService->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
         if (! $project) {
             Flash::error(t('Error retrieving record from database'));
@@ -171,9 +175,9 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.show', [$projectId]);
         }
 
-        $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectService->workflowSelectOptions();
-        $statusOptions = $this->projectService->statusSelectOptions();
+        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
+        $workflowOptions = $this->projectProcess->workflowSelectOptions();
+        $statusOptions = $this->projectProcess->statusSelectOptions();
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
@@ -193,7 +197,7 @@ class ProjectsController extends Controller
      */
     public function edit($projectId)
     {
-        $project = $this->projectContract->findWith($projectId, ['group', 'resources']);
+        $project = $this->projectService->findWith($projectId, ['group', 'resources']);
         if (! $project) {
             Flash::error(t('Error retrieving record from database'));
 
@@ -202,9 +206,9 @@ class ProjectsController extends Controller
 
         $disableWorkflow = $project->panoptesProjects()->exists() ? 'disabled' : '';
 
-        $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectService->workflowSelectOptions();
-        $statusOptions = $this->projectService->statusSelectOptions();
+        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
+        $workflowOptions = $this->projectProcess->workflowSelectOptions();
+        $statusOptions = $this->projectProcess->statusSelectOptions();
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', $project->resources->count() ?: 1);
         $resources = $project->resources;
@@ -223,13 +227,13 @@ class ProjectsController extends Controller
      */
     public function update(ProjectFormRequest $request, $projectId)
     {
-        $group = $this->projectService->findGroup($request->get('group_id'));
+        $group = $this->projectProcess->findGroup($request->get('group_id'));
 
         if (! $this->checkPermissions('updateProject', $group)) {
             return redirect()->route('admin.projects.index');
         }
 
-        $project = $this->projectContract->update($request->all(), $projectId);
+        $project = $this->projectService->update($request->all(), $projectId);
 
         $project ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
 
@@ -250,7 +254,7 @@ class ProjectsController extends Controller
         $user = Auth::user();
         $sort = request()->get('sort');
         $order = request()->get('order');
-        $projects = $this->projectContract->getAdminProjectIndex($user->id, $sort, $order);
+        $projects = $this->projectService->getAdminProjectIndex($user->id, $sort, $order);
 
         return view('admin.project.partials.project', compact('projects'));
     }
@@ -259,34 +263,30 @@ class ProjectsController extends Controller
      * Display project explore page.
      *
      * @param $projectId
-     * @param \App\Services\Grid\JqGridJsonEncoder $grid
+     * @param \App\Services\Grid\JqGridEncoder $grid
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function explore($projectId, JqGridJsonEncoder $grid)
+    public function explore($projectId, JqGridEncoder $grid)
     {
-        $project = $this->projectContract->findWith($projectId, ['group']);
+        $project = $this->projectService->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
-        $model = $grid->loadGridModel($projectId, request()->route()->getName());
+        $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
-            'model' => $model,
-            'projectId'    => $projectId,
-            'expeditionId' => 0,
-            'subjectIds'   => [],
-            'maxSubjects'  => config('config.expedition_size'),
-            'gridUrl'      => route('admin.grids.explore', [$projectId]),
-            'exportUrl'    => route('admin.grids.export', [$projectId]),
-            'editUrl'      => route('admin.grids.delete', [$projectId]),
-            'showCheckbox' => true,
-            'explore'      => true,
+            'model'      => $model,
+            'subjectIds' => [],
+            'maxCount'   => config('config.expedition_size'),
+            'dataUrl'    => route('admin.grids.explore', [$projectId]),
+            'exportUrl'  => route('admin.grids.export', [$projectId]),
+            'checkbox'   => false,
+            'route'      => 'explore', // used for export
         ]);
 
-        // @TODO Should we use expedition_stat for count?
-        $subjectAssignedCount = CountHelper::getProjectSubjectAssignedCount($projectId);
+        $subjectAssignedCount = $this->projectService->find($projectId)->expeditionStats->sum('local_subject_count');
 
         return view('admin.project.explore', compact('project', 'subjectAssignedCount'));
     }
@@ -299,7 +299,7 @@ class ProjectsController extends Controller
      */
     public function delete($projectId)
     {
-        $project = $this->projectContract->getProjectForDelete($projectId);
+        $project = $this->projectService->getProjectForDelete($projectId);
 
         if (! $this->checkPermissions('isOwner', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -332,7 +332,7 @@ class ProjectsController extends Controller
      */
     public function ocr($projectId)
     {
-        $project = $this->projectContract->findWith($projectId, ['group']);
+        $project = $this->projectService->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -348,13 +348,12 @@ class ProjectsController extends Controller
     /**
      * Project Stats.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
      * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function statistics(Project $projectContract, $projectId)
+    public function statistics($projectId)
     {
-        $project = $projectContract->findWith($projectId, ['group']);
+        $project = $this->projectService->findWith($projectId, ['group']);
 
         $transcribers = CountHelper::getTranscribersTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
         $transcriptions = CountHelper::getTranscriptionsPerTranscribers($projectId, $transcribers);
@@ -378,8 +377,7 @@ class ProjectsController extends Controller
             Flash::success(t('Subjects have been set for deletion. You will be notified by email when complete.'));
 
             return redirect()->route('admin.projects.explore', [$projectId]);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Flash::warning(t('There was an error setting the job to delete the Subjects.'));
 
             return redirect()->route('admin.projects.explore', [$projectId]);

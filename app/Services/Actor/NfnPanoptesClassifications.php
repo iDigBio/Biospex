@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,7 +21,7 @@ namespace App\Services\Actor;
 
 use App\Facades\ActorEventHelper;
 use App\Jobs\AmChartJob;
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
 use App\Services\Api\PanoptesApiService;
@@ -31,9 +31,9 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
 {
 
     /**
-     * @var Expedition
+     * @var \App\Services\Model\ExpeditionService
      */
-    public $expeditionContract;
+    public $expeditionService;
 
     /**
      * @var \App\Services\Api\PanoptesApiService
@@ -43,15 +43,15 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
     /**
      * NfnPanoptesClassifications constructor.
      *
-     * @param Expedition $expeditionContract
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      */
     public function __construct(
-        Expedition $expeditionContract,
+        ExpeditionService $expeditionService,
         PanoptesApiService $panoptesApiService
     )
     {
-        $this->expeditionContract = $expeditionContract;
+        $this->expeditionService = $expeditionService;
         $this->panoptesApiService = $panoptesApiService;
     }
 
@@ -62,7 +62,7 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
      */
     public function processActor($actor)
     {
-        $record = $this->expeditionContract
+        $record = $this->expeditionService
             ->findWith($actor->pivot->expedition_id, ['project.group.owner', 'stat', 'panoptesProject']);
 
         if ($this->workflowIdDoesNotExist($record))

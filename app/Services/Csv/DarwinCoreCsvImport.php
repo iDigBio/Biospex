@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,9 +19,9 @@
 
 namespace App\Services\Csv;
 
-use App\Repositories\Interfaces\Header;
-use App\Repositories\Interfaces\Property;
-use App\Repositories\Interfaces\Subject;
+use App\Services\Model\HeaderService;
+use App\Services\Model\PropertyService;
+use App\Services\Model\SubjectService;
 use App\Services\MongoDbService;
 use Carbon\Carbon;
 use Exception;
@@ -30,22 +30,27 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Factory as Validation;
 use MongoDB\BSON\ObjectId;
 
+/**
+ * Class DarwinCoreCsvImport
+ *
+ * @package App\Services\Csv
+ */
 class DarwinCoreCsvImport
 {
     /**
-     * @var Property
+     * @var \App\Services\Model\PropertyService
      */
-    public $propertyContract;
+    public $propertyService;
 
     /**
-     * @var Subject
+     * @var SubjectService
      */
-    public $subjectContract;
+    public $subjectService;
 
     /**
-     * @var Header
+     * @var \App\Services\Model\HeaderService
      */
-    public $headerContract;
+    public $headerService;
 
     /**
      * Array for meta file fields: core and extension
@@ -122,25 +127,25 @@ class DarwinCoreCsvImport
     /**
      * Construct
      *
-     * @param Property $propertyContract
-     * @param Subject $subjectContract
-     * @param Header $headerContract
+     * @param \App\Services\Model\PropertyService $propertyService
+     * @param SubjectService $subjectService
+     * @param \App\Services\Model\HeaderService $headerService
      * @param Validation $factory
      * @param \App\Services\Csv\Csv $csv
      * @param MongoDbService $mongoDbService
      */
     public function __construct(
-        Property $propertyContract,
-        Subject $subjectContract,
-        Header $headerContract,
+        PropertyService $propertyService,
+        SubjectService $subjectService,
+        HeaderService $headerService,
         Validation $factory,
         Csv $csv,
         MongoDbService $mongoDbService
     ) {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
-        $this->propertyContract = $propertyContract;
-        $this->subjectContract = $subjectContract;
-        $this->headerContract = $headerContract;
+        $this->propertyService = $propertyService;
+        $this->subjectService = $subjectService;
+        $this->headerService = $headerService;
         $this->factory = $factory;
         $this->csv = $csv;
         $this->mongoDbService = $mongoDbService;
@@ -343,9 +348,9 @@ class DarwinCoreCsvImport
      */
     protected function setShortNameForQualifiedName($qualified, $short, $namespace)
     {
-        $checkQualified = $this->propertyContract->findBy('qualified', $qualified);
+        $checkQualified = $this->propertyService->findBy('qualified', $qualified);
 
-        $checkShort = $this->propertyContract->findBy('short', $short);
+        $checkShort = $this->propertyService->findBy('short', $short);
 
         if ($checkQualified !== null) {
             $short = $checkQualified->short;
@@ -373,7 +378,7 @@ class DarwinCoreCsvImport
             'short'     => $short,
             'namespace' => $namespace,
         ];
-        $this->propertyContract->create($array);
+        $this->propertyService->create($array);
     }
 
     /**
@@ -472,7 +477,7 @@ class DarwinCoreCsvImport
             return;
         }
 
-        $fields = ['project_id' => (int) $this->projectId, 'ocr' => '', 'expedition_ids' => []];
+        $fields = ['project_id' => (int) $this->projectId, 'ocr' => '', 'expedition_ids' => [], 'exported' => false];
 
         $occurrence = is_null($occurrenceId) ? [] : ['occurrence' => ['id' => (string) $occurrenceId]];
         $subject = $fields + $row + $occurrence;
@@ -521,7 +526,7 @@ class DarwinCoreCsvImport
             unset($subject['language']);
         }
 
-        $this->subjectContract->create($subject);
+        $this->subjectService->create($subject);
         $this->subjectCount++;
     }
 
@@ -620,19 +625,19 @@ class DarwinCoreCsvImport
     {
         $type = $loadMedia ? 'image' : 'occurrence';
 
-        $result = $this->headerContract->findBy('project_id', $this->projectId);
+        $result = $this->headerService->findBy('project_id', $this->projectId);
 
         if (empty($result)) {
             $insert = [
                 'project_id' => $this->projectId,
                 'header'     => [$type => $header],
             ];
-            $this->headerContract->create($insert);
+            $this->headerService->create($insert);
         } else {
             $existingHeader = $result->header;
             $existingHeader[$type] = isset($existingHeader[$type]) ? $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
             $result->header = $existingHeader;
-            $this->headerContract->update($result->toArray(), $result->id);
+            $this->headerService->update($result->toArray(), $result->id);
         }
     }
 

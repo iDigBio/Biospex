@@ -19,7 +19,7 @@
 
 namespace App\Services\Process;
 
-use App\Repositories\Interfaces\Subject;
+use App\Services\Model\SubjectService;
 use App\Services\Requests\HttpRequest;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
@@ -40,9 +40,9 @@ class TesseractService
     public $httpRequest;
 
     /**
-     * @var \App\Repositories\Interfaces\Subject
+     * @var \App\Services\Model\SubjectService
      */
-    private $subjectContract;
+    private $subjectService;
 
     /**
      * @var
@@ -59,16 +59,16 @@ class TesseractService
      *
      * @param \thiagoalessio\TesseractOCR\TesseractOCR $tesseract
      * @param \App\Services\Requests\HttpRequest $httpRequest
-     * @param \App\Repositories\Interfaces\Subject $subjectContract
+     * @param \App\Services\Model\SubjectService $subjectService
      */
     public function __construct(
         TesseractOCR $tesseract,
         HttpRequest $httpRequest,
-        Subject $subjectContract
+        SubjectService $subjectService
     ) {
         $this->tesseract = $tesseract;
         $this->httpRequest = $httpRequest;
-        $this->subjectContract = $subjectContract;
+        $this->subjectService = $subjectService;
     }
 
     /**
@@ -154,7 +154,7 @@ class TesseractService
      */
     private function updateSubject(array $file)
     {
-        $subject = $this->subjectContract->find($file['subject_id']);
+        $subject = $this->subjectService->find($file['subject_id']);
         $subject->ocr = $file['ocr'];
         $subject->save();
     }

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,7 +21,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use App\Repositories\Interfaces\Download;
+use App\Services\Model\DownloadService;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadCleanCommand extends Command
@@ -33,9 +33,9 @@ class DownloadCleanCommand extends Command
     public $filesystem;
 
     /**
-     * @var Download
+     * @var \App\Services\Model\DownloadService
      */
-    public $downloadContract;
+    public $downloadService;
 
     /**
      * The console command name.
@@ -62,17 +62,17 @@ class DownloadCleanCommand extends Command
      * DownloadCleanCommand constructor.
      *
      * @param Filesystem $filesystem
-     * @param Download $downloadContract
+     * @param \App\Services\Model\DownloadService $downloadService
      */
     public function __construct(
         Filesystem $filesystem,
-        Download $downloadContract
+        DownloadService $downloadService
     )
     {
         parent::__construct();
 
         $this->filesystem = $filesystem;
-        $this->downloadContract = $downloadContract;
+        $this->downloadService = $downloadService;
 
         $this->nfnExportDir = Storage::path(config('config.export_dir'));
     }
@@ -84,7 +84,7 @@ class DownloadCleanCommand extends Command
      */
     public function handle()
     {
-        $downloads = $this->downloadContract->getDownloadsForCleaning();
+        $downloads = $this->downloadService->getDownloadsForCleaning();
 
         $downloads->each(function ($download)
         {
@@ -94,13 +94,13 @@ class DownloadCleanCommand extends Command
                 $this->filesystem->delete($file);
             }
 
-            $this->downloadContract->delete($download->id);
+            $download->delete();
         });
 
         $files = collect($this->filesystem->files($this->nfnExportDir));
         $files->each(function($file){
             $fileName = $this->filesystem->basename($file);
-            $result = $this->downloadContract->findBy('file', $fileName);
+            $result = $this->downloadService->findBy('file', $fileName);
             if ( ! $result)
             {
                 $this->filesystem->delete($file);

@@ -1,12 +1,28 @@
 <?php
-
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 namespace App\Jobs;
 
 use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Model\EventTranscriptionService;
-use App\Services\Model\PusherTranscriptionService;
+use App\Services\Process\EventTranscriptionProcess;
+use \App\Services\Process\PusherTranscriptionProcess;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -50,11 +66,11 @@ class ZooniversePusherJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\PusherTranscriptionService $pusherTranscriptionService
-     * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
+     * @param \App\Services\Process\PusherTranscriptionProcess $pusherTranscriptionProcess
+     * @param \App\Services\Process\EventTranscriptionProcess $eventTranscriptionProcess
      * @return void
      */
-    public function handle(PusherTranscriptionService $pusherTranscriptionService, EventTranscriptionService $eventTranscriptionService)
+    public function handle(PusherTranscriptionProcess $pusherTranscriptionProcess, EventTranscriptionProcess $eventTranscriptionProcess)
     {
         if ($this->skipReconcile($this->expeditionId)) {
             return;
@@ -62,15 +78,15 @@ class ZooniversePusherJob implements ShouldQueue
 
         try
         {
-            $expedition = $pusherTranscriptionService->getExpedition($this->expeditionId);
+            $expedition = $pusherTranscriptionProcess->getExpedition($this->expeditionId);
 
             $timestamp = isset($this->days) ? Carbon::now()->subDays($this->days) : Carbon::now()->subDays(3);
 
-            $transcriptions = $pusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
+            $transcriptions = $pusherTranscriptionProcess->getTranscriptions($expedition->id, $timestamp);
 
-            $transcriptions->each(function ($transcription) use ($pusherTranscriptionService, $eventTranscriptionService, $expedition) {
-                $pusherTranscriptionService->processTranscripts($transcription, $expedition);
-                $eventTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
+            $transcriptions->each(function ($transcription) use ($pusherTranscriptionProcess, $eventTranscriptionProcess, $expedition) {
+                $pusherTranscriptionProcess->processTranscripts($transcription, $expedition);
+                $eventTranscriptionProcess->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
             });
 
             return;

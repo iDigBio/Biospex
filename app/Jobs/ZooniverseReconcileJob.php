@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Process\ReconcileProcessService;
+use App\Services\Process\ReconcileProcess;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,10 +35,10 @@ class ZooniverseReconcileJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Process\ReconcileProcessService $service
+     * @param \App\Services\Process\ReconcileProcess $service
      * @return void
      */
-    public function handle(ReconcileProcessService $service)
+    public function handle(ReconcileProcess $service)
     {
         if ($this->skipReconcile($this->expeditionId)) {
             return;

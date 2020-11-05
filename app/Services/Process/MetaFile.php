@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,9 +19,14 @@
 
 namespace App\Services\Process;
 
-use App\Repositories\Interfaces\Meta;
+use App\Services\Model\MetaService;
 use Exception;
 
+/**
+ * Class MetaFile
+ *
+ * @package App\Services\Process
+ */
 class MetaFile
 {
 
@@ -86,9 +91,9 @@ class MetaFile
     protected $metaFields;
 
     /**
-     * @var Meta
+     * @var \App\Services\Model\MetaService
      */
-    protected $metaContract;
+    protected $metaService;
 
     /**
      * @var
@@ -103,13 +108,13 @@ class MetaFile
     /**
      * Constructor
      *
-     * @param Meta $metaContract
+     * @param \App\Services\Model\MetaService $metaService
      * @param Xml $xml
      */
-    public function __construct(Meta $metaContract, Xml $xml)
+    public function __construct(MetaService $metaService, Xml $xml)
     {
         $this->xml = $xml;
-        $this->metaContract = $metaContract;
+        $this->metaService = $metaService;
 
         $this->dwcRequiredRowTypes = config('config.dwcRequiredRowTypes');
         $this->dwcRequiredFields = config('config.dwcRequiredFields');
@@ -150,7 +155,7 @@ class MetaFile
      */
     public function saveMetaFile($projectId, $meta)
     {
-        $this->metaContract->create([
+        $this->metaService->create([
             'project_id' => $projectId,
             'xml'        => $meta,
         ]);

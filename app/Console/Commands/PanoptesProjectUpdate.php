@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,9 +20,14 @@
 namespace App\Console\Commands;
 
 use App\Jobs\PanoptesProjectUpdateJob;
-use App\Repositories\Interfaces\PanoptesProject;
+use App\Services\Model\PanoptesProjectService;
 use Illuminate\Console\Command;
 
+/**
+ * Class PanoptesProjectUpdate
+ *
+ * @package App\Console\Commands
+ */
 class PanoptesProjectUpdate extends Command
 {
     /**
@@ -55,15 +60,15 @@ class PanoptesProjectUpdate extends Command
     /**
      * Execute the console command.
      *
-     * @param \App\Repositories\Interfaces\PanoptesProject $panoptesProject
+     * @param \App\Services\Model\PanoptesProjectService $panoptesProjectService
      */
-    public function handle(PanoptesProject $panoptesProject)
+    public function handle(PanoptesProjectService $panoptesProjectService)
     {
         $this->setIds();
 
         $projects = $this->expeditionIds === null ?
-            $panoptesProject->all() :
-            $panoptesProject->whereIn('expedition_id', $this->expeditionIds);
+            $panoptesProjectService->all() :
+            $panoptesProjectService->whereIn('expedition_id', $this->expeditionIds);
 
         $projects->each(function($project){
             PanoptesProjectUpdateJob::dispatch($project);

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,250 +19,80 @@
 
 namespace App\Services\Model;
 
-use App\Repositories\Interfaces\Expedition;
-use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Repositories\Interfaces\PusherTranscription;
+use App\Models\PusherTranscription;
+use App\Services\Model\Traits\ModelTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Ramsey\Uuid\Uuid;
-use Validator;
 
-class PusherTranscriptionService
+/**
+ * Class PusherTranscriptionService
+ *
+ * @package App\Services\Model
+ */
+class PusherTranscriptionService extends BaseModelService
 {
     /**
-     * @var PusherTranscription
-     */
-    private $pusherTranscriptionContract;
-
-    /**
-     * @var Expedition
-     */
-    private $expeditionContract;
-
-    /**
-     * @var PanoptesTranscription
-     */
-    private $panoptesTranscriptionContract;
-
-    /**
-     * ExpeditionService constructor.
+     * PusherTranscriptionService constructor.
      *
-     * @param PusherTranscription $pusherTranscriptionContract
-     * @param Expedition $expeditionContract
-     * @param PanoptesTranscription $panoptesTranscriptionContract
+     * @param \App\Models\PusherTranscription $pusherTranscription
      */
-    public function __construct(
-        PusherTranscription $pusherTranscriptionContract,
-        Expedition $expeditionContract,
-        PanoptesTranscription $panoptesTranscriptionContract
-    ) {
-        $this->pusherTranscriptionContract = $pusherTranscriptionContract;
-        $this->expeditionContract = $expeditionContract;
-        $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
+    public function __construct(PusherTranscription $pusherTranscription)
+    {
+
+        $this->model = $pusherTranscription;
     }
 
     /**
-     * Get dashboard count
+     * Get API WeDigBioDashboard record count.
      *
+     * @param \Illuminate\Http\Request $request
+     * @param false $count
+     * @return \App\Models\PusherTranscription[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|int
+     */
+    public function getWeDigBioDashboardApi(Request $request, $count = false)
+    {
+        if ($count)
+        {
+            return $this->model->where(function ($query) use ($request) {
+                $this->buildQuery($query, $request);
+            })->count();
+        }
+
+        $count = $request->has('rows') ? (int) $request->input('rows') : 200;
+        $count = $count > 500 ? 200 : $count;                                              //count
+        $current = $request->has('start') ? (int) $request->input('start') : 0; // current
+
+        return $this->model->where(function ($query) use ($request) {
+            $this->buildQuery($query, $request);
+        })->limit($count)->offset($current)->orderBy('timestamp', 'desc')->get();
+    }
+
+    /**
+     * Build query.
+     *
+     * @param $query
      * @param $request
-     * @return mixed
      */
-    public function listApiDashboardCount($request)
+    private function buildQuery(&$query, $request)
     {
-        return $this->pusherTranscriptionContract->getWeDigBioDashboardApi($request, true);
-    }
+        $request->has('project_uuid') ? $query->where('projectUuid', $request->input('project_uuid')) : false;
+        $request->has('expedition_uuid') ? $query->where('expeditionUuid', $request->input('expedition_uuid')) : false;
 
-    /**
-     * List dashboard.
-     *
-     * @param Request $request
-     * @return mixed
-     */
-    public function listApiDashboard($request)
-    {
-        return $this->pusherTranscriptionContract->getWeDigBioDashboardApi($request);
-    }
+        $date_start = is_numeric($request->input('date_start')) ? (int) $request->input('date_start') : $request->input('date_start');
+        $date_end = is_numeric($request->input('date_end')) ? (int) $request->input('date_end') : $request->input('date_end');
 
-    /**
-     * Show single resource.
-     *
-     * @param $guid
-     * @return mixed
-     */
-    public function showApiDashboard($guid)
-    {
-        return $this->pusherTranscriptionContract->where('guid', $guid)->first();
-    }
+        if ($date_start !== null && $date_end !== null)
+        {
+            $timestamps = [
+                Carbon::parse($date_start),
+                Carbon::parse($date_end)
+            ];
+            $query->whereBetween('timestamp', $timestamps);
 
-    /**
-     * Get expedition.
-     *
-     * @param $expeditionId
-     * @return \Illuminate\Support\Collection
-     */
-    public function getExpedition($expeditionId)
-    {
-        return $this->expeditionContract->findWith($expeditionId, ['panoptesProject']);
-    }
-
-    /**
-     * Get transcriptions.
-     *
-     * @param $expeditionId
-     * @param $timestamp
-     * @return mixed
-     */
-    public function getTranscriptions($expeditionId, $timestamp = null)
-    {
-        return $this->panoptesTranscriptionContract->getTranscriptionForDashboardJob($expeditionId, $timestamp);
-    }
-
-    /**
-     * Process transcripts
-     *
-     * @param $transcription
-     * @param $expedition
-     * @throws \Exception
-     */
-    public function processTranscripts($transcription, $expedition)
-    {
-        $classification = $this->pusherTranscriptionContract->findBy('classification_id', $transcription->classification_id);
-        $this->buildItem($transcription, $expedition, $classification);
-    }
-
-    /**
-     * Build item for dashboard.
-     *
-     * @param $transcription
-     * @param $expedition
-     * @param null $classification
-     * @throws \Exception
-     */
-    private function buildItem($transcription, $expedition, $classification = null)
-    {
-        $classification === null ? $this->createClassification($transcription, $expedition) : $this->updateClassification($transcription, $classification, $expedition);
-    }
-
-    /**
-     * Create classification if it doesn't exist.
-     *
-     * @param $transcription
-     * @param $expedition
-     * @throws \Exception
-     */
-    private function createClassification($transcription, $expedition)
-    {
-        $thumbnailUri = $this->setThumbnailUri($transcription);
-
-        $classification_id = (int) $transcription->classification_id;
-
-        if ($this->validateTranscription($classification_id)) {
             return;
         }
 
-        $item = [
-            'classification_id'    => $classification_id,
-            'expedition_uuid'      => $expedition->uuid,
-            'project'              => $expedition->panoptesProject->title,
-            'description'          => $expedition->description,
-            'guid'                 => Uuid::uuid4()->toString(),
-            'timestamp'            => $transcription->classification_finished_at,
-            'subject'              => [
-                'link'         => $transcription->subject_references,
-                'thumbnailUri' => $thumbnailUri,
-            ],
-            'contributor'          => [
-                'decimalLatitude'  => '',
-                'decimalLongitude' => '',
-                'ipAddress'        => '',
-                'transcriber'      => $transcription->user_name,
-                'physicalLocation' => [
-                    'country'      => '',
-                    'province'     => '',
-                    'county'       => '',
-                    'municipality' => '',
-                    'locality'     => '',
-                ],
-            ],
-            'transcriptionContent' => [
-                'lat'          => '',
-                'long'         => '',
-                'country'      => $transcription->Country,
-                'province'     => $transcription->State_Province,
-                'county'       => $transcription->County,
-                'municipality' => '',
-                'locality'     => $transcription->Location,
-                'date'         => '', // which date to use? transcription date is messy
-                'collector'    => $transcription->Collected_By,
-                'taxon'        => $transcription->Scientific_Name,
-            ],
-            'discretionaryState'   => 'Transcribed',
-        ];
-
-        $this->pusherTranscriptionContract->create($item);
-    }
-
-    /**
-     * Update Classification.
-     *
-     * @param $transcription
-     * @param $classification
-     * @param $expedition
-     */
-    private function updateClassification($transcription, $classification, $expedition)
-    {
-        $thumbnailUri = $this->setThumbnailUri($transcription);
-
-        $subject = [
-            'link'         => ! empty ($transcription->subject_references) ? $transcription->subject_references : $classification->subject['link'],
-            'thumbnailUri' => ! empty ($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri'],
-        ];
-
-        $transcriptionContent = [
-            'country'   => ! empty($transcription->Country) ? $transcription->Country : $classification->country,
-            'province'  => ! empty($transcription->StateProvince) ? $transcription->StateProvince : $classification->transcriptionContent['province'],
-            'county'    => ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'],
-            'locality'  => ! empty($transcription->Location) ? $transcription->Location : '',
-            'collector' => ! empty($transcription->CollectedBy) ? $transcription->CollectedBy : '',
-            'taxon'     => ! empty($transcription->ScientificName) ? $transcription->ScientificName : $classification->taxon,
-        ];
-
-        $attributes = [
-            'expedition_uuid'      => $expedition->uuid,
-            'timestamp'            => $transcription->classification_finished_at,
-            'subject'              => array_merge($classification->subject, $subject),
-            'contributor'          => array_merge($classification->contributor, ['transcriber' => $transcription->user_name]),
-            'transcriptionContent' => array_merge($classification->transcriptionContent, $transcriptionContent),
-        ];
-
-        $this->pusherTranscriptionContract->update($attributes, $classification->_id);
-    }
-
-    /**
-     * Determine image url.
-     *
-     * @param $transcription
-     * @return mixed
-     */
-    private function setThumbnailUri($transcription)
-    {
-        return (! isset($transcription->subject_imageURL) || empty($transcription->subject_imageURL)) ? $transcription->subject->accessURI : $transcription->subject_imageURL;
-    }
-
-    /**
-     * Validate transcription to prevent duplicates.
-     *
-     * @param $classification_id
-     * @return mixed
-     */
-    public function validateTranscription($classification_id)
-    {
-
-        $rules = ['classification_id' => 'unique:mongodb.pusher_transcriptions,classification_id'];
-        $values = ['classification_id' => $classification_id];
-        $validator = Validator::make($values, $rules);
-        $validator->getPresenceVerifier()->setConnection('mongodb');
-
-        // returns true if failed.
-        return $validator->fails();
+        $date_start !== null ? $query->where('timestamp', '>=', $date_start) : null;
+        $date_end !== null ? $query->where('timestamp', '<=', $date_end) : null;
     }
 }

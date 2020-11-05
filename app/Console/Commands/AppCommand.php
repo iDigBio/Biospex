@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,6 +21,11 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
+/**
+ * Class AppCommand
+ *
+ * @package App\Console\Commands
+ */
 class AppCommand extends Command
 {
     /**
@@ -45,6 +50,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
     }
+
 }

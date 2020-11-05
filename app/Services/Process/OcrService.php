@@ -20,19 +20,24 @@
 namespace App\Services\Process;
 
 use App\Notifications\OcrProcessComplete;
-use App\Repositories\Interfaces\OcrQueue;
+use App\Services\Model\OcrQueueService;
 use App\Services\Csv\Csv;
 use App\Services\MongoDbService;
 use MongoDB\BSON\Regex;
 use Storage;
 use Str;
 
+/**
+ * Class OcrService
+ *
+ * @package App\Services\Process
+ */
 class OcrService
 {
     /**
-     * @var \App\Repositories\Interfaces\OcrQueue
+     * @var \App\Services\Model\OcrQueueService
      */
-    private $ocrQueueContract;
+    private $ocrQueueService;
 
     /**
      * @var \App\Services\MongoDbService
@@ -52,16 +57,16 @@ class OcrService
     /**
      * Ocr constructor.
      *
-     * @param \App\Repositories\Interfaces\OcrQueue $ocrQueueContract
+     * @param \App\Services\Model\OcrQueueService $ocrQueueService
      * @param \App\Services\MongoDbService $mongoDbService
      * @param \App\Services\Csv\Csv $csvService
      */
     public function __construct(
-        OcrQueue $ocrQueueContract,
+        OcrQueueService $ocrQueueService,
         MongoDbService $mongoDbService,
         Csv $csvService
     ) {
-        $this->ocrQueueContract = $ocrQueueContract;
+        $this->ocrQueueService = $ocrQueueService;
         $this->mongoDbService = $mongoDbService;
         $this->csvService = $csvService;
     }
@@ -97,7 +102,7 @@ class OcrService
      */
     public function createOcrQueue(int $projectId, int $expeditionId = null): \App\Models\OcrQueue
     {
-        return $this->ocrQueueContract->firstOrCreate(['project_id' => $projectId, 'expedition_id' => $expeditionId]);
+        return $this->ocrQueueService->firstOrCreate(['project_id' => $projectId, 'expedition_id' => $expeditionId]);
     }
 
     /**

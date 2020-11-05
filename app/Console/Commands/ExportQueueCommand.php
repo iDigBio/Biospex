@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,7 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ExportQueueJob;
-use App\Repositories\Interfaces\ExportQueue;
+use App\Services\Model\ExportQueueService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -43,19 +43,19 @@ class ExportQueueCommand extends Command
     protected $description = 'Fire export queue job.';
 
     /**
-     * @var ExportQueue
+     * @var \App\Services\Model\ExportQueueService
      */
-    public $exportQueueContract;
+    public $exportQueueService;
 
 
     /**
      * ExportQueueCommand constructor.
-     * @param ExportQueue $exportQueueContract
+     * @param \App\Services\Model\ExportQueueService $exportQueueService
      */
-    public function __construct(ExportQueue $exportQueueContract)
+    public function __construct(ExportQueueService $exportQueueService)
     {
         parent::__construct();
-        $this->exportQueueContract = $exportQueueContract;
+        $this->exportQueueService = $exportQueueService;
     }
 
     /**
@@ -63,7 +63,7 @@ class ExportQueueCommand extends Command
      */
     public function handle()
     {
-        $record = $this->exportQueueContract->getFirstExportWithoutError();
+        $record = $this->exportQueueService->findBy('error', 0);
 
         if ($record === null)
         {
@@ -79,7 +79,7 @@ class ExportQueueCommand extends Command
 
         if (! $record->queued)
         {
-            $this->exportQueueContract->update(['queued' => 1], $record->id);
+            $this->exportQueueService->update(['queued' => 1], $record->id);
             event('exportQueue.updated');
         }
     }

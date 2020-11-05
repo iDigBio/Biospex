@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,32 +22,37 @@ namespace App\Http\Controllers\Admin;
 use Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BingoFormRequest;
-use App\Repositories\Interfaces\Bingo;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\BingoService;
+use App\Services\Model\ProjectService;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class BingosController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class BingosController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\Bingo
+     * @var \App\Services\Model\BingoService
      */
-    private $bingoContract;
+    private $bingoService;
 
     /**
-     * @var \App\Repositories\Interfaces\Project
+     * @var \App\Services\Model\ProjectService
      */
-    private $projectContract;
+    private $projectService;
 
     /**
      * BingosController constructor.
      *
-     * @param \App\Repositories\Interfaces\Bingo $bingoContract
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Model\BingoService $bingoService
+     * @param \App\Services\Model\ProjectService $projectService
      */
-    public function __construct(Bingo $bingoContract, Project $projectContract)
+    public function __construct(BingoService $bingoService, ProjectService $projectService)
     {
-        $this->bingoContract = $bingoContract;
-        $this->projectContract = $projectContract;
+        $this->bingoService = $bingoService;
+        $this->projectService = $projectService;
     }
 
     /**
@@ -57,7 +62,7 @@ class BingosController extends Controller
      */
     public function index()
     {
-        $bingos = $this->bingoContract->getAdminIndex(Auth::user()->id);
+        $bingos = $this->bingoService->getAdminIndex(Auth::user()->id);
 
         return view('admin.bingo.index', compact('bingos'));
     }
@@ -69,7 +74,7 @@ class BingosController extends Controller
      */
     public function create()
     {
-        $projects = $this->projectContract->getProjectEventSelect();
+        $projects = $this->projectService->getProjectEventSelect();
 
         return view('admin.bingo.create', compact('projects'));
     }
@@ -82,7 +87,7 @@ class BingosController extends Controller
      */
     public function store(BingoFormRequest $request)
     {
-        $bingo = $this->bingoContract->createBingo($request->all());
+        $bingo = $this->bingoService->createBingo($request->all());
 
         if ($bingo) {
             Flash::success(t('Record was created successfully.'));
@@ -103,7 +108,7 @@ class BingosController extends Controller
      */
     public function show(string $bingoId)
     {
-        $bingo = $this->bingoContract->findWith($bingoId, ['words']);
+        $bingo = $this->bingoService->findWith($bingoId, ['words']);
 
         if ( ! $this->checkPermissions('read', $bingo))
         {
@@ -121,8 +126,8 @@ class BingosController extends Controller
      */
     public function edit(string $bingoId)
     {
-        $bingo = $this->bingoContract->findWith($bingoId, ['words', 'project']);
-        $projects = $this->projectContract->getProjectEventSelect();
+        $bingo = $this->bingoService->findWith($bingoId, ['words', 'project']);
+        $projects = $this->projectService->getProjectEventSelect();
 
         return view('admin.bingo.edit', compact('bingo', 'projects'));
     }
@@ -136,14 +141,14 @@ class BingosController extends Controller
      */
     public function update(BingoFormRequest $request, string $bingoId)
     {
-        $bingo = $this->bingoContract->findWith($bingoId, ['words']);
+        $bingo = $this->bingoService->findWith($bingoId, ['words']);
 
         if ( ! $this->checkPermissions('update', $bingo))
         {
             return redirect()->route('admin.bingos.index');
         }
 
-        $result = $this->bingoContract->updatebingo($request->all(), $bingoId);
+        $result = $this->bingoService->updatebingo($request->all(), $bingoId);
 
         if ($result) {
             Flash::success(t('Record was updated successfully.'));
@@ -164,14 +169,14 @@ class BingosController extends Controller
      */
     public function delete(string $bingoId)
     {
-        $bingo = $this->bingoContract->find($bingoId);
+        $bingo = $this->bingoService->find($bingoId);
 
         if ( ! $this->checkPermissions('delete', $bingo))
         {
             return redirect()->route('admin.bingos.index');
         }
 
-        $result = $this->bingoContract->delete($bingo);
+        $result = $bingo->delete();
 
         if ($result)
         {

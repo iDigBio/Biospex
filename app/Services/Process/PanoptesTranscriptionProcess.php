@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,15 +19,19 @@
 
 namespace App\Services\Process;
 
-use App\Services\Model\TranscriptionLocationStateCountyService;
-use App\Repositories\Interfaces\Subject;
-use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Services\Model\SubjectService;
+use App\Services\Model\PanoptesTranscriptionService;
 use Exception;
 use Storage;
 use Str;
 use Validator;
 use App\Services\Csv\Csv;
 
+/**
+ * Class PanoptesTranscriptionProcess
+ *
+ * @package App\Services\Process
+ */
 class PanoptesTranscriptionProcess
 {
     /**
@@ -36,19 +40,19 @@ class PanoptesTranscriptionProcess
     protected $collection;
 
     /**
-     * @var Subject
+     * @var SubjectService
      */
-    protected $subjectContract;
+    protected $subjectService;
 
     /**
-     * @var PanoptesTranscription
+     * @var \App\Services\Model\PanoptesTranscriptionService
      */
-    protected $panoptesTranscriptionContract;
+    protected $panoptesTranscriptionService;
 
     /**
-     * @var \App\Services\Model\TranscriptionLocationStateCountyService
+     * @var \App\Services\Process\TranscriptionLocationProcess
      */
-    protected $locationStateCountyService;
+    protected $transcriptionLocationProcess;
 
     /**
      * @var array
@@ -73,20 +77,20 @@ class PanoptesTranscriptionProcess
     /**
      * PanoptesTranscriptionProcess constructor.
      *
-     * @param Subject $subjectContract
-     * @param PanoptesTranscription $panoptesTranscriptionContract
-     * @param \App\Services\Model\TranscriptionLocationStateCountyService $locationStateCountyService
+     * @param SubjectService $subjectService
+     * @param \App\Services\Model\PanoptesTranscriptionService $panoptesTranscriptionService
+     * @param \App\Services\Process\TranscriptionLocationProcess $transcriptionLocationProcess
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
-        Subject $subjectContract,
-        PanoptesTranscription $panoptesTranscriptionContract,
-        TranscriptionLocationStateCountyService $locationStateCountyService,
+        SubjectService $subjectService,
+        PanoptesTranscriptionService $panoptesTranscriptionService,
+        TranscriptionLocationProcess $transcriptionLocationProcess,
         Csv $csv
     ) {
-        $this->subjectContract = $subjectContract;
-        $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
-        $this->locationStateCountyService = $locationStateCountyService;
+        $this->subjectService = $subjectService;
+        $this->panoptesTranscriptionService = $panoptesTranscriptionService;
+        $this->transcriptionLocationProcess = $transcriptionLocationProcess;
         $this->csv = $csv;
 
         // TODO can be removed after fixing Charles issue
@@ -165,20 +169,18 @@ class PanoptesTranscriptionProcess
          */
         $this->fixMisMatched($row, $expeditionId);
 
-        $subject = $this->subjectContract->find(trim($row['subject_subjectId']));
+        $subject = $this->subjectService->find(trim($row['subject_subjectId']));
 
-        if ($subject === null)
-        {
+        if ($subject === null) {
             $this->csvError[] = array_merge(['error' => 'Could not find subject id for classification'], $row);
-
             return;
         }
 
-        $this->locationStateCountyService->buildTranscriptionLocation($row, $subject, $expeditionId);
+        $this->transcriptionLocationProcess->buildTranscriptionLocation($row, $subject, $expeditionId);
 
         $row = array_merge($row, ['subject_projectId' => $subject->project_id]);
 
-        $this->panoptesTranscriptionContract->create($row);
+        $this->panoptesTranscriptionService->create($row);
     }
 
     /**

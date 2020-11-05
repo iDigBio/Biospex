@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,12 +20,10 @@
 namespace App\Services\Actor;
 
 use App\Facades\ActorEventHelper;
-use App\Facades\GeneralHelper;
 use App\Notifications\NfnExportComplete;
-
-use App\Repositories\Interfaces\Download;
-use App\Repositories\Interfaces\ExportQueue;
-use App\Repositories\Interfaces\ExportQueueFile;
+use App\Services\Model\DownloadService;
+use App\Services\Model\ExportQueueService;
+use App\Services\Model\ExportQueueFileService;
 use App\Services\Csv\Csv;
 use File;
 use Notification;
@@ -39,14 +37,14 @@ use Notification;
 class NfnPanoptesExportReport extends NfnPanoptesBase
 {
     /**
-     * @var \App\Repositories\Interfaces\ExportQueue
+     * @var \App\Services\Model\ExportQueueService
      */
-    private $exportQueueContract;
+    private $exportQueueService;
 
     /**
-     * @var \App\Repositories\Interfaces\ExportQueueFile
+     * @var \App\Services\Model\ExportQueueFileService
      */
-    private $exportQueueFileContract;
+    private $exportQueueFileService;
 
     /**
      * @var \App\Services\Csv\Csv
@@ -54,29 +52,29 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
     private $csv;
 
     /**
-     * @var \App\Repositories\Interfaces\Download
+     * @var \App\Services\Model\DownloadService
      */
-    private $downloadContract;
+    private $downloadService;
 
     /**
      * NfnPanoptesExportReport constructor.
      *
-     * @param \App\Repositories\Interfaces\ExportQueue $exportQueueContract
-     * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFileContract
+     * @param \App\Services\Model\ExportQueueService $exportQueueService
+     * @param \App\Services\Model\ExportQueueFileService $exportQueueFileService
      * @param \App\Services\Csv\Csv $csv
-     * @param \App\Repositories\Interfaces\Download $downloadContract
+     * @param \App\Services\Model\DownloadService $downloadService
      */
     public function __construct(
-        ExportQueue $exportQueueContract,
-        ExportQueueFile $exportQueueFileContract,
+        ExportQueueService $exportQueueService,
+        ExportQueueFileService $exportQueueFileService,
         Csv $csv,
-        Download $downloadContract
+        DownloadService $downloadService
     )
     {
-        $this->exportQueueContract = $exportQueueContract;
-        $this->exportQueueFileContract = $exportQueueFileContract;
+        $this->exportQueueService = $exportQueueService;
+        $this->exportQueueFileService = $exportQueueFileService;
         $this->csv = $csv;
-        $this->downloadContract = $downloadContract;
+        $this->downloadService = $downloadService;
     }
 
     /**
@@ -97,7 +95,7 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
         File::deleteDirectory($this->tmpDirectory);
         File::deleteDirectory($this->workingDirectory);
 
-        $this->exportQueueContract->delete($queue->id);
+        $queue->delete();
         event('exportQueue.updated');
 
         ActorEventHelper::fireActorStateEvent($this->actor);
@@ -113,7 +111,7 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
      */
     protected function notify()
     {
-        $files = $this->exportQueueFileContract->getFilesWithErrorsByQueueId($this->queue->id);
+        $files = $this->exportQueueFileService->getFilesWithErrorsByQueueId($this->queue->id);
         $remove = array_flip(['id', 'queue_id', 'error', 'created_at', 'updated_at']);
         $data = $files->map(function($file) use($remove){
             return array_diff_key($file->toArray(), $remove);
@@ -150,6 +148,6 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
             'type' => 'report'
         ];
 
-        $this->downloadContract->updateOrCreate($attributes, $values);
+        $this->downloadService->updateOrCreate($attributes, $values);
     }
 }

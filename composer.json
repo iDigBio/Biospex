@@ -23,7 +23,6 @@
     "laravel/framework": "^7.0",
     "laravel/nova": "^3.8.4",
     "laravel/passport": "^8.3",
-    "laravel/telescope": "^3.0",
     "laravel/tinker": "^2.0",
     "laravel/ui": "^2.0",
     "league/csv": "^9.6",
@@ -94,7 +93,6 @@
       "Illuminate\\Foundation\\ComposerScripts::postUpdate",
       "@php artisan ide-helper:generate",
       "@php artisan ide-helper:meta",
-      "@php artisan telescope:publish --ansi",
       "@php artisan nova:publish"
     ]
   }

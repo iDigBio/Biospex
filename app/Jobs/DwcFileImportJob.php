@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,8 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Facades\GeneralHelper;
-use App\Repositories\Interfaces\Project;
+use App\Services\Model\ProjectService;
 use App\Models\Import;
 use App\Notifications\DarwinCoreImportError;
 use App\Notifications\ImportComplete;
@@ -36,6 +35,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Storage;
 use Notification;
 
+/**
+ * Class DwcFileImportJob
+ *
+ * @package App\Jobs
+ */
 class DwcFileImportJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -64,21 +68,20 @@ class DwcFileImportJob implements ShouldQueue
     }
 
     /**
-     * Execute the job.
-     *
-     * @param Project $projectContract
-     * @param DarwinCore $dwcProcess
-     * @param FileService $fileService
+     * @param \App\Services\Model\ProjectService $projectService
+     * @param \App\Services\Process\DarwinCore $dwcProcess
+     * @param \App\Services\File\FileService $fileService
+     * @param \App\Services\Csv\Csv $csv
      */
     public function handle(
-        Project $projectContract,
+        ProjectService $projectService,
         DarwinCore $dwcProcess,
         FileService $fileService,
         Csv $csv
     ) {
         $scratchFileDir = Storage::path(config('config.scratch_dir').'/'.md5($this->import->file));
 
-        $project = $projectContract->getProjectForDarwinImportJob($this->import->project_id);
+        $project = $projectService->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
 
         try {

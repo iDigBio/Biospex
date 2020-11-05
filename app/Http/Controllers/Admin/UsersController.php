@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,27 +23,33 @@ use App\Facades\DateHelper;
 use Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordFormRequest;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\UserService;
 use App\Http\Requests\EditUserFormRequest;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Class UsersController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class UsersController extends Controller
 {
     use ResetsPasswords;
     
     /**
-     * @var User
+     * @var \App\Services\Model\UserService
      */
     public $userContract;
 
     /**
      * UsersController constructor.
-     * @param User $userContract
+     *
+     * @param \App\Services\Model\UserService $userService
      */
-    public function __construct(User $userContract)
+    public function __construct(UserService $userService)
     {
-        $this->userContract = $userContract;
+        $this->userService = $userService;
     }
 
     /**
@@ -73,7 +79,7 @@ class UsersController extends Controller
      */
     public function edit()
     {
-        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $user = $this->userService->findWith(request()->user()->id, ['profile']);
 
         if ($user->cannot('update', $user))
         {
@@ -96,7 +102,7 @@ class UsersController extends Controller
      */
     public function update(EditUserFormRequest $request, $userId)
     {
-        $user = $this->userContract->findWith($userId, ['profile']);
+        $user = $this->userService->findWith($userId, ['profile']);
 
         if ($user->cannot('update', $user))
         {
@@ -107,7 +113,7 @@ class UsersController extends Controller
 
         $input = $request->all();
         $input['notification'] = $request->exists('notification') ? 1 : 0;
-        $result = $this->userContract->update($input, $user->id);
+        $result = $this->userService->update($input, $user->id);
 
         $user->profile->fill($request->all());
         $user->profile()->save($user->profile);
@@ -132,7 +138,7 @@ class UsersController extends Controller
      */
     public function pass(PasswordFormRequest $request)
     {
-        $user = $this->userContract->find($request->route('id'));
+        $user = $this->userService->find($request->route('id'));
 
         if ( ! policy($user)->pass($user))
         {

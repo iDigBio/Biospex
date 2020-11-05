@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,24 +20,29 @@
 namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
-use App\Repositories\Interfaces\Notice;
+use App\Services\Model\NoticeService;
 
+/**
+ * Class NoticesComposer
+ *
+ * @package App\Http\ViewComposers
+ */
 class NoticesComposer
 {
 
     /**
-     * @var Notice
+     * @var \App\Services\Model\NoticeService
      */
-    private $noticeContract;
+    private $noticeService;
 
     /**
      * Create a new profile composer.
      *
-     * @param Notice $noticeContract
+     * @param \App\Services\Model\NoticeService $noticeService
      */
-    public function __construct(Notice $noticeContract)
+    public function __construct(NoticeService $noticeService)
     {
-        $this->noticeContract = $noticeContract;
+        $this->noticeService = $noticeService;
     }
 
     /**
@@ -48,7 +53,7 @@ class NoticesComposer
      */
     public function compose(View $view)
     {
-        $notices = $this->noticeContract->getEnabledNotices();
+        $notices = $this->noticeService->getBy('enabled', 1);
         $notices = $notices->isEmpty() ? null : $notices;
 
         $view->with('notices', $notices);

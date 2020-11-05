@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,109 +19,296 @@
 
 namespace App\Services\Model;
 
-use App\Repositories\Interfaces\Group;
-use App\Repositories\Interfaces\Workflow;
-use Illuminate\Support\Facades\Notification;
+use App\Models\Project;
+use App\Models\ProjectResource;
+use App\Services\Model\Traits\ModelTrait;
 
-class ProjectService
+/**
+ * Class ProjectService
+ *
+ * @package App\Services\Model
+ */
+class ProjectService extends BaseModelService
 {
     /**
-     * @var \App\Repositories\Interfaces\Workflow
-     */
-    private $workflowContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\Group
-     */
-    private $groupContract;
-
-    /**
-     * CommonVariables constructor.
+     * ProjectService constructor.
      *
-     * @param \App\Repositories\Interfaces\Workflow $workflowContract
-     * @param \App\Repositories\Interfaces\Group $groupContract
+     * @param \App\Models\Project $project
      */
-    public function __construct(
-        Workflow $workflowContract,
-        Group $groupContract
-    )
+    public function __construct(Project $project)
     {
 
-        $this->workflowContract = $workflowContract;
-        $this->groupContract = $groupContract;
+        $this->model = $project;
     }
 
     /**
-     * Return workflow select options.
+     * @param array $attributes
+     * @return \App\Repositories\Eloquent\EloquentRepository|bool|\Illuminate\Database\Eloquent\Model
      */
-    public function workflowSelectOptions()
+    public function create(array $attributes)
     {
-        return $this->workflowContract->getWorkflowSelect();
+        $project = $this->model->create($attributes);
+
+        if (! isset($attributes['resources'])) {
+            return true;
+        }
+
+        $resources = collect($attributes['resources'])->reject(function ($resource) {
+            return $this->filterOrDeleteResources($resource);
+        })->map(function ($resource) {
+            return new ProjectResource($resource);
+        });
+
+        $project->resources()->saveMany($resources->all());
+
+        return $project;
     }
 
     /**
-     * Return group.
+     * Override project update.
      *
-     * @param $groupId
-     * @return mixed
+     * TODO move resource code
+     * @param array $attributes
+     * @param $resourceId
+     * @return bool|iterable
      */
-    public function findGroup($groupId)
+    public function update(array $attributes, $resourceId)
     {
-        return $this->groupContract->find($groupId);
+        $model = $this->model->find($resourceId);
+
+        $attributes['slug'] = null;
+        $model->fill($attributes)->save();
+
+        if (! isset($attributes['resources'])) {
+            return true;
+        }
+
+        $resources = collect($attributes['resources'])->reject(function ($resource) {
+            return $this->filterOrDeleteResources($resource);
+        })->reject(function ($resource) {
+            return empty($resource['id']) ? false : $this->updateProjectResource($resource);
+        })->map(function ($resource) {
+            return new ProjectResource($resource);
+        });
+
+        if ($resources->isEmpty()) {
+            return true;
+        }
+
+        return $model->resources()->saveMany($resources->all());
     }
 
     /**
-     * Find users groups.
+     * Get select for project.
+     *
+     * @return array|string[]
+     */
+    public function getProjectEventSelect()
+    {
+        $results = $this->model->has('panoptesProjects')
+            ->orderBy('title')
+            ->get(['id', 'title'])
+            ->pluck('title', 'id');
+
+        return ['' => 'Select'] + $results->toArray();
+    }
+
+    /**
+     * Get projects for admin index page.
      *
      * @param $userId
+     * @param null $sort
+     * @param null $order
      * @return mixed
      */
-    public function getUserGroupCount($userId)
+    public function getAdminProjectIndex($userId, $sort = null, $order = null)
     {
-        return $this->groupContract->getGroupsByUserId($userId);
+        $results = $this->model->withCount('expeditions')->with([
+            'group' => function ($q) use ($userId) {
+                $q->whereHas('users', function ($q) use ($userId) {
+                    $q->where('users.id', $userId);
+                });
+            },
+        ])->whereHas('group', function ($q) use ($userId) {
+            $q->whereHas('users', function ($q) use ($userId) {
+                $q->where('users.id', $userId);
+            });
+        })->get();
+
+        return $this->sortResults($order, $results, $sort);
     }
 
     /**
-     * Return select options for user's groups
-     * @param $user
+     * Get public project index page.
+     *
+     * @param null $sort
+     * @param null $order
      * @return mixed
      */
-    public function userGroupSelectOptions($user)
+    public function getPublicProjectIndex($sort = null, $order = null)
     {
-        $groups = $this->groupContract->getUsersGroupsSelect($user);
+        $results = $this->model->withCount('expeditions')
+            ->withCount('events')->with('group')->has('panoptesProjects')->get();
 
-        return ['' => '--Select--'] + $groups;
+        return $this->sortResults($order, $results, $sort);
     }
 
     /**
-     * Project status select options.
+     * Get project for show page.
      *
-     * @return \Illuminate\Config\Repository|mixed
+     * @param $projectId
+     * @return \App\Models\Project|\App\Models\Project[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
      */
-    public function statusSelectOptions()
+    public function getProjectShow($projectId)
     {
-        return config('config.status_select');
+        return $this->model->withCount('expeditions')->with([
+            'group',
+            'ocrQueue',
+            'expeditions' => function($q) {
+                $q->with(['stat', 'nfnActor']);
+            },
+        ])->find($projectId);
     }
 
     /**
-     * Send notifications for new projects and actors.
+     * Get project page by slug.
      *
-     * @param $project
-     *
+     * @param $slug
+     * @return \App\Models\Project|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
-    public function notifyActorContacts($project)
+    public function getProjectPageBySlug($slug)
     {
-        $nfnNotify = config('config.nfnNotify');
+        return $this->model->withCount('events')->withCount('expeditions')->with([
+            'group.users.profile',
+            'resources',
+            'lastPanoptesProject',
+            'bingos',
+            'expeditions' => function($query){
+                $query->has('panoptesProject')->has('nfnActor')->with('panoptesProject', 'stat', 'nfnActor');
+            },
+            'events' => function ($q) {
+                $q->orderBy('start_date', 'desc');
+            }])->where('slug', '=', $slug)->first();
+    }
 
-        $project->workflow->actors->reject(function ($actor) {
-            return $actor->contacts->isEmpty();
-        })->filter(function ($actor) use ($nfnNotify) {
-            return isset($nfnNotify[$actor->id]);
-        })->each(function ($actor) use ($project, $nfnNotify) {
-            $class = '\App\Notifications\\'.$nfnNotify[$actor->id];
-            if (class_exists($class)) {
-                Notification::send($actor->contacts, new $class($project));
-            }
-        });
+    /**
+     * Get project for deletion.
+     *
+     * @param $projectId
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     */
+    public function getProjectForDelete($projectId)
+    {
+        return $this->model->with([
+            'group',
+            'panoptesProjects',
+            'workflowManagers',
+            'expeditions.downloads',
+        ])->find($projectId);
+    }
+
+    /**
+     * Filter or delete resource.
+     *
+     * @param $resource
+     * @return bool
+     */
+    public function filterOrDeleteResources($resource)
+    {
+        if ($resource['type'] === null) {
+            return true;
+        }
+
+        if ($resource['type'] === 'delete') {
+            ProjectResource::destroy($resource['id']);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Update project resource.
+     *
+     * @param $resource
+     * @return bool
+     */
+    public function updateProjectResource($resource)
+    {
+        $record = ProjectResource::find($resource['id']);
+        $record->type = $resource['type'];
+        $record->name = $resource['name'];
+        $record->description = $resource['description'];
+        if (isset($resource['download'])) {
+            $record->download = $resource['download'];
+        }
+
+        $record->save();
+
+        return true;
+    }
+
+    /**
+     * Sort results from index pages.
+     *
+     * @param $order
+     * @param $results
+     * @param $sort
+     * @return mixed
+     */
+    protected function sortResults($order, $results, $sort)
+    {
+        if ($order === null) {
+            return $results->sortBy('created_at');
+        }
+
+        switch ($sort) {
+            case 'title':
+                $results = $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
+                break;
+            case 'group':
+                $results = $order === 'desc' ? $results->sortByDesc(function ($project) {
+                    return $project->group->title;
+                }) : $results->sortBy(function ($project) {
+                    return $project->group->title;
+                });
+                break;
+            case 'date':
+                $results = $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
+                break;
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get project for amChart.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectForAmChartJob($projectId)
+    {
+        return $this->model->with([
+            'amChart',
+            'expeditions' => function ($q) {
+                $q->with('stat')->has('stat');
+                $q->with('panoptesProject')->has('panoptesProject');
+            },
+        ])->find($projectId);
+    }
+
+    /**
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectForDarwinImportJob($projectId)
+    {
+        return $this->model->with(['workflow.actors', 'group' => function($q){
+            $q->with(['owner', 'users' => function($q){
+                $q->where('notification', 1);
+            }]);
+        }])->find($projectId);
     }
 }

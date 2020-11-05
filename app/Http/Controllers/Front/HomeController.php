@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,23 +20,28 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\Expedition;
-use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Services\Model\ExpeditionService;
+use App\Services\Model\PanoptesTranscriptionService;
 
+/**
+ * Class HomeController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class HomeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $panoptesTranscription
+     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Services\Model\PanoptesTranscriptionService $panoptesTranscriptionService
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Expedition $expeditionContract, PanoptesTranscription $panoptesTranscription)
+    public function index(ExpeditionService $expeditionService, PanoptesTranscriptionService $panoptesTranscriptionService)
     {
-        $expedition = $expeditionContract->getHomePageProjectExpedition();
-        $contributorCount = $panoptesTranscription->getContributorCount();
-        $transcriptionCount = $panoptesTranscription->getTotalTranscriptions();
+        $expedition = $expeditionService->getHomePageProjectExpedition();
+        $contributorCount = $panoptesTranscriptionService->getContributorCount();
+        $transcriptionCount = $panoptesTranscriptionService->getTotalTranscriptions();
 
         return view('front.home', compact('expedition', 'contributorCount', 'transcriptionCount'));
     }

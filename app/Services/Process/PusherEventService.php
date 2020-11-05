@@ -19,21 +19,20 @@
 
 namespace App\Services\Process;
 
-use App\Repositories\Interfaces\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Services\Api\PanoptesApiService;
-use App\Services\Model\EventTranscriptionService;
 
 class PusherEventService
 {
     /**
-     * @var \App\Services\Model\EventTranscriptionService
+     * @var \App\Services\Process\EventTranscriptionProcess
      */
-    private $eventTranscriptionService;
+    private $eventTranscriptionProcess;
 
     /**
-     * @var \App\Repositories\Interfaces\Expedition
+     * @var \App\Services\Model\ExpeditionService
      */
-    private $expeditionContract;
+    private $expeditionService;
 
     /**
      * @var \App\Services\Api\PanoptesApiService
@@ -43,18 +42,18 @@ class PusherEventService
     /**
      * PusherEventService constructor.
      *
-     * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Services\Process\EventTranscriptionProcess $eventTranscriptionProcess
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      * @param \App\Services\Api\PanoptesApiService $apiService
      */
     public function __construct(
-        EventTranscriptionService $eventTranscriptionService,
-        Expedition $expeditionContract,
+        EventTranscriptionProcess $eventTranscriptionProcess,
+        ExpeditionService $expeditionService,
         PanoptesApiService $apiService)
     {
 
-        $this->eventTranscriptionService = $eventTranscriptionService;
-        $this->expeditionContract = $expeditionContract;
+        $this->eventTranscriptionProcess = $eventTranscriptionProcess;
+        $this->expeditionService = $expeditionService;
         $this->apiService = $apiService;
     }
 
@@ -79,7 +78,7 @@ class PusherEventService
             return;
         }
 
-        $this->eventTranscriptionService->createEventTranscription((int) $data['classification_id'], $expedition->project_id, $user['login']);
+        $this->eventTranscriptionProcess->createEventTranscription((int) $data['classification_id'], $expedition->project_id, $user['login']);
     }
 
     /**
@@ -94,6 +93,6 @@ class PusherEventService
             return null;
         }
 
-        return $this->expeditionContract->find($subject['metadata']['#expeditionId']);
+        return $this->expeditionService->find($subject['metadata']['#expeditionId']);
     }
 }
