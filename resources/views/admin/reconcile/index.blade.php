@@ -11,9 +11,17 @@
     </div>
     <div class="row">
         <div class="col-6">
-            <div class="panzoom">
-                <div class="loader mx-auto"></div>
-                <img src="{{ $imgUrl }}" class="img-fluid lazy">
+            <div class="buttons text-center">
+                <button id="btnZoomIn" class="btn btn-primary p-2 m-1">Zoom in</button>
+                <button id="btnZoomOut" class="btn btn-primary p-2 m-1">Zoom out</button>
+                <button id="btnZoomReset" class="btn btn-primary p-2 m-1">Reset</button>
+                <label>(or Mouse Wheel)</label>
+            </div>
+            <div>
+                <div id="panzoom">
+                    <div class="loader mx-auto"></div>
+                    <img src="{{ $imgUrl }}" class="img-fluid lazy">
+                </div>
             </div>
         </div>
         <div class="col-6">

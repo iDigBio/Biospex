@@ -38,7 +38,6 @@ mix.webpackConfig({
         "summernote/dist/summernote",
         "socket.io-client/dist/socket.io",
     ])
-    .copy('resources/js/jquery.panzoom.min.js', 'public/backend/js/jquery.panzoom.min.js')
     .copy('resources/js/jquery.form.min.js', 'public/backend/js/jquery.form.min.js')
     .copy('resources/js/expertReview.js', 'public/backend/js/expertReview.js')
     .babel('public/backend/js/expertReview.js', 'public/backend/js/expertReview.js')

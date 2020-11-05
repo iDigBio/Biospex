@@ -7,6 +7,7 @@
 try {
 
     window.$ = window.jQuery = require('jquery');
+    window.Panzoom = require('@panzoom/panzoom/dist/panzoom.min');
 
     require('bootstrap');
 
