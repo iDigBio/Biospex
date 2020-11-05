@@ -21,6 +21,11 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 
+/**
+ * Class EventTranscription
+ *
+ * @package App\Models
+ */
 class EventTranscription extends BaseEloquentModel
 {
     use HybridRelations;

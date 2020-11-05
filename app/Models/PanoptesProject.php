@@ -22,6 +22,11 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Presenters\PanoptesProjectPresenter;
 
+/**
+ * Class PanoptesProject
+ *
+ * @package App\Models
+ */
 class PanoptesProject extends BaseEloquentModel
 {
 

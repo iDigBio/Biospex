@@ -22,6 +22,11 @@ namespace App\Models;
 use Illuminate\Support\Carbon;
 use MongoDB\BSON\UTCDateTime;
 
+/**
+ * Class PanoptesTranscription
+ *
+ * @package App\Models
+ */
 class PanoptesTranscription extends BaseMongoModel
 {
 

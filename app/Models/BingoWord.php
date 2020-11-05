@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class BingoWord
+ *
+ * @package App\Models
+ */
 class BingoWord extends BaseEloquentModel
 {
     /**

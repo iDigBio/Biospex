@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -29,6 +29,11 @@ use Cviebrock\EloquentSluggable\Sluggable;
 use App\Models\Traits\UuidTrait;
 use App\Models\Traits\Presentable;
 
+/**
+ * Class Project
+ *
+ * @package App\Models
+ */
 class Project extends BaseEloquentModel implements AttachableInterface
 {
     use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, Presentable;

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,6 +21,11 @@ namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
 
+/**
+ * Class BingoMap
+ *
+ * @package App\Models
+ */
 class BingoMap extends BaseEloquentModel
 {
     use UuidTrait;

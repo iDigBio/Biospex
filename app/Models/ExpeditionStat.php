@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class ExpeditionStat
+ *
+ * @package App\Models
+ */
 class ExpeditionStat extends BaseEloquentModel
 {
 

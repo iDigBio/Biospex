@@ -28,6 +28,11 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Traits\Presentable;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
+/**
+ * Class User
+ *
+ * @package App\Models
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasGroup, UuidTrait, Notifiable, Presentable, LadaCacheTrait;

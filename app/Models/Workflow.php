@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class Workflow
+ *
+ * @package App\Models
+ */
 class Workflow extends BaseEloquentModel
 {
     /**

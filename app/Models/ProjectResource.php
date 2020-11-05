@@ -24,6 +24,11 @@ use App\Presenters\ProjectResourcePresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 
+/**
+ * Class ProjectResource
+ *
+ * @package App\Models
+ */
 class ProjectResource extends BaseEloquentModel implements AttachableInterface
 {
     use PaperclipTrait, Presentable;

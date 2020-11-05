@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class Meta
+ *
+ * @package App\Models
+ */
 class Meta extends BaseEloquentModel
 {
     /**

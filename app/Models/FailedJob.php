@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
+/**
+ * Class FailedJob
+ *
+ * @package App\Models
+ */
 class FailedJob extends Model
 {
     use LadaCacheTrait;

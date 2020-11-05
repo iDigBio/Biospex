@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class TranscriptionLocation
+ *
+ * @package App\Models
+ */
 class TranscriptionLocation extends BaseEloquentModel
 {
 

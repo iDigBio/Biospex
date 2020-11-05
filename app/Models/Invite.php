@@ -21,6 +21,11 @@ namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Class Invite
+ *
+ * @package App\Models
+ */
 class Invite extends BaseEloquentModel
 {
     use Notifiable;

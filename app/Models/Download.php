@@ -23,6 +23,11 @@ use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\DownloadPresenter;
 
+/**
+ * Class Download
+ *
+ * @package App\Models
+ */
 class Download extends BaseEloquentModel
 {
     use UuidTrait, Presentable;

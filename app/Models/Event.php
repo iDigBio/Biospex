@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,6 +23,11 @@ use App\Models\Traits\Presentable;
 use App\Presenters\EventPresenter;
 use DateTimeZone;
 
+/**
+ * Class Event
+ *
+ * @package App\Models
+ */
 class Event extends BaseEloquentModel
 {
     use Presentable;

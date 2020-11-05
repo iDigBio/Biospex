@@ -27,6 +27,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
+/**
+ * Class ApiUser
+ *
+ * @package App\Models
+ */
 class ApiUser extends Authenticatable implements MustVerifyEmail
 {
 

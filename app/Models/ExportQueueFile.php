@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,6 +21,11 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 
+/**
+ * Class ExportQueueFile
+ *
+ * @package App\Models
+ */
 class ExportQueueFile extends BaseEloquentModel
 {
     use HybridRelations;

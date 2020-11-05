@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class AmChart
+ *
+ * @package App\Models
+ */
 class AmChart extends BaseEloquentModel
 {
     /**

@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class Property
+ *
+ * @package App\Models
+ */
 class Property extends BaseEloquentModel
 {
 

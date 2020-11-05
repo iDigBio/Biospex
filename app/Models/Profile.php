@@ -23,6 +23,11 @@ use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 use App\Models\Traits\Presentable;
 
+/**
+ * Class Profile
+ *
+ * @package App\Models
+ */
 class Profile extends BaseEloquentModel implements AttachableInterface
 {
     use PaperclipTrait, Presentable;

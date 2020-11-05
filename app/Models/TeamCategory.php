@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class TeamCategory
+ *
+ * @package App\Models
+ */
 class TeamCategory extends BaseEloquentModel
 {
 

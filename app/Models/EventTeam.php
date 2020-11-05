@@ -23,6 +23,11 @@ use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\EventTeamPresenter;
 
+/**
+ * Class EventTeam
+ *
+ * @package App\Models
+ */
 class EventTeam extends BaseEloquentModel
 {
     use UuidTrait, Presentable;

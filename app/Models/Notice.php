@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class Notice
+ *
+ * @package App\Models
+ */
 class Notice extends BaseEloquentModel
 {
     /**

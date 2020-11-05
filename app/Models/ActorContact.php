@@ -21,6 +21,11 @@ namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Class ActorContact
+ *
+ * @package App\Models
+ */
 class ActorContact extends BaseEloquentModel
 {
     use Notifiable;

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Presenters\BingoPresenter;
 
+/**
+ * Class Bingo
+ *
+ * @package App\Models
+ */
 class Bingo extends BaseEloquentModel
 {
     use Presentable;

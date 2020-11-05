@@ -19,8 +19,11 @@
 
 namespace App\Models;
 
-use MongoDB\BSON\ObjectID;
-
+/**
+ * Class PusherTranscription
+ *
+ * @package App\Models
+ */
 class PusherTranscription extends BaseMongoModel
 {
     /**

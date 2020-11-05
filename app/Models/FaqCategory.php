@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class FaqCategory
+ *
+ * @package App\Models
+ */
 class FaqCategory extends BaseEloquentModel
 {
 

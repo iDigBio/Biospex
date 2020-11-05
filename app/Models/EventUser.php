@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class EventUser
+ *
+ * @package App\Models
+ */
 class EventUser extends BaseEloquentModel
 {
     /**

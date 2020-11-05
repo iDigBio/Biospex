@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class Import
+ *
+ * @package App\Models
+ */
 class Import extends BaseEloquentModel
 {
     /**

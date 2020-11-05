@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,6 +23,11 @@ use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\GroupPresenter;
 
+/**
+ * Class Group
+ *
+ * @package App\Models
+ */
 class Group extends BaseEloquentModel
 {
     use UuidTrait, Presentable;

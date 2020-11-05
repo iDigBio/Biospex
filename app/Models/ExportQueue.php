@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class ExportQueue
+ *
+ * @package App\Models
+ */
 class ExportQueue extends BaseEloquentModel
 {
     /**

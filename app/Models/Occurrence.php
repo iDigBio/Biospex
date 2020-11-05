@@ -19,6 +19,11 @@
 
 namespace App\Models;
 
+/**
+ * Class Occurrence
+ *
+ * @package App\Models
+ */
 class Occurrence extends BaseMongoModel
 {
 
