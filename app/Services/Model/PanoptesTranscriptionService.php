@@ -21,7 +21,6 @@ namespace App\Services\Model;
 
 use App\Facades\DateHelper;
 use App\Models\PanoptesTranscription;
-
 use Illuminate\Support\Facades\Cache;
 
 /**

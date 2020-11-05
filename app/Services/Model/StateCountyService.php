@@ -21,7 +21,6 @@ namespace App\Services\Model;
 
 use App\Models\StateCounty;
 
-
 /**
  * Class StateCountyService
  *
@@ -37,7 +36,7 @@ class StateCountyService extends BaseModelService
     public function __construct(StateCounty $stateCounty)
     {
 
-        $this->stateCounty = $stateCounty;
+        $this->model = $stateCounty;
     }
 
     /**

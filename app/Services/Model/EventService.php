@@ -22,7 +22,6 @@ namespace App\Services\Model;
 use App\Models\Event;
 use App\Models\EventTeam;
 use App\Models\User;
-
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 

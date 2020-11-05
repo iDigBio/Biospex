@@ -20,7 +20,6 @@
 namespace App\Services\Model;
 
 use App\Models\EventTranscription;
-
 use Illuminate\Support\Collection;
 
 /**

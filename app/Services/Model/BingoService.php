@@ -21,7 +21,6 @@ namespace App\Services\Model;
 
 use App\Models\Bingo;
 use App\Models\BingoWord;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 

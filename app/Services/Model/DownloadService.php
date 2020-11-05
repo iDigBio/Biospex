@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,7 +20,6 @@
 namespace App\Services\Model;
 
 use App\Models\Download;
-
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 

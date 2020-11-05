@@ -20,7 +20,6 @@
 namespace App\Services\Model;
 
 use App\Models\Expedition;
-
 use Illuminate\Database\Eloquent\Builder;
 
 /**

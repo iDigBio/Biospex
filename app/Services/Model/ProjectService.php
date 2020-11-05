@@ -22,7 +22,6 @@ namespace App\Services\Model;
 use App\Models\Project;
 use App\Models\ProjectResource;
 
-
 /**
  * Class ProjectService
  *

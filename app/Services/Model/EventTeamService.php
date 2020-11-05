@@ -22,7 +22,6 @@ namespace App\Services\Model;
 use App\Facades\GeneralHelper;
 use App\Models\EventTeam;
 
-
 /**
  * Class EventTeamService
  *

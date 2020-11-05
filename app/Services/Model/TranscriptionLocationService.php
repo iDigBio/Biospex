@@ -21,7 +21,6 @@ namespace App\Services\Model;
 
 use App\Models\TranscriptionLocation;
 
-
 /**
  * Class TranscriptionLocationService
  *

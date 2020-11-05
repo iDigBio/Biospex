@@ -20,7 +20,6 @@
 namespace App\Services\Model;
 
 use App\Models\ExportQueueFile;
-
 use Illuminate\Support\Collection;
 
 /**

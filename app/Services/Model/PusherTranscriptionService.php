@@ -20,7 +20,6 @@
 namespace App\Services\Model;
 
 use App\Models\PusherTranscription;
-
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
