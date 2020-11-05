@@ -1,10 +1,9 @@
 {
-    "/js/admin.js": "/js/admin.js?id=f49de9d6f77253bd4175",
+    "/js/admin.js": "/js/admin.js?id=bcfa1c53bc0117f5e81d",
     "/css/admin.css": "/css/admin.css?id=fd33ecccd9b380f10df5",
     "/js/manifest.js": "/js/manifest.js?id=3c768977c2574a34506e",
     "/js/vendor.js": "/js/vendor.js?id=2829b118ec0884d33ec0",
-    "/js/jquery.panzoom.min.js": "/js/jquery.panzoom.min.js?id=a0331375b5b6b720ee06",
     "/js/jquery.form.min.js": "/js/jquery.form.min.js?id=f448c593c242d134e973",
-    "/js/expertReview.js": "/js/expertReview.js?id=8753ca315c728a5ce6fb",
-    "/js/expertReview.min.js": "/js/expertReview.min.js?id=8753ca315c728a5ce6fb"
+    "/js/expertReview.js": "/js/expertReview.js?id=5800120cce638a85fba0",
+    "/js/expertReview.min.js": "/js/expertReview.min.js?id=5800120cce638a85fba0"
 }

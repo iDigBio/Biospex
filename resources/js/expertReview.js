@@ -17,16 +17,15 @@
  */
 
 $(function () {
-    let $panzoom = $(".panzoom").panzoom();
-    $panzoom.parent().on("mousewheel.focal", function (e) {
-        e.preventDefault();
-        let delta = e.delta || e.originalEvent.wheelDelta;
-        let zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
-        $panzoom.panzoom("zoom", zoomOut, {
-            animate: false,
-            focal: e
-        });
-    });
+    const elem = document.getElementById('panzoom');
+    const panzoom = Panzoom(elem);
+    const parent = elem.parentElement
+    // No function bind needed
+    parent.addEventListener('wheel', panzoom.zoomWithWheel)
+
+    $('#btnZoomIn').on('click', panzoom.zoomIn);
+    $('#btnZoomOut').on('click', panzoom.zoomOut);
+    $('#btnZoomReset').on('click', panzoom.reset);
 
     let options = {
         beforeSubmit: function () {
