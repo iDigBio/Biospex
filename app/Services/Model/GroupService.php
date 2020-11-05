@@ -20,7 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\Group;
-use App\Services\Model\Traits\ModelTrait;
+
 
 /**
  * Class GroupService

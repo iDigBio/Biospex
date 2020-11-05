@@ -21,7 +21,7 @@ namespace App\Services\Model;
 
 use App\Models\Project;
 use App\Models\ProjectResource;
-use App\Services\Model\Traits\ModelTrait;
+
 
 /**
  * Class ProjectService

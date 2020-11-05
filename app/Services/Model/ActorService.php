@@ -20,7 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\Actor;
-use App\Services\Model\Traits\ModelTrait;
+
 
 /**
  * Class ActorService

@@ -20,7 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\ApiUser;
-use App\Services\Model\Traits\ModelTrait;
+
 
 /**
  * Class ApiUserService

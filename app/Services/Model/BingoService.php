@@ -21,7 +21,7 @@ namespace App\Services\Model;
 
 use App\Models\Bingo;
 use App\Models\BingoWord;
-use App\Services\Model\Traits\ModelTrait;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 

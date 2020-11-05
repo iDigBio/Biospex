@@ -20,7 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\Header;
-use App\Services\Model\Traits\ModelTrait;
+
 
 /**
  * Class HeaderService

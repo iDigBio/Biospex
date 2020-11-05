@@ -20,7 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\Import;
-use App\Services\Model\Traits\ModelTrait;
+
 
 /**
  * Class ImportService

@@ -20,7 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\Subject;
-use App\Services\Model\Traits\ModelTrait;
+
 
 /**
  * Class SubjectService

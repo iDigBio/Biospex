@@ -20,7 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\TranscriptionLocation;
-use App\Services\Model\Traits\ModelTrait;
+
 
 /**
  * Class TranscriptionLocationService

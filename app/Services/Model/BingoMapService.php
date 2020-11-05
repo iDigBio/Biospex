@@ -20,7 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\BingoMap;
-use App\Services\Model\Traits\ModelTrait;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;

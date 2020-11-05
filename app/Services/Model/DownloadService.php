@@ -20,7 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\Download;
-use App\Services\Model\Traits\ModelTrait;
+
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
