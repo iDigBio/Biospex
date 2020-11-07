@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Memcached;
 
+/**
+ * Class ClearMemcachedCommand
+ *
+ * @package App\Console\Commands
+ */
 class ClearMemcachedCommand extends Command
 {
     /**

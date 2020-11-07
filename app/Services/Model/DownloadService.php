@@ -23,6 +23,11 @@ use App\Models\Download;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
+/**
+ * Class DownloadService
+ *
+ * @package App\Services\Model
+ */
 class DownloadService extends BaseModelService
 {
 

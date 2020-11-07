@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,6 +21,11 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
+/**
+ * Class FileUploadNameValidation
+ *
+ * @package App\Rules
+ */
 class FileUploadNameValidation implements Rule
 {
     /**

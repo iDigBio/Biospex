@@ -27,6 +27,11 @@ use App\Notifications\NfnTranscriptionsError;
 use App\Services\Api\PanoptesApiService;
 use Exception;
 
+/**
+ * Class NfnPanoptesClassifications
+ *
+ * @package App\Services\Actor
+ */
 class NfnPanoptesClassifications extends NfnPanoptesBase
 {
 

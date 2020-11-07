@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Http\Requests;
 use App\Rules\EventJoinUniqueUserTeamValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class EventJoinRequest
+ *
+ * @package App\Http\Requests
+ */
 class EventJoinRequest extends FormRequest
 {
     /**

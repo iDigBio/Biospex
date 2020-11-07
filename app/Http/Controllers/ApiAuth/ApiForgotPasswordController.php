@@ -23,6 +23,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Support\Facades\Password;
 
+/**
+ * Class ApiForgotPasswordController
+ *
+ * @package App\Http\Controllers\ApiAuth
+ */
 class ApiForgotPasswordController extends Controller
 {
     /*

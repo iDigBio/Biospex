@@ -22,6 +22,11 @@ namespace App\Services\Image;
 use Imagick;
 use ImagickException;
 
+/**
+ * Class ImagickService
+ *
+ * @package App\Services\Image
+ */
 class ImagickService
 {
     /**

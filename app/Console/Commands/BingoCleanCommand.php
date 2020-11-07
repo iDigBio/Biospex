@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Console\Commands;
 use App\Services\Model\BingoMapService;
 use Illuminate\Console\Command;
 
+/**
+ * Class BingoCleanCommand
+ *
+ * @package App\Console\Commands
+ */
 class BingoCleanCommand extends Command
 {
 

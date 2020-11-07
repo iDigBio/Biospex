@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,6 +21,11 @@ namespace App\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
+/**
+ * Class ActorEventHelper
+ *
+ * @package App\Facades
+ */
 class ActorEventHelper extends Facade
 {
     /**

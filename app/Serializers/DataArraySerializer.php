@@ -21,6 +21,11 @@ namespace App\Serializers;
 
 use League\Fractal\Serializer\ArraySerializer;
 
+/**
+ * Class DataArraySerializer
+ *
+ * @package App\Serializers
+ */
 class DataArraySerializer extends ArraySerializer
 {
     public function collection($resourceKey, array $data)

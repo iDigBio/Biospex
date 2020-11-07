@@ -23,6 +23,11 @@ use App\Rules\FileUploadNameValidation;
 use Config;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class ExpeditionFormRequest
+ *
+ * @package App\Http\Requests
+ */
 class ExpeditionFormRequest extends Request
 {
     public function authorize()

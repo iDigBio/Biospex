@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -26,6 +26,11 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
+/**
+ * Class VerifyApiEmail
+ *
+ * @package App\Notifications
+ */
 class VerifyApiEmail extends Notification
 {
     /**

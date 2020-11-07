@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Services\Process;
 use App\Services\Model\ExpeditionService;
 use App\Services\Api\PanoptesApiService;
 
+/**
+ * Class PusherEventService
+ *
+ * @package App\Services\Process
+ */
 class PusherEventService
 {
     /**

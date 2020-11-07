@@ -22,6 +22,11 @@ namespace App\Services\File;
 use Exception;
 use Illuminate\Filesystem\Filesystem;
 
+/**
+ * Class FileService
+ *
+ * @package App\Services\File
+ */
 class FileService
 {
     /**

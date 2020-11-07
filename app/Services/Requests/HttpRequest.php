@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -30,6 +30,11 @@ use Illuminate\Support\Facades\Cache;
 use League\OAuth2\Client\Provider\GenericProvider;
 use GuzzleHttp\Pool;
 
+/**
+ * Class HttpRequest
+ *
+ * @package App\Services\Requests
+ */
 class HttpRequest
 {
 

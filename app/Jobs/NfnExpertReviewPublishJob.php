@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -30,6 +30,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use League\Csv\CannotInsertRecord;
 
+/**
+ * Class NfnExpertReviewPublishJob
+ *
+ * @package App\Jobs
+ */
 class NfnExpertReviewPublishJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

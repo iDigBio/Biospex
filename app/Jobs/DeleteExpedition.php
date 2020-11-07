@@ -33,6 +33,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Class DeleteExpedition
+ *
+ * @package App\Jobs
+ */
 class DeleteExpedition implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

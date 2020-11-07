@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -25,6 +25,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
+/**
+ * Class PusherEventTranscriptionJob
+ *
+ * @package App\Jobs
+ */
 class PusherEventTranscriptionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;

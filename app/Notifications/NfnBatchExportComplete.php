@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -24,6 +24,11 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
+/**
+ * Class NfnBatchExportComplete
+ *
+ * @package App\Notifications
+ */
 class NfnBatchExportComplete extends Notification implements ShouldQueue
 {
 

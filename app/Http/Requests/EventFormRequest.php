@@ -22,6 +22,11 @@ namespace App\Http\Requests;
 use Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class EventFormRequest
+ *
+ * @package App\Http\Requests
+ */
 class EventFormRequest extends FormRequest
 {
     /**

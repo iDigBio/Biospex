@@ -24,6 +24,11 @@ use Exception;
 use GuzzleHttp\Client;
 use Storage;
 
+/**
+ * Class Thumbnail
+ *
+ * @package App\Services\Image
+ */
 class Thumbnail extends ImagickService
 {
     /**

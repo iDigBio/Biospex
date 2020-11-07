@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -29,6 +29,11 @@ ignore_user_abort(true);
 use App\Services\Csv\DarwinCoreCsvImport;
 use Exception;
 
+/**
+ * Class DarwinCore
+ *
+ * @package App\Services\Process
+ */
 class DarwinCore
 {
 

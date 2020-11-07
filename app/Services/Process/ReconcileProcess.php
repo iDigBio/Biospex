@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -29,6 +29,11 @@ use File;
 use Illuminate\Support\Carbon;
 use Storage;
 
+/**
+ * Class ReconcileProcess
+ *
+ * @package App\Services\Process
+ */
 class ReconcileProcess
 {
     /**

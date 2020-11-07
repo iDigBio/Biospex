@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -24,6 +24,11 @@ use DateHelper;
 use Illuminate\Support\Facades\Config;
 use League\Fractal\TransformerAbstract;
 
+/**
+ * Class PusherTranscriptionTransformer
+ *
+ * @package App\Transformers
+ */
 class PusherTranscriptionTransformer extends TransformerAbstract
 {
 

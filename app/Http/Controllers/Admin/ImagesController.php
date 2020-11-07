@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\Image\Thumbnail;
 
+/**
+ * Class ImagesController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class ImagesController extends Controller
 {
     /**

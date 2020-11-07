@@ -24,6 +24,11 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
+/**
+ * Class BiospexException
+ *
+ * @package App\Mail
+ */
 class BiospexException extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

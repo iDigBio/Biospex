@@ -24,6 +24,11 @@ use App\Repositories\Eloquent\WorkflowManagerRepository;
 use Illuminate\Console\Command;
 use App\Services\Model\WorkflowManagerService;
 
+/**
+ * Class WorkFlowManagerCommand
+ *
+ * @package App\Console\Commands
+ */
 class WorkFlowManagerCommand extends Command
 {
 

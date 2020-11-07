@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -24,6 +24,11 @@ use App\Rules\ResourceDownloadValidation;
 use Illuminate\Support\Facades\Auth;
 use App\Rules\ResourceNameValidation;
 
+/**
+ * Class ProjectFormRequest
+ *
+ * @package App\Http\Requests
+ */
 class ProjectFormRequest extends Request
 {
     public function authorize()

@@ -24,6 +24,11 @@ use Illuminate\Filesystem\Filesystem;
 use App\Services\Model\DownloadService;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Class DownloadCleanCommand
+ *
+ * @package App\Console\Commands
+ */
 class DownloadCleanCommand extends Command
 {
 

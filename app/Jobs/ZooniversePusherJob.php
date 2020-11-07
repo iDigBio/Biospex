@@ -31,6 +31,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 
+/**
+ * Class ZooniversePusherJob
+ *
+ * @package App\Jobs
+ */
 class ZooniversePusherJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;

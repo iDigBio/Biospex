@@ -25,6 +25,11 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Storage;
 
+/**
+ * Class AppFileDeployment
+ *
+ * @package App\Console\Commands
+ */
 class AppFileDeployment extends Command
 {
     /**

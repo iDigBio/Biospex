@@ -19,6 +19,11 @@
 
 namespace App\Services\Actor;
 
+/**
+ * Class ActorFactory
+ *
+ * @package App\Services\Actor
+ */
 class ActorFactory
 {
     /**

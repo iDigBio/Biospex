@@ -28,6 +28,11 @@ use App\Services\Model\SubjectService;
 use Auth;
 use Exception;
 
+/**
+ * Class GridsController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class GridsController extends Controller
 {
     /**
@@ -154,7 +159,7 @@ class GridsController extends Controller
         $attributes = [
             'projectId' => (int) $projectId,
             'expeditionId' => (int) $expeditionId,
-            'postData' => ['filters' => request()->get('filters')],
+            'postData' => ['filters' => request()->exists('filters') ? request()->get('filters') : null],
             'route' => request()->get('route')
         ];
 

@@ -30,7 +30,6 @@ use App\Transformers\PusherTranscriptionTransformer;
  *
  * @package App\Http\Controllers\V1
  */
-
 class PusherTranscriptionsController extends ApiController
 {
 

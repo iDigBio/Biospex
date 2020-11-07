@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,6 +19,11 @@
 
 namespace App\Http\Requests;
 
+/**
+ * Class MailFormRequest
+ *
+ * @package App\Http\Requests
+ */
 class MailFormRequest extends Request
 {
     /**

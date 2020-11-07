@@ -19,6 +19,11 @@
 
 namespace App\Policies;
 
+/**
+ * Class EventPolicy
+ *
+ * @package App\Policies
+ */
 class EventPolicy
 {
 

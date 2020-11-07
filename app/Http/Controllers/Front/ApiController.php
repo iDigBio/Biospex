@@ -21,6 +21,11 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 
+/**
+ * Class ApiController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class ApiController extends Controller
 {
 

@@ -1,5 +1,21 @@
 <?php
-
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 $router->get('login')->uses('ApiLoginController@showLoginForm')->name('api.get.login');
 $router->post('login')->uses('ApiLoginController@login')->name('api.post.login');
 $router->get('logout')->uses('ApiLoginController@logout')->name('api.get.logout');
@@ -19,9 +35,3 @@ $router->post('register')->uses('ApiRegisterController@register')->name('api.pos
 $router->get('email/verify', 'ApiVerificationController@show')->name('api.verification.notice');
 $router->get('email/verify/{id}/{hash}', 'ApiVerificationController@verify')->name('api.verification.verify');
 $router->get('email/resend', 'ApiVerificationController@resend')->name('api.verification.resend');
-
-/*
-$router->get('resend')->uses('ApiRegisterController@showResendActivationForm')->name('api.get.resend');
-$router->post('resend')->uses('ApiRegisterController@postResendActivation')->name('api.post.resend');
-$router->get('users/{id}/activate/{code}')->uses('ApiRegisterController@getActivate')->name('api.get.activate');
-*/

@@ -21,6 +21,11 @@ namespace App\Exceptions;
 
 use Exception;
 
+/**
+ * Class PresenterException
+ *
+ * @package App\Exceptions
+ */
 class PresenterException extends Exception
 {
     //

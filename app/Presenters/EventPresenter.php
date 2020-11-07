@@ -22,6 +22,11 @@ namespace App\Presenters;
 use Carbon\Carbon;
 use DateTimeZone;
 
+/**
+ * Class EventPresenter
+ *
+ * @package App\Presenters
+ */
 class EventPresenter extends Presenter
 {
     /**

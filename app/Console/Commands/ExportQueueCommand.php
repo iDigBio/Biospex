@@ -24,6 +24,11 @@ use App\Services\Model\ExportQueueService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
+/**
+ * Class ExportQueueCommand
+ *
+ * @package App\Console\Commands
+ */
 class ExportQueueCommand extends Command
 {
     use DispatchesJobs;

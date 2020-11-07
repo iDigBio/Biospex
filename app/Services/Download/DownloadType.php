@@ -26,6 +26,11 @@ use App\Services\Model\DownloadService;
 use File;
 use Storage;
 
+/**
+ * Class DownloadType
+ *
+ * @package App\Services\Download
+ */
 class DownloadType extends DownloadFileBase
 {
     /**

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,6 +23,11 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Session;
 use JavaScript;
 
+/**
+ * Class PollComposer
+ *
+ * @package App\Http\ViewComposers
+ */
 class PollComposer
 {
 

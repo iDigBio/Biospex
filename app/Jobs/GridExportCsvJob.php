@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -36,6 +36,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
+/**
+ * Class GridExportCsvJob
+ *
+ * @package App\Jobs
+ */
 class GridExportCsvJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -83,7 +88,7 @@ class GridExportCsvJob implements ShouldQueue
         $this->user = $user;
         $this->projectId = $data['projectId'];
         $this->expeditionId = $data['expeditionId'];
-        $this->postData = $data['filters'];
+        $this->postData = $data['postData'];
         $this->route = $data['route'];
         $this->onQueue(config('config.default_tube'));
     }

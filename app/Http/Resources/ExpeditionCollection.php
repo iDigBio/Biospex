@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,6 +21,11 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
+/**
+ * Class ExpeditionCollection
+ *
+ * @package App\Http\Resources
+ */
 class ExpeditionCollection extends ResourceCollection
 {
     /**

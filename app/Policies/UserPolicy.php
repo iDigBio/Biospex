@@ -22,6 +22,11 @@ namespace App\Policies;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class UserPolicy
+ *
+ * @package App\Policies
+ */
 class UserPolicy
 {
     /**

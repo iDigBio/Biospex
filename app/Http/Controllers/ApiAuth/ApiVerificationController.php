@@ -25,6 +25,11 @@ use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Access\AuthorizationException;
 
+/**
+ * Class ApiVerificationController
+ *
+ * @package App\Http\Controllers\ApiAuth
+ */
 class ApiVerificationController extends Controller
 {
     /*

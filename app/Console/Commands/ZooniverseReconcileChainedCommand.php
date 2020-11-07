@@ -24,6 +24,11 @@ use App\Jobs\ZooniverseTranscriptionJob;
 use App\Services\Model\ExpeditionService;
 use Illuminate\Console\Command;
 
+/**
+ * Class ZooniverseReconcileChainedCommand
+ *
+ * @package App\Console\Commands
+ */
 class ZooniverseReconcileChainedCommand extends Command
 {
     /**

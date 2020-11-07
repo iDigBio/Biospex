@@ -19,6 +19,11 @@
 
 namespace App\Presenters;
 
+/**
+ * Class GroupPresenter
+ *
+ * @package App\Presenters
+ */
 class GroupPresenter extends Presenter
 {
     /**

@@ -24,6 +24,11 @@ use App\Models\Expedition;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
+/**
+ * Class ZooniverseClassificationCount
+ *
+ * @package App\Console\Commands
+ */
 class ZooniverseClassificationCount extends Command
 {
     use DispatchesJobs;

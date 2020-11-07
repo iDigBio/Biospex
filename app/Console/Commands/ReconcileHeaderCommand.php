@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,6 +23,11 @@ use App\Services\Csv\Csv;
 use App\Services\MongoDbService;
 use Illuminate\Console\Command;
 
+/**
+ * Class ReconcileHeaderCommand
+ *
+ * @package App\Console\Commands
+ */
 class ReconcileHeaderCommand extends Command
 {
     /**

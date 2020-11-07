@@ -22,6 +22,11 @@ namespace App\Services\Grid;
 use App\Services\Model\SubjectService;
 use Exception;
 
+/**
+ * Class GridData
+ *
+ * @package App\Services\Grid
+ */
 class GridData
 {
     /**

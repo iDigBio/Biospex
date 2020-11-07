@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,6 +23,11 @@ use DOMDocument;
 use DOMXPath;
 use RuntimeException;
 
+/**
+ * Class Xml
+ *
+ * @package App\Services\Process
+ */
 class Xml
 {
 

@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,6 +23,11 @@ use App\Http\Controllers\Controller;
 use App\Services\Model\AmChartService;
 use File;
 
+/**
+ * Class TranscriptionsController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class TranscriptionsController extends Controller
 {
     /**

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -27,6 +27,11 @@ use Exception;
 use Illuminate\Support\Facades\File;
 use Storage;
 
+/**
+ * Class NfnPanoptesBase
+ *
+ * @package App\Services\Actor
+ */
 class NfnPanoptesBase
 {
     /**

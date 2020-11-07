@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Http\Requests;
 use App\Rules\FileUploadNameValidation;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class EditUserFormRequest
+ *
+ * @package App\Http\Requests
+ */
 class EditUserFormRequest extends Request
 {
     /**

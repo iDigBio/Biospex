@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Rules;
 use App\Models\Event;
 use Illuminate\Contracts\Validation\Rule;
 
+/**
+ * Class EventJoinUniqueUserTeamValidation
+ *
+ * @package App\Rules
+ */
 class EventJoinUniqueUserTeamValidation implements Rule
 {
     /**

@@ -33,6 +33,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Storage;
 use Str;
 
+/**
+ * Class EventUserExportCsvJob
+ *
+ * @package App\Jobs
+ */
 class EventUserExportCsvJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

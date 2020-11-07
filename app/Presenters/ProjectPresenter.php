@@ -21,6 +21,11 @@ namespace App\Presenters;
 
 use Storage;
 
+/**
+ * Class ProjectPresenter
+ *
+ * @package App\Presenters
+ */
 class ProjectPresenter extends Presenter
 {
     /**

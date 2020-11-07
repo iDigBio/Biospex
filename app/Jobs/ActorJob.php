@@ -28,6 +28,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
+/**
+ * Class ActorJob
+ *
+ * @package App\Jobs
+ */
 class ActorJob implements ShouldQueue
 {
 

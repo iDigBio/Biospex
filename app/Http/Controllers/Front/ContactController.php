@@ -25,6 +25,11 @@ use App\Mail\ContactForm;
 use App\Http\Requests\ContactFormRequest;
 use Mail;
 
+/**
+ * Class ContactController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class ContactController extends Controller
 {
     public function __construct()

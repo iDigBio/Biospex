@@ -24,6 +24,11 @@ use App\Services\MongoDbService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
+/**
+ * Class UpdateQueries
+ *
+ * @package App\Console\Commands
+ */
 class UpdateQueries extends Command
 {
     use DispatchesJobs;

@@ -24,6 +24,11 @@ use DateTime;
 use DateTimeZone;
 use MongoDB\BSON\UTCDateTime;
 
+/**
+ * Class DateHelper
+ *
+ * @package App\Services\Helpers
+ */
 class DateHelper
 {
     /**

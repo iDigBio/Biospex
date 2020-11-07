@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -24,6 +24,11 @@ use App\Models\User;
 use App\Notifications\FailedJobReport;
 use Illuminate\Console\Command;
 
+/**
+ * Class ReportFailedCommand
+ *
+ * @package App\Console\Commands
+ */
 class ReportFailedCommand extends Command
 {
     /**

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Http\ViewComposers;
 use Auth;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class AuthUserComposer
+ *
+ * @package App\Http\ViewComposers
+ */
 class AuthUserComposer
 {
 

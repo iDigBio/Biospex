@@ -22,6 +22,11 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Services\Model\ExpeditionService;
 
+/**
+ * Class ExpeditionsController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class ExpeditionsController extends Controller
 {
     /**
@@ -34,7 +39,7 @@ class ExpeditionsController extends Controller
     {
         $results = $expeditionService->getExpeditionPublicIndex();
 
-        list($expeditions, $expeditionsCompleted) = $results->partition(function($expedition) {
+        [$expeditions, $expeditionsCompleted] = $results->partition(function($expedition) {
             return $expedition->nfnActor->pivot->completed === 0;
         });
 
@@ -58,7 +63,7 @@ class ExpeditionsController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        list($active, $completed) = $expeditionService->getExpeditionPublicIndex($sort, $order, $projectId)
+        [$active, $completed] = $expeditionService->getExpeditionPublicIndex($sort, $order, $projectId)
             ->partition(function($expedition) {
                 return $expedition->nfnActor->pivot->completed === 0;
         });

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Http\Resources;
 use DateHelper;
 use Illuminate\Http\Resources\Json\JsonResource ;
 
+/**
+ * Class PusherTranscriptionResource
+ *
+ * @package App\Http\Resources
+ */
 class PusherTranscriptionResource extends JsonResource
 {
 

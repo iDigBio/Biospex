@@ -25,6 +25,11 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 
+/**
+ * Class ApiResetPasswordController
+ *
+ * @package App\Http\Controllers\ApiAuth
+ */
 class ApiResetPasswordController extends Controller
 {
     /*

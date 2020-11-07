@@ -23,6 +23,11 @@ use App\Models\Subject;
 use Artisan;
 use Illuminate\Console\Command;
 
+/**
+ * Class ClearOcrResults
+ *
+ * @package App\Console\Commands
+ */
 class ClearOcrResults extends Command
 {
     /**

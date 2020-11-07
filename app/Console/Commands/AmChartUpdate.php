@@ -23,6 +23,11 @@ use App\Jobs\AmChartJob;
 use App\Services\Model\AmChartService;
 use Illuminate\Console\Command;
 
+/**
+ * Class AmChartUpdate
+ *
+ * @package App\Console\Commands
+ */
 class AmChartUpdate extends Command
 {
     /**

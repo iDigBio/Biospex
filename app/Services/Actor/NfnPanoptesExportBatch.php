@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -25,6 +25,11 @@ use App\Services\Csv\Csv;
 use Exception;
 use File;
 
+/**
+ * Class NfnPanoptesExportBatch
+ *
+ * @package App\Services\Actor
+ */
 class NfnPanoptesExportBatch extends NfnPanoptesBase
 {
 

@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 // Begin Reconcile Controller
 $router->get('reconciles/{expeditions}')->uses('ReconcilesController@index')->name('admin.reconciles.index');
 $router->get('reconciles/{expeditions}/create')->uses('ReconcilesController@create')->name('admin.reconciles.create');

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,6 +23,11 @@ use App\Models\ExportQueue;
 use App\Services\Model\DownloadService;
 use Exception;
 
+/**
+ * Class NfnPanoptesExportTarImages
+ *
+ * @package App\Services\Actor
+ */
 class NfnPanoptesExportTarImages extends NfnPanoptesBase
 {
     /**

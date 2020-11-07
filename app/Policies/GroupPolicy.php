@@ -19,6 +19,11 @@
 
 namespace App\Policies;
 
+/**
+ * Class GroupPolicy
+ *
+ * @package App\Policies
+ */
 class GroupPolicy
 {
     /**

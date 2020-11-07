@@ -27,6 +27,11 @@ use App\Services\Process\EventStepChartProcess;
 use Artisan;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * Class AjaxController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class AjaxController extends Controller
 {
     /**

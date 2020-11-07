@@ -24,6 +24,11 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
+/**
+ * Class RecordDeleteComplete
+ *
+ * @package App\Notifications
+ */
 class RecordDeleteComplete extends Notification implements ShouldQueue
 {
     use Queueable;

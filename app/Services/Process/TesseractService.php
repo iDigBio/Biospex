@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -26,6 +26,11 @@ use GuzzleHttp\Exception\GuzzleException;
 use Storage;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 
+/**
+ * Class TesseractService
+ *
+ * @package App\Services\Process
+ */
 class TesseractService
 {
 

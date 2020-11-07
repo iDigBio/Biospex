@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -26,6 +26,11 @@ use GuzzleHttp\Exception\GuzzleException;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Storage;
 
+/**
+ * Class PanoptesApiService
+ *
+ * @package App\Services\Api
+ */
 class PanoptesApiService extends HttpRequest
 {
     /**

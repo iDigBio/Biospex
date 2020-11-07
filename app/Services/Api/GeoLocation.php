@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Services\Api;
 use App\Services\Requests\HttpRequest;
 use GuzzleHttp\Exception\GuzzleException;
 
+/**
+ * Class GeoLocation
+ *
+ * @package App\Services\Api
+ */
 class GeoLocation
 {
     /**

@@ -31,6 +31,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class ZooniverseClassificationCountJob
+ *
+ * @package App\Jobs
+ */
 class ZooniverseClassificationCountJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
