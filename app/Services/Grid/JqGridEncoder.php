@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,6 +19,11 @@
 
 namespace App\Services\Grid;
 
+/**
+ * Class JqGridEncoder
+ *
+ * @package App\Services\Grid
+ */
 class JqGridEncoder
 {
     /**

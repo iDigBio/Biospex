@@ -45,7 +45,6 @@ class ExpeditionFormRequest extends Request
                 'image',
                 new FileUploadNameValidation(),
             ],
-            'subjectCount' => 'integer|max:' . Config::get('config.expedition_size'),
             'panoptes_workflow_id' => 'integer|nullable'
         ];
     }

@@ -13,6 +13,7 @@
           role="form" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="project_id" value="{{ $project->id }}">
+        <input type="hidden" name="subject-ids" id="subject-ids">
         <div class="row">
             <div class="col-sm-10 mx-auto">
                 <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
@@ -78,22 +79,16 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <h3 class="mx-auto">{{ t('Subjects currently assigned') }}
-                <span id="max">
-                                {{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}
-                            </span>:
-                <span id="subject-count-html">0</span></h3>
-
-            <div class="col-md-12">
-                <table class="table table-bordered" id="jqGridTable"></table>
-                <br/>
-                <input type="hidden" name="subject-ids" id="subject-ids">
-            </div>
             @include('common.cancel-submit-buttons')
         </div>
     </form>
+    <div class="row">
+        <h3 class="mx-auto">{{ t('Subjects currently assigned') }}
+            <span id="max">{{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}</span>:
+            <span id="subject-count-html">0</span></h3>
+        <div class="col-md-12">
+            <table class="table table-bordered" id="jqGridTable"></table>
+        </div>
+    </div>
     @include('admin.partials.jqgrid-modal')
 @endsection

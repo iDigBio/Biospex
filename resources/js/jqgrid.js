@@ -22,6 +22,7 @@ $.jgrid.useJSON = true;
 $.jgrid.defaults.responsive = true;
 $.jgrid.cellattr = $.jgrid.cellattr || {};
 
+
 $(function () {
     if ($('#jqGridTable').length > 0) {
 
@@ -31,6 +32,7 @@ $(function () {
         let checkbox = Laravel.checkbox;
         let exportUrl = Laravel.exportUrl;
         let route = Laravel.route;
+        let selected = Laravel.subjectIds;
 
         let model = JSON.parse(Laravel.model), cm = model.colModel, cn = model.colNames;
 
@@ -132,8 +134,26 @@ $(function () {
                 });
             },
             setSelectedCount = function () {
-                let rows = $grid.getGridParam('selarrrow');
-                $('#subject-count-html').html(rows.length);
+                $('#subject-count-html').html(selected.length);
+                if (selected.length > maxCount) {
+                    $('#max').addClass('red');
+                }
+            },
+            updateIdsOfSelectedRows = function (id, isSelected) {
+                let index = $.inArray(id, selected);
+                if (!isSelected && index >= 0) {
+                    selected.splice($.inArray(id, selected), 1);
+                } else if (index < 0) {
+                    selected.push(id);
+                }
+            },
+            setMultipleSelect = function () {
+                let ids = $grid.jqGrid('getDataIDs');
+                for (let i = 0; i < ids.length; i++) {
+                    if ($.inArray(ids[i], selected) !== -1){
+                        $grid.setSelection(ids[i], false);
+                    }
+                }
             },
             firstLoad = true;
 
@@ -175,9 +195,20 @@ $(function () {
             toppager: true,
             pager: true,
             multiselect: checkbox,
-            multiPageSelection: checkbox,
-            selarrrow: Laravel.subjectIds,
+            selarrrow: selected,
             searching: {searchOnEnter: true, searchOperators: true},
+            onSelectRow: function (id, isSelected) {
+                updateIdsOfSelectedRows(id, isSelected);
+                setSelectedCount();
+            },
+            onSelectAll: function (rowIds, isSelected) {
+                let i, count, id;
+                for (i = 0, count = rowIds.length; i < count; i++) {
+                    id = rowIds[i];
+                    updateIdsOfSelectedRows(id, isSelected);
+                }
+                setSelectedCount();
+            },
             loadComplete: function () {
                 if (firstLoad) {
                     firstLoad = false;
@@ -186,14 +217,9 @@ $(function () {
                     }
                 }
                 saveColumnState.call($(this), this.p.remapColumns);
+                setMultipleSelect();
                 setSelectedCount();
-            },
-            onSelectRow: function (id, isSelected) {
-                setSelectedCount();
-            },
-            onSelectAll: function (rowIds, isSelected) {
-                setSelectedCount();
-            },
+            }
         })
             .jqGrid("navGrid", {add: false, edit: false, del: false, search: true}, {}, {}, {}, {
                 top: 'auto',
@@ -223,18 +249,16 @@ $(function () {
             .jqGrid("gridResize");
 
         $('#gridForm').submit(function () {
-            let rows = $grid.getGridParam('selarrrow');
-            if (rows.length > maxCount) {
+            if (selected.length > maxCount) {
                 $('#max').addClass('red');
                 return false;
             }
 
-            $('#subject-ids').val(rows);
-
-            return false;
+            $('#subject-ids').val(selected);
         });
     }
 });
+
 
 /**
  * Map formatter
