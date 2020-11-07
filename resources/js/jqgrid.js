@@ -148,6 +148,7 @@ $(function () {
                 }
             },
             setMultipleSelect = function () {
+                if (!checkbox) return;
                 let ids = $grid.jqGrid('getDataIDs');
                 for (let i = 0; i < ids.length; i++) {
                     if ($.inArray(ids[i], selected) !== -1){
