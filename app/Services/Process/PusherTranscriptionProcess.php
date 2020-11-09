@@ -73,7 +73,7 @@ class PusherTranscriptionProcess
      */
     public function listApiDashboardCount($request)
     {
-        return $this->pusherTranscriptionContract->getWeDigBioDashboardApi($request, true);
+        return $this->pusherTranscriptionService->getWeDigBioDashboardApi($request, true);
     }
 
     /**
@@ -84,7 +84,7 @@ class PusherTranscriptionProcess
      */
     public function listApiDashboard($request)
     {
-        return $this->pusherTranscriptionContract->getWeDigBioDashboardApi($request);
+        return $this->pusherTranscriptionService->getWeDigBioDashboardApi($request);
     }
 
     /**
@@ -95,7 +95,7 @@ class PusherTranscriptionProcess
      */
     public function showApiDashboard($guid)
     {
-        return $this->pusherTranscriptionContract->where('guid', $guid)->first();
+        return $this->pusherTranscriptionService->findBy('guid', $guid);
     }
 
     /**
@@ -130,7 +130,7 @@ class PusherTranscriptionProcess
      */
     public function processTranscripts($transcription, $expedition)
     {
-        $classification = $this->pusherTranscriptionContract->findBy('classification_id', $transcription->classification_id);
+        $classification = $this->pusherTranscriptionService->findBy('classification_id', $transcription->classification_id);
         $this->buildItem($transcription, $expedition, $classification);
     }
 
@@ -203,7 +203,7 @@ class PusherTranscriptionProcess
             'discretionaryState'   => 'Transcribed',
         ];
 
-        $this->pusherTranscriptionContract->create($item);
+        $this->pusherTranscriptionService->create($item);
     }
 
     /**
@@ -239,7 +239,7 @@ class PusherTranscriptionProcess
             'transcriptionContent' => array_merge($classification->transcriptionContent, $transcriptionContent),
         ];
 
-        $this->pusherTranscriptionContract->update($attributes, $classification->_id);
+        $this->pusherTranscriptionService->update($attributes, $classification->_id);
     }
 
     /**
