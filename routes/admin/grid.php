@@ -16,13 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// Project/Grid
-$router->get('grids/{projects}/explore', ['as' => 'admin.grids.explore', 'uses' => 'GridsController@explore']);
-$router->post('grids/{projects}/delete', ['as' => 'admin.grids.delete', 'uses' => 'GridsController@delete']);
-$router->post('grids/{projects}/export', ['as' => 'admin.grids.export', 'uses' => 'GridsController@export']);
 
-$router->get('grids/{projects}/expeditions/create', ['as' => 'admin.grids.create', 'uses' => 'GridsController@expeditionsCreate']);
-$router->get('grids/{projects}/expeditions/{expeditions}', ['as' => 'admin.grids.show', 'uses' => 'GridsController@expeditionsShow']);
-$router->get('grids/{projects}/expeditions/{expeditions}/edit', ['as' => 'admin.grids.edit', 'uses' => 'GridsController@expeditionsEdit']);
-$router->post('grids/{projects}/expeditions/{expeditions}/export', ['as' => 'admin.grids.expedition.export', 'uses' => 'GridsController@export']);
+use App\Http\Controllers\Admin\GridsController;
+
+Route::get('grids/{projects}/explore', [GridsController::class, 'explore'])->name('admin.grids.explore');
+Route::post('grids/{projects}/delete', [GridsController::class, 'delete'])->name('admin.grids.delete');
+Route::post('grids/{projects}/export', [GridsController::class, 'export'])->name('admin.grids.export');
+
+Route::get('grids/{projects}/expeditions/create', [GridsController::class, 'expeditionsCreate'])->name('admin.grids.create');
+Route::get('grids/{projects}/expeditions/{expeditions}', [GridsController::class, 'expeditionsShow'])->name('admin.grids.show');
+Route::get('grids/{projects}/expeditions/{expeditions}/edit', [GridsController::class, 'expeditionsEdit'])->name('admin.grids.edit');
+Route::post('grids/{projects}/expeditions/{expeditions}/export', [GridsController::class, 'export'])->name('admin.grids.expedition.export');
 

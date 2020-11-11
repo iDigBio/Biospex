@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->post('/panoptes-pusher', [
-    'as' => 'api.panoptes-pusher.create',
-    'uses' => 'PanoptesPusherController@create',
-]);
+
+use App\Http\Controllers\Api\V0\PanoptesPusherController;
+
+Route::post('/panoptes-pusher', [PanoptesPusherController::class, 'create'])->name('api.panoptes-pusher.create');

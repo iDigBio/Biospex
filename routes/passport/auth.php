@@ -16,16 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->group(['middleware' => ['web', 'auth:apiuser']], function ($router) {
-    $router->get('/authorize', [
-        'uses' => 'AuthorizationController@authorize',
-    ]);
 
-    $router->post('/authorize', [
-        'uses' => 'ApproveAuthorizationController@approve',
-    ]);
+use Laravel\Passport\Http\Controllers\ApproveAuthorizationController;
+use Laravel\Passport\Http\Controllers\AuthorizationController;
+use Laravel\Passport\Http\Controllers\DenyAuthorizationController;
 
-    $router->delete('/authorize', [
-        'uses' => 'DenyAuthorizationController@deny',
-    ]);
+Route::group(['middleware' => ['web', 'auth:apiuser']], function () {
+    Route::get('/authorize', [AuthorizationController::class, 'authorize']);
+    Route::post('/authorize', [ApproveAuthorizationController::class, 'approve']);
+    Route::delete('/authorize', [DenyAuthorizationController::class, 'deny']);
 });

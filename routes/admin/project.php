@@ -16,20 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// Begin ProjectsController
-$router->get('projects')->uses('ProjectsController@index')->name('admin.projects.index');
-$router->get('projects/create')->uses('ProjectsController@create')->name('admin.projects.create');
-$router->post('projects/create')->uses('ProjectsController@store')->name('admin.projects.store');
-$router->get('projects/{projects}')->uses('ProjectsController@show')->name('admin.projects.show');
-$router->get('projects/{projects}/edit')->uses('ProjectsController@edit')->name('admin.projects.edit');
-$router->put('projects/{projects}')->uses('ProjectsController@update')->name('admin.projects.update');
-$router->get('projects/{projects}/clone')->uses('ProjectsController@clone')->name('admin.projects.clone');
-$router->get('projects/{projects}/explore')->uses('ProjectsController@explore')->name('admin.projects.explore');
-$router->get('projects/{projects}/statistics')->uses('ProjectsController@statistics')->name('admin.projects.statistics');
 
-$router->post('projects/sort')->uses('ProjectsController@sort')->name('admin.projects.sort');
+use App\Http\Controllers\Admin\ProjectsController;
 
-$router->post('projects/{projects}/ocr')->uses('ProjectsController@ocr')->name('admin.projects.ocr');
+Route::get('projects', [ProjectsController::class, 'index'])->name('admin.projects.index');
+Route::get('projects/create', [ProjectsController::class, 'create'])->name('admin.projects.create');
+Route::post('projects/create', [ProjectsController::class, 'store'])->name('admin.projects.store');
+Route::get('projects/{projects}', [ProjectsController::class, 'show'])->name('admin.projects.show');
+Route::get('projects/{projects}/edit', [ProjectsController::class, 'edit'])->name('admin.projects.edit');
+Route::put('projects/{projects}', [ProjectsController::class, 'update'])->name('admin.projects.update');
+Route::get('projects/{projects}/clone', [ProjectsController::class, 'clone'])->name('admin.projects.clone');
+Route::get('projects/{projects}/explore', [ProjectsController::class, 'explore'])->name('admin.projects.explore');
+Route::get('projects/{projects}/statistics', [ProjectsController::class, 'statistics'])->name('admin.projects.statistics');
 
-$router->delete('projects/{projects}')->uses('ProjectsController@delete')->name('admin.projects.delete');
-$router->delete('projects/{projects}/subject')->uses('ProjectsController@deleteSubjects')->name('admin.projects.deleteSubjects');
+Route::post('projects/sort', [ProjectsController::class, 'sort'])->name('admin.projects.sort');
+
+Route::post('projects/{projects}/ocr', [ProjectsController::class, 'ocr'])->name('admin.projects.ocr');
+
+Route::delete('projects/{projects}', [ProjectsController::class, 'delete'])->name('admin.projects.delete');
+Route::delete('projects/{projects}/subject', [ProjectsController::class, 'deleteSubjects'])->name('admin.projects.deleteSubjects');

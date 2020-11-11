@@ -16,23 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->post('/token', [
+
+Route::post('/token', [
     'uses' => 'AccessTokenController@issueToken',
     'middleware' => 'throttle',
 ]);
 
-$router->group(['middleware' => ['web', 'auth:apiuser']], function ($router) {
-    $router->get('/tokens', [
+Route::group(['middleware' => ['web', 'auth:apiuser']], function ($router) {
+    Route::get('/tokens', [
         'uses' => 'AuthorizedAccessTokenController@forUser',
     ]);
 
-    $router->delete('/tokens/{token_id}', [
+    Route::delete('/tokens/{token_id}', [
         'uses' => 'AuthorizedAccessTokenController@destroy',
     ]);
 });
 
 // forTransientTokens
-$router->post('/token/refresh', [
+Route::post('/token/refresh', [
     'middleware' => ['web', 'auth:apiuser'],
     'uses' => 'TransientTokenController@refresh',
 ]);

@@ -16,6 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// Beging Expedition public routes
-$router->get('expeditions')->uses('ExpeditionsController@index')->name('front.expeditions.index');
-$router->post('expeditions/sort')->uses('ExpeditionsController@sort')->name('front.expeditions.sort');
+
+Route::get('expeditions')->uses('ExpeditionsController@index')->name('front.expeditions.index');
+Route::post('expeditions/sort')->uses('ExpeditionsController@sort')->name('front.expeditions.sort');

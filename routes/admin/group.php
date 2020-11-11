@@ -16,12 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// Begin GroupsController
-$router->get('groups')->uses('GroupsController@index')->name('admin.groups.index');
-$router->get('groups/create')->uses('GroupsController@create')->name('admin.groups.create');
-$router->post('groups')->uses('GroupsController@store')->name('admin.groups.store');
-$router->get('groups/{groups}')->uses('GroupsController@show')->name('admin.groups.show');
-$router->get('groups/{groups}/edit')->uses('GroupsController@edit')->name('admin.groups.edit');
-$router->put('groups/{groups}')->uses('GroupsController@update')->name('admin.groups.update');
-$router->delete('groups/{groups}')->uses('GroupsController@delete')->name('admin.groups.delete');
-$router->delete('groups/{groups}/{user}')->uses('GroupsController@deleteUser')->name('admin.groups.deleteUser');
+
+use App\Http\Controllers\Admin\GroupsController;
+
+Route::get('groups', [GroupsController::class, 'index'])->name('admin.groups.index');
+Route::get('groups/create', [GroupsController::class, 'create'])->name('admin.groups.create');
+Route::post('groups', [GroupsController::class, 'store'])->name('admin.groups.store');
+Route::get('groups/{groups}', [GroupsController::class, 'show'])->name('admin.groups.show');
+Route::get('groups/{groups}/edit', [GroupsController::class, 'edit'])->name('admin.groups.edit');
+Route::put('groups/{groups}', [GroupsController::class, 'update'])->name('admin.groups.update');
+Route::delete('groups/{groups}', [GroupsController::class, 'delete'])->name('admin.groups.delete');
+Route::delete('groups/{groups}/{user}', [GroupsController::class, 'deleteUser'])->name('admin.groups.deleteUser');

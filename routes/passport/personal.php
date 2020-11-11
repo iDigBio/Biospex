@@ -16,20 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->group(['middleware' => ['web', 'auth:apiuser']], function ($router) {
-    $router->get('/scopes', [
-        'uses' => 'ScopeController@all',
-    ]);
 
-    $router->get('/personal-access-tokens', [
-        'uses' => 'PersonalAccessTokenController@forUser',
-    ]);
+use Laravel\Passport\Http\Controllers\PersonalAccessTokenController;
+use Laravel\Passport\Http\Controllers\ScopeController;
 
-    $router->post('/personal-access-tokens', [
-        'uses' => 'PersonalAccessTokenController@store',
-    ]);
-
-    $router->delete('/personal-access-tokens/{token_id}', [
-        'uses' => 'PersonalAccessTokenController@destroy',
-    ]);
+Route::group(['middleware' => ['web', 'auth:apiuser']], function () {
+    Route::get('/scopes', [ScopeController::class, 'all']);
+    Route::get('/personal-access-tokens', [PersonalAccessTokenController::class, 'forUser']);
+    Route::post('/personal-access-tokens', [PersonalAccessTokenController::class, 'store']);
+    Route::delete('/personal-access-tokens/{token_id}', [PersonalAccessTokenController::class, 'destroy']);
 });

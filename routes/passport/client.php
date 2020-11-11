@@ -16,20 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->group(['middleware' => ['web', 'auth:apiuser']], function ($router) {
-    $router->get('/clients', [
-        'uses' => 'ClientController@forUser',
-    ]);
 
-    $router->post('/clients', [
-        'uses' => 'ClientController@store',
-    ]);
+use Laravel\Passport\Http\Controllers\ClientController;
 
-    $router->put('/clients/{client_id}', [
-        'uses' => 'ClientController@update',
-    ]);
-
-    $router->delete('/clients/{client_id}', [
-        'uses' => 'ClientController@destroy',
-    ]);
+Route::group(['middleware' => ['web', 'auth:apiuser']], function () {
+    Route::get('/clients', [ClientController::class, 'forUser']);
+    Route::post('/clients', [ClientController::class, 'store']);
+    Route::put('/clients/{client_id}', [ClientController::class, 'update']);
+    Route::delete('/clients/{client_id}', [ClientController::class, 'destroy']);
 });

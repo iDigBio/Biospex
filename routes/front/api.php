@@ -16,4 +16,4 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->get('/api')->uses('ApiController@index')->name('api.get.index');
+Route::get('/api')->uses('ApiController@index')->name('api.get.index');
