@@ -1,1 +1,130 @@
-function buildCountryMap(){am4core.useTheme(am4themes_animated);var e=am4core.create("mapDiv",am4maps.MapChart);e.hiddenState.properties.opacity=0,e.geodata=am4geodata_usaLow,e.projection=new am4maps.projections.AlbersUsa;var a=e.series.push(new am4maps.MapPolygonSeries);a.mapPolygons.template.tooltipText="{name}: {value.value.formatNumber('#')}",a.heatRules.push({property:"fill",target:a.mapPolygons.template,min:am4core.color("#a7abab"),max:am4core.color("#aa0002"),minValue:0,maxValue:Laravel.max}),a.useGeodata=!0;var t=am4core.create("mapLegendDiv",am4maps.HeatLegend);t.width=am4core.percent(100),t.series=a,t.orientation="horizontal",t.padding(20,20,20,20),t.valueAxis.renderer.labels.template.fontSize=10,t.valueAxis.renderer.minGridDistance=40,t.markerCount=6,a.mapPolygons.template.events.on("over",function(e){t.valueAxis.showTooltipAt(e.target.dataItem.value)}),a.mapPolygons.template.events.on("hit",function(a){var o=a.target.dataItem.dataContext.name,n=a.target.dataItem.dataContext.statenum,r="am4geodata_region_usa_"+o.toLowerCase()+"Low";e.dispose(),t.dispose(),$("#mapDiv").html('<div class="loader mx-auto align-self-center"></div>'),$.getScript("//www.amcharts.com/lib/4/geodata/region/usa/"+o.toLowerCase()+"Low.js").done(function(e,a){buildCountyMap(o,n,r)}).fail(function(e,a,t){$("#mapDiv").html("Error getting State map and counties.")})}),a.mapPolygons.template.strokeOpacity=.4,a.mapPolygons.template.events.on("out",function(){t.valueAxis.hideTooltip()}),e.zoomControl=new am4maps.ZoomControl,e.zoomControl.valign="top",a.data=JSON.parse(Laravel.states)}function buildCountyMap(e,a,t){var o=$.get($("#projectUrl").data("href")+"/"+a);o.done(function(e){am4core.useTheme(am4themes_animated);var a=am4core.create("mapDiv",am4maps.MapChart);a.hiddenState.properties.opacity=0,a.geodata=window[t],a.projection=new am4maps.projections.Miller,a.events.on("hit",function(e){a.dispose(),n.dispose(),buildCountryMap()});var o=a.series.push(new am4maps.MapPolygonSeries);o.mapPolygons.template.tooltipText="{name}: {value.value.formatNumber('#')}",o.heatRules.push({property:"fill",target:o.mapPolygons.template,min:am4core.color("#a7abab"),max:am4core.color("#aa0002"),minValue:0,maxValue:e.max}),o.useGeodata=!0;var n=am4core.create("mapLegendDiv",am4maps.HeatLegend);n.width=am4core.percent(100),n.series=o,n.orientation="horizontal",n.padding(20,20,20,20),n.valueAxis.renderer.labels.template.fontSize=10,n.valueAxis.renderer.minGridDistance=40,n.markerCount=6,n.maxValue=e.max,o.mapPolygons.template.events.on("over",function(e){n.valueAxis.showTooltipAt(e.target.dataItem.value)}),o.mapPolygons.template.strokeOpacity=.4,o.mapPolygons.template.events.on("out",function(){n.valueAxis.hideTooltip()}),a.zoomControl=new am4maps.ZoomControl,a.zoomControl.valign="top",o.data=JSON.parse(e.counties)}),o.fail(function(e,a,t){alert(t),stateMap.dispose(),heatLegend.dispose(),buildCountryMap()})}buildCountryMap();
+buildCountryMap();
+
+function buildCountryMap() {
+    am4core.useTheme(am4themes_animated);
+
+    let map = am4core.create("mapDiv", am4maps.MapChart);
+    map.hiddenState.properties.opacity = 0; // this creates initial fade-in
+    map.geodata = am4geodata_usaLow;
+    map.projection = new am4maps.projections.AlbersUsa();
+
+    let polygonSeries = map.series.push(new am4maps.MapPolygonSeries());
+    let polygonTemplate = polygonSeries.mapPolygons.template;
+    polygonTemplate.tooltipText = "{name}: {value.value.formatNumber('#')}";
+    polygonSeries.heatRules.push({
+        property: "fill",
+        target: polygonSeries.mapPolygons.template,
+        min: am4core.color("#a7abab"),
+        max: am4core.color("#aa0002"),
+        minValue: 0,
+        maxValue: Laravel.max
+    });
+    polygonSeries.useGeodata = true;
+
+    // add heat legend
+    let heatLegend = am4core.create("mapLegendDiv", am4maps.HeatLegend);
+    heatLegend.width = am4core.percent(100);
+    heatLegend.series = polygonSeries;
+    heatLegend.orientation = "horizontal";
+    heatLegend.padding(20, 20, 20, 20);
+    heatLegend.valueAxis.renderer.labels.template.fontSize = 10;
+    heatLegend.valueAxis.renderer.minGridDistance = 40;
+    heatLegend.markerCount = 6;
+
+    polygonSeries.mapPolygons.template.events.on("over", event => {
+        heatLegend.valueAxis.showTooltipAt(event.target.dataItem.value);
+    });
+
+    polygonSeries.mapPolygons.template.events.on("hit", event => {
+        let stateabbr = event.target.dataItem.dataContext.name;
+        let statenum = event.target.dataItem.dataContext.statenum;
+        let statevar = 'am4geodata_region_usa_'+stateabbr.toLowerCase()+'Low';
+        map.dispose();
+        heatLegend.dispose();
+        $('#mapDiv').html('<div class="loader mx-auto align-self-center"></div>');
+        $.getScript( '//www.amcharts.com/lib/4/geodata/region/usa/' + stateabbr.toLowerCase() + 'Low.js' )
+            .done(function( script, textStatus ) {
+                buildCountyMap(stateabbr,statenum, statevar);
+            })
+            .fail(function( jqxhr, settings, exception ) {
+                $('#mapDiv').html( "Error getting State map and counties." );
+            });
+    });
+
+
+    polygonSeries.mapPolygons.template.strokeOpacity = 0.4;
+    polygonSeries.mapPolygons.template.events.on("out", function(){
+        heatLegend.valueAxis.hideTooltip();
+    });
+
+    map.zoomControl = new am4maps.ZoomControl();
+    map.zoomControl.valign = "top";
+
+    polygonSeries.data = JSON.parse(Laravel.states);
+}
+
+function buildCountyMap(stateabbr,statenum, statevar) {
+
+    let request = $.get($('#projectUrl').data('href') + '/' + statenum);
+
+    request.done(function(data) {
+        am4core.useTheme(am4themes_animated);
+
+        let stateMap = am4core.create("mapDiv", am4maps.MapChart);
+        stateMap.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+        stateMap.geodata = window[statevar];
+        stateMap.projection = new am4maps.projections.Miller();
+
+        stateMap.events.on('hit', event => {
+            stateMap.dispose();
+            heatLegend.dispose();
+            buildCountryMap();
+        });
+
+        let polygonSeries = stateMap.series.push(new am4maps.MapPolygonSeries());
+        let polygonTemplate = polygonSeries.mapPolygons.template;
+        polygonTemplate.tooltipText = "{name}: {value.value.formatNumber('#')}";
+        polygonSeries.heatRules.push({
+            property: "fill",
+            target: polygonSeries.mapPolygons.template,
+            //min: am4core.color("#00abff"),
+            min: am4core.color("#a7abab"),
+            max: am4core.color("#aa0002"),
+            minValue: 0,
+            maxValue: data.max
+        });
+        polygonSeries.useGeodata = true;
+
+        let heatLegend = am4core.create("mapLegendDiv", am4maps.HeatLegend);
+        heatLegend.width = am4core.percent(100);
+        heatLegend.series = polygonSeries;
+        heatLegend.orientation = "horizontal";
+        heatLegend.padding(20, 20, 20, 20);
+        heatLegend.valueAxis.renderer.labels.template.fontSize = 10;
+        heatLegend.valueAxis.renderer.minGridDistance = 40;
+        heatLegend.markerCount = 6;
+        heatLegend.maxValue = data.max;
+
+        polygonSeries.mapPolygons.template.events.on("over", event => {
+            heatLegend.valueAxis.showTooltipAt(event.target.dataItem.value);
+        });
+
+        polygonSeries.mapPolygons.template.strokeOpacity = 0.4;
+        polygonSeries.mapPolygons.template.events.on("out", function() {
+            heatLegend.valueAxis.hideTooltip();
+        });
+
+        stateMap.zoomControl = new am4maps.ZoomControl();
+        stateMap.zoomControl.valign = "top";
+
+        polygonSeries.data = JSON.parse(data.counties);
+    });
+
+    request.fail(function(jqXHR, textStatus, errorThrown) {
+        alert(errorThrown);
+        stateMap.dispose();
+        heatLegend.dispose();
+        buildCountryMap();
+    });
+}

@@ -87,4 +87,5 @@ if ($("#app").length) {
     const app = new Vue({
         el: "#app"
     });
+    console.log('hello');
 }

@@ -19,4 +19,4 @@
 
 use App\Http\Controllers\Api\V1\PanoptesPusherController;
 
-Route::post('/panoptes-pusher', [PanoptesPusherController::class, 'create'])->name('api.panoptes-pusher.create');
+$router->post('/panoptes-pusher', [PanoptesPusherController::class, 'create'])->name('api.panoptes-pusher.create');

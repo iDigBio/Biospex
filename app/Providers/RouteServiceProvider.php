@@ -116,23 +116,21 @@ class RouteServiceProvider extends ServiceProvider
 
         $router->version('v0', function ($router) {
             $options = [
-                'namespace'  => 'App\Http\Controllers\Api\V0',
                 'middleware' => ['api'],
             ];
-            $router->group($options, function () {
-                $this->require_files('routes/api/v0');
+            $router->group($options, function ($router) {
+                $this->require_files('routes/api/v0', $router);
             });
         });
 
         $router->version('v1', function ($router) {
             $options = [
-                'namespace'  => 'App\Http\Controllers\Api\V1',
                 'middleware' => ['api'],
             ];
 
             $router->group($options, function ($router) {
-                $router->group(['middleware' => 'client'], function () {
-                    $this->require_files('routes/api/v1');
+                $router->group(['middleware' => 'client'], function ($router) {
+                    $this->require_files('routes/api/v1', $router);
                 });
             });
         });
@@ -158,8 +156,9 @@ class RouteServiceProvider extends ServiceProvider
      * Load required files.
      *
      * @param $dir
+     * @param null $router
      */
-    protected function require_files($dir)
+    protected function require_files($dir, $router = null)
     {
         $dirPath = base_path().'/'.$dir.'/';
         foreach (new DirectoryIterator($dirPath) as $file) {
