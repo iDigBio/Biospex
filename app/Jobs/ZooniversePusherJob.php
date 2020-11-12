@@ -84,6 +84,9 @@ class ZooniversePusherJob implements ShouldQueue
         try
         {
             $expedition = $pusherTranscriptionProcess->getExpedition($this->expeditionId);
+            if (!$expedition) {
+                throw new Exception(t('Could not find Expedition using Id: %', $this->expeditionId));
+            }
 
             $timestamp = isset($this->days) ? Carbon::now()->subDays($this->days) : Carbon::now()->subDays(3);
 

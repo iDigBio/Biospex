@@ -99,10 +99,10 @@ class PusherTranscriptionProcess
     }
 
     /**
-     * Get expedition.
+     * Get Expedition.
      *
      * @param $expeditionId
-     * @return \Illuminate\Support\Collection
+     * @return mixed
      */
     public function getExpedition($expeditionId)
     {
