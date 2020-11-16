@@ -27,11 +27,11 @@ use App\Services\Model\ProjectService;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Class BingosController
+ * Class BingoController
  *
  * @package App\Http\Controllers\Admin
  */
-class BingosController extends Controller
+class BingoController extends Controller
 {
     /**
      * @var \App\Services\Model\BingoService
@@ -44,7 +44,7 @@ class BingosController extends Controller
     private $projectService;
 
     /**
-     * BingosController constructor.
+     * BingoController constructor.
      *
      * @param \App\Services\Model\BingoService $bingoService
      * @param \App\Services\Model\ProjectService $projectService

@@ -28,11 +28,11 @@ use GeneralHelper;
 use JavaScript;
 
 /**
- * Class ProjectsController
+ * Class ProjectController
  *
  * @package App\Http\Controllers\Front
  */
-class ProjectsController extends Controller
+class ProjectController extends Controller
 {
     /**
      * @var \App\Services\Model\ProjectService
@@ -40,7 +40,7 @@ class ProjectsController extends Controller
     private $projectService;
 
     /**
-     * ProjectsController constructor.
+     * ProjectController constructor.
      *
      * @param \App\Services\Model\ProjectService $projectService
      */

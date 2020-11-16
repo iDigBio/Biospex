@@ -24,11 +24,11 @@ use App\Http\Controllers\Controller;
 use App\Services\Model\ProjectService;
 
 /**
- * Class AdvertisesController
+ * Class AdvertiseController
  *
  * @package App\Http\Controllers\Admin
  */
-class AdvertisesController extends Controller
+class AdvertiseController extends Controller
 {
 
     /**

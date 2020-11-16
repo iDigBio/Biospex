@@ -17,14 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Admin\BingosController;
+use App\Http\Controllers\Admin\BingoController;
 
-Route::get('bingos', [BingosController::class, 'index'])->name('admin.bingos.index');
-Route::post('bingos/sort/', [BingosController::class, 'sort'])->name('admin.bingos.sort');
-Route::get('bingos/create', [BingosController::class, 'create'])->name('admin.bingos.create');
-Route::post('bingos/create', [BingosController::class, 'store'])->name('admin.bingos.store');
-Route::get('bingos/{bingos}', [BingosController::class, 'show'])->name('admin.bingos.show');
-Route::get('bingos/{bingos}/edit', [BingosController::class, 'edit'])->name('admin.bingos.edit');
-Route::put('bingos/{bingos}', [BingosController::class, 'update'])->name('admin.bingos.update');
-Route::delete('bingos/{bingos}', [BingosController::class, 'delete'])->name('admin.bingos.delete');
+Route::get('bingos', [BingoController::class, 'index'])->name('admin.bingos.index');
+Route::post('bingos/sort/', [BingoController::class, 'sort'])->name('admin.bingos.sort');
+Route::get('bingos/create', [BingoController::class, 'create'])->name('admin.bingos.create');
+Route::post('bingos/create', [BingoController::class, 'store'])->name('admin.bingos.store');
+Route::get('bingos/{bingos}', [BingoController::class, 'show'])->name('admin.bingos.show');
+Route::get('bingos/{bingos}/edit', [BingoController::class, 'edit'])->name('admin.bingos.edit');
+Route::put('bingos/{bingos}', [BingoController::class, 'update'])->name('admin.bingos.update');
+Route::delete('bingos/{bingos}', [BingoController::class, 'delete'])->name('admin.bingos.delete');
 

@@ -17,6 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Admin\ImagesController;
+use App\Http\Controllers\Admin\ImageController;
 
-Route::get('images/preview', [ImagesController::class, 'preview'])->name('admin.images.preview');
+Route::get('images/preview', [ImageController::class, 'preview'])->name('admin.images.preview');

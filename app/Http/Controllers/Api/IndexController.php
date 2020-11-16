@@ -16,8 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-Route::get('events')->uses('EventController@index')->name('front.events.index');
-Route::post('events/sort/')->uses('EventController@sort')->name('front.events.sort');
-Route::get('events/{event}')->uses('EventController@read')->name('front.events.read');
-Route::get('events/{uuid}/signup')->uses('EventController@signup')->name('front.events.signup');
-Route::post('events/{uuid}/join')->uses('EventController@join')->name('front.events.join');
+
+namespace App\Http\Controllers\Api;
+
+/**
+ * Class IndexController
+ *
+ * @package App\Http\Controllers\Api\Index
+ */
+class IndexController extends ApiController
+{
+    /**
+     * @return string
+     */
+    public function index()
+    {
+        return view('front.api-index');
+    }
+}

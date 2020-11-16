@@ -17,10 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\UserController;
 
-Route::get('users', [UsersController::class, 'index'])->name('admin.users.index');
-Route::get('users/{users}', [UsersController::class, 'show'])->name('admin.users.show');
-Route::get('users/{users}/edit', [UsersController::class, 'edit'])->name('admin.users.edit');
-Route::put('users/{users}', [UsersController::class, 'update'])->name('admin.users.update');
-Route::put('password/{id}/pass', [UsersController::class, 'pass'])->name('admin.users.password');
+Route::get('users', [UserController::class, 'index'])->name('admin.users.index');
+Route::get('users/{users}', [UserController::class, 'show'])->name('admin.users.show');
+Route::get('users/{users}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+Route::put('users/{users}', [UserController::class, 'update'])->name('admin.users.update');
+Route::put('password/{id}/pass', [UserController::class, 'pass'])->name('admin.users.password');

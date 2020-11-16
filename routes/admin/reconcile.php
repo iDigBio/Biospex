@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use App\Http\Controllers\Admin\ReconcilesController;
+use App\Http\Controllers\Admin\ReconcileController;
 
-Route::get('reconciles/{expeditions}', [ReconcilesController::class, 'index'])->name('admin.reconciles.index');
-Route::get('reconciles/{expeditions}/create', [ReconcilesController::class, 'create'])->name('admin.reconciles.create');
-Route::put('reconciles/{expeditions}', [ReconcilesController::class, 'update'])->name('admin.reconciles.update');
-Route::post('reconciles/{projects}/publish/{expeditions}', [ReconcilesController::class, 'publish'])->name('admin.reconciles.publish');
+Route::get('reconciles/{expeditions}', [ReconcileController::class, 'index'])->name('admin.reconciles.index');
+Route::get('reconciles/{expeditions}/create', [ReconcileController::class, 'create'])->name('admin.reconciles.create');
+Route::put('reconciles/{expeditions}', [ReconcileController::class, 'update'])->name('admin.reconciles.update');
+Route::post('reconciles/{projects}/publish/{expeditions}', [ReconcileController::class, 'publish'])->name('admin.reconciles.publish');

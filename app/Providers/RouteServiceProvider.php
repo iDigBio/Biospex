@@ -21,7 +21,6 @@ namespace App\Providers;
 use DirectoryIterator;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
-use Dingo\Api\Routing\Router;
 
 /**
  * Class RouteServiceProvider
@@ -56,11 +55,28 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
-        $this->mapWebRoutes();
-
         $this->mapApiRoutes();
 
-        $this->mapPassportRoutes();
+        $this->mapWebRoutes();
+
+        //$this->mapPassportRoutes();
+    }
+
+    /**
+     * Define the "api" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapApiRoutes()
+    {
+        Route::domain(config('config.api_domain'))->group(function (){
+            $this->require_files('routes/api');
+            Route::middleware('auth:sanctum')->group(function () {
+                $this->require_files('routes/api/auth');
+            });
+        });
     }
 
     /**
@@ -90,50 +106,7 @@ class RouteServiceProvider extends ServiceProvider
                         return redirect()->route('admin.projects.index');
                     });
                 });
-
-                Route::prefix('api')->group(function (){
-                    Route::namespace('ApiAuth')->group(function () {
-                        $this->require_files('routes/front/apiauth');
-                    });
-                    Route::namespace('Front')->middleware(['auth:apiuser', 'verified:api.verification.notice'])->group(function () {
-                        Route::get('dashboard')->uses('ApiController@dashboard')->name('api.get.dashboard');
-                    });
-                });
             });
-
-    }
-
-    /**
-     * Define the "api" routes for the application.
-     *
-     * These routes are typically stateless.
-     *
-     * @return void
-     */
-    protected function mapApiRoutes()
-    {
-        $router = app(Router::class);
-
-        $router->version('v0', function ($router) {
-            $options = [
-                'middleware' => ['api'],
-            ];
-            $router->group($options, function ($router) {
-                $this->require_files('routes/api/v0', $router);
-            });
-        });
-
-        $router->version('v1', function ($router) {
-            $options = [
-                'middleware' => ['api'],
-            ];
-
-            $router->group($options, function ($router) {
-                $router->group(['middleware' => 'client'], function ($router) {
-                    $this->require_files('routes/api/v1', $router);
-                });
-            });
-        });
 
     }
 

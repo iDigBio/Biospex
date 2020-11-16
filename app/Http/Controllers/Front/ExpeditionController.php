@@ -23,11 +23,11 @@ use App\Http\Controllers\Controller;
 use App\Services\Model\ExpeditionService;
 
 /**
- * Class ExpeditionsController
+ * Class ExpeditionController
  *
  * @package App\Http\Controllers\Front
  */
-class ExpeditionsController extends Controller
+class ExpeditionController extends Controller
 {
     /**
      * Displays Expeditions on public page.

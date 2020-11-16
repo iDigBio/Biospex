@@ -29,11 +29,11 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * Class UsersController
+ * Class UserController
  *
  * @package App\Http\Controllers\Admin
  */
-class UsersController extends Controller
+class UserController extends Controller
 {
     use ResetsPasswords;
     
@@ -43,7 +43,7 @@ class UsersController extends Controller
     public $userContract;
 
     /**
-     * UsersController constructor.
+     * UserController constructor.
      *
      * @param \App\Services\Model\UserService $userService
      */

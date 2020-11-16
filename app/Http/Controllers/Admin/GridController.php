@@ -29,11 +29,11 @@ use Auth;
 use Exception;
 
 /**
- * Class GridsController
+ * Class GridController
  *
  * @package App\Http\Controllers\Admin
  */
-class GridsController extends Controller
+class GridController extends Controller
 {
     /**
      * @var
@@ -66,7 +66,7 @@ class GridsController extends Controller
     public $csv;
 
     /**
-     * GridsController constructor.
+     * GridController constructor.
      *
      * @param JqGridEncoder $grid
      * @param Csv $csv

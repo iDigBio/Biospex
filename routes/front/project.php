@@ -17,17 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 // Begin Public Project
-Route::get('projects')->uses('ProjectsController@index')->name('front.projects.index');
-Route::post('projects/sort')->uses('ProjectsController@sort')->name('front.projects.sort');
+Route::get('projects')->uses('ProjectController@index')->name('front.projects.index');
+Route::post('projects/sort')->uses('ProjectController@sort')->name('front.projects.sort');
 // Redirect old links to new
 Route::get('project/{slug}', function($slug) {
     return redirect("/projects/$slug", 301);
 });
-Route::get('projects/{slug}')->uses('ProjectsController@project')->name('front.projects.slug');
+Route::get('projects/{slug}')->uses('ProjectController@project')->name('front.projects.slug');
 
 // Project Transcriptions
-Route::get('projects/{project}/transcriptions/{year}')->uses('TranscriptionsController@index')->name('front.projects.transcriptions');
+Route::get('projects/{project}/transcriptions/{year}')->uses('TranscriptionController@index')->name('front.projects.transcriptions');
 
 // Project Map
-Route::get('projects/{project}/{state?}')->uses('ProjectsController@state')->name('front.projects.state');
+Route::get('projects/{project}/{state?}')->uses('ProjectController@state')->name('front.projects.state');
 

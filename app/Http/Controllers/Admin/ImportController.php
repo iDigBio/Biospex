@@ -30,11 +30,11 @@ use Auth;
 use Exception;
 
 /**
- * Class ImportsController
+ * Class ImportController
  *
  * @package App\Http\Controllers\Admin
  */
-class ImportsController extends Controller
+class ImportController extends Controller
 {
     /**
      * Add data to project

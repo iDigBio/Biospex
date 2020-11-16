@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Admin\ImportsController;
+use App\Http\Controllers\Admin\ImportController;
 
-Route::get('projects/{projects}/import', [ImportsController::class, 'index'])->name('admin.imports.index');
-Route::post('projects/dwcfile', [ImportsController::class, 'dwcFile'])->name('admin.imports.dwcfile');
-Route::post('projects/recordset', [ImportsController::class, 'recordSet'])->name('admin.imports.recordset');
-Route::post('projects/dwcuri', [ImportsController::class, 'dwcUri'])->name('admin.imports.dwcuri');
+Route::get('projects/{projects}/import', [ImportController::class, 'index'])->name('admin.imports.index');
+Route::post('projects/dwcfile', [ImportController::class, 'dwcFile'])->name('admin.imports.dwcfile');
+Route::post('projects/recordset', [ImportController::class, 'recordSet'])->name('admin.imports.recordset');
+Route::post('projects/dwcuri', [ImportController::class, 'dwcUri'])->name('admin.imports.dwcuri');

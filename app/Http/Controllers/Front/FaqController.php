@@ -20,29 +20,29 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Services\Model\TeamCategoryService;
+use App\Services\Model\FaqCategoryService;
 
 /**
- * Class TeamsController
+ * Class FaqController
  *
  * @package App\Http\Controllers\Front
  */
-class TeamsController extends Controller
+class FaqController extends Controller
 {
 
     /**
-     * @var \App\Services\Model\TeamCategoryService
+     * @var \App\Services\Model\FaqCategoryService
      */
-    public $teamCategoryService;
+    public $faqCategoryService;
 
     /**
-     * TeamsController constructor.
-     * 
-     * @param \App\Services\Model\TeamCategoryService $teamCategoryService
+     * FaqController constructor.
+     *
+     * @param \App\Services\Model\FaqCategoryService $faqCategoryService
      */
-    public function __construct(TeamCategoryService $teamCategoryService)
+    public function __construct(FaqCategoryService $faqCategoryService)
     {
-        $this->teamCategoryService = $teamCategoryService;
+        $this->faqCategoryService = $faqCategoryService;
     }
 
     /**
@@ -52,8 +52,8 @@ class TeamsController extends Controller
      */
     public function index()
     {
-        $categories = $this->teamCategoryService->getTeamIndexPage();
+        $categories = $this->faqCategoryService->getCategoriesWithFaqOrdered();
 
-        return view('front.team.index', compact('categories'));
+        return view('front.faq.index', compact('categories'));
     }
 }

@@ -29,11 +29,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Class DownloadsController
+ * Class DownloadController
  *
  * @package App\Http\Controllers\Admin
  */
-class DownloadsController extends Controller
+class DownloadController extends Controller
 {
     /**
      * @var \App\Services\Model\UserService
@@ -51,7 +51,7 @@ class DownloadsController extends Controller
     private $downloadType;
 
     /**
-     * DownloadsController constructor.
+     * DownloadController constructor.
      *
      * @param \App\Services\Model\UserService $userService
      * @param \App\Services\Model\ExpeditionService $expeditionService

@@ -29,11 +29,11 @@ use App\Services\Api\PanoptesApiService;
 use Flash;
 
 /**
- * Class ReconcilesController
+ * Class ReconcileController
  *
  * @package App\Http\Controllers\Admin
  */
-class ReconcilesController extends Controller
+class ReconcileController extends Controller
 {
     /**
      * @var \App\Services\Process\ExpertReconcileProcess
@@ -46,7 +46,7 @@ class ReconcilesController extends Controller
     private $expeditionService;
 
     /**
-     * ReconcilesController constructor.
+     * ReconcileController constructor.
      *
      * @param \App\Services\Process\ExpertReconcileProcess $expertReconcileService
      * @param \App\Services\Model\ExpeditionService $expeditionService

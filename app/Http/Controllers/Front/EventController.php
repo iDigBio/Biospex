@@ -28,11 +28,11 @@ use App\Services\Model\EventUserService;
 use GeneralHelper;
 
 /**
- * Class EventsController
+ * Class EventController
  *
  * @package App\Http\Controllers\Front
  */
-class EventsController extends Controller
+class EventController extends Controller
 {
     /**
      * Displays Events on public page.

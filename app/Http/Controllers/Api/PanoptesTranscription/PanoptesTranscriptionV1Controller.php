@@ -17,23 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Http\Controllers\Api\V0;
+namespace App\Http\Controllers\Api\PanoptesTranscription;
 
-use App\Services\Process\PusherTranscriptionProcess;
 use Illuminate\Http\Request;
-use App\Transformers\PusherTranscriptionTransformer;
-use Illuminate\Pagination\Paginator;
+use App\Http\Controllers\Api\ApiController;
+use App\Services\Process\PusherTranscriptionProcess;
 
 /**
- * PusherTranscriptions representation.
+ * Class PanoptesTranscriptionV1Controller
  *
- * @Resource("PusherTranscription", uri="/PusherTranscription")
- *
- * @package App\Http\Controllers\V1
+ * @package App\Http\Controllers\Api\PanoptesTranscription
  */
-class PusherTranscriptionsController extends ApiController
+class PanoptesTranscriptionV1Controller extends ApiController
 {
-
     /**
      * PusherTranscription List.
      *
@@ -51,13 +47,13 @@ class PusherTranscriptionsController extends ApiController
      * })
      *
      * @param Request $request
-     * @param PusherTranscriptionProcess $service
+     * @param PusherTranscriptionProcess $process
      * @return mixed
      */
-    public function index(Request $request, PusherTranscriptionProcess $service)
+    public function index(Request $request, PusherTranscriptionProcess $process)
     {
-        $totalCount = $service->listApiDashboardCount($request);
-        $data = $service->listApiDashboard($request);
+        $totalCount = $process->listApiDashboardCount($request);
+        $data = $process->listApiDashboard($request);
 
         $count = $request->has('rows') ? (int) $request->input('rows') : 200;
         $count = $count > 500 ? 200 : $count;                                              //count
@@ -67,70 +63,26 @@ class PusherTranscriptionsController extends ApiController
         $previous = (int) max($current - $count, 0); // current - count
         $this->paginate($current, $previous, $next, $count);
 
-
-
         return $this->respondWithPusherCollection($data, new PusherTranscriptionTransformer(), $totalCount, 'items');
     }
 
-    /**
-     * Create a PusherTranscription Item.
-     *
-     * Show JSON representation of PusherTranscription items.
-     *
-     * @POST("/")
-     * @Versions({"v1"})
-     *
-     * @return \Illuminate\Support\Facades\Response
-     */
     public function create()
     {
-        return $this->errorNotFound('This feature has not been implemented at this time.');
+
     }
 
-    /**
-     * PusherTranscription List.
-     *
-     * Show JSON representation of PusherTranscription items.
-     *
-     * @Get("/{guid}")
-     * @Versions({"v1"})
-     * @Parameters({
-     *     @Parameter("guid", description="GUID of specific resource item", required=true)
-     * })
-     *
-     * @param PusherTranscriptionProcess $service
-     * @param $guid
-     * @return mixed
-     */
-    public function show(PusherTranscriptionProcess $service, $guid)
+    public function read()
     {
-        $result = $service->showApiDashboard($guid);
 
-        return $result === null ?
-            $this->errorNotFound() :
-            $this->respondWithItem($result, new PusherTranscriptionTransformer(), 'items');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param string $guid
-     * @return \Illuminate\Support\Facades\Response
-     */
-    public function update(Request $request, $guid)
+    public function update()
     {
-        return $this->errorNotFound('This feature has not been implemented at this time.');
+
     }
 
-    /**
-     * Delete resource.
-     *
-     * @param $guid
-     * @return \Illuminate\Support\Facades\Response
-     */
-    public function delete($guid)
+    public function delete()
     {
-        return $this->errorNotFound('This feature has not been implemented at this time.');
+
     }
 }

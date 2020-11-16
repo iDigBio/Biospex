@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Admin\AdvertisesController;
+use App\Http\Controllers\Admin\AdvertiseController;
 
-Route::get('projects/{projects}/advertises', [AdvertisesController::class, 'index'])->name('admin.advertises.index');
-Route::get('projects/{projects}/advertises/download', [AdvertisesController::class, 'download'])->name('admin.advertises.download');
+Route::get('projects/{projects}/advertises', [AdvertiseController::class, 'index'])->name('admin.advertises.index');
+Route::get('projects/{projects}/advertises/download', [AdvertiseController::class, 'download'])->name('admin.advertises.download');

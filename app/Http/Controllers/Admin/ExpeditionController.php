@@ -38,11 +38,11 @@ use Illuminate\Support\Facades\Auth;
 use JavaScript;
 
 /**
- * Class ExpeditionsController
+ * Class ExpeditionController
  *
  * @package App\Http\Controllers\Admin
  */
-class ExpeditionsController extends Controller
+class ExpeditionController extends Controller
 {
     /**
      * @var \App\Services\Model\ExpeditionService
@@ -75,7 +75,7 @@ class ExpeditionsController extends Controller
     private $subjectService;
 
     /**
-     * ExpeditionsController constructor.
+     * ExpeditionController constructor.
      *
      * @param \App\Services\Model\ExpeditionService $expeditionService
      * @param \App\Services\Model\ProjectService $projectService

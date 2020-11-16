@@ -26,11 +26,11 @@ use App\Http\Requests\InviteFormRequest;
 use App\Services\Process\InviteProcess;
 
 /**
- * Class InvitesController
+ * Class InviteController
  *
  * @package App\Http\Controllers\Admin
  */
-class InvitesController extends Controller
+class InviteController extends Controller
 {
     /**
      * @var \App\Services\Model\GroupService
@@ -48,7 +48,7 @@ class InvitesController extends Controller
     private $inviteProcess;
 
     /**
-     * InvitesController constructor.
+     * InviteController constructor.
      *
      * @param \App\Services\Process\InviteProcess $inviteProcess
      * @param \App\Services\Model\GroupService $groupService

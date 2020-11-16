@@ -24,11 +24,11 @@ use App\Jobs\BingoJob;
 use App\Services\Process\BingoProcess;
 
 /**
- * Class BingosController
+ * Class BingoController
  *
  * @package App\Http\Controllers\Front
  */
-class BingosController extends Controller
+class BingoController extends Controller
 {
     /**
      * @var \App\Services\Process\BingoProcess
@@ -36,7 +36,7 @@ class BingosController extends Controller
     private $bingoProcess;
 
     /**
-     * BingosController constructor.
+     * BingoController constructor.
      *
      * @param \App\Services\Process\BingoProcess $bingoProcess
      */

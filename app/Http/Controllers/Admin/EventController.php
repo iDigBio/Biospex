@@ -31,11 +31,11 @@ use App\Services\Model\ProjectService;
 use Auth;
 
 /**
- * Class EventsController
+ * Class EventController
  *
  * @package App\Http\Controllers\Admin
  */
-class EventsController extends Controller
+class EventController extends Controller
 {
     /**
      * @var \App\Services\Model\EventService
@@ -43,7 +43,7 @@ class EventsController extends Controller
     private $eventService;
 
     /**
-     * EventsController constructor.
+     * EventController constructor.
      *
      * @param \App\Services\Model\EventService $eventService
      */

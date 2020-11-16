@@ -5,6 +5,8 @@ return [
     /**
      * Site variables
      */
+    'app_domain'      => env('APP_NAME'),
+    'api_domain'      => env('API_DOMIAN'),
     'current_path'    => env('CURRENT_PATH'),
     'server_user'     => env('SERVER_USER'),
     'registration'    => env('REGISTRATION'),

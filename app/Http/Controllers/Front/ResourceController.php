@@ -25,11 +25,11 @@ use App\Services\Model\ResourceService;
 use Storage;
 
 /**
- * Class ResourcesController
+ * Class ResourceController
  *
  * @package App\Http\Controllers\Front
  */
-class ResourcesController extends Controller
+class ResourceController extends Controller
 {
     /**
      * Show resources.

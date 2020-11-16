@@ -17,13 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Admin\DownloadsController;
+use App\Http\Controllers\Admin\DownloadController;
 
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads', [DownloadsController::class, 'index'])->name('admin.downloads.index');
-Route::get('reports/{file}', [DownloadsController::class, 'report'])->name('admin.downloads.report');
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}', [DownloadsController::class, 'download'])->name('admin.downloads.download');
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/tar', [DownloadsController::class, 'downloadTar'])->name('admin.downloads.downloadTar');
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{files}/tar-batch', [DownloadsController::class, 'downloadTarBatch'])->name('admin.downloads.downloadTarBatch');
-Route::get('projects/{projects}/expeditions/{expeditions}/regenerate', [DownloadsController::class, 'regenerate'])->name('admin.downloads.regenerate');
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/batch', [DownloadsController::class, 'batch'])->name('admin.downloads.batch');
-Route::get('projects/{projects}/expeditions/{expeditions}/summary', [DownloadsController::class, 'summary'])->name('admin.downloads.summary');
+Route::get('projects/{projects}/expeditions/{expeditions}/downloads', [DownloadController::class, 'index'])->name('admin.downloads.index');
+Route::get('reports/{file}', [DownloadController::class, 'report'])->name('admin.downloads.report');
+Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}', [DownloadController::class, 'download'])->name('admin.downloads.download');
+Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/tar', [DownloadController::class, 'downloadTar'])->name('admin.downloads.downloadTar');
+Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{files}/tar-batch', [DownloadController::class, 'downloadTarBatch'])->name('admin.downloads.downloadTarBatch');
+Route::get('projects/{projects}/expeditions/{expeditions}/regenerate', [DownloadController::class, 'regenerate'])->name('admin.downloads.regenerate');
+Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/batch', [DownloadController::class, 'batch'])->name('admin.downloads.batch');
+Route::get('projects/{projects}/expeditions/{expeditions}/summary', [DownloadController::class, 'summary'])->name('admin.downloads.summary');

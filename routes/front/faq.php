@@ -17,4 +17,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 // Begin Faq
-Route::get('faq')->uses('FaqsController@index')->name('front.faqs.index');
+Route::get('faq')->uses('FaqController@index')->name('front.faqs.index');

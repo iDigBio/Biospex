@@ -24,11 +24,11 @@ use App\Services\Model\AmChartService;
 use File;
 
 /**
- * Class TranscriptionsController
+ * Class TranscriptionController
  *
  * @package App\Http\Controllers\Front
  */
-class TranscriptionsController extends Controller
+class TranscriptionController extends Controller
 {
     /**
      * Return json data for transcription charts.

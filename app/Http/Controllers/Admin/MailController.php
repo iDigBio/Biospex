@@ -38,7 +38,7 @@ class MailController extends Controller
     private $userService;
 
     /**
-     * UsersController constructor.
+     * UserController constructor.
      *
      * @param \App\Services\Model\UserService $userService
      */

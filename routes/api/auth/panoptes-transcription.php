@@ -16,8 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-Route::get('events')->uses('EventController@index')->name('front.events.index');
-Route::post('events/sort/')->uses('EventController@sort')->name('front.events.sort');
-Route::get('events/{event}')->uses('EventController@read')->name('front.events.read');
-Route::get('events/{uuid}/signup')->uses('EventController@signup')->name('front.events.signup');
-Route::post('events/{uuid}/join')->uses('EventController@join')->name('front.events.join');
+
+use App\Http\Controllers\Api\PanoptesTranscription\PanoptesTranscriptionV1Controller;
+
+Route::lapiv('panoptes-transcription', 'PanoptesPusher', function (){
+    Route::get('/', [PanoptesTranscriptionV1Controller::class, 'index'])->name('api.panoptes-transcription.index');
+    Route::get('/{guid}', [PanoptesTranscriptionV1Controller::class, 'read'])->name('api.panoptes-transcription.read');
+
+});

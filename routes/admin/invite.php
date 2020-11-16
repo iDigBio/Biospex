@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Admin\InvitesController;
+use App\Http\Controllers\Admin\InviteController;
 
-Route::get('groups/{groups}/invites', [InvitesController::class, 'index'])->name('admin.invites.index');
-Route::post('groups/{groups}/invites', [InvitesController::class, 'store'])->name('admin.invites.store');
-Route::delete('groups/{groups}/invites/{invites}', [InvitesController::class, 'delete'])->name('admin.invites.delete');
+Route::get('groups/{groups}/invites', [InviteController::class, 'index'])->name('admin.invites.index');
+Route::post('groups/{groups}/invites', [InviteController::class, 'store'])->name('admin.invites.store');
+Route::delete('groups/{groups}/invites/{invites}', [InviteController::class, 'delete'])->name('admin.invites.delete');

@@ -29,11 +29,11 @@ use App\Services\Model\UserService;
 use Exception;
 
 /**
- * Class GroupsController
+ * Class GroupController
  *
  * @package App\Http\Controllers\Admin
  */
-class GroupsController extends Controller
+class GroupController extends Controller
 {
     /**
      * @var \App\Services\Model\GroupService
@@ -41,7 +41,7 @@ class GroupsController extends Controller
     private $groupService;
 
     /**
-     * GroupsController constructor.
+     * GroupController constructor.
      *
      * @param \App\Services\Model\GroupService $groupService
      */

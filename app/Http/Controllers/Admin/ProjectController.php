@@ -34,11 +34,11 @@ use Exception;
 use JavaScript;
 
 /**
- * Class ProjectsController
+ * Class ProjectController
  *
  * @package App\Http\Controllers\Admin
  */
-class ProjectsController extends Controller
+class ProjectController extends Controller
 {
     /**
      * @var \App\Services\Model\ProjectService
@@ -51,7 +51,7 @@ class ProjectsController extends Controller
     private $projectProcess;
 
     /**
-     * ProjectsController constructor.
+     * ProjectController constructor.
      *
      * @param \App\Services\Model\ProjectService $projectService
      * @param \App\Services\Process\ProjectProcess $projectProcess

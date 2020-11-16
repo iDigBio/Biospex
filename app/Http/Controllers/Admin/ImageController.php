@@ -23,11 +23,11 @@ use App\Http\Controllers\Controller;
 use App\Services\Image\Thumbnail;
 
 /**
- * Class ImagesController
+ * Class ImageController
  *
  * @package App\Http\Controllers\Admin
  */
-class ImagesController extends Controller
+class ImageController extends Controller
 {
     /**
      * @var Thumbnail
