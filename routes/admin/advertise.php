@@ -16,5 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->get('projects/{projects}/advertises')->uses('AdvertisesController@index')->name('admin.advertises.index');
-$router->get('projects/{projects}/advertises/download')->uses('AdvertisesController@download')->name('admin.advertises.download');
+
+use App\Http\Controllers\Admin\AdvertiseController;
+
+Route::get('projects/{projects}/advertises', [AdvertiseController::class, 'index'])->name('admin.advertises.index');
+Route::get('projects/{projects}/advertises/download', [AdvertiseController::class, 'download'])->name('admin.advertises.download');

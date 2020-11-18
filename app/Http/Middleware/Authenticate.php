@@ -13,16 +13,17 @@ class Authenticate extends Middleware
     public function handle($request, Closure $next, ...$guards)
     {
         $this->guards = $guards;
+
         return parent::handle($request, $next, ...$guards);
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @return string|null
+     */
     protected function redirectTo($request)
     {
-        if (!$request->expectsJson()) {
-            if (reset($this->guards) === 'apiuser') {
-                return route('api.get.login');
-            }
-
+        if (! $request->expectsJson()) {
             return route('app.get.login');
         }
     }

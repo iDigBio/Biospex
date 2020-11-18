@@ -19,10 +19,10 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Api\ApiController;
 use App\Jobs\PusherEventTranscriptionJob;
 use App\Jobs\PusherWeDigBioDashboardJob;
 use App\Services\Model\PanoptesProjectService;
-use Illuminate\Http\Request;
 
 /**
  * Class PanoptesPusherController
@@ -38,27 +38,30 @@ class PanoptesPusherController extends ApiController
      */
     public function index()
     {
-        return $this->errorNotFound();
+        return $this->errorUnauthorized();
     }
 
     /**
      * Create classification based on pusher.
      *
-     * @param Request $request
      * @param \App\Services\Model\PanoptesProjectService $panoptesProjectService
-     * [2017-10-15 00:12:45] lumen.INFO: {"classification_id":"74498341","project_id":"1558","workflow_id":"2838","user_id":null,"subject_ids":["4002829"],"subject_urls":[{"image/jpeg":"https://panoptes-uploads.zooniverse.org/production/subject_location/0640d1cd-6c4f-43b4-9a10-726ebd43fedb.jpeg"}],"geo":{"country_name":"United States","country_code":"US","city_name":"Tallahassee","coordinates":[-84.2539,30.4203],"latitude":30.4203,"longitude":-84.2539}}
+     * @return \Illuminate\Support\Facades\Response|void
      */
-    public function create(Request $request, PanoptesProjectService $panoptesProjectService)
+    public function store(PanoptesProjectService $panoptesProjectService)
     {
-        if ( ! $request->isJson()) {
-            return;
+        if (! request()->isJson()) {
+            return $this->errorWrongArgs(t('JSON request required'));
         }
 
-        $data = json_decode($request->getContent(), true);
+        if(!request()->user()->tokenCan('panoptes-pusher:create')) {
+            return $this->errorUnauthorized();
+        }
+
+        $data = json_decode(request()->getContent(), true);
 
         if ( ! isset($data['workflow_id']))
         {
-            return;
+            return $this->errorWrongArgs(t('Missing workflow_id'));
         }
 
         $result = $panoptesProjectService->findByProjectIdAndWorkflowId($data['project_id'], $data['workflow_id']);
@@ -78,7 +81,7 @@ class PanoptesPusherController extends ApiController
      */
     public function show()
     {
-        return $this->errorNotFound();
+        return $this->errorUnauthorized();
     }
 
     /**
@@ -88,7 +91,7 @@ class PanoptesPusherController extends ApiController
      */
     public function update()
     {
-        return $this->errorNotFound();
+        return $this->errorUnauthorized();
     }
 
     /**
@@ -96,8 +99,8 @@ class PanoptesPusherController extends ApiController
      *
      * @return \Illuminate\Support\Facades\Response
      */
-    public function delete()
+    public function destroy()
     {
-        return $this->errorNotFound();
+        return $this->errorUnauthorized();
     }
 }

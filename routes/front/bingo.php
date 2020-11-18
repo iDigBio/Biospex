@@ -16,6 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->get('bingos')->uses('BingosController@index')->name('front.bingos.index');
-$router->get('bingos/{bingo}')->uses('BingosController@show')->name('front.bingos.show');
-$router->get('bingos/{bingo}/generate')->uses('BingosController@generate')->name('front.bingos.generate');
+
+use App\Http\Controllers\Front\BingoController;
+
+Route::get('bingos', [BingoController::class, 'index'])->name('front.bingos.index');
+Route::get('bingos/{bingo}', [BingoController::class, 'show'])->name('front.bingos.show');
+Route::get('bingos/{bingo}/generate', [BingoController::class, 'generate'])->name('front.bingos.generate');

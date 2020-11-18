@@ -16,14 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// Begin EventsController
-$router->get('events')->uses('EventsController@index')->name('admin.events.index');
-$router->post('events/sort/')->uses('EventsController@sort')->name('admin.events.sort');
-$router->get('events/create')->uses('EventsController@create')->name('admin.events.create');
-$router->post('events/create')->uses('EventsController@store')->name('admin.events.store');
-$router->get('events/{events}')->uses('EventsController@show')->name('admin.events.show');
-$router->get('events/{events}/edit')->uses('EventsController@edit')->name('admin.events.edit');
-$router->put('events/{events}')->uses('EventsController@update')->name('admin.events.update');
-$router->delete('events/{events}')->uses('EventsController@delete')->name('admin.events.delete');
-$router->get('events/{events}/transcriptions')->uses('EventsController@exportTranscriptions')->name('admin.events.exportTranscriptions');
-$router->get('events/{events}/users')->uses('EventsController@exportUsers')->name('admin.events.exportUsers');
+
+use App\Http\Controllers\Admin\EventController;
+
+Route::get('events', [EventController::class, 'index'])->name('admin.events.index');
+Route::post('events/sort/', [EventController::class, 'sort'])->name('admin.events.sort');
+Route::get('events/create', [EventController::class, 'create'])->name('admin.events.create');
+Route::post('events/create', [EventController::class, 'store'])->name('admin.events.store');
+Route::get('events/{events}', [EventController::class, 'show'])->name('admin.events.show');
+Route::get('events/{events}/edit', [EventController::class, 'edit'])->name('admin.events.edit');
+Route::put('events/{events}', [EventController::class, 'update'])->name('admin.events.update');
+Route::delete('events/{events}', [EventController::class, 'delete'])->name('admin.events.delete');
+Route::get('events/{events}/transcriptions', [EventController::class, 'exportTranscriptions'])->name('admin.events.exportTranscriptions');
+Route::get('events/{events}/users', [EventController::class, 'exportUsers'])->name('admin.events.exportUsers');

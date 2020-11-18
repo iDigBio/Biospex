@@ -1,16 +1,16 @@
 {
-    "/js/front.js": "/js/front.js?id=3678d09d7f03d3a28306",
+    "/js/front.js": "/js/front.js?id=3f6555395b229c7a6099",
     "/css/front.css": "/css/front.css?id=e90069f5514536963a83",
     "/js/manifest.js": "/js/manifest.js?id=3c768977c2574a34506e",
-    "/js/vendor.js": "/js/vendor.js?id=f555c18c3477e50a686d",
-    "/js/amChartMap.js": "/js/amChartMap.js?id=d1d1fda49cac74f44975",
-    "/js/amChartMap.min.js": "/js/amChartMap.min.js?id=d1d1fda49cac74f44975",
-    "/js/amChartTranscript.js": "/js/amChartTranscript.js?id=0cce8cba3c4d3ca3f530",
-    "/js/amChartTranscript.min.js": "/js/amChartTranscript.min.js?id=0cce8cba3c4d3ca3f530",
-    "/js/amChartStat.js": "/js/amChartStat.js?id=074974c6828a4c3f4bd9",
-    "/js/amChartStat.min.js": "/js/amChartStat.min.js?id=074974c6828a4c3f4bd9",
-    "/js/amChartEventRate.js": "/js/amChartEventRate.js?id=0300ae3891ff8efa8d1d",
-    "/js/amChartEventRate.min.js": "/js/amChartEventRate.min.js?id=0300ae3891ff8efa8d1d",
-    "/js/amChartBingo.js": "/js/amChartBingo.js?id=965bc907147270f5b848",
-    "/js/amChartBingo.min.js": "/js/amChartBingo.min.js?id=965bc907147270f5b848"
+    "/js/vendor.js": "/js/vendor.js?id=6ebec338ff9b30172512",
+    "/js/amChartMap.js": "/js/amChartMap.js?id=3b16569289e89cc376ca",
+    "/js/amChartMap.min.js": "/js/amChartMap.min.js?id=3b16569289e89cc376ca",
+    "/js/amChartTranscript.js": "/js/amChartTranscript.js?id=a61b82f64cc689655c1d",
+    "/js/amChartTranscript.min.js": "/js/amChartTranscript.min.js?id=a61b82f64cc689655c1d",
+    "/js/amChartStat.js": "/js/amChartStat.js?id=02895612a2918ea24dbb",
+    "/js/amChartStat.min.js": "/js/amChartStat.min.js?id=02895612a2918ea24dbb",
+    "/js/amChartEventRate.js": "/js/amChartEventRate.js?id=b10f1784c42814da5833",
+    "/js/amChartEventRate.min.js": "/js/amChartEventRate.min.js?id=b10f1784c42814da5833",
+    "/js/amChartBingo.js": "/js/amChartBingo.js?id=8490ad22fc00c622ea52",
+    "/js/amChartBingo.min.js": "/js/amChartBingo.min.js?id=8490ad22fc00c622ea52"
 }

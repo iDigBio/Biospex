@@ -27,6 +27,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Traits\Presentable;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * Class User
@@ -35,7 +36,7 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasGroup, UuidTrait, Notifiable, Presentable, LadaCacheTrait;
+    use HasGroup, UuidTrait, Notifiable, Presentable, LadaCacheTrait, HasApiTokens;
 
     /**
      * @inheritDoc

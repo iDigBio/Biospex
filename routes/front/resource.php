@@ -16,5 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->get('resource')->uses('ResourcesController@index')->name('front.resources.index');
-$router->get('resource/{id}')->uses('ResourcesController@download')->name('front.resources.download');
+
+use App\Http\Controllers\Front\ResourceController;
+
+Route::get('resource', [ResourceController::class, 'index'])->name('front.resources.index');
+Route::get('resource/{id}', [ResourceController::class, 'download'])->name('front.resources.download');

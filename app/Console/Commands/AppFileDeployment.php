@@ -160,8 +160,7 @@ class AppFileDeployment extends Command
 
             'API_URL',
             'API_VERSION',
-            'API_CLIENT_ID',
-            'API_CLIENT_SECRET',
+            'API_TOKEN',
 
             'NUM_PROCS',
             'QUEUE_CHART_TUBE',

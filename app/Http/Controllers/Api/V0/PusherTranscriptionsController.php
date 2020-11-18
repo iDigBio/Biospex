@@ -22,6 +22,7 @@ namespace App\Http\Controllers\Api\V0;
 use App\Services\Process\PusherTranscriptionProcess;
 use Illuminate\Http\Request;
 use App\Transformers\PusherTranscriptionTransformer;
+use Illuminate\Pagination\Paginator;
 
 /**
  * PusherTranscriptions representation.
@@ -65,6 +66,8 @@ class PusherTranscriptionsController extends ApiController
         $next = (int) ($current + $count); // current + count
         $previous = (int) max($current - $count, 0); // current - count
         $this->paginate($current, $previous, $next, $count);
+
+
 
         return $this->respondWithPusherCollection($data, new PusherTranscriptionTransformer(), $totalCount, 'items');
     }

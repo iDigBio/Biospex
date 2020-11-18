@@ -25,8 +25,6 @@
                 <div class="d-flex align-items-start justify-content-between my-4 mx-auto">
                     <a class="btn btn-primary mr-4" href="https://biospex.docs.apiary.io/#">{{ t('API Docs') }}</a>
                     <a class="btn btn-primary mr-4" href="https://github.com/iDigBio/Biospex">{{ t('GitHub') }}</a>
-                    <a class="btn btn-primary mr-4" href="{{ route('api.get.login') }}">{{ t('Login') }}</a>
-                    <a class="btn btn-primary mr-4" href="{{ route('api.get.register') }}">{{ t('Register') }}</a>
                 </div>
             </div>
         </div>

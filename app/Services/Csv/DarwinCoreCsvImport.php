@@ -28,6 +28,7 @@ use Exception;
 use ForceUTF8\Encoding;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Factory as Validation;
+use Illuminate\Validation\Rule;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -568,11 +569,11 @@ class DarwinCoreCsvImport
      */
     public function validateDoc($subject)
     {
-        $rules = ['project_id' => 'unique_with:mongodb.subjects,id'];
-        $values = ['project_id' => $subject['project_id'], 'id' => $subject['id']];
+        $rules = ['project_id' => Rule::unique('mongodb.subjects')->where(function ($query) use($subject) {
+            return $query->where('project_id', $subject['project_id'])->where('id', $subject['id']);
+        })];
 
-        $validator = $this->factory->make($values, $rules);
-        $validator->getPresenceVerifier()->setConnection('mongodb');
+        $validator = $this->factory->make($subject, $rules);
 
         $fail = $validator->fails();
 

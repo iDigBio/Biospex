@@ -21,6 +21,7 @@ namespace App\Services\Model;
 
 use App\Models\PusherTranscription;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 /**
@@ -30,6 +31,11 @@ use Illuminate\Http\Request;
  */
 class PusherTranscriptionService extends BaseModelService
 {
+    /**
+     * @var \Illuminate\Database\Eloquent\Builder
+     */
+    private $dashboardQuery;
+
     /**
      * PusherTranscriptionService constructor.
      *
@@ -61,37 +67,70 @@ class PusherTranscriptionService extends BaseModelService
         $count = $count > 500 ? 200 : $count;                                              //count
         $current = $request->has('start') ? (int) $request->input('start') : 0; // current
 
+        $count = $request->has('rows') ? (int) $request->input('rows') : 200;
+        $count = $count > 500 ? 200 : $count;                                              //count
+        $current = $request->has('start') ? (int) $request->input('start') : 0; // current
+
         return $this->model->where(function ($query) use ($request) {
             $this->buildQuery($query, $request);
         })->limit($count)->offset($current)->orderBy('timestamp', 'desc')->get();
     }
 
     /**
-     * Build query.
+     * Return count for current dashboard query.
      *
-     * @param $query
-     * @param $request
+     * @return mixed
      */
-    private function buildQuery(&$query, $request)
+    public function getWeDigBioDashboardCount()
     {
-        $request->has('project_uuid') ? $query->where('projectUuid', $request->input('project_uuid')) : false;
-        $request->has('expedition_uuid') ? $query->where('expeditionUuid', $request->input('expedition_uuid')) : false;
+        return $this->dashboardQuery->count();
+    }
 
-        $date_start = is_numeric($request->input('date_start')) ? (int) $request->input('date_start') : $request->input('date_start');
-        $date_end = is_numeric($request->input('date_end')) ? (int) $request->input('date_end') : $request->input('date_end');
+    /**
+     * Get dashboard items.
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getWeDigBioDashboardItems(int $limit, int $offset)
+    {
+        return $this->dashboardQuery->limit($limit)->offset($offset)->orderBy('timestamp', 'desc')->get();
+    }
 
-        if ($date_start !== null && $date_end !== null)
-        {
-            $timestamps = [
-                Carbon::parse($date_start),
-                Carbon::parse($date_end)
-            ];
-            $query->whereBetween('timestamp', $timestamps);
+    /**
+     * Set query for dashboard.
+     *
+     * @param array $request
+     */
+    public function setQueryForDashboard(array $request)
+    {
+        $timestampStart = $this->setTimestampStart($request);
+        $timestampEnd = $this->setTimestampEnd($request);
 
-            return;
-        }
+        $this->dashboardQuery = $this->model->where(function($query) use($timestampStart, $timestampEnd){
+            $query->where('timestamp', '<=', $timestampStart);
+            isset($date_end) ? $query->where('timestamp', '>=', $timestampEnd) : null;
+        });
+    }
 
-        $date_start !== null ? $query->where('timestamp', '>=', $date_start) : null;
-        $date_end !== null ? $query->where('timestamp', '<=', $date_end) : null;
+    /**
+     * Set the date_start with default to now.
+     *
+     * @param array $request
+     * @return \Carbon\Carbon
+     */
+    private function setTimestampStart(array $request): Carbon
+    {
+        return isset($request['timestampStart']) ? Carbon::parse($request['timestampStart'], 'UTC') : Carbon::now('UTC');
+    }
+
+    /**
+     * @param array $request
+     * @return \Carbon\Carbon|null
+     */
+    private function setTimestampEnd(array $request): ?Carbon
+    {
+        return isset($request['timestampEnd']) ? Carbon::parse($request['timestampEnd'], 'UTC') : null;
     }
 }

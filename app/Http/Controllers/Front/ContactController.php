@@ -32,10 +32,6 @@ use Mail;
  */
 class ContactController extends Controller
 {
-    public function __construct()
-    {
-        //dd(request()->all());
-    }
     /**
      * Display contact form.
      *

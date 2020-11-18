@@ -40,7 +40,6 @@ mix.webpackConfig({
     ])
     .copy('resources/js/jquery.form.min.js', 'public/backend/js/jquery.form.min.js')
     .copy('resources/js/expertReview.js', 'public/backend/js/expertReview.js')
-    .babel('public/backend/js/expertReview.js', 'public/backend/js/expertReview.js')
     .minify('public/backend/js/expertReview.js');
 
 

@@ -16,8 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// Begin Reconcile Controller
-$router->get('reconciles/{expeditions}')->uses('ReconcilesController@index')->name('admin.reconciles.index');
-$router->get('reconciles/{expeditions}/create')->uses('ReconcilesController@create')->name('admin.reconciles.create');
-$router->put('reconciles/{expeditions}')->uses('ReconcilesController@update')->name('admin.reconciles.update');
-$router->post('reconciles/{projects}/publish/{expeditions}')->uses('ReconcilesController@publish')->name('admin.reconciles.publish');
+use App\Http\Controllers\Admin\ReconcileController;
+
+Route::get('reconciles/{expeditions}', [ReconcileController::class, 'index'])->name('admin.reconciles.index');
+Route::get('reconciles/{expeditions}/create', [ReconcileController::class, 'create'])->name('admin.reconciles.create');
+Route::put('reconciles/{expeditions}', [ReconcileController::class, 'update'])->name('admin.reconciles.update');
+Route::post('reconciles/{projects}/publish/{expeditions}', [ReconcileController::class, 'publish'])->name('admin.reconciles.publish');
