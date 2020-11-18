@@ -16,5 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// Begin Faq
-Route::get('faq')->uses('FaqController@index')->name('front.faqs.index');
+
+use App\Http\Controllers\Front\FaqController;
+
+Route::get('faq', [FaqController::class, 'index'])->name('front.faqs.index');

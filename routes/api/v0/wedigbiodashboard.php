@@ -19,4 +19,4 @@
 
 use App\Http\Controllers\Api\V0\PusherTranscriptionsController;
 
-$router->resource('wedigbiodashboards', PusherTranscriptionsController::class);
+Route::resource('wedigbiodashboards', PusherTranscriptionsController::class);

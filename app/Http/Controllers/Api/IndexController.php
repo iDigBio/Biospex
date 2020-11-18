@@ -24,7 +24,7 @@ namespace App\Http\Controllers\Api;
  *
  * @package App\Http\Controllers\Api\Index
  */
-class IndexController extends ApiController
+class IndexController
 {
     /**
      * @return string

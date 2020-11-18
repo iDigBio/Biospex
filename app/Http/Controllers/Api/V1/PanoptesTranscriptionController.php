@@ -20,20 +20,15 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\ApiController;
-use App\Jobs\PusherEventTranscriptionJob;
-use App\Jobs\PusherWeDigBioDashboardJob;
-use App\Services\Model\PanoptesProjectService;
 
 /**
- * Class PanoptesPusherController
+ * Class PanoptesTranscriptionController
  *
  * @package App\Http\Controllers\Api\V1
  */
-class PanoptesPusherController extends ApiController
+class PanoptesTranscriptionController extends ApiController
 {
     /**
-     * Display a listing of the resource.
-     *
      * @return \Illuminate\Support\Facades\Response
      */
     public function index()
@@ -42,41 +37,14 @@ class PanoptesPusherController extends ApiController
     }
 
     /**
-     * Create classification based on pusher.
-     *
-     * @param \App\Services\Model\PanoptesProjectService $panoptesProjectService
-     * @return \Illuminate\Support\Facades\Response|void
+     * @return \Illuminate\Support\Facades\Response
      */
-    public function store(PanoptesProjectService $panoptesProjectService)
+    public function store()
     {
-        if (! request()->isJson()) {
-            return $this->errorWrongArgs(t('JSON request required'));
-        }
-
-        if(!request()->user()->tokenCan('panoptes-pusher:create')) {
-            return $this->errorUnauthorized();
-        }
-
-        $data = json_decode(request()->getContent(), true);
-
-        if ( ! isset($data['workflow_id']))
-        {
-            return $this->errorWrongArgs(t('Missing workflow_id'));
-        }
-
-        $result = $panoptesProjectService->findByProjectIdAndWorkflowId($data['project_id'], $data['workflow_id']);
-
-        if ($result === null){
-            return;
-        }
-
-        PusherEventTranscriptionJob::dispatch($data);
-        PusherWeDigBioDashboardJob::dispatch($data, $result);
+        return $this->errorUnauthorized();
     }
 
     /**
-     * Display the specified resource.
-     *
      * @return \Illuminate\Support\Facades\Response
      */
     public function show()
@@ -85,8 +53,6 @@ class PanoptesPusherController extends ApiController
     }
 
     /**
-     * Update the specified resource in storage.
-     *
      * @return \Illuminate\Support\Facades\Response
      */
     public function update()
@@ -95,8 +61,6 @@ class PanoptesPusherController extends ApiController
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
      * @return \Illuminate\Support\Facades\Response
      */
     public function destroy()

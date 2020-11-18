@@ -17,5 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-Route::get('expeditions')->uses('ExpeditionController@index')->name('front.expeditions.index');
-Route::post('expeditions/sort')->uses('ExpeditionController@sort')->name('front.expeditions.sort');
+use App\Http\Controllers\Front\ExpeditionController;
+
+Route::get('expeditions', [ExpeditionController::class, 'index'])->name('front.expeditions.index');
+Route::post('expeditions/sort', [ExpeditionController::class, 'sort'])->name('front.expeditions.sort');

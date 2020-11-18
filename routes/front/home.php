@@ -16,5 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-Route::get('/')->uses('HomeController@index')->name('home');
+
+use App\Http\Controllers\Front\HomeController;
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
 

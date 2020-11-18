@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Providers;
 
-use DirectoryIterator;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -30,13 +30,13 @@ use Illuminate\Support\Facades\Route;
 class RouteServiceProvider extends ServiceProvider
 {
     /**
-     * This namespace is applied to your controller routes.
+     * The path to the "home" route for your application.
      *
-     * In addition, it is set as the URL generator's root namespace.
+     * This is used by Laravel authentication to redirect users after login.
      *
      * @var string
      */
-    protected $namespace = 'App\Http\Controllers';
+    public const HOME = '/projects';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -55,11 +55,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
-        $this->mapApiRoutes();
-
         $this->mapWebRoutes();
-
-        //$this->mapPassportRoutes();
+        $this->mapApiRoutes();
     }
 
     /**
@@ -71,10 +68,21 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
-        Route::domain(config('config.api_domain'))->group(function (){
-            $this->require_files('routes/api');
-            Route::middleware('auth:sanctum')->group(function () {
-                $this->require_files('routes/api/auth');
+        Route::domain(config('config.api_domain'))->group(function () {
+            Route::middleware(['web'])->group(base_path('routes/api/index.php'));
+
+            Route::prefix('v0')->middleware([
+                'api',
+                'auth:sanctum',
+            ])->group(function () {
+                $this->require_files('routes/api/v0');
+            });
+
+            Route::prefix('v1')->middleware([
+                'api',
+                'auth:sanctum',
+            ])->group(function () {
+                $this->require_files('routes/api/v1');
             });
         });
     }
@@ -88,40 +96,16 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::domain(config('config.app_domain'))
-            ->namespace($this->namespace)->middleware('web')->group(function () {
+        Route::domain(config('config.app_domain'))->middleware('web')->group(function () {
+            $this->require_files('routes/front');
+            $this->require_files('routes/front/appauth');
 
-                Route::namespace('Front')->group(function ($router) {
-                    $this->require_files('routes/front');
-                });
-
-                Route::namespace('Auth')->group(function(){
-                    $this->require_files('routes/front/appauth');
-                    //base_path('routes/front/appauth/auth.php');
-                });
-
-                Route::namespace('Admin')->prefix('admin')->middleware(['auth', 'verified'])->group(function () {
-                    $this->require_files('routes/admin');
-                    Route::get('/', function (){
-                        return redirect()->route('admin.projects.index');
-                    });
+            Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
+                $this->require_files('routes/admin');
+                Route::get('/', function () {
+                    return redirect()->route('admin.projects.index');
                 });
             });
-
-    }
-
-    /**
-     * Map Passport routes.
-     */
-    protected function mapPassportRoutes()
-    {
-        $defaultOptions = [
-            'prefix'    => 'oauth',
-            'namespace' => '\Laravel\Passport\Http\Controllers',
-        ];
-
-        Route::group($defaultOptions, function () {
-            $this->require_files('routes/passport');
         });
     }
 
@@ -129,15 +113,12 @@ class RouteServiceProvider extends ServiceProvider
      * Load required files.
      *
      * @param $dir
-     * @param null $router
      */
-    protected function require_files($dir, $router = null)
+    protected function require_files($dir)
     {
-        $dirPath = base_path().'/'.$dir.'/';
-        foreach (new DirectoryIterator($dirPath) as $file) {
-            if (! $file->isDot() && ! $file->isDir()) {
-                require $dirPath.$file->getFilename();
-            }
+        $files = \File::files(base_path($dir));
+        foreach ($files as $file) {
+            require $file->getPathname();
         }
     }
 }

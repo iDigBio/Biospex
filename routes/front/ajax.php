@@ -16,9 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// Begin Ajax Routes
-Route::get('ajax/chart/{project}')->uses('AjaxController@loadAmChart')->name('ajax.get.chart');
-Route::get('ajax/scoreboard/{event}')->uses('AjaxController@scoreboard')->name('ajax.get.scoreboard');
-Route::get('ajax/step/{event}/{load?}')->uses('AjaxController@eventStepChart')->name('ajax.get.step');
-Route::get('poll')->uses('AjaxController@poll')->name('ajax.get.poll');
-Route::get('bingos/{bingo}/winner/{map}')->uses('AjaxController@bingoWinner')->name('ajax.get.bingoWinner');
+
+use App\Http\Controllers\Front\AjaxController;
+
+Route::get('ajax/chart/{project}', [AjaxController::class, 'loadAmChart'])->name('ajax.get.chart');
+Route::get('ajax/scoreboard/{event}', [AjaxController::class, 'scoreboard'])->name('ajax.get.scoreboard');
+Route::get('ajax/step/{event}/{load?}', [AjaxController::class, 'eventStepChart'])->name('ajax.get.step');
+Route::get('poll', [AjaxController::class, 'poll'])->name('ajax.get.poll');
+Route::get('bingos/{bingo}/winner/{map}', [AjaxController::class, 'bingoWinner'])->name('ajax.get.bingoWinner');

@@ -19,22 +19,27 @@ Route::post('/resend')->uses('RegisterController@postResendActivation')->name('a
 Route::get('/users/{id}/activate/{code}')->uses('RegisterController@getActivate')->name('app.get.activate');
 */
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\VerificationController;
 
-Route::get('login', 'LoginController@showLoginForm')->name('app.get.login');
-Route::post('login', 'LoginController@login')->name('app.post.login');
-Route::get('logout', 'LoginController@logout')->name('app.get.logout');
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('app.get.login');
+Route::post('login', [LoginController::class, 'login'])->name('app.post.login');
+Route::get('logout', [LoginController::class, 'logout'])->name('app.get.logout');
 
 // Reset password
-Route::get('password/reset', 'ForgotPasswordController@showLinkRequestForm')->name('app.password.request');
-Route::post('password/email', 'ForgotPasswordController@sendResetLinkEmail')->name('app.password.email');
-Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->name('password.reset');
-Route::post('password/reset', 'ResetPasswordController@reset')->name('password.update');
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('app.password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('app.password.email');
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Registration Routes...
-Route::get('register/{code?}', 'RegisterController@showRegistrationForm')->name('app.get.register');
-Route::post('register', 'RegisterController@register')->name('app.post.register');
+Route::get('register/{code?}', [RegisterController::class, 'showRegistrationForm'])->name('app.get.register');
+Route::post('register', [RegisterController::class, 'register'])->name('app.post.register');
 
 // Register email
-Route::get('email/verify', 'VerificationController@show')->name('verification.notice');
-Route::get('email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify');
-Route::get('email/resend', 'VerificationController@resend')->name('verification.resend');
+Route::get('email/verify', [VerificationController::class, 'show'])->name('verification.notice');
+Route::get('email/verify/{id}/{hash}', [VerificationController::class, 'verify'])->name('verification.verify');
+Route::get('email/resend', [VerificationController::class, 'resend'])->name('verification.resend');

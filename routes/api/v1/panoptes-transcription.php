@@ -17,23 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-Route::post('/token', [
-    'uses' => 'AccessTokenController@issueToken',
-    'middleware' => 'throttle',
-]);
+use App\Http\Controllers\Api\V1\PanoptesTranscriptionController;
 
-Route::group(['middleware' => ['web', 'auth:apiuser']], function ($router) {
-    Route::get('/tokens', [
-        'uses' => 'AuthorizedAccessTokenController@forUser',
-    ]);
-
-    Route::delete('/tokens/{token_id}', [
-        'uses' => 'AuthorizedAccessTokenController@destroy',
-    ]);
-});
-
-// forTransientTokens
-Route::post('/token/refresh', [
-    'middleware' => ['web', 'auth:apiuser'],
-    'uses' => 'TransientTokenController@refresh',
-]);
+Route::apiResource('panoptes-transcription', PanoptesTranscriptionController::class, ['names' => 'api.v1.panoptes-transcription']);

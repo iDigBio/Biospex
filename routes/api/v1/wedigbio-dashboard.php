@@ -17,11 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use Laravel\Passport\Http\Controllers\ClientController;
+use App\Http\Controllers\Api\V1\WeDigBioDashboardController;
 
-Route::group(['middleware' => ['web', 'auth:apiuser']], function () {
-    Route::get('/clients', [ClientController::class, 'forUser']);
-    Route::post('/clients', [ClientController::class, 'store']);
-    Route::put('/clients/{client_id}', [ClientController::class, 'update']);
-    Route::delete('/clients/{client_id}', [ClientController::class, 'destroy']);
-});
+Route::apiResource('/wedigbio-dashboard', WeDigBioDashboardController::class, ['names' => 'api.v1.wedigbio-dashboard']);

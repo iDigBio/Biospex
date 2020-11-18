@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
 use Illuminate\Console\Command;
 
 /**
@@ -51,7 +52,9 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
+        $user = User::find(1);
+        $token = $user->createToken('WeDigBioDashboard', ['wedigbio-dashboard:read']);
+        echo $token->plainTextToken . PHP_EOL;
     }
 
 }

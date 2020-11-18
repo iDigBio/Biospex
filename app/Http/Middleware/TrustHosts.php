@@ -17,8 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Api\PanoptesPusher\PanoptesPusherGatewayController;
+namespace App\Http\Middleware;
 
-Route::lapiv('panoptes-pusher', 'PanoptesPusher', function (){
-    Route::post('/', [PanoptesPusherGatewayController::class, 'create'])->name('api.panoptes-pusher.create');
-});
+use Illuminate\Http\Middleware\TrustHosts as Middleware;
+
+class TrustHosts extends Middleware
+{
+    /**
+     * Get the host patterns that should be trusted.
+     *
+     * @return array
+     */
+    public function hosts()
+    {
+        return [
+            $this->allSubdomainsOfApplicationUrl(),
+        ];
+    }
+}
+
+
+
