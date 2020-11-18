@@ -13,6 +13,7 @@ storage/app/scratch/*
 storage/nova-resource-generator.json
 storage/oauth-private.key
 storage/oauth-public.key
+storage/routes.json
 public/storage
 public/js/working.js
 public/css/working.css
