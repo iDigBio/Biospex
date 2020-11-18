@@ -71,9 +71,9 @@ class RouteServiceProvider extends ServiceProvider
         Route::domain(config('config.api_domain'))->group(function () {
             Route::middleware(['web'])->group(base_path('routes/api/index.php'));
 
-            Route::prefix('v0')->middleware([
+            Route::middleware([
                 'api',
-                'auth:sanctum',
+                //'auth:sanctum',
             ])->group(function () {
                 $this->require_files('routes/api/v0');
             });

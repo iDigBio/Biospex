@@ -19,10 +19,11 @@
 
 namespace App\Http\Controllers\Api\V0;
 
+use App\Models\PusherTranscription;
 use App\Services\Process\PusherTranscriptionProcess;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Transformers\PusherTranscriptionTransformer;
-use Illuminate\Pagination\Paginator;
 
 /**
  * PusherTranscriptions representation.
@@ -56,8 +57,8 @@ class PusherTranscriptionsController extends ApiController
      */
     public function index(Request $request, PusherTranscriptionProcess $service)
     {
-        $totalCount = $service->listApiDashboardCount($request);
-        $data = $service->listApiDashboard($request);
+        $totalCount = $this->listApiDashboardCount($request);
+        $data = $this->listApiDashboard($request);
 
         $count = $request->has('rows') ? (int) $request->input('rows') : 200;
         $count = $count > 500 ? 200 : $count;                                              //count
@@ -98,13 +99,12 @@ class PusherTranscriptionsController extends ApiController
      *     @Parameter("guid", description="GUID of specific resource item", required=true)
      * })
      *
-     * @param PusherTranscriptionProcess $service
-     * @param $guid
+     * @param string $guid
      * @return mixed
      */
-    public function show(PusherTranscriptionProcess $service, $guid)
+    public function show(string $guid)
     {
-        $result = $service->showApiDashboard($guid);
+        $result = PusherTranscription::where('guid', $guid)->first();
 
         return $result === null ?
             $this->errorNotFound() :
@@ -132,5 +132,64 @@ class PusherTranscriptionsController extends ApiController
     public function delete($guid)
     {
         return $this->errorNotFound('This feature has not been implemented at this time.');
+    }
+
+    /**
+     * Get dashboard count
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    private function listApiDashboardCount(Request $request)
+    {
+       return PusherTranscription::where(function ($query) use ($request) {
+                $this->buildQuery($query, $request);
+            })->count();
+    }
+
+    /**
+     * List dashboard.
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    private function listApiDashboard(Request $request)
+    {
+        $count = $request->has('rows') ? (int) $request->input('rows') : 200;
+        $count = $count > 500 ? 200 : $count;                                              //count
+        $current = $request->has('start') ? (int) $request->input('start') : 0; // current
+
+        return PusherTranscription::where(function ($query) use ($request) {
+            $this->buildQuery($query, $request);
+        })->limit($count)->offset($current)->orderBy('timestamp', 'desc')->get();
+    }
+
+    /**
+     * Build query.
+     *
+     * @param $query
+     * @param $request
+     */
+    private function buildQuery(&$query, $request)
+    {
+        $request->has('project_uuid') ? $query->where('projectUuid', $request->input('project_uuid')) : false;
+        $request->has('expedition_uuid') ? $query->where('expeditionUuid', $request->input('expedition_uuid')) : false;
+
+        $date_start = is_numeric($request->input('date_start')) ? (int) $request->input('date_start') : $request->input('date_start');
+        $date_end = is_numeric($request->input('date_end')) ? (int) $request->input('date_end') : $request->input('date_end');
+
+        if ($date_start !== null && $date_end !== null)
+        {
+            $timestamps = [
+                Carbon::parse($date_start),
+                Carbon::parse($date_end)
+            ];
+            $query->whereBetween('timestamp', $timestamps);
+
+            return;
+        }
+
+        $date_start !== null ? $query->where('timestamp', '>=', $date_start) : null;
+        $date_end !== null ? $query->where('timestamp', '<=', $date_end) : null;
     }
 }

@@ -21,8 +21,6 @@ namespace App\Services\Model;
 
 use App\Models\PusherTranscription;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 
 /**
  * Class PusherTranscriptionService
@@ -45,35 +43,6 @@ class PusherTranscriptionService extends BaseModelService
     {
 
         $this->model = $pusherTranscription;
-    }
-
-    /**
-     * Get API WeDigBioDashboard record count.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param false $count
-     * @return \App\Models\PusherTranscription[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|int
-     */
-    public function getWeDigBioDashboardApi(Request $request, $count = false)
-    {
-        if ($count)
-        {
-            return $this->model->where(function ($query) use ($request) {
-                $this->buildQuery($query, $request);
-            })->count();
-        }
-
-        $count = $request->has('rows') ? (int) $request->input('rows') : 200;
-        $count = $count > 500 ? 200 : $count;                                              //count
-        $current = $request->has('start') ? (int) $request->input('start') : 0; // current
-
-        $count = $request->has('rows') ? (int) $request->input('rows') : 200;
-        $count = $count > 500 ? 200 : $count;                                              //count
-        $current = $request->has('start') ? (int) $request->input('start') : 0; // current
-
-        return $this->model->where(function ($query) use ($request) {
-            $this->buildQuery($query, $request);
-        })->limit($count)->offset($current)->orderBy('timestamp', 'desc')->get();
     }
 
     /**
