@@ -15,6 +15,11 @@ class WeDigBioDashboard extends JsonResource
     /**
      * @var string
      */
+    public static $wrap = 'items';
+
+    /**
+     * @var string
+     */
     protected $resourceRoute;
 
     /**

@@ -51,6 +51,7 @@ class PusherTranscriptionsController extends ApiController
      *     @Parameter("expedition_uuid", description="Biospex Expedition ID resource belongs to.")
      * })
      *
+     * @TODO Remove league/fractal from composer and remove V0 api
      * @param Request $request
      * @param PusherTranscriptionProcess $service
      * @return mixed
