@@ -223,7 +223,13 @@ $(function () {
             }
         })
             .jqGrid("navGrid", {add: false, edit: false, del: false, search: true}, {}, {}, {}, {
-                top: 'auto',
+                afterShowSearch: function ($form) {
+                    $form.closest(".ui-jqdialog").position({
+                        of: window, // or any other element
+                        my: "center center",
+                        at: "center center"
+                    });
+                },
                 width: 700,
                 multipleSearch: true,
                 recreateFilter: true
