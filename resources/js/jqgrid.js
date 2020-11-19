@@ -22,7 +22,6 @@ $.jgrid.useJSON = true;
 $.jgrid.defaults.responsive = true;
 $.jgrid.cellattr = $.jgrid.cellattr || {};
 
-
 $(function () {
     if ($('#jqGridTable').length > 0) {
 
@@ -172,7 +171,6 @@ $(function () {
                 id: "_id"
             },
             url: dataUrl,
-            editurl: "/admin/projects/17/expeditions/312/delete",
             mtype: "GET",
             datatype: "json",
             colNames: cn,
