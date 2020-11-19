@@ -61,8 +61,7 @@ class GridsController extends Controller
     public function load()
     {
         try {
-            $model = $this->grid->loadGridModel();
-            return response()->json($model);
+            return $this->grid->loadGridModel();
         } catch (Exception $e) {
             return response($e->getMessage(), 404);
         }

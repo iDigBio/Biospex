@@ -5,10 +5,10 @@
     {{ t('RAPID Record') }}
 @stop
 
-@section('custom-style')
+@push('styles')
     <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/v/bs4/dt-1.10.22/b-1.6.4/b-colvis-1.6.4/sb-1.0.0/sp-1.2.0/datatables.min.css"/>
-@endsection
+@endpush
 
 {{-- Content --}}
 @section('content')
@@ -40,7 +40,7 @@
     </div>
 @endsection
 
-@section('custom-script')
+@push('scripts')
     <script type="text/javascript"
             src="https://cdn.datatables.net/v/bs4/dt-1.10.22/b-1.6.4/b-colvis-1.6.4/sb-1.0.0/sp-1.2.0/datatables.min.js"></script>
     <script>
@@ -74,4 +74,4 @@
         });
     </script>
 
-@endsection
+@endpush

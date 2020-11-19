@@ -31,7 +31,6 @@ mix.webpackConfig({
         "jquery-ui/ui/widgets/draggable",
         "jquery-ui/ui/widgets/droppable",
         "jquery-ui/ui/widgets/resizable",
-        "free-jqgrid/dist/plugins/ui.multiselect",
         "free-jqgrid/js/jquery.jqgrid.min",
     ]).copy('resources/images', 'public/images');
 

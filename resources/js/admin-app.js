@@ -1,7 +1,5 @@
 /**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
+ * First we will load all of this project's JavaScript dependencies.
  */
 
 try {
@@ -19,12 +17,12 @@ try {
     require("jquery-ui/ui/widgets/resizable");
     require('jquery-ui/sortable');
 
-    require("free-jqgrid/dist/plugins/ui.multiselect");
+    require("./ui.multiselect");
     require("free-jqgrid/js/jquery.jqgrid.min");
 
     window.bootbox = require("./bootbox");
 
-    require("./grid");
+    require("./jqgrid");
     require("./admin");
 
 } catch (e) {}

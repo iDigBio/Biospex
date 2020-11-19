@@ -1,5 +1,5 @@
 /*!
-  * Bootstrap v4.5.2 (https://getbootstrap.com/)
+  * Bootstrap v4.5.3 (https://getbootstrap.com/)
   * Copyright 2011-2020 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
@@ -12,14 +12,14 @@
  */
 
 /*!
- * Sizzle CSS Selector Engine v2.3.4
+ * Sizzle CSS Selector Engine v2.3.5
  * https://sizzlejs.com/
  *
  * Copyright JS Foundation and other contributors
  * Released under the MIT license
  * https://js.foundation/
  *
- * Date: 2019-04-08
+ * Date: 2020-03-14
  */
 
 /*!
@@ -169,15 +169,6 @@
  */
 
 /*!
- * jQuery UI Sortable 1.12.1
- * http://jqueryui.com
- *
- * Copyright jQuery Foundation and other contributors
- * Released under the MIT license.
- * http://jquery.org/license
- */
-
-/*!
  * jQuery UI Tabbable 1.12.1
  * http://jqueryui.com
  *
@@ -202,35 +193,6 @@
  * Copyright jQuery Foundation and other contributors
  * Released under the MIT license.
  * http://jquery.org/license
- */
-
-/**
- * @license jQuery UI Multiselect
- *
- * Authors:
- *  Michael Aufreiter (quasipartikel.at)
- *  Yanick Rochon (yanick.rochon[at]gmail[dot]com)
- * 
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- * 
- * http://www.quasipartikel.at/multiselect/
- *
- * UPDATED by Oleg Kiriljuk (oleg.kiriljuk@ok-soft-gmbh.com) to support jQuery 1.6 and hight
- * (the usage of jQuery.attr and jQuery.removeAttr is replaced to the usage of jQuery.prop
- *  in case of working with selected options of select)
- * 
- * Depends:
- *	ui.core.js
- *	ui.sortable.js
- *
- * Optional:
- * localization (http://plugins.jquery.com/project/localisation)
- * scrollTo (http://plugins.jquery.com/project/ScrollTo)
- * 
- * Todo:
- *  Make batch actions faster
- *  Implement dynamic insertion through remote calls
  */
 
 /**

@@ -20,6 +20,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\JqGridJsonEncoderService;
 use JavaScript;
 
 class DashboardController extends Controller
@@ -27,13 +28,17 @@ class DashboardController extends Controller
     /**
      * Show projects list for admin page.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param \App\Services\JqGridJsonEncoderService $service
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function index()
+    public function index(JqGridJsonEncoderService $service)
     {
+        $model = $service->loadGridModel();
+
         JavaScript::put([
-            'loadUrl'      => route('admin.grids.load'),
-            'gridUrl'      => route('admin.grids.read')
+            'model'      => $model,
+            'dataUrl'      => route('admin.grids.read')
         ]);
 
         return view('dashboard');

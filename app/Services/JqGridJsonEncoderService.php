@@ -53,9 +53,10 @@ class JqGridJsonEncoderService
     }
 
     /**
-     * Load grid model.
+     * Return column names and model.
      *
-     * @return array
+     * @return false|string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function loadGridModel()
     {
@@ -63,11 +64,12 @@ class JqGridJsonEncoderService
         array_unshift($header, '_id');
         $this->defaultGridVisible = $this->rapidFileService->getDefaultGridView();
 
-        return [
+        $data = [
             'colNames' => $header,
             'colModel' => $this->setColModel($header),
         ];
 
+        return json_encode($data);
     }
 
     /**
