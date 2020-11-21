@@ -7,95 +7,95 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-11-19T20:41:29+00:00\n"
-"PO-Revision-Date: 2020-11-19 21:41+0100\n"
+"POT-Creation-Date: 2020-11-21T17:01:05+00:00\n"
+"PO-Revision-Date: 2020-11-21 18:01+0100\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: app/Http/Controllers/Admin/DownloadController.php:41
+#: app/Http/Controllers/Admin/DownloadController.php:45
 msgid "Report file does not exist."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadController.php:70
+#: app/Http/Controllers/Admin/DownloadController.php:74
 #: app/Services/RapidExportService.php:459
 msgid "RAPID export file does not exist."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExportController.php:67
-#: app/Http/Controllers/Front/IndexController.php:78
+#: app/Http/Controllers/Admin/ExportController.php:72
+#: app/Http/Controllers/Front/IndexController.php:82
 msgid "Request must be ajax"
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExportController.php:89
+#: app/Http/Controllers/Admin/ExportController.php:94
 msgid "The export is processing. You will be notified by email when completed."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:60
+#: app/Http/Controllers/Admin/IngestController.php:65
 msgid "The import failed to upload. Please contact the administration to determine the error."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:67
+#: app/Http/Controllers/Admin/IngestController.php:72
 msgid "The import uploaded successfully. You will be notified by email when it's completed."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:85
+#: app/Http/Controllers/Admin/IngestController.php:90
 msgid "The update failed to upload. Please contact the administration to determine the error."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:92
+#: app/Http/Controllers/Admin/IngestController.php:97
 msgid "The update has been uploaded. Please select the fields you wish to update and click UPDATE"
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:107
+#: app/Http/Controllers/Admin/IngestController.php:112
 msgid "The update file path does not exist. Please contact the administration to determine the error."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:124
+#: app/Http/Controllers/Admin/IngestController.php:129
 msgid "An error occurred while loading the csv file. Please contact the administration to determine the error."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:153
+#: app/Http/Controllers/Admin/IngestController.php:158
 msgid "Your selections for the update are being processed. You will be notified by email when complete."
 msgstr ""
 
-#: app/Http/Controllers/Admin/UserController.php:79
-#: app/Http/Controllers/Admin/UserController.php:101
-#: app/Http/Controllers/Admin/UserController.php:133
+#: app/Http/Controllers/Admin/UserController.php:85
+#: app/Http/Controllers/Admin/UserController.php:107
+#: app/Http/Controllers/Admin/UserController.php:139
 #: app/Http/Controllers/Controller.php:30
 #: app/Services/RapidExportService.php:453
 msgid "You do not have sufficient permissions."
 msgstr ""
 
-#: app/Http/Controllers/Admin/UserController.php:111
+#: app/Http/Controllers/Admin/UserController.php:117
 msgid "Record was updated successfully."
 msgstr ""
 
-#: app/Http/Controllers/Admin/UserController.php:140
+#: app/Http/Controllers/Admin/UserController.php:146
 msgid "You did not provide the correct original password."
 msgstr ""
 
-#: app/Http/Controllers/Admin/UserController.php:147
+#: app/Http/Controllers/Admin/UserController.php:153
 msgid "Your password has been changed."
 msgstr ""
 
-#: app/Http/Controllers/Auth/RegisterController.php:73
+#: app/Http/Controllers/Auth/RegisterController.php:78
 msgid "Registration is not available at this time."
 msgstr ""
 
-#: app/Jobs/RapidImportJob.php:77
-#: app/Jobs/RapidUpdateJob.php:87
+#: app/Jobs/RapidImportJob.php:82
+#: app/Jobs/RapidUpdateJob.php:92
 msgid "Rapid import file does not exist while processing import job."
 msgstr ""
 
-#: app/Jobs/RapidImportJob.php:83
+#: app/Jobs/RapidImportJob.php:88
 msgid "CSV file could not be extracted from zip file."
 msgstr ""
 
-#: app/Presenters/RapidRecordPresenter.php:37
+#: app/Presenters/RapidRecordPresenter.php:42
 msgid "GBIF"
 msgstr ""
 
-#: app/Presenters/RapidRecordPresenter.php:51
+#: app/Presenters/RapidRecordPresenter.php:56
 msgid "iDigBio"
 msgstr ""
 
