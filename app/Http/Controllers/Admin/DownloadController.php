@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -24,7 +24,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use League\Csv\Reader;
 
-
+/**
+ * Class DownloadController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class DownloadController extends Controller
 {
     /**

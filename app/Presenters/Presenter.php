@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,6 +22,11 @@ namespace App\Presenters;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * Class Presenter
+ *
+ * @package App\Presenters
+ */
 abstract class Presenter
 {
     /**

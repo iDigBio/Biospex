@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,6 +21,11 @@ namespace App\Http\Requests;
 
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class PasswordFormRequest
+ *
+ * @package App\Http\Requests
+ */
 class PasswordFormRequest extends Request
 {
     /**

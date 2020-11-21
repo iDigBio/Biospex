@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,12 +20,16 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\RapidRecord;
-use Illuminate\Support\Collection;
+use App\Services\Model\RapidRecordService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Yajra\DataTables\Facades\DataTables;
 
+/**
+ * Class IndexController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class IndexController extends Controller
 {
     /**
@@ -43,16 +47,16 @@ class IndexController extends Controller
     /**
      * Show rapid record.
      *
-     * @param \App\Repositories\Interfaces\RapidRecord $rapidRecord
+     * @param \App\Services\Model\RapidRecordService $rapidRecordService
      * @param string $view
      * @param string|null $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(RapidRecord $rapidRecord, string $view, string $id = null)
+    public function show(RapidRecordService $rapidRecordService, string $view, string $id = null)
     {
         $newId = $id === null ? $view : $id;
 
-        $record = $rapidRecord->find($newId);
+        $record = $rapidRecordService->find($newId);
 
         $dataVars = isset($id) ? ['id' => $id, 'view' => $view] : ['id' => $view];
 
@@ -60,7 +64,7 @@ class IndexController extends Controller
     }
 
     /**
-     * @param \App\Repositories\Interfaces\RapidRecord $rapidRecordInterface
+     * @param \App\Services\Model\RapidRecordService $rapidRecordService
      * @param string $id
      * @param string|null $view
      * @return \Illuminate\Http\JsonResponse
@@ -72,13 +76,13 @@ class IndexController extends Controller
      * "verbatimLongitude_gbifP", // not available
      *
      */
-    public function data(RapidRecord $rapidRecordInterface, string $id, string $view = null)
+    public function data(RapidRecordService $rapidRecordService, string $id, string $view = null)
     {
         if (! request()->ajax()) {
             return response()->json(['error' => t('Request must be ajax')]);
         }
 
-        $record = $rapidRecordInterface->find($id);
+        $record = $rapidRecordService->find($id);
 
         $mapped = collect($record->getAttributes())->map(function ($value, $field) {
             if ($field === '_id') {

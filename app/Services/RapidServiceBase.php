@@ -19,6 +19,11 @@
 
 namespace App\Services;
 
+/**
+ * Class RapidServiceBase
+ *
+ * @package App\Services
+ */
 class RapidServiceBase
 {
     /**

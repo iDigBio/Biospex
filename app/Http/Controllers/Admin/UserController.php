@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,27 +22,33 @@ namespace App\Http\Controllers\Admin;
 use Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordFormRequest;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\UserService;
 use App\Http\Requests\EditUserFormRequest;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Class UserController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class UserController extends Controller
 {
     use ResetsPasswords;
-    
+
     /**
-     * @var User
+     * @var \App\Services\Model\UserService
      */
-    public $userContract;
+    public $userService;
 
     /**
      * UserController constructor.
-     * @param User $userContract
+     *
+     * @param \App\Services\Model\UserService $userService
      */
-    public function __construct(User $userContract)
+    public function __construct(UserService $userService)
     {
-        $this->userContract = $userContract;
+        $this->userService = $userService;
     }
 
     /**
@@ -72,7 +78,7 @@ class UserController extends Controller
      */
     public function edit()
     {
-        $user = $this->userContract->findWith(request()->user()->id);
+        $user = $this->userService->findWith(request()->user()->id);
 
         if ($user->cannot('update', $user))
         {
@@ -94,7 +100,7 @@ class UserController extends Controller
      */
     public function update(EditUserFormRequest $request, $userId)
     {
-        $user = $this->userContract->findWith($userId);
+        $user = $this->userService->findWith($userId);
 
         if ($user->cannot('update', $user))
         {
@@ -103,7 +109,7 @@ class UserController extends Controller
             return redirect()->route('admin.get.index');
         }
 
-        $result = $this->userContract->update($request->all(), $user->id);
+        $result = $this->userService->update($request->all(), $user->id);
 
 
         if ($result)
@@ -126,7 +132,7 @@ class UserController extends Controller
      */
     public function pass(PasswordFormRequest $request)
     {
-        $user = $this->userContract->find($request->route('id'));
+        $user = $this->userService->find($request->route('id'));
 
         if ( ! policy($user)->pass($user))
         {

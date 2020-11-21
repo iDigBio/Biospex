@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,6 +23,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
+/**
+ * Class LoginController
+ *
+ * @package App\Http\Controllers\Auth
+ */
 class LoginController extends Controller
 {
 

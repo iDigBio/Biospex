@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,6 +21,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 
+/**
+ * Class AjaxController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class AjaxController extends Controller
 {
 

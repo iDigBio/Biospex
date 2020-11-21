@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -24,6 +24,11 @@ use App\Services\JqGridJsonEncoderService;
 use App\Services\CsvService;
 use Exception;
 
+/**
+ * Class GridsController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class GridsController extends Controller
 {
     /**

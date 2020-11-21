@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -34,6 +34,11 @@ use Session;
 use Storage;
 use Str;
 
+/**
+ * Class IngestController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class IngestController extends Controller
 {
     /**

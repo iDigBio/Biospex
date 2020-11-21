@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,7 +19,11 @@
 
 namespace App\Presenters;
 
-
+/**
+ * Class ExportFormPresenter
+ *
+ * @package App\Presenters
+ */
 class ExportFormPresenter extends Presenter
 {
     /**

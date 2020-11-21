@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,11 +21,16 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterFormRequest;
-use App\Repositories\Interfaces\User;
+use App\Services\Model\UserService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Class RegisterController
+ *
+ * @package App\Http\Controllers\Auth
+ */
 class RegisterController extends Controller
 {
     /*
@@ -80,14 +85,14 @@ class RegisterController extends Controller
      * Register the user. Overrides trait so invite is checked.
      *
      * @param \App\Http\Requests\RegisterFormRequest $request
-     * @param \App\Repositories\Interfaces\User $userContract
+     * @param \App\Services\Model\UserService $userService
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function register(RegisterFormRequest $request, User $userContract)
+    public function register(RegisterFormRequest $request, UserService $userService)
     {
         $input = $request->only('email', 'password');
         $input['password'] = Hash::make($input['password']);
-        $user = $userContract->create($input);
+        $user = $userService->create($input);
 
         event(new Registered($user));
 

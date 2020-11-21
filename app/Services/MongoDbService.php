@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -25,6 +25,11 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\BSON\Regex;
 
+/**
+ * Class MongoDbService
+ *
+ * @package App\Services
+ */
 class MongoDbService
 {
     /**

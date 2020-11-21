@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,40 +17,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Mail;
+namespace App\Services\Model;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Models\ExportForm;
+use Illuminate\Support\Collection;
 
-class BiospexException extends Mailable implements ShouldQueue
+/**
+ * Class ExportFormService
+ *
+ * @package App\Services\Model
+ */
+class ExportFormService extends BaseModelService
 {
-    use Queueable, SerializesModels;
-
     /**
-     * @var
-     */
-    public $content;
-
-    /**
-     * Create a new message instance.
+     * ExportFormService constructor.
      *
-     * @param $content
+     * @param \App\Models\ExportForm $exportForm
      */
-    public function __construct($content)
+    public function __construct(ExportForm $exportForm)
     {
-        $this->content = $content;
-        $this->onQueue(config('config.default_tube'));
+        $this->model = $exportForm;
     }
 
     /**
-     * Build the message.
+     * Return form select for export.
      *
-     * @return $this
+     * @return \Illuminate\Support\Collection
      */
-    public function build()
+    public function getFormsSelect(): Collection
     {
-        return $this->markdown('mail.exception');
+        return $this->model->with('user')
+            ->orderBy('created_at')
+            ->get(['id', 'user_id', 'destination', 'created_at']);
     }
 }

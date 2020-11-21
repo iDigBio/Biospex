@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,6 +23,11 @@ use League\Csv\CharsetConverter;
 use League\Csv\Writer;
 use League\Csv\Reader;
 
+/**
+ * Class CsvService
+ *
+ * @package App\Services
+ */
 class CsvService
 {
     /**

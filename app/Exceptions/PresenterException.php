@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,20 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Eloquent;
+namespace App\Exceptions;
 
-use App\Models\RapidUpdate as Model;
-use App\Repositories\Interfaces\RapidUpdate;
+use Exception;
 
-class RapidUpdateRepository extends EloquentRepository implements RapidUpdate
+/**
+ * Class PresenterException
+ *
+ * @package App\Exceptions
+ */
+class PresenterException extends Exception
 {
-    /**
-     * Specify Model class name
-     *
-     * @return \Illuminate\Database\Eloquent\Model|string
-     */
-    public function model()
-    {
-        return Model::class;
-    }
+    //
 }

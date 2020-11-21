@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,43 +17,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Model;
 
-use Illuminate\Container\Container as App;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
-use Jenssegers\Mongodb\Eloquent\Model as MongdbModel;
-
-abstract class Repository
+/**
+ * Class BaseModelService
+ *
+ * @package App\Services\Model
+ */
+class BaseModelService
 {
     /**
-     * Specify Model class name
-     */
-    abstract function model();
-
-    /**
-     * @var App
-     */
-    protected $app;
-
-    /**
-     * @var \Illuminate\Database\Eloquent\Model
+     * @var \Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
      */
     protected $model;
 
     /**
-     * @param App $app
-     * @throws \Exception
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->makeModel();
-    }
-
-    /**
-     * @param array $columns
+     * Get all.
+     *
+     * @param array|string[] $columns
      * @return mixed
-     * @throws \Exception
      */
     public function all(array $columns = ['*'])
     {
@@ -61,10 +43,11 @@ abstract class Repository
     }
 
     /**
+     * Get all with relations.
+     *
      * @param array $with
-     * @param array $columns
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     * @throws \Exception
+     * @param array|string[] $columns
+     * @return mixed
      */
     public function allWith(array $with = [], array $columns = ['*'])
     {
@@ -72,10 +55,11 @@ abstract class Repository
     }
 
     /**
+     * Find by id.
+     *
      * @param $resourceId
-     * @param array $columns
+     * @param array|string[] $columns
      * @return mixed
-     * @throws \Exception
      */
     public function find($resourceId, array $columns = ['*'])
     {
@@ -83,11 +67,12 @@ abstract class Repository
     }
 
     /**
+     * Find by field.
+     *
      * @param $attribute
      * @param $value
-     * @param array $columns
+     * @param array|string[] $columns
      * @return mixed
-     * @throws \Exception
      */
     public function findBy($attribute, $value, array $columns = ['*'])
     {
@@ -95,9 +80,24 @@ abstract class Repository
     }
 
     /**
+     * Get all by attribute value.
+     *
+     * @param $attribute
+     * @param $value
+     * @param array|string[] $columns
+     * @return mixed
+     */
+    public function getBy($attribute, $value, array $columns = ['*'])
+    {
+        return $this->model->where($attribute, '=', $value)->get($columns);
+    }
+
+    /**
+     * Find with relations.
+     *
      * @param $resourceId
      * @param array $with
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     * @return mixed
      */
     public function findWith($resourceId, array $with = [])
     {
@@ -105,11 +105,12 @@ abstract class Repository
     }
 
     /**
+     * Find whereIn.
+     *
      * @param $field
      * @param array $values
-     * @param array $columns
+     * @param array|string[] $columns
      * @return mixed
-     * @throws \Exception
      */
     public function whereIn($field, array $values, array $columns = ['*'])
     {
@@ -117,9 +118,10 @@ abstract class Repository
     }
 
     /**
+     * Create.
+     *
      * @param array $data
-     * @return $this|\Illuminate\Database\Eloquent\Model
-     * @throws \Exception
+     * @return mixed
      */
     public function create(array $data)
     {
@@ -127,10 +129,11 @@ abstract class Repository
     }
 
     /**
+     * First or create.
+     *
      * @param array $attributes
      * @param array $data
      * @return mixed
-     * @throws \Exception
      */
     public function firstOrCreate(array $attributes, array $data = [])
     {
@@ -138,10 +141,11 @@ abstract class Repository
     }
 
     /**
+     * Update.
+     *
      * @param array $data
      * @param $resourceId
-     * @return bool
-     * @throws \Exception
+     * @return false
      */
     public function update(array $data, $resourceId)
     {
@@ -152,10 +156,11 @@ abstract class Repository
     }
 
     /**
+     * Update or Create.
+     *
      * @param array $attributes
      * @param array $values
      * @return mixed
-     * @throws \Exception
      */
     public function updateOrCreate(array $attributes, array $values)
     {
@@ -163,11 +168,12 @@ abstract class Repository
     }
 
     /**
+     * Update many.
+     *
      * @param array $attributes
      * @param string $column
      * @param string $value
      * @return mixed
-     * @throws \Exception
      */
     public function updateMany(array $attributes, string $column, string $value)
     {
@@ -175,21 +181,10 @@ abstract class Repository
     }
 
     /**
-     * @param $model
-     * @return mixed
-     * @throws \Exception
-     */
-    public function delete($model)
-    {
-        return $model instanceof EloquentModel || $model instanceof MongdbModel  ?
-            $model->delete() :
-            $this->model->destroy($model);
-    }
-
-    /**
+     * Count.
+     *
      * @param array $attributes
      * @return mixed
-     * @throws \Exception
      */
     public function count(array $attributes = [])
     {
@@ -197,18 +192,9 @@ abstract class Repository
     }
 
     /**
-     * Get first record from model.
+     * Truncate data in model.
      *
      * @return mixed
-     */
-    public function first()
-    {
-        return $this->model->first();
-    }
-
-    /**
-     * @return mixed
-     * @throws \Exception
      */
     public function truncate()
     {

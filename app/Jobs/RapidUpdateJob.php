@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\JobErrorNotification;
 use App\Notifications\UpdateNotification;
-use App\Repositories\Interfaces\RapidUpdate;
+use App\Services\Model\RapidUpdateService;
 use App\Services\RapidIngestService;
 use Exception;
 use File;
@@ -33,6 +33,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 
+/**
+ * Class RapidUpdateJob
+ *
+ * @package App\Jobs
+ */
 class RapidUpdateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -78,9 +83,9 @@ class RapidUpdateJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\RapidIngestService $rapidIngestService
-     * @param \App\Repositories\Interfaces\RapidUpdate $rapidUpdate
+     * @param \App\Services\Model\RapidUpdateService $rapidService
      */
-    public function handle(RapidIngestService $rapidIngestService, RapidUpdate $rapidUpdate)
+    public function handle(RapidIngestService $rapidIngestService, RapidUpdateService $rapidService)
     {
         try {
             if (! File::exists($this->fileInfo['filePath'])) {
@@ -99,7 +104,7 @@ class RapidUpdateJob implements ShouldQueue
                 'updated_records' => $recordsUpdated
             ];
 
-            $rapidUpdate->create($data);
+            $rapidService->create($data);
 
             $downloadUrl = null;
             if ($rapidIngestService->checkErrors()) {

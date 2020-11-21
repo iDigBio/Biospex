@@ -19,28 +19,33 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\ExportForm;
-use App\Models\ExportForm as ExportFormModel;
+use App\Services\Model\ExportFormService;
+use App\Models\ExportForm;
 use Illuminate\Support\Collection;
 
+/**
+ * Class RapidExportDbService
+ *
+ * @package App\Services
+ */
 class RapidExportDbService
 {
 
     /**
-     * @var \App\Repositories\Interfaces\ExportForm
+     * @var \App\Services\Model\ExportFormService
      */
-    private $exportFormInterface;
+    private $exportFormService;
 
     /**
      * RapidExportDbService constructor.
      *
-     * @param \App\Repositories\Interfaces\ExportForm $exportFormInterface
+     * @param \App\Services\Model\ExportFormService $exportFormService
      */
     public function __construct(
-        ExportForm $exportFormInterface
+        ExportFormService $exportFormService
     )
     {
-        $this->exportFormInterface = $exportFormInterface;
+        $this->exportFormService = $exportFormService;
     }
 
     /**
@@ -49,9 +54,9 @@ class RapidExportDbService
      * @param int $id
      * @return \App\Models\ExportForm
      */
-    public function findRapidFormById(int $id): ExportFormModel
+    public function findRapidFormById(int $id): ExportForm
     {
-        return $this->exportFormInterface->findWith($id, ['user']);
+        return $this->exportFormService->findWith($id, ['user']);
     }
 
     /**
@@ -61,7 +66,7 @@ class RapidExportDbService
      * @param int $userId
      * @return \App\Models\ExportForm
      */
-    public function saveRapidForm(array $fields, int $userId): ExportFormModel
+    public function saveRapidForm(array $fields, int $userId): ExportForm
     {
         $data = [
             'user_id' => $userId,
@@ -69,7 +74,7 @@ class RapidExportDbService
             'data'        => $fields,
         ];
 
-        return $this->exportFormInterface->create($data);
+        return $this->exportFormService->create($data);
     }
 
     /**
@@ -79,6 +84,6 @@ class RapidExportDbService
      */
     public function getRapidFormsSelect(): Collection
     {
-        return $this->exportFormInterface->getFormsSelect();
+        return $this->exportFormService->getFormsSelect();
     }
 }

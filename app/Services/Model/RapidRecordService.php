@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,12 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\MongoDb;
+namespace App\Services\Model;
 
-use App\Models\RapidRecord as Model;
-use App\Repositories\Interfaces\RapidRecord;
+use App\Models\RapidRecord;
 
-class RapidRecordRepository extends MongoDbRepository implements RapidRecord
+/**
+ * Class RapidRecordService
+ *
+ * @package App\Services\Model
+ */
+class RapidRecordService extends BaseModelService
 {
     /**
      * OrderBy
@@ -51,17 +55,21 @@ class RapidRecordRepository extends MongoDbRepository implements RapidRecord
     protected $assignedRuleData;
 
     /**
-     * Specify Model class name
+     * RapidRecordService constructor.
      *
-     * @return \App\Models\RapidRecord|string
+     * @param \App\Models\RapidRecord $rapidRecord
      */
-    public function model()
+    public function __construct(RapidRecord $rapidRecord)
     {
-        return Model::class;
+
+        $this->model = $rapidRecord;
     }
 
     /**
-     * @inheritDoc
+     * Validate record.
+     *
+     * @param array $attributes
+     * @return bool
      */
     public function validateRecord(array $attributes): bool
     {
@@ -73,7 +81,10 @@ class RapidRecordRepository extends MongoDbRepository implements RapidRecord
     }
 
     /**
-     * @inheritDoc
+     * Get total row count.
+     *
+     * @param array $vars
+     * @return int
      */
     public function getTotalRowCount(array $vars = [])
     {
@@ -85,7 +96,10 @@ class RapidRecordRepository extends MongoDbRepository implements RapidRecord
     }
 
     /**
-     * @inheritDoc
+     * Get row data.
+     *
+     * @param array $vars
+     * @return array
      */
     public function getRows(array $vars = [])
     {

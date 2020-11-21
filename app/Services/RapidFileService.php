@@ -22,6 +22,11 @@ namespace App\Services;
 use Illuminate\Support\Facades\File;
 use Storage;
 
+/**
+ * Class RapidFileService
+ *
+ * @package App\Services
+ */
 class RapidFileService
 {
     /**

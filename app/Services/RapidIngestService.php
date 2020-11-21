@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,12 +19,17 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\RapidRecord;
+use App\Services\Model\RapidRecordService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ZipArchive;
 
+/**
+ * Class RapidIngestService
+ *
+ * @package App\Services
+ */
 class RapidIngestService extends RapidServiceBase
 {
     /**
@@ -33,9 +38,9 @@ class RapidIngestService extends RapidServiceBase
     private $csvService;
 
     /**
-     * @var \App\Repositories\Interfaces\RapidRecord
+     * @var \App\Services\Model\RapidRecordService
      */
-    private $rapidInterface;
+    private $rapidRecordService;
 
     /**
      * @var array
@@ -66,18 +71,18 @@ class RapidIngestService extends RapidServiceBase
      * RapidIngestService constructor.
      *
      * @param \App\Services\CsvService $csvService
-     * @param \App\Repositories\Interfaces\RapidRecord $rapidInterface
+     * @param \App\Services\Model\RapidRecordService $rapidRecordService
      * @param \App\Services\RapidFileService $rapidFileService
      */
     public function __construct(
         CsvService $csvService,
-        RapidRecord $rapidInterface,
+        RapidRecordService $rapidRecordService,
         RapidFileService $rapidFileService
     )
     {
 
         $this->csvService = $csvService;
-        $this->rapidInterface = $rapidInterface;
+        $this->rapidRecordService = $rapidRecordService;
         $this->rapidFileService = $rapidFileService;
     }
 
@@ -217,7 +222,7 @@ class RapidIngestService extends RapidServiceBase
             return;
         }
 
-        $this->rapidInterface->create($row);
+        $this->rapidRecordService->create($row);
     }
 
     /**

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,19 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\MongoDb;
+namespace App\Services\Model;
 
-use App\Repositories\Repository;
-use Exception;
-use Jenssegers\Mongodb\Eloquent\Model as MongodbModel;
+use App\Models\User;
 
-abstract class MongoDbRepository extends Repository
+/**
+ * Class UserService
+ *
+ * @package App\Services\Model
+ */
+class UserService extends BaseModelService
 {
     /**
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * UserService constructor.
+     *
+     * @param \App\Models\User $user
      */
-    public function makeModel()
+    public function __construct(User $user)
     {
-        $this->model = $this->app->make($this->model());
+        $this->model = $user;
     }
 }

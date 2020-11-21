@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -19,15 +19,20 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\RapidRecord;
+use App\Services\Model\RapidRecordService;
 use Exception;
 
+/**
+ * Class JqGridJsonEncoderService
+ *
+ * @package App\Services
+ */
 class JqGridJsonEncoderService
 {
     /**
-     * @var \App\Repositories\Interfaces\RapidRecord
+     * @var \App\Services\Model\RapidRecordService
      */
-    private $rapidRecord;
+    private $rapidRecordService;
 
     /**
      * @var \App\Services\RapidFileService
@@ -42,13 +47,13 @@ class JqGridJsonEncoderService
     /**
      * JqGridJsonEncoder constructor.
      *
-     * @param \App\Repositories\Interfaces\RapidRecord $rapidRecord
+     * @param \App\Services\Model\RapidRecordService $rapidRecordService
      * @param \App\Services\RapidFileService $rapidFileService
      */
     public function __construct(
-        RapidRecord $rapidRecord, RapidFileService $rapidFileService
+        RapidRecordService $rapidRecordService, RapidFileService $rapidFileService
     ) {
-        $this->rapidRecord = $rapidRecord;
+        $this->rapidRecordService = $rapidRecordService;
         $this->rapidFileService = $rapidFileService;
     }
 
@@ -189,7 +194,7 @@ class JqGridJsonEncoderService
             'filters' => $this->setFilters($postedData),
         ];
 
-        $vars['count'] = $this->rapidRecord->getTotalRowCount($vars);
+        $vars['count'] = $this->rapidRecordService->getTotalRowCount($vars);
 
         $vars['limit'] = (int) $vars['limit'] === 0 ? (int) $vars['count'] : (int) $vars['limit'];
 
@@ -205,7 +210,7 @@ class JqGridJsonEncoderService
         $vars['offset'] = $vars['offset'] < 0 ? 0 : $vars['offset'];
         $vars['limit'] *= $vars['page'];
 
-        $rows = $this->rapidRecord->getRows($vars);
+        $rows = $this->rapidRecordService->getRows($vars);
 
         if (! is_array($rows) || (isset($rows[0]) && ! is_array($rows[0]))) {
             throw new Exception('The method getRows must return an array of arrays, example: array(array("column1"  =>  "1-1", "column2" => "1-2"), array("column1" => "2-1", "column2" => "2-2"))');

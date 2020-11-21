@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -22,15 +22,11 @@ namespace App\Providers;
 use App\Services\FlashService;
 use Illuminate\Support\ServiceProvider;
 
-use App\Repositories\Interfaces\User;
-use App\Repositories\Eloquent\UserRepository;
-use App\Repositories\Interfaces\RapidRecord;
-use App\Repositories\MongoDb\RapidRecordRepository;
-use App\Repositories\Interfaces\RapidUpdate;
-use App\Repositories\Eloquent\RapidUpdateRepository;
-use App\Repositories\Interfaces\ExportForm;
-use App\Repositories\Eloquent\ExportFormRepository;
-
+/**
+ * Class BiospexServiceProvider
+ *
+ * @package App\Providers
+ */
 class BiospexServiceProvider extends ServiceProvider
 {
     public function boot()
@@ -40,7 +36,6 @@ class BiospexServiceProvider extends ServiceProvider
     
     public function register()
     {
-        $this->registerRepositories();
         $this->registerFacades();
     }
 
@@ -50,17 +45,6 @@ class BiospexServiceProvider extends ServiceProvider
     public function setViewComposers()
     {
 
-    }
-
-    /**
-     * Register Repositories
-     */
-    protected function registerRepositories()
-    {
-        $this->app->bind(User::class, UserRepository::class);
-        $this->app->bind(RapidRecord::class, RapidRecordRepository::class);
-        $this->app->bind(RapidUpdate::class, RapidUpdateRepository::class);
-        $this->app->bind(ExportForm::class, ExportFormRepository::class);
     }
 
     /**

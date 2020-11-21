@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -17,17 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories\Interfaces;
+namespace App\Services\Model;
 
-use App\Repositories\RepositoryInterface;
-use Illuminate\Support\Collection;
+use App\Models\RapidUpdate;
 
-interface ExportForm extends RepositoryInterface
+/**
+ * Class RapidUpdateService
+ *
+ * @package App\Services\Model
+ */
+class RapidUpdateService extends BaseModelService
 {
     /**
-     * Get export forms by destination.
+     * RapidUpdateService constructor.
      *
-     * @return \Illuminate\Support\Collection
+     * @param \App\Models\RapidUpdate $rapidUpdate
      */
-    public function getFormsSelect(): Collection;
+    public function __construct(RapidUpdate $rapidUpdate)
+    {
+        $this->model = $rapidUpdate;
+    }
 }

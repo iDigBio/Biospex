@@ -26,7 +26,8 @@
     "spiritix/lada-cache": "^5.1",
     "tio/laravel": "^1.10",
     "yajra/laravel-datatables-oracle": "~9.0",
-    "ext-zip": "*"
+    "ext-zip": "*",
+    "ext-mongodb": "*"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.5",

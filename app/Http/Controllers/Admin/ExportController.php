@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -25,6 +25,11 @@ use App\Services\RapidExportService;
 use Flash;
 use Auth;
 
+/**
+ * Class ExportController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class ExportController extends Controller
 {
     /**

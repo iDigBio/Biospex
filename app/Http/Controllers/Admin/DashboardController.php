@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -23,6 +23,11 @@ use App\Http\Controllers\Controller;
 use App\Services\JqGridJsonEncoderService;
 use JavaScript;
 
+/**
+ * Class DashboardController
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class DashboardController extends Controller
 {
     /**

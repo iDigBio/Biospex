@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -21,6 +21,11 @@ namespace App\Models\Traits;
 
 use App\Exceptions\PresenterException;
 
+/**
+ * Trait Presentable
+ *
+ * @package App\Models\Traits
+ */
 trait Presentable
 {
     /**

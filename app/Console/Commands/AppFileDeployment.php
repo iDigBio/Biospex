@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -24,6 +24,11 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Class AppFileDeployment
+ *
+ * @package App\Console\Commands
+ */
 class AppFileDeployment extends Command
 {
     /**
