@@ -45,7 +45,7 @@ class PanoptesPusherController extends ApiController
      * Create classification based on pusher.
      *
      * @param \App\Services\Model\PanoptesProjectService $panoptesProjectService
-     * @return \Illuminate\Support\Facades\Response|void
+     * @return \Illuminate\Http\Response|\Illuminate\Support\Facades\Response|void
      */
     public function store(PanoptesProjectService $panoptesProjectService)
     {
@@ -72,6 +72,8 @@ class PanoptesPusherController extends ApiController
 
         PusherEventTranscriptionJob::dispatch($data);
         PusherWeDigBioDashboardJob::dispatch($data, $result);
+
+        return $this->respondWithCreated();
     }
 
     /**

@@ -63,6 +63,16 @@ class ApiController extends Controller
     }
 
     /**
+     * Send response created.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function respondWithCreated()
+    {
+        return response()->noContent(201);
+    }
+
+    /**
      * Respond with array.
      *
      * @param array $array
