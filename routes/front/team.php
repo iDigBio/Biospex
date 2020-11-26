@@ -16,4 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->get('team')->uses('TeamsController@index')->name('front.teams.index');
+
+use App\Http\Controllers\Front\TeamController;
+
+Route::get('team', [TeamController::class, 'index'])->name('front.teams.index');

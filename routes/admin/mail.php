@@ -16,6 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->get('mail')->uses('MailController@index')->name('admin.mail.index');
-$router->post('mail')->uses('MailController@send')->name('admin.mail.send');
+
+use App\Http\Controllers\Admin\MailController;
+
+Route::get('mail', [MailController::class, 'index'])->name('admin.mail.index');
+Route::post('mail', [MailController::class, 'send'])->name('admin.mail.send');
 

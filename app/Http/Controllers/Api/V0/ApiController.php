@@ -86,6 +86,16 @@ class ApiController extends BaseController
     }
 
     /**
+     * Send response created.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function respondWithCreated()
+    {
+        return response()->noContent(201);
+    }
+
+    /**
      * Respond with single item.
      *
      * @param $item

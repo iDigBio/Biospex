@@ -5,6 +5,11 @@ return [
     /**
      * Site variables
      */
+    'app_domain'      => env('APP_DOMAIN'),
+    'api_domain'      => env('API_DOMAIN'),
+    'api_url'         => env('API_URL'),
+    'api_version'     => env('API_VERSION'),
+    'api_token'       => env('API_TOKEN'),
     'current_path'    => env('CURRENT_PATH'),
     'server_user'     => env('SERVER_USER'),
     'registration'    => env('REGISTRATION'),
@@ -13,11 +18,6 @@ return [
     'echo_key'        => env('ECHO_KEY'),
     'echo_ssl_crt'    => env('ECHO_SSL_CRT'),
     'echo_ssl_key'    => env('ECHO_SSL_KEY'),
-
-    'api_url'           => env('API_URL'),
-    'api_version'       => env('API_VERSION'),
-    'api_client_id'     => env('API_CLIENT_ID'),
-    'api_client_secret' => env('API_CLIENT_SECRET'),
 
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),

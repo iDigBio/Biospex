@@ -60,4 +60,6 @@ class PusherTranscription extends BaseMongoModel
     {
         return $this->belongsTo(PanoptesTranscription::class, 'classification_id', 'classification_id');
     }
+
+
 }

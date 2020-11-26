@@ -22,7 +22,6 @@ namespace App\Services\Process;
 use App\Services\Model\ExpeditionService;
 use App\Services\Model\PanoptesTranscriptionService;
 use App\Services\Model\PusherTranscriptionService;
-use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 use Validator;
 
@@ -66,43 +65,10 @@ class PusherTranscriptionProcess
     }
 
     /**
-     * Get dashboard count
-     *
-     * @param $request
-     * @return mixed
-     */
-    public function listApiDashboardCount($request)
-    {
-        return $this->pusherTranscriptionService->getWeDigBioDashboardApi($request, true);
-    }
-
-    /**
-     * List dashboard.
-     *
-     * @param Request $request
-     * @return mixed
-     */
-    public function listApiDashboard($request)
-    {
-        return $this->pusherTranscriptionService->getWeDigBioDashboardApi($request);
-    }
-
-    /**
-     * Show single resource.
-     *
-     * @param $guid
-     * @return mixed
-     */
-    public function showApiDashboard($guid)
-    {
-        return $this->pusherTranscriptionService->findBy('guid', $guid);
-    }
-
-    /**
-     * Get Expedition.
+     * Get expedition.
      *
      * @param $expeditionId
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
     public function getExpedition($expeditionId)
     {

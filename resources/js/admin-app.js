@@ -19,7 +19,7 @@ try {
     require("jquery-ui/ui/widgets/resizable");
     require("jquery-datetimepicker/build/jquery.datetimepicker.full");
 
-    require("free-jqgrid/dist/plugins/ui.multiselect");
+    require("./ui.multiselect");
     require("free-jqgrid/js/jquery.jqgrid.min");
 
     require("summernote/dist/summernote-bs4.min");

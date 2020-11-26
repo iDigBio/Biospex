@@ -21,6 +21,7 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
 use Schema;
+use Illuminate\Pagination\Paginator;
 
 /**
  * Class AppServiceProvider
@@ -40,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
 
         Redis::enableEvents();
+        Paginator::useBootstrap();
 
         $this->setupBlade();
     }

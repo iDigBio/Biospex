@@ -43,11 +43,11 @@ class PanoptesPusherController extends ApiController
     }
 
     /**
-     * Create classification based on pusher.
+     * Create pusher classification.
      *
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      * @param \App\Services\Model\PanoptesProjectService $panoptesProjectService
-     * [2017-10-15 00:12:45] lumen.INFO: {"classification_id":"74498341","project_id":"1558","workflow_id":"2838","user_id":null,"subject_ids":["4002829"],"subject_urls":[{"image/jpeg":"https://panoptes-uploads.zooniverse.org/production/subject_location/0640d1cd-6c4f-43b4-9a10-726ebd43fedb.jpeg"}],"geo":{"country_name":"United States","country_code":"US","city_name":"Tallahassee","coordinates":[-84.2539,30.4203],"latitude":30.4203,"longitude":-84.2539}}
+     * @return \Illuminate\Http\Response|void
      */
     public function create(Request $request, PanoptesProjectService $panoptesProjectService)
     {
@@ -70,6 +70,8 @@ class PanoptesPusherController extends ApiController
 
         PusherEventTranscriptionJob::dispatch($data);
         PusherWeDigBioDashboardJob::dispatch($data, $result);
+
+        return $this->respondWithCreated();
     }
 
     /**

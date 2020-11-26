@@ -102,7 +102,7 @@ sub footer -->
                     <a href="{{ route('front.events.index') }}">{{ t('Events') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('api.get.index') }}" class="text-uppercase">{{ t('Biospex API') }}</a>
+                    <a href="{{ route('api.index.get') }}" class="text-uppercase">{{ t('Biospex API') }}</a>
                 </p>
             </div>
             <!-- Grid column -->

@@ -16,5 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$router->get('contact')->uses('ContactController@index')->name('front.contact.index');
-$router->post('contact')->uses('ContactController@create')->name('front.contact.create');
+
+use App\Http\Controllers\Front\ContactController;
+
+Route::get('contact', [ContactController::class, 'index'])->name('front.contact.index');
+Route::post('contact', [ContactController::class, 'create'])->name('front.contact.create');
