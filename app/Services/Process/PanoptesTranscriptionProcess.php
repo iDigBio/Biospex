@@ -223,26 +223,18 @@ class PanoptesTranscriptionProcess
     /**
      * Check errors.
      *
-     * @return bool
+     * @return string|null
      * @throws \League\Csv\CannotInsertRecord
-     * @see \App\Jobs\NfnClassificationTranscriptJob
      */
-    public function checkCsvError(): bool
+    public function checkCsvError(): ?string
     {
         if (count($this->csvError) === 0) {
-            return false;
+            return null;
         }
 
-        $csvCollection = collect($this->csvError);
-        $first = $csvCollection->first();
-        $header = array_keys($first);
+        $csvName = Str::random().'.csv';
 
-        $this->csvFile = Storage::path(config('config.reports_dir') . '/' . Str::random() . '.csv');
-        $this->csv->writerCreateFromPath($this->csvFile);
-        $this->csv->insertOne($header);
-        $this->csv->insertAll($csvCollection->toArray());
-
-        return true;
+        return $this->csv->createReportCsv($this->csvError, $csvName);
     }
 
 }

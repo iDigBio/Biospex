@@ -211,7 +211,7 @@ class PanoptesTranscriptionService extends BaseModelService
      * Get minimum finish date of transcriptions for project.
      *
      * @param $projectId
-     * @return |null
+     * @return mixed|null
      */
     public function getMinFinishedAtDateByProjectId($projectId)
     {
@@ -230,7 +230,7 @@ class PanoptesTranscriptionService extends BaseModelService
 
     /**
      * Get maximum finish date of transcriptions for project.
-     *
+     * TODO check query because it gave error (projectId 62) could not send aggregate
      * @param $projectId
      * @return mixed|null
      */

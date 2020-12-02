@@ -34,14 +34,19 @@ class JobError extends Notification implements ShouldQueue
     use Queueable;
 
     /**
+     * @var string
+     */
+    private $file;
+
+    /**
      * @var array
      */
     private $messages;
 
     /**
-     * @var string
+     * @var
      */
-    private $file;
+    private $fileName;
 
     /**
      * @var \Illuminate\Config\Repository|mixed
@@ -53,11 +58,13 @@ class JobError extends Notification implements ShouldQueue
      *
      * @param string $file
      * @param array $messages
+     * @param string|null $fileName
      */
-    public function __construct(string $file, array $messages = [])
+    public function __construct(string $file, array $messages = [],  string $fileName = null)
     {
         $this->messages = $messages;
         $this->file = $file;
+        $this->fileName = $fileName;
         $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.default_tube'));
     }
@@ -89,7 +96,11 @@ class JobError extends Notification implements ShouldQueue
             $mailMessage->bcc($this->adminEmail);
         }
 
-        return $mailMessage->markdown('mail.joberror', ['file' => $this->file, 'message' => $message]);
+        return $mailMessage->markdown('mail.joberror', [
+            'file' => $this->file,
+            'message' => $message,
+            'url' => isset($this->fileName) ? route('admin.downloads.report', ['file' => $this->fileName]) : null
+        ]);
     }
 
     /**
