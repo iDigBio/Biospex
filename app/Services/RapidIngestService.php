@@ -20,7 +20,6 @@
 namespace App\Services;
 
 use App\Services\Model\RapidRecordService;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ZipArchive;
@@ -58,6 +57,11 @@ class RapidIngestService extends RapidServiceBase
     private $rows;
 
     /**
+     * @var
+     */
+    private $updateFields;
+
+    /**
      * @var int
      */
     private $updatedRecordsCount = 0;
@@ -91,17 +95,17 @@ class RapidIngestService extends RapidServiceBase
      *
      * @param string $csvFilePath
      * @param bool $import
-     * @param \Illuminate\Support\Collection|null $fields
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      * @throws \League\Csv\Exception
      */
-    public function process(string $csvFilePath, bool $import = false, Collection $fields = null)
+    public function process(string $csvFilePath, bool $import = false)
     {
         $this->loadCsvFile($csvFilePath);
         $this->setCsvHeader();
         $this->updateHeader();
         $this->setRows();
 
-        $import ? $this->processImportRows() : $this->processUpdateRows($fields);
+        $import ? $this->processImportRows() : $this->processUpdateRows();
     }
 
     /**
@@ -159,12 +163,10 @@ class RapidIngestService extends RapidServiceBase
 
     /**
      * Set the header.
-     *
-     * @return array
      */
-    public function setCsvHeader(): array
+    public function setCsvHeader()
     {
-        return $this->csvHeader = $this->csvService->getHeader();
+        $this->csvHeader = $this->csvService->getHeader();
     }
 
     /**
@@ -181,16 +183,6 @@ class RapidIngestService extends RapidServiceBase
     public function updateHeader()
     {
         $this->rapidFileService->updateHeader($this->csvHeader);
-    }
-
-    /**
-     * Return column tags.
-     *
-     * @return array|\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application
-     */
-    public function getColumnTags()
-    {
-        return $this->rapidFileService->getColumnTags();
     }
 
     /**
@@ -240,7 +232,7 @@ class RapidIngestService extends RapidServiceBase
             $attributes[$field] = $row[$field];
         }
 
-        $count = $this->rapidInterface->validateRecord($attributes);
+        $count = $this->rapidRecordService->validateRecord($attributes);
 
         if ($count) {
             $this->errors[] = $row;
@@ -251,14 +243,21 @@ class RapidIngestService extends RapidServiceBase
 
     /**
      * Update record using selected fields only.
-     * @param \Illuminate\Support\Collection $fields
      */
-    public function processUpdateRows(Collection $fields)
+    public function processUpdateRows()
     {
-        foreach ($this->rows as $offset => $row) {
-            $intersect = collect($row)->intersectByKeys($fields->flip())->toArray();
+        $this->setUpdateFields();
 
-            $this->updateRecord($intersect, $row['_id']);
+        foreach ($this->rows as $offset => $row) {
+            $id = $row['_id'];
+            if ($id === null) {
+                $this->errors[] = $row;
+                continue;
+            }
+
+            $intersect = collect($row)->intersectByKeys($this->updateFields)->toArray();
+
+            $this->updateRecord($intersect, $id);
         }
     }
 
@@ -270,7 +269,7 @@ class RapidIngestService extends RapidServiceBase
      */
     public function updateRecord(array $attributes, string $id)
     {
-        $result =$this->rapidInterface->update($attributes, $id);
+        $result =$this->rapidRecordService->update($attributes, $id);
 
         if (! $result) {
             $this->errors[] = array_merge(['_id' => $id], $attributes);
@@ -318,5 +317,25 @@ class RapidIngestService extends RapidServiceBase
     public function getUpdatedRecordsCount()
     {
         return $this->updatedRecordsCount;
+    }
+
+    /**
+     * Set fields to be updated.
+     */
+    private function setUpdateFields()
+    {
+        $this->updateFields = collect($this->csvHeader)->flip()->filter(function ($field, $key){
+            return strpos($key, '_rapid') !== false;
+        })->toArray();
+    }
+
+    /**
+     * Return updated fields.
+     *
+     * @return array
+     */
+    public function getUpdatedFields(): array
+    {
+        return $this->updateFields;
     }
 }

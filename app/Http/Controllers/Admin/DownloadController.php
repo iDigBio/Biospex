@@ -19,7 +19,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Flash;
+use FlashHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use League\Csv\Reader;
@@ -42,7 +42,7 @@ class DownloadController extends Controller
         $fileName = base64_decode($file);
 
         if(! Storage::exists(config('config.reports_dir') . '/' . $fileName)) {
-            Flash::warning( t('Report file does not exist.'));
+            FlashHelper::warning( t('Report file does not exist.'));
             return redirect()->route('admin.ingest.index');
         }
 
@@ -71,11 +71,40 @@ class DownloadController extends Controller
         $fileName = base64_decode($file);
 
         if(! Storage::exists(config('config.rapid_export_dir') . '/' . $fileName)) {
-            Flash::warning( t('RAPID export file does not exist.'));
+            FlashHelper::warning( t('RAPID export file does not exist.'));
             return redirect()->route('admin.export.index');
         }
 
         $filePath = Storage::path(config('config.rapid_export_dir') . '/' . $fileName);
+        $reader = Reader::createFromPath($filePath, 'r');
+        $reader->setOutputBOM(Reader::BOM_UTF8);
+
+        $headers = [
+            'Content-Encoding' => 'none',
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Description' => 'File Transfer',
+            'Content-Disposition' => 'attachment; filename="'.$fileName.'"'
+        ];
+
+        return response($reader->getContent(), 200, $headers);
+    }
+
+    /**
+     * Download version file.
+     *
+     * @param string $file
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     */
+    public function version(string $file)
+    {
+        $fileName = base64_decode($file);
+
+        if(! Storage::exists(config('config.rapid_version_dir') . '/' . $fileName)) {
+            FlashHelper::warning( t('RAPID version file does not exist.'));
+            return redirect()->route('admin.version.index');
+        }
+
+        $filePath = Storage::path(config('config.rapid_version_dir') . '/' . $fileName);
         $reader = Reader::createFromPath($filePath, 'r');
         $reader->setOutputBOM(Reader::BOM_UTF8);
 

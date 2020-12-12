@@ -58,7 +58,7 @@ class UpdateNotification extends Notification implements ShouldQueue
      */
     public function __construct(string $fileName, int $recordsUpdated, array $fields, string $downloadUrl = null)
     {
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.rapid_tube'));
         $this->fileName = $fileName;
         $this->recordsUpdated = $recordsUpdated;
         $this->fields = implode(', ', $fields);

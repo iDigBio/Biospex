@@ -17,44 +17,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Providers;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use App\Services\FlashService;
-use Illuminate\Support\ServiceProvider;
-
-/**
- * Class BiospexServiceProvider
- *
- * @package App\Providers
- */
-class BiospexServiceProvider extends ServiceProvider
+class CreateRapidVersionsTable extends Migration
 {
-    public function boot()
-    {
-        $this->setViewComposers();
-    }
-    
-    public function register()
-    {
-        $this->registerFacades();
-    }
-
     /**
-     * Set up view composers
+     * Run the migrations.
+     *
+     * @return void
      */
-    public function setViewComposers()
+    public function up()
     {
+        Schema::create('rapid_versions', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('user_id')->unsigned()->index();
+            $table->string('file_name');
+            $table->timestamps();
 
-    }
-
-    /**
-     * Registers custom facades
-     */
-    public function registerFacades()
-    {
-        $this->app->singleton('FlashHelper', function ()
-        {
-            return new FlashService();
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('rapid_versions');
     }
 }

@@ -22,7 +22,7 @@ namespace App\Services;
 use App\Models\ExportForm;
 use App\Models\User;
 use Exception;
-use Flash;
+use FlashHelper;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -444,19 +444,19 @@ class RapidExportService extends RapidServiceBase
     {
         try {
             if ($form === null) {
-                Flash::warning(t('The export you would like to delete does not exist.'));
+                FlashHelper::warning(t('The export you would like to delete does not exist.'));
 
                 return;
             }
 
             if ($form->user_id !== $userId) {
-                Flash::warning(t('You do not have sufficient permissions.'));
+                FlashHelper::warning(t('You do not have sufficient permissions.'));
 
                 return;
             }
 
             if(! Storage::exists(config('config.rapid_export_dir') . '/' . $form->file)) {
-                Flash::warning( t('RAPID export file does not exist.'));
+                FlashHelper::warning( t('RAPID export file does not exist.'));
 
                 return;
             }
@@ -464,12 +464,12 @@ class RapidExportService extends RapidServiceBase
             Storage::delete(config('config.rapid_export_dir') . '/' . $form->file);
             $form->delete();
 
-            Flash::success( t('RAPID export file and data has been deleted.'));
+            FlashHelper::success( t('RAPID export file and data has been deleted.'));
 
             return;
         }
         catch(\Exception $exception) {
-            Flash::warning( $exception->getMessage());
+            FlashHelper::warning( $exception->getMessage());
 
             return;
         }

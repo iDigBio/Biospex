@@ -66,6 +66,16 @@ class RapidRecordService extends BaseModelService
     }
 
     /**
+     * Get query to chunk export for version files.
+     *
+     * @return mixed
+     */
+    public function getExportQuery()
+    {
+        return $this->model->options(['allowDiskUse' => true]);
+    }
+
+    /**
      * Validate record.
      *
      * @param array $attributes

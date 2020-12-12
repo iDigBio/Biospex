@@ -19,7 +19,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Flash;
+use FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordFormRequest;
 use App\Services\Model\UserService;
@@ -82,7 +82,7 @@ class UserController extends Controller
 
         if ($user->cannot('update', $user))
         {
-            Flash::warning( t('You do not have sufficient permissions.'));
+            FlashHelper::warning( t('You do not have sufficient permissions.'));
 
             return redirect()->route('admin.get.index');
         }
@@ -104,7 +104,7 @@ class UserController extends Controller
 
         if ($user->cannot('update', $user))
         {
-            Flash::warning( t('You do not have sufficient permissions.'));
+            FlashHelper::warning( t('You do not have sufficient permissions.'));
 
             return redirect()->route('admin.get.index');
         }
@@ -114,11 +114,11 @@ class UserController extends Controller
 
         if ($result)
         {
-            Flash::success(t('Record was updated successfully.'));
+            FlashHelper::success(t('Record was updated successfully.'));
         }
         else
         {
-            Flash::error(trans('Error while updating record.'));
+            FlashHelper::error(trans('Error while updating record.'));
         }
 
         return redirect()->route('admin.users.edit', [$user->id]);
@@ -136,21 +136,21 @@ class UserController extends Controller
 
         if ( ! policy($user)->pass($user))
         {
-            Flash::warning( t('You do not have sufficient permissions.'));
+            FlashHelper::warning( t('You do not have sufficient permissions.'));
 
             return redirect()->route('admin.get.index');
         }
 
         if ( ! Hash::check($request->input('oldPassword'), $user->password))
         {
-            Flash::error(t('You did not provide the correct original password.'));
+            FlashHelper::error(t('You did not provide the correct original password.'));
 
             return redirect()->route('admin.users.edit', [$user->id]);
         }
 
         $this->resetPassword($user, $request->input('newPassword'));
 
-        Flash::success(t('Your password has been changed.'));
+        FlashHelper::success(t('Your password has been changed.'));
 
         return redirect()->route('admin.users.edit', [$user->id]);
     }

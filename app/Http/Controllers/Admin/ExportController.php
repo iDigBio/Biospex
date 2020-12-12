@@ -22,7 +22,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\RapidExportJob;
 use App\Services\RapidExportService;
-use Flash;
+use FlashHelper;
 use Auth;
 
 /**
@@ -91,7 +91,7 @@ class ExportController extends Controller
     {
         RapidExportJob::dispatch(Auth::user(), request()->all());
 
-        Flash::success(t('The export is processing. You will be notified by email when completed.'));
+        FlashHelper::success(t('The export is processing. You will be notified by email when completed.'));
 
         return redirect()->route('admin.get.index');
     }

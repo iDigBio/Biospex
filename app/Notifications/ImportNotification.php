@@ -40,7 +40,7 @@ class ImportNotification extends Notification implements ShouldQueue
      */
     public function __construct(string $downloadUrl = null)
     {
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.rapid_tube'));
         $this->downloadUrl = $downloadUrl;
     }
 

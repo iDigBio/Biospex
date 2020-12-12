@@ -20,6 +20,8 @@
                        type="button">{{ t('Ingest')  }}</a>
                     <a href="{{ route('admin.export.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Export')  }}</a>
+                    <a href="{{ route('admin.version.index') }}" class="dropdown-item text-uppercase"
+                       type="button">{{ t('Version')  }}</a>
                     <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Account') }}</a>
                     <a href="{{ route('app.get.logout') }}" class="dropdown-item text-uppercase"

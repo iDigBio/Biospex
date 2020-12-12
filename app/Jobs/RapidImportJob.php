@@ -55,7 +55,7 @@ class RapidImportJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 600;
+    public $timeout = 1200;
 
     /**
      * Create a new job instance.
@@ -65,7 +65,7 @@ class RapidImportJob implements ShouldQueue
      */
     public function __construct(User $user, string $path)
     {
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.rapid_tube'));
         $this->user = $user;
         $this->path = $path;
     }

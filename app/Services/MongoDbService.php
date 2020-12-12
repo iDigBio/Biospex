@@ -112,7 +112,7 @@ class MongoDbService
      * @param $value
      * @return \MongoDB\BSON\ObjectId
      */
-    public function setMongoObjectId($value)
+    public function setMongoObjectId($value): ObjectId
     {
         return new ObjectId($value);
     }
@@ -123,7 +123,7 @@ class MongoDbService
      * @param $value
      * @return \MongoDB\BSON\Regex
      */
-    public function setRegex($value)
+    public function setRegex($value): Regex
     {
         return new Regex($value, 'i');
     }
@@ -180,7 +180,7 @@ class MongoDbService
      * @param array $attributes
      * @return \MongoDB\InsertOneResult
      */
-    public function insertOne(array $attributes = [])
+    public function insertOne(array $attributes = []): \MongoDB\InsertOneResult
     {
         return $this->clientCollection->insertOne($attributes);
     }
@@ -225,7 +225,12 @@ class MongoDbService
         $this->clientCollection->deleteMany($criteria);
     }
 
-    public function aggregate($pipline, $options = [])
+    /**
+     * @param $pipline
+     * @param array $options
+     * @return \Traversable
+     */
+    public function aggregate($pipline, $options = []): \Traversable
     {
         return $this->clientCollection->aggregate($pipline, $options);
     }

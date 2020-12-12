@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -24,30 +24,24 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class JobErrorNotification extends Notification implements ShouldQueue
+class VersionNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * @var array
+     * @var string|null
      */
-    private $attributes;
+    private $downloadUrl;
 
     /**
-     * @var string
-     */
-    private $adminEmail;
-
-    /**
-     * JobErrorNotification constructor.
+     * ImportNotification constructor.
      *
-     * @param array $attributes
+     * @param string|null $downloadUrl
      */
-    public function __construct(array $attributes)
+    public function __construct(string $downloadUrl = null)
     {
-        $this->attributes = $attributes;
-        $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.rapid_tube'));
+        $this->downloadUrl = $downloadUrl;
     }
 
     /**
@@ -68,9 +62,7 @@ class JobErrorNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-            ->bcc($this->adminEmail)
-            ->markdown('mail.job-error-notification', $this->attributes);
+        return (new MailMessage)->markdown('mail.version-notification', ['downloadUrl'    => $this->downloadUrl]);
     }
 
     /**
@@ -80,8 +72,10 @@ class JobErrorNotification extends Notification implements ShouldQueue
      */
     public function toArray()
     {
-        return [
-            //
+        return [//
         ];
     }
 }
+
+
+

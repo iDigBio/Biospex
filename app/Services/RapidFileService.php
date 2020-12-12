@@ -19,6 +19,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Storage;
 
@@ -105,7 +106,6 @@ class RapidFileService
      * Update header.
      *
      * @param array $csvHeader
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function updateHeader(array $csvHeader = [])
     {
@@ -124,7 +124,6 @@ class RapidFileService
      * Return headers from file.
      *
      * @return array
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getHeader(): array
     {
@@ -201,5 +200,21 @@ class RapidFileService
     public function getImportsPath()
     {
         return $this->importsPath;
+    }
+
+    /**
+     * Build the header to export for version file.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getExportHeader(): Collection
+    {
+        $header = collect($this->getHeader());
+        $header->prepend('_id');
+        $header->push('updated_at', 'created_at');
+
+        return $header->flip()->transform(function($value, $key) {
+            return "";
+        });
     }
 }

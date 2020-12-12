@@ -17,44 +17,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Providers;
+namespace App\Models;
 
-use App\Services\FlashService;
-use Illuminate\Support\ServiceProvider;
-
-/**
- * Class BiospexServiceProvider
- *
- * @package App\Providers
- */
-class BiospexServiceProvider extends ServiceProvider
+class RapidVersion extends BaseEloquentModel
 {
-    public function boot()
-    {
-        $this->setViewComposers();
-    }
-    
-    public function register()
-    {
-        $this->registerFacades();
-    }
+    /**
+     * @inheritDoc
+     */
+    protected $table = 'rapid_versions';
 
     /**
-     * Set up view composers
+     * @inheritDoc
      */
-    public function setViewComposers()
-    {
-
-    }
+    protected $fillable = [
+        'user_id',
+        'file_name'
+    ];
 
     /**
-     * Registers custom facades
+     * Belongs to relation with Users.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function registerFacades()
+    public function user()
     {
-        $this->app->singleton('FlashHelper', function ()
-        {
-            return new FlashService();
-        });
+        return $this->belongsTo(User::class);
     }
 }

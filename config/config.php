@@ -14,7 +14,7 @@ return [
 
     /* Beanstalk Tubes */
     'num_procs'             => env('NUM_PROCS'),
-    'default_tube'          => env('QUEUE_DEFAULT_TUBE'),
+    'rapid_tube'            => env('QUEUE_RAPID_TUBE'),
 
     /**
      * Directories
@@ -22,6 +22,7 @@ return [
     'reports_dir'           => 'reports',
     'rapid_import_dir'      => 'imports/rapid',
     'rapid_export_dir'      => 'exports/rapid',
+    'rapid_version_dir'     => 'exports/rapid/version',
     'header_import_file'    => 'imports/rapid/header.json',
 
     /**

@@ -17,26 +17,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Facades;
+namespace App\Services\Model;
 
-use App\Services\FlashService;
-use Illuminate\Support\Facades\Facade;
+use App\Models\RapidVersion;
 
 /**
- * Class Flash
+ * Class RapidUpdateService
  *
- * @package App\Facades
+ * @package App\Services\Model
  */
-class FlashFacade extends Facade
+class RapidVersionService extends BaseModelService
 {
-
     /**
-     * Get the registered name of the component.
+     * RapidUpdateService constructor.
      *
-     * @return string
+     * @param \App\Models\RapidVersion $rapidVersion
      */
-    protected static function getFacadeAccessor()
+    public function __construct(RapidVersion $rapidVersion)
     {
-        return FlashService::class;
+        $this->model = $rapidVersion;
     }
+
 }

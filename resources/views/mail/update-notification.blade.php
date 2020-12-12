@@ -1,6 +1,8 @@
 @component('mail::message')
 # {{ t('RAPID Update Completed') }}
 
+{{ t('The Rapid update has been completed. You will receive another email when the exported version file is completed.') }}
+
 {{ t('File Name') }}: {{ $fileName }}
 
 {{ t('Rows Updated') }}: {{ $recordsUpdated }}

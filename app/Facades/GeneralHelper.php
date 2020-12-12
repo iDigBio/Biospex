@@ -17,44 +17,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Providers;
+namespace App\Facades;
 
-use App\Services\FlashService;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Facade;
 
 /**
- * Class BiospexServiceProvider
- *
- * @package App\Providers
+ * Class GeneralHelper
+ * @package App\Facades
  */
-class BiospexServiceProvider extends ServiceProvider
+class GeneralHelper extends Facade
 {
-    public function boot()
-    {
-        $this->setViewComposers();
-    }
-    
-    public function register()
-    {
-        $this->registerFacades();
-    }
-
     /**
-     * Set up view composers
+     * Get the registered name of the component.
+     *
+     * @return string
      */
-    public function setViewComposers()
+    protected static function getFacadeAccessor()
     {
-
-    }
-
-    /**
-     * Registers custom facades
-     */
-    public function registerFacades()
-    {
-        $this->app->singleton('FlashHelper', function ()
-        {
-            return new FlashService();
-        });
+        return \App\Services\Helpers\GeneralService::class;
     }
 }

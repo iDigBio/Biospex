@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services;
+namespace App\Services\Helpers;
 
 /**
  * Class FlashService

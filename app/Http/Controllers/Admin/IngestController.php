@@ -19,19 +19,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\RapidUpdateSelectFormRequest;
 use App\Jobs\RapidUpdateJob;
-use App\Services\RapidFileService;
 use App\Services\RapidIngestService;
-use Exception;
-use Flash;
+use FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RapidImportFormRequest;
 use App\Http\Requests\RapidUpdateFormRequest;
 use App\Jobs\RapidImportJob;
 use Auth;
-use Session;
-use Storage;
 use Str;
 
 /**
@@ -62,14 +57,14 @@ class IngestController extends Controller
         $path = $request->file('import-file')->store(config('config.rapid_import_dir'));
 
         if (! $path) {
-            Flash::warning(t('The import failed to upload. Please contact the administration to determine the error.'));
+            FlashHelper::warning(t('The import failed to upload. Please contact the administration to determine the error.'));
 
             return redirect()->route('admin.ingest.index');
         }
 
         RapidImportJob::dispatch(Auth::user(), $path);
 
-        Flash::success(t('The import uploaded successfully. You will be notified by email when it\'s completed.'));
+        FlashHelper::success(t('The import uploaded successfully. You will be notified by email when it\'s completed.'));
 
         return redirect()->route('admin.ingest.index');
     }
@@ -78,86 +73,24 @@ class IngestController extends Controller
      * Import an update file.
      *
      * @param \App\Http\Requests\RapidUpdateFormRequest $request
+     * @param \App\Services\RapidIngestService $rapidIngestService
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(RapidUpdateFormRequest $request)
+    public function update(RapidUpdateFormRequest $request, RapidIngestService $rapidIngestService)
     {
-        $file     = $request->file('update-file');
+        $file = $request->file('update-file');
         $fileOrigName = $file->getClientOriginalName();
         $filePath = $file->storeAs(config('config.rapid_import_dir'), Str::random(10) .'-'. $fileOrigName);
 
         if (! $filePath) {
-            Flash::warning(t('The update failed to upload. Please contact the administration to determine the error.'));
+            FlashHelper::warning(t('The update failed to upload. Please contact the administration to determine the error.'));
 
             return redirect()->route('admin.ingest.index');
         }
 
-        Session::put(['filePath' => $filePath, 'fileOrigName' => $fileOrigName]);
+        RapidUpdateJob::dispatch(Auth::user(), $filePath, $fileOrigName);
 
-        Flash::success(t('The update has been uploaded. Please select the fields you wish to update and click UPDATE'));
-
-        return redirect()->route('admin.ingest.select');
-    }
-
-    /**
-     * Show form for selecting which fields to update for rapid records.
-     *
-     * @param \App\Services\RapidIngestService $rapidIngestService
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     */
-    public function select(RapidIngestService $rapidIngestService)
-    {
-        try {
-            if (! Session::exists('filePath') || ! Storage::exists(Session::get('filePath'))) {
-                Flash::warning(t('The update file path does not exist. Please contact the administration to determine the error.'));
-
-                return redirect()->route('admin.ingest.index');
-            }
-
-            $fileOrigName = Session::get('fileOrigName');
-
-            [$fileName, $filePath] = $rapidIngestService->unzipFile(Session::get('filePath'));
-
-            $rapidIngestService->loadCsvFile($filePath);
-            $headers = $rapidIngestService->setCsvHeader();
-            $columnTags = $rapidIngestService->getColumnTags();
-
-            $tags = $rapidIngestService->mapColumns($headers, $columnTags);
-
-            return view('ingest.update', compact('tags', 'filePath', 'fileName', 'fileOrigName'));
-        } catch (Exception $e) {
-            Flash::warning(t('An error occurred while loading the csv file. Please contact the administration to determine the error.'));
-
-            return redirect()->route('admin.ingest.index');
-        }
-    }
-
-    /**
-     * Process selected fields for update and send to job.
-     *
-     * @param \App\Http\Requests\RapidUpdateSelectFormRequest $request
-     * @param \App\Services\RapidFileService $service
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function selected(RapidUpdateSelectFormRequest $request, RapidFileService $service)
-    {
-        $updateColumnTags = $service->getColumnTags();
-
-        $fields = collect($request->all())->filter(function($item, $key) use ($updateColumnTags){
-            return in_array($key, $updateColumnTags);
-        })->collapse();
-
-        $fileInfo = [
-            'filePath' => $request->get('filePath'),
-            'fileName' => $request->get('fileName'),
-            'fileOrigName' => $request->get('fileOrigName')
-        ];
-
-        RapidUpdateJob::dispatch(Auth::user(), $fileInfo, $fields);
-
-        Flash::success(t('Your selections for the update are being processed. You will be notified by email when complete.'));
-
-        Session::forget(['upload-path', 'filePath', 'fileName', 'fileOrigName']);
+        FlashHelper::success(t('The update has been uploaded. You will receive an email when the process has been completed.'));
 
         return redirect()->route('admin.ingest.index');
     }

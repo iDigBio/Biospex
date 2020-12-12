@@ -31,7 +31,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Collection;
 
 /**
  * Class RapidUpdateJob
@@ -48,35 +47,35 @@ class RapidUpdateJob implements ShouldQueue
     private $user;
 
     /**
-     * @var array
+     * @var string
      */
-    private $fileInfo;
+    private $filePath;
 
     /**
-     * @var \Illuminate\Support\Collection
+     * @var string
      */
-    private $fields;
+    private $fileOrigName;
 
     /**
      * The number of seconds the job can run before timing out.
      *
      * @var int
      */
-    public $timeout = 600;
+    public $timeout = 1200;
 
     /**
      * Update rapid records job.
      *
      * @param \App\Models\User $user
-     * @param array $fileInfo
-     * @param \Illuminate\Support\Collection $fields
+     * @param string $filePath
+     * @param string $fileOrigName
      */
-    public function __construct(User $user, array $fileInfo, Collection $fields)
+    public function __construct(User $user, string $filePath, string $fileOrigName)
     {
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.rapid_tube'));
         $this->user = $user;
-        $this->fileInfo = $fileInfo;
-        $this->fields = $fields;
+        $this->filePath = $filePath;
+        $this->fileOrigName = $fileOrigName;
     }
 
     /**
@@ -88,19 +87,22 @@ class RapidUpdateJob implements ShouldQueue
     public function handle(RapidIngestService $rapidIngestService, RapidUpdateService $rapidService)
     {
         try {
-            if (! File::exists($this->fileInfo['filePath'])) {
-                throw new Exception(t('Rapid import file does not exist while processing import job.'));
+            if (! File::exists($this->filePath)) {
+                throw new Exception(t('Rapid import file does not exist while processing update job.'));
             }
 
-            $rapidIngestService->process($this->fileInfo['filePath'], false, $this->fields);
+            [$fileName, $filePath] = $rapidIngestService->unzipFile($this->filePath);
+
+            $rapidIngestService->process($filePath);
 
             $recordsUpdated = $rapidIngestService->getUpdatedRecordsCount();
+            $fields = $rapidIngestService->getUpdatedFields();
 
             $data = [
                 'user_id'        => $this->user->id,
-                'file_orig_name' => $this->fileInfo['fileOrigName'],
-                'file_name'      => $this->fileInfo['fileName'],
-                'fields_updated' => $this->fields->toArray(),
+                'file_orig_name' => $this->fileOrigName,
+                'file_name'      => $fileName,
+                'fields_updated' => $fields,
                 'updated_records' => $recordsUpdated
             ];
 
@@ -111,7 +113,9 @@ class RapidUpdateJob implements ShouldQueue
                 $downloadUrl = $rapidIngestService->createCsv();
             }
 
-            $this->user->notify(new UpdateNotification($this->fileInfo['fileOrigName'], $recordsUpdated, $this->fields->toArray(), $downloadUrl));
+            $this->user->notify(new UpdateNotification($this->fileOrigName, $recordsUpdated, $fields, $downloadUrl));
+
+            RapidVersionJob::dispatch($this->user);
 
             return;
         } catch (Exception $exception) {
