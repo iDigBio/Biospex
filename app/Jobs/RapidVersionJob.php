@@ -34,12 +34,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use League\Csv\CannotInsertRecord;
 use Storage;
 use Throwable;
 
 class RapidVersionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 5;
 
     /**
      * @var \App\Models\User
@@ -107,6 +115,15 @@ class RapidVersionJob implements ShouldQueue
 
             $downloadUrl = route('admin.download.version', [base64_encode($csvName)]);
             $this->user->notify(new VersionNotification($downloadUrl));
+        }
+        catch (CannotInsertRecord $exception) {
+            Storage::delete($this->filePath);
+            $attributes = [
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => $exception->getTraceAsString()
+            ];
         }
         catch (Exception $exception) {
             Storage::delete($this->filePath);

@@ -133,7 +133,6 @@ class AppFileDeployment extends Command
             'SERVER_USER',
             'CURRENT_PATH',
             'NUM_PROCS',
-            'QUEUE_DEFAULT_TUBE',
             'QUEUE_RAPID_TUBE'
         ]);
     }
