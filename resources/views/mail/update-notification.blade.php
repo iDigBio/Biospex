@@ -7,7 +7,7 @@
 
 {{ t('Rows Updated') }}: {{ $recordsUpdated }}
 
-{{ t('Update Fields ') }}: {{ $fields }}
+{{ t('Updated Fields ') }}: {{ $fields }}
 
 
 @if(!empty($downloadUrl))

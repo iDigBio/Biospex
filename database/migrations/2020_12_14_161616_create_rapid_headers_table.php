@@ -16,7 +16,7 @@ class CreateRapidHeadersTable extends Migration
         Schema::create('rapid_headers', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->text('header')->nullable();
+            $table->text('data')->nullable();
             $table->timestamps();
         });
     }

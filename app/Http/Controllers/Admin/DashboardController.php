@@ -35,7 +35,6 @@ class DashboardController extends Controller
      *
      * @param \App\Services\JqGridJsonEncoderService $service
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function index(JqGridJsonEncoderService $service)
     {

@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterFormRequest;
-use App\Services\Model\UserService;
+use App\Services\Model\UserModelService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
@@ -85,10 +85,10 @@ class RegisterController extends Controller
      * Register the user. Overrides trait so invite is checked.
      *
      * @param \App\Http\Requests\RegisterFormRequest $request
-     * @param \App\Services\Model\UserService $userService
+     * @param \App\Services\Model\UserModelService $userService
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function register(RegisterFormRequest $request, UserService $userService)
+    public function register(RegisterFormRequest $request, UserModelService $userService)
     {
         $input = $request->only('email', 'password');
         $input['password'] = Hash::make($input['password']);

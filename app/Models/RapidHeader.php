@@ -20,41 +20,65 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class RapidVersion extends BaseEloquentModel
+/**
+ * Class RapidHeader
+ *
+ * @package App\Models
+ */
+class RapidHeader extends BaseEloquentModel
 {
     /**
      * @inheritDoc
      */
-    protected $table = 'rapid_versions';
+    protected $table = 'rapid_headers';
 
     /**
      * @inheritDoc
      */
     protected $fillable = [
-        'header_id',
-        'user_id',
-        'file_name'
+        'data'
     ];
 
     /**
-     * Belongs to relation with Users.
+     * RapidUpdate relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user(): BelongsTo
+    public function rapidUpdate(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(RapidUpdate::class);
     }
 
     /**
-     * Has one relation to RapidHeader.
+     * RapidVersion relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function headers(): HasOne
+    public function rapidVersion(): BelongsTo
     {
-        return $this->hasOne(RapidHeader::class);
+        return $this->belongsTo(RapidVersion::class);
     }
+
+    /**
+     * Mutator for data column.
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function getDataAttribute($value)
+    {
+        return unserialize($value);
+    }
+
+    /**
+     * Setter for data column.
+     *
+     * @param $value
+     */
+    public function setDataAttribute($value)
+    {
+        $this->attributes['data'] = serialize($value);
+    }
+
 }

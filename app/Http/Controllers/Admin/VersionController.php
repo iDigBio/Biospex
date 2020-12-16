@@ -19,8 +19,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
-use App\Services\Model\RapidVersionService;
+use App\Jobs\RapidVersionJob;
+use App\Services\Model\RapidVersionModelService;
+use Auth;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
+use Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 /**
@@ -40,13 +46,19 @@ class VersionController extends Controller
         return view('version.index');
     }
 
-    public function show(RapidVersionService $rapidVersionService)
+    /**
+     * Return data for data tables.
+     *
+     * @param \App\Services\Model\RapidVersionModelService $rapidVersionModelService
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show(RapidVersionModelService $rapidVersionModelService): JsonResponse
     {
         if (! request()->ajax()) {
             return response()->json(['error' => t('Request must be ajax')]);
         }
 
-        $versions = $rapidVersionService->allWith(['user']);
+        $versions = $rapidVersionModelService->allWith(['user']);
         $mapped = $versions->map(function($version){
             return [
                 $version->id,
@@ -58,5 +70,19 @@ class VersionController extends Controller
         });
 
         return DataTables::collection($mapped)->toJson();
+    }
+
+    /**
+     * Create version file.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function create()
+    {
+        RapidVersionJob::dispatch(Auth::user(), Carbon::now('UTC')->timestamp); //->delay(now()->addMinutes(5));
+
+        FlashHelper::success(t('Your request has been submitted and will start in 10 minutes. You will be notified by email when complete.'));
+
+        return redirect()->route('admin.version.index');
     }
 }

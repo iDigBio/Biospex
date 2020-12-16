@@ -20,13 +20,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Jobs\RapidUpdateJob;
-use App\Services\RapidIngestService;
 use FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RapidImportFormRequest;
 use App\Http\Requests\RapidUpdateFormRequest;
 use App\Jobs\RapidImportJob;
 use Auth;
+use Illuminate\Http\RedirectResponse;
 use Str;
 
 /**
@@ -52,7 +52,7 @@ class IngestController extends Controller
      * @param \App\Http\Requests\RapidImportFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function create(RapidImportFormRequest $request)
+    public function create(RapidImportFormRequest $request): RedirectResponse
     {
         $path = $request->file('import-file')->store(config('config.rapid_import_dir'));
 
@@ -73,10 +73,9 @@ class IngestController extends Controller
      * Import an update file.
      *
      * @param \App\Http\Requests\RapidUpdateFormRequest $request
-     * @param \App\Services\RapidIngestService $rapidIngestService
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(RapidUpdateFormRequest $request, RapidIngestService $rapidIngestService)
+    public function update(RapidUpdateFormRequest $request): RedirectResponse
     {
         $file = $request->file('update-file');
         $fileOrigName = $file->getClientOriginalName();

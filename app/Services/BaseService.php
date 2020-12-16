@@ -19,16 +19,10 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Storage;
 
-/**
- * Class RapidServiceBase
- *
- * @package App\Services
- */
-class RapidServiceBase
+class BaseService
 {
     /**
      * Get validation fields for rapid records.
@@ -115,12 +109,12 @@ class RapidServiceBase
     /**
      * Build the header txt file for version file export.
      *
-     * @param array $data
+     * @param array $header
      */
-    public function buildExportHeader(array $data = [])
+    public function buildExportHeader(array $header = [])
     {
-        collect($data)->each(function($value) {
-            Storage::append(config('config.rapid_version_dir') . '/header.txt', $value);
+        collect($header)->each(function($value) {
+            Storage::append(config('config.rapid_import_dir') . '/header.txt', $value);
         });
     }
 
@@ -131,7 +125,7 @@ class RapidServiceBase
      */
     public function getExportHeaderFile(): string
     {
-        return Storage::path(config('config.rapid_version_dir') . '/header.txt');
+        return Storage::path(config('config.rapid_import_dir') . '/header.txt');
     }
 
     /**
@@ -139,7 +133,7 @@ class RapidServiceBase
      */
     public function deleteExportHeaderFile()
     {
-        Storage::delete(config('config.rapid_version_dir') . '/header.txt');
+        Storage::delete(config('config.rapid_import_dir') . '/header.txt');
     }
 
     /**
@@ -161,37 +155,5 @@ class RapidServiceBase
     public function deleteVersionFile(string $versionFileName)
     {
         Storage::delete(config('config.rapid_version_dir') . '/' . $versionFileName);
-    }
-
-    /**
-     * Get version file size for check.
-     *
-     * @param string $versionFileName
-     * @return int
-     */
-    public function getVersionFileSize(string $versionFileName): int
-    {
-        return Storage::size(config('config.rapid_version_dir') . '/' . $versionFileName);
-    }
-
-    /**
-     * Map header columns to tags.
-     *
-     * @param array $header
-     * @param array $tags
-     * @return \Illuminate\Support\Collection
-     */
-    public function mapColumns(array $header, array $tags): Collection
-    {
-        $mapped = collect($header)->mapToGroups(function($value) use($tags){
-            foreach ($tags as $tag) {
-                if (preg_match('/'.$tag.'/', $value, $matches)) {
-                    return [$matches[0] => $value];
-                }
-            }
-            return ['unused' => $value];
-        });
-
-        return $mapped->forget('unused');
     }
 }

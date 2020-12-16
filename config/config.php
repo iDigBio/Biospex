@@ -23,7 +23,6 @@ return [
     'rapid_import_dir'      => 'imports/rapid',
     'rapid_export_dir'      => 'exports/rapid',
     'rapid_version_dir'     => 'exports/rapid/version',
-    'header_import_file'    => 'imports/rapid/header.json',
 
     /**
      * Rapid field files

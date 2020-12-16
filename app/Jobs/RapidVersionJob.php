@@ -21,33 +21,26 @@ namespace App\Jobs;
 
 use App\Notifications\JobErrorNotification;
 use App\Notifications\VersionNotification;
-use App\Services\Model\RapidVersionService;
-use DateHelper;
+use App\Services\Model\RapidHeaderModelService;
+use App\Services\Model\RapidVersionModelService;
 use App\Models\User;
-use App\Services\CsvService;
-use App\Services\Model\RapidRecordService;
-use App\Services\RapidFileService;
-use Carbon\Carbon;
-use Exception;
+use App\Services\RapidServiceBase;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Csv\CannotInsertRecord;
 use Storage;
 use Throwable;
 
+/**
+ * Class RapidVersionJob
+ *
+ * @package App\Jobs
+ */
 class RapidVersionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
-    public $tries = 1;
 
     /**
      * @var \App\Models\User
@@ -57,102 +50,102 @@ class RapidVersionJob implements ShouldQueue
     /**
      * @var string
      */
-    private $filePath;
+    private $versionFileName;
+
+    /**
+     * @var \App\Services\RapidServiceBase
+     */
+    private $rapidServiceBase;
 
     /**
      * Create a new job instance.
      *
      * @param \App\Models\User $user
+     * @param int $timestamp
      */
-    public function __construct(User $user)
+    public function __construct(User $user, int $timestamp)
     {
         $this->onQueue(config('config.rapid_tube'));
         $this->user = $user;
+        $this->versionFileName = $timestamp.'.csv';
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\CsvService $csvService
-     * @param \App\Services\Model\RapidRecordService $rapidRecordService
-     * @param \App\Services\RapidFileService $rapidFileService
-     * @param \App\Services\Model\RapidVersionService $rapidVersionService
+     * @param \App\Services\RapidServiceBase $rapidServiceBase
+     * @param \App\Services\Model\RapidVersionModelService $rapidVersionModelService
+     * @param \App\Services\Model\RapidHeaderModelService $rapidHeaderModelService
      */
     public function handle(
-        CsvService $csvService,
-        RapidRecordService $rapidRecordService,
-        RapidFileService $rapidFileService,
-        RapidVersionService $rapidVersionService
+        RapidServiceBase $rapidServiceBase,
+        RapidVersionModelService $rapidVersionModelService,
+        RapidHeaderModelService $rapidHeaderModelService
     ) {
         if (! Storage::exists(config('config.rapid_version_dir'))) {
             Storage::makeDirectory(config('config.rapid_version_dir'));
         }
 
-        $csvName = Carbon::now()->timestamp.'.csv';
-        $this->filePath = config('config.rapid_version_dir') . '/' . $csvName;
+        $this->rapidServiceBase = $rapidServiceBase;
 
-        try{
-            $query = $rapidRecordService->getExportQuery();
-            $header = $rapidFileService->getExportHeader();
-            $csvService->writerCreateFromPath(Storage::path($this->filePath));
-            $csvService->insertOne($header->keys()->toArray());
+        $user = User::find(1);
 
-            $query->chunk(1000, function ($records) use ($header, $csvService) {
-                $records->each(function ($record) use ($header, $csvService) {
-                    $record->updated_at = DateHelper::formatMongoDbDate($record->updated_at, 'Y-m-d H:i:s');
-                    $record->created_at = DateHelper::formatMongoDbDate($record->created_at, 'Y-m-d H:i:s');
+        try {
 
-                    $record = $header->merge($record->toArray());
+            $versionFilePath = $rapidServiceBase->getVersionFilePath($this->versionFileName);
+            $header = $rapidHeaderModelService->getLatestHeader();
+            $rapidServiceBase->buildExportHeader($header->data);
+            $exportHeaderPath = $rapidServiceBase->getExportHeaderFile();
 
-                    $csvService->insertOne($record->toArray());
-                });
-            });
+            exec('mongoexport --quiet --db=rapid --collection=rapid_records --type=csv --fieldFile='.$exportHeaderPath.' --out='.$versionFilePath, $output, $result_code);
 
-            $rapidVersionService->create([
-                'user_id' => $this->user->id,
-                'file_name' => $csvName
+            $size = $rapidServiceBase->getVersionFileSize($this->versionFileName);
+
+            if (! $result_code || $size === 0) {
+                throw new \Exception(t('Error in executing command to build version file %s', $this->versionFileName));
+            }
+
+            $rapidVersionModelService->create([
+                'header_id' => $header->id,
+                'user_id'   => $user->id,
+                'file_name' => $this->versionFileName,
             ]);
 
-            $downloadUrl = route('admin.download.version', [base64_encode($csvName)]);
-            $this->user->notify(new VersionNotification($downloadUrl));
-        }
-        catch (CannotInsertRecord $exception) {
-            Storage::delete($this->filePath);
+            //$rapidServiceBase->deleteExportHeaderFile();
+
+            $downloadUrl = route('admin.download.version', [base64_encode($this->versionFileName)]);
+            $user->notify(new VersionNotification($downloadUrl));
+        } catch (\Exception $e) {
+            $rapidServiceBase->deleteVersionFile($this->versionFileName);
+            $rapidServiceBase->deleteExportHeaderFile();
+
             $attributes = [
-                'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'trace' => $exception->getTraceAsString()
-            ];
-        }
-        catch (Exception $exception) {
-            Storage::delete($this->filePath);
-            $attributes = [
-                'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'trace' => $exception->getTraceAsString()
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+                'trace'   => $e->getTraceAsString(),
             ];
 
-            $this->user->notify(new JobErrorNotification($attributes));
+            $user->notify(new JobErrorNotification($attributes));
         }
     }
 
     /**
      * Handle a job failure.
      *
-     * @param  \Throwable  $exception
+     * @param \Throwable $exception
      * @return void
      */
     public function failed(Throwable $exception)
     {
-        Storage::delete($this->filePath);
+        $this->rapidServiceBase->deleteVersionFile($this->versionFileName);
+        $this->rapidServiceBase->deleteExportHeaderFile();
 
         $attributes = [
             'message' => $exception->getMessage(),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'trace' => $exception->getTraceAsString()
+            'file'    => $exception->getFile(),
+            'line'    => $exception->getLine(),
+            'trace'   => $exception->getTraceAsString(),
         ];
 
         $this->user->notify(new JobErrorNotification($attributes));

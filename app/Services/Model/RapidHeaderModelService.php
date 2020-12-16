@@ -17,40 +17,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Console\Commands;
+namespace App\Services\Model;
 
-use Illuminate\Console\Command;
+use App\Models\RapidHeader;
 
 /**
- * Class AppCommand
+ * Class RapidHeaderModelService
  *
- * @package App\Console\Commands
+ * @package App\Services\Model
  */
-class AppCommand extends Command
+class RapidHeaderModelService extends BaseModelService
 {
     /**
-     * The console command name.
+     * RapidHeaderModelService constructor.
+     *
+     * @param \App\Models\RapidHeader $rapidHeader
      */
-    protected $signature = 'test:test {ids?}';
-
-    /**
-     * The console command description.
-     */
-    protected $description = 'Used to test code';
-
-    /**
-     * AppCommand constructor.
-     */
-    public function __construct()
+    public function __construct(RapidHeader $rapidHeader)
     {
-        parent::__construct();
+        $this->model = $rapidHeader;
     }
 
     /**
-     * Handle command.
+     * Get latest header.
+     *
+     * @return mixed
      */
-    public function handle()
+    public function getLatestHeader()
     {
-
+        return $this->model->orderBy('id', 'desc')->first();
     }
 }

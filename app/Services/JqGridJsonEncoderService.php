@@ -19,7 +19,8 @@
 
 namespace App\Services;
 
-use App\Services\Model\RapidRecordService;
+use App\Services\Model\RapidHeaderModelService;
+use App\Services\Model\RapidRecordModelService;
 use Exception;
 
 /**
@@ -27,17 +28,12 @@ use Exception;
  *
  * @package App\Services
  */
-class JqGridJsonEncoderService
+class JqGridJsonEncoderService extends RapidServiceBase
 {
     /**
-     * @var \App\Services\Model\RapidRecordService
+     * @var \App\Services\Model\RapidRecordModelService
      */
-    private $rapidRecordService;
-
-    /**
-     * @var \App\Services\RapidFileService
-     */
-    private $rapidFileService;
+    private $rapidRecordModelService;
 
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
@@ -45,29 +41,33 @@ class JqGridJsonEncoderService
     private $defaultGridVisible;
 
     /**
+     * @var \App\Services\Model\RapidHeaderModelService
+     */
+    private $rapidHeaderModelService;
+
+    /**
      * JqGridJsonEncoder constructor.
      *
-     * @param \App\Services\Model\RapidRecordService $rapidRecordService
-     * @param \App\Services\RapidFileService $rapidFileService
+     * @param \App\Services\Model\RapidRecordModelService $rapidRecordModelService
+     * @param \App\Services\Model\RapidHeaderModelService $rapidHeaderModelService
      */
     public function __construct(
-        RapidRecordService $rapidRecordService, RapidFileService $rapidFileService
+        RapidRecordModelService $rapidRecordModelService, RapidHeaderModelService $rapidHeaderModelService
     ) {
-        $this->rapidRecordService = $rapidRecordService;
-        $this->rapidFileService = $rapidFileService;
+        $this->rapidRecordModelService = $rapidRecordModelService;
+        $this->rapidHeaderModelService = $rapidHeaderModelService;
     }
 
     /**
      * Return column names and model.
      *
      * @return false|string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function loadGridModel()
     {
-        $header = $this->rapidFileService->getHeader();
+        $header = $this->rapidHeaderModelService->getLatestHeader()->data;
         array_unshift($header, '_id');
-        $this->defaultGridVisible = $this->rapidFileService->getDefaultGridView();
+        $this->defaultGridVisible = $this->getDefaultGridView();
 
         $data = [
             'colNames' => $header,
@@ -99,7 +99,7 @@ class JqGridJsonEncoderService
      * @param $colNames
      * @return array
      */
-    protected function setColModel($colNames)
+    protected function setColModel($colNames): array
     {
         $colModel = [];
         foreach ($colNames as $column) {
@@ -115,7 +115,7 @@ class JqGridJsonEncoderService
      * @param $column
      * @return array
      */
-    protected function formatGridColumn($column)
+    protected function formatGridColumn($column): array
     {
         $col = $this->setNormalColumnProperties($column);
 
@@ -132,7 +132,7 @@ class JqGridJsonEncoderService
      * @param $col
      * @return array
      */
-    protected function addUriLink($col)
+    protected function addUriLink($col): array
     {
         return array_merge($col, [
             'formatter' => 'link'
@@ -146,7 +146,7 @@ class JqGridJsonEncoderService
      * @param $column
      * @return array
      */
-    protected function setNormalColumnProperties($column)
+    protected function setNormalColumnProperties($column): array
     {
         return [
             'name'          => $column,
@@ -182,7 +182,7 @@ class JqGridJsonEncoderService
      * @return array
      * @throws Exception
      */
-    public function encodeGridRequestedData($postedData)
+    public function encodeGridRequestedData($postedData): array
     {
         $vars = [
             'page'    => $this->setPage($postedData),
@@ -194,7 +194,7 @@ class JqGridJsonEncoderService
             'filters' => $this->setFilters($postedData),
         ];
 
-        $vars['count'] = $this->rapidRecordService->getTotalRowCount($vars);
+        $vars['count'] = $this->rapidRecordModelService->getTotalRowCount($vars);
 
         $vars['limit'] = (int) $vars['limit'] === 0 ? (int) $vars['count'] : (int) $vars['limit'];
 
@@ -210,7 +210,7 @@ class JqGridJsonEncoderService
         $vars['offset'] = $vars['offset'] < 0 ? 0 : $vars['offset'];
         $vars['limit'] *= $vars['page'];
 
-        $rows = $this->rapidRecordService->getRows($vars);
+        $rows = $this->rapidRecordModelService->getRows($vars);
 
         if (! is_array($rows) || (isset($rows[0]) && ! is_array($rows[0]))) {
             throw new Exception('The method getRows must return an array of arrays, example: array(array("column1"  =>  "1-1", "column2" => "1-2"), array("column1" => "2-1", "column2" => "2-2"))');
@@ -228,25 +228,29 @@ class JqGridJsonEncoderService
      * @param $postedData
      * @return int
      */
-    public function setPage($postedData)
+    public function setPage($postedData): int
     {
         return isset($postedData['page']) ? $postedData['page'] : 1;
     }
 
     /**
+     * Set limit.
+     *
      * @param $postedData
-     * @return array
+     * @return string|null
      */
-    public function setLimit($postedData)
+    public function setLimit($postedData): ?string
     {
         return isset($postedData['rows']) ? $postedData['rows'] : null;
     }
 
     /**
+     * Set id.
+     *
      * @param $postedData
-     * @return array
+     * @return string|null
      */
-    public function setSidx($postedData)
+    public function setSidx($postedData): ?string
     {
         $sidx = isset($postedData['sidx']) ? $postedData['sidx'] : null;
 
@@ -254,10 +258,12 @@ class JqGridJsonEncoderService
     }
 
     /**
+     * Set order.
+     *
      * @param $postedData
-     * @return array
+     * @return string|null
      */
-    public function setSord($postedData)
+    public function setSord($postedData): ?string
     {
         $sord = isset($postedData['sord']) ? $postedData['sord'] : null;
 
@@ -265,15 +271,19 @@ class JqGridJsonEncoderService
     }
 
     /**
+     * Set filters.
+     *
      * @param $postedData
      * @return array
      */
-    public function setFilters($postedData)
+    public function setFilters($postedData): array
     {
         return (isset($postedData['filters']) && ! empty($postedData['filters'])) ? json_decode(str_replace('\'', '"', $postedData['filters']), true) : [];
     }
 
     /**
+     * set total pages.
+     *
      * @param $count
      * @param $limit
      * @return float|int

@@ -19,22 +19,22 @@
 
 namespace App\Services\Model;
 
-use App\Models\RapidUpdate;
+use App\Models\User;
 
 /**
- * Class RapidUpdateService
+ * Class UserModelService
  *
  * @package App\Services\Model
  */
-class RapidUpdateService extends BaseModelService
+class UserModelService extends BaseModelService
 {
     /**
-     * RapidUpdateService constructor.
+     * UserModelService constructor.
      *
-     * @param \App\Models\RapidUpdate $rapidUpdate
+     * @param \App\Models\User $user
      */
-    public function __construct(RapidUpdate $rapidUpdate)
+    public function __construct(User $user)
     {
-        $this->model = $rapidUpdate;
+        $this->model = $user;
     }
 }

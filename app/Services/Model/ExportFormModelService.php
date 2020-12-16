@@ -19,23 +19,35 @@
 
 namespace App\Services\Model;
 
-use App\Models\RapidVersion;
+use App\Models\ExportForm;
+use Illuminate\Support\Collection;
 
 /**
- * Class RapidUpdateService
+ * Class ExportFormModelService
  *
  * @package App\Services\Model
  */
-class RapidVersionService extends BaseModelService
+class ExportFormModelService extends BaseModelService
 {
     /**
-     * RapidUpdateService constructor.
+     * ExportFormModelService constructor.
      *
-     * @param \App\Models\RapidVersion $rapidVersion
+     * @param \App\Models\ExportForm $exportForm
      */
-    public function __construct(RapidVersion $rapidVersion)
+    public function __construct(ExportForm $exportForm)
     {
-        $this->model = $rapidVersion;
+        $this->model = $exportForm;
     }
 
+    /**
+     * Return form select for export.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getFormsSelect(): Collection
+    {
+        return $this->model->with('user')
+            ->orderBy('created_at')
+            ->get(['id', 'user_id', 'destination', 'created_at']);
+    }
 }

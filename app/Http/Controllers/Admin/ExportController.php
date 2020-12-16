@@ -24,6 +24,7 @@ use App\Jobs\RapidExportJob;
 use App\Services\RapidExportService;
 use FlashHelper;
 use Auth;
+use Illuminate\Http\RedirectResponse;
 
 /**
  * Class ExportController
@@ -87,7 +88,7 @@ class ExportController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function create()
+    public function create(): RedirectResponse
     {
         RapidExportJob::dispatch(Auth::user(), request()->all());
 
@@ -102,7 +103,7 @@ class ExportController extends Controller
      * @param int $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(int $id)
+    public function delete(int $id): RedirectResponse
     {
         $form = $this->rapidExportService->findFormById($id);
 

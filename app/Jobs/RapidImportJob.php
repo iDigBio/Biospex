@@ -22,6 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\ImportNotification;
 use App\Notifications\JobErrorNotification;
+use App\Services\Model\RapidUpdateModelService;
 use App\Services\RapidIngestService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -74,8 +75,9 @@ class RapidImportJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\RapidIngestService $rapidIngestService
+     * @param \App\Services\Model\RapidUpdateModelService $rapidUpdateModelService
      */
-    public function handle(RapidIngestService $rapidIngestService)
+    public function handle(RapidIngestService $rapidIngestService, RapidUpdateModelService $rapidUpdateModelService)
     {
         try {
             if (! Storage::exists($this->path)) {
@@ -88,7 +90,15 @@ class RapidImportJob implements ShouldQueue
                 throw new Exception(t('CSV file could not be extracted from zip file.'));
             }
 
-            $rapidIngestService->process($csvFilePath, true);
+            $rapidHeaderRecord = $rapidIngestService->process($csvFilePath, true);
+
+            $rapidUpdateModelService->create([
+                'header_id' => $rapidHeaderRecord->id,
+                'user_id' => $this->user->id,
+                'file_orig_name' => $fileName,
+                'file_name' => $fileName,
+                'fields_updated' => $rapidHeaderRecord->data
+            ]);
 
             $downloadUrl = null;
             if ($rapidIngestService->checkErrors()) {

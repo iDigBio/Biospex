@@ -22,11 +22,11 @@ namespace App\Services\Model;
 use App\Models\RapidRecord;
 
 /**
- * Class RapidRecordService
+ * Class RapidRecordModelService
  *
  * @package App\Services\Model
  */
-class RapidRecordService extends BaseModelService
+class RapidRecordModelService extends BaseModelService
 {
     /**
      * OrderBy
@@ -55,7 +55,7 @@ class RapidRecordService extends BaseModelService
     protected $assignedRuleData;
 
     /**
-     * RapidRecordService constructor.
+     * RapidRecordModelService constructor.
      *
      * @param \App\Models\RapidRecord $rapidRecord
      */

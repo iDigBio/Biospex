@@ -22,9 +22,10 @@ namespace App\Http\Controllers\Admin;
 use FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordFormRequest;
-use App\Services\Model\UserService;
+use App\Services\Model\UserModelService;
 use App\Http\Requests\EditUserFormRequest;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -37,16 +38,16 @@ class UserController extends Controller
     use ResetsPasswords;
 
     /**
-     * @var \App\Services\Model\UserService
+     * @var \App\Services\Model\UserModelService
      */
     public $userService;
 
     /**
      * UserController constructor.
      *
-     * @param \App\Services\Model\UserService $userService
+     * @param \App\Services\Model\UserModelService $userService
      */
-    public function __construct(UserService $userService)
+    public function __construct(UserModelService $userService)
     {
         $this->userService = $userService;
     }
@@ -54,7 +55,7 @@ class UserController extends Controller
     /**
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function index()
+    public function index(): RedirectResponse
     {
         return redirect()->route('admin.users.edit', [request()->user()->id]);
     }
@@ -65,7 +66,7 @@ class UserController extends Controller
      * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function show($userId)
+    public function show($userId): RedirectResponse
     {
         return redirect()->route('admin.users.edit', [$userId]);
     }
@@ -98,7 +99,7 @@ class UserController extends Controller
      * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(EditUserFormRequest $request, $userId)
+    public function update(EditUserFormRequest $request, $userId): RedirectResponse
     {
         $user = $this->userService->findWith($userId);
 
@@ -130,7 +131,7 @@ class UserController extends Controller
      * @param PasswordFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function pass(PasswordFormRequest $request)
+    public function pass(PasswordFormRequest $request): RedirectResponse
     {
         $user = $this->userService->find($request->route('id'));
 

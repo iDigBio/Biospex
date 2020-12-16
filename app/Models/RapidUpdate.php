@@ -19,6 +19,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 class RapidUpdate extends BaseEloquentModel
 {
     /**
@@ -30,6 +32,7 @@ class RapidUpdate extends BaseEloquentModel
      * @inheritDoc
      */
     protected $fillable = [
+        'header_id',
         'user_id',
         'file_orig_name',
         'file_name',
@@ -42,9 +45,19 @@ class RapidUpdate extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Has one relation to RapidHeader.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function headers(): HasOne
+    {
+        return $this->hasOne(RapidHeader::class);
     }
 
     /**

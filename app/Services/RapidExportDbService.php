@@ -19,7 +19,7 @@
 
 namespace App\Services;
 
-use App\Services\Model\ExportFormService;
+use App\Services\Model\ExportFormModelService;
 use App\Models\ExportForm;
 use Illuminate\Support\Collection;
 
@@ -32,20 +32,20 @@ class RapidExportDbService
 {
 
     /**
-     * @var \App\Services\Model\ExportFormService
+     * @var \App\Services\Model\ExportFormModelService
      */
-    private $exportFormService;
+    private $exportFormModelService;
 
     /**
      * RapidExportDbService constructor.
      *
-     * @param \App\Services\Model\ExportFormService $exportFormService
+     * @param \App\Services\Model\ExportFormModelService $exportFormModelService
      */
     public function __construct(
-        ExportFormService $exportFormService
+        ExportFormModelService $exportFormModelService
     )
     {
-        $this->exportFormService = $exportFormService;
+        $this->exportFormModelService = $exportFormModelService;
     }
 
     /**
@@ -56,7 +56,7 @@ class RapidExportDbService
      */
     public function findRapidFormById(int $id): ExportForm
     {
-        return $this->exportFormService->findWith($id, ['user']);
+        return $this->exportFormModelService->findWith($id, ['user']);
     }
 
     /**
@@ -74,7 +74,7 @@ class RapidExportDbService
             'data'        => $fields,
         ];
 
-        return $this->exportFormService->create($data);
+        return $this->exportFormModelService->create($data);
     }
 
     /**
@@ -84,6 +84,6 @@ class RapidExportDbService
      */
     public function getRapidFormsSelect(): Collection
     {
-        return $this->exportFormService->getFormsSelect();
+        return $this->exportFormModelService->getFormsSelect();
     }
 }

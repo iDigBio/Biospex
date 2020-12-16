@@ -19,7 +19,9 @@
 
 namespace App\Services;
 
-use App\Services\Model\RapidRecordService;
+use App\Models\RapidHeader;
+use App\Services\Model\RapidHeaderModelService;
+use App\Services\Model\RapidRecordModelService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ZipArchive;
@@ -37,9 +39,9 @@ class RapidIngestService extends RapidServiceBase
     private $csvService;
 
     /**
-     * @var \App\Services\Model\RapidRecordService
+     * @var \App\Services\Model\RapidRecordModelService
      */
-    private $rapidRecordService;
+    private $rapidRecordModelService;
 
     /**
      * @var array
@@ -67,27 +69,26 @@ class RapidIngestService extends RapidServiceBase
     private $updatedRecordsCount = 0;
 
     /**
-     * @var \App\Services\RapidFileService
+     * @var \App\Services\Model\RapidHeaderModelService
      */
-    private $rapidFileService;
+    private $rapidHeaderModelService;
 
     /**
      * RapidIngestService constructor.
      *
      * @param \App\Services\CsvService $csvService
-     * @param \App\Services\Model\RapidRecordService $rapidRecordService
-     * @param \App\Services\RapidFileService $rapidFileService
+     * @param \App\Services\Model\RapidRecordModelService $rapidRecordModelService
+     * @param \App\Services\Model\RapidHeaderModelService $rapidHeaderModelService
      */
     public function __construct(
         CsvService $csvService,
-        RapidRecordService $rapidRecordService,
-        RapidFileService $rapidFileService
-    )
-    {
+        RapidRecordModelService $rapidRecordModelService,
+        RapidHeaderModelService $rapidHeaderModelService
+    ) {
 
         $this->csvService = $csvService;
-        $this->rapidRecordService = $rapidRecordService;
-        $this->rapidFileService = $rapidFileService;
+        $this->rapidRecordModelService = $rapidRecordModelService;
+        $this->rapidHeaderModelService = $rapidHeaderModelService;
     }
 
     /**
@@ -95,17 +96,18 @@ class RapidIngestService extends RapidServiceBase
      *
      * @param string $csvFilePath
      * @param bool $import
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @return \App\Models\RapidHeader
      * @throws \League\Csv\Exception
      */
-    public function process(string $csvFilePath, bool $import = false)
+    public function process(string $csvFilePath, bool $import = false): RapidHeader
     {
         $this->loadCsvFile($csvFilePath);
         $this->setCsvHeader();
-        $this->updateHeader();
         $this->setRows();
 
         $import ? $this->processImportRows() : $this->processUpdateRows();
+
+        return $this->storeHeader();
     }
 
     /**
@@ -114,10 +116,10 @@ class RapidIngestService extends RapidServiceBase
      * @param string $filePath
      * @return array|null
      */
-    public function unzipFile(string $filePath)
+    public function unzipFile(string $filePath): ?array
     {
-        $importsPath = $this->rapidFileService->getImportsPath();
-        $tmpPath = $importsPath . '/tmp';
+        $importsPath = $this->getImportsPath();
+        $tmpPath = $importsPath.'/tmp';
 
         Storage::makeDirectory($tmpPath);
 
@@ -126,15 +128,15 @@ class RapidIngestService extends RapidServiceBase
 
         $zipArchive = new ZipArchive();
         $result = $zipArchive->open(Storage::path($filePath));
-        if ($result === TRUE) {
+        if ($result === true) {
             $zipArchive->extractTo(Storage::path($tmpPath));
             $zipArchive->close();
 
             $files = \File::allFiles(Storage::path($tmpPath));
             foreach ($files as $file) {
-                if($file->getExtension() === 'csv') {
-                    $fileName = date('d-m-Y_H-i-s') . '_' . $file->getFilename();
-                    $csvFilePath = Storage::path($importsPath . '/' . $fileName);
+                if ($file->getExtension() === 'csv') {
+                    $fileName = date('d-m-Y_H-i-s').'_'.$file->getFilename();
+                    $csvFilePath = Storage::path($importsPath.'/'.$fileName);
                     \File::move($file->getPathname(), $csvFilePath);
                     break;
                 }
@@ -170,19 +172,22 @@ class RapidIngestService extends RapidServiceBase
     }
 
     /**
-     * Store the header file.
+     * Update and store new header.
+     *
+     * @return \App\Models\RapidHeader
      */
-    public function storeHeader()
+    public function storeHeader(): RapidHeader
     {
-        $this->rapidFileService->storeHeader($this->csvHeader);
-    }
+        $header = $this->rapidHeaderModelService->getLatestHeader()->data;
+        $protectedFields = $this->getProtectedFields();
 
-    /**
-     * Update the header with new values if they are different.
-     */
-    public function updateHeader()
-    {
-        $this->rapidFileService->updateHeader($this->csvHeader);
+        $diff = collect($this->csvHeader)->diff($header)->reject(function ($field) use ($protectedFields) {
+            return in_array($field, $protectedFields);
+        });
+
+        $rapidHeader = collect($header)->concat($diff)->toArray();
+
+        return $this->rapidHeaderModelService->create(['data' => $rapidHeader]);
     }
 
     /**
@@ -214,7 +219,7 @@ class RapidIngestService extends RapidServiceBase
             return;
         }
 
-        $this->rapidRecordService->create($row);
+        $this->rapidRecordModelService->create($row);
     }
 
     /**
@@ -226,13 +231,13 @@ class RapidIngestService extends RapidServiceBase
     public function validateRow($row)
     {
         $attributes = [];
-        $validationFields = $this->rapidFileService->getValidationFields();
+        $validationFields = $this->getValidationFields();
 
         foreach ($validationFields as $field) {
             $attributes[$field] = $row[$field];
         }
 
-        $count = $this->rapidRecordService->validateRecord($attributes);
+        $count = $this->rapidRecordModelService->validateRecord($attributes);
 
         if ($count) {
             $this->errors[] = $row;
@@ -269,7 +274,7 @@ class RapidIngestService extends RapidServiceBase
      */
     public function updateRecord(array $attributes, string $id)
     {
-        $result =$this->rapidRecordService->update($attributes, $id);
+        $result = $this->rapidRecordModelService->update($attributes, $id);
 
         if (! $result) {
             $this->errors[] = array_merge(['_id' => $id], $attributes);
@@ -284,17 +289,17 @@ class RapidIngestService extends RapidServiceBase
      * @return string
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function createCsv() {
+    public function createCsv()
+    {
         $errors = collect($this->errors)->recursive();
         $header = $errors->first()->keys();
 
-        $fileName = Str::random() . '.csv';
-        $filePath = Storage::path(config('config.reports_dir') . '/' . $fileName);
+        $fileName = Str::random().'.csv';
+        $filePath = Storage::path(config('config.reports_dir').'/'.$fileName);
 
         $this->csvService->writerCreateFromPath($filePath);
         $this->csvService->insertOne($header);
         $this->csvService->insertAll($errors->toArray());
-
 
         return route('admin.download.report', ['fileName' => base64_encode($fileName)]);
     }
@@ -324,18 +329,18 @@ class RapidIngestService extends RapidServiceBase
      */
     private function setUpdateFields()
     {
-        $this->updateFields = collect($this->csvHeader)->flip()->filter(function ($field, $key){
+        $this->updateFields = collect($this->csvHeader)->flip()->filter(function ($field, $key) {
             return strpos($key, '_rapid') !== false;
         })->toArray();
     }
 
     /**
-     * Return updated fields.
+     * Return updated fields for sending in update notification.
      *
      * @return array
      */
     public function getUpdatedFields(): array
     {
-        return $this->updateFields;
+        return array_keys($this->updateFields);
     }
 }

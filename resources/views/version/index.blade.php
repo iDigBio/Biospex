@@ -10,6 +10,12 @@
     <h2 class="text-center text-uppercase pt-4">{{ t('Rapid Record Version') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
+        <div class="col-sm-3 mx-auto text-center my-4">
+            <a href="{{ route('admin.version.create') }}" type="submit"
+               class="btn btn-primary text-uppercase"><i class="fas fa-plus-circle"></i> {{ t('Create Version File') }}</a>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-10 m-auto">
             <div class="card white box-shadow py-5 my-5 p-sm-5">
                 <table id="version" class="table table-striped table-bordered dt-responsive"

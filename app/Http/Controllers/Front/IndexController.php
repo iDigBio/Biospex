@@ -20,7 +20,9 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Services\Model\RapidRecordService;
+use App\Services\Model\RapidRecordModelService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Yajra\DataTables\Facades\DataTables;
@@ -35,7 +37,7 @@ class IndexController extends Controller
     /**
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function index()
+    public function index(): RedirectResponse
     {
         if (Auth::check()) {
             return redirect()->route('admin.get.index');
@@ -47,16 +49,16 @@ class IndexController extends Controller
     /**
      * Show rapid record.
      *
-     * @param \App\Services\Model\RapidRecordService $rapidRecordService
+     * @param \App\Services\Model\RapidRecordModelService $rapidRecordModelService
      * @param string $view
      * @param string|null $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(RapidRecordService $rapidRecordService, string $view, string $id = null)
+    public function show(RapidRecordModelService $rapidRecordModelService, string $view, string $id = null)
     {
         $newId = $id === null ? $view : $id;
 
-        $record = $rapidRecordService->find($newId);
+        $record = $rapidRecordModelService->find($newId);
 
         $dataVars = isset($id) ? ['id' => $id, 'view' => $view] : ['id' => $view];
 
@@ -64,7 +66,7 @@ class IndexController extends Controller
     }
 
     /**
-     * @param \App\Services\Model\RapidRecordService $rapidRecordService
+     * @param \App\Services\Model\RapidRecordModelService $rapidRecordModelService
      * @param string $id
      * @param string|null $view
      * @return \Illuminate\Http\JsonResponse
@@ -76,13 +78,13 @@ class IndexController extends Controller
      * "verbatimLongitude_gbifP", // not available
      *
      */
-    public function data(RapidRecordService $rapidRecordService, string $id, string $view = null)
+    public function data(RapidRecordModelService $rapidRecordModelService, string $id, string $view = null): JsonResponse
     {
         if (! request()->ajax()) {
             return response()->json(['error' => t('Request must be ajax')]);
         }
 
-        $record = $rapidRecordService->find($id);
+        $record = $rapidRecordModelService->find($id);
 
         $mapped = collect($record->getAttributes())->map(function ($value, $field) {
             if ($field === '_id') {

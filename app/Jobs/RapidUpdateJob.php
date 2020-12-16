@@ -22,15 +22,16 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\JobErrorNotification;
 use App\Notifications\UpdateNotification;
-use App\Services\Model\RapidUpdateService;
+use App\Services\Model\RapidUpdateModelService;
 use App\Services\RapidIngestService;
+use Carbon\Carbon;
 use Exception;
-use File;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Storage;
 
 /**
  * Class RapidUpdateJob
@@ -82,31 +83,33 @@ class RapidUpdateJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\RapidIngestService $rapidIngestService
-     * @param \App\Services\Model\RapidUpdateService $rapidService
+     * @param \App\Services\Model\RapidUpdateModelService $rapidUpdateModelService
      */
-    public function handle(RapidIngestService $rapidIngestService, RapidUpdateService $rapidService)
+    public function handle(RapidIngestService $rapidIngestService, RapidUpdateModelService $rapidUpdateModelService)
     {
         try {
-            if (! File::exists($this->filePath)) {
+            if (! Storage::exists($this->filePath)) {
                 throw new Exception(t('Rapid import file does not exist while processing update job.'));
             }
 
             [$fileName, $filePath] = $rapidIngestService->unzipFile($this->filePath);
 
-            $rapidIngestService->process($filePath);
+            $rapidHeaderRecord = $rapidIngestService->process($filePath);
 
             $recordsUpdated = $rapidIngestService->getUpdatedRecordsCount();
+
             $fields = $rapidIngestService->getUpdatedFields();
 
             $data = [
-                'user_id'        => $this->user->id,
-                'file_orig_name' => $this->fileOrigName,
-                'file_name'      => $fileName,
-                'fields_updated' => $fields,
-                'updated_records' => $recordsUpdated
+                'header_id'       => $rapidHeaderRecord->id,
+                'user_id'         => $this->user->id,
+                'file_orig_name'  => $this->fileOrigName,
+                'file_name'       => $fileName,
+                'fields_updated'  => $fields,
+                'updated_records' => $recordsUpdated,
             ];
 
-            $rapidService->create($data);
+            $rapidUpdateModelService->create($data);
 
             $downloadUrl = null;
             if ($rapidIngestService->checkErrors()) {
@@ -115,15 +118,15 @@ class RapidUpdateJob implements ShouldQueue
 
             $this->user->notify(new UpdateNotification($this->fileOrigName, $recordsUpdated, $fields, $downloadUrl));
 
-            RapidVersionJob::dispatch($this->user);
+            RapidVersionJob::dispatch($this->user, Carbon::now('UTC')->timestamp)->delay(now()->addMinutes(10));
 
             return;
         } catch (Exception $exception) {
             $attributes = [
                 'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'trace' => $exception->getTraceAsString()
+                'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+                'trace'   => $exception->getTraceAsString(),
             ];
 
             $this->user->notify(new JobErrorNotification($attributes));
