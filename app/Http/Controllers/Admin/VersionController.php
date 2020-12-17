@@ -26,7 +26,6 @@ use App\Services\Model\RapidVersionModelService;
 use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
-use Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 /**
@@ -79,7 +78,7 @@ class VersionController extends Controller
      */
     public function create()
     {
-        RapidVersionJob::dispatch(Auth::user(), Carbon::now('UTC')->timestamp); //->delay(now()->addMinutes(5));
+        RapidVersionJob::dispatch(Auth::user(), Carbon::now('UTC')->timestamp);
 
         FlashHelper::success(t('Your request has been submitted and will start in 10 minutes. You will be notified by email when complete.'));
 

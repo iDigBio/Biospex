@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-11-21T17:01:05+00:00\n"
-"PO-Revision-Date: 2020-11-21 18:01+0100\n"
+"POT-Creation-Date: 2020-12-16T15:12:18+00:00\n"
+"PO-Revision-Date: 2020-12-16 16:13+0100\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
@@ -17,78 +17,82 @@ msgid "Report file does not exist."
 msgstr ""
 
 #: app/Http/Controllers/Admin/DownloadController.php:74
-#: app/Services/RapidExportService.php:459
+#: app/Services/RapidExportService.php:463
 msgid "RAPID export file does not exist."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExportController.php:72
-#: app/Http/Controllers/Front/IndexController.php:82
+#: app/Http/Controllers/Admin/DownloadController.php:103
+msgid "RAPID version file does not exist."
+msgstr ""
+
+#: app/Http/Controllers/Admin/ExportController.php:73
+#: app/Http/Controllers/Admin/VersionController.php:58
+#: app/Http/Controllers/Front/IndexController.php:84
 msgid "Request must be ajax"
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExportController.php:94
+#: app/Http/Controllers/Admin/ExportController.php:95
 msgid "The export is processing. You will be notified by email when completed."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:65
+#: app/Http/Controllers/Admin/IngestController.php:60
 msgid "The import failed to upload. Please contact the administration to determine the error."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:72
+#: app/Http/Controllers/Admin/IngestController.php:67
 msgid "The import uploaded successfully. You will be notified by email when it's completed."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:90
+#: app/Http/Controllers/Admin/IngestController.php:85
 msgid "The update failed to upload. Please contact the administration to determine the error."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:97
-msgid "The update has been uploaded. Please select the fields you wish to update and click UPDATE"
+#: app/Http/Controllers/Admin/IngestController.php:92
+msgid "The update has been uploaded. You will receive an email when the process has been completed."
 msgstr ""
 
-#: app/Http/Controllers/Admin/IngestController.php:112
-msgid "The update file path does not exist. Please contact the administration to determine the error."
-msgstr ""
-
-#: app/Http/Controllers/Admin/IngestController.php:129
-msgid "An error occurred while loading the csv file. Please contact the administration to determine the error."
-msgstr ""
-
-#: app/Http/Controllers/Admin/IngestController.php:158
-msgid "Your selections for the update are being processed. You will be notified by email when complete."
-msgstr ""
-
-#: app/Http/Controllers/Admin/UserController.php:85
-#: app/Http/Controllers/Admin/UserController.php:107
-#: app/Http/Controllers/Admin/UserController.php:139
+#: app/Http/Controllers/Admin/UserController.php:86
+#: app/Http/Controllers/Admin/UserController.php:108
+#: app/Http/Controllers/Admin/UserController.php:140
 #: app/Http/Controllers/Controller.php:30
-#: app/Services/RapidExportService.php:453
+#: app/Services/RapidExportService.php:457
 msgid "You do not have sufficient permissions."
 msgstr ""
 
-#: app/Http/Controllers/Admin/UserController.php:117
+#: app/Http/Controllers/Admin/UserController.php:118
 msgid "Record was updated successfully."
 msgstr ""
 
-#: app/Http/Controllers/Admin/UserController.php:146
+#: app/Http/Controllers/Admin/UserController.php:147
 msgid "You did not provide the correct original password."
 msgstr ""
 
-#: app/Http/Controllers/Admin/UserController.php:153
+#: app/Http/Controllers/Admin/UserController.php:154
 msgid "Your password has been changed."
+msgstr ""
+
+#: app/Http/Controllers/Admin/VersionController.php:84
+msgid "Your request has been submitted and will start in 10 minutes. You will be notified by email when complete."
 msgstr ""
 
 #: app/Http/Controllers/Auth/RegisterController.php:78
 msgid "Registration is not available at this time."
 msgstr ""
 
-#: app/Jobs/RapidImportJob.php:82
-#: app/Jobs/RapidUpdateJob.php:92
+#: app/Jobs/RapidImportJob.php:84
 msgid "Rapid import file does not exist while processing import job."
 msgstr ""
 
-#: app/Jobs/RapidImportJob.php:88
+#: app/Jobs/RapidImportJob.php:90
 msgid "CSV file could not be extracted from zip file."
+msgstr ""
+
+#: app/Jobs/RapidUpdateJob.php:92
+msgid "Rapid import file does not exist while processing update job."
+msgstr ""
+
+#: app/Jobs/RapidVersionJob.php:105
+msgid "Error in executing command to build version file %s"
 msgstr ""
 
 #: app/Presenters/RapidRecordPresenter.php:42
@@ -99,20 +103,20 @@ msgstr ""
 msgid "iDigBio"
 msgstr ""
 
-#: app/Services/RapidExportService.php:428
+#: app/Services/RapidExportService.php:432
 msgid "Csv data returned empty while exporting."
 msgstr ""
 
-#: app/Services/RapidExportService.php:447
+#: app/Services/RapidExportService.php:451
 msgid "The export you would like to delete does not exist."
 msgstr ""
 
-#: app/Services/RapidExportService.php:467
+#: app/Services/RapidExportService.php:471
 msgid "RAPID export file and data has been deleted."
 msgstr ""
 
 #: resources/views/auth/login.blade.php:5
-#: resources/views/partials/nav.blade.php:31
+#: resources/views/partials/nav.blade.php:33
 msgid "Login"
 msgstr ""
 
@@ -329,7 +333,6 @@ msgstr ""
 
 #: resources/views/ingest/index.blade.php:5
 #: resources/views/ingest/index.blade.php:11
-#: resources/views/ingest/update.blade.php:5
 msgid "Rapid Records Import"
 msgstr ""
 
@@ -351,16 +354,7 @@ msgid "Update Rapid Records Data"
 msgstr ""
 
 #: resources/views/ingest/index.blade.php:85
-#: resources/views/ingest/update.blade.php:52
 msgid "Update"
-msgstr ""
-
-#: resources/views/ingest/update.blade.php:11
-msgid "Rapid Records Update"
-msgstr ""
-
-#: resources/views/ingest/update.blade.php:24
-msgid "At least one selection needs to be made."
 msgstr ""
 
 #: resources/views/layout/foot.blade.php:4
@@ -381,15 +375,17 @@ msgstr ""
 
 #: resources/views/mail/export-notification.blade.php:8
 #: resources/views/mail/import-notification.blade.php:9
-#: resources/views/mail/update-notification.blade.php:19
+#: resources/views/mail/update-notification.blade.php:22
+#: resources/views/mail/version-notification.blade.php:8
 msgid "Download"
 msgstr ""
 
 #: resources/views/mail/export-notification.blade.php:16
 #: resources/views/mail/failedjob.blade.php:8
 #: resources/views/mail/import-notification.blade.php:18
-#: resources/views/mail/job-error-notification.blade.php:14
-#: resources/views/mail/update-notification.blade.php:28
+#: resources/views/mail/job-error-notification.blade.php:17
+#: resources/views/mail/update-notification.blade.php:31
+#: resources/views/mail/version-notification.blade.php:16
 msgid "Thank you"
 msgstr ""
 
@@ -402,7 +398,7 @@ msgid "RAPID Import Completed"
 msgstr ""
 
 #: resources/views/mail/import-notification.blade.php:6
-#: resources/views/mail/update-notification.blade.php:16
+#: resources/views/mail/update-notification.blade.php:19
 msgid "There were errors while updating some of the Rapid Records. Click the button below to download the columns not updated."
 msgstr ""
 
@@ -414,15 +410,15 @@ msgstr ""
 msgid "Message"
 msgstr ""
 
-#: resources/views/mail/job-error-notification.blade.php:7
+#: resources/views/mail/job-error-notification.blade.php:8
 msgid "File"
 msgstr ""
 
-#: resources/views/mail/job-error-notification.blade.php:9
+#: resources/views/mail/job-error-notification.blade.php:11
 msgid "Line"
 msgstr ""
 
-#: resources/views/mail/job-error-notification.blade.php:11
+#: resources/views/mail/job-error-notification.blade.php:14
 msgid "Trace"
 msgstr ""
 
@@ -431,15 +427,27 @@ msgid "RAPID Update Completed"
 msgstr ""
 
 #: resources/views/mail/update-notification.blade.php:5
-msgid "File Name"
+msgid "The Rapid update has been completed. You will receive another email when the exported version file is completed."
 msgstr ""
 
 #: resources/views/mail/update-notification.blade.php:8
-msgid "Rows Updated"
+msgid "File Name"
 msgstr ""
 
 #: resources/views/mail/update-notification.blade.php:11
-msgid "Update Fields "
+msgid "Rows Updated"
+msgstr ""
+
+#: resources/views/mail/update-notification.blade.php:14
+msgid "Updated Fields "
+msgstr ""
+
+#: resources/views/mail/version-notification.blade.php:2
+msgid "RAPID Version Completed"
+msgstr ""
+
+#: resources/views/mail/version-notification.blade.php:4
+msgid "The RAPID versioning file is complete and may be downloaded by clicking the button below. You must be logged in to access the download."
 msgstr ""
 
 #: resources/views/partials/back-login.blade.php:2
@@ -475,10 +483,15 @@ msgid "Ingest"
 msgstr ""
 
 #: resources/views/partials/nav.blade.php:24
-msgid "Account"
+#: resources/views/version/index.blade.php:5
+msgid "Version"
 msgstr ""
 
 #: resources/views/partials/nav.blade.php:26
+msgid "Account"
+msgstr ""
+
+#: resources/views/partials/nav.blade.php:28
 msgid "Logout"
 msgstr ""
 
@@ -511,4 +524,12 @@ msgstr ""
 
 #: resources/views/user/edit.blade.php:57
 msgid "New Password"
+msgstr ""
+
+#: resources/views/version/index.blade.php:11
+msgid "Rapid Record Version"
+msgstr ""
+
+#: resources/views/version/index.blade.php:16
+msgid "Create Version File"
 msgstr ""
