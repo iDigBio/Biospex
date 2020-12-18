@@ -94,8 +94,9 @@ class RapidVersionJob implements ShouldQueue
             $header = $rapidHeaderModelService->getLatestHeader();
             $rapidServiceBase->buildExportHeader($header->data);
             $exportHeaderPath = $rapidServiceBase->getExportHeaderFile();
+            $dbHost = config('database.connections.mongodb.host');
 
-            exec('mongoexport --quiet --db=rapid --collection=rapid_records --type=csv --fieldFile='.$exportHeaderPath.' --out='.$versionFilePath, $output, $result_code);
+            exec('mongoexport --host='.$dbHost.' --quiet --db=rapid --collection=rapid_records --type=csv --fieldFile='.$exportHeaderPath.' --out='.$versionFilePath, $output, $result_code);
 
             if (! $result_code) {
                 throw new \Exception(t('Error in executing command to build version file %s', $this->versionFileName));
