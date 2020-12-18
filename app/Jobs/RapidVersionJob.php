@@ -68,6 +68,11 @@ class RapidVersionJob implements ShouldQueue
     private $versionFileName;
 
     /**
+     * @var string
+     */
+    private $zipFileName;
+
+    /**
      * @var \App\Services\RapidServiceBase
      */
     private $rapidServiceBase;
@@ -81,7 +86,6 @@ class RapidVersionJob implements ShouldQueue
     {
         $this->onQueue(config('config.rapid_tube'));
         $this->user = $user;
-        $this->versionFileName = Carbon::now('UTC')->timestamp.'.csv';
     }
 
     /**
@@ -100,6 +104,9 @@ class RapidVersionJob implements ShouldQueue
             Storage::makeDirectory(config('config.rapid_version_dir'));
         }
 
+        $now = Carbon::now('UTC')->timestamp;
+        $this->versionFileName = $now.'.csv';
+        $this->zipFileName = $now.'.zip';
         $this->rapidServiceBase = $rapidServiceBase;
 
         try {
@@ -122,12 +129,15 @@ class RapidVersionJob implements ShouldQueue
                 throw new \Exception(t('Version file was empty for file %s', $this->versionFileName));
             }
 
+            $this->rapidServiceBase->zipVersionFile($this->versionFileName, $this->zipFileName);
+
             $rapidVersionModelService->create([
                 'header_id' => $header->id,
                 'user_id'   => $this->user->id,
-                'file_name' => $this->versionFileName,
+                'file_name' => $this->zipFileName,
             ]);
 
+            $rapidServiceBase->deleteVersionFile($this->versionFileName);
             $rapidServiceBase->deleteExportHeaderFile();
 
             $downloadUrl = route('admin.download.version', [base64_encode($this->versionFileName)]);

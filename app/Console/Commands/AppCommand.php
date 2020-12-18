@@ -19,15 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
-use App\Notifications\JobErrorNotification;
-use App\Notifications\VersionNotification;
-use App\Services\Model\RapidHeaderModelService;
-use App\Services\Model\RapidVersionModelService;
-use App\Services\RapidServiceBase;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Storage;
 
 /**
  * Class AppCommand
@@ -47,43 +39,12 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Models\User
-     */
-    private $user;
-
-    /**
-     * @var string
-     */
-    private $versionFileName;
-
-    /**
-     * @var \App\Services\RapidServiceBase
-     */
-    private $rapidServiceBase;
-
-    /**
-     * @var \App\Services\Model\RapidVersionModelService
-     */
-    private $rapidVersionModelService;
-
-    /**
-     * @var \App\Services\Model\RapidHeaderModelService
-     */
-    private $rapidHeaderModelService;
-
-    /**
      * AppCommand constructor.
      */
     public function __construct(
-        RapidServiceBase $rapidServiceBase,
-        RapidVersionModelService $rapidVersionModelService,
-        RapidHeaderModelService $rapidHeaderModelService
     )
     {
         parent::__construct();
-        $this->rapidServiceBase = $rapidServiceBase;
-        $this->rapidVersionModelService = $rapidVersionModelService;
-        $this->rapidHeaderModelService = $rapidHeaderModelService;
     }
 
     /**
@@ -91,56 +52,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        if (! Storage::exists(config('config.rapid_version_dir'))) {
-            Storage::makeDirectory(config('config.rapid_version_dir'));
-        }
-
-        $this->user = User::find(1);
-        $this->versionFileName = Carbon::now('UTC')->timestamp.'.csv';
-
-        try {
-
-            $versionFilePath = $this->rapidServiceBase->getVersionFilePath($this->versionFileName);
-            $header = $this->rapidHeaderModelService->getLatestHeader();
-            $this->rapidServiceBase->buildExportHeader($header->data);
-            $exportHeaderPath = $this->rapidServiceBase->getExportHeaderFile();
-            $dbHost = config('database.connections.mongodb.host');
-
-            exec('mongoexport --host='.$dbHost.' --db=rapid --collection=rapid_records --type=csv --fieldFile='.$exportHeaderPath.' --out='.$versionFilePath, $output, $result_code);
-
-            if (! $result_code) {
-                throw new \Exception(t('Error in executing command to build version file %s', $this->versionFileName));
-            }
-
-            $size = $this->rapidServiceBase->getVersionFileSize($this->versionFileName);
-
-            if (! $size) {
-                throw new \Exception(t('Version file was empty for file %s', $this->versionFileName));
-            }
-
-            $this->rapidVersionModelService->create([
-                'header_id' => $header->id,
-                'user_id'   => $this->user->id,
-                'file_name' => $this->versionFileName,
-            ]);
-
-            $this->rapidServiceBase->deleteExportHeaderFile();
-
-            $downloadUrl = route('admin.download.version', [base64_encode($this->versionFileName)]);
-            $this->user->notify(new VersionNotification($downloadUrl));
-        } catch (\Exception $e) {
-            $this->rapidServiceBase->deleteVersionFile($this->versionFileName);
-            $this->rapidServiceBase->deleteExportHeaderFile();
-
-            $attributes = [
-                'message' => $e->getMessage(),
-                'file'    => $e->getFile(),
-                'line'    => $e->getLine(),
-                'trace'   => $e->getTraceAsString(),
-            ];
-
-            $this->user->notify(new JobErrorNotification($attributes));
-        }
 
     }
 }

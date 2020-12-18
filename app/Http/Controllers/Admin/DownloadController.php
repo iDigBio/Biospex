@@ -93,7 +93,7 @@ class DownloadController extends Controller
      * Download version file.
      *
      * @param string $file
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function version(string $file)
     {
@@ -105,16 +105,13 @@ class DownloadController extends Controller
         }
 
         $filePath = Storage::path(config('config.rapid_version_dir') . '/' . $fileName);
-        $reader = Reader::createFromPath($filePath, 'r');
-        $reader->setOutputBOM(Reader::BOM_UTF8);
 
         $headers = [
-            'Content-Encoding' => 'none',
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Description' => 'File Transfer',
-            'Content-Disposition' => 'attachment; filename="'.$fileName.'"'
+            'Content-Type'        => 'application/octet-stream',
+            'Content-disposition' => 'attachment; filename="' . $fileName . '"',
+            'Content-Description' => 'File Transfer'
         ];
 
-        return response($reader->getContent(), 200, $headers);
+        return response()->download($filePath, $fileName, $headers);
     }
 }

@@ -22,6 +22,7 @@ namespace App\Services;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Storage;
+use ZipArchive;
 
 /**
  * Class RapidServiceBase
@@ -193,5 +194,24 @@ class RapidServiceBase
         });
 
         return $mapped->forget('unused');
+    }
+
+    /**
+     * Create zip file for version export.
+     *
+     * @param string $versionFileName
+     * @param string $zipFileName
+     */
+    public function zipVersionFile(string $versionFileName, string $zipFileName)
+    {
+        $zip = new ZipArchive;
+        if ($zip->open(Storage::path(config('config.rapid_version_dir')) . '/' . $zipFileName, ZipArchive::CREATE) === TRUE)
+        {
+            // Add files to the zip file
+            $zip->addFile(Storage::path(config('config.rapid_version_dir')) . '/' . $versionFileName, $versionFileName);
+
+            // All files are added, so close the zip file.
+            $zip->close();
+        }
     }
 }
