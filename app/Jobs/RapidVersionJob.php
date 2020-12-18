@@ -88,8 +88,6 @@ class RapidVersionJob implements ShouldQueue
 
         $this->rapidServiceBase = $rapidServiceBase;
 
-        $user = User::find(1);
-
         try {
 
             $versionFilePath = $rapidServiceBase->getVersionFilePath($this->versionFileName);
@@ -107,14 +105,14 @@ class RapidVersionJob implements ShouldQueue
 
             $rapidVersionModelService->create([
                 'header_id' => $header->id,
-                'user_id'   => $user->id,
+                'user_id'   => $this->user->id,
                 'file_name' => $this->versionFileName,
             ]);
 
             $rapidServiceBase->deleteExportHeaderFile();
 
             $downloadUrl = route('admin.download.version', [base64_encode($this->versionFileName)]);
-            $user->notify(new VersionNotification($downloadUrl));
+            $this->user->notify(new VersionNotification($downloadUrl));
         } catch (\Exception $e) {
             $rapidServiceBase->deleteVersionFile($this->versionFileName);
             $rapidServiceBase->deleteExportHeaderFile();
@@ -126,7 +124,7 @@ class RapidVersionJob implements ShouldQueue
                 'trace'   => $e->getTraceAsString(),
             ];
 
-            $user->notify(new JobErrorNotification($attributes));
+            $this->user->notify(new JobErrorNotification($attributes));
         }
     }
 
