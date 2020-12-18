@@ -57,7 +57,9 @@ class VersionController extends Controller
         }
 
         $versions = $rapidVersionModelService->allWith(['user']);
-        $mapped = $versions->map(function($version){
+        $mapped = $versions->filter(function($version){
+            return \Storage::exists(config('config.rapid_version_dir') . '/' . $version->file_name);
+        })->map(function($version){
             return [
                 $version->id,
                 $version->user->email,
