@@ -97,10 +97,14 @@ class RapidVersionJob implements ShouldQueue
 
             exec('mongoexport --quiet --db=rapid --collection=rapid_records --type=csv --fieldFile='.$exportHeaderPath.' --out='.$versionFilePath, $output, $result_code);
 
+            if (! $result_code) {
+                throw new \Exception(t('Error in executing command to build version file %s', $this->versionFileName));
+            }
+
             $size = $rapidServiceBase->getVersionFileSize($this->versionFileName);
 
-            if (! $result_code || $size === 0) {
-                throw new \Exception(t('Error in executing command to build version file %s', $this->versionFileName));
+            if (! $size) {
+                throw new \Exception(t('Version file was empty for file %s', $this->versionFileName));
             }
 
             $rapidVersionModelService->create([
