@@ -44,6 +44,20 @@ class RapidVersionJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
+
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 1800;
+
+    /**
      * @var \App\Models\User
      */
     private $user;
@@ -98,7 +112,7 @@ class RapidVersionJob implements ShouldQueue
 
             exec('mongoexport --host='.$dbHost.' --quiet --db=rapid --collection=rapid_records --type=csv --fieldFile='.$exportHeaderPath.' --out='.$versionFilePath, $output, $result_code);
 
-            if (! $result_code) {
+            if ($result_code !== 0) {
                 throw new \Exception(t('Error in executing command to build version file %s', $this->versionFileName));
             }
 
@@ -118,6 +132,9 @@ class RapidVersionJob implements ShouldQueue
 
             $downloadUrl = route('admin.download.version', [base64_encode($this->versionFileName)]);
             $this->user->notify(new VersionNotification($downloadUrl));
+
+            $this->delete();
+
         } catch (\Exception $e) {
             $rapidServiceBase->deleteVersionFile($this->versionFileName);
             $rapidServiceBase->deleteExportHeaderFile();
@@ -130,6 +147,8 @@ class RapidVersionJob implements ShouldQueue
             ];
 
             $this->user->notify(new JobErrorNotification($attributes));
+
+            $this->delete();
         }
     }
 
