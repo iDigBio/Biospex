@@ -25,6 +25,7 @@ use App\Notifications\VersionNotification;
 use App\Services\Model\RapidHeaderModelService;
 use App\Services\Model\RapidVersionModelService;
 use App\Services\RapidServiceBase;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Storage;
 
@@ -95,6 +96,7 @@ class AppCommand extends Command
         }
 
         $this->user = User::find(1);
+        $this->versionFileName = Carbon::now('UTC')->timestamp.'.csv';
 
         try {
 
