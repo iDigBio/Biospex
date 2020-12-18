@@ -24,7 +24,6 @@ use App\Notifications\JobErrorNotification;
 use App\Notifications\UpdateNotification;
 use App\Services\Model\RapidUpdateModelService;
 use App\Services\RapidIngestService;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -118,7 +117,7 @@ class RapidUpdateJob implements ShouldQueue
 
             $this->user->notify(new UpdateNotification($this->fileOrigName, $recordsUpdated, $fields, $downloadUrl));
 
-            RapidVersionJob::dispatch($this->user, Carbon::now('UTC')->timestamp)->delay(now()->addMinutes(10));
+            RapidVersionJob::dispatch($this->user)->delay(now()->addMinutes(10));
 
             return;
         } catch (Exception $exception) {

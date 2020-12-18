@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Jobs\RapidVersionJob;
 use App\Models\User;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 
 /**
  * Class CreateVersionCommand
@@ -48,6 +47,6 @@ class CreateVersionCommand extends Command
     {
         $user = User::find(1);
 
-        RapidVersionJob::dispatch($user, Carbon::now('UTC')->timestamp);
+        RapidVersionJob::dispatch($user);
     }
 }

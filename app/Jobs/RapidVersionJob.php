@@ -25,6 +25,7 @@ use App\Services\Model\RapidHeaderModelService;
 use App\Services\Model\RapidVersionModelService;
 use App\Models\User;
 use App\Services\RapidServiceBase;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -61,13 +62,12 @@ class RapidVersionJob implements ShouldQueue
      * Create a new job instance.
      *
      * @param \App\Models\User $user
-     * @param int $timestamp
      */
-    public function __construct(User $user, int $timestamp)
+    public function __construct(User $user)
     {
         $this->onQueue(config('config.rapid_tube'));
         $this->user = $user;
-        $this->versionFileName = $timestamp.'.csv';
+        $this->versionFileName = Carbon::now('UTC')->timestamp.'.csv';
     }
 
     /**
