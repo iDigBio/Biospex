@@ -43,6 +43,7 @@
             let $version = $('#version');
             let table = $version.DataTable( {
                 "ajax": $version.data('route'),
+                "order": [[ 3, "desc" ]],
                 "columnDefs": [ {
                     "targets": -1,
                     "data": null,
