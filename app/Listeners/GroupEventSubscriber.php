@@ -19,7 +19,6 @@
 
 namespace App\Listeners;
 
-use App\Models\ApiUser;
 use Illuminate\Auth\Events\Login;
 use App\Services\Model\GroupService;
 use Illuminate\Auth\Events\Logout;
@@ -85,11 +84,6 @@ class GroupEventSubscriber
      */
     public function onUserLogin($event)
     {
-        if ($event->user instanceof ApiUser)
-        {
-            return;
-        }
-
         $this->setUserGroupSession();
     }
 
