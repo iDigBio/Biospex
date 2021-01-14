@@ -38,6 +38,13 @@ class ZooniverseReconcileJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
     /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 300;
+
+    /**
      * @var int
      */
     private $expeditionId;
