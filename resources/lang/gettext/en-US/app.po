@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-11-19T16:09:50+00:00\n"
-"PO-Revision-Date: 2020-11-19 17:09+0100\n"
+"POT-Creation-Date: 2021-01-14T00:34:27+00:00\n"
+"PO-Revision-Date: 2021-01-14 01:34+0100\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
@@ -305,22 +305,27 @@ msgstr ""
 
 #: app/Jobs/ZooniverseCsvDownloadJob.php:76
 #: app/Jobs/ZooniverseCsvJob.php:131
-#: app/Jobs/ZooniverseReconcileJob.php:76
-#: app/Jobs/ZooniverseTranscriptionJob.php:91
+#: app/Jobs/ZooniversePusherJob.php:107
+#: app/Jobs/ZooniverseReconcileJob.php:84
+#: app/Jobs/ZooniverseTranscriptionJob.php:111
 msgid "Error: %s"
 msgstr ""
 
 #: app/Jobs/ZooniverseCsvDownloadJob.php:77
 #: app/Jobs/ZooniverseCsvJob.php:132
-#: app/Jobs/ZooniverseReconcileJob.php:77
-#: app/Jobs/ZooniverseTranscriptionJob.php:92
+#: app/Jobs/ZooniversePusherJob.php:108
+#: app/Jobs/ZooniverseReconcileJob.php:85
+#: app/Jobs/ZooniverseTranscriptionJob.php:100
+#: app/Jobs/ZooniverseTranscriptionJob.php:112
 msgid "File: %s"
 msgstr ""
 
 #: app/Jobs/ZooniverseCsvDownloadJob.php:78
 #: app/Jobs/ZooniverseCsvJob.php:133
-#: app/Jobs/ZooniverseReconcileJob.php:78
-#: app/Jobs/ZooniverseTranscriptionJob.php:93
+#: app/Jobs/ZooniversePusherJob.php:109
+#: app/Jobs/ZooniverseReconcileJob.php:86
+#: app/Jobs/ZooniverseTranscriptionJob.php:101
+#: app/Jobs/ZooniverseTranscriptionJob.php:113
 msgid "Line: %s"
 msgstr ""
 
@@ -328,8 +333,19 @@ msgstr ""
 msgid "Zooniverse csv creation for Expedition Id %s failed"
 msgstr ""
 
-#: app/Jobs/ZooniversePusherJob.php:103
-msgid "An error occurred while processing pusher job for Expedition Id: %s"
+#: app/Jobs/ZooniversePusherJob.php:88
+msgid "Could not find Expedition using Id: %"
+msgstr ""
+
+#: app/Jobs/ZooniversePusherJob.php:106
+#: app/Jobs/ZooniverseReconcileJob.php:83
+#: app/Jobs/ZooniverseTranscriptionJob.php:98
+#: app/Jobs/ZooniverseTranscriptionJob.php:110
+msgid "Expedition Id: %s"
+msgstr ""
+
+#: app/Jobs/ZooniverseTranscriptionJob.php:99
+msgid "Error: "
 msgstr ""
 
 #: app/Notifications/GroupInvite.php:73
@@ -2433,7 +2449,7 @@ msgstr ""
 #: resources/views/mail/importcomplete.blade.php:33
 #: resources/views/mail/importerror.blade.php:15
 #: resources/views/mail/invite.blade.php:17
-#: resources/views/mail/joberror.blade.php:8
+#: resources/views/mail/joberror.blade.php:19
 #: resources/views/mail/newnfnlegacy.blade.php:15
 #: resources/views/mail/newnfnpanoptes.blade.php:15
 #: resources/views/mail/nfnbatchexportcomplete.blade.php:13
@@ -2544,6 +2560,10 @@ msgstr ""
 
 #: resources/views/mail/invite.blade.php:9
 msgid "Join Now"
+msgstr ""
+
+#: resources/views/mail/joberror.blade.php:10
+msgid "Download Report CSV"
 msgstr ""
 
 #: resources/views/mail/newnfnlegacy.blade.php:2
