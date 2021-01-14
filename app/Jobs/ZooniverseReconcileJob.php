@@ -80,6 +80,7 @@ class ZooniverseReconcileJob implements ShouldQueue
         catch (\Exception $e) {
             $user = User::find(1);
             $messages = [
+                t('Expedition Id: %s', $this->expeditionId),
                 t('Error: %s', $e->getMessage()),
                 t('File: %s', $e->getFile()),
                 t('Line: %s', $e->getLine()),

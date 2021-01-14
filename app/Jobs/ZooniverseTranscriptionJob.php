@@ -95,6 +95,7 @@ class ZooniverseTranscriptionJob implements ShouldQueue
             $fileName = $transcriptionProcess->checkCsvError();
             if ($fileName !== null) {
                 $messages = [
+                    t('Expedition Id: %s', $this->expeditionId),
                     t('Error: ', 'Zooniverse Transcription'),
                     t('File: %s', __FILE__),
                     t('Line: %s', 89),
@@ -106,6 +107,7 @@ class ZooniverseTranscriptionJob implements ShouldQueue
         }
         catch (\Exception $e) {
             $messages = [
+                t('Expedition Id: %s', $this->expeditionId),
                 t('Error: %s', $e->getMessage()),
                 t('File: %s', $e->getFile()),
                 t('Line: %s', $e->getLine()),
