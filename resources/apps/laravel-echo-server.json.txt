@@ -19,15 +19,20 @@
     "host": null,
     "port": "6001",
     "protocol": "https",
-    "socketio": {},
+    "socketio": {
+    	"cors": {
+    		"origin": "APP_URL",
+            "credentials": true
+        }
+    },
     "sslCertPath": "ECHO_SSL_CRT",
     "sslKeyPath": "ECHO_SSL_KEY",
     "sslCertChainPath": "",
     "sslPassphrase": "",
     "apiOriginAllow": {
-        "allowCors": true,
-        "allowOrigin": "APP_URL:80",
-        "allowMethods": "GET, POST",
+        "allowCors": false,
+        "allowOrigin": "",
+        "allowMethods": "",
         "allowHeaders": "Origin, Content-Type, X-Auth-Token, X-Requested-With, Accept, Authorization, X-CSRF-TOKEN, X-Socket-Id"
     }
 }
