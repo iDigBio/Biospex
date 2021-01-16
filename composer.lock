@@ -439,16 +439,16 @@
         },
         {
             "name": "cviebrock/eloquent-sluggable",
-            "version": "8.0.2",
+            "version": "8.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cviebrock/eloquent-sluggable.git",
-                "reference": "1b693b333de9080380340facf3806c644a949ad7"
+                "reference": "7c20b4c3b6bbef1b915faa3ff8b5ccc4ce189ae7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cviebrock/eloquent-sluggable/zipball/1b693b333de9080380340facf3806c644a949ad7",
-                "reference": "1b693b333de9080380340facf3806c644a949ad7",
+                "url": "https://api.github.com/repos/cviebrock/eloquent-sluggable/zipball/7c20b4c3b6bbef1b915faa3ff8b5ccc4ce189ae7",
+                "reference": "7c20b4c3b6bbef1b915faa3ff8b5ccc4ce189ae7",
                 "shasum": ""
             },
             "require": {
@@ -463,7 +463,7 @@
                 "mockery/mockery": "^1.4.2",
                 "orchestra/database": "^6.0",
                 "orchestra/testbench": "^6.0",
-                "phpunit/phpunit": "^9.3"
+                "phpunit/phpunit": "^9.4"
             },
             "type": "library",
             "extra": {
@@ -500,9 +500,9 @@
             ],
             "support": {
                 "issues": "https://github.com/cviebrock/eloquent-sluggable/issues",
-                "source": "https://github.com/cviebrock/eloquent-sluggable/tree/8.0.2"
+                "source": "https://github.com/cviebrock/eloquent-sluggable/tree/8.0.3"
             },
-            "time": "2020-11-29T18:53:58+00:00"
+            "time": "2021-01-15T18:25:54+00:00"
         },
         {
             "name": "czim/file-handling",
@@ -3798,16 +3798,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.2",
+            "version": "3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "7a9418e4e02a3da7950b6b85c30e694d68daf995"
+                "reference": "97a5a270e4a9ebfc1a7e2f462e917cbce1a8e6d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/7a9418e4e02a3da7950b6b85c30e694d68daf995",
-                "reference": "7a9418e4e02a3da7950b6b85c30e694d68daf995",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/97a5a270e4a9ebfc1a7e2f462e917cbce1a8e6d9",
+                "reference": "97a5a270e4a9ebfc1a7e2f462e917cbce1a8e6d9",
                 "shasum": ""
             },
             "require": {
@@ -3889,7 +3889,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.2"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.3"
             },
             "funding": [
                 {
@@ -3905,7 +3905,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-12-23T16:39:00+00:00"
+            "time": "2021-01-16T17:35:19+00:00"
         },
         {
             "name": "psr/container",
@@ -7053,16 +7053,16 @@
         },
         {
             "name": "thiagoalessio/tesseract_ocr",
-            "version": "2.9.5",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thiagoalessio/tesseract-ocr-for-php.git",
-                "reference": "82cfd7879d6158be3098714f1d5c860f344a0e29"
+                "reference": "5908a1f2f542199efec9cecb297d8a3890206738"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thiagoalessio/tesseract-ocr-for-php/zipball/82cfd7879d6158be3098714f1d5c860f344a0e29",
-                "reference": "82cfd7879d6158be3098714f1d5c860f344a0e29",
+                "url": "https://api.github.com/repos/thiagoalessio/tesseract-ocr-for-php/zipball/5908a1f2f542199efec9cecb297d8a3890206738",
+                "reference": "5908a1f2f542199efec9cecb297d8a3890206738",
                 "shasum": ""
             },
             "require": {
@@ -7098,7 +7098,7 @@
                 "issues": "https://github.com/thiagoalessio/tesseract-ocr-for-php/issues",
                 "source": "https://github.com/thiagoalessio/tesseract-ocr-for-php"
             },
-            "time": "2020-12-07T18:48:58+00:00"
+            "time": "2021-01-14T12:01:03+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
