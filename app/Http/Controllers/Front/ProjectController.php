@@ -97,7 +97,7 @@ class ProjectController extends Controller
 
         $expeditions = null;
         $expeditionsCompleted = null;
-        if ($project->expeditions !== null) {
+        if (isset($project->expeditions)) {
             [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
                 return $expedition->nfnActor->pivot->completed === 0;
             });
@@ -105,7 +105,7 @@ class ProjectController extends Controller
 
         $events = null;
         $eventsCompleted = null;
-        if ($project->events !== null) {
+        if (isset($project->events)) {
             [$events, $eventsCompleted] = $project->events->partition(function ($event) {
                 return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
             });
