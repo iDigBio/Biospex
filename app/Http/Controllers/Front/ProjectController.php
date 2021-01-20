@@ -86,7 +86,7 @@ class ProjectController extends Controller
      * @param \App\Services\Process\TranscriptionChartService $chartService
      * @param \App\Services\Model\StateCountyService $stateCountyService
      * @param $slug
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function project(
         TranscriptionChartService $chartService,
