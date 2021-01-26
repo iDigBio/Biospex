@@ -19,6 +19,12 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
+use App\Notifications\ExportNotification;
+use App\Notifications\JobErrorNotification;
+use App\Services\Export\RapidExportService;
+use DB;
+use Exception;
 use Illuminate\Console\Command;
 
 /**
@@ -39,12 +45,19 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * AppCommand constructor.
+     * @var \App\Services\Export\RapidExportService
      */
-    public function __construct(
-    )
+    private $rapidExportService;
+
+    /**
+     * AppCommand constructor.
+     *
+     * @param \App\Services\Export\RapidExportService $rapidExportService
+     */
+    public function __construct(RapidExportService $rapidExportService)
     {
         parent::__construct();
+        $this->rapidExportService = $rapidExportService;
     }
 
     /**
@@ -52,6 +65,40 @@ class AppCommand extends Command
      */
     public function handle()
     {
+
+        DB::beginTransaction();
+
+        $user = User::find(1);
+        $data = json_decode(\Storage::get('generic.json'), true);
+
+        try {
+            $fields = isset($data['exportFields']) ?
+                $this->rapidExportService->mapExportFields($data) :
+                $this->rapidExportService->mapDirectFields($data);
+
+            $form = $this->rapidExportService->saveForm($fields, $user->id);
+            $this->rapidExportService->createFileName($form, $user, $fields);
+
+            $downloadUrl = $this->rapidExportService->buildExport($fields);
+
+            DB::commit();
+
+            $user->notify(new ExportNotification($downloadUrl));
+
+            return;
+
+        } catch (Exception $exception) {
+            DB::rollback();
+
+            $attributes = [
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => $exception->getTraceAsString()
+            ];
+
+            $user->notify(new JobErrorNotification($attributes));
+        }
 
     }
 }

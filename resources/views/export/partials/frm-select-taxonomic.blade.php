@@ -5,7 +5,7 @@
     <input type="hidden" name="exportDestination" value="taxonomic">
     <div class="row">
         <div class="col-sm-10 mx-auto text-center mb-5">
-            @include('partials.export-type')
+            @include('export.partials.export-type')
         </div>
     </div>
     <div class="row">

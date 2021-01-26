@@ -19,7 +19,7 @@
 
 namespace App\Providers;
 
-use App\Services\FlashService;
+use App\Services\Helpers\FlashService;
 use Illuminate\Support\ServiceProvider;
 
 /**

@@ -79,6 +79,7 @@ return [
         'geolocate' => ['CatalogNumber' => '_id'],
         'people'    => ['BIOSPEXid' => '_id'],
         'taxonomic' => ['BIOSPEXid' => '_id'],
+        'generic'   => ['BIOSPEXid' => '_id'],
     ],
 
     /**

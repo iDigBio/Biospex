@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\RapidExportJob;
-use App\Services\RapidExportService;
+use App\Services\Export\RapidExportService;
 use FlashHelper;
 use Auth;
 use Illuminate\Http\RedirectResponse;
@@ -34,14 +34,14 @@ use Illuminate\Http\RedirectResponse;
 class ExportController extends Controller
 {
     /**
-     * @var \App\Services\RapidExportService
+     * @var \App\Services\Export\RapidExportService
      */
     private $rapidExportService;
 
     /**
-     * DashboardController constructor.
+     * ExportController constructor.
      *
-     * @param \App\Services\RapidExportService $rapidExportService
+     * @param \App\Services\Export\RapidExportService $rapidExportService
      */
     public function __construct(RapidExportService $rapidExportService)
     {

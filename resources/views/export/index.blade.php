@@ -13,41 +13,26 @@
         <div class="col-12 m-auto">
             <div id="accordion" class="card white box-shadow py-5 my-5 p-sm-5">
                 <div class="row">
-                    <h3 class="mb-5 mx-auto">{{ t('Select Export Destination') }}:</h3>
-                    <div class="col-sm-10 mx-auto text-center">
-                        <button type="button" class="btn btn-primary pl-4 pr-4 text-uppercase"
-                                data-toggle="collapse"
-                                data-target="#geolocate"
-                                data-hover="tooltip" title="{{ t('Export to GeoLocate') }}"
-                                aria-expanded="false" aria-controls="collapseGeoLocate"
-                        >{{ t('geolocate') }}</button>
-                        <button type="button" class="btn btn-primary pl-4 pr-4 text-uppercase"
-                                data-toggle="collapse"
-                                data-target="#people"
-                                data-hover="tooltip" title="{{ t('Export to People Standardization') }}"
-                                aria-expanded="false" aria-controls="collapsePeople"
-                        >{{ t('People') }}</button>
-                        <button type="button" class="btn btn-primary pl-4 pr-4 text-uppercase"
-                                data-toggle="collapse"
-                                data-target="#taxonomic"
-                                data-hover="tooltip" title="{{ t('Export Taxonomic') }}"
-                                aria-expanded="false" aria-controls="collapseTaxonomic"
-                        >{{ t('Taxonomic') }}</button>
-                    </div>
+                    @include('export.partials.export-destination')
                 </div>
                 <div class="row">
                     <div id="geolocate" data-parent="#accordion" class="col-sm-6 mx-auto text-center mt-5 collapse">
-                        @include('export.partials.geolocate-frm-select')
+                        @include('export.partials.frm-select-geolocate')
                     </div>
                 </div>
                 <div class="row">
                     <div id="people" data-parent="#accordion" class="col-sm-6 mx-auto text-center mt-5 collapse">
-                        @include('export.partials.people-frm-select')
+                        @include('export.partials.frm-select-people')
                     </div>
                 </div>
                 <div class="row">
                     <div id="taxonomic" data-parent="#accordion" class="col-sm-6 mx-auto text-center mt-5 collapse">
-                        @include('export.partials.taxonomic-frm-select')
+                        @include('export.partials.frm-select-taxonomic')
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="generic" data-parent="#accordion" class="col-sm-6 mx-auto text-center mt-5 collapse">
+                        @include('export.partials.frm-select-generic')
                     </div>
                 </div>
                 <div class="row">
@@ -56,5 +41,4 @@
             </div>
         </div>
     </div>
-
 @endsection

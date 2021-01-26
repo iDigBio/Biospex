@@ -22,13 +22,15 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\ExportNotification;
 use App\Notifications\JobErrorNotification;
-use App\Services\RapidExportService;
+use App\Services\Export\RapidExportService;
+use DB;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class RapidExportJob
@@ -50,11 +52,16 @@ class RapidExportJob implements ShouldQueue
     private $data;
 
     /**
+     * @var string
+     */
+    private $frmFile;
+
+    /**
      * The number of seconds the job can run before timing out.
      *
      * @var int
      */
-    public $timeout = 1200;
+    public $timeout = 3600;
 
     /**
      * Create a new job instance.
@@ -70,21 +77,27 @@ class RapidExportJob implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Execute job.
      *
-     * @param \App\Services\RapidExportService $rapidExportService
+     * @param \App\Services\Export\RapidExportService $rapidExportService
+     * @throws \Throwable
      */
     public function handle(RapidExportService $rapidExportService)
     {
+        DB::beginTransaction();
+
         try {
             $fields = isset($this->data['exportFields']) ?
-                $rapidExportService->mapFormFields($this->data) :
+                $rapidExportService->mapExportFields($this->data) :
                 $rapidExportService->mapDirectFields($this->data);
 
             $form = $rapidExportService->saveForm($fields, $this->user->id);
             $rapidExportService->createFileName($form, $this->user, $fields);
+            $this->frmFile = $fields['frmFile'];
 
             $downloadUrl = $rapidExportService->buildExport($fields);
+
+            DB::commit();
 
             $this->user->notify(new ExportNotification($downloadUrl));
 
@@ -99,6 +112,13 @@ class RapidExportJob implements ShouldQueue
             ];
 
             $this->user->notify(new JobErrorNotification($attributes));
+
+            DB::rollback();
+
+            $filePath = config('config.rapid_export_dir').'/'.$this->frmFile;
+            if (Storage::exists($filePath)) {
+                Storage::delete($filePath);
+            }
         }
     }
 }
