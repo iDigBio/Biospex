@@ -86,8 +86,10 @@ class RapidVersionJob implements ShouldQueue
 
         $now = Carbon::now('UTC')->timestamp;
         $fileName = $now.'.csv';
+        $zipFileName = $now.'.zip';
 
         $filePath = $rapidExportService->getVersionFilePath($fileName);
+        $zipFilePath = $rapidExportService->getVersionFilePath($zipFileName);
 
         DB::beginTransaction();
 
@@ -100,20 +102,25 @@ class RapidVersionJob implements ShouldQueue
             $exportTypeClass = RapidExportFactoryType::create($fields['exportType']);
             $exportTypeClass->build($filePath, $fields, $reservedColumns);
 
+            $rapidExportService->zipVersionFile($fileName, $filePath, $zipFilePath);
+
             $attributes = [
                 'header_id' => $headerId,
                 'user_id'   => $this->user->id,
-                'file_name' => $fileName,
+                'file_name' => $zipFileName,
             ];
             $rapidExportService->createVersionRecord($attributes);
 
-            $downloadUrl = route('admin.download.version', [base64_encode($fileName)]);
+            $rapidExportService->deleteVersionFile($fileName);
+
+            $downloadUrl = route('admin.download.version', [base64_encode($zipFileName)]);
             $this->user->notify(new VersionNotification($downloadUrl));
 
             DB::commit();
 
         } catch (\Exception $e) {
             $rapidExportService->deleteVersionFile($fileName);
+            $rapidExportService->deleteVersionFile($zipFileName);
 
             DB::rollback();
 
