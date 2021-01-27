@@ -61,6 +61,14 @@ class CsvService
     }
 
     /**
+     * Create writer from temp file object.
+     */
+    public function writerCreateFromTempFileObj()
+    {
+        $this->writer = Writer::createFromFileObject(new \SplTempFileObject());
+    }
+
+    /**
      * Set delimiter.
      *
      * @param string $delimiter
@@ -150,7 +158,7 @@ class CsvService
      *
      * @return \League\Csv\CharsetConverter
      */
-    public function setEncoding()
+    public function setEncoding(): CharsetConverter
     {
         return (new CharsetConverter())
             ->inputEncoding('utf-8')

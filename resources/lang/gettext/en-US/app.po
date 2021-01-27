@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-12-21T19:12:36+00:00\n"
-"PO-Revision-Date: 2020-12-21 20:12+0100\n"
+"POT-Creation-Date: 2021-01-27T16:59:16+00:00\n"
+"PO-Revision-Date: 2021-01-27 17:59+0100\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
@@ -17,7 +17,7 @@ msgid "Report file does not exist."
 msgstr ""
 
 #: app/Http/Controllers/Admin/DownloadController.php:74
-#: app/Services/RapidExportService.php:463
+#: app/Services/Export/RapidExportService.php:339
 msgid "RAPID export file does not exist."
 msgstr ""
 
@@ -55,7 +55,7 @@ msgstr ""
 #: app/Http/Controllers/Admin/UserController.php:108
 #: app/Http/Controllers/Admin/UserController.php:140
 #: app/Http/Controllers/Controller.php:30
-#: app/Services/RapidExportService.php:457
+#: app/Services/Export/RapidExportService.php:333
 msgid "You do not have sufficient permissions."
 msgstr ""
 
@@ -91,14 +91,6 @@ msgstr ""
 msgid "Rapid import file does not exist while processing update job."
 msgstr ""
 
-#: app/Jobs/RapidVersionJob.php:123
-msgid "Error in executing command to build version file %s"
-msgstr ""
-
-#: app/Jobs/RapidVersionJob.php:129
-msgid "Version file was empty for file %s"
-msgstr ""
-
 #: app/Presenters/RapidRecordPresenter.php:42
 msgid "GBIF"
 msgstr ""
@@ -107,15 +99,19 @@ msgstr ""
 msgid "iDigBio"
 msgstr ""
 
-#: app/Services/RapidExportService.php:432
+#: app/Services/Export/CsvExportType.php:76
 msgid "Csv data returned empty while exporting."
 msgstr ""
 
-#: app/Services/RapidExportService.php:451
+#: app/Services/Export/RapidExportFactoryType.php:62
+msgid "Cannot create Rapid Export Type class."
+msgstr ""
+
+#: app/Services/Export/RapidExportService.php:327
 msgid "The export you would like to delete does not exist."
 msgstr ""
 
-#: app/Services/RapidExportService.php:471
+#: app/Services/Export/RapidExportService.php:347
 msgid "RAPID export file and data has been deleted."
 msgstr ""
 
@@ -223,37 +219,69 @@ msgstr ""
 msgid "Rapid Record Export"
 msgstr ""
 
-#: resources/views/export/index.blade.php:17
+#: resources/views/export/partials/export-delete.blade.php:6
+msgid "Download the Export File"
+msgstr ""
+
+#: resources/views/export/partials/export-delete.blade.php:6
+msgid "Download Export"
+msgstr ""
+
+#: resources/views/export/partials/export-delete.blade.php:12
+msgid "Delete Export File and Data"
+msgstr ""
+
+#: resources/views/export/partials/export-delete.blade.php:13
+msgid "Delete Export File"
+msgstr ""
+
+#: resources/views/export/partials/export-delete.blade.php:14
+msgid "This will permanently delete the export file and data."
+msgstr ""
+
+#: resources/views/export/partials/export-delete.blade.php:15
+msgid "Delete Export"
+msgstr ""
+
+#: resources/views/export/partials/export-destination.blade.php:1
 msgid "Select Export Destination"
 msgstr ""
 
-#: resources/views/export/index.blade.php:22
+#: resources/views/export/partials/export-destination.blade.php:6
 msgid "Export to GeoLocate"
 msgstr ""
 
-#: resources/views/export/index.blade.php:24
+#: resources/views/export/partials/export-destination.blade.php:8
 msgid "geolocate"
 msgstr ""
 
-#: resources/views/export/index.blade.php:28
+#: resources/views/export/partials/export-destination.blade.php:12
 msgid "Export to People Standardization"
 msgstr ""
 
-#: resources/views/export/index.blade.php:30
+#: resources/views/export/partials/export-destination.blade.php:14
 msgid "People"
 msgstr ""
 
-#: resources/views/export/index.blade.php:34
+#: resources/views/export/partials/export-destination.blade.php:18
 msgid "Export Taxonomic"
 msgstr ""
 
-#: resources/views/export/index.blade.php:36
+#: resources/views/export/partials/export-destination.blade.php:20
 msgid "Taxonomic"
+msgstr ""
+
+#: resources/views/export/partials/export-destination.blade.php:24
+msgid "Export Generic"
+msgstr ""
+
+#: resources/views/export/partials/export-destination.blade.php:26
+msgid "Generic"
 msgstr ""
 
 #: resources/views/export/partials/export-field-select-default.blade.php:5
 #: resources/views/export/partials/export-field-select.blade.php:5
-#: resources/views/export/partials/export-form.blade.php:32
+#: resources/views/export/partials/export-form-fields.blade.php:3
 msgid "Field"
 msgstr ""
 
@@ -264,75 +292,79 @@ msgstr ""
 
 #: resources/views/export/partials/export-field-select-default.blade.php:10
 #: resources/views/export/partials/export-field-select.blade.php:10
-#: resources/views/partials/tags-select-fields-default.blade.php:13
-#: resources/views/partials/tags-select-fields.blade.php:13
-#: resources/views/partials/tags-select-fields.blade.php:32
+#: resources/views/export/partials/tags-select-fields-default.blade.php:13
+#: resources/views/export/partials/tags-select-fields.blade.php:13
+#: resources/views/export/partials/tags-select-fields.blade.php:32
 msgid "None"
 msgstr ""
 
-#: resources/views/export/partials/export-form.blade.php:13
-msgid "Download the Export File"
-msgstr ""
-
-#: resources/views/export/partials/export-form.blade.php:13
-msgid "Download Export"
-msgstr ""
-
-#: resources/views/export/partials/export-form.blade.php:19
-msgid "Delete Export File and Data"
-msgstr ""
-
-#: resources/views/export/partials/export-form.blade.php:20
-msgid "Delete Export File"
-msgstr ""
-
-#: resources/views/export/partials/export-form.blade.php:21
-msgid "This will permanently delete the export file and data."
-msgstr ""
-
-#: resources/views/export/partials/export-form.blade.php:22
-msgid "Delete Export"
-msgstr ""
-
-#: resources/views/export/partials/export-form.blade.php:33
+#: resources/views/export/partials/export-form-fields.blade.php:7
 msgid "Grab edge of drop downs and drag in order to sort order preference for selecting data."
 msgstr ""
 
-#: resources/views/export/partials/export-form.blade.php:49
+#: resources/views/export/partials/export-form-fields.blade.php:25
 msgid "Add New Row"
 msgstr ""
 
-#: resources/views/export/partials/export-form.blade.php:52
+#: resources/views/export/partials/export-form-fields.blade.php:28
 msgid "Delete Last Row"
 msgstr ""
 
-#: resources/views/export/partials/export-form.blade.php:57
-#: resources/views/export/partials/taxonomic-frm-select.blade.php:13
+#: resources/views/export/partials/export-form-fields.blade.php:33
+#: resources/views/export/partials/export-form-generic.blade.php:12
+#: resources/views/export/partials/frm-select-taxonomic.blade.php:13
 #: resources/views/partials/cancel-submit-buttons.blade.php:3
 #: resources/views/partials/submit-button.blade.php:2
 msgid "Submit"
 msgstr ""
 
-#: resources/views/export/partials/export-form.blade.php:61
+#: resources/views/export/partials/export-form-fields.blade.php:37
+#: resources/views/export/partials/export-form-generic.blade.php:16
 msgid "Field select dropdowns cannot contain duplicate values."
 msgstr ""
 
-#: resources/views/export/partials/geolocate-frm-select.blade.php:6
-msgid "GEOLocate Forms"
+#: resources/views/export/partials/export-type.blade.php:1
+msgid "Select Export Type"
 msgstr ""
 
-#: resources/views/export/partials/geolocate-frm-select.blade.php:7
-#: resources/views/export/partials/people-frm-select.blade.php:7
+#: resources/views/export/partials/export-type.blade.php:9
+msgid "CSV"
+msgstr ""
+
+#: resources/views/export/partials/export-type.blade.php:20
+msgid "Darwin Core Archive"
+msgstr ""
+
+#: resources/views/export/partials/frm-select-generic.blade.php:6
+msgid "Generic Forms"
+msgstr ""
+
+#: resources/views/export/partials/frm-select-generic.blade.php:7
+#: resources/views/export/partials/frm-select-geolocate.blade.php:7
+#: resources/views/export/partials/frm-select-people.blade.php:7
 msgid "Select New or Saved Form"
 msgstr ""
 
-#: resources/views/export/partials/geolocate-frm-select.blade.php:10
-#: resources/views/export/partials/people-frm-select.blade.php:10
+#: resources/views/export/partials/frm-select-generic.blade.php:10
+#: resources/views/export/partials/frm-select-geolocate.blade.php:10
+#: resources/views/export/partials/frm-select-people.blade.php:10
 msgid "New"
 msgstr ""
 
-#: resources/views/export/partials/people-frm-select.blade.php:6
+#: resources/views/export/partials/frm-select-geolocate.blade.php:6
+msgid "GEOLocate Forms"
+msgstr ""
+
+#: resources/views/export/partials/frm-select-people.blade.php:6
 msgid "People Forms"
+msgstr ""
+
+#: resources/views/export/partials/tags-select-fields-default.blade.php:10
+#: resources/views/export/partials/tags-select-fields.blade.php:10
+#: resources/views/export/partials/tags-select-fields.blade.php:29
+#: resources/views/export/partials/tags-select-generic-fields.blade.php:11
+#: resources/views/export/partials/tags-select-generic-fields.blade.php:30
+msgid "Select..."
 msgstr ""
 
 #: resources/views/ingest/index.blade.php:5
@@ -462,18 +494,6 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: resources/views/partials/export-type.blade.php:1
-msgid "Select Export Type"
-msgstr ""
-
-#: resources/views/partials/export-type.blade.php:9
-msgid "CSV"
-msgstr ""
-
-#: resources/views/partials/export-type.blade.php:20
-msgid "Darwin Core Archive"
-msgstr ""
-
 #: resources/views/partials/nav.blade.php:15
 msgid "Admin"
 msgstr ""
@@ -497,12 +517,6 @@ msgstr ""
 
 #: resources/views/partials/nav.blade.php:28
 msgid "Logout"
-msgstr ""
-
-#: resources/views/partials/tags-select-fields-default.blade.php:10
-#: resources/views/partials/tags-select-fields.blade.php:10
-#: resources/views/partials/tags-select-fields.blade.php:29
-msgid "Select..."
 msgstr ""
 
 #: resources/views/show.blade.php:5

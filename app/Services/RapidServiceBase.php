@@ -22,7 +22,6 @@ namespace App\Services;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Storage;
-use ZipArchive;
 
 /**
  * Class RapidServiceBase
@@ -66,7 +65,7 @@ class RapidServiceBase
      *
      * @return \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
-    public function getReservedColumns()
+    public function getConfigReservedColumns()
     {
         return config('config.reserved_columns');
     }
@@ -114,65 +113,35 @@ class RapidServiceBase
     }
 
     /**
-     * Build the header txt file for version file export.
+     * Get export file path.
      *
-     * @param array $data
-     */
-    public function buildExportHeader(array $data = [])
-    {
-        collect($data)->each(function($value) {
-            Storage::append(config('config.rapid_version_dir') . '/header.txt', $value);
-        });
-    }
-
-    /**
-     * Return header export file path.
-     *
+     * @param string $fileName
      * @return string
      */
-    public function getExportHeaderFile(): string
+    public function getExportFilePath(string $fileName): string
     {
-        return Storage::path(config('config.rapid_version_dir') . '/header.txt');
-    }
-
-    /**
-     * Delete header file used for version export.
-     */
-    public function deleteExportHeaderFile()
-    {
-        Storage::delete(config('config.rapid_version_dir') . '/header.txt');
+        return Storage::path(config('config.rapid_export_dir'). '/' . $fileName);
     }
 
     /**
      * Get version file path.
      *
-     * @param string $versionFileName
+     * @param string $fileName
      * @return string
      */
-    public function getVersionFilePath(string $versionFileName): string
+    public function getVersionFilePath(string $fileName): string
     {
-        return Storage::path(config('config.rapid_version_dir') . '/' . $versionFileName);
+        return Storage::path(config('config.rapid_version_dir') . '/' . $fileName);
     }
 
     /**
      * Delete version csv file
      *
-     * @param string $versionFileName
+     * @param string $fileName
      */
-    public function deleteVersionFile(string $versionFileName)
+    public function deleteVersionFile(string $fileName)
     {
-        Storage::delete(config('config.rapid_version_dir') . '/' . $versionFileName);
-    }
-
-    /**
-     * Get version file size for check.
-     *
-     * @param string $versionFileName
-     * @return int
-     */
-    public function getVersionFileSize(string $versionFileName): int
-    {
-        return Storage::size(config('config.rapid_version_dir') . '/' . $versionFileName);
+        Storage::delete(config('config.rapid_version_dir') . '/' . $fileName);
     }
 
     /**
@@ -194,24 +163,5 @@ class RapidServiceBase
         });
 
         return $mapped->forget('unused');
-    }
-
-    /**
-     * Create zip file for version export.
-     *
-     * @param string $versionFileName
-     * @param string $zipFileName
-     */
-    public function zipVersionFile(string $versionFileName, string $zipFileName)
-    {
-        $zip = new ZipArchive;
-        if ($zip->open(Storage::path(config('config.rapid_version_dir')) . '/' . $zipFileName, ZipArchive::CREATE) === TRUE)
-        {
-            // Add files to the zip file
-            $zip->addFile(Storage::path(config('config.rapid_version_dir')) . '/' . $versionFileName, $versionFileName);
-
-            // All files are added, so close the zip file.
-            $zip->close();
-        }
     }
 }

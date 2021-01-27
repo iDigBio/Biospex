@@ -22,6 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\ExportNotification;
 use App\Notifications\JobErrorNotification;
+use App\Services\Export\RapidExportFactoryType;
 use App\Services\Export\RapidExportService;
 use DB;
 use Exception;
@@ -54,14 +55,14 @@ class RapidExportJob implements ShouldQueue
     /**
      * @var string
      */
-    private $frmFile;
+    private $filePath;
 
     /**
      * The number of seconds the job can run before timing out.
      *
      * @var int
      */
-    public $timeout = 3600;
+    public $timeout = 1800;
 
     /**
      * Create a new job instance.
@@ -87,15 +88,19 @@ class RapidExportJob implements ShouldQueue
         DB::beginTransaction();
 
         try {
-            $fields = isset($this->data['exportFields']) ?
-                $rapidExportService->mapExportFields($this->data) :
-                $rapidExportService->mapDirectFields($this->data);
+
+            $fields = $rapidExportService->getMappedFields($this->data);
 
             $form = $rapidExportService->saveForm($fields, $this->user->id);
-            $rapidExportService->createFileName($form, $this->user, $fields);
-            $this->frmFile = $fields['frmFile'];
+            $fileName = $rapidExportService->createFileName($form, $this->user, $fields);
+            $this->filePath = $rapidExportService->getExportFilePath($fileName);
 
-            $downloadUrl = $rapidExportService->buildExport($fields);
+            $reservedColumns =$rapidExportService->getReservedColumns();
+
+            $exportTypeClass = RapidExportFactoryType::create($fields['exportType']);
+            $exportTypeClass->build($this->filePath, $fields, $reservedColumns);
+
+            $downloadUrl = route('admin.download.export', ['file' => base64_encode($fileName)]);
 
             DB::commit();
 
@@ -115,9 +120,8 @@ class RapidExportJob implements ShouldQueue
 
             DB::rollback();
 
-            $filePath = config('config.rapid_export_dir').'/'.$this->frmFile;
-            if (Storage::exists($filePath)) {
-                Storage::delete($filePath);
+            if (Storage::exists($this->filePath)) {
+                Storage::delete($this->filePath);
             }
         }
     }

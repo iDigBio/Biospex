@@ -20,9 +20,7 @@
 namespace App\Services\Export;
 
 use App\Services\CsvService;
-use App\Services\MongoDbService;
 use Exception;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Class CsvExportType
@@ -32,108 +30,78 @@ use Illuminate\Support\Facades\Storage;
 class CsvExportType
 {
     /**
-     * @var \App\Services\MongoDbService
-     */
-    private $mongoDbService;
-
-    /**
      * @var \App\Services\CsvService
      */
     private $csvService;
 
-    private $reservedColumns;
+    /**
+     * @var \App\Services\Export\RapidExportDbService
+     */
+    private $rapidExportDbService;
 
     /**
      * CsvExportType constructor.
      *
-     * @param \App\Services\MongoDbService $mongoDbService
+     * @param \App\Services\Export\RapidExportDbService $rapidExportDbService
      * @param \App\Services\CsvService $csvService
      */
-    public function __construct(MongoDbService $mongoDbService, CsvService $csvService)
+    public function __construct(RapidExportDbService $rapidExportDbService, CsvService $csvService)
     {
-        $this->mongoDbService = $mongoDbService;
+        $this->rapidExportDbService = $rapidExportDbService;
         $this->csvService = $csvService;
     }
 
     /**
-     * Start building csv data and return file route.
+     * Build Csv File for export.
      *
+     * @param string $filePath
      * @param array $fields
      * @param array $reservedColumns
-     * @return string
-     * @throws \Exception
+     * @throws \League\Csv\CannotInsertRecord|\Exception
      */
-    public function build(array $fields, array $reservedColumns): string
+    public function build(string $filePath, array $fields, array $reservedColumns)
     {
-        $this->reservedColumns = $reservedColumns;
-
-        $csvData = $this->buildCsvData($fields);
-        if (! isset($csvData[0])) {
-            throw new Exception(t('Csv data returned empty while exporting.'));
-        }
-
-        return $this->buildCsvFile($csvData, $fields['frmFile']);
-    }
-
-    /**
-     * Build csv data for GeoLocate export.
-     *
-     * @param array $fields
-     * @return array
-     */
-    public function buildCsvData(array $fields): array
-    {
-        $cursor = $this->getRapidRecordsCursor();
-
-        $csvData = [];
-
-        foreach ($cursor as $doc) {
-            $data = $this->buildReservedColumns($doc);
-            $csvData[] = $this->setColumns($doc, $fields, $data);
-        }
-
-        return $csvData;
-    }
-
-    /**
-     * Build csv file and return it.
-     *
-     * @param array $csvData
-     * @param string $frmFile
-     * @return string
-     * @throws \League\Csv\CannotInsertRecord
-     */
-    public function buildCsvFile(array $csvData, string $frmFile): string
-    {
-        $header = array_keys($csvData[0]);
-
-        $file = Storage::path(config('config.rapid_export_dir').'/'.$frmFile);
-        $this->csvService->writerCreateFromPath($file);
+        $this->csvService->writerCreateFromTempFileObj();
         $this->csvService->writer->addFormatter($this->csvService->setEncoding());
 
-        $this->csvService->insertOne($header);
-        $this->csvService->insertAll($csvData);
+        $cursor = $this->rapidExportDbService->getMongoCursorForRapidRecords();
 
-        return route('admin.download.export', ['file' => base64_encode($frmFile)]);
+        $first = true;
+        foreach ($cursor as $doc) {
+            $data = $this->setReservedColumns($doc, $reservedColumns);
+
+            $csvData = $this->setColumns($doc, $fields, $data);
+
+            if (!isset($csvData)) {
+                throw new Exception(t('Csv data returned empty while exporting.'));
+            }
+
+            if ($first) {
+                $this->csvService->insertOne(array_keys($csvData));
+                $first = false;
+            }
+
+            $this->csvService->insertOne($csvData);
+        }
+
+        \File::put($filePath, $this->csvService->writer->getContent());
     }
 
     /**
-     * Get cursor for rapid documents
+     * Set reserved columns for adding to doc.
      *
-     * @return mixed
+     * @param array $doc
+     * @param array $reservedColumns
+     * @return array
      */
-    public function getRapidRecordsCursor()
+    private function setReservedColumns(array $doc, array $reservedColumns): array
     {
-        $this->mongoDbService->setCollection('rapid_records');
+        $data = [];
+        foreach ($reservedColumns as $column => $item) {
+            $data[$column] = (string) $doc[$item];
+        }
 
-        $cursor = $this->mongoDbService->find([], ['batchSize' => 100]);
-        $cursor->setTypeMap([
-            'array'    => 'array',
-            'document' => 'array',
-            'root'     => 'array',
-        ]);
-
-        return $cursor;
+        return $data;
     }
 
     /**
@@ -214,22 +182,6 @@ class CsvExportType
                     break;
                 }
             }
-        }
-
-        return $data;
-    }
-
-    /**
-     * Set reserved columns.
-     *
-     * @param $doc
-     * @return array
-     */
-    public function buildReservedColumns($doc): array
-    {
-        $data = [];
-        foreach ($this->reservedColumns as $column => $item) {
-            $data[$column] = (string) $doc[$item];
         }
 
         return $data;

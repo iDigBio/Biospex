@@ -37,9 +37,7 @@
 
 namespace App\Services\Export;
 
-
 use App\Services\CsvService;
-use App\Services\MongoDbService;
 
 /**
  * Class RapidExportFactoryType
@@ -58,7 +56,7 @@ class RapidExportFactoryType
     public static function create(string $type)
     {
         if ($type === 'csv') {
-            return app(CsvExportType::class, [MongoDbService::class, CsvService::class]);
+            return app(CsvExportType::class, [RapidExportDbService::class, CsvService::class]);
         }
 
         throw new \Exception(t('Cannot create Rapid Export Type class.'));

@@ -22,7 +22,6 @@ namespace App\Services\Export;
 use App\Services\RapidServiceBase;
 use App\Models\ExportForm;
 use App\Models\User;
-use App\Services\Model\RapidHeaderModelService;
 use FlashHelper;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -46,27 +45,14 @@ class RapidExportService extends RapidServiceBase
     private $destination;
 
     /**
-     * @var array
-     */
-    private $reserved;
-
-    /**
-     * @var \App\Services\Model\RapidHeaderModelService
-     */
-    private $rapidHeaderModelService;
-
-    /**
      * RapidExportService constructor.
      *
      * @param \App\Services\Export\RapidExportDbService $rapidExportDbService
-     * @param \App\Services\Model\RapidHeaderModelService $rapidHeaderModelService
      */
     public function __construct(
-        RapidExportDbService $rapidExportDbService,
-        RapidHeaderModelService $rapidHeaderModelService
+        RapidExportDbService $rapidExportDbService
     ) {
         $this->rapidExportDbService = $rapidExportDbService;
-        $this->rapidHeaderModelService = $rapidHeaderModelService;
     }
 
     /**
@@ -80,12 +66,45 @@ class RapidExportService extends RapidServiceBase
     }
 
     /**
+     * Build fields for version file creation.
+     *
+     * @return array
+     */
+    public function buildVersionFields(): array
+    {
+        $this->setDestination('generic');
+
+        $columnTags = $this->getColumnTags();
+        $header = $this->getLatestHeader();
+        $tags = $this->mapColumns($header, $columnTags);
+
+        return [
+            "entries"           => "1",
+            "exportDestination" => "generic",
+            "exportType"        => "csv",
+            "exportFields"      => [$tags->toArray()]
+        ];
+    }
+
+    /**
+     * Get mapped fields for export.
+     *
+     * @param array $data
+     * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function getMappedFields(array $data): array
+    {
+        return isset($data['exportFields']) ? $this->mapExportFields($data) : $this->mapDirectFields($data);
+    }
+
+    /**
      * Map the posted export order data.
      *
      * @param array $data
      * @return array
      */
-    public function mapExportFields(array $data): array
+    private function mapExportFields(array $data): array
     {
         $this->setDestination($data['exportDestination']);
 
@@ -111,12 +130,12 @@ class RapidExportService extends RapidServiceBase
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function mapDirectFields(array $data): array
+    private function mapDirectFields(array $data): array
     {
         $this->setDestination($data['exportDestination']);
 
         $fields = $this->getDestinationFieldFile($data['exportDestination']);
-        $header = $this->rapidHeaderModelService->getLatestHeader()->data;
+        $header = $this->getLatestHeader();
         $tags = $this->getColumnTags();
 
         $data['exportFields'] = collect($fields)->map(function ($field) use ($tags, $header) {
@@ -159,15 +178,18 @@ class RapidExportService extends RapidServiceBase
      * @param \App\Models\ExportForm $form
      * @param \App\Models\User $user
      * @param array $fields
+     * @return string
      * @throws \App\Exceptions\PresenterException
      */
-    public function createFileName(ExportForm $form, User $user, array &$fields)
+    public function createFileName(ExportForm $form, User $user, array &$fields): string
     {
         $exportExtensions = $this->getExportExtensions();
 
         $user = explode('@', $user->email);
-        $form->file = $fields['frmFile'] = $form->present()->form_name.'_'.$user[0].$exportExtensions[$fields['exportType']];
+        $form->file = $form->present()->form_name.'_'.$user[0].$exportExtensions[$fields['exportType']];
         $form->save();
+
+        return $form->file;
     }
 
     /**
@@ -207,7 +229,7 @@ class RapidExportService extends RapidServiceBase
      */
     public function newForm(): array
     {
-        $header = $this->rapidHeaderModelService->getLatestHeader()->data;
+        $header = $this->getLatestHeader();
         $columnTags = $this->getColumnTags();
         $tags = $this->mapColumns($header, $columnTags);
 
@@ -230,7 +252,7 @@ class RapidExportService extends RapidServiceBase
     public function existingForm(int $id): array
     {
         $form = $this->rapidExportDbService->findRapidFormById($id);
-        $header = $this->rapidHeaderModelService->getLatestHeader()->data;
+        $header = $this->getLatestHeader();
         $columnTags = $this->getColumnTags();
         $tags = $this->mapColumns($header, $columnTags);
 
@@ -263,28 +285,33 @@ class RapidExportService extends RapidServiceBase
     }
 
     /**
-     * Create export type and build data.
-     *
-     * @param array $fields
-     * @return string|null
-     * @throws \Exception
+     * Set reserved columns according to destination.
      */
-    public function buildExport(array $fields): ?string
+    public function getReservedColumns()
     {
-        $this->setReservedColumns();
+        $reserved = $this->getConfigReservedColumns();
 
-        $exportTypeClass = RapidExportFactoryType::create($fields['exportType']);
-
-        return $exportTypeClass->build($fields, $this->reserved);
+        return $reserved[$this->destination];
     }
 
     /**
-     * Set reserved columns according to destination.
+     * Get latest header.
+     *
+     * @return array
      */
-    public function setReservedColumns()
+    public function getLatestHeader(): array
     {
-        $reserved = $this->getReservedColumns();
-        $this->reserved = $reserved[$this->destination];
+        return $this->rapidExportDbService->getLatestHeader();
+    }
+
+    /**
+     * Return last header id.
+     *
+     * @return int
+     */
+    public function getHeaderId(): int
+    {
+        return $this->rapidExportDbService->getHeaderId();
     }
 
     /**
@@ -325,5 +352,15 @@ class RapidExportService extends RapidServiceBase
 
             return;
         }
+    }
+
+    /**
+     * Created rapid version record.
+     *
+     * @param array $attributes
+     */
+    public function createVersionRecord(array $attributes)
+    {
+        $this->rapidExportDbService->createVersionRecord($attributes);
     }
 }

@@ -21,18 +21,17 @@ namespace App\Jobs;
 
 use App\Notifications\JobErrorNotification;
 use App\Notifications\VersionNotification;
-use App\Services\Model\RapidHeaderModelService;
-use App\Services\Model\RapidVersionModelService;
+use App\Services\Export\RapidExportFactoryType;
+use App\Services\Export\RapidExportService;
 use App\Models\User;
-use App\Services\RapidServiceBase;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Storage;
-use Throwable;
 
 /**
  * Class RapidVersionJob
@@ -63,21 +62,6 @@ class RapidVersionJob implements ShouldQueue
     private $user;
 
     /**
-     * @var string
-     */
-    private $versionFileName;
-
-    /**
-     * @var string
-     */
-    private $zipFileName;
-
-    /**
-     * @var \App\Services\RapidServiceBase
-     */
-    private $rapidServiceBase;
-
-    /**
      * Create a new job instance.
      *
      * @param \App\Models\User $user
@@ -89,65 +73,49 @@ class RapidVersionJob implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Execute job.
      *
-     * @param \App\Services\RapidServiceBase $rapidServiceBase
-     * @param \App\Services\Model\RapidVersionModelService $rapidVersionModelService
-     * @param \App\Services\Model\RapidHeaderModelService $rapidHeaderModelService
+     * @param \App\Services\Export\RapidExportService $rapidExportService
+     * @throws \Throwable
      */
-    public function handle(
-        RapidServiceBase $rapidServiceBase,
-        RapidVersionModelService $rapidVersionModelService,
-        RapidHeaderModelService $rapidHeaderModelService
-    ) {
+    public function handle(RapidExportService $rapidExportService) {
+
         if (! Storage::exists(config('config.rapid_version_dir'))) {
             Storage::makeDirectory(config('config.rapid_version_dir'));
         }
 
         $now = Carbon::now('UTC')->timestamp;
-        $this->versionFileName = $now.'.csv';
-        $this->zipFileName = $now.'.zip';
-        $this->rapidServiceBase = $rapidServiceBase;
+        $fileName = $now.'.csv';
+
+        $filePath = $rapidExportService->getVersionFilePath($fileName);
+
+        DB::beginTransaction();
 
         try {
 
-            $versionFilePath = $rapidServiceBase->getVersionFilePath($this->versionFileName);
-            $header = $rapidHeaderModelService->getLatestHeader();
-            $rapidServiceBase->buildExportHeader($header->data);
-            $exportHeaderPath = $rapidServiceBase->getExportHeaderFile();
-            $dbHost = config('database.connections.mongodb.host');
+            $fields = $rapidExportService->buildVersionFields();
+            $headerId = $rapidExportService->getHeaderId();
+            $reservedColumns =$rapidExportService->getReservedColumns();
 
-            exec('mongoexport --host='.$dbHost.' --quiet --db=rapid --collection=rapid_records --type=csv --fieldFile='.$exportHeaderPath.' --out='.$versionFilePath, $output, $result_code);
+            $exportTypeClass = RapidExportFactoryType::create($fields['exportType']);
+            $exportTypeClass->build($filePath, $fields, $reservedColumns);
 
-            if ($result_code !== 0) {
-                throw new \Exception(t('Error in executing command to build version file %s', $this->versionFileName));
-            }
-
-            $size = $rapidServiceBase->getVersionFileSize($this->versionFileName);
-
-            if (! $size) {
-                throw new \Exception(t('Version file was empty for file %s', $this->versionFileName));
-            }
-
-            $this->rapidServiceBase->zipVersionFile($this->versionFileName, $this->zipFileName);
-
-            $rapidVersionModelService->create([
-                'header_id' => $header->id,
+            $attributes = [
+                'header_id' => $headerId,
                 'user_id'   => $this->user->id,
-                'file_name' => $this->zipFileName,
-            ]);
+                'file_name' => $fileName,
+            ];
+            $rapidExportService->createVersionRecord($attributes);
 
-            $rapidServiceBase->deleteVersionFile($this->versionFileName);
-            $rapidServiceBase->deleteExportHeaderFile();
-
-            $downloadUrl = route('admin.download.version', [base64_encode($this->zipFileName)]);
+            $downloadUrl = route('admin.download.version', [base64_encode($fileName)]);
             $this->user->notify(new VersionNotification($downloadUrl));
 
-            $this->delete();
+            DB::commit();
 
         } catch (\Exception $e) {
-            $rapidServiceBase->deleteVersionFile($this->versionFileName);
-            $rapidServiceBase->deleteExportHeaderFile();
+            $rapidExportService->deleteVersionFile($fileName);
+
+            DB::rollback();
 
             $attributes = [
                 'message' => $e->getMessage(),
@@ -157,29 +125,6 @@ class RapidVersionJob implements ShouldQueue
             ];
 
             $this->user->notify(new JobErrorNotification($attributes));
-
-            $this->delete();
         }
-    }
-
-    /**
-     * Handle a job failure.
-     *
-     * @param \Throwable $exception
-     * @return void
-     */
-    public function failed(Throwable $exception)
-    {
-        $this->rapidServiceBase->deleteVersionFile($this->versionFileName);
-        $this->rapidServiceBase->deleteExportHeaderFile();
-
-        $attributes = [
-            'message' => $exception->getMessage(),
-            'file'    => $exception->getFile(),
-            'line'    => $exception->getLine(),
-            'trace'   => $exception->getTraceAsString(),
-        ];
-
-        $this->user->notify(new JobErrorNotification($attributes));
     }
 }

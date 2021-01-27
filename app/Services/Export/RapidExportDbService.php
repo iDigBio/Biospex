@@ -21,7 +21,11 @@ namespace App\Services\Export;
 
 use App\Services\Model\ExportFormModelService;
 use App\Models\ExportForm;
+use App\Services\Model\RapidHeaderModelService;
+use App\Services\Model\RapidVersionModelService;
+use App\Services\MongoDbService;
 use Illuminate\Support\Collection;
+use MongoDB\Driver\Cursor;
 
 /**
  * Class RapidExportDbService
@@ -37,15 +41,44 @@ class RapidExportDbService
     private $exportFormModelService;
 
     /**
+     * @var \App\Services\Model\RapidHeaderModelService
+     */
+    private $rapidHeaderModelService;
+
+    /**
+     * @var \App\Services\MongoDbService
+     */
+    private $mongoDbService;
+
+    /**
+     * @var \App\Services\Model\RapidVersionModelService
+     */
+    private $rapidVersionModelService;
+
+    /**
+     * @var int
+     */
+    private $headerId;
+
+    /**
      * RapidExportDbService constructor.
      *
      * @param \App\Services\Model\ExportFormModelService $exportFormModelService
+     * @param \App\Services\Model\RapidHeaderModelService $rapidHeaderModelService
+     * @param \App\Services\MongoDbService $mongoDbService
+     * @param \App\Services\Model\RapidVersionModelService $rapidVersionModelService
      */
     public function __construct(
-        ExportFormModelService $exportFormModelService
+        ExportFormModelService $exportFormModelService,
+        RapidHeaderModelService $rapidHeaderModelService,
+        MongoDbService $mongoDbService,
+        RapidVersionModelService $rapidVersionModelService
     )
     {
         $this->exportFormModelService = $exportFormModelService;
+        $this->rapidHeaderModelService = $rapidHeaderModelService;
+        $this->mongoDbService = $mongoDbService;
+        $this->rapidVersionModelService = $rapidVersionModelService;
     }
 
     /**
@@ -85,5 +118,57 @@ class RapidExportDbService
     public function getRapidFormsSelect(): Collection
     {
         return $this->exportFormModelService->getFormsSelect();
+    }
+
+    /**
+     * Get latest rapid header.
+     *
+     * @return mixed
+     */
+    public function getLatestHeader(): array
+    {
+        $header = $this->rapidHeaderModelService->getLatestHeader();
+        $this->headerId = $header->id;
+
+        return $header->data;
+    }
+
+    /**
+     * Return last header id.
+     *
+     * @return int
+     */
+    public function getHeaderId(): int
+    {
+        return $this->headerId;
+    }
+
+    /**
+     * Get mongo db cursor for looping rapid records.
+     *
+     * @return \MongoDB\Driver\Cursor
+     */
+    public function getMongoCursorForRapidRecords(): Cursor
+    {
+        $this->mongoDbService->setCollection('rapid_records');
+
+        $cursor = $this->mongoDbService->find([], ['batchSize' => 1000]);
+        $cursor->setTypeMap([
+            'array'    => 'array',
+            'document' => 'array',
+            'root'     => 'array',
+        ]);
+
+        return $cursor;
+    }
+
+    /**
+     * Create version record in database.
+     *
+     * @param array $attributes
+     */
+    public function createVersionRecord(array $attributes)
+    {
+        $this->rapidVersionModelService->create($attributes);
     }
 }
