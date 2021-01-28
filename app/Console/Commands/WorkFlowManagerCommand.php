@@ -20,7 +20,6 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ActorJob;
-use App\Repositories\Eloquent\WorkflowManagerRepository;
 use Illuminate\Console\Command;
 use App\Services\Model\WorkflowManagerService;
 
