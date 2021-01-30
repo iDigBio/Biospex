@@ -20,6 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\RapidRecord;
+use Illuminate\Support\LazyCollection;
 
 /**
  * Class RapidRecordModelService
@@ -66,13 +67,13 @@ class RapidRecordModelService extends BaseModelService
     }
 
     /**
-     * Get query to chunk export for version files.
+     * Return cursor.
      *
-     * @return mixed
+     * @return \Illuminate\Support\LazyCollection
      */
-    public function getExportQuery()
+    public function getCursor(): LazyCollection
     {
-        return $this->model->options(['allowDiskUse' => true]);
+        return $this->model->cursor();
     }
 
     /**

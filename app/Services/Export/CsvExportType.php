@@ -19,6 +19,7 @@
 
 namespace App\Services\Export;
 
+use App\Models\RapidRecord;
 use App\Services\CsvService;
 use Exception;
 
@@ -64,13 +65,13 @@ class CsvExportType
         $this->csvService->writerCreateFromTempFileObj();
         $this->csvService->writer->addFormatter($this->csvService->setEncoding());
 
-        $cursor = $this->rapidExportDbService->getMongoCursorForRapidRecords();
+        $cursor = $this->rapidExportDbService->getCursorForRapidRecords();
 
         $first = true;
-        foreach ($cursor as $doc) {
-            $data = $this->setReservedColumns($doc, $reservedColumns);
+        foreach ($cursor as $record) {
+            $data = $this->setReservedColumns($record, $reservedColumns);
 
-            $csvData = $this->setColumns($doc, $fields, $data);
+            $csvData = $this->setColumns($record, $fields, $data);
 
             if (!isset($csvData)) {
                 throw new Exception(t('Csv data returned empty while exporting.'));
@@ -90,15 +91,15 @@ class CsvExportType
     /**
      * Set reserved columns for adding to doc.
      *
-     * @param array $doc
+     * @param \App\Models\RapidRecord $record
      * @param array $reservedColumns
      * @return array
      */
-    private function setReservedColumns(array $doc, array $reservedColumns): array
+    private function setReservedColumns(RapidRecord $record, array $reservedColumns): array
     {
         $data = [];
         foreach ($reservedColumns as $column => $item) {
-            $data[$column] = (string) $doc[$item];
+            $data[$column] = (string) $record->{$item};
         }
 
         return $data;
@@ -107,35 +108,35 @@ class CsvExportType
     /**
      * Set columns according to export destination.
      *
-     * @param $doc
+     * @param \App\Models\RapidRecord $record
      * @param array $fields
      * @param array $data
      * @return array
      */
-    public function setColumns($doc, array $fields, array $data): array
+    public function setColumns(RapidRecord $record, array $fields, array $data): array
     {
         if($fields['exportDestination'] === 'taxonomic'){
-            return $this->setDirectColumns($doc, $fields, $data);
+            return $this->setDirectColumns($record, $fields, $data);
         }elseif ($fields['exportDestination'] === 'generic') {
-            return $this->setGenericColumns($doc, $fields, $data);
+            return $this->setGenericColumns($record, $fields, $data);
         }else {
-            return $this->setFormColumns($doc, $fields, $data);
+            return $this->setFormColumns($record, $fields, $data);
         }
     }
 
     /**
      * Set array for export fields.
      *
-     * @param $doc
+     * @param \App\Models\RapidRecord $record
      * @param array $fields
      * @param array $data
      * @return array
      */
-    public function setDirectColumns($doc, array $fields, array $data): array
+    public function setDirectColumns(RapidRecord $record, array $fields, array $data): array
     {
         foreach ($fields['exportFields'] as $field) {
-            if (isset($doc[$field])) {
-                $data[$field] = $doc[$field];
+            if (isset($record->{$field})) {
+                $data[$field] = $record->{$field};
             }
         }
 
@@ -145,27 +146,27 @@ class CsvExportType
     /**
      * Set Generic columns.
      *
-     * @param $doc
+     * @param \App\Models\RapidRecord $record
      * @param array $fields
      * @param array $data
      * @return array
      */
-    public function setGenericColumns($doc, array $fields, array $data): array
+    public function setGenericColumns(RapidRecord $record, array $fields, array $data): array
     {
         $flattened = collect($fields['exportFields'][0])->forget('order')->flatten()->flip();
 
-        return array_merge($data, collect($doc)->intersectByKeys($flattened)->toArray());
+        return array_merge($data, collect($record->getAttributes())->intersectByKeys($flattened)->toArray());
     }
 
     /**
      * Set columns for forms with export fields
      *
-     * @param $doc
+     * @param \App\Models\RapidRecord $record
      * @param array $fields
      * @param array $data
      * @return mixed
      */
-    public function setFormColumns($doc, array $fields, array $data): array
+    public function setFormColumns(RapidRecord $record, array $fields, array $data): array
     {
         foreach ($fields['exportFields'] as $fieldArray) {
 
@@ -177,8 +178,8 @@ class CsvExportType
 
             // indexes are the tags. isset skips index values that are null
             foreach ($fieldArray as $index => $value) {
-                if (isset($fieldArray[$index]) && ! empty($doc[$value])) {
-                    $data[$field] = $doc[$value];
+                if (isset($fieldArray[$index]) && ! empty($record->{$value})) {
+                    $data[$field] = $record->{$value};
                     break;
                 }
             }

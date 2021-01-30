@@ -22,9 +22,10 @@ namespace App\Services\Export;
 use App\Services\Model\ExportFormModelService;
 use App\Models\ExportForm;
 use App\Services\Model\RapidHeaderModelService;
+use App\Services\Model\RapidRecordModelService;
 use App\Services\Model\RapidVersionModelService;
-use App\Services\MongoDbService;
 use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use MongoDB\Driver\Cursor;
 
 /**
@@ -46,14 +47,14 @@ class RapidExportDbService
     private $rapidHeaderModelService;
 
     /**
-     * @var \App\Services\MongoDbService
-     */
-    private $mongoDbService;
-
-    /**
      * @var \App\Services\Model\RapidVersionModelService
      */
     private $rapidVersionModelService;
+
+    /**
+     * @var \App\Services\Model\RapidRecordModelService
+     */
+    private $rapidRecordModelService;
 
     /**
      * @var int
@@ -65,20 +66,20 @@ class RapidExportDbService
      *
      * @param \App\Services\Model\ExportFormModelService $exportFormModelService
      * @param \App\Services\Model\RapidHeaderModelService $rapidHeaderModelService
-     * @param \App\Services\MongoDbService $mongoDbService
      * @param \App\Services\Model\RapidVersionModelService $rapidVersionModelService
+     * @param \App\Services\Model\RapidRecordModelService $rapidRecordModelService
      */
     public function __construct(
         ExportFormModelService $exportFormModelService,
         RapidHeaderModelService $rapidHeaderModelService,
-        MongoDbService $mongoDbService,
-        RapidVersionModelService $rapidVersionModelService
+        RapidVersionModelService $rapidVersionModelService,
+        RapidRecordModelService $rapidRecordModelService
     )
     {
         $this->exportFormModelService = $exportFormModelService;
         $this->rapidHeaderModelService = $rapidHeaderModelService;
-        $this->mongoDbService = $mongoDbService;
         $this->rapidVersionModelService = $rapidVersionModelService;
+        $this->rapidRecordModelService = $rapidRecordModelService;
     }
 
     /**
@@ -144,22 +145,13 @@ class RapidExportDbService
     }
 
     /**
-     * Get mongo db cursor for looping rapid records.
+     * Get cursor for looping rapid records.
      *
-     * @return \MongoDB\Driver\Cursor
+     * @return \Illuminate\Support\LazyCollection
      */
-    public function getMongoCursorForRapidRecords(): Cursor
+    public function getCursorForRapidRecords(): LazyCollection
     {
-        $this->mongoDbService->setCollection('rapid_records');
-
-        $cursor = $this->mongoDbService->find([], ['batchSize' => 1000]);
-        $cursor->setTypeMap([
-            'array'    => 'array',
-            'document' => 'array',
-            'root'     => 'array',
-        ]);
-
-        return $cursor;
+        return $this->rapidRecordModelService->getCursor();
     }
 
     /**
