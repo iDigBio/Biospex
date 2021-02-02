@@ -61,7 +61,7 @@ class RapidUpdateJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 1200;
+    public $timeout = 3600;
 
     /**
      * Update rapid records job.
