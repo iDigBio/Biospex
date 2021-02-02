@@ -117,7 +117,7 @@ class RapidUpdateJob implements ShouldQueue
 
             $this->user->notify(new UpdateNotification($this->fileOrigName, $recordsUpdated, $fields, $downloadUrl));
 
-            RapidVersionJob::dispatch($this->user)->delay(now()->addMinutes(10));
+            RapidVersionJob::dispatch($this->user)->delay(now()->addMinutes(5));
 
             return;
         } catch (Exception $exception) {
