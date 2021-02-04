@@ -143,6 +143,18 @@ class BaseModelService
     }
 
     /**
+     * First or new returning instance.
+     *
+     * @param array $attributes
+     * @param array $data
+     * @return mixed
+     */
+    public function firstOrNew(array $attributes, array $data = [])
+    {
+        return $this->model->firstOrNew($attributes, $data);
+    }
+
+    /**
      * Update.
      *
      * @param array $data

@@ -95,4 +95,16 @@ class ExportQueueService extends BaseModelService
             $query->where('actor_id', $actorId);
         })->find($queueId);
     }
+
+    /**
+     * Find queue by expedition and actor ids.
+     *
+     * @param int $expeditionId
+     * @param int $actorId
+     * @return mixed
+     */
+    public function findByExpeditionAndActorId(int $expeditionId, int $actorId)
+    {
+        return $this->model->with('expedition')->where('expedition_id', $expeditionId)->where('actor_id', $actorId)->get()->first();
+    }
 }

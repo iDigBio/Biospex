@@ -19,8 +19,19 @@
 
 namespace App\Services\Actor;
 
+use App\Jobs\ZooniverseExportBuildCsvJob;
+use App\Jobs\ZooniverseExportBuildQueueJob;
+use App\Jobs\ZooniverseExportBuildTarJob;
+use App\Jobs\ZooniverseExportConvertImageJob;
+use App\Jobs\ZooniverseExportDeleteFilesJob;
+use App\Jobs\ZooniverseExportReportJob;
+use App\Jobs\ZooniverseExportRetrieveImageJob;
+use App\Jobs\ZooniverseExportCheckImageCountJob;
 use App\Models\Actor;
-use App\Models\ExportQueue;
+use App\Notifications\NfnExportError;
+use App\Services\Model\ExpeditionService;
+use Illuminate\Bus\Batch;
+use Notification;
 
 /**
  * Class NfnPanoptes
@@ -29,111 +40,80 @@ use App\Models\ExportQueue;
  */
 class NfnPanoptes
 {
-
     /**
      * @var NfnPanoptesClassifications
      */
     private $nfnPanoptesClassifications;
 
     /**
-     * @var NfnPanoptesExportQueue
+     * @var \App\Services\Model\ExpeditionService
      */
-    private $nfnPanoptesExportQueue;
+    private $expeditionService;
 
     /**
-     * @var array
+     * @var \App\Models\Actor
      */
-    public $exportStages;
-
-    /**
-     * @var \App\Services\Actor\NfnPanoptesExportRetrieveImages
-     */
-    private $retrieveImages;
-
-    /**
-     * @var \App\Services\Actor\NfnPanoptesExportConvertImages
-     */
-    private $convertImages;
-
-    /**
-     * @var \App\Services\Actor\NfnPanoptesExportDeleteOriginalImages
-     */
-    private $deleteOriginalImages;
-
-    /**
-     * @var \App\Services\Actor\NfnPanoptesExportBuildCsv
-     */
-    private $buildCsv;
-
-    /**
-     * @var \App\Services\Actor\NfnPanoptesExportTarImages
-     */
-    private $tarImages;
-
-    /**
-     * @var \App\Services\Actor\NfnPanoptesExportReport
-     */
-    private $report;
+    private $actor;
 
     /**
      * NfnPanoptes constructor.
      *
      * @param \App\Services\Actor\NfnPanoptesClassifications $nfnPanoptesClassifications
-     * @param \App\Services\Actor\NfnPanoptesExportQueue $nfnPanoptesExportQueue
-     * @param \App\Services\Actor\NfnPanoptesExportRetrieveImages $retrieveImages
-     * @param \App\Services\Actor\NfnPanoptesExportConvertImages $convertImages
-     * @param \App\Services\Actor\NfnPanoptesExportDeleteOriginalImages $deleteOriginalImages
-     * @param \App\Services\Actor\NfnPanoptesExportBuildCsv $buildCsv
-     * @param \App\Services\Actor\NfnPanoptesExportTarImages $tarImages
-     * @param \App\Services\Actor\NfnPanoptesExportReport $report
+     * @param \App\Services\Model\ExpeditionService $expeditionService
      */
     public function __construct(
         NfnPanoptesClassifications $nfnPanoptesClassifications,
-        NfnPanoptesExportQueue $nfnPanoptesExportQueue,
-        NfnPanoptesExportRetrieveImages $retrieveImages,
-        NfnPanoptesExportConvertImages $convertImages,
-        NfnPanoptesExportDeleteOriginalImages $deleteOriginalImages,
-        NfnPanoptesExportBuildCsv $buildCsv,
-        NfnPanoptesExportTarImages $tarImages,
-        NfnPanoptesExportReport $report
-    )
-    {
+        ExpeditionService $expeditionService
+    ) {
         $this->nfnPanoptesClassifications = $nfnPanoptesClassifications;
-        $this->nfnPanoptesExportQueue = $nfnPanoptesExportQueue;
-        $this->retrieveImages = $retrieveImages;
-        $this->convertImages = $convertImages;
-        $this->deleteOriginalImages = $deleteOriginalImages;
-        $this->buildCsv = $buildCsv;
-        $this->tarImages = $tarImages;
-        $this->report = $report;
-
-        $this->exportStages = config('config.export_stages');
+        $this->expeditionService = $expeditionService;
     }
 
     /**
-     * Process actor according to state.
+     * Process export job.
      *
      * @param \App\Models\Actor $actor
+     * @throws \Throwable
      */
     public function actor(Actor $actor)
     {
-        if ($actor->pivot->state === 0)
-        {
-            $this->nfnPanoptesExportQueue->createQueue($actor);
-        }
-        elseif ($actor->pivot->state === 1)
-        {
+        $this->actor = $actor;
+
+        if ($actor->pivot->state === 0) {
+            \Bus::batch([
+                new ZooniverseExportBuildQueueJob($actor),
+                new ZooniverseExportRetrieveImageJob($actor),
+                new ZooniverseExportConvertImageJob($actor),
+                new ZooniverseExportCheckImageCountJob($actor),
+                new ZooniverseExportBuildCsvJob($actor),
+                new ZooniverseExportBuildTarJob($actor),
+                new ZooniverseExportReportJob($actor),
+                new ZooniverseExportDeleteFilesJob($actor)
+            ])->catch(function (Batch $batch, \Exception $exception) {
+                $this->sendErrorNotification($exception);
+            })->name('Zooniverse Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
+        } elseif ($actor->pivot->state === 1) {
+            // Todo
             $this->nfnPanoptesClassifications->processActor($actor);
         }
     }
 
     /**
-     * Process export queue.
+     * Send error notification.
      *
-     * @param \App\Models\ExportQueue $queue
+     * @param \Exception $exception
      */
-    public function processQueue(ExportQueue $queue)
+    public function sendErrorNotification(\Exception $exception)
     {
-        $this->{$this->exportStages[$queue->stage]}->process($queue);
+        $expedition = $this->expeditionService->findNotifyExpeditionUsers($this->actor->pivot->expedition_id);
+        $users = $expedition->project->group->users->push($expedition->project->group->owner);
+
+        $message = [
+            $exception->getFile(),
+            $exception->getLine(),
+            $exception->getMessage(),
+        ];
+
+        Notification::send($users, new NfnExportError($expedition->title, $expedition->id, $message));
     }
 }

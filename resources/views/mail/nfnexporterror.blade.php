@@ -6,7 +6,7 @@
 
 {{ t('Expedition') }}: {{ $title }}
 {{ t('ID') }}: {{ $id }}
-{{ t('Message') }}: {{ $message }}
+{{ t('Message') }}: {!! $message !!}
 
 {{ t('Thank you') }},
 {{ config('app.name') }}

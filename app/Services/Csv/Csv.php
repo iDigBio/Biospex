@@ -20,6 +20,7 @@
 namespace App\Services\Csv;
 
 use Illuminate\Support\Facades\Storage;
+use League\Csv\CharsetConverter;
 use League\Csv\Writer;
 use League\Csv\Reader;
 
@@ -58,6 +59,14 @@ class Csv
     public function writerCreateFromPath($filePath)
     {
         $this->writer = Writer::createFromPath($filePath, 'w+');
+    }
+
+    /**
+     * Create writer from temp file object.
+     */
+    public function writerCreateFromTempFileObj()
+    {
+        $this->writer = Writer::createFromFileObject(new \SplTempFileObject());
     }
 
     /**
@@ -158,7 +167,7 @@ class Csv
      * @return string|null
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function createReportCsv(array $data, string $fileName)
+    public function createReportCsv(array $data, string $fileName): ?string
     {
         if (! isset($data) || empty($data)) {
             return null;
@@ -172,5 +181,17 @@ class Csv
         $this->insertAll($data);
 
         return base64_encode($fileName);
+    }
+
+    /**
+     * Set encoding.
+     *
+     * @return \League\Csv\CharsetConverter
+     */
+    public function setEncoding(): CharsetConverter
+    {
+        return (new CharsetConverter())
+            ->inputEncoding('utf-8')
+            ->outputEncoding('utf-8');
     }
 }

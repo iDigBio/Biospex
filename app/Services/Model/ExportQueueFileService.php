@@ -21,6 +21,7 @@ namespace App\Services\Model;
 
 use App\Models\ExportQueueFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 
 /**
  * Class ExportQueueFileService
@@ -67,10 +68,11 @@ class ExportQueueFileService extends BaseModelService
      * Get all files by queue id.
      *
      * @param string $queueId
-     * @return \Illuminate\Support\Collection
+     * @param int $error
+     * @return \Illuminate\Support\LazyCollection
      */
-    public function getFilesByQueueId(string $queueId): Collection
+    public function getFilesByQueueId(string $queueId, int $error = 0): LazyCollection
     {
-        return $this->model->where('queue_id', $queueId)->where('error', 0)->get();
+        return $this->model->where('queue_id', $queueId)->where('error', $error)->cursor();
     }
 }

@@ -19,7 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\ActorJob;
+use App\Services\Actor\ActorFactory;
 use Illuminate\Console\Command;
 use App\Services\Model\WorkflowManagerService;
 
@@ -103,7 +103,8 @@ class WorkFlowManagerCommand extends Command
             $actor->pivot->total = $expedition->stat->local_subject_count;
             $actor->pivot->queued = 1;
             event('actor.pivot.queued', [$actor]);
-            ActorJob::dispatch(serialize($actor));
+
+            ActorFactory::create($actor->class)->actor($actor);
         });
     }
 }

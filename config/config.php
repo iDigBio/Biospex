@@ -71,12 +71,14 @@ return [
     ],
 
     'export_stages'       => [
-        'retrieveImages',
-        'convertImages',
-        'deleteOriginalImages',
-        'buildCsv',
-        'tarImages',
-        'report',
+        'Build Queue', // 0
+        'Retrieve Images', // 1
+        'Convert Images', // 2
+        'Check Image Count', // 3
+        'Build CSV', // 4
+        'Compress Export File', // 5
+        'Send Report', // 6
+        'Delete Working Files', // 7
     ],
 
     /**

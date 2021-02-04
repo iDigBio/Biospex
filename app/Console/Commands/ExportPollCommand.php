@@ -74,6 +74,8 @@ class ExportPollCommand extends Command
      */
     public function handle()
     {
+        // todo remove this
+        return;
         $queues = $this->exportQueueService->getAllExportQueueOrderByIdAsc();
 
         $data = ['message' => t('No processes running at this time'), 'payload' => []];

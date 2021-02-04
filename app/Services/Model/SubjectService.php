@@ -20,6 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\Subject;
+use Illuminate\Support\LazyCollection;
 
 /**
  * Class SubjectService
@@ -51,6 +52,17 @@ class SubjectService extends BaseModelService
     public function __construct(Subject $subject)
     {
         $this->model = $subject;
+    }
+
+    /**
+     * Get subjects by expedition id and return using lazycollection.
+     *
+     * @param $expeditionId
+     * @return \Illuminate\Support\LazyCollection
+     */
+    public function getAssignedByExpeditionId($expeditionId): LazyCollection
+    {
+        return $this->model->where('expedition_ids', $expeditionId)->cursor();
     }
 
     /**

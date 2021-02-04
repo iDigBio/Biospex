@@ -26,6 +26,7 @@ use App\Services\Download\DownloadType;
 use Exception;
 use Flash;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -118,7 +119,7 @@ class DownloadController extends Controller
             $download = $this->downloadType->getDownload($downloadId);
 
             if (! $download) {
-                Flash::error(t("The file record appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."));
+                Flash::error(t("The file record appears to be missing. If you'd like to have the file generated, please use the generate button in the Expedition tools."));
 
                 return redirect()->back();
             }
@@ -196,22 +197,22 @@ class DownloadController extends Controller
     }
 
     /**
-     * Regenerate export download.
+     * Generate export download.
      *
      * @param string $projectId
      * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function regenerate(string $projectId, string $expeditionId)
+    public function export(string $projectId, string $expeditionId): RedirectResponse
     {
         try {
             $expedition = $this->expeditionService->findwith($expeditionId, ['nfnActor', 'stat']);
 
-            $this->downloadType->resetExpeditionData($expedition);
+            $this->downloadType->resetExpeditionData($expedition, \Auth::user());
 
-            Flash::success(t('Download regeneration has started. You will be notified when completed.'));
+            Flash::success(t('Export generation has started. You will be notified when completed.'));
         } catch (Exception $e) {
-            Flash::error(t('An error occurred while trying to regenerate the download. The Admin has been notified.'));
+            Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
         }
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);

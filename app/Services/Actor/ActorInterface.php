@@ -17,27 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Presenters;
+namespace App\Services\Actor;
 
-/**
- * Class ActorPresenter
- *
- * @package App\Presenters
- */
-class ActorPresenter extends Presenter
+use App\Models\Actor;
+
+interface ActorInterface
 {
     /**
-     * Return button and path for expert review.
+     * Process function for actors.
      *
-     * @return string
+     * @param \App\Models\Actor $actor
+     * @return mixed
      */
-    public function reconcileExpertReviewBtn()
-    {
-        $route = $this->model->pivot->expert ? 'admin.reconciles.index' : 'admin.reconciles.create';
-        $url = route($route, [$this->model->pivot->expedition_id]);
-
-        $class = $this->model->pivot->expert ? 'green' : '';
-
-        return '<a class="btn btn-primary rounded-0 mb-1 '.$class.'" href="'.$url.'">'. t('Expert Review Ambiguities').'</a>';
-    }
+    public function process(Actor $actor);
 }

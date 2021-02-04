@@ -22,6 +22,7 @@ namespace App\Services\Actor;
 use App\Services\Model\ExportQueueService;
 use App\Services\Model\ExportQueueFileService;
 use App\Models\Actor;
+use App\Services\Model\SubjectService;
 use App\Services\MongoDbService;
 
 /**

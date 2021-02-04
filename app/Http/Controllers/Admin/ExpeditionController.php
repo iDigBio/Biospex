@@ -413,8 +413,13 @@ class ExpeditionController extends Controller
         try {
             $expedition = $this->expeditionService->findWith($expeditionId, [
                 'project.workflow.actors',
+                'panoptesProject',
                 'workflowManager',
             ]);
+
+            if(null === $expedition->panoptesProject) {
+                throw new Exception(t('Zooniverse Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
+            }
 
             if (null !== $expedition->workflowManager) {
                 $expedition->workflowManager->stopped = 0;
@@ -429,7 +434,7 @@ class ExpeditionController extends Controller
                 $this->workflowManagerService->create(['expedition_id' => $expeditionId]);
             }
 
-            Artisan::call('workflow:manage', ['expeditionId' => $expeditionId]);
+            //Artisan::call('workflow:manage', ['expeditionId' => $expeditionId]);
 
             Flash::success(t('The expedition has been added to the process queue.'));
 

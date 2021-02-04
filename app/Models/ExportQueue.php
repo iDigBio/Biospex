@@ -40,6 +40,7 @@ class ExportQueue extends BaseEloquentModel
         'stage',
         'queued',
         'count',
+        'processed',
         'error',
         'missing'
     ];

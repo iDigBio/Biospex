@@ -20,6 +20,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Phar;
 
 /**
  * Class AppCommand
@@ -41,7 +42,8 @@ class AppCommand extends Command
     /**
      * AppCommand constructor.
      */
-    public function __construct() {
+    public function __construct(
+    ) {
         parent::__construct();
     }
 
@@ -50,6 +52,40 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $tmpDir = "/home/vagrant/sites/biospexProd/storage/app/scratch/1-2-8d2ac06b-60f4-4879-9e5c-819e929003f7/tmp";
+        $exportDir = "/home/vagrant/sites/biospexProd/storage/app/exports/1-2-8d2ac06b-60f4-4879-9e5c-819e929003f7.tar.gz";
+        $tmpTar = "/tmp/1-2-8d2ac06b-60f4-4879-9e5c-819e929003f7.tar";
+        $tmpGz = "/tmp/1-2-8d2ac06b-60f4-4879-9e5c-819e929003f7.tar.gz";
+
+        //$fi = new \FilesystemIterator($tmpDir);
+
+        try {
+            $archive = new \PharData($tmpTar);
+            $archive->buildFromIterator(new \DirectoryIterator($tmpDir), $tmpDir);
+            $archive->compress(Phar::GZ);
+            \File::delete($tmpTar);
+            \File::move($tmpGz, $exportDir);
+
+        } catch (\Exception $exception) {
+            dd($exception->getMessage());
+        }
+
+
+        /*
+        foreach ($fi as $file) {
+            dd($file);
+        }
+        */
+
+        // compress to "outfile.tar.gz
+        //$gzipped = $archive->compress(Phar::GZ);
+
+        // delete outfile.tar
+        //unset($archive);
+        //unlink("outfile.tar");
+
+        //$cmd = "cd /home/vagrant/sites/biospexProd/storage/app/scratch/1-2-8d2ac06b-60f4-4879-9e5c-819e929003f7/tmp && sudo tar -czf /home/vagrant/sites/biospexProd/storage/app/exports/1-2-8d2ac06b-60f4-4879-9e5c-819e929003f7.tar.gz *";
+        //$cmd = "cd /home/vagrant/sites/biospexProd/storage/app/scratch/1-2-8d2ac06b-60f4-4879-9e5c-819e929003f7/tmp && tar -czf /tmp/1-2-8d2ac06b-60f4-4879-9e5c-819e929003f7.tar.gz *";
 
     }
 }
