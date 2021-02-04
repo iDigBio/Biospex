@@ -19,7 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\ExportQueueJob;
+use App\Services\Download\DownloadType;
 use App\Services\Model\ExportQueueService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -38,7 +38,7 @@ class ExportQueueCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'export:queue';
+    protected $signature = 'export:queue {expeditionId}';
 
     /**
      * The console command description.
@@ -52,15 +52,25 @@ class ExportQueueCommand extends Command
      */
     public $exportQueueService;
 
+    /**
+     * @var \App\Services\Download\DownloadType
+     */
+    private $downloadType;
 
     /**
      * ExportQueueCommand constructor.
+     *
      * @param \App\Services\Model\ExportQueueService $exportQueueService
+     * @param \App\Services\Download\DownloadType $downloadType
      */
-    public function __construct(ExportQueueService $exportQueueService)
+    public function __construct(
+        ExportQueueService $exportQueueService,
+        DownloadType $downloadType
+    )
     {
         parent::__construct();
         $this->exportQueueService = $exportQueueService;
+        $this->downloadType = $downloadType;
     }
 
     /**
@@ -68,24 +78,14 @@ class ExportQueueCommand extends Command
      */
     public function handle()
     {
-        $record = $this->exportQueueService->findBy('error', 0);
+        $expeditionId = $this->argument('expeditionId');
+        $record = $this->exportQueueService->findWithExpeditionNfnActor($expeditionId);
 
         if ($record === null)
         {
             return;
         }
 
-        if ($record->queued)
-        {
-            ExportQueueJob::dispatch($record);
-
-            return;
-        }
-
-        if (! $record->queued)
-        {
-            $this->exportQueueService->update(['queued' => 1], $record->id);
-            event('exportQueue.updated');
-        }
+        $this->downloadType->resetExpeditionData($record->expedition);
     }
 }
