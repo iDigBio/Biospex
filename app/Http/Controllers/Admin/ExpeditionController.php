@@ -415,6 +415,7 @@ class ExpeditionController extends Controller
                 'project.workflow.actors',
                 'panoptesProject',
                 'workflowManager',
+                'stat'
             ]);
 
             if(null === $expedition->panoptesProject) {
@@ -428,13 +429,14 @@ class ExpeditionController extends Controller
                 $expedition->project->workflow->actors->reject(function ($actor) {
                     return $actor->private;
                 })->each(function ($actor) use ($expedition) {
-                    $expedition->actors()->sync([$actor->id => ['order' => $actor->pivot->order]], false);
+                    $sync = [
+                        $actor->id => ['order' => $actor->pivot->order, 'state' => 1]
+                    ];
+                    $expedition->actors()->sync($sync, false);
                 });
 
                 $this->workflowManagerService->create(['expedition_id' => $expeditionId]);
             }
-
-            //Artisan::call('workflow:manage', ['expeditionId' => $expeditionId]);
 
             Flash::success(t('The expedition has been added to the process queue.'));
 

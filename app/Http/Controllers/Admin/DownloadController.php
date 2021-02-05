@@ -208,7 +208,7 @@ class DownloadController extends Controller
         try {
             $expedition = $this->expeditionService->findwith($expeditionId, ['nfnActor', 'stat']);
 
-            $this->downloadType->resetExpeditionData($expedition, \Auth::user());
+            $this->downloadType->resetExpeditionData($expedition);
 
             Flash::success(t('Export generation has started. You will be notified when completed.'));
         } catch (Exception $e) {

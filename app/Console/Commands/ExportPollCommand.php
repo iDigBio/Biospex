@@ -74,8 +74,6 @@ class ExportPollCommand extends Command
      */
     public function handle()
     {
-        // todo remove this
-        return;
         $queues = $this->exportQueueService->getAllExportQueueOrderByIdAsc();
 
         $data = ['message' => t('No processes running at this time'), 'payload' => []];
@@ -88,14 +86,13 @@ class ExportPollCommand extends Command
 
         $count = 0;
         $data['payload'] = $queues->map(function ($queue) use (&$count) {
-            $data = $this->getFirstQueueData($queue);
 
-            $notice = $queue->queued ? $this->setProcessNotice($data) : $this->setQueuedNotice($data, $count);
+            $notice = $queue->queued ? $this->setProcessNotice($queue) : $this->setQueuedNotice($queue, $count);
 
             $count++;
 
             return [
-                'groupId' => $data->expedition->project->group->id,
+                'groupId' => $queue->expedition->project->group->id,
                 'notice'  => $notice,
             ];
         })->values();
@@ -104,34 +101,21 @@ class ExportPollCommand extends Command
     }
 
     /**
-     * Get needed data for queue relationships.
-     *
-     * @param \App\Models\ExportQueue $queue
-     * @return \App\Models\ExportQueue
-     */
-    private function getFirstQueueData(ExportQueue $queue): ExportQueue
-    {
-        return $this->exportQueueService->findQueueProcessData($queue->id, $queue->expedition_id, $queue->actor_id);
-    }
-
-    /**
      * Set notice if process is occurring.
      *
-     * @param \App\Models\ExportQueue $data
+     * @param \App\Models\ExportQueue $queue
      * @return string
      * @throws \Throwable
      */
-    private function setProcessNotice(ExportQueue $data): string
+    private function setProcessNotice(ExportQueue $queue): string
     {
-        $stage = $this->exportStages[$data->stage];
+        $processed = $queue->processed === 0 ? 1 : $queue->processed;
+        $stage = $this->exportStages[$queue->stage];
+        $title = $queue->expedition->title;
 
-        $processed = $data->expedition->actors->first()->pivot->processed === 0 ? 1 : $data->expedition->actors->first()->pivot->processed;
-
-        $stage = GeneralHelper::camelCaseToWords($stage);
-        $title = $data->expedition->title;
         $processedRecords = t(' :processed of :total completed.', [
             ':processed' => $processed,
-            ':total'     => $data->count,
+            ':total'     => $queue->count,
         ]);
 
         return view('common.export-process', compact('stage', 'title', 'processedRecords'))->render();
@@ -140,14 +124,14 @@ class ExportPollCommand extends Command
     /**
      * Set notice message for remaining exports.
      *
-     * @param \App\Models\ExportQueue $data
+     * @param \App\Models\ExportQueue $queue
      * @param int $count
      * @return string
      * @throws \Throwable
      */
-    private function setQueuedNotice(ExportQueue $data, int $count): string
+    private function setQueuedNotice(ExportQueue $queue, int $count): string
     {
-        $title =$data->expedition->title;
+        $title =$queue->expedition->title;
         $remainingCount = t(n(':count export remains in queue before processing begins.', ':count exports remain in queue before processing begins.', $count), [':count' => $count]);
 
         return view('common.export-process-queued', compact('title', 'remainingCount'))->render();

@@ -50,8 +50,8 @@ class WorkflowManagerService extends BaseModelService
     {
         $model =$this->model->with(['expedition.stat', 'expedition.actors' => function($query){
             $query->where('error', 0);
-            $query->where('queued', 0);
             $query->where('completed', 0);
+            $query->where->whereDoesntHave();
         }])->where('stopped', '=', 0);
 
         return $expeditionId === null ?

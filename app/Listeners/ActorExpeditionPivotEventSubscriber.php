@@ -162,8 +162,7 @@ class ActorExpeditionPivotEventSubscriber
     {
         $attributes = [
             'state'     => $actor->pivot->state,
-            'total'     => $actor->pivot->total,
-            'queued'    => $actor->pivot->queued
+            'total'     => $actor->pivot->total
         ];
         $this->updateActorExpeditions($actor, $attributes);
     }
