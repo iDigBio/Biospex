@@ -49,6 +49,7 @@ class ProjectController extends Controller
 
         $this->projectService = $projectService;
     }
+
     /**
      * Public Projects page.
      *
@@ -85,23 +86,30 @@ class ProjectController extends Controller
      * @param \App\Services\Process\TranscriptionChartService $chartService
      * @param \App\Services\Model\StateCountyService $stateCountyService
      * @param $slug
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function project(
         TranscriptionChartService $chartService,
         StateCountyService $stateCountyService,
         $slug
-    )
-    {
+    ) {
         $project = $this->projectService->getProjectPageBySlug($slug);
 
-        [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
-            return $expedition->nfnActor->pivot->completed === 0;
-        });
+        $expeditions = null;
+        $expeditionsCompleted = null;
+        if (isset($project->expeditions)) {
+            [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
+                return $expedition->nfnActor->pivot->completed === 0;
+            });
+        }
 
-        [$events, $eventsCompleted] = $project->events->partition(function ($event) {
-            return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
-        });
+        $events = null;
+        $eventsCompleted = null;
+        if (isset($project->events)) {
+            [$events, $eventsCompleted] = $project->events->partition(function ($event) {
+                return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
+            });
+        }
 
         // TODO change to stat table count
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
@@ -113,10 +121,10 @@ class ProjectController extends Controller
         $max = abs(round(($states->max('value') + 500), -3));
 
         JavaScript::put([
-            'max'    => $max,
-            'states' => $states->toJson(),
-            'years' => $years === null ? null : $years->toArray(),
-            'project' => $project->id
+            'max'     => $max,
+            'states'  => $states->toJson(),
+            'years'   => $years === null ? null : $years->toArray(),
+            'project' => $project->id,
         ]);
 
         return view('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
@@ -137,12 +145,12 @@ class ProjectController extends Controller
         }
 
         $counties = $stateCountyService->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
-                return [
-                    'id'    => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
-                    'value' => $item->transcription_locations_count,
-                    'name'  => $item->state_county,
-                ];
-            });
+            return [
+                'id'    => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
+                'value' => $item->transcription_locations_count,
+                'name'  => $item->state_county,
+            ];
+        });
 
         return [
             'max'      => abs(round(($counties->max('value') + 500), -3)),

@@ -195,6 +195,8 @@
  * http://jquery.org/license
  */
 
+/*! https://mths.be/utf8js v2.1.2 by @mathias */
+
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
 /**

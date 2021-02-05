@@ -21,6 +21,7 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
+use App\Services\Csv\Csv;
 use App\Services\Process\PanoptesTranscriptionProcess;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -29,6 +30,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Str;
 
 /**
  * Class ZooniverseTranscriptionJob
@@ -38,6 +40,13 @@ use Illuminate\Support\Facades\Storage;
 class ZooniverseTranscriptionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 300;
 
     /**
      * @var int
@@ -59,13 +68,17 @@ class ZooniverseTranscriptionJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Process\PanoptesTranscriptionProcess $transcriptionProcess
+     * @param \App\Services\Csv\Csv $csv
      * @return void
+     * @throws \League\Csv\CannotInsertRecord
      */
-    public function handle(PanoptesTranscriptionProcess $transcriptionProcess)
+    public function handle(PanoptesTranscriptionProcess $transcriptionProcess, Csv $csv)
     {
         if ($this->skipReconcile($this->expeditionId)) {
             return;
         }
+
+        $user = User::find(1);
 
         try {
             $transcriptDir = config('config.nfn_downloads_transcript');
@@ -79,15 +92,22 @@ class ZooniverseTranscriptionJob implements ShouldQueue
             $csvFile = Storage::path($transcriptDir.'/'.$this->expeditionId.'.csv');
             $transcriptionProcess->process($csvFile, $this->expeditionId);
 
-            if ($transcriptionProcess->checkCsvError()) {
-                throw new Exception('Error in Classification transcript job.');
+            $fileName = $transcriptionProcess->checkCsvError();
+            if ($fileName !== null) {
+                $messages = [
+                    t('Expedition Id: %s', $this->expeditionId),
+                    t('Error: ', 'Zooniverse Transcription'),
+                    t('File: %s', __FILE__),
+                    t('Line: %s', 89),
+                ];
+                $user->notify(new JobError(__FILE__, $messages, $fileName));
             }
 
             return;
         }
         catch (\Exception $e) {
-            $user = User::find(1);
             $messages = [
+                t('Expedition Id: %s', $this->expeditionId),
                 t('Error: %s', $e->getMessage()),
                 t('File: %s', $e->getFile()),
                 t('Line: %s', $e->getLine()),

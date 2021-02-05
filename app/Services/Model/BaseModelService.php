@@ -85,12 +85,13 @@ class BaseModelService
      *
      * @param $attribute
      * @param $value
+     * @param string $op
      * @param array|string[] $columns
      * @return mixed
      */
-    public function getBy($attribute, $value, array $columns = ['*'])
+    public function getBy($attribute, $value, $op = '=', array $columns = ['*'])
     {
-        return $this->model->where($attribute, '=', $value)->get($columns);
+        return $this->model->where($attribute, $op, $value)->get($columns);
     }
 
     /**

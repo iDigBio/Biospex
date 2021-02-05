@@ -25,7 +25,6 @@ use App\Notifications\GridCsvExport;
 use App\Notifications\GridCsvExportError;
 use App\Services\Grid\JqGridEncoder;
 use App\Services\Csv\Csv;
-use App\Facades\DateHelper;
 use App\Facades\GeneralHelper;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -102,6 +101,8 @@ class GridExportCsvJob implements ShouldQueue
      */
     public function handle(JqGridEncoder $jqGridEncoder, Csv $csv)
     {
+        $csvName = Str::random().'.csv';
+
         try {
 
             $query = $jqGridEncoder->encodeGridExportData($this->postData, $this->route, $this->projectId, $this->expeditionId);
@@ -111,23 +112,20 @@ class GridExportCsvJob implements ShouldQueue
             }
 
             $header = $this->buildHeader();
-
-            $csvName = Str::random().'.csv';
             $file = Storage::path(config('config.reports_dir').'/'.$csvName);
             $csv->writerCreateFromPath($file);
             $csv->insertOne($header->keys()->toArray());
 
             $query->chunk(1000, function($subjects) use($header, $csv) {
                 $mapped = $subjects->map(function($subject) use($header) {
-                    $subject->expedition_ids = trim(implode(', ',$subject->expedition_ids), ',');
-                    $subject->updated_at = DateHelper::formatMongoDbDate($subject->updated_at, 'Y-m-d H:i:s');
-                    $subject->created_at = DateHelper::formatMongoDbDate($subject->created_at, 'Y-m-d H:i:s');
-                    $subject->ocr = GeneralHelper::forceUtf8($subject->ocr);
-                    $subject->occurrence = $this->decodeAndEncode($subject->occurrence);
+                    $subjectArray = $subject->getAttributes();
+                    $subjectArray['expedition_ids'] = trim(implode(', ',$subject->expedition_ids), ',');
+                    $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
+                    $subjectArray['created_at'] = $subject->created_at->toDateTimeString();;
+                    $subjectArray['ocr'] = GeneralHelper::forceUtf8($subject->ocr);
+                    $subjectArray['occurrence'] = $this->decodeAndEncode($subject->occurrence->getAttributes());
 
-                    $subject = $header->merge($subject->toArray());
-
-                    return $subject;
+                    return $header->merge($subjectArray);
                 });
 
                 $csv->insertAll($mapped->toArray());
@@ -136,7 +134,8 @@ class GridExportCsvJob implements ShouldQueue
             $this->user->notify(new GridCsvExport(base64_encode($csvName)));
 
         } catch (Exception $e) {
-            $this->user->notify(new GridCsvExportError($e->getMessage()));
+            $this->user->notify(new GridCsvExportError($e->getTraceAsString()));
+            Storage::delete(config('config.reports_dir').'/'.$csvName);
         }
     }
 

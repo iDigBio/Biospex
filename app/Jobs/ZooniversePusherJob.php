@@ -53,7 +53,7 @@ class ZooniversePusherJob implements ShouldQueue
     /**
      * @var int
      */
-    public $timeout = 3600;
+    public $timeout = 300;
 
     /**
      * Create a new job instance.
@@ -84,6 +84,9 @@ class ZooniversePusherJob implements ShouldQueue
         try
         {
             $expedition = $pusherTranscriptionProcess->getExpedition($this->expeditionId);
+            if (!$expedition) {
+                throw new Exception(t('Could not find Expedition using Id: %', $this->expeditionId));
+            }
 
             $timestamp = isset($this->days) ? Carbon::now()->subDays($this->days) : Carbon::now()->subDays(3);
 
@@ -99,13 +102,13 @@ class ZooniversePusherJob implements ShouldQueue
         catch (Exception $e)
         {
             $user = User::find(1);
-            $message = [
-                'Message: ' => t('An error occurred while processing pusher job for Expedition Id: %s', $this->expeditionId),
-                'File: ' => $e->getFile(),
-                'Line: ' => $e->getLine(),
-                'Error: ' => $e->getMessage(),
+            $messages = [
+                t('Expedition Id: %s', $this->expeditionId),
+                t('Error: %s', $e->getMessage()),
+                t('File: %s', $e->getFile()),
+                t('Line: %s', $e->getLine()),
             ];
-            $user->notify(new JobError(__FILE__, $message));
+            $user->notify(new JobError(__FILE__, $messages));
 
             return;
         }

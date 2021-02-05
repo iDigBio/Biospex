@@ -35,7 +35,7 @@ class ZooniverseClassificationCount extends Command
 
     /**
      * The name and signature of the console command.
-     *
+     * zooniverse:count 20 30 40
      * @var string
      */
     protected $signature = 'zooniverse:count {expeditionIds?*}';

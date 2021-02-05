@@ -22,7 +22,6 @@ $.jgrid.useJSON = true;
 $.jgrid.defaults.responsive = true;
 $.jgrid.cellattr = $.jgrid.cellattr || {};
 
-
 $(function () {
     if ($('#jqGridTable').length > 0) {
 
@@ -172,7 +171,6 @@ $(function () {
                 id: "_id"
             },
             url: dataUrl,
-            editurl: "/admin/projects/17/expeditions/312/delete",
             mtype: "GET",
             datatype: "json",
             colNames: cn,
@@ -223,7 +221,13 @@ $(function () {
             }
         })
             .jqGrid("navGrid", {add: false, edit: false, del: false, search: true}, {}, {}, {}, {
-                top: 'auto',
+                afterShowSearch: function ($form) {
+                    $form.closest(".ui-jqdialog").position({
+                        of: window, // or any other element
+                        my: "center center",
+                        at: "center center"
+                    });
+                },
                 width: 700,
                 multipleSearch: true,
                 recreateFilter: true
