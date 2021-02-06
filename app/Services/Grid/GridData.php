@@ -21,6 +21,7 @@ namespace App\Services\Grid;
 
 use App\Services\Model\SubjectService;
 use Exception;
+use Illuminate\Support\LazyCollection;
 
 /**
  * Class GridData
@@ -75,11 +76,11 @@ class GridData
      * Return query so chunk export can be performed.
      *
      * @param array $vars
-     * @return \Jenssegers\Mongodb\Eloquent\Builder
+     * @return \Illuminate\Support\LazyCollection
      */
-    public function getQueryForChunkExport(array $vars)
+    public function getQueryForExport(array $vars): LazyCollection
     {
-        return $this->subjectService->chunkExportGridRows($vars);
+        return $this->subjectService->exportGridRows($vars);
     }
 
     /**

@@ -20,6 +20,7 @@
 namespace App\Services\Model;
 
 use App\Models\Subject;
+use Illuminate\Support\LazyCollection;
 
 /**
  * Class SubjectService
@@ -198,9 +199,9 @@ class SubjectService extends BaseModelService
      * Return query used to chunk rows for export.
      *
      * @param array $vars
-     * @return \Jenssegers\Mongodb\Eloquent\Builder
+     * @return \Illuminate\Support\LazyCollection
      */
-    public function chunkExportGridRows(array $vars)
+    public function exportGridRows(array $vars): LazyCollection
     {
         $query = $this->model->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
@@ -210,7 +211,7 @@ class SubjectService extends BaseModelService
             $query->orderBy($field, $sort);
         }
 
-        return $query;
+        return $query->orderBy('_id', 'desc')->cursor();
     }
 
     /**
