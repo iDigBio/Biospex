@@ -105,30 +105,25 @@ class GridExportCsvJob implements ShouldQueue
 
         try {
 
-            $query = $jqGridEncoder->encodeGridExportData($this->postData, $this->route, $this->projectId, $this->expeditionId);
-
-            if (!$query->count()) {
-                throw new Exception(t('No results were returned for the CSV export.'));
-            }
+            $cursor = $jqGridEncoder->encodeGridExportData($this->postData, $this->route, $this->projectId, $this->expeditionId);
 
             $header = $this->buildHeader();
             $file = Storage::path(config('config.reports_dir').'/'.$csvName);
             $csv->writerCreateFromPath($file);
             $csv->insertOne($header->keys()->toArray());
 
-            $query->chunk(1000, function($subjects) use($header, $csv) {
-                $mapped = $subjects->map(function($subject) use($header) {
-                    $subjectArray = $subject->getAttributes();
-                    $subjectArray['expedition_ids'] = trim(implode(', ',$subject->expedition_ids), ',');
-                    $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
-                    $subjectArray['created_at'] = $subject->created_at->toDateTimeString();;
-                    $subjectArray['ocr'] = GeneralHelper::forceUtf8($subject->ocr);
-                    $subjectArray['occurrence'] = $this->decodeAndEncode($subject->occurrence->getAttributes());
+            $cursor->each(function ($subject) use ($header, $csv) {
+                $subjectArray = $subject->getAttributes();
+                $subjectArray['_id'] = (string) $subject->_id;
+                $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
+                $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
+                $subjectArray['created_at'] = $subject->created_at->toDateTimeString();;
+                $subjectArray['ocr'] = GeneralHelper::forceUtf8($subject->ocr);
+                $subjectArray['occurrence'] = $this->decodeAndEncode($subject->occurrence->getAttributes());
 
-                    return $header->merge($subjectArray);
-                });
+                $merged = $header->merge($subjectArray);
 
-                $csv->insertAll($mapped->toArray());
+                $csv->insertOne($merged->toArray());
             });
 
             $this->user->notify(new GridCsvExport(base64_encode($csvName)));
@@ -162,10 +157,29 @@ class GridExportCsvJob implements ShouldQueue
      */
     private function decodeAndEncode($occurrence)
     {
-        foreach ($occurrence as $field => $value){
-            $occurrence[$field] = is_array($value) ? $value : json_decode($value);
+        unset($occurrence['_id'], $occurrence['updated_at'], $occurrence['created_at']);
+
+        foreach ($occurrence as $field => $value) {
+            if ($this->isJson($value)) {
+                $value = json_decode($value);
+            }
+
+            $occurrence[$field] = $value;
         }
 
         return json_encode($occurrence);
+    }
+
+    /**
+     * Check if value is json.
+     *
+     * @param $str
+     * @return bool
+     */
+    public function isJson($str): bool
+    {
+        $json = json_decode($str);
+
+        return $json !== false && ! is_null($json) && $str != $json;
     }
 }
