@@ -19,6 +19,8 @@
 
 namespace App\Services\Grid;
 
+use Illuminate\Support\LazyCollection;
+
 /**
  * Class JqGridEncoder
  *
@@ -96,19 +98,19 @@ class JqGridEncoder
     }
 
     /**
-     * Return query for processing chunked exports.
+     * Return query for processing exports.
      *
      * @param $postedData
      * @param $route
      * @param $projectId
      * @param null $expeditionId
-     * @return \Jenssegers\Mongodb\Eloquent\Builder
+     * @return \Illuminate\Support\LazyCollection
      */
-    public function encodeGridExportData($postedData, $route, $projectId, $expeditionId = null)
+    public function encodeGridExportData($postedData, $route, $projectId, $expeditionId = null): LazyCollection
     {
         $vars = $this->gridData->buildVariables($postedData, $route, $projectId, $expeditionId);
         $this->gridData->setOrderBy($vars);
 
-        return $this->gridData->getQueryForChunkExport($vars);
+        return $this->gridData->getQueryForExport($vars);
     }
 }
