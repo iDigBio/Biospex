@@ -96,10 +96,7 @@ class AppFileDeployment extends Command
         });
 
         $supFiles = File::files($this->resPath.'/supervisord');
-        $subTargets = collect($supFiles)->reject(function ($file) {
-            return (File::name($file) === 'echoserver.conf' || File::name($file) === 'panoptes-pusher.conf')
-                && App::environment() === 'dev';
-        })->map(function ($file) {
+        $subTargets = collect($supFiles)->map(function ($file) {
             $target = $this->supPath.'/'.File::name($file);
             File::copy($file, $target);
 
