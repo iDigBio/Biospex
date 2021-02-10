@@ -20,7 +20,8 @@
 namespace App\Console\Commands;
 
 use App\Jobs\OcrTesseractJob;
-use App\Services\Model\OcrQueueService;
+use App\Services\Process\OcrService;
+use Artisan;
 use Illuminate\Console\Command;
 
 /**
@@ -45,19 +46,19 @@ class OcrProcessCommand extends Command
     protected $description = 'Starts ocr processing if queues exist.';
 
     /**
-     * @var \App\Services\Model\OcrQueueService
+     * @var \App\Services\Process\OcrService
      */
-    private $ocrQueueService;
+    private $ocrService;
 
     /**
      * OcrProcessCommand constructor.
      *
-     * @param \App\Services\Model\OcrQueueService $ocrQueueService
+     * @param \App\Services\Process\OcrService $ocrService
      */
-    public function __construct(OcrQueueService $ocrQueueService) {
+    public function __construct(OcrService $ocrService) {
         parent::__construct();
 
-        $this->ocrQueueService = $ocrQueueService;
+        $this->ocrService = $ocrService;
     }
 
     /**
@@ -67,12 +68,32 @@ class OcrProcessCommand extends Command
      */
     public function handle()
     {
-        $queue = $this->ocrQueueService->getOcrQueueForOcrProcessCommand();
+        $queue = $this->ocrService->getOcrQueueForOcrProcessCommand();
 
         if ($queue === null || $queue->status === 1) {
             return;
         }
 
-        OcrTesseractJob::dispatch($queue);
+        $count = $this->ocrService->getSubjectCountForOcr($queue->project_id, $queue->expedition_id);
+
+        if ($count === 0) {
+
+            $this->ocrService->complete($queue);
+
+            Artisan::call('ocrprocess:records');
+
+            return;
+        }
+
+        $queue->total = $count;
+        $queue->processed = 0;
+        $queue->status = 1;
+        $queue->save();
+
+        $subjects = $this->ocrService->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id);
+
+        $subjects->each(function ($subject) use($queue) {
+            OcrTesseractJob::dispatch($queue->id, $subject);
+        });
     }
 }

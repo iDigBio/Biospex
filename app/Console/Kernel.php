@@ -30,6 +30,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        // Run ocr every 15 minutes.
+        $schedule->command('ocrprocess:records')->everyFifteenMinutes();
+
         // Failed jobs report used to check ocr
         $schedule->command('report:failed')
             ->timezone('America/New_York')

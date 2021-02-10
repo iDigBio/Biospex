@@ -22,7 +22,9 @@ namespace App\Services\Process;
 use App\Notifications\OcrProcessComplete;
 use App\Services\Model\OcrQueueService;
 use App\Services\Csv\Csv;
+use App\Services\Model\SubjectService;
 use App\Services\MongoDbService;
+use Illuminate\Support\LazyCollection;
 use MongoDB\BSON\Regex;
 use Storage;
 use Str;
@@ -55,13 +57,20 @@ class OcrService
     public $folderPath;
 
     /**
+     * @var \App\Services\Model\SubjectService
+     */
+    private $subjectService;
+
+    /**
      * Ocr constructor.
      *
+     * @param \App\Services\Model\SubjectService $subjectService
      * @param \App\Services\Model\OcrQueueService $ocrQueueService
      * @param \App\Services\MongoDbService $mongoDbService
      * @param \App\Services\Csv\Csv $csvService
      */
     public function __construct(
+        SubjectService $subjectService,
         OcrQueueService $ocrQueueService,
         MongoDbService $mongoDbService,
         Csv $csvService
@@ -69,6 +78,7 @@ class OcrService
         $this->ocrQueueService = $ocrQueueService;
         $this->mongoDbService = $mongoDbService;
         $this->csvService = $csvService;
+        $this->subjectService = $subjectService;
     }
 
     /**
@@ -83,6 +93,27 @@ class OcrService
         if (! Storage::exists($this->folderPath)) {
             Storage::makeDirectory($this->folderPath);
         }
+    }
+
+    /**
+     * Find queue by id.
+     *
+     * @param int $id
+     * @return mixed
+     */
+    public function findOcrQueueById(int $id)
+    {
+        return $this->ocrQueueService->find($id);
+    }
+
+    /**
+     * Return ocr queue for command process.
+     *
+     * @return mixed
+     */
+    public function getOcrQueueForOcrProcessCommand()
+    {
+        return $this->ocrQueueService->getOcrQueueForOcrProcessCommand();
     }
 
     /**
@@ -106,65 +137,27 @@ class OcrService
     }
 
     /**
-     * Set query for count and retrieving subjects that need to be processed.
-     *
      * @param int $projectId
      * @param int|null $expeditionId
-     * @param \MongoDB\BSON\Regex|null $regex
-     * @return array
+     * @param bool $error
+     * @return \Illuminate\Support\LazyCollection
      */
-    private function setSubjectQuery(int $projectId, int $expeditionId = null, Regex $regex = null): array
+    public function getSubjectCursorForOcr(int $projectId, int $expeditionId = null, bool $error = false): LazyCollection
     {
-        return $query = null === $expeditionId ? [
-            'project_id' => $projectId,
-            'ocr'        => $regex ?: '',
-        ] : [
-            'project_id'     => $projectId,
-            'expedition_ids' => $expeditionId,
-            'ocr'            => $regex ?: '',
-        ];
+        return $this->subjectService->getSubjectCursorForOcr($projectId, $expeditionId, $error);
     }
 
     /**
-     * Get subject count.
+     * Get subject count for ocr process.
      *
      * @param int $projectId
      * @param int|null $expeditionId
+     * @param bool $error
      * @return int
      */
-    public function getSubjectCount(int $projectId, int $expeditionId = null): int
+    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null, bool $error = false): int
     {
-        $query = $this->setSubjectQuery($projectId, $expeditionId);
-
-        $this->mongoDbService->setCollection('subjects');
-
-        return $this->mongoDbService->count($query);
-    }
-
-    /**
-     * Get subjects that need processing.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @return array
-     */
-    public function getSubjectsToProcess(int $projectId, int $expeditionId = null): array
-    {
-        $query = $this->setSubjectQuery($projectId, $expeditionId);
-
-        $this->mongoDbService->setCollection('subjects');
-
-        $results = $this->mongoDbService->find($query);
-
-        $subjects = [];
-        foreach ($results as $doc) {
-            $subjects[] = [
-                'subject_id' => (string) $doc['_id'],
-                'url'        => $doc['accessURI'],
-            ];
-        }
-
-        return $subjects;
+        return $this->subjectService->getSubjectCountForOcr($projectId, $expeditionId, $error);
     }
 
     /**
@@ -188,21 +181,18 @@ class OcrService
      */
     public function sendNotify(\App\Models\OcrQueue $queue)
     {
-        $query = $this->setSubjectQuery($queue->project_id, $queue->expedition_id, $this->mongoDbService->setRegex('^Error:'));
-        $this->mongoDbService->setCollection('subjects');
-        $results = $this->mongoDbService->find($query);
+        $cursor = $this->subjectService->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id, true);
 
-        $subjects = [];
-        foreach ($results as $doc) {
-            $subjects[] = [
-                'subject_id' => (string) $doc['_id'],
-                'url'        => $doc['accessURI'],
-                'ocr'        => $doc['ocr'],
+        $subjects = $cursor->map(function ($subject) {
+            return [
+                'subject_id' => (string) $subject->_id,
+                'url'        => $subject->accessURI,
+                'ocr'        => $subject->ocr
             ];
-        }
+        });
 
         $csvName = Str::random().'.csv';
-        $fileName = $this->csvService->createReportCsv($subjects, $csvName);
+        $fileName = $this->csvService->createReportCsv($subjects->toArray(), $csvName);
 
         $queue->project->group->owner->notify(new OcrProcessComplete($queue->project->title, $fileName));
     }
