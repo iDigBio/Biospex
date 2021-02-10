@@ -215,7 +215,6 @@ class DownloadType extends DownloadFileBase
     {
         $this->deleteExportFiles($expedition->id);
 
-        $expedition->nfnActor->pivot->state = 0;
         $expedition->nfnActor->pivot->error = 0;
         $expedition->nfnActor->pivot->total = $expedition->stat->local_subject_count;
 

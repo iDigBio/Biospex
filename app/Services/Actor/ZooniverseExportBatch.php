@@ -19,6 +19,7 @@
 
 namespace App\Services\Actor;
 
+use App\Models\Download;
 use App\Notifications\NfnBatchExportComplete;
 use App\Services\Model\DownloadService;
 use App\Services\Csv\Csv;
@@ -26,11 +27,11 @@ use Exception;
 use File;
 
 /**
- * Class NfnPanoptesExportBatch
+ * Class ZooniverseExportBatch
  *
  * @package App\Services\Actor
  */
-class NfnPanoptesExportBatch extends NfnPanoptesBase
+class ZooniverseExportBatch extends ZooniverseBase
 {
 
     /**
@@ -69,7 +70,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
      * @param string $downloadId
      * @return \App\Models\Download
      */
-    public function getDownload(string $downloadId): \App\Models\Download
+    public function getDownload(string $downloadId): Download
     {
         return $this->downloadService->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
     }
@@ -80,7 +81,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
      * @param \App\Models\Download $download
      * @throws \Exception
      */
-    public function process(\App\Models\Download $download)
+    public function process(Download $download)
     {
         $this->setProperties($download);
         $this->extractFile();
@@ -100,12 +101,12 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
      * @param \App\Models\Download $download
      * @throws \Exception
      */
-    private function setProperties(\App\Models\Download $download)
+    private function setProperties(Download $download)
     {
         $this->setExpedition($download->expedition);
         $this->setActor($download->actor);
         $this->setOwner($download->expedition->project->group->owner);
-        $this->setFolder();
+        $this->setFolder($download->id, $download->actor->id, $download->expedition->uuid);
         $this->setDirectories(true);
     }
 

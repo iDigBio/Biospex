@@ -82,7 +82,7 @@ class DownloadController extends Controller
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group);
 
-        return view('admin.partials.expedition-download-modal-body', compact('expedition', 'user', 'error'));
+        return view('admin.expedition.partials.expedition-download-modal-body', compact('expedition', 'user', 'error'));
     }
 
     /**
@@ -251,7 +251,7 @@ class DownloadController extends Controller
      * @param string $downloadId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function batch(string $projectId, string $expeditionId, string $downloadId)
+    public function batch(string $projectId, string $expeditionId, string $downloadId): RedirectResponse
     {
         ExportDownloadBatchJob::dispatch($downloadId);
 

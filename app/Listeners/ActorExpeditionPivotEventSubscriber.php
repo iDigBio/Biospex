@@ -56,16 +56,6 @@ class ActorExpeditionPivotEventSubscriber
         );
 
         $events->listen(
-            'actor.pivot.unqueued',
-            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotUnQueued'
-        );
-
-        $events->listen(
-            'actor.pivot.state',
-            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotState'
-        );
-
-        $events->listen(
             'actor.pivot.export',
             'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotExport'
         );
@@ -73,16 +63,6 @@ class ActorExpeditionPivotEventSubscriber
         $events->listen(
             'actor.pivot.error',
             'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotError'
-        );
-
-        $events->listen(
-            'actor.pivot.completed',
-            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotCompleted'
-        );
-
-        $events->listen(
-            'actor.pivot.report',
-            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotReport'
         );
     }
 
@@ -106,34 +86,6 @@ class ActorExpeditionPivotEventSubscriber
     {
         $attributes = [
             'total'     => $actor->pivot->total,
-            'queued'    => $actor->pivot->queued
-        ];
-        $this->updateActorExpeditions($actor, $attributes);
-    }
-
-    /**
-     * Update actor to clear queue.
-     *
-     * @param $actor
-     */
-    public function actorPivotUnQueued($actor)
-    {
-        $attributes = [
-            'total'     => $actor->pivot->total,
-            'queued'    => $actor->pivot->queued
-        ];
-        $this->updateActorExpeditions($actor, $attributes);
-    }
-
-    /**
-     * Update actor for new state.
-     *
-     * @param $actor
-     */
-    public function actorPivotState($actor)
-    {
-        $attributes = [
-            'state'     => $actor->pivot->state,
             'queued'    => $actor->pivot->queued
         ];
         $this->updateActorExpeditions($actor, $attributes);
@@ -164,37 +116,6 @@ class ActorExpeditionPivotEventSubscriber
             'state'     => $actor->pivot->state,
             'total'     => $actor->pivot->total
         ];
-        $this->updateActorExpeditions($actor, $attributes);
-    }
-
-    /**
-     * Set actor completed.
-     *
-     * @param $actor
-     */
-    public function actorPivotCompleted($actor)
-    {
-        $attributes = [
-            'state'     => $actor->pivot->state,
-            'queued'    => $actor->pivot->queued,
-            'completed' => $actor->pivot->completed
-        ];
-
-        $this->updateActorExpeditions($actor, $attributes);
-    }
-
-    /**
-     * Set stage to advance to report due to issues.
-     *
-     * @param $actor
-     */
-    public function actorPivotReport($actor)
-    {
-        $attributes = [
-            'state'     => $actor->pivot->state,
-            'queued'    => $actor->pivot->queued
-        ];
-
         $this->updateActorExpeditions($actor, $attributes);
     }
 }

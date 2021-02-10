@@ -115,7 +115,7 @@ $(function() {
         return false;
     });
 
-    $('[data-confirm=confirmation]').on('click', function (e) {
+    $(document).on('click', '[data-confirm=confirmation]', function (e) {
         let url = $(this).is("[data-href]") ? $(this).data("href") : $(this).attr('href');
         let method = $(this).data('method');
         bootbox.confirm({

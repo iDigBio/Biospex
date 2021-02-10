@@ -70,6 +70,11 @@ class ExpeditionPresenter extends Presenter
             <i class="fas fa-eye fa-2x"></i></a>';
     }
 
+    /**
+     * Return tools icon.
+     *
+     * @return string
+     */
     public function expeditionToolsIconLrg()
     {
         return '<a href="#" class="preventDefault" data-toggle="modal"

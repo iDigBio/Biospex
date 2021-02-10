@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Actor\NfnPanoptesExportBatch;
+use App\Services\Actor\ZooniverseExportBatch;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -64,9 +64,9 @@ class ExportDownloadBatchJob implements ShouldQueue
     /**
      * Handle download batch job.
      *
-     * @param \App\Services\Actor\NfnPanoptesExportBatch $nfnPanoptesExportBatch
+     * @param \App\Services\Actor\ZooniverseExportBatch $nfnPanoptesExportBatch
      */
-    public function handle(NfnPanoptesExportBatch $nfnPanoptesExportBatch)
+    public function handle(ZooniverseExportBatch $nfnPanoptesExportBatch)
     {
         $download = $nfnPanoptesExportBatch->getDownload($this->downloadId);
 

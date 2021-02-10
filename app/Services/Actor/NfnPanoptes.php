@@ -19,6 +19,7 @@
 
 namespace App\Services\Actor;
 
+use App\Jobs\ZooniverseClassificationCountJob;
 use App\Jobs\ZooniverseExportBuildCsvJob;
 use App\Jobs\ZooniverseExportBuildQueueJob;
 use App\Jobs\ZooniverseExportBuildTarJob;
@@ -41,11 +42,6 @@ use Notification;
 class NfnPanoptes
 {
     /**
-     * @var NfnPanoptesClassifications
-     */
-    private $nfnPanoptesClassifications;
-
-    /**
      * @var \App\Services\Model\ExpeditionService
      */
     private $expeditionService;
@@ -58,14 +54,11 @@ class NfnPanoptes
     /**
      * NfnPanoptes constructor.
      *
-     * @param \App\Services\Actor\NfnPanoptesClassifications $nfnPanoptesClassifications
      * @param \App\Services\Model\ExpeditionService $expeditionService
      */
     public function __construct(
-        NfnPanoptesClassifications $nfnPanoptesClassifications,
         ExpeditionService $expeditionService
     ) {
-        $this->nfnPanoptesClassifications = $nfnPanoptesClassifications;
         $this->expeditionService = $expeditionService;
     }
 
@@ -93,8 +86,7 @@ class NfnPanoptes
                 $this->sendErrorNotification($exception);
             })->name('Zooniverse Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
         } elseif ($actor->pivot->state === 1) {
-            // Todo
-            $this->nfnPanoptesClassifications->processActor($actor);
+            ZooniverseClassificationCountJob::dispatch($actor->pivot->expedition_id, $actor);
         }
     }
 

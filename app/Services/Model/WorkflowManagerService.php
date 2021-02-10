@@ -49,9 +49,7 @@ class WorkflowManagerService extends BaseModelService
     public function getWorkflowManagersForProcessing($expeditionId = null, array $attributes = ['*'])
     {
         $model =$this->model->with(['expedition.stat', 'expedition.actors' => function($query){
-            $query->where('error', 0);
-            $query->where('completed', 0);
-            $query->where->whereDoesntHave();
+            $query->where('state', 1)->where('error', 0)->where('completed', 0);
         }])->where('stopped', '=', 0);
 
         return $expeditionId === null ?
