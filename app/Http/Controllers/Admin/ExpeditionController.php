@@ -425,6 +425,7 @@ class ExpeditionController extends Controller
             if (null !== $expedition->workflowManager) {
                 $expedition->workflowManager->stopped = 0;
                 $expedition->workflowManager->save();
+                $message = t('The expedition has been removed from the process queue.');
             } else {
                 $expedition->project->workflow->actors->reject(function ($actor) {
                     return $actor->private;
@@ -436,9 +437,10 @@ class ExpeditionController extends Controller
                 });
 
                 $this->workflowManagerService->create(['expedition_id' => $expeditionId]);
+                $message = t('The expedition has been added to the process queue.');
             }
 
-            Flash::success(t('The expedition has been added to the process queue.'));
+            Flash::success($message);
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         } catch (Exception $e) {
