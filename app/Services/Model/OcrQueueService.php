@@ -60,7 +60,6 @@ class OcrQueueService extends BaseModelService
     public function getOcrQueueForOcrProcessCommand()
     {
         return $this->model->with('project.group.owner')
-            ->where('error', 0)
             ->orderBy('id', 'asc')
             ->first();
     }

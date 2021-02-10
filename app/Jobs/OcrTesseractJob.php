@@ -21,11 +21,8 @@ namespace App\Jobs;
 
 use App\Models\OcrQueue;
 use App\Models\Subject;
-use App\Models\User;
-use App\Notifications\JobError;
 use App\Services\Process\OcrService;
 use App\Services\Process\TesseractService;
-use Artisan;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -89,8 +86,9 @@ class OcrTesseractJob implements ShouldQueue
         $tesseract->process($this->subject, $ocrService->folderPath);
 
         $this->ocrQueue->processed = $this->ocrQueue->processed + 1;
-        $this->ocrQueue->status = $this->ocrQueue->count === $this->ocrQueue->processed ? 0 : 1;
         $this->ocrQueue->save();
+
+        $this->delete();
     }
 
     /**
@@ -106,5 +104,7 @@ class OcrTesseractJob implements ShouldQueue
 
         $this->subject->ocr = 'Error: processing tesseract ocr job.';
         $this->subject->save();
+
+        $this->delete();
     }
 }

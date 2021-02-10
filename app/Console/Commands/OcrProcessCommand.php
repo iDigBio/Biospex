@@ -70,24 +70,25 @@ class OcrProcessCommand extends Command
     {
         $queue = $this->ocrService->getOcrQueueForOcrProcessCommand();
 
-        if ($queue === null || $queue->status === 1) {
+        if ($queue === null) {
             return;
         }
 
-        $count = $this->ocrService->getSubjectCountForOcr($queue->project_id, $queue->expedition_id);
-
-        if ($count === 0) {
+        if ($queue->processed === $queue->total) {
 
             $this->ocrService->complete($queue);
-
-            Artisan::call('ocrprocess:records');
+            Artisan::call('ocr:poll');
 
             return;
         }
 
-        $queue->total = $count;
-        $queue->processed = 0;
+        if ($queue->status === 1) {
+            return;
+        }
+
+        $queue->total = $this->ocrService->getSubjectCountForOcr($queue->project_id, $queue->expedition_id);
         $queue->status = 1;
+        $queue->processed = 0;
         $queue->save();
 
         $subjects = $this->ocrService->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id);

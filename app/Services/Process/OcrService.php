@@ -19,13 +19,13 @@
 
 namespace App\Services\Process;
 
+use App\Models\OcrQueue;
 use App\Notifications\OcrProcessComplete;
 use App\Services\Model\OcrQueueService;
 use App\Services\Csv\Csv;
 use App\Services\Model\SubjectService;
 use App\Services\MongoDbService;
 use Illuminate\Support\LazyCollection;
-use MongoDB\BSON\Regex;
 use Storage;
 use Str;
 
@@ -131,7 +131,7 @@ class OcrService
      * @param int|null $expeditionId
      * @return \App\Models\OcrQueue
      */
-    public function createOcrQueue(int $projectId, int $expeditionId = null): \App\Models\OcrQueue
+    public function createOcrQueue(int $projectId, int $expeditionId = null): OcrQueue
     {
         return $this->ocrQueueService->firstOrCreate(['project_id' => $projectId, 'expedition_id' => $expeditionId]);
     }
@@ -166,8 +166,9 @@ class OcrService
      * @param \App\Models\OcrQueue $queue
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function complete(\App\Models\OcrQueue $queue)
+    public function complete(OcrQueue $queue)
     {
+        $this->setDir($queue->id);
         $this->sendNotify($queue);
         $queue->delete();
         $this->deleteDir();
@@ -179,7 +180,7 @@ class OcrService
      * @param $queue
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function sendNotify(\App\Models\OcrQueue $queue)
+    public function sendNotify(OcrQueue $queue)
     {
         $cursor = $this->subjectService->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id, true);
 
