@@ -88,9 +88,7 @@ class AppFileDeployment extends Command
     {
         // copy needed files to locations
         $appFiles = File::files($this->resPath.'/apps');
-        $appTargets = collect($appFiles)->reject(function ($file) {
-            return App::environment() === 'dev';
-        })->map(function ($file) {
+        $appTargets = collect($appFiles)->map(function ($file) {
             $target = $this->appPath.'/'.File::name($file);
             File::copy($file, $target);
 
