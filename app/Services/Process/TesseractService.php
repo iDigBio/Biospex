@@ -19,6 +19,7 @@
 
 namespace App\Services\Process;
 
+use App\Models\Subject;
 use App\Services\Model\SubjectService;
 use App\Services\Requests\HttpRequest;
 use Exception;
@@ -79,11 +80,15 @@ class TesseractService
     /**
      * Process ocr file.
      *
-     * @param array $file
+     * @param Subject $subject
      * @param string $folderPath
      */
-    public function process(array $file, string $folderPath)
+    public function process(Subject $subject, string $folderPath)
     {
+        $file['subject_id'] = (string) $subject->_id;
+        $file['ocr'] = $subject->ocr;
+        $file['url']  = $subject->accessURI;
+
         $this->createImagePath($file, $folderPath);
 
         if ( ! $this->getImage($file)) {
@@ -93,8 +98,6 @@ class TesseractService
         $this->tesseractImage($file);
 
         Storage::delete($this->imgPath);
-
-        return;
     }
 
     /**
@@ -115,7 +118,7 @@ class TesseractService
      * @param array $file
      * @return bool
      */
-    private function getImage(array $file)
+    private function getImage(array $file): bool
     {
         try {
             if (Storage::exists($this->imgPath)) {

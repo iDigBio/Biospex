@@ -89,7 +89,7 @@ class OcrCreateJob implements ShouldQueue
                 return;
             }
 
-            $total = $ocrService->getSubjectCount($this->projectId, $this->expeditionId);
+            $total = $ocrService->getSubjectCountForOcr($this->projectId, $this->expeditionId);
 
             if ($total === 0) {
                 $queue->delete();
@@ -113,7 +113,5 @@ class OcrCreateJob implements ShouldQueue
         }
 
         $this->delete();
-
-        return;
     }
 }

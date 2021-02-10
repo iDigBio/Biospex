@@ -72,6 +72,42 @@ class SubjectService extends BaseModelService
     }
 
     /**
+     * Get subject cursor for OCR processing.
+     *
+     * @param int $projectId
+     * @param int|null $expeditionId
+     * @param bool $error
+     * @return \Illuminate\Support\LazyCollection
+     */
+    public function getSubjectCursorForOcr(int $projectId, int $expeditionId = null, bool $error = false): LazyCollection
+    {
+        $query = $this->model->where('project_id', $projectId);
+        $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
+        $query = !$error ? $query->where('ocr', '') : $query->where('ocr', 'like', '%Error:%');
+
+        return $query->cursor();
+
+    }
+
+    /**
+     * Get subject cursor for OCR processing.
+     *
+     * @param int $projectId
+     * @param int|null $expeditionId
+     * @param bool $error
+     * @return int
+     */
+    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null, bool $error = false): int
+    {
+        $query = $this->model->where('project_id', $projectId);
+        $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
+        $query = !$error ? $query->where('ocr', '') : $query->where('ocr', 'like', '%Error:%');
+
+        return $query->count();
+
+    }
+
+    /**
      * Detach subjects from expedition.
      *
      * @param $subjectIds
@@ -106,20 +142,10 @@ class SubjectService extends BaseModelService
     }
 
     /**
-     * Get assigned count for project.
-     *
-     * @param $projectId
-     * @return mixed
-     */
-    public function getAssignedCountByProject($projectId)
-    {
-        return $this->model->whereRaw(['expedition_ids.0' => ['$exists' => true]])->where('project_id', '=', (int) $projectId)->count();
-    }
-
-    /**
      * Delete unassigned by project id.
      *
      * @param int $projectId
+     * @throws \Exception
      */
     public function deleteUnassignedByProject(int $projectId)
     {
