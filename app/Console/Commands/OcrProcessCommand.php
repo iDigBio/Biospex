@@ -36,7 +36,7 @@ class OcrProcessCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'ocrprocess:records';
+    protected $signature = 'ocrprocess:records {--reset}';
 
     /**
      * The console command description.
@@ -82,7 +82,7 @@ class OcrProcessCommand extends Command
             return;
         }
 
-        if ($queue->status === 1) {
+        if ($queue->status === 1 && !$this->option('reset')) {
             return;
         }
 
