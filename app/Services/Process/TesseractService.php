@@ -122,19 +122,16 @@ class TesseractService
     {
         try {
             if (Storage::exists($this->imgPath)) {
-                \Log::info('image exists: ' . $this->imgPath);
                 return true;
             }
 
             $this->httpRequest->setHttpProvider();
             $this->httpRequest->getHttpClient()->request('GET', $this->imgUrl, ['sink' => Storage::path($this->imgPath)]);
-            \Log::info('retrieved: ' . $this->imgUrl);
+
             return true;
         } catch (GuzzleException $e) {
-            \Log::info('image error: ' . $e->getMessage());
             $file['ocr'] = 'Error: ' . $e->getMessage();
             $this->updateSubject($file);
-            \Log::info('updated subject');
 
             return false;
         }
@@ -150,7 +147,7 @@ class TesseractService
         try {
             $result = $this->tesseract->image(Storage::path($this->imgPath))->threadLimit(1)->run();
             $ocr = preg_replace('/\s+/', ' ', trim($result));
-            $file['ocr'] = empty($ocr) ? 'Error: OCR returned empty string.' : $ocr;
+            $file['ocr'] = empty($ocr) ? 'Error: OCR returned empty string.' : trim($ocr);
             $this->updateSubject($file);
         } catch (Exception $e) {
             $file['ocr'] = $e->getMessage();
