@@ -59,23 +59,15 @@ class ZooniverseBuildTar extends ZooniverseBase implements ActorInterface
         $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
         $this->setDirectories();
 
-        $tmpTar = '/tmp/'.$this->folderName.'.tar';
-        $tmpGz = '/tmp/'.$this->folderName.'.tar.gz';
-
         try {
-            $this->deleteFile($this->archiveExportPath);
-            $this->deleteFile($tmpTar);
-            $this->deleteFile($tmpGz);
+            $this->deleteFile($this->archiveTarPath);
+            $this->deleteFile($this->archiveTarGzPath);
 
-            $archive = new \PharData($tmpTar);
+            $archive = new \PharData($this->archiveTarPath);
             $archive->buildFromIterator(new \DirectoryIterator($this->tmpDirectory), $this->tmpDirectory);
             $archive->compress(\Phar::GZ);
 
-            $this->deleteFile($tmpTar);
-
-            if (! \File::move($tmpGz, $this->archiveExportPath)) {
-                throw new \Exception(t('Unable to move compressed file to export directory.'));
-            }
+            $this->deleteFile($this->archiveTarPath);
 
             $values = [
                 'expedition_id' => $queue->expedition->id,
@@ -97,9 +89,8 @@ class ZooniverseBuildTar extends ZooniverseBase implements ActorInterface
             $queue->save();
 
         } catch (\Exception $exception) {
-            $this->deleteFile($this->archiveExportPath);
-            $this->deleteFile($tmpTar);
-            $this->deleteFile($tmpGz);
+            $this->deleteFile($this->archiveTarPath);
+            $this->deleteFile($this->archiveTarGzPath);
 
             $queue->error = 1;
             $queue->queued = 0;

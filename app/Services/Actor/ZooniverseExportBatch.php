@@ -117,8 +117,8 @@ class ZooniverseExportBatch extends ZooniverseBase
      */
     private function extractFile()
     {
-        if (File::isFile($this->archiveExportPath)) {
-            exec('tar -xzf '.$this->archiveExportPath.' --directory '.$this->workingDirectory);
+        if (File::isFile($this->archiveTarGzPath)) {
+            exec('tar -xzf '.$this->archiveTarGzPath.' --directory '.$this->workingDirectory);
 
             return;
         }

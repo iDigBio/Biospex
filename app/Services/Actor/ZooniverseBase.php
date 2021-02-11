@@ -82,12 +82,22 @@ class ZooniverseBase
     /**
      * @var string
      */
+    protected $archiveTar;
+
+    /**
+     * @var string
+     */
+    protected $archiveTarPath;
+
+    /**
+     * @var string
+     */
     protected $archiveTarGz;
 
     /**
      * @var string
      */
-    protected $archiveExportPath;
+    protected $archiveTarGzPath;
 
     /**
      * Set queue property.
@@ -157,6 +167,7 @@ class ZooniverseBase
         $this->setWorkingDirectory($delete);
         $this->setTmpDirectory();
         $this->setNfnExportDirectory();
+        $this->setArchiveTar();
         $this->setArchiveTarGz();
     }
 
@@ -205,10 +216,19 @@ class ZooniverseBase
     /**
      * Set gz archive and path.
      */
-    private function setArchiveTarGz()
+    private function setArchiveTar()
+    {
+        $this->archiveTar = $this->folderName . '.tar';
+        $this->archiveTarPath = $this->nfnExportDirectory . '/' . $this->archiveTar;
+    }
+
+    /**
+     * Set archive tar gz file and path.
+     */
+    protected function setArchiveTarGz()
     {
         $this->archiveTarGz = $this->folderName . '.tar.gz';
-        $this->archiveExportPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
+        $this->archiveTarGzPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
     }
 
     /**
@@ -217,11 +237,9 @@ class ZooniverseBase
      * @param string $fileName
      * @return string
      */
-    protected function setBatchArchiveTarGz(string $fileName)
+    protected function setBatchArchiveTarGz(string $fileName): string
     {
-        $this->archiveTarGz = $fileName . '.tar.gz';
-
-        return $this->nfnExportDirectory . '/' . $this->archiveTarGz;
+        return $this->nfnExportDirectory . '/' . $fileName . '.tar.gz';
     }
 
     /**
