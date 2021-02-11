@@ -21,17 +21,15 @@ namespace App\Services\Actor;
 
 putenv('MAGICK_THREAD_LIMIT=1');
 
-use App\Facades\ActorEventHelper;
-use App\Models\Actor;
-use App\Services\Model\ExportQueueFileService;
-use Exception;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Pool;
+use App\Models\ExportQueueFile;
 use App\Services\Image\ImagickService;
-use App\Services\Requests\HttpRequest;
-use Illuminate\Support\Collection;
 use File;
+use Illuminate\Support\LazyCollection;
 use ImagickException;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise\EachPromise;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * Class ActorImageService
@@ -46,224 +44,107 @@ class ActorImageService
     private $imagickService;
 
     /**
-     * @var HttpRequest
+     * @var \GuzzleHttp\Client
      */
-    private $httpRequest;
+    private $client;
 
     /**
-     * @var \App\Models\Actor
+     * @var array
      */
-    private $actor;
-
-    /**
-     * @var \Illuminate\Support\Collection
-     */
-    private $files = null;
-
-    /**
-     * @var string
-     */
-    private $workingDirectory = null;
-
-    /**
-     * @var string
-     */
-    private $tmpDirectory = null;
-
-    /**
-     * @var \App\Services\Model\ExportQueueFileService
-     */
-    private $exportQueueFileService;
+    private $rejected = [];
 
     /**
      * ActorImageService constructor.
      *
      * @param ImagickService $imagickService
-     * @param HttpRequest $httpRequest
-     * @param \App\Services\Model\ExportQueueFileService $exportQueueFileService
-     * @internal param ImageService $imageService
+     * @param \GuzzleHttp\Client $client
      */
     public function __construct(
         ImagickService $imagickService,
-        HttpRequest $httpRequest,
-        ExportQueueFileService $exportQueueFileService
+        Client $client
+
     ) {
         $this->imagickService = $imagickService;
-        $this->httpRequest = $httpRequest;
-        $this->exportQueueFileService = $exportQueueFileService;
+        $this->client = $client;
     }
 
     /**
-     * Set the actor being worked on for firing events.
+     * Return rejected files.
      *
-     * @param \App\Models\Actor $actor
+     * @return array
      */
-    public function setActor(Actor $actor)
+    public function getRejected(): array
     {
-        $this->actor = $actor;
+        return $this->rejected;
     }
 
     /**
-     * Set files collection to process.
+     * Retrieve images.
      *
-     * @param \Illuminate\Support\Collection $files
+     * @param \Illuminate\Support\LazyCollection $files
+     * @param $wrkDir
      */
-    public function setFiles(Collection $files)
+    public function retrieveImages(LazyCollection $files, $wrkDir)
     {
-        $this->files = $files;
-    }
+        $checkedFiles = $this->checkFileProperties($files, $wrkDir);
 
-    /**
-     * Set directories.
-     *
-     * @param string $workingDirectory
-     * @param string $tmpDirectory
-     */
-    public function setDirectories(string $workingDirectory, string $tmpDirectory)
-    {
-        $this->workingDirectory = $workingDirectory;
-        $this->tmpDirectory = $tmpDirectory;
-    }
-
-    /**
-     * Check necessary properties are set.
-     *
-     * @return bool
-     */
-    private function propertiesCheck()
-    {
-        return $this->actor === null || $this->workingDirectory === null || $this->tmpDirectory === null;
-    }
-
-    /**
-     * Process images.
-     *
-     * @throws \Exception
-     */
-    public function getImages()
-    {
-        if ($this->propertiesCheck()) {
-            throw new Exception(t('Missing needed properties for ActorImageService'));
-        }
-
-        $this->httpRequest->setHttpProvider();
-
-        $requests = function () {
-            foreach ($this->files as $index => $file) {
-                $filePath = $this->workingDirectory.'/'.$file->subject_id.'.jpg';
-                if ($this->checkPropertiesExist($file) || File::isFile($filePath)) {
-                    ActorEventHelper::fireActorProcessedEvent($this->actor);
-
-                    continue;
-                }
-
+        $promises = (function () use ($checkedFiles, $wrkDir) {
+            foreach ($checkedFiles as $file) {
                 $uri = str_replace(' ', '%20', $file->url);
-
-                yield $index => new Request('GET', $uri);
+                yield $file->subject_id => $this->client->getAsync($uri);;
             }
-        };
+        })();
 
-        $pool = new Pool($this->httpRequest->getHttpClient(), $requests(), [
+        $eachPromise = new EachPromise($promises, [
+            // how many concurrency we are use
             'concurrency' => 5,
-            'fulfilled'   => function ($response, $index) {
-                $this->saveImage($response, $index);
+            'fulfilled'   => function (Response $response, $index) use ($wrkDir) {
+                if ($response->getStatusCode() == 200) {
+                    $image = $response->getBody();
+                    if ($this->checkImageString($image)) {
+                        $this->saveImage($image, $index, $wrkDir);
+
+                        return;
+                    }
+
+                    $this->rejected = [$index => 'Image format not recognized'];
+                }
             },
             'rejected'    => function ($reason, $index) {
-                ActorEventHelper::fireActorProcessedEvent($this->actor);
-                $this->setFileErrorMessage($this->files[$index], 'Could not retrieve image from uri.');
+                $this->rejected = [$index => $reason];
             },
         ]);
 
-        $promise = $pool->promise();
-
-        $promise->wait();
+        $eachPromise->promise()->wait();
     }
 
     /**
-     * Save image to image path.
+     * Check response is image.
      *
-     * @param $response
-     * @param $index
-     * @throws \Exception
+     * @param $data
+     * @return bool
      */
-    private function saveImage($response, $index)
+    public function checkImageString($data): bool
     {
-        $image = $response->getBody()->getContents();
-        $response->getBody()->close();
+        $im = @imagecreatefromstring($data);
 
-        if ($image === '' || $response->getStatusCode() !== 200) {
-            $this->setFileErrorMessage($this->files[$index], 'Image string empty or status code not 200.');
-            ActorEventHelper::fireActorProcessedEvent($this->actor);
-
-            return;
-        }
-
-        $this->processBlobImage($image, $index);
-        ActorEventHelper::fireActorProcessedEvent($this->actor);
+        return $im !== false;
     }
 
     /**
-     * Process Image.
+     * Check file properties and if file exists already.
      *
-     * @param $image
-     * @param $index
-     * @throws \Exception
+     * @param \Illuminate\Support\LazyCollection $files
+     * @param string $wrkDir
+     * @return \Illuminate\Support\LazyCollection
      */
-    public function processBlobImage($image, $index)
+    private function checkFileProperties(LazyCollection $files, string $wrkDir): LazyCollection
     {
-        try {
-            $this->imagickService->createImagickObject();
-            $this->imagickService->readImagickFromBlob($image);
-            $this->imagickService->setImageFormat();
-            $this->imagickService->stripImage();
-            $this->writeImagickFile($this->workingDirectory, $this->files[$index]->subject_id);
-            $this->imagickService->clearImagickObject();
-        } catch (ImagickException $e) {
-            $this->setFileErrorMessage($this->files[$index], $e->getMessage());
-            $this->imagickService->clearImagickObject();
-        }
-    }
-
-    /**
-     * @param $file
-     * @param $fileName
-     * @throws \Exception
-     */
-    public function processFileImage($file, $fileName)
-    {
-        try {
-            $this->imagickService->createImagickObject();
-            $this->imagickService->setOption('jpeg:size', '1540x1540');
-            $this->imagickService->readImageFromPath($file);
-            $this->imagickService->setOption('jpeg:extent', '600kb');
-            $this->writeImagickFile($this->tmpDirectory, $fileName);
-            $this->imagickService->clearImagickObject();
-        } catch (ImagickException $e) {
-            $this->setFileErrorMessage($fileName, $e->getMessage());
-            $this->imagickService->clearImagickObject();
-        }
-    }
-
-    /**
-     * Add missing image information to array.
-     *
-     * @param $file
-     * @param string $message
-     */
-    private function setFileErrorMessage($file, string $message)
-    {
-        if ($file instanceof \App\Models\ExportQueueFile) {
-            $file->error = 1;
-            $file->error_message = $message;
-            $file->save();
-
-            return;
-        }
-
-        $result = $this->exportQueueFileService->findBy('subject_id', $file);
-        $result->error = 1;
-        $result->error_message = $message;
-        $result->save();
+        return $files->filter(function($file){
+            return $this->checkUrlExist($file);
+        })->reject(function($file) use ($wrkDir) {
+            return $this->checkFile($wrkDir.'/'.$file->subject_id.'.jpg');
+        });
     }
 
     /**
@@ -272,15 +153,83 @@ class ActorImageService
      * @param \App\Models\ExportQueueFile $file
      * @return bool
      */
-    private function checkPropertiesExist(\App\Models\ExportQueueFile $file)
+    public function checkUrlExist(ExportQueueFile $file): bool
     {
-        if (empty($file->url)) {
-            $this->setFileErrorMessage($file, 'Image missing url value');
-
+        if($file->url !== null) {
             return true;
         }
 
+        $this->rejected = [$file->subject_id => 'Missing image url'];
+
         return false;
+    }
+
+    /**
+     * Check if file exists and is image.
+     *
+     * @param string $filePath
+     * @param bool $addRejected
+     * @return bool
+     */
+    public function checkFile(string $filePath, bool $addRejected = false): bool
+    {
+        if (!File::exists($filePath)) {
+            if ($addRejected) {
+                $this->rejected = [$filePath => 'Missing image on disk'];
+            }
+            return false;
+        }
+
+        if (File::exists($filePath) && false === exif_imagetype($filePath)) {
+            if ($addRejected) {
+                $this->rejected = [$filePath => 'Image file corrupted'];
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Save image to image path.
+     *
+     * @param string $image
+     * @param string $subjectId
+     * @param string $wrkDir
+     */
+    public function saveImage(string $image, string $subjectId, string $wrkDir)
+    {
+        try {
+            $this->imagickService->createImagickObject();
+            $this->imagickService->readImagickFromBlob($image);
+            $this->imagickService->setImageFormat();
+            $this->imagickService->stripImage();
+            $this->writeImagickFile($wrkDir, $subjectId);
+        } catch (\Exception $exception) {
+            $this->rejected = [$subjectId => 'Could not create Imagick image'];
+        }
+    }
+
+    /**
+     * Process image to size.
+     *
+     * @param string $filePath
+     * @param string $tmpDir
+     * @param string $fileName
+     */
+    public function processFileImage(string $filePath, string $tmpDir, string $fileName)
+    {
+        try {
+            $this->imagickService->createImagickObject();
+            $this->imagickService->setOption('jpeg:size', '1540x1540');
+            $this->imagickService->readImageFromPath($filePath);
+            $this->imagickService->setOption('jpeg:extent', '600kb');
+            $this->writeImagickFile($tmpDir, $fileName);
+            $this->imagickService->clearImagickObject();
+        } catch (ImagickException $e) {
+            $this->rejected[] = [$fileName => $e->getMessage()];
+            $this->imagickService->clearImagickObject();
+        }
     }
 
     /**
@@ -288,13 +237,15 @@ class ActorImageService
      *
      * @param string $dir
      * @param $fileName
-     * @throws \Exception
      */
-    public function writeImagickFile($dir, $fileName)
+    public function writeImagickFile(string $dir, string $fileName)
     {
         $destination = $dir.'/'.$fileName.'.jpg';
         if (! $this->imagickService->writeImagickImageToFile($destination)) {
-            throw new ImagickException('Could not write image '.$destination);
+            $this->imagickService->clearImagickObject();
+            $this->rejected = [$fileName => 'Could not write image to disk'];
         }
+
+        $this->imagickService->clearImagickObject();
     }
 }

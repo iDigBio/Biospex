@@ -38,6 +38,6 @@ class ActorPresenter extends Presenter
 
         $class = $this->model->pivot->expert ? 'green' : '';
 
-        return '<a class="btn btn-primary '.$class.' float-right m-2" href="'.$url.'">'. t('Expert Review Ambiguities').'</a>';
+        return '<a class="btn btn-primary rounded-0 mb-1 '.$class.'" href="'.$url.'">'. t('Expert Review Ambiguities').'</a>';
     }
 }

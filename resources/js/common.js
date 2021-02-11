@@ -7,7 +7,7 @@ $(function () {
     });
 
     // Set prevent default for links
-    $('.prevent-default').click(function (e) {
+    $(document).on('click', '.prevent-default', function (e) {
         e.preventDefault();
     });
 

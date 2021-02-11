@@ -55,6 +55,17 @@ class SubjectService extends BaseModelService
     }
 
     /**
+     * Get subjects by expedition id and return using lazycollection.
+     *
+     * @param $expeditionId
+     * @return \Illuminate\Support\LazyCollection
+     */
+    public function getAssignedByExpeditionId($expeditionId): LazyCollection
+    {
+        return $this->model->where('expedition_ids', $expeditionId)->cursor();
+    }
+
+    /**
      * Find by expedition id.
      *
      * @param $expeditionId

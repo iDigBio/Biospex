@@ -71,6 +71,18 @@ class ExpeditionPresenter extends Presenter
     }
 
     /**
+     * Return tools icon.
+     *
+     * @return string
+     */
+    public function expeditionToolsIconLrg()
+    {
+        return '<a href="#" class="preventDefault" data-toggle="modal"
+                    data-target="#expedition-tools-modal" data-hover="tooltip" title="'. t('Expedition Tools').'">
+                    <i class="fas fa-tools fa-2x"></i></a>';
+    }
+
+    /**
      * Return return download icon lrg.
      *
      * @return string
@@ -188,14 +200,12 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.ocr', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Reprocess Subject OCR').'" 
-            data-hover="tooltip"        
+            ]).'" class="prevent-default btn btn-primary rounded-0 mb-1"
             data-method="post"
             data-confirm="confirmation"
             data-title="'. t('Reprocess Subject OCR').'?" 
             data-content="'. t('This action will reprocess all ocr for the Expedition.').'">
-            <i class="fas fa-redo-alt fa-2x"></i></a>';
+            '. t('Reprocess Subject OCR').'</a>';
     }
 
     /**
@@ -208,14 +218,12 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.process', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Start Expedition Processing').'" 
-            data-hover="tooltip"        
+            ]).'" class="prevent-default btn btn-primary rounded-0 mb-1 green" 
             data-method="post"
             data-confirm="confirmation"
             data-title="'. t('Start Expedition Processing').'?" 
             data-content="'. t('This will begin processing the Expedition. After starting, Subjects cannot be added or removed. Do you wish to Continue?').'">
-            <i class="fas fa-play-circle fa-2x"></i></a>';
+            '. t('Start Expedition Processing').'</a>';
     }
 
     /**
@@ -228,28 +236,31 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.stop', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Stop Expedition Processing').'" 
-            data-hover="tooltip"        
+            ]).'" class="prevent-default btn btn-primary rounded-0 mb-1"
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Stop Expedition Processing').'" 
+            data-title="'. t('Stop Processing').'" 
             data-content="'. t('This will stop the Expedition Process. However, Subjects cannot be added since process was already started. Do you wish to Continue?').'">
-            <i class="fas fa-stop-circle fa-2x"></i></a>';
+            '. t('Stop Expedition Processing').'</a>';
     }
 
     /**
-     * Return button and path for reprocessing export file.
+     * Return button and path for generating export file.
      *
      * @return string
      */
-    public function expeditionRegenerateExportBtn()
+    public function expeditionExportBtn()
     {
-        $route = route('admin.downloads.regenerate', [
+        $route = route('admin.downloads.export', [
             $this->model->project->id,
             $this->model->id,
         ]);
 
-        return '<a class="btn btn-primary float-right mt-2 mb-2" href="'.$route.'">'. t('Regenerate Export File').'</a>';
+        return '<a href="'.$route.'" class="prevent-default btn btn-primary rounded-0 mb-1"
+            data-method="get"
+            data-confirm="confirmation"
+            data-title="'. t('Generate Export File').'" 
+            data-content="'. t('This will generate a new export file. Any previous exports will be overwritten. Do you wish to Continue?').'">
+            '. t('Generate Export File').'</a>';
     }
 }

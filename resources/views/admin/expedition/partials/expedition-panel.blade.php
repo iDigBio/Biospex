@@ -9,17 +9,7 @@
                     @if($expedition->downloads->isNotEmpty())
                         {!! $expedition->present()->expedition_download_icon_lrg !!}
                     @endif
-                    @if($expedition->project->ocrQueue->isEmpty())
-                        {!! $expedition->present()->expedition_ocr_icon_lrg !!}
-                    @endif
-                    @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
-                        {!!
-                        $expedition->stat->local_subject_count === 0 ? '' :
-                            $expedition->present()->expedition_process_start_lrg
-                        !!}
-                    @else
-                        {!! $expedition->present()->expedition_process_stop_lrg !!}
-                    @endif
+                    {!! $expedition->present()->expedition_tools_icon_lrg !!}
                     {!! $expedition->present()->expedition_edit_icon_lrg !!}
                     {!! $expedition->present()->expedition_clone_icon_lrg !!}
                     @can('isOwner', $expedition->project->group)
@@ -36,5 +26,6 @@
             </div>
         </div>
     </div>
-    @include('admin.partials.expedition-download-modal')
+    @include('admin.expedition.partials.expedition-tools-modal')
+    @include('admin.expedition.partials.expedition-download-modal')
 </div>

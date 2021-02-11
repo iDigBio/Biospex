@@ -5,13 +5,8 @@
 @else
     @foreach ($expedition->actors as $actor)
         <div class="col-md-12">
-            <h4 class="float-left">{{ $actor->title }}</h4>
-            {!! $expedition->present()->expedition_regenerate_export_btn !!}
-            @if($actor->pivot->completed  && $actor->id === 2)
-                {!! $actor->present()->reconcile_expert_review_btn !!}
-            @endif
             <div class="table-responsive">
-                <table class="table table-sm table-hover">
+                <table class="table table-sm">
                     <thead>
                     <tr>
                         <th>{{ t('Download Type') }}</th>
@@ -60,13 +55,18 @@
                                         @endcan
                                     @else
                                         <a href="{{ route('admin.downloads.downloadTar', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                           class="mr-4"
                                            data-hover="tooltip"
-                                           title="{{ t('Download') }} {{ $download->type }} {{ t('archive') }}">
+                                           data-original-title="{{ t('Download %s file', $download->type) }} ">
                                             <i class="fas fa-file-archive fa-2x"></i></a>
                                         <a href="{{ route('admin.downloads.batch', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                           class="prevent-default"
+                                           data-method="get"
+                                           data-confirm="confirmation"
                                            data-hover="tooltip"
-                                           title="{{ t('Download') }} {{ $download->type }} {{ t('batch') }}">
-                                            <i class="fas fa-file-download fa-2x ml-2"></i></a>
+                                           data-original-title="{{ t('Download %s batches', $download->type) }}"
+                                           data-content="{{ t('This action will split the Export file into several batch files that can be downloaded separately. You will be notified by email when the process is complete. Do you wish to continue?') }}">
+                                            <i class="fas fa-file-download fa-2x"></i></a>
                                     @endif
                                 </td>
                             </tr>

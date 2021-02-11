@@ -46,27 +46,10 @@ class ExportQueueService extends BaseModelService
      */
     public function getAllExportQueueOrderByIdAsc()
     {
-        return $this->model->where('error', 0)->orderBy('id', 'asc')->get('*');
-    }
-
-    /**
-     * Find process data for queue.
-     *
-     * @param $queueId
-     * @param $expeditionId
-     * @param $actorId
-     * @param array|string[] $attributes
-     * @return \App\Models\ExportQueue|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
-     */
-    public function findQueueProcessData($queueId, $expeditionId, $actorId, array $attributes = ['*'])
-    {
-        return $this->model->with(['expedition.project.group', 'expedition.actors' => function($q) use($expeditionId, $actorId){
-            $q->where('expedition_id', $expeditionId);
-            $q->where('actor_id', $actorId);
-        }])->whereHas('expedition.actors', function ($q) use ($expeditionId, $actorId) {
-            $q->where('expedition_id', $expeditionId);
-            $q->where('actor_id', $actorId);
-        })->find($queueId);
+        return $this->model->with('expedition.project.group')
+            ->where('error', 0)
+            ->orderBy('id', 'asc')
+            ->get('*');
     }
 
     /**
@@ -94,5 +77,31 @@ class ExportQueueService extends BaseModelService
             $query->where('expedition_id', $expeditionId);
             $query->where('actor_id', $actorId);
         })->find($queueId);
+    }
+
+    /**
+     * Find queue by expedition and actor ids.
+     *
+     * @param int $expeditionId
+     * @param int $actorId
+     * @return mixed
+     */
+    public function findByExpeditionAndActorId(int $expeditionId, int $actorId)
+    {
+        return $this->model->with('expedition')
+            ->where('expedition_id', $expeditionId)
+            ->where('actor_id', $actorId)
+            ->get()->first();
+    }
+
+    /**
+     * Return queue with expedition and nfnActor
+     *
+     * @param int $expeditionId
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     */
+    public function findWithExpeditionNfnActor(int $expeditionId)
+    {
+        return $this->model->with(['expedition.nfnActor', 'expedition.stat'])->where('expedition_id', $expeditionId)->first();
     }
 }

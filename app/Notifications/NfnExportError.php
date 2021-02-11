@@ -58,9 +58,9 @@ class NfnExportError extends Notification implements ShouldQueue
      *
      * @param string $title
      * @param int $identifier
-     * @param string $message
+     * @param array $message
      */
-    public function __construct(string $title, int $identifier, string $message)
+    public function __construct(string $title, int $identifier, array $message)
     {
         $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.default_tube'));
@@ -89,7 +89,7 @@ class NfnExportError extends Notification implements ShouldQueue
         $attributes = [
             'title' => $this->title,
             'id' => $this->identifier,
-            'message' => $this->message
+            'message' => implode('<br>', $this->message)
         ];
 
         return (new MailMessage)

@@ -19,9 +19,10 @@
 
 namespace App\Services\Download;
 
-use App\Jobs\ActorJob;
 use App\Models\Download;
 use App\Models\Expedition;
+use App\Models\User;
+use App\Services\Actor\ActorFactory;
 use App\Services\Model\DownloadService;
 use File;
 use Storage;
@@ -52,7 +53,7 @@ class DownloadType extends DownloadFileBase
         DownloadService $downloadService
     ) {
         $this->downloadService = $downloadService;
-        $this->missingMsg = t("The file appears to be missing though the records exist. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title.");
+        $this->missingMsg = t("The file appears to be missing though the records exist. Please contact the administration.");
     }
 
     /**
@@ -214,13 +215,11 @@ class DownloadType extends DownloadFileBase
     {
         $this->deleteExportFiles($expedition->id);
 
-        $expedition->nfnActor->pivot->state = 0;
+        $expedition->nfnActor->pivot->error = 0;
         $expedition->nfnActor->pivot->total = $expedition->stat->local_subject_count;
-        $expedition->nfnActor->pivot->processed = 0;
-        $expedition->nfnActor->pivot->queued = 1;
 
-        event('actor.pivot.regenerate', [$expedition->nfnActor]);
+        event('actor.pivot.export', [$expedition->nfnActor]);
 
-        ActorJob::dispatch(serialize($expedition->nfnActor));
+        ActorFactory::create($expedition->nfnActor->class)->actor($expedition->nfnActor);
     }
 }

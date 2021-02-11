@@ -28,11 +28,11 @@ use Illuminate\Support\Facades\File;
 use Storage;
 
 /**
- * Class NfnPanoptesBase
+ * Class ZooniverseBase
  *
  * @package App\Services\Actor
  */
-class NfnPanoptesBase
+class ZooniverseBase
 {
     /**
      * @var ExportQueue
@@ -82,12 +82,22 @@ class NfnPanoptesBase
     /**
      * @var string
      */
+    protected $archiveTar;
+
+    /**
+     * @var string
+     */
+    protected $archiveTarPath;
+
+    /**
+     * @var string
+     */
     protected $archiveTarGz;
 
     /**
      * @var string
      */
-    protected $archiveExportPath;
+    protected $archiveTarGzPath;
 
     /**
      * Set queue property.
@@ -132,15 +142,13 @@ class NfnPanoptesBase
     /**
      * Set folder property.
      *
-     * @throws \Exception
+     * @param int $queueId
+     * @param int $actorId
+     * @param string $expeditionUuid
      */
-    public function setFolder()
+    public function setFolder(int $queueId, int $actorId, string $expeditionUuid)
     {
-        if ($this->actor === null || $this->expedition === null) {
-            throw new Exception(t('Values required for export process are missing.'));
-        }
-
-        $this->folderName = $this->actor->id . '-' . $this->expedition->uuid;
+        $this->folderName = $queueId . '-' . $actorId . '-' . $expeditionUuid;
     }
 
     /**
@@ -152,13 +160,14 @@ class NfnPanoptesBase
     public function setDirectories(bool $delete = false)
     {
         if ($this->folderName === null) {
-            throw new Exception(t('Values required for export process are missing.'));
+            throw new Exception(t('Folder required for export process is missing.'));
         }
 
         $this->setScratchDirectory();
         $this->setWorkingDirectory($delete);
         $this->setTmpDirectory();
         $this->setNfnExportDirectory();
+        $this->setArchiveTar();
         $this->setArchiveTarGz();
     }
 
@@ -207,10 +216,19 @@ class NfnPanoptesBase
     /**
      * Set gz archive and path.
      */
-    private function setArchiveTarGz()
+    private function setArchiveTar()
+    {
+        $this->archiveTar = $this->folderName . '.tar';
+        $this->archiveTarPath = $this->nfnExportDirectory . '/' . $this->archiveTar;
+    }
+
+    /**
+     * Set archive tar gz file and path.
+     */
+    protected function setArchiveTarGz()
     {
         $this->archiveTarGz = $this->folderName . '.tar.gz';
-        $this->archiveExportPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
+        $this->archiveTarGzPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
     }
 
     /**
@@ -219,11 +237,9 @@ class NfnPanoptesBase
      * @param string $fileName
      * @return string
      */
-    protected function setBatchArchiveTarGz(string $fileName)
+    protected function setBatchArchiveTarGz(string $fileName): string
     {
-        $this->archiveTarGz = $fileName . '.tar.gz';
-
-        return $this->nfnExportDirectory . '/' . $this->archiveTarGz;
+        return $this->nfnExportDirectory . '/' . $fileName . '.tar.gz';
     }
 
     /**
@@ -246,7 +262,7 @@ class NfnPanoptesBase
      * @param bool $subject used if passing a subject id as file
      * @return bool
      */
-    protected function checkConvertedFile($file, $subject = false)
+    protected function checkConvertedFile($file, $subject = false): bool
     {
         $fileName = ! $subject ? File::name($file) : $file;
         $tmpFile = $this->tmpDirectory.'/'.$fileName.'.jpg';
@@ -255,5 +271,17 @@ class NfnPanoptesBase
         }
 
         return false;
+    }
+
+    /**
+     * Delete existing file.
+     *
+     * @param string $filePath
+     */
+    protected function deleteFile(string $filePath)
+    {
+        if (\File::exists($filePath)) {
+            \File::delete($filePath);
+        }
     }
 }

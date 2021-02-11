@@ -17,24 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Facades;
+namespace App\Services\Actor;
 
-use Illuminate\Support\Facades\Facade;
+use App\Models\Actor;
 
-/**
- * Class ActorEventHelper
- *
- * @package App\Facades
- */
-class ActorEventHelper extends Facade
+interface ActorInterface
 {
     /**
-     * Get the registered name of the component.
+     * Process function for actors.
      *
-     * @return string
+     * @param \App\Models\Actor $actor
+     * @return mixed
      */
-    protected static function getFacadeAccessor()
-    {
-        return \App\Services\Helpers\ActorEventHelper::class;
-    }
+    public function process(Actor $actor);
 }
