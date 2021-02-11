@@ -122,14 +122,16 @@ class TesseractService
     {
         try {
             if (Storage::exists($this->imgPath)) {
+                \Log::info('image exists: ' . $this->imgPath);
                 return true;
             }
 
             $this->httpRequest->setHttpProvider();
             $this->httpRequest->getHttpClient()->request('GET', $this->imgUrl, ['sink' => Storage::path($this->imgPath)]);
-
+            \Log::info('retrieved: ' . $this->imgUrl);
             return true;
         } catch (GuzzleException $e) {
+            \Log::info('image error: ' . $e->getMessage());
             $file['ocr'] = 'Error: ' . $e->getMessage();
             $this->updateSubject($file);
 
