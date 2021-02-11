@@ -134,6 +134,7 @@ class TesseractService
             \Log::info('image error: ' . $e->getMessage());
             $file['ocr'] = 'Error: ' . $e->getMessage();
             $this->updateSubject($file);
+            \Log::info('updated subject');
 
             return false;
         }
