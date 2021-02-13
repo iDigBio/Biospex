@@ -34,7 +34,7 @@ class GridCsvExportError extends Notification implements ShouldQueue
     use Queueable;
 
     /**
-     * @var string
+     * @var array
      */
     public $message;
 
@@ -46,9 +46,9 @@ class GridCsvExportError extends Notification implements ShouldQueue
     /**
      * GridCsvExport constructor.
      *
-     * @param string $message
+     * @param array $message
      */
-    public function __construct(string $message)
+    public function __construct(array $message)
     {
         $this->message = $message;
         $this->adminEmail = config('mail.from.address');
@@ -70,7 +70,8 @@ class GridCsvExportError extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        return (new MailMessage)->bcc($this->adminEmail)->markdown('mail.gridcsvexport', ['message' => $this->message]);
+        $message = implode('<br>', $this->message);
+        return (new MailMessage)->bcc($this->adminEmail)->markdown('mail.gridcsvexporterror', ['message' => $message]);
     }
 
     /**
