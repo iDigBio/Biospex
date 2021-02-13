@@ -130,6 +130,8 @@ class GridExportCsvJob implements ShouldQueue
 
         } catch (Exception $e) {
             $message = [
+                'Project Id: ' . $this->projectId,
+                'Expedition Id: ' . $this->expeditionId,
                 'Error: ' . $e->getMessage(),
                 'Trace: ' . $e->getTraceAsString()
             ];
