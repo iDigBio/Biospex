@@ -129,7 +129,11 @@ class GridExportCsvJob implements ShouldQueue
             $this->user->notify(new GridCsvExport(base64_encode($csvName)));
 
         } catch (Exception $e) {
-            $this->user->notify(new GridCsvExportError($e->getTraceAsString()));
+            $message = [
+                'Error: ' . $e->getMessage(),
+                'Trace: ' . $e->getTraceAsString()
+            ];
+            $this->user->notify(new GridCsvExportError($message));
             Storage::delete(config('config.reports_dir').'/'.$csvName);
         }
     }
