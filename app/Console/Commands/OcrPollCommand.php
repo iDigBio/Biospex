@@ -66,8 +66,6 @@ class OcrPollCommand extends Command
      */
     public function handle()
     {
-        // todo remove
-        return;
         $records = $this->ocrQueueService->getOcrQueuesForPollCommand();
 
         $data = ['message' => t('No processes running at this time'), 'payload' => []];

@@ -83,18 +83,35 @@ class SubjectService extends BaseModelService
     }
 
     /**
+     * Return query for processing subjects in ocr.
+     *
+     * @param int $projectId
+     * @param int|null $expeditionId
+     * @return \App\Models\Subject|\Illuminate\Database\Eloquent\Builder
+     */
+    public function getSubjectQueryForOcr(int $projectId, int $expeditionId = null)
+    {
+        $query = $this->model->where('project_id', $projectId);
+        $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
+        $query = $query->where('ocr', '');
+
+        return $query;
+
+    }
+
+    /**
      * Get subject cursor for OCR processing.
      *
      * @param int $projectId
      * @param int|null $expeditionId
-     * @param bool $error
+     *
      * @return \Illuminate\Support\LazyCollection
      */
-    public function getSubjectCursorForOcr(int $projectId, int $expeditionId = null, bool $error = false): LazyCollection
+    public function getSubjectErrorCursorForOcr(int $projectId, int $expeditionId = null): LazyCollection
     {
         $query = $this->model->where('project_id', $projectId);
         $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = !$error ? $query->where('ocr', '') : $query->where('ocr', 'like', '%Error:%');
+        $query = $query->where('ocr', 'like', '%Error:%');
 
         return $query->cursor();
 

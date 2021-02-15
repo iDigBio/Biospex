@@ -96,27 +96,6 @@ class OcrService
     }
 
     /**
-     * Find queue by id.
-     *
-     * @param int $id
-     * @return mixed
-     */
-    public function findOcrQueueById(int $id)
-    {
-        return $this->ocrQueueService->find($id);
-    }
-
-    /**
-     * Return ocr queue for command process.
-     *
-     * @return mixed
-     */
-    public function getOcrQueueForOcrProcessCommand()
-    {
-        return $this->ocrQueueService->getOcrQueueForOcrProcessCommand();
-    }
-
-    /**
      * Delete directory for queue.
      */
     public function deleteDir()
@@ -125,26 +104,50 @@ class OcrService
     }
 
     /**
+     * Find queue by id.
+     *
+     * @param int $id
+     * @return mixed
+     */
+    public function findOcrQueueById(int $id)
+    {
+        return $this->ocrQueueService->findWith($id, ['project.group.owner']);
+    }
+
+    /**
+     * Return ocr queue for command process.
+     *
+     * @return mixed
+     */
+    public function getFirstQueue()
+    {
+        return $this->ocrQueueService->getFirstQueue();
+    }
+
+    /**
      * Create ocr queue record.
      *
      * @param int $projectId
      * @param int|null $expeditionId
+     * @param array $data
      * @return \App\Models\OcrQueue
      */
-    public function createOcrQueue(int $projectId, int $expeditionId = null): OcrQueue
+    public function createOcrQueue(int $projectId, int $expeditionId = null, array $data = []): OcrQueue
     {
-        return $this->ocrQueueService->firstOrCreate(['project_id' => $projectId, 'expedition_id' => $expeditionId]);
+        return $this->ocrQueueService->firstOrCreate(['project_id' => $projectId, 'expedition_id' => $expeditionId], $data);
     }
 
     /**
+     * Return query for processing subjects in ocr.
+     *
      * @param int $projectId
      * @param int|null $expeditionId
-     * @param bool $error
-     * @return \Illuminate\Support\LazyCollection
+     *
+     * @return \App\Models\Subject|\Illuminate\Database\Eloquent\Builder
      */
-    public function getSubjectCursorForOcr(int $projectId, int $expeditionId = null, bool $error = false): LazyCollection
+    public function getSubjectQueryForOcr(int $projectId, int $expeditionId = null)
     {
-        return $this->subjectService->getSubjectCursorForOcr($projectId, $expeditionId, $error);
+        return $this->subjectService->getSubjectQueryForOcr($projectId, $expeditionId);
     }
 
     /**
@@ -168,10 +171,7 @@ class OcrService
      */
     public function complete(OcrQueue $queue)
     {
-        $this->setDir($queue->id);
         $this->sendNotify($queue);
-        $queue->delete();
-        $this->deleteDir();
     }
 
     /**
@@ -182,7 +182,7 @@ class OcrService
      */
     public function sendNotify(OcrQueue $queue)
     {
-        $cursor = $this->subjectService->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id, true);
+        $cursor = $this->subjectService->getSubjectErrorCursorForOcr($queue->project_id, $queue->expedition_id);
 
         $subjects = $cursor->map(function ($subject) {
             return [

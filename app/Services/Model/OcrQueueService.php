@@ -47,7 +47,6 @@ class OcrQueueService extends BaseModelService
     public function getOcrQueuesForPollCommand()
     {
         return $this->model->with(['project.group', 'expedition'])
-            ->where('error', 0)
             ->orderBy('id', 'asc')
             ->get();
     }
@@ -57,10 +56,8 @@ class OcrQueueService extends BaseModelService
      *
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
-    public function getOcrQueueForOcrProcessCommand()
+    public function getFirstQueue()
     {
-        return $this->model->with('project.group.owner')
-            ->orderBy('id', 'asc')
-            ->first();
+        return $this->model->orderBy('id', 'asc')->first();
     }
 }

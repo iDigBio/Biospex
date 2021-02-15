@@ -20,12 +20,11 @@
 namespace App\Services\Process;
 
 use App\Models\Subject;
-use App\Services\Model\SubjectService;
 use App\Services\Requests\HttpRequest;
-use Exception;
 use GuzzleHttp\Exception\GuzzleException;
-use Storage;
 use thiagoalessio\TesseractOCR\TesseractOCR;
+use Storage;
+use Exception;
 
 /**
  * Class TesseractService
@@ -46,9 +45,9 @@ class TesseractService
     public $httpRequest;
 
     /**
-     * @var \App\Services\Model\SubjectService
+     * @var Subject
      */
-    private $subjectService;
+    private $subject;
 
     /**
      * @var
@@ -65,33 +64,33 @@ class TesseractService
      *
      * @param \thiagoalessio\TesseractOCR\TesseractOCR $tesseract
      * @param \App\Services\Requests\HttpRequest $httpRequest
-     * @param \App\Services\Model\SubjectService $subjectService
      */
     public function __construct(
         TesseractOCR $tesseract,
-        HttpRequest $httpRequest,
-        SubjectService $subjectService
+        HttpRequest $httpRequest
     ) {
         $this->tesseract = $tesseract;
         $this->httpRequest = $httpRequest;
-        $this->subjectService = $subjectService;
     }
 
     /**
      * Process ocr file.
      *
      * @param Subject $subject
-     * @param string $folderPath
      */
-    public function process(Subject $subject, string $folderPath)
+    public function process(Subject $subject)
     {
+        $this->subject = $subject;
+
         $file['subject_id'] = (string) $subject->_id;
         $file['ocr'] = $subject->ocr;
         $file['url']  = $subject->accessURI;
 
-        $this->createImagePath($file, $folderPath);
+        $this->createImagePath($file, 'ocr');
 
         if ( ! $this->getImage($file)) {
+            Storage::delete($this->imgPath);
+
             return;
         }
 
@@ -162,8 +161,7 @@ class TesseractService
      */
     private function updateSubject(array $file)
     {
-        $subject = $this->subjectService->find($file['subject_id']);
-        $subject->ocr = $file['ocr'];
-        $subject->save();
+        $this->subject->ocr = $file['ocr'];
+        $this->subject->save();
     }
 }

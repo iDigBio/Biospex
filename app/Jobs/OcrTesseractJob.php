@@ -19,9 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Models\OcrQueue;
 use App\Models\Subject;
-use App\Services\Process\OcrService;
 use App\Services\Process\TesseractService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -55,11 +53,6 @@ class OcrTesseractJob implements ShouldQueue
     private $subject;
 
     /**
-     * @var OcrQueue
-     */
-    private $ocrQueue;
-
-    /**
      * OcrTesseractJob constructor.
      *
      * @param int $queueId
@@ -69,25 +62,17 @@ class OcrTesseractJob implements ShouldQueue
     {
         $this->queueId = $queueId;
         $this->subject = $subject;
-        $this->onQueue(config('config.ocr_tube'));
+        $this->onQueue(config('config.import_tube'));
     }
 
     /**
      * Execute tesseract job.
      *
-     * @param \App\Services\Process\OcrService $ocrService
      * @param \App\Services\Process\TesseractService $tesseract
      */
-    public function handle(OcrService $ocrService, TesseractService $tesseract)
+    public function handle(TesseractService $tesseract)
     {
-        $this->ocrQueue = $ocrService->findOcrQueueById($this->queueId);
-
-        $ocrService->setDir($this->ocrQueue->id);
-        $tesseract->process($this->subject, $ocrService->folderPath);
-
-        $this->ocrQueue->processed = $this->ocrQueue->processed + 1;
-        $this->ocrQueue->save();
-
+        $tesseract->process($this->subject);
         $this->delete();
     }
 
@@ -99,9 +84,6 @@ class OcrTesseractJob implements ShouldQueue
      */
     public function failed(Exception $exception)
     {
-        $this->ocrQueue->processed = $this->ocrQueue->processed + 1;
-        $this->ocrQueue->save();
-
         $this->subject->ocr = 'Error: processing tesseract ocr job.';
         $this->subject->save();
 

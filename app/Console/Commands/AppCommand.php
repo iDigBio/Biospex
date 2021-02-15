@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Process\OcrService;
 use Illuminate\Console\Command;
 
 /**
@@ -39,11 +40,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Services\Process\OcrService
+     */
+    private $ocrService;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct()
+    public function __construct(OcrService $ocrService)
     {
         parent::__construct();
+        $this->ocrService = $ocrService;
     }
 
     /**
@@ -51,7 +58,9 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
-
+        $subjects = $this->ocrService->getSubjectQueryForOcr(107);
+        $subjects->each(function($subject){
+            echo $subject->_id . PHP_EOL;
+        });
     }
 }

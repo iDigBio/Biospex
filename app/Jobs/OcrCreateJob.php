@@ -42,7 +42,7 @@ class OcrCreateJob implements ShouldQueue
     /**
      * @var int
      */
-    public $timeout = 36000;
+    public $timeout = 3600;
 
     /**
      * @var
@@ -81,24 +81,21 @@ class OcrCreateJob implements ShouldQueue
         }
 
         try {
-            $queue = $ocrService->createOcrQueue($this->projectId, $this->expeditionId);
 
-            if (! $queue) {
+            $total = $ocrService->getSubjectCountForOcr($this->projectId, $this->expeditionId);
+
+            if ($total === 0) {
                 $this->delete();
 
                 return;
             }
 
-            $total = $ocrService->getSubjectCountForOcr($this->projectId, $this->expeditionId);
-
-            if ($total === 0) {
-                $queue->delete();
+            $queue = $ocrService->createOcrQueue($this->projectId, $this->expeditionId, ['total' => $total]);
+            if (! $queue) {
+                $this->delete();
 
                 return;
             }
-
-            $queue->total = $total;
-            $queue->save();
 
             Artisan::call('ocrprocess:records');
 

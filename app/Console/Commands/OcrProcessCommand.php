@@ -19,9 +19,8 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\OcrTesseractJob;
+use App\Jobs\OcrProcessJob;
 use App\Services\Process\OcrService;
-use Artisan;
 use Illuminate\Console\Command;
 
 /**
@@ -68,33 +67,17 @@ class OcrProcessCommand extends Command
      */
     public function handle()
     {
-        $queue = $this->ocrService->getOcrQueueForOcrProcessCommand();
+        $queue = $this->ocrService->getFirstQueue();
 
-        if ($queue === null) {
+        if ($this->option('reset')) {
+            $queue->status = 0;
+            $queue->save();
+        }
+
+        if ($queue === null || $queue->status === 1) {
             return;
         }
 
-        if ($queue->processed === $queue->total) {
-
-            $this->ocrService->complete($queue);
-            Artisan::call('ocr:poll');
-
-            return;
-        }
-
-        if ($queue->status === 1 && !$this->option('reset')) {
-            return;
-        }
-
-        $queue->total = $this->ocrService->getSubjectCountForOcr($queue->project_id, $queue->expedition_id);
-        $queue->status = 1;
-        $queue->processed = 0;
-        $queue->save();
-
-        $subjects = $this->ocrService->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id);
-
-        $subjects->each(function ($subject) use($queue) {
-            OcrTesseractJob::dispatch($queue->id, $subject);
-        });
+        OcrProcessJob::dispatch($queue);
     }
 }
