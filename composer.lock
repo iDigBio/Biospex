@@ -2200,17 +2200,17 @@
         },
         {
             "name": "laravel/nova",
-            "version": "3.21.0",
+            "version": "3.21.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:laravel/nova.git",
-                "reference": "a50eb75d8c5ea26320353f96c26266ad53c5ff93"
+                "reference": "bcca9b5bf1a058bfbc7bf04cdcfab242a81a0171"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-a50eb75d8c5ea26320353f96c26266ad53c5ff93-zip-714e68.zip",
-                "reference": "a50eb75d8c5ea26320353f96c26266ad53c5ff93",
-                "shasum": "3d2d72bd42bf44b4df671194cb5381a3167f3aa6"
+                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-bcca9b5bf1a058bfbc7bf04cdcfab242a81a0171-zip-930dc8.zip",
+                "reference": "bcca9b5bf1a058bfbc7bf04cdcfab242a81a0171",
+                "shasum": "d09e3e971f245c88cd68a32e4cb7f161fd05abe5"
             },
             "require": {
                 "brick/money": "^0.5.0",
@@ -2288,9 +2288,9 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/laravel/nova/tree/v3.21.0"
+                "source": "https://github.com/laravel/nova/tree/v3.21.1"
             },
-            "time": "2021-02-02T17:55:49+00:00"
+            "time": "2021-02-12T15:54:22+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -3282,16 +3282,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.45.0",
+            "version": "2.45.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "e2ba3174ce869da1713c38340dbb36572dfacd5a"
+                "reference": "528783b188bdb853eb21239b1722831e0f000a8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/e2ba3174ce869da1713c38340dbb36572dfacd5a",
-                "reference": "e2ba3174ce869da1713c38340dbb36572dfacd5a",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/528783b188bdb853eb21239b1722831e0f000a8d",
+                "reference": "528783b188bdb853eb21239b1722831e0f000a8d",
                 "shasum": ""
             },
             "require": {
@@ -3371,7 +3371,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-02-07T21:35:59+00:00"
+            "time": "2021-02-11T18:30:17+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -3799,16 +3799,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.4",
+            "version": "3.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "845a2275e886ba9fb386c8f59cb383dd9c8963e9"
+                "reference": "7c751ea006577e4c2e83326d90c8b1e8c11b8ede"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/845a2275e886ba9fb386c8f59cb383dd9c8963e9",
-                "reference": "845a2275e886ba9fb386c8f59cb383dd9c8963e9",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/7c751ea006577e4c2e83326d90c8b1e8c11b8ede",
+                "reference": "7c751ea006577e4c2e83326d90c8b1e8c11b8ede",
                 "shasum": ""
             },
             "require": {
@@ -3890,7 +3890,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.4"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.5"
             },
             "funding": [
                 {
@@ -3906,7 +3906,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-01-25T19:02:05+00:00"
+            "time": "2021-02-12T16:18:16+00:00"
         },
         {
             "name": "psr/container",
