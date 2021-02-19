@@ -135,7 +135,7 @@ class RapidIngestService extends RapidServiceBase
             $files = \File::allFiles(Storage::path($tmpPath));
             foreach ($files as $file) {
                 if ($file->getExtension() === 'csv') {
-                    $fileName = date('d-m-Y_H-i-s').'_'.$file->getFilename();
+                    $fileName = $file->getFilename();
                     $csvFilePath = Storage::path($importsPath.'/'.$fileName);
                     \File::move($file->getPathname(), $csvFilePath);
                     break;
@@ -261,6 +261,11 @@ class RapidIngestService extends RapidServiceBase
             }
 
             $intersect = collect($row)->intersectByKeys($this->updateFields)->toArray();
+
+            if (empty($intersect)) {
+                $this->errors[] = array_merge(['_id' => $id], $intersect);
+                continue;
+            }
 
             $this->updateRecord($intersect, $id);
         }

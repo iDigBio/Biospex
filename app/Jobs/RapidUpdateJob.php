@@ -61,7 +61,7 @@ class RapidUpdateJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 3600;
+    public $timeout = 7200;
 
     /**
      * Update rapid records job.
@@ -88,10 +88,14 @@ class RapidUpdateJob implements ShouldQueue
     {
         try {
             if (! Storage::exists($this->filePath)) {
-                throw new Exception(t('Rapid import file does not exist while processing update job.'));
+                throw new Exception(t('Rapid import zip file does not exist while processing update job.'));
             }
 
             [$fileName, $filePath] = $rapidIngestService->unzipFile($this->filePath);
+            if (empty($fileName) || empty($filePath)) {
+                $vars = [':name' => $fileName, ':path' => $filePath];
+                throw new Exception(t('Rapid import csv file name :name, or file path :path, are empty.', $vars));
+            }
 
             $rapidHeaderRecord = $rapidIngestService->process($filePath);
 

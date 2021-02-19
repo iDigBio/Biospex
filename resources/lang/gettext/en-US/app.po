@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-01-27T16:59:16+00:00\n"
-"PO-Revision-Date: 2021-01-27 17:59+0100\n"
+"POT-Creation-Date: 2021-02-19T18:25:42+00:00\n"
+"PO-Revision-Date: 2021-02-19 19:25+0100\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
@@ -88,7 +88,11 @@ msgid "CSV file could not be extracted from zip file."
 msgstr ""
 
 #: app/Jobs/RapidUpdateJob.php:91
-msgid "Rapid import file does not exist while processing update job."
+msgid "Rapid import zip file does not exist while processing update job."
+msgstr ""
+
+#: app/Jobs/RapidUpdateJob.php:97
+msgid "Rapid import csv file name :name, or file path :path, are empty."
 msgstr ""
 
 #: app/Presenters/RapidRecordPresenter.php:42
@@ -99,7 +103,7 @@ msgstr ""
 msgid "iDigBio"
 msgstr ""
 
-#: app/Services/Export/CsvExportType.php:76
+#: app/Services/Export/CsvExportType.php:77
 msgid "Csv data returned empty while exporting."
 msgstr ""
 
