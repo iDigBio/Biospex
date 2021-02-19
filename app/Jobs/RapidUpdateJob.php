@@ -119,6 +119,8 @@ class RapidUpdateJob implements ShouldQueue
 
             RapidVersionJob::dispatch($this->user)->delay(now()->addMinutes(5));
 
+            $this->delete();
+
             return;
         } catch (Exception $exception) {
             $attributes = [
@@ -129,6 +131,10 @@ class RapidUpdateJob implements ShouldQueue
             ];
 
             $this->user->notify(new JobErrorNotification($attributes));
+
+            $this->delete();
+
+            return;
         }
     }
 }
