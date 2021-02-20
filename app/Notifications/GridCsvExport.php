@@ -53,9 +53,9 @@ class GridCsvExport extends Notification implements ShouldQueue
      *
      * @param string $route
      * @param int $projectId
-     * @param int|null $expeditionId
+     * @param int $expeditionId
      */
-    public function __construct(string $route, int $projectId, int $expeditionId = null)
+    public function __construct(string $route, int $projectId, int $expeditionId = 0)
     {
         $this->route = $route;
         $this->projectId = $projectId;
