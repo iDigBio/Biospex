@@ -126,10 +126,21 @@ class GridExportCsvJob implements ShouldQueue
                 $csv->insertOne($merged->toArray());
             });
 
-            $this->user->notify(new GridCsvExport(base64_encode($csvName)));
+            if (!Storage::exists(config('config.reports_dir').'/'.$csvName)) {
+                throw new Exception(t('Csv export file is missing.'));
+            }
+
+            $route = route('admin.downloads.report', ['file' => base64_encode($csvName)]);
+            $this->user->notify(new GridCsvExport($route, $this->projectId, $this->expeditionId));
 
         } catch (Exception $e) {
-            $this->user->notify(new GridCsvExportError($e->getTraceAsString()));
+            $message = [
+                'Project Id: ' . $this->projectId,
+                'Expedition Id: ' . $this->expeditionId,
+                'Error: ' . $e->getMessage(),
+                'Trace: ' . $e->getTraceAsString()
+            ];
+            $this->user->notify(new GridCsvExportError($message));
             Storage::delete(config('config.reports_dir').'/'.$csvName);
         }
     }
