@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-01-24T18:02:56+00:00\n"
-"PO-Revision-Date: 2021-01-24 19:02+0100\n"
+"POT-Creation-Date: 2021-02-20T16:04:54+00:00\n"
+"PO-Revision-Date: 2021-02-20 17:04+0100\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
@@ -291,8 +291,8 @@ msgstr ""
 msgid "An error occurred while attempting to save file: %s"
 msgstr ""
 
-#: app/Jobs/GridExportCsvJob.php:111
-msgid "No results were returned for the CSV export."
+#: app/Jobs/GridExportCsvJob.php:130
+msgid "Csv export file is missing."
 msgstr ""
 
 #: app/Jobs/NfnExpertReviewJob.php:77
@@ -1641,7 +1641,7 @@ msgstr ""
 #: resources/views/admin/partials/expedition-download-modal-body.blade.php:55
 #: resources/views/admin/partials/expedition-download-modal-body.blade.php:68
 #: resources/views/admin/partials/expedition-download-modal-body.blade.php:72
-#: resources/views/mail/gridcsvexport.blade.php:9
+#: resources/views/mail/gridcsvexport.blade.php:13
 msgid "Download"
 msgstr ""
 
@@ -2444,7 +2444,7 @@ msgstr ""
 #: resources/views/mail/eventcsvexport.blade.php:21
 #: resources/views/mail/eventcsvexporterror.blade.php:11
 #: resources/views/mail/failedjob.blade.php:8
-#: resources/views/mail/gridcsvexport.blade.php:22
+#: resources/views/mail/gridcsvexport.blade.php:21
 #: resources/views/mail/gridcsvexporterror.blade.php:11
 #: resources/views/mail/importcomplete.blade.php:33
 #: resources/views/mail/importerror.blade.php:15
@@ -2504,11 +2504,11 @@ msgid "Grid Export CSV"
 msgstr ""
 
 #: resources/views/mail/gridcsvexport.blade.php:6
-msgid "Your grid export is completed. Click the button provided to download:"
+msgid "Your grid export for Expedition Id %s is complete. Click the button provided to download:"
 msgstr ""
 
-#: resources/views/mail/gridcsvexport.blade.php:17
-msgid "Grid export could not be completed. Please contact the Admin."
+#: resources/views/mail/gridcsvexport.blade.php:9
+msgid "Your grid export for Project Id %s is complete. Click the button provided to download:"
 msgstr ""
 
 #: resources/views/mail/gridcsvexporterror.blade.php:5
