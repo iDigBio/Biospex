@@ -73,7 +73,7 @@ class CsvExportType
 
             $csvData = $this->setColumns($record, $fields, $data);
 
-            if (!isset($csvData)) {
+            if (! isset($csvData)) {
                 throw new Exception(t('Csv data returned empty while exporting.'));
             }
 
@@ -115,11 +115,11 @@ class CsvExportType
      */
     public function setColumns(RapidRecord $record, array $fields, array $data): array
     {
-        if($fields['exportDestination'] === 'taxonomic'){
+        if ($fields['exportDestination'] === 'taxonomic') {
             return $this->setDirectColumns($record, $fields, $data);
-        }elseif ($fields['exportDestination'] === 'generic') {
+        } elseif ($fields['exportDestination'] === 'generic') {
             return $this->setGenericColumns($record, $fields, $data);
-        }else {
+        } else {
             return $this->setFormColumns($record, $fields, $data);
         }
     }
@@ -153,9 +153,12 @@ class CsvExportType
      */
     public function setGenericColumns(RapidRecord $record, array $fields, array $data): array
     {
-        $flattened = collect($fields['exportFields'][0])->forget('order')->flatten()->flip();
+        $flattened = collect($fields['exportFields'][0])->forget('order')->flatten();
+        $filled = array_fill_keys($flattened->toArray(), '');
+        $attributes = $record->getAttributes();
+        unset($attributes['_id'], $attributes['updated_at'], $attributes['created_at']);
 
-        return array_merge($data, collect($record->getAttributes())->intersectByKeys($flattened)->toArray());
+        return array_merge($data, $filled, $attributes);
     }
 
     /**

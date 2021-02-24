@@ -31,6 +31,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Storage;
+use const Grpc\STATUS_OUT_OF_RANGE;
 
 /**
  * Class RapidUpdateJob
@@ -54,7 +55,7 @@ class RapidUpdateJob implements ShouldQueue
     /**
      * @var string
      */
-    private $fileOrigName;
+    private $fileName;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -68,14 +69,14 @@ class RapidUpdateJob implements ShouldQueue
      *
      * @param \App\Models\User $user
      * @param string $filePath
-     * @param string $fileOrigName
+     * @param string $fileName
      */
-    public function __construct(User $user, string $filePath, string $fileOrigName)
+    public function __construct(User $user, string $filePath, string $fileName)
     {
         $this->onQueue(config('config.rapid_tube'));
         $this->user = $user;
         $this->filePath = $filePath;
-        $this->fileOrigName = $fileOrigName;
+        $this->fileName = $fileName;
     }
 
     /**
@@ -88,16 +89,10 @@ class RapidUpdateJob implements ShouldQueue
     {
         try {
             if (! Storage::exists($this->filePath)) {
-                throw new Exception(t('Rapid import zip file does not exist while processing update job.'));
+                throw new Exception(t('Rapid update csv file does not exist while processing job.'));
             }
 
-            [$fileName, $filePath] = $rapidIngestService->unzipFile($this->filePath);
-            if (empty($fileName) || empty($filePath)) {
-                $vars = [':name' => $fileName, ':path' => $filePath];
-                throw new Exception(t('Rapid import csv file name :name, or file path :path, are empty.', $vars));
-            }
-
-            $rapidHeaderRecord = $rapidIngestService->process($filePath);
+            $rapidHeaderRecord = $rapidIngestService->process(Storage::path($this->filePath));
 
             $recordsUpdated = $rapidIngestService->getUpdatedRecordsCount();
 
@@ -106,8 +101,7 @@ class RapidUpdateJob implements ShouldQueue
             $data = [
                 'header_id'       => $rapidHeaderRecord->id,
                 'user_id'         => $this->user->id,
-                'file_orig_name'  => $this->fileOrigName,
-                'file_name'       => $fileName,
+                'file_name'       => $this->fileName,
                 'fields_updated'  => $fields,
                 'updated_records' => $recordsUpdated,
             ];
@@ -119,26 +113,23 @@ class RapidUpdateJob implements ShouldQueue
                 $downloadUrl = $rapidIngestService->createCsv();
             }
 
-            $this->user->notify(new UpdateNotification($this->fileOrigName, $recordsUpdated, $fields, $downloadUrl));
+            $this->user->notify(new UpdateNotification($this->fileName, $recordsUpdated, $fields, $downloadUrl));
 
             RapidVersionJob::dispatch($this->user)->delay(now()->addMinutes(5));
 
             $this->delete();
 
-            return;
-        } catch (Exception $exception) {
+        } catch (Exception $e) {
             $attributes = [
-                'message' => $exception->getMessage(),
-                'file'    => $exception->getFile(),
-                'line'    => $exception->getLine(),
-                'trace'   => $exception->getTraceAsString(),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
             ];
 
             $this->user->notify(new JobErrorNotification($attributes));
 
             $this->delete();
-
-            return;
         }
     }
 }

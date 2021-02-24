@@ -66,7 +66,7 @@ class VersionController extends Controller
                 $version->user->email,
                 $version->file_name,
                 $version->created_at->toDateTime()->format('Y-m-d h:m:s'),
-                route('admin.download.version', [base64_encode($version->file_name)])
+                route('admin.download.version', ['file' => base64_encode($version->file_name)])
             ];
         });
 

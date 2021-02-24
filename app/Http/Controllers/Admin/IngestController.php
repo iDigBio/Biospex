@@ -19,15 +19,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Jobs\RapidUpdateJob;
+use App\Jobs\RapidIngestUnzipJob;
+use App\Services\Model\RapidHeaderModelService;
 use FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RapidImportFormRequest;
 use App\Http\Requests\RapidUpdateFormRequest;
-use App\Jobs\RapidImportJob;
 use Auth;
 use Illuminate\Http\RedirectResponse;
-use Str;
 
 /**
  * Class IngestController
@@ -39,11 +38,13 @@ class IngestController extends Controller
     /**
      * Show projects list for admin page.
      *
+     * @param \App\Services\Model\RapidHeaderModelService $service
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(RapidHeaderModelService $service)
     {
-        return view('ingest.index');
+        $count = $service->count();
+        return view('ingest.index', compact('count'));
     }
 
     /**
@@ -54,15 +55,15 @@ class IngestController extends Controller
      */
     public function create(RapidImportFormRequest $request): RedirectResponse
     {
-        $path = $request->file('import-file')->store(config('config.rapid_import_dir'));
+        $filePath = $request->file('import-file')->store(config('config.rapid_import_dir'));
 
-        if (! $path) {
+        if (! $filePath) {
             FlashHelper::warning(t('The import failed to upload. Please contact the administration to determine the error.'));
 
             return redirect()->route('admin.ingest.index');
         }
 
-        RapidImportJob::dispatch(Auth::user(), $path);
+        RapidIngestUnzipJob::dispatch(Auth::user(), $filePath, false);
 
         FlashHelper::success(t('The import uploaded successfully. You will be notified by email when it\'s completed.'));
 
@@ -77,9 +78,7 @@ class IngestController extends Controller
      */
     public function update(RapidUpdateFormRequest $request): RedirectResponse
     {
-        $file = $request->file('update-file');
-        $fileOrigName = $file->getClientOriginalName();
-        $filePath = $file->storeAs(config('config.rapid_import_dir'), Str::random(10) .'-'. $fileOrigName);
+        $filePath = $request->file('update-file')->store(config('config.rapid_import_dir'));
 
         if (! $filePath) {
             FlashHelper::warning(t('The update failed to upload. Please contact the administration to determine the error.'));
@@ -87,7 +86,7 @@ class IngestController extends Controller
             return redirect()->route('admin.ingest.index');
         }
 
-        RapidUpdateJob::dispatch(Auth::user(), $filePath, $fileOrigName);
+        RapidIngestUnzipJob::dispatch(Auth::user(), $filePath);
 
         FlashHelper::success(t('The update has been uploaded. You will receive an email when the process has been completed.'));
 

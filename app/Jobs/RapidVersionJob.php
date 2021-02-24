@@ -113,7 +113,7 @@ class RapidVersionJob implements ShouldQueue
 
             $rapidExportService->deleteVersionFile($fileName);
 
-            $downloadUrl = route('admin.download.version', [base64_encode($zipFileName)]);
+            $downloadUrl = route('admin.download.version', ['file' => base64_encode($zipFileName)]);
             $this->user->notify(new VersionNotification($downloadUrl));
 
             DB::commit();

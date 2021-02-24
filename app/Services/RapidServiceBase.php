@@ -114,6 +114,16 @@ class RapidServiceBase
     }
 
     /**
+     * Return import path.
+     *
+     * @return \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    public function getImportsTmpPath()
+    {
+        return config('config.rapid_import_dir') . '/tmp';
+    }
+
+    /**
      * Get export file path.
      *
      * @param string $fileName

@@ -16,7 +16,7 @@
                     <div class="card">
                         <div class="card-header" id="file-import">
                             <h5 class="mb-0">
-                                <button class="import btn" disabled data-toggle="collapse" data-target="#rapid-import"
+                                <button class="import btn" {{ $count > 0 ? 'disabled': '' }} data-toggle="collapse" data-target="#rapid-import"
                                         aria-expanded="true" aria-controls="rapid-import">
                                     {{ t('Import Rapid Records Data') }}
                                 </button>

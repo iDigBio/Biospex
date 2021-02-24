@@ -65,13 +65,17 @@ class JqGridJsonEncoderService extends RapidServiceBase
      */
     public function loadGridModel()
     {
-        $header = $this->rapidHeaderModelService->getLatestHeader()->data;
-        array_unshift($header, '_id');
+        $header = $this->rapidHeaderModelService->getLatestHeader();
+        if ($header === null) {
+            return json_encode([]);
+        }
+        $headerArray = $header->data;
+        array_unshift($headerArray, '_id');
         $this->defaultGridVisible = $this->getDefaultGridView();
 
         $data = [
-            'colNames' => $header,
-            'colModel' => $this->setColModel($header),
+            'colNames' => $headerArray,
+            'colModel' => $this->setColModel($headerArray),
         ];
 
         return json_encode($data);

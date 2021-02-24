@@ -114,16 +114,15 @@ class RapidIngestService extends RapidServiceBase
      * Unzip file.
      *
      * @param string $filePath
-     * @return array|null
+     * @return string|null
      */
-    public function unzipFile(string $filePath): ?array
+    public function unzipFile(string $filePath): ?string
     {
         $importsPath = $this->getImportsPath();
-        $tmpPath = $importsPath.'/tmp';
+        $tmpPath = $this->getImportsTmpPath();
 
         Storage::makeDirectory($tmpPath);
 
-        $csvFilePath = null;
         $fileName = null;
 
         $zipArchive = new ZipArchive();
@@ -136,8 +135,7 @@ class RapidIngestService extends RapidServiceBase
             foreach ($files as $file) {
                 if ($file->getExtension() === 'csv') {
                     $fileName = $file->getFilename();
-                    $csvFilePath = Storage::path($importsPath.'/'.$fileName);
-                    \File::move($file->getPathname(), $csvFilePath);
+                    \File::move($file->getPathname(), Storage::path($importsPath.'/'.$fileName));
                     break;
                 }
             }
@@ -146,7 +144,7 @@ class RapidIngestService extends RapidServiceBase
             Storage::delete($filePath);
         }
 
-        return isset($csvFilePath) ? [$fileName, $csvFilePath] : null;
+        return $fileName;
     }
 
     /**
@@ -178,14 +176,15 @@ class RapidIngestService extends RapidServiceBase
      */
     public function storeHeader(): RapidHeader
     {
-        $header = $this->rapidHeaderModelService->getLatestHeader()->data;
+        $header = $this->rapidHeaderModelService->getLatestHeader();
+        $headerArray = isset($header->data) ? $header->data : [];
         $protectedFields = $this->getProtectedFields();
 
-        $diff = collect($this->csvHeader)->diff($header)->reject(function ($field) use ($protectedFields) {
+        $diff = collect($this->csvHeader)->diff($headerArray)->reject(function ($field) use ($protectedFields) {
             return in_array($field, $protectedFields);
         });
 
-        $rapidHeader = collect($header)->concat($diff)->toArray();
+        $rapidHeader = collect($headerArray)->concat($diff)->toArray();
 
         return $this->rapidHeaderModelService->create(['data' => $rapidHeader]);
     }
@@ -262,11 +261,6 @@ class RapidIngestService extends RapidServiceBase
 
             $intersect = collect($row)->intersectByKeys($this->updateFields)->toArray();
 
-            if (empty($intersect)) {
-                $this->errors[] = array_merge(['_id' => $id], $intersect);
-                continue;
-            }
-
             $this->updateRecord($intersect, $id);
         }
     }
@@ -294,7 +288,7 @@ class RapidIngestService extends RapidServiceBase
      * @return string
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function createCsv()
+    public function createCsv(): string
     {
         $errors = collect($this->errors)->recursive();
         $header = $errors->first()->keys();
@@ -303,10 +297,10 @@ class RapidIngestService extends RapidServiceBase
         $filePath = Storage::path(config('config.reports_dir').'/'.$fileName);
 
         $this->csvService->writerCreateFromPath($filePath);
-        $this->csvService->insertOne($header);
+        $this->csvService->insertOne($header->toArray());
         $this->csvService->insertAll($errors->toArray());
 
-        return route('admin.download.report', ['fileName' => base64_encode($fileName)]);
+        return route('admin.download.report', ['file' => base64_encode($fileName)]);
     }
 
     /**

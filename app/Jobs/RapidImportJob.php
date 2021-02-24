@@ -49,7 +49,12 @@ class RapidImportJob implements ShouldQueue
     /**
      * @var string
      */
-    private $path;
+    private $filePath;
+
+    /**
+     * @var string
+     */
+    private $fileName;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -62,13 +67,15 @@ class RapidImportJob implements ShouldQueue
      * Create a new job instance.
      *
      * @param \App\Models\User $user
-     * @param string $path
+     * @param string $filePath
+     * @param string $fileName
      */
-    public function __construct(User $user, string $path)
+    public function __construct(User $user, string $filePath, string $fileName)
     {
         $this->onQueue(config('config.rapid_tube'));
         $this->user = $user;
-        $this->path = $path;
+        $this->filePath = $filePath;
+        $this->fileName = $fileName;
     }
 
     /**
@@ -80,23 +87,16 @@ class RapidImportJob implements ShouldQueue
     public function handle(RapidIngestService $rapidIngestService, RapidUpdateModelService $rapidUpdateModelService)
     {
         try {
-            if (! Storage::exists($this->path)) {
-                throw new Exception(t('Rapid import file does not exist while processing import job.'));
+            if (! Storage::exists($this->filePath)) {
+                throw new Exception(t('Rapid import csv file does not exist while processing job.'));
             }
 
-            [$csvFilePath, $fileName] = $rapidIngestService->unzipFile($this->path);
-
-            if (!isset($csvFilePath)) {
-                throw new Exception(t('CSV file could not be extracted from zip file.'));
-            }
-
-            $rapidHeaderRecord = $rapidIngestService->process($csvFilePath, true);
+            $rapidHeaderRecord = $rapidIngestService->process(Storage::path($this->filePath), true);
 
             $rapidUpdateModelService->create([
                 'header_id' => $rapidHeaderRecord->id,
                 'user_id' => $this->user->id,
-                'file_orig_name' => $fileName,
-                'file_name' => $fileName,
+                'file_name' => $this->fileName,
                 'fields_updated' => $rapidHeaderRecord->data
             ]);
 
@@ -107,17 +107,21 @@ class RapidImportJob implements ShouldQueue
 
             $this->user->notify(new ImportNotification($downloadUrl));
 
-            return;
+            RapidVersionJob::dispatch($this->user)->delay(now()->addMinutes(5));
 
-        } catch (Exception $exception) {
+            $this->delete();
+
+        } catch (Exception $e) {
             $attributes = [
-                'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'trace' => $exception->getTraceAsString()
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
             ];
 
             $this->user->notify(new JobErrorNotification($attributes));
+
+            $this->delete();
         }
     }
 }
