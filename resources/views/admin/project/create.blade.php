@@ -27,7 +27,6 @@
                                         class="form-control custom-select {{ ($errors->has('group_id')) ? 'is-invalid' : '' }}"
                                         required>
                                     @foreach($groupOptions as $key => $name)
-                                        {{ $key }}
                                         <option {{ $key == old('group_id') ?
                                         ' selected=selected' : '' }} value="{{ $key }}">{{ $name }}</option>
                                     @endforeach
