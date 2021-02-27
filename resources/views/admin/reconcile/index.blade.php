@@ -8,6 +8,12 @@
 
     <div class="row mt-5 justify-content-center">
         {{ $reconciles->links() }}
+        <select name="pagination" id="pagination" class="form-control custom-select ml-2" style="width: 100px"
+                required>
+            @foreach($reconciles->getUrlRange(1, $reconciles->total()) as $page => $url)
+                <option value="{{ $url }}" {{ $reconciles->url($reconciles->currentPage()) === $url ? ' selected=selected' : '' }}>{{ $page }}</option>
+            @endforeach
+        </select>
     </div>
     <div class="row">
         <div class="col-6">
@@ -50,7 +56,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="radio"
                                                data-column="{{ $mask }}"
-                                               id="{{ $transcription->_id }}" value="{{ $transcription->{$column} }}">
+                                               value="{{ $transcription->{$column} }}">
                                         <label class="form-check-label" for="{{ $transcription->_id }}">
                                             {!! $transcription->{$column} ?: '<i>'.t('participant left blank').'</i>' !!}
                                         </label>
@@ -99,7 +105,6 @@
 @stop
 
 @push('scripts')
-    <script src="{{ secure_asset('backend/js/jquery.panzoom.min.js') }}"></script>
     <script src="{{ secure_asset('backend/js/jquery.form.min.js') }}"></script>
     <script src="{{ secure_asset('backend/js/expertReview.min.js') }}"></script>
 @endpush

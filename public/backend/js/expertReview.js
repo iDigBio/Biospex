@@ -50,4 +50,8 @@ $(function () {
             $(this).trigger("load");
         }
     });
+
+    $('#pagination').on('change', function() {
+        window.location.replace($(this).val());
+    });
 });
