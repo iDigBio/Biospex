@@ -207,15 +207,10 @@ class ExpertReconcileProcess
     public function updateRecord(array $request)
     {
         $id = $request['_id'];
-        $unsetArray = ['_id', '_method', '_token', 'radio'];
+        unset($request['_id'], $request['_method'], $request['_token'], $request['page'], $request['radio']);
+
         $attributes = [];
-
         foreach ($request as $key => $value) {
-            if (in_array($key, $unsetArray)) {
-                unset($request[$key]);
-                continue;
-            }
-
             $attributes[base64_decode($key)] = is_null($value) ? '' : $value;
         }
 

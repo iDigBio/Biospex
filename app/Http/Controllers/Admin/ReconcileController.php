@@ -62,7 +62,7 @@ class ReconcileController extends Controller
      *
      * @param string $expeditionId
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function index(string $expeditionId, PanoptesApiService $panoptesApiService)
     {
@@ -112,19 +112,19 @@ class ReconcileController extends Controller
      * Update reconciled record.
      *
      * @param string $expeditionId
-     * @return array
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(string $expeditionId): array
+    public function update(string $expeditionId): RedirectResponse
     {
-        if (! request()->ajax()) {
-            return ['result' => false, 'message' => t('Error while updating record.')];
-        }
-
         if (! $this->expertReconcileService->updateRecord(request()->all())) {
-            return ['result' => false, 'message' => t('Error while updating record.')];
+            Flash::warning(t('Error while updating record.'));
+
+            return redirect()->back();
         }
 
-        return ['result' => true, 'message' => t('Record was updated successfully.')];
+        Flash::success(t('Record was updated successfully.'));
+
+        return redirect()->to(request()->get('page'));
     }
 
     /**

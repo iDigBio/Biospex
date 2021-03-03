@@ -27,17 +27,6 @@ $(function () {
     $('#btnZoomOut').on('click', panzoom.zoomOut);
     $('#btnZoomReset').on('click', panzoom.reset);
 
-    let options = {
-        beforeSubmit: function () {
-            $("#output").removeClass().html("<div class='loader mx-auto'></div>");
-        },
-        success: function (response) {
-            let css = response.result === "false" ? "alert-danger" : "alert-success";
-            $("#output").addClass(css).html(response.message);
-        }
-    };
-
-    $("#frmReconcile").ajaxForm(options);
     $("form input:radio").on("change", function () {
         let id = $(this).data("column");
         $("[id='"+id+"']").text($(this).val());
