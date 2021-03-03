@@ -36,6 +36,7 @@
                 {!! method_field('put') !!}
                 @csrf
                 <input type="hidden" name="_id" value="{{ $reconciles->first()->_id }}">
+                <input type="hidden" name="page" value="{{ $reconciles->nextPageUrl() }}">
                 <div class="row">
                     <h2 id="output"></h2>
                 </div>
@@ -69,12 +70,8 @@
                 @endforeach
                 <div class="row">
                     <div class="form-group m-auto">
-                        <a href="{{ $reconciles->previousPageUrl() }}" class="btn btn-primary text-uppercase mt-5">
-                            {{t('Previous')}}</a>
                         <button type="submit"
                                 class="btn btn-primary text-uppercase mt-5">{{ t('Save') }}</button>
-                        <a href="{{ $reconciles->nextPageUrl() }}" class="btn btn-primary text-uppercase mt-5">
-                            {{t('Next')}}</a>
                     </div>
                 </div>
             </form>
@@ -101,6 +98,12 @@
     </div>
     <div class="row mt-5 justify-content-center">
         {{ $reconciles->links() }}
+        <select name="pagination" id="pagination" class="form-control custom-select ml-2" style="width: 100px"
+                required>
+            @foreach($reconciles->getUrlRange(1, $reconciles->total()) as $page => $url)
+                <option value="{{ $url }}" {{ $reconciles->url($reconciles->currentPage()) === $url ? ' selected=selected' : '' }}>{{ $page }}</option>
+            @endforeach
+        </select>
     </div>
 @stop
 

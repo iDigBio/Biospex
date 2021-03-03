@@ -226,10 +226,10 @@ function notify(icon, msg, type) {
         offset: 50,
         spacing: 10,
         animate: {
-            enter: 'animated fadeInDown',
-            exit: 'animated fadeOutUp'
+            enter: 'animated bounceInDown',
+            exit: 'animated bounceOutUp'
         },
-        timer: 5000,
+        delay: 3000,
     });
 }
 
