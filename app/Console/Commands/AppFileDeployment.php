@@ -88,9 +88,7 @@ class AppFileDeployment extends Command
     {
         // copy needed files to locations
         $appFiles = File::files($this->resPath.'/apps');
-        $appTargets = collect($appFiles)->reject(function ($file) {
-            return App::environment() === 'dev';
-        })->map(function ($file) {
+        $appTargets = collect($appFiles)->map(function ($file) {
             $target = $this->appPath.'/'.File::name($file);
             File::copy($file, $target);
 
@@ -98,10 +96,7 @@ class AppFileDeployment extends Command
         });
 
         $supFiles = File::files($this->resPath.'/supervisord');
-        $subTargets = collect($supFiles)->reject(function ($file) {
-            return (File::name($file) === 'echoserver.conf' || File::name($file) === 'panoptes-pusher.conf')
-                && App::environment() === 'dev';
-        })->map(function ($file) {
+        $subTargets = collect($supFiles)->map(function ($file) {
             $target = $this->supPath.'/'.File::name($file);
             File::copy($file, $target);
 
@@ -155,6 +150,7 @@ class AppFileDeployment extends Command
 
             'ECHO_ID',
             'ECHO_KEY',
+            'ECHO_PORT',
             'ECHO_SSL_CRT',
             'ECHO_SSL_KEY',
 
