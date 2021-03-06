@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-03-06T18:59:33+00:00\n"
-"PO-Revision-Date: 2021-03-06 19:59+0100\n"
+"POT-Creation-Date: 2021-03-06T19:30:18+00:00\n"
+"PO-Revision-Date: 2021-03-06 20:30+0100\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
@@ -19,11 +19,11 @@ msgstr ""
 msgid "No processes running at this time"
 msgstr ""
 
-#: app/Console/Commands/ExportPollCommand.php:130
+#: app/Console/Commands/ExportPollCommand.php:116
 msgid " :processed of :total completed."
 msgstr ""
 
-#: app/Console/Commands/ExportPollCommand.php:149
+#: app/Console/Commands/ExportPollCommand.php:135
 msgid ":count export remains in queue before processing begins."
 msgid_plural ":count exports remain in queue before processing begins."
 msgstr[0] ""
@@ -98,58 +98,66 @@ msgstr ""
 msgid "An error occurred when deleting record."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadController.php:121
-msgid "The file record appears to be missing. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."
+#: app/Http/Controllers/Admin/DownloadController.php:122
+msgid "The file record appears to be missing. If you'd like to have the file generated, please use the generate button in the Expedition tools."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadController.php:212
-msgid "Download regeneration has started. You will be notified when completed."
+#: app/Http/Controllers/Admin/DownloadController.php:213
+msgid "Export generation has started. You will be notified when completed."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadController.php:214
-msgid "An error occurred while trying to regenerate the download. The Admin has been notified."
+#: app/Http/Controllers/Admin/DownloadController.php:215
+msgid "An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadController.php:237
+#: app/Http/Controllers/Admin/DownloadController.php:238
 msgid "File does not exist"
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadController.php:257
+#: app/Http/Controllers/Admin/DownloadController.php:258
 msgid "Your batch request has been submitted. You will receive an email with download links when the process is complete."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:434
+#: app/Http/Controllers/Admin/ExpeditionController.php:422
+msgid "Zooniverse Workflow Id is missing. Please update the Expedition once Workflow Id is acquired."
+msgstr ""
+
+#: app/Http/Controllers/Admin/ExpeditionController.php:428
+msgid "The expedition has been removed from the process queue."
+msgstr ""
+
+#: app/Http/Controllers/Admin/ExpeditionController.php:440
 msgid "The expedition has been added to the process queue."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:438
+#: app/Http/Controllers/Admin/ExpeditionController.php:447
 msgid "An error occurred when trying to process the expedition: %s"
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:462
+#: app/Http/Controllers/Admin/ExpeditionController.php:471
 #: app/Http/Controllers/Admin/ProjectController.php:343
 msgid "OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:485
+#: app/Http/Controllers/Admin/ExpeditionController.php:494
 msgid "Expedition has no processes at this time."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:492
+#: app/Http/Controllers/Admin/ExpeditionController.php:501
 msgid "Expedition process has been stopped locally. This does not stop any processing occurring on remote sites."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:520
+#: app/Http/Controllers/Admin/ExpeditionController.php:529
 #: app/Http/Controllers/Admin/GroupController.php:180
 #: app/Http/Controllers/Admin/ProjectController.php:310
 msgid "An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:527
+#: app/Http/Controllers/Admin/ExpeditionController.php:536
 msgid "Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:531
+#: app/Http/Controllers/Admin/ExpeditionController.php:540
 msgid "record.record_delete_error"
 msgstr ""
 
@@ -215,7 +223,7 @@ msgstr ""
 #: app/Http/Controllers/Admin/UserController.php:109
 #: app/Http/Controllers/Admin/UserController.php:145
 #: app/Http/Controllers/Controller.php:29
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:3
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:3
 #: resources/views/admin/partials/invite-modal-body.blade.php:3
 msgid "You do not have sufficient permissions."
 msgstr ""
@@ -832,8 +840,8 @@ msgstr ""
 #: app/Presenters/BingoPresenter.php:123
 #: app/Presenters/EventPresenter.php:234
 #: app/Presenters/EventPresenter.php:252
-#: app/Presenters/ExpeditionPresenter.php:157
-#: app/Presenters/ExpeditionPresenter.php:177
+#: app/Presenters/ExpeditionPresenter.php:169
+#: app/Presenters/ExpeditionPresenter.php:189
 #: app/Presenters/GroupPresenter.php:82
 #: app/Presenters/GroupPresenter.php:100
 #: app/Presenters/ProjectPresenter.php:381
@@ -886,60 +894,73 @@ msgstr ""
 msgid "View Expedition"
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:86
+#: app/Presenters/ExpeditionPresenter.php:81
+#: resources/views/admin/expedition/partials/expedition-tools-modal.blade.php:8
+msgid "Expedition Tools"
+msgstr ""
+
+#: app/Presenters/ExpeditionPresenter.php:98
 msgid "Download Expedition Files"
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:100
-#: app/Presenters/ExpeditionPresenter.php:113
+#: app/Presenters/ExpeditionPresenter.php:112
+#: app/Presenters/ExpeditionPresenter.php:125
 #: resources/views/admin/expedition/edit.blade.php:20
 msgid "Edit Expedition"
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:126
-#: app/Presenters/ExpeditionPresenter.php:139
+#: app/Presenters/ExpeditionPresenter.php:138
+#: app/Presenters/ExpeditionPresenter.php:151
 #: resources/views/admin/expedition/clone.blade.php:19
 msgid "Clone Expedition"
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:153
-#: app/Presenters/ExpeditionPresenter.php:157
-#: app/Presenters/ExpeditionPresenter.php:172
-#: app/Presenters/ExpeditionPresenter.php:176
+#: app/Presenters/ExpeditionPresenter.php:165
+#: app/Presenters/ExpeditionPresenter.php:169
+#: app/Presenters/ExpeditionPresenter.php:184
+#: app/Presenters/ExpeditionPresenter.php:188
 msgid "Delete Expedition"
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:192
-#: app/Presenters/ExpeditionPresenter.php:196
+#: app/Presenters/ExpeditionPresenter.php:206
+#: app/Presenters/ExpeditionPresenter.php:208
 #: app/Presenters/ProjectPresenter.php:425
 #: app/Presenters/ProjectPresenter.php:429
 msgid "Reprocess Subject OCR"
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:197
+#: app/Presenters/ExpeditionPresenter.php:207
 msgid "This action will reprocess all ocr for the Expedition."
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:212
-#: app/Presenters/ExpeditionPresenter.php:216
+#: app/Presenters/ExpeditionPresenter.php:224
+#: app/Presenters/ExpeditionPresenter.php:226
 msgid "Start Expedition Processing"
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:217
+#: app/Presenters/ExpeditionPresenter.php:225
 msgid "This will begin processing the Expedition. After starting, Subjects cannot be added or removed. Do you wish to Continue?"
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:232
-#: app/Presenters/ExpeditionPresenter.php:236
-msgid "Stop Expedition Processing"
+#: app/Presenters/ExpeditionPresenter.php:242
+msgid "Stop Processing"
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:237
+#: app/Presenters/ExpeditionPresenter.php:243
 msgid "This will stop the Expedition Process. However, Subjects cannot be added since process was already started. Do you wish to Continue?"
 msgstr ""
 
-#: app/Presenters/ExpeditionPresenter.php:253
-msgid "Regenerate Export File"
+#: app/Presenters/ExpeditionPresenter.php:244
+msgid "Stop Expedition Processing"
+msgstr ""
+
+#: app/Presenters/ExpeditionPresenter.php:262
+#: app/Presenters/ExpeditionPresenter.php:264
+msgid "Generate Export File"
+msgstr ""
+
+#: app/Presenters/ExpeditionPresenter.php:263
+msgid "This will generate a new export file. Any previous exports will be overwritten. Do you wish to Continue?"
 msgstr ""
 
 #: app/Presenters/GroupPresenter.php:38
@@ -1068,21 +1089,24 @@ msgstr ""
 msgid "Must be valid URL"
 msgstr ""
 
-#: app/Services/Actor/ActorImageService.php:146
-msgid "Missing needed properties for ActorImageService"
+#: app/Services/Actor/ZooniverseBase.php:163
+msgid "Folder required for export process is missing."
 msgstr ""
 
-#: app/Services/Actor/NfnPanoptesBase.php:140
-#: app/Services/Actor/NfnPanoptesBase.php:155
-msgid "Values required for export process are missing."
+#: app/Services/Actor/ZooniverseBuildCsv.php:116
+msgid "The row count in the csv export file does not match image count."
 msgstr ""
 
-#: app/Services/Actor/NfnPanoptesExportBatch.php:125
+#: app/Services/Actor/ZooniverseBuildQueue.php:75
+msgid "Error while trying to create queue files for export: %s"
+msgstr ""
+
+#: app/Services/Actor/ZooniverseCheckImageCount.php:71
+msgid "Image count of database records does not equal count of converted images."
+msgstr ""
+
+#: app/Services/Actor/ZooniverseExportBatch.php:126
 msgid "The archive file does not exist."
-msgstr ""
-
-#: app/Services/Actor/NfnPanoptesExportConvertImages.php:89
-msgid "The subject files do not exist."
 msgstr ""
 
 #: app/Services/Csv/DarwinCoreCsvImport.php:245
@@ -1141,8 +1165,8 @@ msgstr ""
 msgid "Storage path must be set."
 msgstr ""
 
-#: app/Services/Download/DownloadType.php:55
-msgid "The file appears to be missing though the records exist. If you'd like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title."
+#: app/Services/Download/DownloadType.php:56
+msgid "The file appears to be missing though the records exist. Please contact the administration."
 msgstr ""
 
 #: app/Services/File/FileService.php:55
@@ -1506,19 +1530,76 @@ msgstr ""
 msgid "view completed expeditions"
 msgstr ""
 
-#: resources/views/admin/expedition/partials/expedition-panel.blade.php:38
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:12
+msgid "Download Type"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:13
+msgid "Filename"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:14
+msgid "File Size"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:15
+msgid "Created"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:16
+msgid "Updated"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:43
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:48
+#: resources/views/mail/gridcsvexport.blade.php:13
+msgid "Download"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:53
+msgid "View"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:62
+msgid "Download %s file"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:69
+msgid "Download %s batches"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal-body.blade.php:70
+msgid "This action will split the Export file into several batch files that can be downloaded separately. You will be notified by email when the process is complete. Do you wish to continue?"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal.blade.php:8
+msgid "Expedition Downloads"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-download-modal.blade.php:19
+#: resources/views/admin/expedition/partials/expedition-tools-modal.blade.php:44
+#: resources/views/admin/partials/import-modal.blade.php:22
+#: resources/views/admin/partials/jqgrid-modal.blade.php:9
+#: resources/views/admin/partials/project-banner-modal.blade.php:68
+#: resources/views/common/chart-modal.blade.php:22
+#: resources/views/common/process-modal.blade.php:30
+#: resources/views/common/script-modal.blade.php:13
+msgid "Exit"
+msgstr ""
+
+#: resources/views/admin/expedition/partials/expedition-panel.blade.php:28
 msgid "Biospex Subjects"
 msgstr ""
 
-#: resources/views/admin/expedition/partials/expedition-panel.blade.php:39
+#: resources/views/admin/expedition/partials/expedition-panel.blade.php:29
 msgid "Zooniverse Subjects"
 msgstr ""
 
-#: resources/views/admin/expedition/partials/expedition-panel.blade.php:40
+#: resources/views/admin/expedition/partials/expedition-panel.blade.php:30
 msgid "Digitization Goal"
 msgstr ""
 
-#: resources/views/admin/expedition/partials/expedition-panel.blade.php:41
+#: resources/views/admin/expedition/partials/expedition-panel.blade.php:31
 msgid "Digitizations Completed"
 msgstr ""
 
@@ -1614,60 +1695,6 @@ msgstr ""
 #: resources/views/mail/nfnexporterror.blade.php:14
 #: resources/views/mail/nfntranscriptsionerror.blade.php:14
 msgid "Message"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:19
-msgid "Download Type"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:20
-msgid "Filename"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:21
-msgid "File Size"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:22
-msgid "Created"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:23
-msgid "Updated"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:50
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:55
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:68
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:72
-#: resources/views/mail/gridcsvexport.blade.php:13
-msgid "Download"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:60
-msgid "View"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:68
-msgid "archive"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal-body.blade.php:72
-msgid "batch"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal.blade.php:8
-msgid "Expedition Downloads"
-msgstr ""
-
-#: resources/views/admin/partials/expedition-download-modal.blade.php:19
-#: resources/views/admin/partials/import-modal.blade.php:22
-#: resources/views/admin/partials/jqgrid-modal.blade.php:9
-#: resources/views/admin/partials/project-banner-modal.blade.php:68
-#: resources/views/common/chart-modal.blade.php:22
-#: resources/views/common/process-modal.blade.php:30
-#: resources/views/common/script-modal.blade.php:13
-msgid "Exit"
 msgstr ""
 
 #: resources/views/admin/partials/import-modal-body.blade.php:7
