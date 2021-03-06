@@ -219,15 +219,16 @@ function notify(icon, msg, type) {
         message: msg
     }, {
         type: type,
+        allow_dismiss: true,
         placement: {
             from: "top",
             align: "center"
         },
-        offset: 50,
+        offset: 5,
         spacing: 10,
         animate: {
-            enter: 'animated bounceInDown',
-            exit: 'animated bounceOutUp'
+            enter: "animate__animated animate__fadeInDown",
+            exit: "animate__animated animate__fadeOutUp"
         },
         delay: 3000,
     });

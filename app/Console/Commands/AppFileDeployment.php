@@ -150,6 +150,7 @@ class AppFileDeployment extends Command
 
             'ECHO_ID',
             'ECHO_KEY',
+            'ECHO_PORT',
             'ECHO_SSL_CRT',
             'ECHO_SSL_KEY',
 
