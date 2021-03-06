@@ -129,32 +129,4 @@ class ProjectController extends Controller
 
         return view('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
     }
-
-    /**
-     * State counties for project map.
-     *
-     * @param $projectId
-     * @param $stateId
-     * @param \App\Services\Model\StateCountyService $stateCountyService
-     * @return array|\Illuminate\Http\JsonResponse
-     */
-    public function state($projectId, $stateId, stateCountyService $stateCountyService)
-    {
-        if (! request()->ajax()) {
-            return response()->json(['html' => 'Error retrieving the counties.']);
-        }
-
-        $counties = $stateCountyService->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
-            return [
-                'id'    => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
-                'value' => $item->transcription_locations_count,
-                'name'  => $item->state_county,
-            ];
-        });
-
-        return [
-            'max'      => abs(round(($counties->max('value') + 500), -3)),
-            'counties' => $counties->toJson(),
-        ];
-    }
 }

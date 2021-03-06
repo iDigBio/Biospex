@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Services\Model\AmChartService;
+use App\Services\Model\StateCountyService;
 use File;
 
 /**
@@ -37,8 +38,9 @@ class TranscriptionController extends Controller
      * @param string $projectId
      * @param string $year
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function index(AmChartService $amChartService, string $projectId, string $year)
+    public function transcriptions(AmChartService $amChartService, string $projectId, string $year): \Illuminate\Http\JsonResponse
     {
         $chart = $amChartService->findBy('project_id', $projectId);
 
@@ -47,5 +49,33 @@ class TranscriptionController extends Controller
         $file['data'] = $chart->data[$year];
 
         return response()->json($file);
+    }
+
+    /**
+     * State counties for project map.
+     *
+     * @param $projectId
+     * @param $stateId
+     * @param \App\Services\Model\StateCountyService $stateCountyService
+     * @return array|\Illuminate\Http\JsonResponse
+     */
+    public function state($projectId, $stateId, stateCountyService $stateCountyService)
+    {
+        if (! request()->ajax()) {
+            return response()->json(['html' => 'Error retrieving the counties.']);
+        }
+
+        $counties = $stateCountyService->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
+            return [
+                'id'    => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
+                'value' => $item->transcription_locations_count,
+                'name'  => $item->state_county,
+            ];
+        });
+
+        return [
+            'max'      => abs(round(($counties->max('value') + 500), -3)),
+            'counties' => $counties->toJson(),
+        ];
     }
 }

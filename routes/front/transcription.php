@@ -17,14 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Front\ProjectController;
+// Project Transcriptions
+use App\Http\Controllers\Front\TranscriptionController;
 
-Route::get('projects', [ProjectController::class, 'index'])->name('front.projects.index');
-Route::post('projects/sort', [ProjectController::class, 'sort'])->name('front.projects.sort');
-// Redirect old links to new
-Route::get('project/{slug}', function($slug) {
-    return redirect("/projects/$slug", 301);
-});
-Route::get('projects/{slug}', [ProjectController::class, 'project'])->name('front.projects.slug');
+Route::get('projects/{project}/transcriptions/{year}', [TranscriptionController::class, 'transcriptions'])->name('front.projects.transcriptions');
+
+// Project Map
+Route::get('projects/{project}/{state?}', [TranscriptionController::class, 'state'])->name('front.projects.state');
 
 
