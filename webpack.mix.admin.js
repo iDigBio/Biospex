@@ -42,10 +42,5 @@ mix.webpackConfig({
     .copy('resources/js/expertReview.js', 'public/backend/js/expertReview.js')
     .minify('public/backend/js/expertReview.js');
 
-
-/* Production settings */
-
-if (mix.inProduction()) {
-    mix.version();
-    mix.disableNotifications();
-}
+mix.version();
+mix.disableNotifications();

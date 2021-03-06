@@ -4,6 +4,10 @@
     {{ t('Expert Review') }}
 @stop
 
+@push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+@endpush
+
 @section('content')
 
     <div class="row mt-5 justify-content-center">
@@ -36,7 +40,8 @@
                 {!! method_field('put') !!}
                 @csrf
                 <input type="hidden" name="_id" value="{{ $reconciles->first()->_id }}">
-                <input type="hidden" name="page" value="{{ $reconciles->nextPageUrl() }}">
+                <input type="hidden" name="page"
+                       value="{{ $reconciles->hasMorePages() ? $reconciles->nextPageUrl() : $reconciles->url($reconciles->currentPage()) }}">
                 <div class="row">
                     <h2 id="output"></h2>
                 </div>

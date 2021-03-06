@@ -30,9 +30,6 @@ mix.js("resources/js/front-app.js", "js/front.js")
     .copy('resources/js/amChartBingo.js', 'public/js/amChartBingo.js')
     .minify('public/js/amChartBingo.js')
     .copy('resources/images', 'public/images');
-/* Production settings */
 
-if (mix.inProduction()) {
-    mix.version();
-    mix.disableNotifications();
-}
+mix.version();
+mix.disableNotifications();
