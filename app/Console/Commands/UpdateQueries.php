@@ -57,9 +57,12 @@ class UpdateQueries extends Command
     {
         $cursor = Subject::cursor();
 
+        $count = 0;
         $cursor->each(function($subject) use(&$count){
             $subject->ocr = trim($subject->ocr);
             $subject->save();
+            $count++;
         });
+        echo $count . PHP_EOL;
     }
 }
