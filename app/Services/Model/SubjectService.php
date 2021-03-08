@@ -359,6 +359,7 @@ class SubjectService extends BaseModelService
      * in: is in
      * ni: is not in
      *
+     * 'eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'
      * @param $rule
      * @param $query
      */
@@ -574,7 +575,7 @@ class SubjectService extends BaseModelService
      */
     protected function setWhereNull(&$query, $field)
     {
-        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereNull($field) : $query->orWhereNull($field);
+        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->where($field, '') : $query->orWhereNull($field, '');
 
         $this->setGroupOpProcessed(true);
     }
