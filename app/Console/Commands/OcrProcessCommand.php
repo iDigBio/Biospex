@@ -54,7 +54,8 @@ class OcrProcessCommand extends Command
      *
      * @param \App\Services\Process\OcrService $ocrService
      */
-    public function __construct(OcrService $ocrService) {
+    public function __construct(OcrService $ocrService)
+    {
         parent::__construct();
 
         $this->ocrService = $ocrService;
@@ -67,7 +68,9 @@ class OcrProcessCommand extends Command
      */
     public function handle()
     {
-        $queue = $this->ocrService->getFirstQueue();
+        $queue = $this->option('reset') ?
+            $this->ocrService->getFirstQueue(true) :
+            $this->ocrService->getFirstQueue();
 
         if ($queue !== null && $this->option('reset')) {
             $queue->status = 0;

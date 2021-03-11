@@ -54,10 +54,13 @@ class OcrQueueService extends BaseModelService
     /**
      * Get ocr queue for process command.
      *
+     * @param bool $reset
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
-    public function getFirstQueue()
+    public function getFirstQueue($reset = false)
     {
-        return $this->model->where('error', 0)->orderBy('id', 'asc')->first();
+        return $reset ?
+            $this->model->orderBy('id', 'asc')->first() :
+            $this->model->where('error', 0)->orderBy('id', 'asc')->first();
     }
 }

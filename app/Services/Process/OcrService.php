@@ -117,11 +117,12 @@ class OcrService
     /**
      * Return ocr queue for command process.
      *
+     * @param bool $reset
      * @return mixed
      */
-    public function getFirstQueue()
+    public function getFirstQueue($reset = false)
     {
-        return $this->ocrQueueService->getFirstQueue();
+        return $this->ocrQueueService->getFirstQueue($reset);
     }
 
     /**
