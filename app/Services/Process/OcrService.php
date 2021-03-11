@@ -104,7 +104,7 @@ class OcrService
     }
 
     /**
-     * Find queue by id.
+     * Find queue by id where error is 0.
      *
      * @param int $id
      * @return mixed
@@ -166,7 +166,7 @@ class OcrService
     /**
      * Send complete notification.
      *
-     * @param \App\Models\OcrQueue $queue
+     * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null $queue
      * @throws \League\Csv\CannotInsertRecord
      */
     public function complete(OcrQueue $queue)

@@ -69,7 +69,7 @@ class OcrProcessCommand extends Command
     {
         $queue = $this->ocrService->getFirstQueue();
 
-        if ($this->option('reset')) {
+        if ($queue !== null && $this->option('reset')) {
             $queue->status = 0;
             $queue->save();
         }

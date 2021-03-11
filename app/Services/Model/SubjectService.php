@@ -93,7 +93,7 @@ class SubjectService extends BaseModelService
     {
         $query = $this->model->where('project_id', $projectId);
         $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = $query->where('ocr', '');
+        $query = $query->where('ocr', '')->timeout(7200);
 
         return $query;
 
@@ -588,7 +588,7 @@ class SubjectService extends BaseModelService
      */
     protected function setWhereNotNull(&$query, $field)
     {
-        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereNotNull($field) : $query->orWhereNotNull($field);
+        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereNotNull($field, '!=', '') : $query->orWhereNotNull($field, '!=', '');
 
         $this->setGroupOpProcessed(true);
     }

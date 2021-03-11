@@ -71,7 +71,7 @@ class OcrProcessJob implements ShouldQueue
 
             $query = $ocrService->getSubjectQueryForOcr($queue->project_id, $queue->expedition_id);
 
-            $query->chunk(5, function ($chunk) use(&$queue) {
+            $query->chunk(5, function ($chunk) use (&$queue) {
                 $chunk->each(function ($subject) {
                     OcrTesseractJob::dispatchNow($this->ocrQueue->id, $subject);
                 });
@@ -88,14 +88,16 @@ class OcrProcessJob implements ShouldQueue
             $this->delete();
 
             return;
-
         } catch (\Exception $e) {
+            $queue->error = 1;
+            $queue->save();
+
             $user = User::find(1);
             $messages = [
-                'Queue Id:' . $queue->id,
+                'Queue Id:'.$queue->id,
                 'Project Id: '.$queue->project_id,
                 'Expedition Id: '.$queue->expedition_id,
-                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
+                'Message:'.$e->getFile().': '.$e->getLine().' - '.$e->getMessage(),
             ];
             $user->notify(new JobError(__FILE__, $messages));
 

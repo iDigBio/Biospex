@@ -58,6 +58,6 @@ class OcrQueueService extends BaseModelService
      */
     public function getFirstQueue()
     {
-        return $this->model->orderBy('id', 'asc')->first();
+        return $this->model->where('error', 0)->orderBy('id', 'asc')->first();
     }
 }

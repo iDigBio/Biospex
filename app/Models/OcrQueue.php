@@ -44,7 +44,8 @@ class OcrQueue extends Model
         'expedition_id',
         'total',
         'processed',
-        'status'
+        'status',
+        'error'
     ];
 
     /**
