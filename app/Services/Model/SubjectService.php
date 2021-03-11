@@ -93,7 +93,7 @@ class SubjectService extends BaseModelService
     {
         $query = $this->model->where('project_id', $projectId);
         $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = $query->where('ocr', '')->timeout(7200);
+        $query = $query->where('ocr', '')->timeout(86400);
 
         return $query;
 
