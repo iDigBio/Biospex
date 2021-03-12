@@ -27,7 +27,6 @@ use App\Jobs\ZooniverseExportConvertImageJob;
 use App\Jobs\ZooniverseExportDeleteFilesJob;
 use App\Jobs\ZooniverseExportReportJob;
 use App\Jobs\ZooniverseExportRetrieveImageJob;
-use App\Jobs\ZooniverseExportCheckImageCountJob;
 use App\Models\Actor;
 use App\Notifications\NfnExportError;
 use App\Services\Model\ExpeditionService;
@@ -77,7 +76,6 @@ class NfnPanoptes
                 new ZooniverseExportBuildQueueJob($actor),
                 new ZooniverseExportRetrieveImageJob($actor),
                 new ZooniverseExportConvertImageJob($actor),
-                new ZooniverseExportCheckImageCountJob($actor),
                 new ZooniverseExportBuildCsvJob($actor),
                 new ZooniverseExportBuildTarJob($actor),
                 new ZooniverseExportReportJob($actor),
