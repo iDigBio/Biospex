@@ -18,16 +18,16 @@
                         <h4>{{ $actor->title }}</h4>
                         <div class="btn-group-lg btn-group-vertical mb-2">
                             @if($expedition->project->ocrQueue->isEmpty())
-                                {!! $expedition->present()->expedition_ocr_icon_lrg !!}
+                                {!! $expedition->present()->expedition_ocr_btn !!}
                             @endif
                             {!! $expedition->present()->expedition_export_btn !!}
                             @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
                                 {!!
                                 $expedition->stat->local_subject_count === 0 ? '' :
-                                    $expedition->present()->expedition_process_start_lrg
+                                    $expedition->present()->expedition_process_start_btn
                                 !!}
                             @else
-                                {!! $expedition->present()->expedition_process_stop_lrg !!}
+                                {!! $expedition->present()->expedition_process_stop_btn !!}
                             @endif
                             @if($actor->pivot->completed  && $actor->id === 2)
                                 {!! $actor->present()->reconcile_expert_review_btn !!}

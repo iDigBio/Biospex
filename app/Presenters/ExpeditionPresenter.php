@@ -195,7 +195,7 @@ class ExpeditionPresenter extends Presenter
      *
      * @return string
      */
-    public function expeditionOcrIconLrg()
+    public function expeditionOcrBtn()
     {
         return '<a href="'.route('admin.expeditions.ocr', [
                 $this->model->project_id,
@@ -213,7 +213,7 @@ class ExpeditionPresenter extends Presenter
      *
      * @return string
      */
-    public function expeditionProcessStartLrg()
+    public function expeditionProcessStartBtn()
     {
         return '<a href="'.route('admin.expeditions.process', [
                 $this->model->project_id,
@@ -231,7 +231,7 @@ class ExpeditionPresenter extends Presenter
      *
      * @return string
      */
-    public function expeditionProcessStopLrg()
+    public function expeditionProcessStopBtn()
     {
         return '<a href="'.route('admin.expeditions.stop', [
                 $this->model->project_id,
