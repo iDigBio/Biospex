@@ -99,6 +99,9 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
                     return $this->mapNfnCsvColumns($file, $queue);
                 });
 
+                if (empty($csvData)) {
+                    throw new Exception(t('CSV data empty while creating file for Expedition ID: %s', $queue->expedition->id));
+                }
                 $this->buildCsv($csvData, $first);
                 $first = false;
 
