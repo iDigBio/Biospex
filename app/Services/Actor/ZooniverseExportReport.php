@@ -67,6 +67,10 @@ class ZooniverseExportReport extends ZooniverseBase implements ActorInterface
     public function process(Actor $actor)
     {
         $queue = $this->dbService->exportQueueService->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
+        $queue->processed = 0;
+        $queue->stage = 5;
+        $queue->save();
+
         $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id, 1);
 
         try {
@@ -86,10 +90,6 @@ class ZooniverseExportReport extends ZooniverseBase implements ActorInterface
             $users = $expedition->project->group->users->push($expedition->project->group->owner);
 
             Notification::send($users, new NfnExportComplete($expedition->title, $fileName));
-
-            $queue->processed = 0;
-            $queue->stage = 6;
-            $queue->save();
 
         } catch (\Exception $exception) {
             $queue->error = 1;

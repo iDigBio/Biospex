@@ -55,6 +55,9 @@ class ZooniverseBuildTar extends ZooniverseBase implements ActorInterface
     public function process(Actor $actor)
     {
         $queue = $this->dbService->exportQueueService->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
+        $queue->processed = 0;
+        $queue->stage = 4;
+        $queue->save();
 
         $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
         $this->setDirectories();
@@ -83,10 +86,6 @@ class ZooniverseBuildTar extends ZooniverseBase implements ActorInterface
             ];
 
             $this->dbService->downloadService->updateOrCreate($attributes, $values);
-
-            $queue->processed = 0;
-            $queue->stage = 5;
-            $queue->save();
 
         } catch (\Exception $exception) {
             $this->deleteFile($this->archiveTarPath);

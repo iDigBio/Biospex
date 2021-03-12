@@ -63,6 +63,9 @@ class ZooniverseConvertImage extends ZooniverseBase implements ActorInterface
     public function process(Actor $actor)
     {
         $queue = $this->dbService->exportQueueService->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
+        $queue->processed = 0;
+        $queue->stage = 2;
+        $queue->save();
 
         $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id);
 
@@ -83,10 +86,6 @@ class ZooniverseConvertImage extends ZooniverseBase implements ActorInterface
             });
 
             $this->dbService->updateRejected($this->actorImageService->getRejected());
-
-            $queue->processed = 0;
-            $queue->stage = 3;
-            $queue->save();
 
         } catch (\Exception $exception) {
             $queue->error = 1;

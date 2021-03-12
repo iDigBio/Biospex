@@ -62,10 +62,6 @@ class ZooniverseBuildQueue implements ActorInterface
                 $this->createQueueFile($queue, $subject);
             });
 
-            $queue->processed = 0;
-            $queue->stage = 1;
-            $queue->save();
-
         } catch (\Exception $e) {
             $queue->error = 1;
             $queue->queued = 0;
@@ -92,6 +88,7 @@ class ZooniverseBuildQueue implements ActorInterface
         $queue = $this->dbService->exportQueueService->firstOrNew($attributes);
         $queue->queued = 1;
         $queue->error = 0;
+        $queue->stage = 0;
         $queue->count = $actor->pivot->total;
         $queue->processed = 0;
         $queue->save();

@@ -81,6 +81,9 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
     public function process(Actor $actor)
     {
         $queue = $this->dbService->exportQueueService->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
+        $queue->processed = 0;
+        $queue->stage = 3;
+        $queue->save();
 
         $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id);
 
@@ -117,11 +120,8 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
 
             if (!$this->checkCsvImageCount($queue)) {
                 throw new Exception(t('The row count in the csv export file does not match image count.'));
-            };
+            }
 
-            $queue->processed = 0;
-            $queue->stage = 4;
-            $queue->save();
         } catch (Exception $exception) {
             $queue->error = 1;
             $queue->queued = 0;
