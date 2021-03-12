@@ -24,7 +24,7 @@ use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
 use App\Services\Csv\Csv;
 use Illuminate\Support\LazyCollection;
-use mysql_xdevapi\Exception;
+use Exception;
 
 /**
  * Class ZooniverseBuildCsv
@@ -117,15 +117,15 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
             };
 
             $queue->processed = 0;
-            $queue->stage = 5;
+            $queue->stage = 4;
             $queue->save();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $queue->error = 1;
             $queue->queued = 0;
             $queue->processed = 0;
             $queue->save();
 
-            throw new \Exception($exception->getMessage());
+            throw new Exception($exception->getMessage());
         }
     }
 

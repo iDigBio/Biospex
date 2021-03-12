@@ -63,9 +63,6 @@ class ZooniverseRetrieveImage extends ZooniverseBase implements ActorInterface
     public function process(Actor $actor)
     {
         $queue = $this->dbService->exportQueueService->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
-        if ($queue === null) {
-            throw new \Exception(t('Queue record missing for Expedition ID: %s', $actor->pivot->expedition_id));
-        }
 
         $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id);
 

@@ -85,7 +85,7 @@ class ZooniverseBuildTar extends ZooniverseBase implements ActorInterface
             $this->dbService->downloadService->updateOrCreate($attributes, $values);
 
             $queue->processed = 0;
-            $queue->stage = 6;
+            $queue->stage = 5;
             $queue->save();
 
         } catch (\Exception $exception) {

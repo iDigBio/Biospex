@@ -88,7 +88,7 @@ class ZooniverseExportReport extends ZooniverseBase implements ActorInterface
             Notification::send($users, new NfnExportComplete($expedition->title, $fileName));
 
             $queue->processed = 0;
-            $queue->stage = 7;
+            $queue->stage = 6;
             $queue->save();
 
         } catch (\Exception $exception) {
