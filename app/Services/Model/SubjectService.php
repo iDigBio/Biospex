@@ -74,7 +74,7 @@ class SubjectService extends BaseModelService
      */
     public function findByExpeditionId($expeditionId, array $attributes = ['*'])
     {
-        return \Cache::tags((string) $expeditionId)->remember(__METHOD__, 14440, function () use (
+        return \Cache::tags((string) $expeditionId . serialize($attributes))->remember(__METHOD__, 14440, function () use (
             $expeditionId,
             $attributes
         ) {

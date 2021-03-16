@@ -535,7 +535,7 @@ class ExpeditionController extends Controller
 
             Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete.'));
 
-            return redirect()->route('admin.projects.index');
+            return redirect()->route('admin.projects.show', [$projectId]);
         } catch (Exception $e) {
             Flash::error(t('record.record_delete_error'));
 
