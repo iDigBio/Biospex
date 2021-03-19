@@ -232,13 +232,13 @@ class SubjectService extends BaseModelService
     {
         $query = $this->model->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
-        })->options(['allowDiskUse' => true])->take($vars['limit'])->skip($vars['offset']);
+        });
 
         foreach ($vars['orderBy'] as $field => $sort) {
             $query->orderBy($field, $sort);
         }
 
-        $rows = $query->get();
+        $rows = $query->options(['allowDiskUse' => true])->skip($vars['offset'])->take($vars['limit'])->get();
 
         if (! is_array($rows)) {
             $rows = $rows->toArray();
