@@ -102,6 +102,7 @@ class NfnPanoptes
             $exception->getFile(),
             $exception->getLine(),
             $exception->getMessage(),
+            $exception->getTraceAsString()
         ];
 
         Notification::send($users, new NfnExportError($expedition->title, $expedition->id, $message));
