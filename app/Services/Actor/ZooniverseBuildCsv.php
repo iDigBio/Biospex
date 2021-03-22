@@ -97,7 +97,7 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
             $first = true;
             $files->chunk(5)->each(function ($chunk) use (&$queue, &$first) {
                 $csvData = $chunk->filter(function ($file) {
-                    return $this->actorImageService->checkFile($this->tmpDirectory.'/'.$file->subject_id.'.jpg', true);
+                    return $this->actorImageService->checkFile($this->tmpDirectory.'/'.$file->subject_id.'.jpg', $file->subject_id, true);
                 })->map(function ($file) use ($queue) {
                     return $this->mapNfnCsvColumns($file, $queue);
                 });

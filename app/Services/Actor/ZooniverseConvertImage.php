@@ -75,7 +75,7 @@ class ZooniverseConvertImage extends ZooniverseBase implements ActorInterface
         try {
             $files->chunk(5)->each(function ($chunk) use (&$queue) {
                 $chunk->reject(function ($file) {
-                    return $this->actorImageService->checkFile($this->tmpDirectory . '/' . $file->subject_id . '.jpg');
+                    return $this->actorImageService->checkFile($this->tmpDirectory . '/' . $file->subject_id . '.jpg', $file->subject_id);
                 })->each(function ($file) {
                     $filePath = $this->workingDirectory . '/' . $file->subject_id . '.jpg';
                     $this->actorImageService->processFileImage($filePath, $this->tmpDirectory, $file->subject_id);

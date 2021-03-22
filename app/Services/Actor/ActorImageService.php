@@ -107,11 +107,11 @@ class ActorImageService
                         return;
                     }
 
-                    $this->rejected = [$index => 'Image format not recognized'];
+                    $this->rejected[$index] = 'Image format not recognized';
                 }
             },
             'rejected'    => function ($reason, $index) {
-                $this->rejected = [$index => $reason];
+                $this->rejected[$index] = $reason;
             },
         ]);
 
@@ -143,7 +143,7 @@ class ActorImageService
         return $files->filter(function($file){
             return $this->checkUrlExist($file);
         })->reject(function($file) use ($wrkDir) {
-            return $this->checkFile($wrkDir.'/'.$file->subject_id.'.jpg');
+            return $this->checkFile($wrkDir.'/'.$file->subject_id.'.jpg', $file->subject_id);
         });
     }
 
@@ -159,7 +159,7 @@ class ActorImageService
             return true;
         }
 
-        $this->rejected = [$file->subject_id => 'Missing image url'];
+        $this->rejected[$file->subject_id] = 'Missing image url';
 
         return false;
     }
@@ -168,21 +168,22 @@ class ActorImageService
      * Check if file exists and is image.
      *
      * @param string $filePath
+     * @param string $subjectId
      * @param bool $addRejected
      * @return bool
      */
-    public function checkFile(string $filePath, bool $addRejected = false): bool
+    public function checkFile(string $filePath, string $subjectId, bool $addRejected = false): bool
     {
         if (!File::exists($filePath)) {
             if ($addRejected) {
-                $this->rejected = [$filePath => 'Missing image on disk'];
+                $this->rejected[$subjectId] = 'Missing image on disk';
             }
             return false;
         }
 
         if (File::exists($filePath) && false === exif_imagetype($filePath)) {
             if ($addRejected) {
-                $this->rejected = [$filePath => 'Image file corrupted'];
+                $this->rejected[$subjectId] = 'Image file corrupted';
             }
             return false;
         }
@@ -206,7 +207,7 @@ class ActorImageService
             $this->imagickService->stripImage();
             $this->writeImagickFile($wrkDir, $subjectId);
         } catch (\Exception $exception) {
-            $this->rejected = [$subjectId => 'Could not create Imagick image'];
+            $this->rejected[$subjectId] = 'Could not create Imagick image';
         }
     }
 
@@ -227,8 +228,7 @@ class ActorImageService
             $this->writeImagickFile($tmpDir, $fileName);
             $this->imagickService->clearImagickObject();
         } catch (ImagickException $e) {
-            \Log::info('rejected file ' . $fileName);
-            $this->rejected[] = [$fileName => $e->getMessage()];
+            $this->rejected[$fileName] = $e->getMessage();
             $this->imagickService->clearImagickObject();
         }
     }
@@ -244,7 +244,7 @@ class ActorImageService
         $destination = $dir.'/'.$fileName.'.jpg';
         if (! $this->imagickService->writeImagickImageToFile($destination)) {
             $this->imagickService->clearImagickObject();
-            $this->rejected = [$fileName => 'Could not write image to disk'];
+            $this->rejected[$fileName] = 'Could not write image to disk';
         }
 
         $this->imagickService->clearImagickObject();
