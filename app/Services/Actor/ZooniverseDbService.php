@@ -90,6 +90,10 @@ class ZooniverseDbService
 
         foreach ($rejected as $subjectId => $reason) {
             $file = $this->exportQueueFileService->findBy('subject_id', $subjectId);
+            if (empty($file)) {
+                \Log::info('empty file ' . $subjectId);
+                continue;
+            }
             $file->error = 1;
             $file->error_message = $reason;
             $file->save();

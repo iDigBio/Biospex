@@ -227,6 +227,7 @@ class ActorImageService
             $this->writeImagickFile($tmpDir, $fileName);
             $this->imagickService->clearImagickObject();
         } catch (ImagickException $e) {
+            \Log::info('rejected file ' . $fileName);
             $this->rejected[] = [$fileName => $e->getMessage()];
             $this->imagickService->clearImagickObject();
         }
