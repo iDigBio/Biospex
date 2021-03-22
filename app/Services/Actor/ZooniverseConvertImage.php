@@ -93,7 +93,7 @@ class ZooniverseConvertImage extends ZooniverseBase implements ActorInterface
             $queue->processed = 0;
             $queue->save();
 
-            throw new \Exception($exception->getMessage());
+            throw new \Exception($exception->getMessage() . ' ' . $exception->getTraceAsString());
         }
 
     }
