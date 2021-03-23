@@ -44,7 +44,6 @@ class ExportQueueFile extends BaseEloquentModel
      * @inheritDoc
      */
     protected $fillable = [
-        'queue_id',
         'subject_id',
         'url',
         'error',
