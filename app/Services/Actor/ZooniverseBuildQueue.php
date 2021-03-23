@@ -104,12 +104,16 @@ class ZooniverseBuildQueue implements ActorInterface
      */
     protected function createQueueFile(ExportQueue $queue, $subject): void
     {
-        $attributes = [
-            'queue_id'   => $queue->id,
-            'subject_id' => (string) $subject->_id
-        ];
+        $file = $this->dbService->exportQueueFileService->findBy('subject_id', $subject->_id);
+        if ($file === null) {
+            $attributes = [
+                'queue_id'   => $queue->id,
+                'subject_id' => (string) $subject->_id,
+            ];
 
-        $file = $this->dbService->exportQueueFileService->firstOrNew($attributes);
+            $file = $this->dbService->exportQueueFileService->create($attributes);
+        }
+
         $file->url = $subject->accessURI;
         $file->error = 0;
         $file->error_message = null;
