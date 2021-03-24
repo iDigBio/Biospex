@@ -62,7 +62,7 @@ class SubjectService extends BaseModelService
      */
     public function getAssignedByExpeditionId($expeditionId): LazyCollection
     {
-        return $this->model->where('expedition_ids', $expeditionId)->cursor();
+        return $this->model->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])->timeout(86400)->cursor();
     }
 
     /**

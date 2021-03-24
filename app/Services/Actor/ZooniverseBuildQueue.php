@@ -68,7 +68,7 @@ class ZooniverseBuildQueue implements ActorInterface
             $queue->processed = 0;
             $queue->save();
 
-            throw new \Exception(t('Error while trying to create queue files for export: %s', $e->getMessage()));
+            throw new \Exception(t('Error while trying to create queue files for export: %s', $e->getMessage() . ' ' . $e->getTraceAsString()));
         }
     }
 
@@ -104,16 +104,12 @@ class ZooniverseBuildQueue implements ActorInterface
      */
     protected function createQueueFile(ExportQueue $queue, $subject): void
     {
-        $file = $this->dbService->exportQueueFileService->findBy('subject_id', $subject->_id);
-        if ($file === null) {
-            $attributes = [
-                'queue_id'   => $queue->id,
-                'subject_id' => (string) $subject->_id,
-            ];
+        $attributes = [
+            'queue_id'   => $queue->id,
+            'subject_id' => (string) $subject->_id
+        ];
 
-            $file = $this->dbService->exportQueueFileService->create($attributes);
-        }
-
+        $file = $this->dbService->exportQueueFileService->firstOrNew($attributes);
         $file->url = $subject->accessURI;
         $file->error = 0;
         $file->error_message = null;
