@@ -28,7 +28,7 @@ class ZooniverseExportBuildCsvJob implements ShouldQueue, ShouldBeUnique
     /**
      * @var int
      */
-    public $timeout = 36000;
+    public $timeout = 3600;
 
     /**
      * Create a new job instance.

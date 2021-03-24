@@ -26,6 +26,11 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     private $actor;
 
     /**
+     * @var int
+     */
+    public $timeout = 3600;
+
+    /**
      * Create a new job instance.
      *
      * @param \App\Models\Actor $actor
