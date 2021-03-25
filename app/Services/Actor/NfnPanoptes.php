@@ -75,7 +75,7 @@ class NfnPanoptes
             \Bus::batch([
                 new ZooniverseExportBuildQueueJob($actor),
                 new ZooniverseExportRetrieveImageJob($actor),
-                //new ZooniverseExportConvertImageJob($actor),
+                new ZooniverseExportConvertImageJob($actor),
                 //new ZooniverseExportBuildCsvJob($actor),
                 //new ZooniverseExportBuildTarJob($actor),
                 //new ZooniverseExportReportJob($actor),
