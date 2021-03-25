@@ -51,6 +51,7 @@ class ImagickService
     {
         $this->imagick = new Imagick();
         $this->imagick->setResourceLimit(6, 1);
+        //$this->imagick->setRegistry('temporary-path', '/efs');
     }
 
     /**
