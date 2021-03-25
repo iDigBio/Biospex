@@ -76,10 +76,10 @@ class NfnPanoptes
                 new ZooniverseExportBuildQueueJob($actor),
                 new ZooniverseExportRetrieveImageJob($actor),
                 new ZooniverseExportConvertImageJob($actor),
-                //new ZooniverseExportBuildCsvJob($actor),
-                //new ZooniverseExportBuildTarJob($actor),
-                //new ZooniverseExportReportJob($actor),
-                //new ZooniverseExportDeleteFilesJob($actor)
+                new ZooniverseExportBuildCsvJob($actor),
+                new ZooniverseExportBuildTarJob($actor),
+                new ZooniverseExportReportJob($actor),
+                new ZooniverseExportDeleteFilesJob($actor)
             ])->catch(function (Batch $batch, \Exception $exception) {
                 $this->sendErrorNotification($exception);
             })->name('Zooniverse Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
