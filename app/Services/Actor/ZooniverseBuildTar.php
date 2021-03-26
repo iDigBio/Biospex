@@ -19,6 +19,8 @@
 
 namespace App\Services\Actor;
 
+ini_set('sys_temp_dir', config('config.scratch_dir') . '/phptmp');
+
 use App\Models\Actor;
 
 /**
