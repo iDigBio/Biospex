@@ -2,8 +2,6 @@
 
 namespace App\Jobs;
 
-ini_set('sys_temp_dir', config('config.scratch_dir') . '/phptmp');
-
 use App\Models\Actor;
 use App\Services\Actor\ZooniverseBuildTar;
 use Illuminate\Bus\Batchable;
