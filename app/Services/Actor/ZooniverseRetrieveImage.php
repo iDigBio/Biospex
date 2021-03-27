@@ -67,6 +67,8 @@ class ZooniverseRetrieveImage extends ZooniverseBase implements ActorInterface
         $queue->stage = 1;
         $queue->save();
 
+        \Artisan::call('export:poll');
+
         $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id);
 
         $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
@@ -80,6 +82,7 @@ class ZooniverseRetrieveImage extends ZooniverseBase implements ActorInterface
             });
 
             $this->dbService->updateRejected($this->actorImageService->getRejected());
+
         } catch (\Exception $exception) {
             $queue->error = 1;
             $queue->queued = 0;

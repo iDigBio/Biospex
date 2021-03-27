@@ -59,11 +59,15 @@ class ZooniverseExportDeleteFiles extends ZooniverseBase implements ActorInterfa
         $queue->stage = 6;
         $queue->save();
 
+        \Artisan::call('export:poll');
+
         try {
             $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
             $this->setDirectories();
             \File::deleteDirectory($this->workingDirectory);
             $queue->delete();
+
+            \Artisan::call('export:poll');
 
         } catch (\Exception $exception) {
             throw new \Exception($exception->getMessage());

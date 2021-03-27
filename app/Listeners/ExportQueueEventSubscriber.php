@@ -56,8 +56,6 @@ class ExportQueueEventSubscriber
 
     /**
      * Entity Updated.
-     *
-     * @see ExportQueueRepository::getFirstExportWithoutError() Get first record with no error.
      */
     public function updated()
     {

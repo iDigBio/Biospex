@@ -59,6 +59,8 @@ class ZooniverseBuildTar extends ZooniverseBase implements ActorInterface
         $queue->stage = 4;
         $queue->save();
 
+        \Artisan::call('export:poll');
+
         $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
         $this->setDirectories();
 

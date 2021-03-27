@@ -243,19 +243,6 @@ class ZooniverseBase
     }
 
     /**
-     * Advance the queue to the next stage.
-     *
-     * @param \App\Models\ExportQueue $queue
-     */
-    protected function advanceQueue(ExportQueue $queue)
-    {
-        $queue->stage++;
-        $queue->save();
-
-        event('exportQueue.updated');
-    }
-
-    /**
      * Check if converted file exists and is under file size.
      *
      * @param $file

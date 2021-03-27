@@ -67,6 +67,8 @@ class ZooniverseConvertImage extends ZooniverseBase implements ActorInterface
         $queue->stage = 2;
         $queue->save();
 
+        \Artisan::call('export:poll');
+
         $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id);
 
         $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);

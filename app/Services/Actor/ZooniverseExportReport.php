@@ -71,6 +71,8 @@ class ZooniverseExportReport extends ZooniverseBase implements ActorInterface
         $queue->stage = 5;
         $queue->save();
 
+        \Artisan::call('export:poll');
+
         $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id, 1);
 
         try {

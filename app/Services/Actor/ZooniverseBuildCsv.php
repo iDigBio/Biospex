@@ -85,6 +85,8 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
         $queue->stage = 3;
         $queue->save();
 
+        \Artisan::call('export:poll');
+
         $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id);
 
         try {
