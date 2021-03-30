@@ -106,17 +106,6 @@ class SubjectService extends BaseModelService
     }
 
     /**
-     * Get assigned count for project.
-     *
-     * @param $projectId
-     * @return mixed
-     */
-    public function getAssignedCountByProject($projectId)
-    {
-        return $this->model->whereRaw(['expedition_ids.0' => ['$exists' => true]])->where('project_id', '=', (int) $projectId)->count();
-    }
-
-    /**
      * Delete unassigned by project id.
      *
      * @param int $projectId
