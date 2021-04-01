@@ -79,8 +79,6 @@ class JqGridEncoder
 
         $this->gridData->getTotalRows($vars);
 
-        $this->gridData->setLimitByCount($vars);
-
         $this->gridData->setPaging($vars);
 
         $this->gridData->setOrderBy($vars);
