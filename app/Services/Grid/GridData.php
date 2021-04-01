@@ -144,18 +144,6 @@ class GridData
     }
 
     /**
-     * Set limit by count.
-     *
-     * @param $vars
-     */
-    public function setLimitByCount(&$vars)
-    {
-        $limit = (int) $vars['limit'] === 0 ? (int) $vars['count'] : (int) $vars['limit'];
-
-        $vars['limit'] = ($limit === 0) ? 1 : $limit;
-    }
-
-    /**
      * Set paging.
      *
      * @param array $vars
@@ -167,15 +155,6 @@ class GridData
         $vars['page'] = $vars['page'] > $vars['total'] ? $vars['total'] : $vars['page'];
 
         $vars['offset'] = ($vars['limit'] * $vars['page']) - $vars['limit']; // do not put $limit*($page - 1)
-
-        /*
-        $vars['total'] = $vars['count'] > 0 ? ceil($vars['count'] / $vars['limit']) : 0;
-        $vars['page'] = $vars['page'] > $vars['total'] ? $vars['total'] : $vars['page'];
-        $vars['limit'] = $vars['limit'] < 0 ? 0 : $vars['limit'];
-        $vars['offset'] = $vars['limit'] * $vars['page'] - $vars['limit'];
-        $vars['offset'] = $vars['offset'] < 0 ? 0 : $vars['offset'];
-        $vars['limit'] *= $vars['page'];
-        */
     }
 
     /**
