@@ -158,6 +158,8 @@ class AppFileDeployment extends Command
             'ECHO_SSL_CRT',
             'ECHO_SSL_KEY',
 
+            'REDIS_HOST',
+
             'API_URL',
             'API_VERSION',
             'API_TOKEN',
