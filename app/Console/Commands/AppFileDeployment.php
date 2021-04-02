@@ -123,6 +123,10 @@ class AppFileDeployment extends Command
             return config(str_replace('_', '.', strtolower($search)));
         }
 
+        if ($search === 'REDIS_HOST') {
+            return config('database.redis.default.host');
+        }
+
         if (strpos($search, 'QUEUE_') === 0) {
             $replace = strtolower(str_replace('QUEUE_', '', $search));
 
