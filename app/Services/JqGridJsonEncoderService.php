@@ -189,30 +189,26 @@ class JqGridJsonEncoderService extends RapidServiceBase
     public function encodeGridRequestedData($postedData): array
     {
         $vars = [
-            'page'    => $this->setPage($postedData),
-            'limit'   => $this->setLimit($postedData),
+            'page'         => isset($postedData['page']) ? (int) $postedData['page'] : 1,
+            'limit'        => isset($postedData['rows']) ? (int) $postedData['rows'] : 25,
             'count'   => null,
             'offset'  => null,
-            'sidx'    => $this->setSidx($postedData),
-            'sord'    => $this->setSord($postedData),
+            'sidx'         => isset($postedData['sidx']) ? $postedData['sidx'] : '_id',
+            'sord'         => isset($postedData['sord']) ? $postedData['sord'] : 'desc',
             'filters' => $this->setFilters($postedData),
         ];
 
         $vars['count'] = $this->rapidRecordModelService->getTotalRowCount($vars);
 
-        $vars['limit'] = (int) $vars['limit'] === 0 ? (int) $vars['count'] : (int) $vars['limit'];
-
         if (! is_int($vars['count'])) {
             throw new Exception('The method getTotalNumberOfRows must return an integer');
         }
 
-        $totalPages = $this->setTotalPages($vars['count'], $vars['limit']);
+        $vars['total'] = $vars['count'] > 0 ? ceil($vars['count']/$vars['limit']) : 0;
 
-        $vars['page'] = ($vars['page'] > $totalPages) ? $totalPages : $vars['page'];
-        $vars['limit'] = $vars['limit'] < 0 ? 0 : $vars['limit'];
-        $vars['offset'] = $vars['limit'] * $vars['page'] - $vars['limit'];
-        $vars['offset'] = $vars['offset'] < 0 ? 0 : $vars['offset'];
-        $vars['limit'] *= $vars['page'];
+        $vars['page'] = $vars['page'] > $vars['total'] ? $vars['total'] : $vars['page'];
+
+        $vars['offset'] = ($vars['limit'] * $vars['page']) - $vars['limit']; // do not put $limit*($page - 1)
 
         $rows = $this->rapidRecordModelService->getRows($vars);
 
@@ -222,7 +218,7 @@ class JqGridJsonEncoderService extends RapidServiceBase
 
         return [
             'page'    => $vars['page'],
-            'total'   => $totalPages,
+            'total'   => $vars['total'],
             'records' => $vars['count'],
             'rows'    => $rows,
         ];
