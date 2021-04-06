@@ -62,9 +62,6 @@ return [
     'poll_scoreboard_channel' => env('POLL_SCOREBOARD_CHANNEL'),
     'poll_bingo_channel'      => env('POLL_BINGO_CHANNEL'),
 
-    'cache_enabled' => env('CACHE_ENABLED', true),
-    'cache_minutes' => env('CACHE_MINUTES', 60),
-
     'project_resources' => [
         'Website URL',
         'Video URL',
