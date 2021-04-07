@@ -9,9 +9,6 @@ return [
     'server_user'  => env('SERVER_USER'),
     'registration' => env('REGISTRATION'),
 
-    'cache_enabled'         => env('CACHE_ENABLED', true),
-    'cache_minutes'         => env('CACHE_MINUTES', 60),
-
     /* Beanstalk Tubes */
     'num_procs'             => env('NUM_PROCS'),
     'rapid_tube'            => env('QUEUE_RAPID_TUBE'),
