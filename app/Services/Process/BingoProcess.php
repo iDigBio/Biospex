@@ -80,9 +80,9 @@ class BingoProcess
      *
      * @param string $id
      * @param array $with
-     * @return \App\Models\Bingo
+     * @return mixed
      */
-    public function findBingoWith(string $id, array $with = []): Bingo
+    public function findBingoWith(string $id, array $with = [])
     {
         return $this->bingoService->findWith($id, $with);
     }
