@@ -27,6 +27,7 @@ return [
     'geolocate_fields_file' => resource_path('files/rapid-exports/geolocate-fields.json'),
     'people_fields_file'    => resource_path('files/rapid-exports/people-fields.json'),
     'taxonomic_fields_file' => resource_path('files/rapid-exports/taxonomic-fields.json'),
+    'product_fields_file' => resource_path('files/rapid-exports/product-fields.json'),
     'geolocate_view_file'   => resource_path('files/rapid-views/geolocate.json'),
 
     /**
@@ -77,6 +78,7 @@ return [
         'people'    => ['BIOSPEXid' => '_id'],
         'taxonomic' => ['BIOSPEXid' => '_id'],
         'generic'   => ['BIOSPEXid' => '_id'],
+        'product' => ['BIOSPEX_id' => '_id']
     ],
 
     /**
