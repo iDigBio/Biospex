@@ -36,6 +36,11 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div id="product" data-parent="#accordion" class="col-sm-6 mx-auto text-center mt-5 collapse">
+                        @include('export.partials.frm-select-product')
+                    </div>
+                </div>
+                <div class="row">
                     <div id="exportResults" class="col-sm-12 text-center mt-5"></div>
                 </div>
             </div>

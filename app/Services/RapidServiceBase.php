@@ -120,7 +120,7 @@ class RapidServiceBase
      */
     public function getImportsTmpPath()
     {
-        return config('config.rapid_import_dir') . '/tmp';
+        return config('config.rapid_import_dir').'/tmp';
     }
 
     /**
@@ -131,7 +131,7 @@ class RapidServiceBase
      */
     public function getExportFilePath(string $fileName): string
     {
-        return Storage::path(config('config.rapid_export_dir'). '/' . $fileName);
+        return Storage::path(config('config.rapid_export_dir').'/'.$fileName);
     }
 
     /**
@@ -142,7 +142,7 @@ class RapidServiceBase
      */
     public function getVersionFilePath(string $fileName): string
     {
-        return Storage::path(config('config.rapid_version_dir') . '/' . $fileName);
+        return Storage::path(config('config.rapid_version_dir').'/'.$fileName);
     }
 
     /**
@@ -152,7 +152,7 @@ class RapidServiceBase
      */
     public function deleteVersionFile(string $fileName)
     {
-        Storage::delete(config('config.rapid_version_dir') . '/' . $fileName);
+        Storage::delete(config('config.rapid_version_dir').'/'.$fileName);
     }
 
     /**
@@ -164,16 +164,17 @@ class RapidServiceBase
      */
     public function mapColumns(array $header, array $tags): Collection
     {
-        $mapped = collect($header)->mapToGroups(function($value) use($tags){
+        return collect($header)->mapToGroups(function ($value) use ($tags) {
             foreach ($tags as $tag) {
                 if (preg_match('/'.$tag.'/', $value, $matches)) {
                     return [$matches[0] => $value];
                 }
             }
-            return ['unused' => $value];
-        });
 
-        return $mapped->forget('unused');
+            return ['unused' => $value];
+        })->forget('unused')->map(function($value, $key){
+            return $value->sort()->values();
+        });
     }
 
     /**
@@ -186,8 +187,7 @@ class RapidServiceBase
     public function zipVersionFile(string $fileName, string $filePath, string $zipFilePath)
     {
         $zip = new ZipArchive;
-        if ($zip->open($zipFilePath, ZipArchive::CREATE) === TRUE)
-        {
+        if ($zip->open($zipFilePath, ZipArchive::CREATE) === true) {
             // Add files to the zip file
             $zip->addFile($filePath, $fileName);
 
