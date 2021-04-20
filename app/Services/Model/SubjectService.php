@@ -106,13 +106,14 @@ class SubjectService extends BaseModelService
     }
 
     /**
-     * Delete unassigned by project id.
+     * Cursor to delete unassigned by project id.
      *
      * @param int $projectId
+     * @return \Illuminate\Support\LazyCollection
      */
     public function deleteUnassignedByProject(int $projectId)
     {
-        $this->model->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->delete();
+        return $this->model->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->cursor();
     }
 
     /**
