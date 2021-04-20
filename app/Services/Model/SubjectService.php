@@ -170,14 +170,14 @@ class SubjectService extends BaseModelService
     }
 
     /**
-     * Delete unassigned by project id.
+     * Cursor to delete unassigned by project id.
      *
      * @param int $projectId
-     * @throws \Exception
+     * @return \Illuminate\Support\LazyCollection
      */
     public function deleteUnassignedByProject(int $projectId)
     {
-        $this->model->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->delete();
+        return $this->model->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->cursor();
     }
 
     /**
@@ -232,13 +232,13 @@ class SubjectService extends BaseModelService
     {
         $query = $this->model->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
-        });
+        })->options(['allowDiskUse' => true])->take($vars['limit'])->skip($vars['offset']);
 
         foreach ($vars['orderBy'] as $field => $sort) {
             $query->orderBy($field, $sort);
         }
 
-        $rows = $query->options(['allowDiskUse' => true])->skip($vars['offset'])->take($vars['limit'])->get();
+        $rows = $query->get();
 
         if (! is_array($rows)) {
             $rows = $rows->toArray();
