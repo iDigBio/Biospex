@@ -575,7 +575,7 @@ class SubjectService extends BaseModelService
      */
     protected function setWhereNull(&$query, $field)
     {
-        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->where($field, '') : $query->orWhereNull($field, '');
+        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->where($field, '') : $query->orWhere($field, '');
 
         $this->setGroupOpProcessed(true);
     }
@@ -588,7 +588,7 @@ class SubjectService extends BaseModelService
      */
     protected function setWhereNotNull(&$query, $field)
     {
-        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereNotNull($field, '!=', '') : $query->orWhereNotNull($field, '!=', '');
+        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->where($field, '!=', '') : $query->orWhere($field, '!=', '');
 
         $this->setGroupOpProcessed(true);
     }
