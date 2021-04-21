@@ -70,7 +70,10 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
     public function handle(SubjectService $subjectService)
     {
         try {
-            $subjectService->deleteUnassignedByProject($this->projectId);
+            $cursor = $subjectService->deleteUnassignedByProject($this->projectId);
+            $cursor->each(function($subject) {
+                $subject->delete();
+            });
 
             $message = [
                 t('All unassigned subjects for project id %s have been deleted.', $this->projectId)
