@@ -27,7 +27,7 @@
     <button type="button" class="btn btn-primary pl-4 pr-4 text-uppercase"
             data-toggle="collapse"
             data-target="#product"
-            data-hover="tooltip" title="{{ t('Product Data') }}"
+            data-hover="tooltip" title="{{ t('Export Product Data') }}"
             aria-expanded="false" aria-controls="collapseProduct"
     >{{ t('Product Data') }}</button>
 </div>
