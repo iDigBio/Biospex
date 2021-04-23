@@ -22,6 +22,7 @@
   "family_rapid",
   "fieldNumber",
   "flagEventDate_rapid",
+  "flagExclude",
   "flagGeoreference_rapid",
   "flagTaxonomy_rapid",
   "footprintWKT_rapid",
