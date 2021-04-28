@@ -254,7 +254,7 @@ class RapidIngestService extends RapidServiceBase
 
         foreach ($this->rows as $offset => $row) {
             $id = $row['_id'];
-            if ($id === null) {
+            if ($id === null || empty($id)) {
                 $this->errors[] = $row;
                 continue;
             }
