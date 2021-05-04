@@ -181,7 +181,7 @@ class CsvExportType
 
             // indexes are the tags. isset skips index values that are null
             foreach ($fieldArray as $index => $value) {
-                if (isset($fieldArray[$index]) && ! empty($record->{$value})) {
+                if (isset($fieldArray[$index]) && (! empty($record->{$value}) || $record->{$value} === "0")) {
                     $data[$field] = $record->{$value};
                     break;
                 }
