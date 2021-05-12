@@ -87,7 +87,7 @@ class JobError extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $message = implode('<br /><br />', $this->messages);
+        $message = implode('<br><br>', $this->messages);
 
         $mailMessage = new MailMessage;
 

@@ -169,6 +169,11 @@ class PanoptesTranscriptionProcess
          */
         $this->fixMisMatched($row, $expeditionId);
 
+        if (trim($row['subject_subjectId'] === null)) {
+            $this->csvError[] = array_merge(['error' => 'Transcript missing subject id'], $row);
+            return;
+        }
+
         $subject = $this->subjectService->find(trim($row['subject_subjectId']));
 
         if ($subject === null) {
