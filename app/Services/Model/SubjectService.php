@@ -63,7 +63,7 @@ class SubjectService extends BaseModelService
      */
     public function findByExpeditionId($expeditionId, array $attributes = ['*'])
     {
-        return \Cache::tags((string) $expeditionId)->remember(__METHOD__, 14440, function () use (
+        return \Cache::tags((string) $expeditionId . serialize($attributes))->remember(__METHOD__, 14440, function () use (
             $expeditionId,
             $attributes
         ) {
@@ -106,24 +106,14 @@ class SubjectService extends BaseModelService
     }
 
     /**
-     * Get assigned count for project.
-     *
-     * @param $projectId
-     * @return mixed
-     */
-    public function getAssignedCountByProject($projectId)
-    {
-        return $this->model->whereRaw(['expedition_ids.0' => ['$exists' => true]])->where('project_id', '=', (int) $projectId)->count();
-    }
-
-    /**
-     * Delete unassigned by project id.
+     * Cursor to delete unassigned by project id.
      *
      * @param int $projectId
+     * @return \Illuminate\Support\LazyCollection
      */
     public function deleteUnassignedByProject(int $projectId)
     {
-        $this->model->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->delete();
+        return $this->model->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->cursor();
     }
 
     /**

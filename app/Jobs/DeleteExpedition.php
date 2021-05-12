@@ -93,10 +93,10 @@ class DeleteExpedition implements ShouldQueue
             $mongoDbService->setCollection('panoptes_transcriptions');
             $mongoDbService->deleteMany(['subject_expeditionId' => $expedition->id]);
 
-            $subjects = $subjectService->findByExpeditionId($expedition->id);
+            $subjectIds = $subjectService->findByExpeditionId((int) $this->expedition->id, ['_id'])->pluck('_id');
 
-            if ($subjects->isNotEmpty()) {
-                $subjectService->detachSubjects($subjects, $expedition->id);
+            if ($subjectIds->isNotEmpty()) {
+                $subjectService->detachSubjects($subjectIds, $expedition->id);
             }
 
             $expedition->delete();
@@ -108,7 +108,7 @@ class DeleteExpedition implements ShouldQueue
         } catch (\Exception $e) {
             $message = [
                 'Error: '.t('Could not delete Expedition %s', $expedition->title),
-                'Message:'.$e->getFile().': '.$e->getLine().' - '.$e->getMessage(),
+                'Message:'.$e->getFile().': '.$e->getLine().' - '.$e->getMessage().' - '. $e->getTraceAsString(),
             ];
             $this->user->notify(new JobError(__FILE__, $message));
 

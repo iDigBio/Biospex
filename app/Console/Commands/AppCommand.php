@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Model\SubjectService;
 use Illuminate\Console\Command;
 
 /**
@@ -51,7 +52,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
 
     }
 }

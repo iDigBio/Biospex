@@ -109,74 +109,26 @@ class GridData
     /**
      * build variables array for querying.
      *
-     * @param array $postData
+     * @param array $postedData
      * @param string $route
      * @param int $projectId
      * @param int|null $expeditionId
      * @return array
      */
-    public function buildVariables(array $postData, string $route, int $projectId, int $expeditionId = null)
+    public function buildVariables(array $postedData, string $route, int $projectId, int $expeditionId = null): array
     {
         return [
-            'page'         => $this->setPage($postData),
-            'limit'        => $this->setLimit($postData),
+            'page'         => isset($postedData['page']) ? (int) $postedData['page'] : 1,
+            'limit'        => isset($postedData['rows']) ? (int) $postedData['rows'] : 25,
             'count'        => null,
             'offset'       => null,
-            'sidx'         => $this->setSidx($postData),
-            'sord'         => $this->setSord($postData),
-            'filters'      => $this->setFilters($postData),
+            'sidx'         => isset($postedData['sidx']) ? $postedData['sidx'] : '_id',
+            'sord'         => isset($postedData['sord']) ? $postedData['sord'] : 'desc',
+            'filters'      => $this->setFilters($postedData),
             'route'        => $route,
             'projectId'    => $projectId,
             'expeditionId' => $expeditionId
         ];
-    }
-
-    /**
-     * Set vars page.
-     *
-     * @param $postedData
-     * @return int
-     */
-    public function setPage($postedData)
-    {
-        return isset($postedData['page']) ? $postedData['page'] : 1;
-    }
-
-    /**
-     * Set Limit.
-     *
-     * @param $postedData
-     * @return int|mixed
-     */
-    public function setLimit($postedData)
-    {
-        return isset($postedData['rows']) ? $postedData['rows'] : null;
-    }
-
-    /**
-     * Set vars order by.
-     *
-     * @param $postedData
-     * @return array
-     */
-    public function setSidx($postedData)
-    {
-        $sidx = isset($postedData['sidx']) ? $postedData['sidx'] : null;
-
-        return (! $sidx || empty($sidx)) ? null : $sidx;
-    }
-
-    /**
-     * Sort vars order.
-     *
-     * @param $postedData
-     * @return array
-     */
-    public function setSord($postedData)
-    {
-        $sord = isset($postedData['sord']) ? $postedData['sord'] : null;
-
-        return (! $sord || empty($sord)) ? null : $sord;
     }
 
     /**
@@ -185,22 +137,10 @@ class GridData
      * @param $postedData
      * @return array
      */
-    public function setFilters($postedData)
+    public function setFilters($postedData): array
     {
         return (isset($postedData['filters']) && ! empty($postedData['filters'])) ?
             json_decode(str_replace('\'', '"', $postedData['filters']), true) : [];
-    }
-
-    /**
-     * Set limit by count.
-     *
-     * @param $vars
-     */
-    public function setLimitByCount(&$vars)
-    {
-        $limit = (int) $vars['limit'] === 0 ? (int) $vars['count'] : (int) $vars['limit'];
-
-        $vars['limit'] = ($limit === 0) ? 1 : $limit;
     }
 
     /**
@@ -210,12 +150,11 @@ class GridData
      */
     public function setPaging(array &$vars)
     {
-        $vars['total'] = $vars['count'] > 0 ? ceil($vars['count'] / $vars['limit']) : 0;
+        $vars['total'] = $vars['count'] > 0 ? ceil($vars['count']/$vars['limit']) : 0;
+
         $vars['page'] = $vars['page'] > $vars['total'] ? $vars['total'] : $vars['page'];
-        $vars['limit'] = $vars['limit'] < 0 ? 0 : $vars['limit'];
-        $vars['offset'] = $vars['limit'] * $vars['page'] - $vars['limit'];
-        $vars['offset'] = $vars['offset'] < 0 ? 0 : $vars['offset'];
-        $vars['limit'] *= $vars['page'];
+
+        $vars['offset'] = ($vars['limit'] * $vars['page']) - $vars['limit']; // do not put $limit*($page - 1)
     }
 
     /**
