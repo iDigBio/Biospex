@@ -19,8 +19,6 @@
 
 namespace App\Services\Model;
 
-use App\Models\Bingo;
-
 /**
  * Class BaseModelService
  *

@@ -212,7 +212,6 @@ class DownloadController extends Controller
 
             Flash::success(t('Export generation has started. You will be notified when completed.'));
         } catch (Exception $e) {
-            \Log::alert($e->getMessage());
             Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
         }
 
