@@ -7,4 +7,4 @@ user=root
 stdout_logfile=/var/log/supervisor/APP_ENV/echoserver.log
 redirect_stderr=true
 logfile_maxbytes=50MB
-logfile_backups=5
+logfile_backups=1

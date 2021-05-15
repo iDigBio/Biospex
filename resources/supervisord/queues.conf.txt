@@ -5,7 +5,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_CHART_TUBE --tri
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_CHART_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
@@ -18,7 +18,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_CLASSIFICATION_T
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_CLASSIFICATION_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
@@ -31,7 +31,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_DEFAULT_TUBE --t
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_DEFAULT_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
@@ -44,7 +44,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_EVENT_TUBE --tri
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_EVENT_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
@@ -57,7 +57,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_EXPORT_TUBE --tr
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_EXPORT_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
@@ -70,7 +70,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_IMPORT_TUBE --tr
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_IMPORT_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
@@ -83,7 +83,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_OCR_TUBE --tries
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_OCR_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
@@ -96,7 +96,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_PUSHER_TUBE --tr
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_PUSHER_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
@@ -109,7 +109,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_RECONCILE_TUBE -
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_RECONCILE_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
@@ -122,7 +122,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_STAT_TUBE --trie
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_STAT_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
@@ -135,7 +135,7 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_WORKFLOW_TUBE --
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_WORKFLOW_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
-logfile_backups=5
+logfile_backups=1
 autostart=true
 autorestart=true
 user=SERVER_USER
