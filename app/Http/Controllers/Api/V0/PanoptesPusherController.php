@@ -19,10 +19,10 @@
 
 namespace App\Http\Controllers\Api\V0;
 
-use App\Jobs\PusherEventTranscriptionJob;
-use App\Jobs\PusherWeDigBioDashboardJob;
+use App\Jobs\PanoptesPusherJob;
 use App\Services\Model\PanoptesProjectService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 /**
  * Class PanoptesPusherController
@@ -31,13 +31,12 @@ use Illuminate\Http\Request;
  */
 class PanoptesPusherController extends ApiController
 {
-
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Support\Facades\Response
      */
-    public function index()
+    public function index(): Response
     {
         return $this->errorNotFound();
     }
@@ -45,31 +44,21 @@ class PanoptesPusherController extends ApiController
     /**
      * Create pusher classification.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Services\Model\PanoptesProjectService $panoptesProjectService
      * @return \Illuminate\Http\Response|void
      */
-    public function create(Request $request, PanoptesProjectService $panoptesProjectService)
+    public function create()
     {
-        if ( ! $request->isJson()) {
+        if (! request()->isJson()) {
             return;
         }
 
-        $data = json_decode($request->getContent(), true);
+        $data = json_decode(request()->getContent(), true);
 
-        if ( ! isset($data['workflow_id']))
-        {
+        if (! isset($data['workflow_id'])) {
             return;
         }
 
-        $result = $panoptesProjectService->findByProjectIdAndWorkflowId($data['project_id'], $data['workflow_id']);
-
-        if ($result === null){
-            return;
-        }
-
-        PusherEventTranscriptionJob::dispatch($data);
-        PusherWeDigBioDashboardJob::dispatch($data, $result);
+        PanoptesPusherJob::dispatch($data);
 
         return $this->respondWithCreated();
     }
@@ -79,7 +68,7 @@ class PanoptesPusherController extends ApiController
      *
      * @return \Illuminate\Support\Facades\Response
      */
-    public function show()
+    public function show(): Response
     {
         return $this->errorNotFound();
     }
@@ -89,7 +78,7 @@ class PanoptesPusherController extends ApiController
      *
      * @return \Illuminate\Support\Facades\Response
      */
-    public function update()
+    public function update(): Response
     {
         return $this->errorNotFound();
     }
@@ -99,7 +88,7 @@ class PanoptesPusherController extends ApiController
      *
      * @return \Illuminate\Support\Facades\Response
      */
-    public function delete()
+    public function delete(): Response
     {
         return $this->errorNotFound();
     }

@@ -41,7 +41,7 @@ class PanoptesPusherController extends ApiController
     }
 
     /**
-     * Process panoptes data from pusher stream.
+     * Process Panoptes data from pusher stream.
      *
      * @return \Illuminate\Http\Response|\Illuminate\Support\Facades\Response
      */
