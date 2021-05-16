@@ -54,7 +54,7 @@ class PusherEventTranscriptionJob implements ShouldQueue
     public function __construct(array $data)
     {
         $this->data = $data;
-        $this->onQueue(config('config.pusher_proecss_tube'));
+        $this->onQueue(config('config.pusher_process_tube'));
     }
 
     /**

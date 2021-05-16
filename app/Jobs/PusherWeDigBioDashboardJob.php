@@ -62,7 +62,7 @@ class PusherWeDigBioDashboardJob implements ShouldQueue
     {
         $this->data = $data;
         $this->panoptesProject = $panoptesProject;
-        $this->onQueue(config('config.pusher_proecss_tube'));
+        $this->onQueue(config('config.pusher_process_tube'));
     }
 
     /**
