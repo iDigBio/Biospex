@@ -16,7 +16,7 @@ return [
     'expedition_size' => env('EXPEDITION_SIZE'),
     'echo_id'         => env('ECHO_ID'),
     'echo_key'        => env('ECHO_KEY'),
-    'echo_port'        => env('ECHO_PORT'),
+    'echo_port'       => env('ECHO_PORT'),
     'echo_ssl_crt'    => env('ECHO_SSL_CRT'),
     'echo_ssl_key'    => env('ECHO_SSL_KEY'),
 
@@ -143,6 +143,7 @@ return [
     'workflow_tube'         => env('QUEUE_WORKFLOW_TUBE'),
     'ocr_tube'              => env('QUEUE_OCR_TUBE'),
     'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
+    'pusher_process_tube'   => env('QUEUE_PUSHER_PROCESS_TUBE'),
 
     /* Images */
     /* Min and max logo and banner sizes used in Project model for Codesleve Stapler */
