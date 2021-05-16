@@ -20,9 +20,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\ApiController;
-use App\Jobs\PusherEventTranscriptionJob;
-use App\Jobs\PusherWeDigBioDashboardJob;
-use App\Services\Model\PanoptesProjectService;
+use App\Jobs\PanoptesPusherJob;
+use Illuminate\Support\Facades\Response;
 
 /**
  * Class PanoptesPusherController
@@ -36,18 +35,17 @@ class PanoptesPusherController extends ApiController
      *
      * @return \Illuminate\Support\Facades\Response
      */
-    public function index()
+    public function index(): Response
     {
         return $this->errorUnauthorized();
     }
 
     /**
-     * Create classification based on pusher.
+     * Process panoptes data from pusher stream.
      *
-     * @param \App\Services\Model\PanoptesProjectService $panoptesProjectService
-     * @return \Illuminate\Http\Response|\Illuminate\Support\Facades\Response|void
+     * @return \Illuminate\Http\Response|\Illuminate\Support\Facades\Response
      */
-    public function store(PanoptesProjectService $panoptesProjectService)
+    public function store()
     {
         if (! request()->isJson()) {
             return $this->errorWrongArgs(t('JSON request required'));
@@ -59,19 +57,11 @@ class PanoptesPusherController extends ApiController
 
         $data = json_decode(request()->getContent(), true);
 
-        if ( ! isset($data['workflow_id']))
-        {
+        if ( ! isset($data['workflow_id'])) {
             return $this->errorWrongArgs(t('Missing workflow_id'));
         }
 
-        $result = $panoptesProjectService->findByProjectIdAndWorkflowId($data['project_id'], $data['workflow_id']);
-
-        if ($result === null){
-            return;
-        }
-
-        PusherEventTranscriptionJob::dispatch($data);
-        PusherWeDigBioDashboardJob::dispatch($data, $result);
+        PanoptesPusherJob::dispatch($data);
 
         return $this->respondWithCreated();
     }
@@ -81,7 +71,7 @@ class PanoptesPusherController extends ApiController
      *
      * @return \Illuminate\Support\Facades\Response
      */
-    public function show()
+    public function show(): Response
     {
         return $this->errorUnauthorized();
     }
@@ -91,7 +81,7 @@ class PanoptesPusherController extends ApiController
      *
      * @return \Illuminate\Support\Facades\Response
      */
-    public function update()
+    public function update(): Response
     {
         return $this->errorUnauthorized();
     }
@@ -101,7 +91,7 @@ class PanoptesPusherController extends ApiController
      *
      * @return \Illuminate\Support\Facades\Response
      */
-    public function destroy()
+    public function destroy(): Response
     {
         return $this->errorUnauthorized();
     }
