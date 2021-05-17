@@ -147,7 +147,7 @@ class ZooniverseCsvJob implements ShouldQueue
      */
     private function dispatchJob(array $expeditionIds, int $tries = 0, bool $delay = false)
     {
-        $delay ? ZooniverseCsvJob::dispatch($expeditionIds, $tries, $delay)->delay(now()->addMinutes(3))
+        $delay ? ZooniverseCsvJob::dispatch($expeditionIds, $tries, $delay)->delay(now()->addMinutes(15))
             : ZooniverseCsvJob::dispatch($expeditionIds, $tries, $delay);
     }
 }
