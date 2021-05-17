@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-05-12T17:34:00+00:00\n"
-"PO-Revision-Date: 2021-05-12 19:34+0200\n"
+"POT-Creation-Date: 2021-05-17T16:14:24+00:00\n"
+"PO-Revision-Date: 2021-05-17 18:14+0200\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n!=1;\n"
 
@@ -236,11 +236,11 @@ msgstr ""
 msgid "Your password has been changed."
 msgstr ""
 
-#: app/Http/Controllers/Api/V1/PanoptesPusherController.php:53
+#: app/Http/Controllers/Api/V1/PanoptesPusherController.php:51
 msgid "JSON request required"
 msgstr ""
 
-#: app/Http/Controllers/Api/V1/PanoptesPusherController.php:64
+#: app/Http/Controllers/Api/V1/PanoptesPusherController.php:61
 msgid "Missing workflow_id"
 msgstr ""
 
@@ -416,7 +416,7 @@ msgstr ""
 #: resources/views/admin/group/edit.blade.php:20
 #: resources/views/admin/group/show.blade.php:54
 #: resources/views/admin/project/clone.blade.php:64
-#: resources/views/admin/project/create.blade.php:54
+#: resources/views/admin/project/create.blade.php:51
 #: resources/views/admin/project/edit.blade.php:53
 #: resources/views/common/event-sort.blade.php:7
 #: resources/views/common/expedition-sort.blade.php:7
@@ -489,7 +489,7 @@ msgstr ""
 #: resources/views/admin/expedition/create.blade.php:38
 #: resources/views/admin/expedition/edit.blade.php:39
 #: resources/views/admin/project/clone.blade.php:194
-#: resources/views/admin/project/create.blade.php:184
+#: resources/views/admin/project/create.blade.php:181
 #: resources/views/admin/project/edit.blade.php:183
 msgid "Keywords"
 msgstr ""
@@ -504,7 +504,7 @@ msgstr ""
 #: app/Nova/Group.php:77
 #: resources/views/admin/group/show.blade.php:2
 #: resources/views/admin/project/clone.blade.php:33
-#: resources/views/admin/project/create.blade.php:25
+#: resources/views/admin/project/create.blade.php:22
 #: resources/views/admin/project/edit.blade.php:24
 #: resources/views/common/project-sort.blade.php:9
 msgid "Group"
@@ -603,7 +603,7 @@ msgstr ""
 
 #: app/Nova/Project.php:96
 #: resources/views/admin/project/clone.blade.php:50
-#: resources/views/admin/project/create.blade.php:40
+#: resources/views/admin/project/create.blade.php:37
 #: resources/views/admin/project/edit.blade.php:39
 msgid "Status"
 msgstr ""
@@ -619,7 +619,7 @@ msgstr ""
 #: resources/views/admin/event/create.blade.php:51
 #: resources/views/admin/event/edit.blade.php:54
 #: resources/views/admin/project/clone.blade.php:72
-#: resources/views/admin/project/create.blade.php:62
+#: resources/views/admin/project/create.blade.php:59
 #: resources/views/admin/project/edit.blade.php:61
 #: resources/views/common/nav.blade.php:35
 #: resources/views/front/contact.blade.php:2
@@ -633,21 +633,21 @@ msgstr ""
 #: resources/views/admin/event/create.blade.php:58
 #: resources/views/admin/event/edit.blade.php:61
 #: resources/views/admin/project/clone.blade.php:80
-#: resources/views/admin/project/create.blade.php:70
+#: resources/views/admin/project/create.blade.php:67
 #: resources/views/admin/project/edit.blade.php:69
 msgid "Contact Email"
 msgstr ""
 
 #: app/Nova/Project.php:106
 #: resources/views/admin/project/clone.blade.php:93
-#: resources/views/admin/project/create.blade.php:83
+#: resources/views/admin/project/create.blade.php:80
 #: resources/views/admin/project/edit.blade.php:82
 msgid "Contact Title"
 msgstr ""
 
 #: app/Nova/Project.php:107
 #: resources/views/admin/project/clone.blade.php:113
-#: resources/views/admin/project/create.blade.php:103
+#: resources/views/admin/project/create.blade.php:100
 #: resources/views/admin/project/edit.blade.php:102
 msgid "Organization Website"
 msgstr ""
@@ -656,7 +656,7 @@ msgstr ""
 #: app/Presenters/ProjectPresenter.php:139
 #: app/Presenters/ProjectPresenter.php:150
 #: resources/views/admin/project/clone.blade.php:102
-#: resources/views/admin/project/create.blade.php:92
+#: resources/views/admin/project/create.blade.php:89
 #: resources/views/admin/project/edit.blade.php:91
 #: resources/views/front/project/home.blade.php:56
 msgid "Organization"
@@ -664,14 +664,14 @@ msgstr ""
 
 #: app/Nova/Project.php:109
 #: resources/views/admin/project/clone.blade.php:122
-#: resources/views/admin/project/create.blade.php:112
+#: resources/views/admin/project/create.blade.php:109
 #: resources/views/admin/project/edit.blade.php:111
 msgid "Project Partners"
 msgstr ""
 
 #: app/Nova/Project.php:110
 #: resources/views/admin/project/clone.blade.php:130
-#: resources/views/admin/project/create.blade.php:120
+#: resources/views/admin/project/create.blade.php:117
 #: resources/views/admin/project/edit.blade.php:119
 #: resources/views/front/project/home.blade.php:71
 msgid "Funding Source"
@@ -687,7 +687,7 @@ msgstr ""
 
 #: app/Nova/Project.php:113
 #: resources/views/admin/project/clone.blade.php:159
-#: resources/views/admin/project/create.blade.php:149
+#: resources/views/admin/project/create.blade.php:146
 #: resources/views/admin/project/edit.blade.php:148
 #: resources/views/front/project/home.blade.php:84
 msgid "Incentives"
@@ -695,7 +695,7 @@ msgstr ""
 
 #: app/Nova/Project.php:114
 #: resources/views/admin/project/clone.blade.php:167
-#: resources/views/admin/project/create.blade.php:157
+#: resources/views/admin/project/create.blade.php:154
 #: resources/views/admin/project/edit.blade.php:156
 #: resources/views/front/project/home.blade.php:89
 msgid "Geographic Scope"
@@ -703,7 +703,7 @@ msgstr ""
 
 #: app/Nova/Project.php:115
 #: resources/views/admin/project/clone.blade.php:176
-#: resources/views/admin/project/create.blade.php:166
+#: resources/views/admin/project/create.blade.php:163
 #: resources/views/admin/project/edit.blade.php:165
 #: resources/views/front/project/home.blade.php:94
 msgid "Taxonomic Scope"
@@ -711,7 +711,7 @@ msgstr ""
 
 #: app/Nova/Project.php:116
 #: resources/views/admin/project/clone.blade.php:185
-#: resources/views/admin/project/create.blade.php:175
+#: resources/views/admin/project/create.blade.php:172
 #: resources/views/admin/project/edit.blade.php:174
 #: resources/views/front/project/home.blade.php:99
 msgid "Temporal Scope"
@@ -725,7 +725,7 @@ msgstr ""
 #: app/Presenters/ProjectPresenter.php:183
 #: app/Presenters/ProjectPresenter.php:194
 #: resources/views/admin/project/clone.blade.php:210
-#: resources/views/admin/project/create.blade.php:200
+#: resources/views/admin/project/create.blade.php:197
 #: resources/views/admin/project/edit.blade.php:199
 msgid "Facebook"
 msgstr ""
@@ -734,14 +734,14 @@ msgstr ""
 #: app/Presenters/ProjectPresenter.php:161
 #: app/Presenters/ProjectPresenter.php:172
 #: resources/views/admin/project/clone.blade.php:218
-#: resources/views/admin/project/create.blade.php:208
+#: resources/views/admin/project/create.blade.php:205
 #: resources/views/admin/project/edit.blade.php:207
 msgid "Twitter"
 msgstr ""
 
 #: app/Nova/Project.php:121
 #: resources/views/admin/project/clone.blade.php:226
-#: resources/views/admin/project/create.blade.php:216
+#: resources/views/admin/project/create.blade.php:213
 #: resources/views/admin/project/edit.blade.php:215
 #: resources/views/front/project/home.blade.php:109
 msgid "Activities"
@@ -801,7 +801,7 @@ msgstr ""
 
 #: app/Nova/Workflow.php:65
 #: resources/views/admin/project/clone.blade.php:245
-#: resources/views/admin/project/create.blade.php:235
+#: resources/views/admin/project/create.blade.php:232
 #: resources/views/admin/project/edit.blade.php:234
 msgid "Workflows"
 msgstr ""
@@ -1471,7 +1471,7 @@ msgstr ""
 #: resources/views/admin/expedition/clone.blade.php:48
 #: resources/views/admin/expedition/create.blade.php:48
 #: resources/views/admin/expedition/edit.blade.php:48
-#: resources/views/admin/project/create.blade.php:251
+#: resources/views/admin/project/create.blade.php:248
 #: resources/views/admin/project/edit.blade.php:255
 msgid "Logo"
 msgstr ""
@@ -1688,7 +1688,11 @@ msgstr ""
 msgid "Subject"
 msgstr ""
 
-#: resources/views/admin/mail/index.blade.php:41
+#: resources/views/admin/mail/index.blade.php:40
+msgid "** Only type message. Greeting and signature added automatically."
+msgstr ""
+
+#: resources/views/admin/mail/index.blade.php:42
 #: resources/views/front/contact.blade.php:40
 #: resources/views/mail/contact.blade.php:9
 #: resources/views/mail/importerror.blade.php:9
@@ -1810,8 +1814,8 @@ msgstr ""
 #: resources/views/admin/partials/project-banner-modal.blade.php:59
 #: resources/views/admin/project/clone.blade.php:284
 #: resources/views/admin/project/clone.blade.php:285
-#: resources/views/admin/project/create.blade.php:273
-#: resources/views/admin/project/create.blade.php:274
+#: resources/views/admin/project/create.blade.php:270
+#: resources/views/admin/project/create.blade.php:271
 #: resources/views/admin/project/edit.blade.php:278
 #: resources/views/admin/project/edit.blade.php:279
 msgid "Click to select banner."
@@ -1842,37 +1846,37 @@ msgid "Trees Banner"
 msgstr ""
 
 #: resources/views/admin/project/clone.blade.php:138
-#: resources/views/admin/project/create.blade.php:128
+#: resources/views/admin/project/create.blade.php:125
 #: resources/views/admin/project/edit.blade.php:127
 msgid "Short Description"
 msgstr ""
 
 #: resources/views/admin/project/clone.blade.php:149
-#: resources/views/admin/project/create.blade.php:139
+#: resources/views/admin/project/create.blade.php:136
 #: resources/views/admin/project/edit.blade.php:138
 msgid "Long Description"
 msgstr ""
 
 #: resources/views/admin/project/clone.blade.php:204
-#: resources/views/admin/project/create.blade.php:194
+#: resources/views/admin/project/create.blade.php:191
 #: resources/views/admin/project/edit.blade.php:193
 msgid "http://blog.com"
 msgstr ""
 
 #: resources/views/admin/project/clone.blade.php:212
-#: resources/views/admin/project/create.blade.php:202
+#: resources/views/admin/project/create.blade.php:199
 #: resources/views/admin/project/edit.blade.php:201
 msgid "http://facebook.com/example"
 msgstr ""
 
 #: resources/views/admin/project/clone.blade.php:220
-#: resources/views/admin/project/create.blade.php:210
+#: resources/views/admin/project/create.blade.php:207
 #: resources/views/admin/project/edit.blade.php:209
 msgid "http://twitter.com/example"
 msgstr ""
 
 #: resources/views/admin/project/clone.blade.php:236
-#: resources/views/admin/project/create.blade.php:226
+#: resources/views/admin/project/create.blade.php:223
 #: resources/views/admin/project/edit.blade.php:225
 #: resources/views/front/project/home.blade.php:104
 msgid "Language Skills Required"
@@ -1883,13 +1887,13 @@ msgid "Max. 300 x 300"
 msgstr ""
 
 #: resources/views/admin/project/clone.blade.php:277
-#: resources/views/admin/project/create.blade.php:266
+#: resources/views/admin/project/create.blade.php:263
 #: resources/views/admin/project/edit.blade.php:271
 msgid "Banner File"
 msgstr ""
 
 #: resources/views/admin/project/clone.blade.php:294
-#: resources/views/admin/project/create.blade.php:283
+#: resources/views/admin/project/create.blade.php:280
 #: resources/views/admin/project/edit.blade.php:288
 #: resources/views/admin/project/partials/resources.blade.php:4
 #: resources/views/common/nav.blade.php:18
@@ -1899,12 +1903,12 @@ msgstr ""
 msgid "Resources"
 msgstr ""
 
-#: resources/views/admin/project/create.blade.php:5
-#: resources/views/admin/project/create.blade.php:16
+#: resources/views/admin/project/create.blade.php:2
+#: resources/views/admin/project/create.blade.php:13
 msgid "Create Project"
 msgstr ""
 
-#: resources/views/admin/project/create.blade.php:192
+#: resources/views/admin/project/create.blade.php:189
 #: resources/views/admin/project/edit.blade.php:191
 msgid "Project Blog"
 msgstr ""
@@ -1973,39 +1977,39 @@ msgstr ""
 msgid "Last Date"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:4
+#: resources/views/admin/reconcile/index.blade.php:2
 msgid "Expert Review"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:55
+#: resources/views/admin/reconcile/index.blade.php:53
 msgid "Your expert opinion of"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:63
+#: resources/views/admin/reconcile/index.blade.php:61
 msgid "Participants entered for"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:72
+#: resources/views/admin/reconcile/index.blade.php:70
 msgid "participant left blank"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:85
+#: resources/views/admin/reconcile/index.blade.php:83
 msgid "Save"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:96
+#: resources/views/admin/reconcile/index.blade.php:94
 msgid "Publish Reconciled File"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:97
+#: resources/views/admin/reconcile/index.blade.php:95
 msgid "This will publish a new reconciled_with_expert_opinion.csv file containing your edits in the Expedition downloads section."
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:98
+#: resources/views/admin/reconcile/index.blade.php:96
 msgid "Publish Expert Review"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:104
+#: resources/views/admin/reconcile/index.blade.php:102
 msgid "Once you have submitted your expert opinion for each page, go to the last page and click \"Publish Reconciled.\""
 msgstr ""
 
@@ -2068,7 +2072,7 @@ msgid "Contact_us"
 msgstr ""
 
 #: resources/views/apiauth/dashboard.blade.php:2
-#: resources/views/front/api-index.blade.php:5
+#: resources/views/front/api-index.blade.php:2
 msgid "API"
 msgstr ""
 
@@ -2077,12 +2081,12 @@ msgid "Biospex Api"
 msgstr ""
 
 #: resources/views/apiauth/dashboard.blade.php:24
-#: resources/views/front/api-index.blade.php:27
+#: resources/views/front/api-index.blade.php:24
 msgid "API Docs"
 msgstr ""
 
 #: resources/views/apiauth/dashboard.blade.php:25
-#: resources/views/front/api-index.blade.php:28
+#: resources/views/front/api-index.blade.php:25
 msgid "GitHub"
 msgstr ""
 
@@ -2280,7 +2284,7 @@ msgstr ""
 msgid "Loading stats for visualizations. This will take a moment."
 msgstr ""
 
-#: resources/views/front/api-index.blade.php:24
+#: resources/views/front/api-index.blade.php:21
 #: resources/views/front/layout/default.blade.php:105
 msgid "Biospex API"
 msgstr ""

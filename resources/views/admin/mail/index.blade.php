@@ -38,6 +38,7 @@
                             <span class="invalid-feedback">{{ $errors->first('subject') }}</span>
                         </div>
 
+                        <div>{{ t('** Only type message. Greeting and signature added automatically.') }}</div>
                         <div class="form-group">
                             <label for="message" class="col-form-label required">{{ t('Message') }}
                                 :</label>
