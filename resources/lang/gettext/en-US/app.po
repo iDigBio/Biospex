@@ -7,10 +7,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-04-16T14:17:53+00:00\n"
-"PO-Revision-Date: 2021-04-16 16:17+0200\n"
+"POT-Creation-Date: 2021-05-18T15:49:49+00:00\n"
+"PO-Revision-Date: 2021-05-18 17:49+0200\n"
 "Language: en_US\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=2; plural=n!=1;\n"
 
 #: app/Http/Controllers/Admin/DownloadController.php:45
 msgid "Report file does not exist."
@@ -103,7 +103,7 @@ msgstr ""
 msgid "iDigBio"
 msgstr ""
 
-#: app/Services/Export/CsvExportType.php:77
+#: app/Services/Export/CsvExportType.php:83
 msgid "Csv data returned empty while exporting."
 msgstr ""
 
@@ -284,6 +284,9 @@ msgid "Generic"
 msgstr ""
 
 #: resources/views/export/partials/export-destination.blade.php:30
+msgid "Export Product Data"
+msgstr ""
+
 #: resources/views/export/partials/export-destination.blade.php:32
 msgid "Product Data"
 msgstr ""
