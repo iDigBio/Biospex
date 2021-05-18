@@ -87,4 +87,12 @@ return [
     'export_extensions'     => [
         'csv' => '.csv',
     ],
+
+    /**
+     * Product export mapping
+     */
+    'product_field_map' => [
+        'recordedBy_rapid' => 'recordedByInterpreted',
+        'identifiedBy_rapid' => 'identifiedByInterpreted'
+    ]
 ];

@@ -41,6 +41,11 @@ class CsvExportType
     private $rapidExportDbService;
 
     /**
+     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    private $productFieldMap;
+
+    /**
      * CsvExportType constructor.
      *
      * @param \App\Services\Export\RapidExportDbService $rapidExportDbService
@@ -50,6 +55,7 @@ class CsvExportType
     {
         $this->rapidExportDbService = $rapidExportDbService;
         $this->csvService = $csvService;
+        $this->productFieldMap = config('config.product_field_map');
     }
 
     /**
@@ -171,9 +177,11 @@ class CsvExportType
      */
     public function setFormColumns(RapidRecord $record, array $fields, array $data): array
     {
+        $product = $fields['exportDestination'] === 'product';
+
         foreach ($fields['exportFields'] as $fieldArray) {
 
-            $field = $fieldArray['field'];
+            $field = !$product ? $fieldArray['field'] : $this->mapProductField($fieldArray['field']);
             $data[$field] = '';
 
             // unset to make foreach easier to deal with
@@ -189,5 +197,16 @@ class CsvExportType
         }
 
         return $data;
+    }
+
+    /**
+     * Map any product export fields or returned stripped _rapid tag.
+     *
+     * @param string $field
+     * @return array|mixed|string|string[]
+     */
+    private function mapProductField(string $field)
+    {
+        return isset($this->productFieldMap[$field]) ? $this->productFieldMap[$field] : str_replace('_rapid', '', $field);
     }
 }
