@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Subject;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -55,14 +54,6 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        $cursor = Subject::cursor();
 
-        $count = 0;
-        $cursor->each(function($subject) use(&$count){
-            $subject->ocr = trim($subject->ocr);
-            $subject->save();
-            $count++;
-        });
-        echo $count . PHP_EOL;
     }
 }

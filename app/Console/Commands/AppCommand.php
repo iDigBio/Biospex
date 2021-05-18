@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Model\SubjectService;
 use Illuminate\Console\Command;
 
 /**
