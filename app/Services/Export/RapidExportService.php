@@ -236,7 +236,7 @@ class RapidExportService extends RapidServiceBase
         return [
             'count'      => old('entries', 1),
             'exportType' => null,
-            'fields'     => $this->destination === 'generic' ? null : $this->getDestinationFields(),
+            'fields'     => $this->destination === 'generic' ? null : $this->getDestinationFieldFile($this->destination),
             'tags'       => $tags,
             'frmData'    => null,
         ];
@@ -265,23 +265,12 @@ class RapidExportService extends RapidServiceBase
         return [
             'count'      => $form->data['entries'],
             'exportType' => $form->data['exportType'],
-            'fields'     => $this->destination === 'generic' ? null : $this->getDestinationFields(),
+            'fields'     => $this->destination === 'generic' ? null : $this->getDestinationFieldFile($this->destination),
             'tags'       => $tags,
             'frmData'    => $frmData,
             'frmName'    => base64_encode($form->file),
             'frmId'      => $form->id,
         ];
-    }
-
-    /**
-     * Get fields according to destination.
-     *
-     * @return array
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    public function getDestinationFields(): array
-    {
-        return json_decode(File::get(config('config.'.$this->destination.'_fields_file')), true);
     }
 
     /**
