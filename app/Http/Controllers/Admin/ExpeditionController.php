@@ -136,10 +136,14 @@ class ExpeditionController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        [$active, $completed] = $this->expeditionService->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)
-            ->partition(function ($expedition) {
-            return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
-        });
+        [
+            $active,
+            $completed,
+        ] = $this->expeditionService->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
+                $expedition
+            ) {
+                return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
+            });
 
         $expeditions = $type === 'active' ? $active : $completed;
 
@@ -164,13 +168,13 @@ class ExpeditionController extends Controller
         $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
-            'model'        => $model,
-            'subjectIds'   => [],
-            'maxCount'     => config('config.expedition_size'),
-            'dataUrl'      => route('admin.grids.create', [$project->id]),
-            'exportUrl'    => route('admin.grids.export', [$projectId]),
-            'checkbox' => true,
-            'route' => 'create', // used for export
+            'model'      => $model,
+            'subjectIds' => [],
+            'maxCount'   => config('config.expedition_size'),
+            'dataUrl'    => route('admin.grids.create', [$project->id]),
+            'exportUrl'  => route('admin.grids.export', [$projectId]),
+            'checkbox'   => true,
+            'route'      => 'create', // used for export
         ]);
 
         return view('admin.expedition.create', compact('project'));
@@ -185,13 +189,19 @@ class ExpeditionController extends Controller
      */
     public function store(ExpeditionFormRequest $request, $projectId)
     {
-        $project = $this->projectService->findWith($projectId, ['group']);
+        $project = $this->projectService->findWith($projectId, ['group', 'workflow.actors']);
 
         if (! $this->checkPermissions('createProject', $project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
         $expedition = $this->expeditionService->create($request->all());
+        if (! $expedition) {
+            Flash::error(t('An error occurred when saving record.'));
+
+            return redirect()->route('admin.projects.show', [$project->id]);
+        }
+
         $subjects = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
         $count = count($subjects);
         $expedition->subjects()->sync($subjects);
@@ -202,15 +212,18 @@ class ExpeditionController extends Controller
 
         $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
 
-        if ($expedition) {
-            Flash::success(t('Record was created successfully.'));
+        $project->workflow->actors->reject(function ($actor) {
+            return $actor->private;
+        })->each(function ($actor) use ($expedition, $count) {
+            $sync = [
+                $actor->id => ['order' => $actor->pivot->order, 'state' => 0, 'total' => $count],
+            ];
+            $expedition->actors()->sync($sync, false);
+        });
 
-            return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
-        }
+        Flash::success(t('Record was created successfully.'));
 
-        Flash::error(t('An error occurred when saving record.'));
-
-        return redirect()->route('admin.projects.show', [$project->id]);
+        return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
     }
 
     /**
@@ -246,7 +259,7 @@ class ExpeditionController extends Controller
             'dataUrl'    => route('admin.grids.show', [$expedition->project->id, $expedition->id]),
             'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'checkbox'   => false,
-            'route' => 'show', // used for export
+            'route'      => 'show', // used for export
         ]);
 
         return view('admin.expedition.show', compact('expedition'));
@@ -271,13 +284,13 @@ class ExpeditionController extends Controller
         $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
-            'model'        => $model,
-            'subjectIds'   => [],
-            'maxCount'     => config('config.expedition_size'),
-            'dataUrl'      => route('admin.grids.create', [$expedition->project->id]),
-            'exportUrl'    => route('admin.grids.export', [$projectId]),
-            'checkbox' => true,
-            'route' => 'create', // used for export
+            'model'      => $model,
+            'subjectIds' => [],
+            'maxCount'   => config('config.expedition_size'),
+            'dataUrl'    => route('admin.grids.create', [$expedition->project->id]),
+            'exportUrl'  => route('admin.grids.export', [$projectId]),
+            'checkbox'   => true,
+            'route'      => 'create', // used for export
         ]);
 
         return view('admin.expedition.clone', compact('expedition'));
@@ -319,7 +332,7 @@ class ExpeditionController extends Controller
             'dataUrl'    => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
             'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'checkbox'   => $expedition->workflowManager === null,
-            'route' => 'edit', // used for export
+            'route'      => 'edit', // used for export
         ]);
 
         return view('admin.expedition.edit', compact('expedition'));
@@ -415,10 +428,10 @@ class ExpeditionController extends Controller
                 'project.workflow.actors',
                 'panoptesProject',
                 'workflowManager',
-                'stat'
+                'stat',
             ]);
 
-            if(null === $expedition->panoptesProject) {
+            if (null === $expedition->panoptesProject) {
                 throw new Exception(t('Zooniverse Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
             }
 
@@ -431,7 +444,7 @@ class ExpeditionController extends Controller
                     return $actor->private;
                 })->each(function ($actor) use ($expedition) {
                     $sync = [
-                        $actor->id => ['order' => $actor->pivot->order, 'state' => 1]
+                        $actor->id => ['order' => $actor->pivot->order, 'state' => 1],
                     ];
                     $expedition->actors()->sync($sync, false);
                 });
