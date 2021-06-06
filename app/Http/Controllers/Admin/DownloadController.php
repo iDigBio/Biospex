@@ -36,6 +36,7 @@ class DownloadController extends Controller
      *
      * @param string $file
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     * @throws \League\Csv\Exception
      */
     public function report(string $file)
     {
@@ -57,7 +58,7 @@ class DownloadController extends Controller
             'Content-Disposition' => 'attachment; filename="'.$fileName.'"'
         ];
 
-        return response($reader->getContent(), 200, $headers);
+        return response($reader->toString(), 200, $headers);
     }
 
     /**
@@ -65,6 +66,7 @@ class DownloadController extends Controller
      *
      * @param string $file
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     * @throws \League\Csv\Exception
      */
     public function export(string $file)
     {
@@ -86,7 +88,7 @@ class DownloadController extends Controller
             'Content-Disposition' => 'attachment; filename="'.$fileName.'"'
         ];
 
-        return response($reader->getContent(), 200, $headers);
+        return response($reader->toString(), 200, $headers);
     }
 
     /**
@@ -114,4 +116,6 @@ class DownloadController extends Controller
 
         return response()->download($filePath, $fileName, $headers);
     }
+
+
 }
