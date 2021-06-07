@@ -116,7 +116,7 @@ class RapidServiceBase
     /**
      * Return import path.
      *
-     * @return \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     * @return string
      */
     public function getImportsTmpPath()
     {
@@ -180,16 +180,17 @@ class RapidServiceBase
     /**
      * Create zip file for version export.
      *
-     * @param string $fileName
-     * @param string $filePath
+     * @param array $files
      * @param string $zipFilePath
      */
-    public function zipVersionFile(string $fileName, string $filePath, string $zipFilePath)
+    public function zipFile(array $files, string $zipFilePath)
     {
         $zip = new ZipArchive;
         if ($zip->open($zipFilePath, ZipArchive::CREATE) === true) {
             // Add files to the zip file
-            $zip->addFile($filePath, $fileName);
+            foreach ($files as $fileName => $filePath) {
+                $zip->addFile($filePath, $fileName);
+            }
 
             // All files are added, so close the zip file.
             $zip->close();

@@ -5,9 +5,9 @@ return [
     /**
      * Site variables
      */
-    'current_path' => env('CURRENT_PATH'),
-    'server_user'  => env('SERVER_USER'),
-    'registration' => env('REGISTRATION'),
+    'current_path'          => env('CURRENT_PATH'),
+    'server_user'           => env('SERVER_USER'),
+    'registration'          => env('REGISTRATION'),
 
     /* Beanstalk Tubes */
     'num_procs'             => env('NUM_PROCS'),
@@ -27,7 +27,10 @@ return [
     'geolocate_fields_file' => resource_path('files/rapid-exports/geolocate-fields.json'),
     'people_fields_file'    => resource_path('files/rapid-exports/people-fields.json'),
     'taxonomic_fields_file' => resource_path('files/rapid-exports/taxonomic-fields.json'),
-    'product_fields_file' => resource_path('files/rapid-exports/product-fields.json'),
+    'product_fields_file'   => resource_path('files/rapid-exports/product-fields.json'),
+    'dwc_select_providers'  => resource_path('files/rapid-exports/dwc-providers.json'),
+    'occurrence_file'       => resource_path('files/rapid-exports/occurrence.csv'),
+    'meta_file'             => resource_path('files/rapid-exports/meta.xml'),
     'geolocate_view_file'   => resource_path('files/rapid-views/geolocate.json'),
 
     /**
@@ -78,7 +81,7 @@ return [
         'people'    => ['BIOSPEXid' => '_id'],
         'taxonomic' => ['BIOSPEXid' => '_id'],
         'generic'   => ['BIOSPEXid' => '_id'],
-        'product' => ['BIOSPEX_id' => '_id']
+        'product'   => ['BIOSPEX_id' => '_id'],
     ],
 
     /**
@@ -86,5 +89,5 @@ return [
      */
     'export_extensions'     => [
         'csv' => '.csv',
-    ]
+    ],
 ];

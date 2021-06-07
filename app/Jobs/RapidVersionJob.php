@@ -102,7 +102,7 @@ class RapidVersionJob implements ShouldQueue
             $exportTypeClass = RapidExportFactoryType::create($fields['exportType']);
             $exportTypeClass->build($filePath, $fields, $reservedColumns);
 
-            $rapidExportService->zipVersionFile($fileName, $filePath, $zipFilePath);
+            $rapidExportService->zipFile([$fileName => $filePath], $zipFilePath);
 
             $attributes = [
                 'header_id' => $headerId,

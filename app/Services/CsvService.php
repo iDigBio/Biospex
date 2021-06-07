@@ -20,6 +20,7 @@
 namespace App\Services;
 
 use League\Csv\CharsetConverter;
+use League\Csv\Statement;
 use League\Csv\Writer;
 use League\Csv\Reader;
 
@@ -66,6 +67,17 @@ class CsvService
     public function writerCreateFromTempFileObj()
     {
         $this->writer = Writer::createFromFileObject(new \SplTempFileObject());
+    }
+
+    /**
+     * Create Statement.
+     *
+     * @return \League\Csv\Statement
+     * @throws \League\Csv\Exception
+     */
+    public function statementCreate(): Statement
+    {
+        return Statement::create();
     }
 
     /**

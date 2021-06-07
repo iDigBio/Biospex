@@ -41,11 +41,6 @@ class CsvExportType
     private $rapidExportDbService;
 
     /**
-     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
-     */
-    private $productFieldMap;
-
-    /**
      * CsvExportType constructor.
      *
      * @param \App\Services\Export\RapidExportDbService $rapidExportDbService
@@ -55,7 +50,6 @@ class CsvExportType
     {
         $this->rapidExportDbService = $rapidExportDbService;
         $this->csvService = $csvService;
-        $this->productFieldMap = config('config.product_field_map');
     }
 
     /**
@@ -91,7 +85,7 @@ class CsvExportType
             $this->csvService->insertOne($csvData);
         }
 
-        \File::put($filePath, $this->csvService->writer->getContent());
+        \File::put($filePath, $this->csvService->writer->toString());
     }
 
     /**

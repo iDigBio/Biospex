@@ -53,4 +53,5 @@ class AppCommand extends Command
     {
 
     }
+
 }
