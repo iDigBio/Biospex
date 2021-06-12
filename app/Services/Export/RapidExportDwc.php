@@ -19,7 +19,9 @@
 
 namespace App\Services\Export;
 
+use App\Models\Product;
 use App\Services\CsvService;
+use App\Services\Model\ProductModelService;
 use App\Services\RapidServiceBase;
 use Illuminate\Support\Facades\File;
 
@@ -39,26 +41,40 @@ class RapidExportDwc extends RapidServiceBase
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
-    private $occurrenceFilePath;
-
-    /**
-     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
-     */
     private $metaFilePath;
 
-    public function __construct(CsvService $csvService)
+    /**
+     * @var \App\Services\Model\ProductModelService
+     */
+    private $productModelService;
+
+    /**
+     * RapidExportDwc constructor.
+     *
+     * @param \App\Services\CsvService $csvService
+     * @param \App\Services\Model\ProductModelService $productModelService
+     */
+    public function __construct(CsvService $csvService, ProductModelService $productModelService)
     {
         $this->csvService = $csvService;
-        $this->occurrenceFilePath = config('config.occurrence_file');
+        $this->productModelService = $productModelService;
         $this->metaFilePath = config('config.meta_file');
     }
 
     /**
-     * @param string $key
+     * Process export.
+     *
+     * @param \App\Models\Product $product
+     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\Exception
      */
-    public function process(string $key)
+    public function process(Product $product)
     {
-        $key === '' ? $this->processAll($key) : $this->processProvider($key);
+        $product->key === '00000000-0000-0000-0000-000000000000' ?
+            $this->processAll($product->key) :
+            $this->processProvider($product->key);
+
+        $product->touch();
     }
 
     /**
@@ -69,11 +85,11 @@ class RapidExportDwc extends RapidServiceBase
     private function processAll(string $key)
     {
         $files = [
-            'occurrence.csv' => $this->occurrenceFilePath,
+            'occurrence.csv' => $this->getProductFilePath('occurrence.csv'),
             'meta.xml' => $this->metaFilePath
         ];
 
-        $dwcFilePath = $this->getExportFilePath($key . '.zip');
+        $dwcFilePath = $this->getProductFilePath($key . '.zip');
         $this->zipFile($files, $dwcFilePath);
     }
 
@@ -86,31 +102,31 @@ class RapidExportDwc extends RapidServiceBase
      */
     private function processProvider(string $key)
     {
-        $csvFilePath = \Storage::path(config('config.rapid_export_dir') . '/occurrence.csv');
-        $this->buildCsv($key, $csvFilePath);
+        $tmpFilePath = \Storage::path('occurrence.csv');
+        $this->buildCsv($key, $tmpFilePath);
 
         $files = [
-            'occurrence.csv' => $csvFilePath,
+            'occurrence.csv' => $tmpFilePath,
             'meta.xml' => $this->metaFilePath
         ];
 
-        $dwcFilePath = $this->getExportFilePath($key . '.zip');
+        $dwcFilePath = $this->getProductFilePath($key . '.zip');
         $this->zipFile($files, $dwcFilePath);
 
-        File::delete($csvFilePath);
+        File::delete($tmpFilePath);
     }
 
     /**
      * Build csv for given provider.
      *
      * @param string $key
-     * @param string $csvFilePath
+     * @param string $tmpFilePath
      * @throws \League\Csv\CannotInsertRecord
      * @throws \League\Csv\Exception
      */
-    private function buildCsv(string $key, string $csvFilePath)
+    private function buildCsv(string $key, string $tmpFilePath)
     {
-        $this->csvService->readerCreateFromPath($this->occurrenceFilePath);
+        $this->csvService->readerCreateFromPath($this->getProductFilePath('occurrence.csv'));
         $this->csvService->setDelimiter();
         $this->csvService->setEnclosure();
         $this->csvService->setHeaderOffset();
@@ -133,6 +149,20 @@ class RapidExportDwc extends RapidServiceBase
             $this->csvService->insertOne($record);
         }
 
-        File::put($csvFilePath, $this->csvService->writer->toString());
+        File::put($tmpFilePath, $this->csvService->writer->toString());
+    }
+
+    /**
+     * Create product or return first.
+     *
+     * @param string $key
+     * @param string|null $name
+     * @return mixed
+     */
+    public function getProductRecord(string $key, string $name = null)
+    {
+        return $name === null ?
+            $this->productModelService->findBy('key', $key) :
+            $this->productModelService->firstOrCreate(['key' => $key], ['name' => $name]);
     }
 }

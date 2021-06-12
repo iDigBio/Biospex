@@ -135,6 +135,17 @@ class RapidServiceBase
     }
 
     /**
+     * Get product file path.
+     *
+     * @param string $fileName
+     * @return string
+     */
+    public function getProductFilePath(string $fileName): string
+    {
+        return Storage::path(config('config.rapid_product_dir').'/'.$fileName);
+    }
+
+    /**
      * Get version file path.
      *
      * @param string $fileName

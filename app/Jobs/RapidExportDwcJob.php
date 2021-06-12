@@ -21,21 +21,29 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobErrorNotification;
+use App\Notifications\ProductNotification;
 use App\Services\Export\RapidExportDwc;
+use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Storage;
 
 class RapidExportDwcJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var string
+     * @var \App\Models\User
      */
-    private $key;
+    private $user;
+
+    /**
+     * @var array
+     */
+    private $request;
 
     /**
      * @var string
@@ -52,23 +60,43 @@ class RapidExportDwcJob implements ShouldQueue
     /**
      * RapidExportDwcJob constructor.
      *
-     * @param string $key
+     * @param \App\Models\User $user
+     * @param array $request
      */
-    public function __construct(string $key)
+    public function __construct(User $user, array $request)
     {
         $this->onQueue(config('config.rapid_tube'));
-        $this->key = $key;
+        $this->user = $user;
+        $this->request = $request;
     }
 
     /**
-     * Execute the job.
+     * Handle job.
      *
-     * @return void
+     * @param \App\Services\Export\RapidExportDwc $rapidExportDwc
+     * @throws \Throwable
      */
     public function handle(RapidExportDwc $rapidExportDwc)
     {
+        DB::beginTransaction();
         try {
-            $rapidExportDwc->process($this->key);
+            $key = $this->request['key-select'] === null ? $this->request['key-text'] : $this->request['key-select'];
+            $name = $this->request['key-select'] === null ? $this->request['name-text'] : null;
+
+            $product = $rapidExportDwc->getProductRecord($key, $name);
+
+            if (Storage::exists(config('config.rapid_product_dir') . '/' . $product->key . '.zip')) {
+                Storage::delete(config('config.rapid_product_dir') . '/' . $product->key . '.zip');
+            }
+
+            $rapidExportDwc->process($product);
+
+            $downloadUrl = route('admin.download.product', ['file' => base64_encode($key . '.zip')]);
+
+            $this->user->notify(new ProductNotification($downloadUrl));
+
+            DB::commit();
+
         } catch (\Exception $e) {
             $attributes = [
                 'message' => $e->getMessage(),
@@ -77,8 +105,9 @@ class RapidExportDwcJob implements ShouldQueue
                 'trace' => $e->getTraceAsString()
             ];
 
-            $user = User::find(1);
-            $user->notify(new JobErrorNotification($attributes));
+            $this->user->notify(new JobErrorNotification($attributes));
+
+            DB::rollback();
 
             $this->delete();
         }

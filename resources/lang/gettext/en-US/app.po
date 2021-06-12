@@ -7,22 +7,26 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-05-18T15:49:49+00:00\n"
-"PO-Revision-Date: 2021-05-18 17:49+0200\n"
+"POT-Creation-Date: 2021-06-12T17:59:47+00:00\n"
+"PO-Revision-Date: 2021-06-12 19:59+0200\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n!=1;\n"
 
-#: app/Http/Controllers/Admin/DownloadController.php:45
+#: app/Http/Controllers/Admin/DownloadController.php:46
 msgid "Report file does not exist."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadController.php:74
-#: app/Services/Export/RapidExportService.php:339
+#: app/Http/Controllers/Admin/DownloadController.php:76
+#: app/Services/Export/RapidExportService.php:327
 msgid "RAPID export file does not exist."
 msgstr ""
 
-#: app/Http/Controllers/Admin/DownloadController.php:103
+#: app/Http/Controllers/Admin/DownloadController.php:105
 msgid "RAPID version file does not exist."
+msgstr ""
+
+#: app/Http/Controllers/Admin/DownloadController.php:131
+msgid "RAPID product file does not exist."
 msgstr ""
 
 #: app/Http/Controllers/Admin/ExportController.php:73
@@ -51,11 +55,15 @@ msgstr ""
 msgid "The update has been uploaded. You will receive an email when the process has been completed."
 msgstr ""
 
+#: app/Http/Controllers/Admin/ProductController.php:81
+msgid "The request is processing. You will be notified by email when completed."
+msgstr ""
+
 #: app/Http/Controllers/Admin/UserController.php:86
 #: app/Http/Controllers/Admin/UserController.php:108
 #: app/Http/Controllers/Admin/UserController.php:140
 #: app/Http/Controllers/Controller.php:30
-#: app/Services/Export/RapidExportService.php:333
+#: app/Services/Export/RapidExportService.php:321
 msgid "You do not have sufficient permissions."
 msgstr ""
 
@@ -111,115 +119,115 @@ msgstr ""
 msgid "Cannot create Rapid Export Type class."
 msgstr ""
 
-#: app/Services/Export/RapidExportService.php:327
+#: app/Services/Export/RapidExportService.php:315
 msgid "The export you would like to delete does not exist."
 msgstr ""
 
-#: app/Services/Export/RapidExportService.php:347
+#: app/Services/Export/RapidExportService.php:335
 msgid "RAPID export file and data has been deleted."
 msgstr ""
 
-#: resources/views/auth/login.blade.php:5
-#: resources/views/partials/nav.blade.php:33
+#: resources/views/auth/login.blade.php:2
+#: resources/views/partials/nav.blade.php:35
 msgid "Login"
 msgstr ""
 
-#: resources/views/auth/login.blade.php:11
+#: resources/views/auth/login.blade.php:8
 msgid "Biospex Rapid Login"
 msgstr ""
 
-#: resources/views/auth/login.blade.php:19
-#: resources/views/auth/passwords/email.blade.php:19
-#: resources/views/auth/passwords/reset.blade.php:20
-#: resources/views/auth/register.blade.php:20
-#: resources/views/user/edit.blade.php:23
+#: resources/views/auth/login.blade.php:16
+#: resources/views/auth/passwords/email.blade.php:16
+#: resources/views/auth/passwords/reset.blade.php:17
+#: resources/views/auth/register.blade.php:17
+#: resources/views/user/edit.blade.php:20
 msgid "Email"
 msgstr ""
 
-#: resources/views/auth/login.blade.php:44
-#: resources/views/auth/passwords/reset.blade.php:45
-#: resources/views/auth/register.blade.php:45
+#: resources/views/auth/login.blade.php:41
+#: resources/views/auth/passwords/reset.blade.php:42
+#: resources/views/auth/register.blade.php:42
 msgid "Password"
 msgstr ""
 
-#: resources/views/auth/login.blade.php:70
+#: resources/views/auth/login.blade.php:67
 msgid "Remember Me"
 msgstr ""
 
-#: resources/views/auth/login.blade.php:76
+#: resources/views/auth/login.blade.php:73
 msgid "Forgot your Password?"
 msgstr ""
 
-#: resources/views/auth/login.blade.php:77
-#: resources/views/auth/register.blade.php:5
+#: resources/views/auth/login.blade.php:74
+#: resources/views/auth/register.blade.php:2
 msgid "Register"
 msgstr ""
 
-#: resources/views/auth/passwords/email.blade.php:5
+#: resources/views/auth/passwords/email.blade.php:2
 msgid "Resend Password"
 msgstr ""
 
-#: resources/views/auth/passwords/email.blade.php:11
+#: resources/views/auth/passwords/email.blade.php:8
 msgid "Send Password Instructions"
 msgstr ""
 
-#: resources/views/auth/passwords/reset.blade.php:5
-#: resources/views/auth/passwords/reset.blade.php:11
+#: resources/views/auth/passwords/reset.blade.php:2
+#: resources/views/auth/passwords/reset.blade.php:8
 msgid "Reset Password"
 msgstr ""
 
-#: resources/views/auth/passwords/reset.blade.php:70
-#: resources/views/auth/register.blade.php:70
-#: resources/views/user/edit.blade.php:68
+#: resources/views/auth/passwords/reset.blade.php:67
+#: resources/views/auth/register.blade.php:67
+#: resources/views/user/edit.blade.php:65
 msgid "Confirm Password"
 msgstr ""
 
-#: resources/views/auth/register.blade.php:11
+#: resources/views/auth/register.blade.php:8
 msgid "Register Account"
 msgstr ""
 
-#: resources/views/auth/register.blade.php:98
+#: resources/views/auth/register.blade.php:95
 msgid "Already have an account? Login"
 msgstr ""
 
-#: resources/views/auth/verify.blade.php:5
+#: resources/views/auth/verify.blade.php:2
 msgid "Verify"
 msgstr ""
 
-#: resources/views/auth/verify.blade.php:11
+#: resources/views/auth/verify.blade.php:8
 msgid "Verify Your Email Address"
 msgstr ""
 
-#: resources/views/auth/verify.blade.php:18
+#: resources/views/auth/verify.blade.php:15
 msgid "A fresh verification link has been sent to your email address."
 msgstr ""
 
-#: resources/views/auth/verify.blade.php:23
+#: resources/views/auth/verify.blade.php:20
 msgid "Before proceeding, please check your email for a verification link."
 msgstr ""
 
-#: resources/views/auth/verify.blade.php:25
+#: resources/views/auth/verify.blade.php:22
 msgid "If you did not receive the email"
 msgstr ""
 
-#: resources/views/auth/verify.blade.php:25
+#: resources/views/auth/verify.blade.php:22
 msgid "click here to request another"
 msgstr ""
 
-#: resources/views/dashboard.blade.php:5
+#: resources/views/dashboard.blade.php:2
 msgid "Welcome"
 msgstr ""
 
-#: resources/views/dashboard.blade.php:11
+#: resources/views/dashboard.blade.php:8
 msgid "Rapid Dashboard"
 msgstr ""
 
-#: resources/views/export/index.blade.php:5
+#: resources/views/export/index.blade.php:2
 #: resources/views/partials/nav.blade.php:22
 msgid "Export"
 msgstr ""
 
-#: resources/views/export/index.blade.php:11
+#: resources/views/export/index.blade.php:8
 msgid "Rapid Record Export"
 msgstr ""
 
@@ -307,6 +315,7 @@ msgstr ""
 #: resources/views/export/partials/tags-select-fields-default.blade.php:13
 #: resources/views/export/partials/tags-select-fields.blade.php:13
 #: resources/views/export/partials/tags-select-fields.blade.php:32
+#: resources/views/product/partials/create-product.blade.php:28
 msgid "None"
 msgstr ""
 
@@ -327,6 +336,7 @@ msgstr ""
 #: resources/views/export/partials/frm-select-taxonomic.blade.php:13
 #: resources/views/partials/cancel-submit-buttons.blade.php:3
 #: resources/views/partials/submit-button.blade.php:2
+#: resources/views/product/partials/create-product.blade.php:44
 msgid "Submit"
 msgstr ""
 
@@ -385,29 +395,29 @@ msgstr ""
 msgid "Select..."
 msgstr ""
 
-#: resources/views/ingest/index.blade.php:5
-#: resources/views/ingest/index.blade.php:11
+#: resources/views/ingest/index.blade.php:2
+#: resources/views/ingest/index.blade.php:8
 msgid "Rapid Records Import"
 msgstr ""
 
-#: resources/views/ingest/index.blade.php:22
+#: resources/views/ingest/index.blade.php:19
 msgid "Import Rapid Records Data"
 msgstr ""
 
-#: resources/views/ingest/index.blade.php:39
-#: resources/views/ingest/index.blade.php:77
+#: resources/views/ingest/index.blade.php:36
+#: resources/views/ingest/index.blade.php:74
 msgid "Choose file..."
 msgstr ""
 
-#: resources/views/ingest/index.blade.php:48
+#: resources/views/ingest/index.blade.php:45
 msgid "Import"
 msgstr ""
 
-#: resources/views/ingest/index.blade.php:59
+#: resources/views/ingest/index.blade.php:56
 msgid "Update Rapid Records Data"
 msgstr ""
 
-#: resources/views/ingest/index.blade.php:85
+#: resources/views/ingest/index.blade.php:82
 msgid "Update"
 msgstr ""
 
@@ -429,8 +439,10 @@ msgstr ""
 
 #: resources/views/mail/export-notification.blade.php:8
 #: resources/views/mail/import-notification.blade.php:9
+#: resources/views/mail/product-notification.blade.php:8
 #: resources/views/mail/update-notification.blade.php:22
 #: resources/views/mail/version-notification.blade.php:8
+#: resources/views/product/index.blade.php:36
 msgid "Download"
 msgstr ""
 
@@ -438,6 +450,7 @@ msgstr ""
 #: resources/views/mail/failedjob.blade.php:8
 #: resources/views/mail/import-notification.blade.php:18
 #: resources/views/mail/job-error-notification.blade.php:17
+#: resources/views/mail/product-notification.blade.php:16
 #: resources/views/mail/update-notification.blade.php:31
 #: resources/views/mail/version-notification.blade.php:16
 msgid "Thank you"
@@ -474,6 +487,14 @@ msgstr ""
 
 #: resources/views/mail/job-error-notification.blade.php:14
 msgid "Trace"
+msgstr ""
+
+#: resources/views/mail/product-notification.blade.php:2
+msgid "RAPID Product DWC Completed"
+msgstr ""
+
+#: resources/views/mail/product-notification.blade.php:4
+msgid "The RAPID Product DWC you requested is complete. You may download the file by clicking the button below. You must be logged in to access the download."
 msgstr ""
 
 #: resources/views/mail/update-notification.blade.php:2
@@ -525,47 +546,80 @@ msgid "Ingest"
 msgstr ""
 
 #: resources/views/partials/nav.blade.php:24
-#: resources/views/version/index.blade.php:5
+#: resources/views/version/index.blade.php:2
 msgid "Version"
 msgstr ""
 
 #: resources/views/partials/nav.blade.php:26
-msgid "Account"
+#: resources/views/product/index.blade.php:2
+msgid "Product"
 msgstr ""
 
 #: resources/views/partials/nav.blade.php:28
+msgid "Account"
+msgstr ""
+
+#: resources/views/partials/nav.blade.php:30
 msgid "Logout"
 msgstr ""
 
-#: resources/views/show.blade.php:5
+#: resources/views/product/index.blade.php:8
+msgid "Rapid Record Product"
+msgstr ""
+
+#: resources/views/product/index.blade.php:13
+msgid "Create DWC Product"
+msgstr ""
+
+#: resources/views/product/index.blade.php:36
+msgid "Download Product File"
+msgstr ""
+
+#: resources/views/product/partials/create-product.blade.php:7
+msgid "Provider Key"
+msgstr ""
+
+#: resources/views/product/partials/create-product.blade.php:13
+msgid "Provider Name"
+msgstr ""
+
+#: resources/views/product/partials/create-product.blade.php:24
+msgid "Provider"
+msgstr ""
+
+#: resources/views/product/partials/create-product.blade.php:25
+msgid "Select Provider"
+msgstr ""
+
+#: resources/views/show.blade.php:2
 msgid "RAPID Record"
 msgstr ""
 
-#: resources/views/show.blade.php:16
+#: resources/views/show.blade.php:13
 msgid "Record"
 msgstr ""
 
-#: resources/views/user/edit.blade.php:5
-#: resources/views/user/edit.blade.php:15
+#: resources/views/user/edit.blade.php:2
+#: resources/views/user/edit.blade.php:12
 msgid "Edit Account"
 msgstr ""
 
-#: resources/views/user/edit.blade.php:39
+#: resources/views/user/edit.blade.php:36
 msgid "Change Password"
 msgstr ""
 
-#: resources/views/user/edit.blade.php:47
+#: resources/views/user/edit.blade.php:44
 msgid "Old Password"
 msgstr ""
 
-#: resources/views/user/edit.blade.php:57
+#: resources/views/user/edit.blade.php:54
 msgid "New Password"
 msgstr ""
 
-#: resources/views/version/index.blade.php:11
+#: resources/views/version/index.blade.php:8
 msgid "Rapid Record Version"
 msgstr ""
 
-#: resources/views/version/index.blade.php:16
+#: resources/views/version/index.blade.php:13
 msgid "Create Version File"
 msgstr ""

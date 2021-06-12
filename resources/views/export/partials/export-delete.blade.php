@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-sm-10 mx-auto text-center">
-        <button type="button" id="downloadExport" class="btn btn-primary pl-4 pr-4"
+        <button type="button" id="downloadProduct" class="btn btn-primary pl-4 pr-4"
                 data-hover="tooltip"
                 data-url="{{ route('admin.download.export', ['file' => $data['frmName']]) }}"
                 title="{{ t('Download the Export File') }}">{{ t('Download Export') }}</button>

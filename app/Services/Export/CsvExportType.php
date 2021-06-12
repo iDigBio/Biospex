@@ -41,6 +41,11 @@ class CsvExportType
     private $rapidExportDbService;
 
     /**
+     * @var array
+     */
+    private $productHeaders;
+
+    /**
      * CsvExportType constructor.
      *
      * @param \App\Services\Export\RapidExportDbService $rapidExportDbService
@@ -50,6 +55,7 @@ class CsvExportType
     {
         $this->rapidExportDbService = $rapidExportDbService;
         $this->csvService = $csvService;
+        $this->productHeaders = json_decode(\File::get(config('config.product_fields_file')), true);
     }
 
     /**
@@ -171,11 +177,9 @@ class CsvExportType
      */
     public function setFormColumns(RapidRecord $record, array $fields, array $data): array
     {
-        $product = $fields['exportDestination'] === 'product';
-
         foreach ($fields['exportFields'] as $fieldArray) {
 
-            $field = !$product ? $fieldArray['field'] : str_replace('_rapid', '', $fieldArray['field']);
+            $field = $fieldArray['field'];
             $data[$field] = '';
 
             // unset to make foreach easier to deal with
@@ -190,6 +194,20 @@ class CsvExportType
             }
         }
 
-        return $data;
+        return $fields['exportDestination'] === 'product' ? $this->setProductHeaders($data) : $data;
+    }
+
+    /**
+     * Set product headers to proper field names.
+     *
+     * @param array $data
+     * @return array
+     */
+    private function setProductHeaders(array $data): array
+    {
+        return collect($data)->mapWithKeys(function($value, $index){
+            $key = $index === 'BIOSPEXid' ? 'BIOSPEXid' : $this->productHeaders[$index];
+            return [$key => $value];
+        })->toArray();
     }
 }

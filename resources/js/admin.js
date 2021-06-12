@@ -58,6 +58,10 @@ $(function () {
             });
     });
 
+    $('.downloadProduct').click(function(){
+        window.open($(this).data('url'));
+    });
+
     let $exportResults = $('#exportResults');
     $exportResults.on('click', '.btn-add', function () {
         let $entry = $('.default').clone();

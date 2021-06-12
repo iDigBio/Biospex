@@ -39,7 +39,6 @@
   "georeferenceVerificationStatus_rapid": "georeferenceVerificationStatus",
   "habitat": "habitat",
   "identificationQualifier_rapid": "identificationQualifier",
-  "identificationRemarks": "identificationRemarks",
   "identificationRemarks_rapid": "identificationRemarks",
   "identificationVerificationStatus_rapid":  "identificationVerificationStatus",
   "identifiedBy": "identifiedBy",

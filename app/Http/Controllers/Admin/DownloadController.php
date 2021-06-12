@@ -117,5 +117,31 @@ class DownloadController extends Controller
         return response()->download($filePath, $fileName, $headers);
     }
 
+    /**
+     * Download product file.
+     *
+     * @param string $file
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function product(string $file)
+    {
+        $fileName = base64_decode($file);
+
+        if(! Storage::exists(config('config.rapid_product_dir') . '/' . $fileName)) {
+            FlashHelper::warning( t('RAPID product file does not exist.'));
+            return redirect()->route('admin.product.index');
+        }
+
+        $filePath = Storage::path(config('config.rapid_product_dir') . '/' . $fileName);
+
+        $headers = [
+            'Content-Type'        => 'application/octet-stream',
+            'Content-disposition' => 'attachment; filename="' . $fileName . '"',
+            'Content-Description' => 'File Transfer'
+        ];
+
+        return response()->download($filePath, $fileName, $headers);
+    }
+
 
 }

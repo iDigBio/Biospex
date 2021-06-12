@@ -20,6 +20,7 @@ return [
     'rapid_import_dir'      => 'imports/rapid',
     'rapid_export_dir'      => 'exports/rapid',
     'rapid_version_dir'     => 'exports/rapid/version',
+    'rapid_product_dir'     => 'exports/rapid/product',
 
     /**
      * Rapid field files
@@ -29,7 +30,6 @@ return [
     'taxonomic_fields_file' => resource_path('files/rapid-exports/taxonomic-fields.json'),
     'product_fields_file'   => resource_path('files/rapid-exports/product-fields.json'),
     'dwc_select_providers'  => resource_path('files/rapid-exports/dwc-providers.json'),
-    'occurrence_file'       => resource_path('files/rapid-exports/occurrence.csv'),
     'meta_file'             => resource_path('files/rapid-exports/meta.xml'),
     'geolocate_view_file'   => resource_path('files/rapid-views/geolocate.json'),
 
@@ -81,7 +81,7 @@ return [
         'people'    => ['BIOSPEXid' => '_id'],
         'taxonomic' => ['BIOSPEXid' => '_id'],
         'generic'   => ['BIOSPEXid' => '_id'],
-        'product'   => ['BIOSPEX_id' => '_id'],
+        'product'   => ['BIOSPEXid' => '_id'],
     ],
 
     /**
