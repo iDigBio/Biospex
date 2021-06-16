@@ -44,6 +44,11 @@ class RapidExportDwc extends RapidServiceBase
     private $metaFilePath;
 
     /**
+     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    private $citationFilePath;
+
+    /**
      * @var \App\Services\Model\ProductModelService
      */
     private $productModelService;
@@ -59,6 +64,7 @@ class RapidExportDwc extends RapidServiceBase
         $this->csvService = $csvService;
         $this->productModelService = $productModelService;
         $this->metaFilePath = config('config.meta_file');
+        $this->citationfilePath = config('config.citation_file');
     }
 
     /**
@@ -86,7 +92,8 @@ class RapidExportDwc extends RapidServiceBase
     {
         $files = [
             'occurrence.csv' => $this->getProductFilePath('occurrence.csv'),
-            'meta.xml' => $this->metaFilePath
+            'meta.xml' => $this->metaFilePath,
+            'citation.txt' => $this->citationFilePath
         ];
 
         $dwcFilePath = $this->getProductFilePath($key . '.zip');
@@ -107,7 +114,8 @@ class RapidExportDwc extends RapidServiceBase
 
         $files = [
             'occurrence.csv' => $tmpFilePath,
-            'meta.xml' => $this->metaFilePath
+            'meta.xml' => $this->metaFilePath,
+            'citation.txt' => $this->citationFilePath
         ];
 
         $dwcFilePath = $this->getProductFilePath($key . '.zip');

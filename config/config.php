@@ -31,6 +31,7 @@ return [
     'product_fields_file'   => resource_path('files/rapid-exports/product-fields.json'),
     'dwc_select_providers'  => resource_path('files/rapid-exports/dwc-providers.json'),
     'meta_file'             => resource_path('files/rapid-exports/meta.xml'),
+    'citation_file'         => resource_path('files/rapid-exports/citation.txt'),
     'geolocate_view_file'   => resource_path('files/rapid-views/geolocate.json'),
 
     /**

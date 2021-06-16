@@ -1,0 +1,5 @@
+More about origins of these data can be found in the Zenodo repository associated with NSF DBI 2033973, RAPID Grant: Rapid Creation of a Data Product for the World's Specimens of Horseshoe Bats and Relatives, a Known Reservoir for Coronaviruses (https://www.nsf.gov/awardsearch/showAward?AWD_ID=2033973)
+
+Cite the Zenodo Repository
+
+Mast, Austin R., Paul, Deborah L., Rios, Nelson, Krimmel, Erica R., Bruhn, Robert, Shorthouse, David P., Simmons, Nancy B., Soltis, Pam., Upham, Nathan (2020). Rapid Creation of a Data Product for the World's Specimens of Horseshoe Bats and Relatives, a Known Reservoir for Coronaviruses (Latest Version) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.3974999
