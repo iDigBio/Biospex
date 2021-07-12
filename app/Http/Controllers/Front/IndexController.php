@@ -20,11 +20,13 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Services\Model\ProductModelService;
 use App\Services\Model\RapidRecordModelService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 /**
@@ -35,15 +37,20 @@ use Yajra\DataTables\Facades\DataTables;
 class IndexController extends Controller
 {
     /**
-     * @return \Illuminate\Http\RedirectResponse
+     * Home page.
+     *
+     * @param \App\Services\Model\ProductModelService $productModelService
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index(): RedirectResponse
+    public function index(ProductModelService $productModelService)
     {
-        if (Auth::check()) {
-            return redirect()->route('admin.get.index');
-        }
+        $records = $productModelService->all();
 
-        return redirect()->route('app.get.login');
+        $products = $records->filter(function($record){
+            return Storage::exists(config('config.rapid_product_dir') . '/' . $record->key . '.zip');
+        });
+
+        return view('home', compact('products'));
     }
 
     /**
