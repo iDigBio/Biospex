@@ -12,7 +12,6 @@
     <div class="row">
         <div class="col-12 m-auto">
             <div class="card white box-shadow py-5 my-5 p-sm-5">
-                <h3 class="mb-5 mx-auto">{{ t('Rapid DWC Product') }}:</h3>
                 <div class="row mt-5">
                     <div class="col-sm-10 mx-auto">
                         <table id="dwc" class="table table-striped table-bordered">
