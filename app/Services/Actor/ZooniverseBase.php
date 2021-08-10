@@ -152,6 +152,17 @@ class ZooniverseBase
     }
 
     /**
+     * Set folder name using already created download file name.
+     *
+     * @param string $fileName
+     */
+    public function setBatchFolder(string $fileName)
+    {
+        $folder = str_replace('.tar.gz', '', $fileName);
+        $this->folderName = $folder;
+    }
+
+    /**
      * Set directories.
      *
      * @param bool $delete
