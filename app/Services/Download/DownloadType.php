@@ -215,10 +215,12 @@ class DownloadType extends DownloadFileBase
     {
         $this->deleteExportFiles($expedition->id);
 
-        $expedition->nfnActor->pivot->state = 0;
-        $expedition->nfnActor->pivot->total = $expedition->stat->local_subject_count;
+        $attributes = [
+            'state'     => 0,
+            'total'     => $expedition->stat->local_subject_count
+        ];
 
-        event('actor.pivot.export', [$expedition->nfnActor]);
+        $expedition->nfnActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
 
         ActorFactory::create($expedition->nfnActor->class)->actor($expedition->nfnActor);
     }

@@ -56,12 +56,10 @@ class ZooniverseClassificationCountJob implements ShouldQueue
      * Create a new job instance.
      *
      * @param int $expeditionId
-     * @param \App\Models\Actor|null $actor
      */
-    public function __construct(int $expeditionId, Actor $actor = null)
+    public function __construct(int $expeditionId)
     {
         $this->expeditionId = $expeditionId;
-        $this->actor = $actor;
         $this->onQueue(config('config.classification_tube'));
     }
 
@@ -81,19 +79,11 @@ class ZooniverseClassificationCountJob implements ShouldQueue
             $expedition = $expeditionService->findWith($this->expeditionId, [
                 'project.group.owner',
                 'stat',
+                'nfnActor',
                 'panoptesProject',
             ]);
 
-            if ($expedition === null) {
-                $this->delete();
-
-                return;
-            }
-
-            if ($this->workflowIdDoesNotExist($expedition) && $this->actor !== null) {
-                $this->actor->pivot->processed = 0;
-                $this->actor->pivot->queued = 0;
-                $this->actor->save();
+            if ($expedition === null || $this->workflowIdDoesNotExist($expedition)) {
                 $this->delete();
 
                 return;
@@ -110,7 +100,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
 
             $expedition->stat->save();
 
-            $this->checkFinishedAt($expedition, $workflow);
+            $this->checkFinishedAt($expedition, $workflow['finished_at']);
 
             AmChartJob::dispatch($expedition->project_id);
 
@@ -146,26 +136,22 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * Check if finished_at date and set percentage.
      *
-     * @param Expedition $expedition
-     * @param $workflow
+     * @param \App\Models\Expedition $expedition
+     * @param string/null $finishedAt
      */
-    protected function checkFinishedAt(Expedition $expedition, $workflow)
+    protected function checkFinishedAt(Expedition $expedition, $finishedAt = null)
     {
-        if ($this->actor === null) {
+        if ($finishedAt === null) {
             return;
         }
 
-        if ($workflow['finished_at'] !== null) {
-            $this->actor->pivot->state++;
-            $this->actor->pivot->queued = 0;
-            $this->actor->pivot->completed = 1;
-            $expedition->project->group->owner->notify(new NfnTranscriptionsComplete($expedition->title));
+        $attributes = [
+            'state' => $expedition->nfnActor->pivot->state++,
+            'completed' => 1
+        ];
 
-            return;
-        }
+        $expedition->nfnActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
 
-        $this->actor->pivot->processed = 0;
-        $this->actor->pivot->queued = 0;
-        $this->actor->save();
+        $expedition->project->group->owner->notify(new NfnTranscriptionsComplete($expedition->title));
     }
 }

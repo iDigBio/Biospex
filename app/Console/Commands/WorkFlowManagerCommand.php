@@ -100,9 +100,11 @@ class WorkFlowManagerCommand extends Command
     {
         $expedition->actors->each(function ($actor) use ($expedition)
         {
-            $actor->pivot->total = $expedition->stat->local_subject_count;
-            $actor->pivot->queued = 1;
-            event('actor.pivot.queued', [$actor]);
+            $attributes = [
+                'total' => $expedition->stat->local_subject_count
+            ];
+
+            $actor->expeditions()->updateExistingPivot($expedition->id, $attributes);
 
             ActorFactory::create($actor->class)->actor($actor);
         });

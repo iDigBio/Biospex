@@ -84,7 +84,7 @@ class NfnPanoptes
                 $this->sendErrorNotification($exception);
             })->name('Zooniverse Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
         } elseif ($actor->pivot->state === 1) {
-            ZooniverseClassificationCountJob::dispatch($actor->pivot->expedition_id, $actor);
+            ZooniverseClassificationCountJob::dispatch($actor->pivot->expedition_id);
         }
     }
 

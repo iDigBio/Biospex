@@ -18,7 +18,6 @@
  */
 namespace App\Providers;
 
-use App\Listeners\ActorExpeditionPivotEventSubscriber;
 use App\Listeners\ExportQueueEventSubscriber;
 use App\Listeners\GroupEventSubscriber;
 use App\Listeners\CacheEventSubscriber;
@@ -51,7 +50,6 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $subscribe = [
         GroupEventSubscriber::class,
-        ActorExpeditionPivotEventSubscriber::class,
         ExportQueueEventSubscriber::class,
         CacheEventSubscriber::class
     ];

@@ -83,9 +83,12 @@ class ExportQueueJob implements ShouldQueue
             Artisan::call('export:poll');
             $this->delete();
         } catch (Exception $e) {
-            event('actor.pivot.error', $queue->expedition->actors->first());
+            $attributes = [
+                'error'  => 1
+            ];
 
-            $attributes = ['queued' => 0, 'error' => 1];
+            $queue->expedition->actors->first()->expeditions()->updateExistingPivot($queue->expedition->id, $attributes);
+
             $exportQueueService->updateMany($attributes, 'expedition_id', $this->model->expedition_id);
 
             $message = $e->getFile().'<br>'.$e->getLine().'<br>'.$e->getMessage();
