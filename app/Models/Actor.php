@@ -87,7 +87,7 @@ class Actor extends BaseEloquentModel
     public function expeditions()
     {
         return $this->belongsToMany(Expedition::class, 'actor_expedition')
-            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'error', 'queued', 'completed', 'order', 'expert')
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'error', 'completed', 'order', 'expert')
             ->orderBy('order')
             ->withTimestamps();
     }
