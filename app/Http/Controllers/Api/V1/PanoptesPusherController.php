@@ -51,12 +51,6 @@ class PanoptesPusherController extends ApiController
             return $this->errorWrongArgs(t('JSON request required'));
         }
 
-        /*
-        if(!request()->user()->tokenCan('panoptes-pusher:create')) {
-            return $this->errorUnauthorized();
-        }
-        */
-
         $data = json_decode(request()->getContent(), true);
 
         if ( ! isset($data['workflow_id'])) {
