@@ -20,18 +20,18 @@
 namespace App\Jobs;
 
 use App\Models\PanoptesProject;
-use App\Services\Process\PusherWeDigBioDashboardService;
+use App\Services\Process\PusherDashboardService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
 /**
- * Class PusherWeDigBioDashboardJob
+ * Class PusherClassificationJob
  *
  * @package App\Jobs
  */
-class PusherWeDigBioDashboardJob implements ShouldQueue
+class PusherClassificationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
@@ -68,10 +68,10 @@ class PusherWeDigBioDashboardJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Process\PusherWeDigBioDashboardService $service
+     * @param \App\Services\Process\PusherDashboardService $service
      * @throws \Exception
      */
-    public function handle(PusherWeDigBioDashboardService $service)
+    public function handle(PusherDashboardService $service)
     {
         $service->process($this->data, $this->panoptesProject);
 

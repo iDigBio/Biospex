@@ -20,6 +20,8 @@
 namespace App\Services\Process;
 
 use App\Models\PanoptesProject;
+use App\Models\PusherClassification;
+use App\Services\Model\PusherClassificationService;
 use App\Services\Model\PusherTranscriptionService;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
@@ -27,11 +29,11 @@ use Ramsey\Uuid\Uuid;
 use Validator;
 
 /**
- * Class PusherWeDigBioDashboardService
+ * Class PusherDashboardService
  *
  * @package App\Services\Process
  */
-class PusherWeDigBioDashboardService
+class PusherDashboardService
 {
     /**
      * @var \App\Services\Api\PanoptesApiService
@@ -44,15 +46,26 @@ class PusherWeDigBioDashboardService
     private $pusherTranscriptionService;
 
     /**
-     * PusherWeDigBioDashboardService constructor.
+     * @var \App\Services\Model\PusherClassificationService
+     */
+    private $pusherClassificationService;
+
+    /**
+     * PusherDashboardService constructor.
      *
      * @param \App\Services\Api\PanoptesApiService $apiService
      * @param \App\Services\Model\PusherTranscriptionService $pusherTranscriptionService
+     * @param \App\Services\Model\PusherClassificationService $pusherClassificationService
      */
-    public function __construct(PanoptesApiService $apiService, PusherTranscriptionService $pusherTranscriptionService)
+    public function __construct(
+        PanoptesApiService $apiService,
+        PusherTranscriptionService $pusherTranscriptionService,
+        PusherClassificationService $pusherClassificationService
+    )
     {
         $this->apiService = $apiService;
         $this->pusherTranscriptionService = $pusherTranscriptionService;
+        $this->pusherClassificationService = $pusherClassificationService;
     }
 
     /**
@@ -71,37 +84,35 @@ class PusherWeDigBioDashboardService
             return;
         }
 
-        $this->createDashboardFromPusher($panoptesProject, $data, $subject, $user);
+        $values = $this->setDashboardData($panoptesProject, $data, $subject, $user);
+
+        $this->pusherClassificationService->updateOrCreate(['classification_id' => $values['classification_id']], ['data' => $values]);
     }
 
     /**
      * Build item for dashboard.
      * This is built during the posted data from Pusher
      * $this->buildItem($data, $workflow, $subject, $expedition);
+     *
      * @param \App\Models\PanoptesProject $panoptesProject
      * @param array $data
      * @param array $subject
      * @param array|null $user
+     * @return array
      */
-    private function createDashboardFromPusher(PanoptesProject $panoptesProject, array $data, array $subject, array $user = null)
+    private function setDashboardData(PanoptesProject $panoptesProject, array $data, array $subject, array $user = null): array
     {
 
         $thumbnailUri = $this->setPusherThumbnailUri($data);
 
-        $classification_id = (int) $data['classification_id'];
-
-        if ($this->validateTranscription($classification_id)) {
-            return;
-        }
-
-        $attributes = [
-            'classification_id'    => $classification_id,
+        return [
+            'classification_id'    => (int) $data['classification_id'],
             'project'              => $panoptesProject->title,
             'description'          => 'Classification Id ' . $data['classification_id'],
             'guid'                 => Uuid::uuid4()->toString(),
             'timestamp'            => Carbon::now(),
             'subject'              => [
-                'link'         => isset($subject['metadata']['references']) ? $subject['metadata']['references'] : '',
+                'link'         => $subject['metadata']['references'] ?? '',
                 'thumbnailUri' => $thumbnailUri,
             ],
             'contributor'          => [
@@ -120,19 +131,32 @@ class PusherWeDigBioDashboardService
             'transcriptionContent' => [
                 'lat'          => '',
                 'long'         => '',
-                'country'      => isset($subject['metadata']['country']) ? $subject['metadata']['country'] : '',
-                'province'     => isset($subject['metadata']['stateProvince']) ? $subject['metadata']['stateProvince'] : '',
-                'county'       => isset($subject['metadata']['county']) ? $subject['metadata']['county'] : '',
+                'country'      => $subject['metadata']['country'] ?? '',
+                'province'     => $subject['metadata']['stateProvince'] ?? '',
+                'county'       => $subject['metadata']['county'] ?? '',
                 'municipality' => '',
                 'locality'     => '',
                 'date'         => '', // which date to use? transcription date is messy
                 'collector'    => '',
-                'taxon'        => isset($subject['metadata']['scientificName']) ? $subject['metadata']['scientificName'] : '',
+                'taxon'        => $subject['metadata']['scientificName'] ?? '',
             ],
             'discretionaryState'   => 'Transcribed',
         ];
+    }
 
-        $this->pusherTranscriptionService->create($attributes);
+    /**
+     * Create dashboard item.
+     *
+     * @param \App\Models\PusherClassification $pusherClassification
+     */
+    public function createDashboardRecord(PusherClassification $pusherClassification)
+    {
+
+        if ($this->validateTranscription($pusherClassification->classification_id)) {
+            return;
+        }
+
+        $this->pusherTranscriptionService->create($pusherClassification->data);
     }
 
     /**

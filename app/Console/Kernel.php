@@ -64,6 +64,8 @@ class Kernel extends ConsoleKernel
                     Cache::flush();
                     Artisan::call('lada-cache:flush');
                 });
+            // WeDigBio classification cron
+            $schedule->command('dashboard:records')->everyThirtyMinutes();
         }
     }
 

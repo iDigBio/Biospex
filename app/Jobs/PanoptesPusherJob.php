@@ -72,6 +72,6 @@ class PanoptesPusherJob implements ShouldQueue
         }
 
         PusherEventTranscriptionJob::dispatch($this->data);
-        PusherWeDigBioDashboardJob::dispatch($this->data, $result);
+        PusherClassificationJob::dispatch($this->data, $result);
     }
 }
