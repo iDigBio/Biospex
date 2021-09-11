@@ -54,14 +54,13 @@ class ResourceController extends Controller
     public function download(ResourceService $resourceService, $resourceId)
     {
         $download = $resourceService->find($resourceId);
-        $document = $download->document;
 
-        if (! $document->exists() || ! file_exists(public_path('storage' . $document->path()))) {
+        if (! $download->document->exists() || ! file_exists(public_path('storage' . $download->document->path()))) {
             Flash::error('File cannot be found.');
 
             return redirect()->route('front.resources.index');
         }
 
-        return Storage::download('public/' . $document->path());
+        return Storage::download('public/' . $download->document->path());
     }
 }
