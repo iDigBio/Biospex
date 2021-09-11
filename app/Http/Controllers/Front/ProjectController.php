@@ -24,6 +24,7 @@ use App\Services\Model\ProjectService;
 use App\Services\Model\StateCountyService;
 use App\Services\Process\TranscriptionChartService;
 use CountHelper;
+use Flash;
 use GeneralHelper;
 use JavaScript;
 
@@ -86,7 +87,7 @@ class ProjectController extends Controller
      * @param \App\Services\Process\TranscriptionChartService $chartService
      * @param \App\Services\Model\StateCountyService $stateCountyService
      * @param $slug
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function project(
         TranscriptionChartService $chartService,
@@ -94,6 +95,12 @@ class ProjectController extends Controller
         $slug
     ) {
         $project = $this->projectService->getProjectPageBySlug($slug);
+
+        if ($project === null) {
+            Flash::error(t('Unable to locate project. Please alert the Admin.'));
+
+            return redirect()->route('front.projects.index');
+        }
 
         $expeditions = null;
         $expeditionsCompleted = null;
