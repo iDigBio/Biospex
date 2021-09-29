@@ -12,6 +12,6 @@
     @include('common.favicon')
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:700|Work+Sans">
     <script src="https://kit.fontawesome.com/c840411e54.js" crossorigin="anonymous"></script>
-    <link href="{{ mix('/css/admin.css', '/backend') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ mix('/css/app.css') }}" rel="stylesheet" type="text/css"/>
     @stack('styles')
 </head>

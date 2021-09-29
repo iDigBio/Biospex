@@ -4,9 +4,12 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
+//import ConfettiGenerator from "confetti-js";
+
 try {
 
-    window.$ = window.jQuery = require('jquery');
+    window.$ = window.jQuery = require("jquery");
+    window.ConfettiGenerator = require("confetti-js/dist/index.min");
     window.Panzoom = require('@panzoom/panzoom/dist/panzoom.min');
 
     require('bootstrap');
@@ -25,12 +28,10 @@ try {
     require("summernote/dist/summernote-bs4.min");
 
     window.bootbox = require("./bootbox");
-    require("./common");
     require("./jqgrid");
-    require("./admin");
+    require("./main");
 
 } catch (e) {}
-
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
@@ -41,7 +42,7 @@ window.io = require("socket.io-client");
 window.Echo = new Echo({
     broadcaster: "socket.io",
     host: window.location.hostname,
-    path: '/ws/socket.io',
+    path: "/ws/socket.io",
 });
 
 /**
