@@ -435,12 +435,12 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
                 if ($type === 'url') {
                     if ($value === 'slug') {
-                        $build[$field] = $_ENV['APP_URL'].'/'.$this->{$value};
+                        $build[$field] = env('APP_URL').'/'.$this->{$value};
                         continue;
                     }
 
                     if ($value === 'logo') {
-                        $build[$field] = $_ENV['APP_URL'].$this->{$value}->url();
+                        $build[$field] = env('APP_URL').$this->{$value}->url();
                         continue;
                     }
                 }
