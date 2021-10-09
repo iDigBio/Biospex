@@ -45,4 +45,29 @@ class HomeController extends Controller
 
         return view('front.home', compact('expedition', 'contributorCount', 'transcriptionCount'));
     }
+
+    /**
+     * Get tmp images for fossil project.
+     * TODO remove after project 115 completed.
+     * @param string $name
+     * @return \Illuminate\Http\Response|void
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function tmpimg(string $name)
+    {
+        $exists = \Storage::disk('public')->exists('tmpimg/'.$name);
+
+        if($exists) {
+            //get content of image
+            $content = \Storage::get('public/tmpimg/'.$name);
+
+            //get mime type of image
+            $mime = \Storage::mimeType('public/tmpimg/'.$name);      //prepare response with image content and response code
+            $response = \Response::make($content, 200);      //set header
+            $response->header("Content-Type", $mime);      // return response
+            return $response;
+        } else {
+            abort(404);
+        }
+    }
 }
