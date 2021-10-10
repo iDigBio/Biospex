@@ -20,5 +20,5 @@
 use App\Http\Controllers\Front\HomeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/tmpimg/{name}', [HomeController::class, 'tmpimg'])->name('tmpimg');
+Route::get('/tmpimage/{name}', [HomeController::class, 'tmpimage'])->name('tmpimage');
 

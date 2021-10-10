@@ -53,7 +53,7 @@ class HomeController extends Controller
      * @return \Illuminate\Http\Response|void
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function tmpimg(string $name)
+    public function tmpimage(string $name)
     {
         $exists = \Storage::disk('public')->exists('tmpimage/'.$name);
 
