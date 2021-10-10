@@ -55,14 +55,14 @@ class HomeController extends Controller
      */
     public function tmpimg(string $name)
     {
-        $exists = \Storage::disk('public')->exists('tmpimg/'.$name);
+        $exists = \Storage::disk('public')->exists('tmpimage/'.$name);
 
         if($exists) {
             //get content of image
-            $content = \Storage::get('public/tmpimg/'.$name);
+            $content = \Storage::get('public/tmpimage/'.$name);
 
             //get mime type of image
-            $mime = \Storage::mimeType('public/tmpimg/'.$name);      //prepare response with image content and response code
+            $mime = \Storage::mimeType('public/tmpimage/'.$name);      //prepare response with image content and response code
             $response = \Response::make($content, 200);      //set header
             $response->header("Content-Type", $mime);      // return response
             return $response;
