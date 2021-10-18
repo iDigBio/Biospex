@@ -21,13 +21,15 @@
                                 {!! $expedition->present()->expedition_ocr_btn !!}
                             @endif
                             {!! $expedition->present()->expedition_export_btn !!}
-                            @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
-                                {!!
-                                $expedition->stat->local_subject_count === 0 ? '' :
-                                    $expedition->present()->expedition_process_start_btn
-                                !!}
-                            @else
-                                {!! $expedition->present()->expedition_process_stop_btn !!}
+                            @if($expedition->downloads->isNotEmpty())
+                                @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
+                                    {!!
+                                    $expedition->stat->local_subject_count === 0 ? '' :
+                                        $expedition->present()->expedition_process_start_btn
+                                    !!}
+                                @else
+                                    {!! $expedition->present()->expedition_process_stop_btn !!}
+                                @endif
                             @endif
                             @if($actor->pivot->completed  && $actor->id === 2)
                                 {!! $actor->present()->reconcile_expert_review_btn !!}
