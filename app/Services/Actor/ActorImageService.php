@@ -204,6 +204,7 @@ class ActorImageService
             $this->imagickService->createImagickObject();
             $this->imagickService->readImagickFromBlob($image);
             $this->imagickService->setImageFormat();
+            $this->imagickService->setImageRotation();
             $this->imagickService->stripImage();
             $this->writeImagickFile($wrkDir, $subjectId);
         } catch (\Exception $exception) {

@@ -47,38 +47,10 @@ class AppCommand extends Command
     }
 
     /**
-     * @throws \Exception
+     *
      */
     public function handle()
     {
-        $pdfPath = \Storage::path(config('config.scratch_dir'));
-        $imgPath = \Storage::path(config('config.scratch_dir') . '/images');
-        $filename = 'ZR9_41.pdf';
-
-        $im = new \Imagick();
-        $im->setResourceLimit(6, 1);
-        $im->setResolution(300,300);
-        $im->readImage($pdfPath . '/Z80_1_64.pdf');
-        $im->setBackgroundColor('white');
-        $im->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE );
-        $im->setImageFormat('jpg');
-
-        $im->writeImages($imgPath . '/Z80_1_64.jpg', false);
-        $im->clear();
-
-        $im = new \Imagick();
-        $files = collect(\File::files($imgPath));
-        $files->each(function ($file) use (&$im) {
-            $im->setResolution(300,300);
-            $im->readImage($file->getPathName());
-        });
-
-        $im->resetIterator();
-        $combined = $im->appendImages(true);
-        $combined->setImageFormat('jpg');
-        $combined->writeImage($imgPath . '/ZR9_41.jpg');
-        $im->clear();
-        $combined->clear();
 
     }
 }

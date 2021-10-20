@@ -152,10 +152,35 @@ class ImagickService
     }
 
     /**
-     * Write imagick image.
+     * Set image rotation using EXIF.
+     *
+     * @throws \ImagickException
+     */
+    public function setImageRotation()
+    {
+        $orientation = $this->imagick->getImageOrientation();
+
+        switch($orientation) {
+            case imagick::ORIENTATION_BOTTOMRIGHT:
+                $this->imagick->rotateimage("#000", 180); // rotate 180 degrees
+                break;
+
+            case imagick::ORIENTATION_RIGHTTOP:
+                $this->imagick->rotateimage("#000", 90); // rotate 90 degrees CW
+                break;
+
+            case imagick::ORIENTATION_LEFTBOTTOM:
+                $this->imagick->rotateimage("#000", -90); // rotate 90 degrees CCW
+                break;
+        }
+    }
+
+    /**
+     * Write Image.
      *
      * @param $destination
      * @return bool
+     * @throws \ImagickException
      */
     public function writeImagickImageToFile($destination)
     {

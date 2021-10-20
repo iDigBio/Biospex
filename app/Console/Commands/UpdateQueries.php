@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Csv\Csv;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -43,17 +42,11 @@ class UpdateQueries extends Command
     protected $description = 'Used for custom queries when updating database';
 
     /**
-     * @var \App\Services\Csv\Csv
-     */
-    private $csv;
-
-    /**
      * UpdateQueries constructor.
      */
-    public function __construct(Csv $csv)
+    public function __construct()
     {
         parent::__construct();
-        $this->csv = $csv;
     }
 
     /**
@@ -61,47 +54,6 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        //$this->renameFiles();
-        //$this->renameCsv('fossils/mammal/images.csv','fossils/mammal/imagesNew.csv');
-        //$this->renameCsv('fossils/bird/images.csv','fossils/bird/imagesNew.csv');
-    }
 
-    public function renameFiles()
-    {
-        if (! \Storage::disk('public')->exists('tmpimage')) {
-            \Storage::disk('public')->makeDirectory('tmpimage');
-        }
-
-        // trim(preg_replace("/[^ \w-]/", "", $data['county']));
-        $publicDir = \Storage::disk('public')->path('original');
-        $newDir = \Storage::disk('public')->path('tmpimage');
-
-        $files = \File::files($publicDir);
-        collect($files)->each(function ($file) use ($newDir) {
-            $fileName = trim(preg_replace("/[^\w-]/", "", $file->getBasename('.jpg')));
-            \File::copy($file->getPathname(), $newDir . '/' . $fileName . '.jpg');
-        });
-    }
-
-    public function renameCsv(string $oldPath, string $newPath)
-    {
-        $newFile = \Storage::path($newPath);
-        $this->csv->writerCreateFromPath($newFile);
-
-        $file = \Storage::path($oldPath);
-        $this->csv->readerCreateFromPath($file);
-        $this->csv->setHeaderOffset();
-
-        $this->csv->insertOne($this->csv->getHeader());
-
-        $rows = $this->csv->getRecords();
-        foreach ($rows as $offset => $row) {
-            $subStr = substr($row['title'], 0, strrpos($row['title'], '.'));
-            $title = trim(preg_replace("/[^\w-]/", "", $subStr));
-            $accessUri = "https://biospex.org/tmpimage/" . $title . '.jpg';
-
-            $row['accessURI'] = $accessUri;
-            $this->csv->insertOne($row);
-        }
     }
 }
