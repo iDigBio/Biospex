@@ -19,8 +19,6 @@
 
 namespace App\Jobs;
 
-use ActorEventHelper;
-use App\Models\Actor;
 use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\JobError;
