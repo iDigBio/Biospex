@@ -4,7 +4,7 @@ let path = require("path");
 mix.webpackConfig({
     resolve: {
         alias: {
-            'jquery': path.join(__dirname, 'node_modules/jquery/src/jquery'),
+            'jQuery': path.join(__dirname, 'node_modules/jquery/src/jquery'),
             "jquery-ui/sortable": "jquery-ui/ui/widgets/sortable"
         }
     }

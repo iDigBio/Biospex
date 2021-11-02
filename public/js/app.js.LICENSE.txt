@@ -14,7 +14,7 @@
  */
 
 /*!
- * jQuery UI :data 1.12.1
+ * jQuery UI :data 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -23,7 +23,7 @@
  */
 
 /*!
- * jQuery UI Button 1.12.1
+ * jQuery UI Button 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -32,7 +32,7 @@
  */
 
 /*!
- * jQuery UI Checkboxradio 1.12.1
+ * jQuery UI Checkboxradio 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -41,7 +41,7 @@
  */
 
 /*!
- * jQuery UI Controlgroup 1.12.1
+ * jQuery UI Controlgroup 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -50,7 +50,7 @@
  */
 
 /*!
- * jQuery UI Dialog 1.12.1
+ * jQuery UI Dialog 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -59,7 +59,7 @@
  */
 
 /*!
- * jQuery UI Disable Selection 1.12.1
+ * jQuery UI Disable Selection 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -68,7 +68,7 @@
  */
 
 /*!
- * jQuery UI Draggable 1.12.1
+ * jQuery UI Draggable 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -77,7 +77,7 @@
  */
 
 /*!
- * jQuery UI Droppable 1.12.1
+ * jQuery UI Droppable 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -86,7 +86,7 @@
  */
 
 /*!
- * jQuery UI Focusable 1.12.1
+ * jQuery UI Focusable 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -95,7 +95,7 @@
  */
 
 /*!
- * jQuery UI Form Reset Mixin 1.12.1
+ * jQuery UI Form Reset Mixin 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -104,7 +104,7 @@
  */
 
 /*!
- * jQuery UI Keycode 1.12.1
+ * jQuery UI Keycode 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -113,7 +113,7 @@
  */
 
 /*!
- * jQuery UI Labels 1.12.1
+ * jQuery UI Labels 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -122,7 +122,7 @@
  */
 
 /*!
- * jQuery UI Mouse 1.12.1
+ * jQuery UI Mouse 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -131,7 +131,7 @@
  */
 
 /*!
- * jQuery UI Position 1.12.1
+ * jQuery UI Position 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -142,7 +142,7 @@
  */
 
 /*!
- * jQuery UI Resizable 1.12.1
+ * jQuery UI Resizable 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -151,7 +151,7 @@
  */
 
 /*!
- * jQuery UI Scroll Parent 1.12.1
+ * jQuery UI Scroll Parent 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -160,7 +160,7 @@
  */
 
 /*!
- * jQuery UI Sortable 1.12.1
+ * jQuery UI Sortable 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -169,7 +169,7 @@
  */
 
 /*!
- * jQuery UI Tabbable 1.12.1
+ * jQuery UI Tabbable 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -178,7 +178,7 @@
  */
 
 /*!
- * jQuery UI Unique ID 1.12.1
+ * jQuery UI Unique ID 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -187,13 +187,15 @@
  */
 
 /*!
- * jQuery UI Widget 1.12.1
+ * jQuery UI Widget 1.13.0
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
  * Released under the MIT license.
  * http://jquery.org/license
  */
+
+/*! https://mths.be/utf8js v2.1.2 by @mathias */
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
