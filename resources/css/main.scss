@@ -264,7 +264,7 @@ header#header-img {
     background: -webkit-linear-gradient(-45deg, rgba(85,99,117,1) 0%,rgba(17,20,33,1) 72%);
     background: linear-gradient(135deg, rgba(85,99,117,1) 0%,rgba(17,20,33,1) 72%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#556375', endColorstr='#111421',GradientType=1 );
-    zoom: 1;
+    transform: scale(1);
     filter: alpha(opacity=7);
     -webkit-opacity: .7;
     -moz-opacity: .7;
