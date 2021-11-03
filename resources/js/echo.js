@@ -1,38 +1,4 @@
 /**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
-//import ConfettiGenerator from "confetti-js";
-
-try {
-
-    window.$ = window.jQuery = require("jquery");
-    window.ConfettiGenerator = require("confetti-js/dist/index.min");
-    window.Panzoom = require('@panzoom/panzoom/dist/panzoom.min');
-
-    require('bootstrap');
-
-    require("bootstrap-notify/bootstrap-notify");
-
-    require("jquery-ui/ui/widgets/dialog");
-    require("jquery-ui/ui/widgets/draggable");
-    require("jquery-ui/ui/widgets/droppable");
-    require("jquery-ui/ui/widgets/resizable");
-    require("jquery-datetimepicker/build/jquery.datetimepicker.full");
-
-    require("./ui.multiselect");
-    require("free-jqgrid/js/jquery.jqgrid.min");
-
-    require("summernote/dist/summernote-bs4.min");
-
-    window.bootbox = require("./bootbox");
-    require("./jqgrid");
-    require("./main");
-
-} catch (e) {}
-/**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
  * allows your team to easily build robust real-time web applications.
@@ -41,8 +7,7 @@ import Echo from "laravel-echo"
 window.io = require("socket.io-client");
 window.Echo = new Echo({
     broadcaster: "socket.io",
-    host: window.location.hostname,
-    path: "/ws/socket.io",
+    host: window.location.hostname
 });
 
 /**
