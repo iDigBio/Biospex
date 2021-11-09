@@ -1,22 +1,36 @@
-let mix = require('laravel-mix');
+let mix = require("laravel-mix");
+let webpack = require("webpack");
 let path = require("path");
 
+/*
+ |--------------------------------------------------------------------------
+ | Mix Asset Management
+ |--------------------------------------------------------------------------
+ |
+ | Mix provides a clean, fluent API for defining some Webpack build steps
+ | for your Laravel application. By default, we are compiling the Sass
+ | file for the application as well as bundling up all the JS files.
+ |
+ */
 mix.webpackConfig({
     resolve: {
         alias: {
-            'jQuery': path.join(__dirname, 'node_modules/jquery/src/jquery'),
+            'jQuery': path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
             "jquery-ui/sortable": "jquery-ui/ui/widgets/sortable"
         }
     }
-}).js("resources/js/app.js", "public/js")
-    .sass("resources/sass/app.scss", "public/css")
+});
+
+mix.js("resources/js/front-app.js", "js/front.js")
+    .js("resources/js/admin-app.js", "js/admin.js")
+    .sass("resources/sass/front.scss", "css/front.css")
+    .sass("resources/sass/admin.scss", "css/admin.css")
     .extract([
         "jquery",
         "bootstrap",
         "bootstrap-notify/bootstrap-notify",
         "socket.io-client/dist/socket.io",
         "confetti-js/dist/index.min",
-
         "jquery-ui/ui/widgets/dialog",
         "jquery-ui/ui/widgets/draggable",
         "jquery-ui/ui/widgets/droppable",
@@ -24,9 +38,8 @@ mix.webpackConfig({
         "jquery-datetimepicker/build/jquery.datetimepicker.full",
         "free-jqgrid/dist/plugins/ui.multiselect",
         "free-jqgrid/js/jquery.jqgrid.min",
-
         "codemirror/lib/codemirror",
-        "summernote/dist/summernote"
+        "summernote/dist/summernote",
     ])
     .copy('resources/js/amChartMap.js', 'public/js/amChartMap.js')
     .minify('public/js/amChartMap.js')
@@ -38,7 +51,9 @@ mix.webpackConfig({
     .minify('public/js/amChartEventRate.js')
     .copy('resources/js/amChartBingo.js', 'public/js/amChartBingo.js')
     .minify('public/js/amChartBingo.js')
+    .copy('resources/images', 'public/images')
     .copy('resources/js/jquery.form.min.js', 'public/js/jquery.form.min.js')
     .copy('resources/js/expertReview.js', 'public/js/expertReview.js')
     .minify('public/js/expertReview.js')
-    .copy('resources/images', 'public/images').version().disableNotifications();
+    .version()
+    .disableNotifications();
