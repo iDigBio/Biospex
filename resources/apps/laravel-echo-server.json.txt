@@ -32,7 +32,7 @@
     "apiOriginAllow": {
         "allowCors": false,
         "allowOrigin": "",
-        "allowMethods": "GET,POST",
+        "allowMethods": "",
         "allowHeaders": "Origin, Content-Type, X-Auth-Token, X-Requested-With, Accept, Authorization, X-CSRF-TOKEN, X-Socket-Id"
     }
 }
