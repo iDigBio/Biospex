@@ -19,7 +19,7 @@
     "jenssegers/mongodb": "^3.8",
     "laracasts/utilities": "^3.2",
     "laravel/framework": "^8.0",
-    "laravel/nova": "^3.15.0",
+    "laravel/nova": "^3.30.0",
     "laravel/sanctum": "^2.8",
     "laravel/tinker": "^2.5",
     "laravel/ui": "^3.0",
