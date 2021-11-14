@@ -14,7 +14,7 @@
     @include('common.favicon')
     <link href="https://fonts.googleapis.com/css?family=Raleway:400,700|Work+Sans:400,700" rel="stylesheet">
     <script src="https://kit.fontawesome.com/c840411e54.js" crossorigin="anonymous" SameSite="none Secure"></script>
-    <link href="{{ mix('/css/app.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ mix('/css/front.css') }}" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div class="container">
