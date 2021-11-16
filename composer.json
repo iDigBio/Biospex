@@ -31,7 +31,8 @@
     "ramsey/uuid": "^4.1",
     "spiritix/lada-cache": "^5.1",
     "thiagoalessio/tesseract_ocr": "^2.9",
-    "tio/laravel": "^1.10"
+    "tio/laravel": "^1.10",
+    "ext-json": "*"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.5",
