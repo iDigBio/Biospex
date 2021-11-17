@@ -184,6 +184,9 @@ class HttpRequest
         };
     }
 
+    /**
+     * @return \Closure
+     */
     public function retryDelay()
     {
         return function ($numberOfRetries)
