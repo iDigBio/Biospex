@@ -358,7 +358,7 @@ class ExpeditionController extends Controller
             $expedition = $this->expeditionService->update($request->all(), $expeditionId);
 
             if ($request->filled('panoptes_workflow_id')) {
-                $attributes = $attributes = [
+                $attributes = [
                     'project_id'    => $project->id,
                     'expedition_id' => $expedition->id,
                 ];
