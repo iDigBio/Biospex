@@ -20,7 +20,6 @@
 namespace App\Services\Helpers;
 
 use App\Services\Model\PanoptesTranscriptionService;
-use App\Services\Model\SubjectService;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -31,11 +30,6 @@ use Illuminate\Support\Facades\Cache;
 class CountHelper
 {
     /**
-     * @var \App\Services\Model\SubjectService|\Illuminate\Contracts\Foundation\Application|mixed
-     */
-    private $subjectService;
-
-    /**
      * @var \App\Services\Model\PanoptesTranscriptionService
      */
     private $panoptesTranscriptionService;
@@ -43,12 +37,10 @@ class CountHelper
     /**
      * CountHelper constructor.
      *
-     * @param \App\Services\Model\SubjectService $subjectService
      * @param \App\Services\Model\PanoptesTranscriptionService $panoptesTranscriptionService
      */
-    public function __construct(SubjectService $subjectService, PanoptesTranscriptionService $panoptesTranscriptionService)
+    public function __construct(PanoptesTranscriptionService $panoptesTranscriptionService)
     {
-        $this->subjectService = $subjectService;
         $this->panoptesTranscriptionService = $panoptesTranscriptionService;
     }
 
