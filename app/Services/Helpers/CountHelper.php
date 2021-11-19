@@ -107,4 +107,18 @@ class CountHelper
                 })->toJson();
         });
     }
+
+    /**
+     * Return transcription count per transcriber
+     *
+     * @param int $projectId
+     * @param string $transcriber
+     * @return mixed
+     */
+    public function getTranscriptionCountForTranscriber(int $projectId, string $transcriber)
+    {
+        return Cache::remember(md5(__METHOD__.$projectId.$transcriber), 86400, function () use ($projectId, $transcriber) {
+            return $this->panoptesTranscriptionService->getTranscriptionCountForTranscriber($projectId, $transcriber);
+        });
+    }
 }

@@ -34,7 +34,7 @@ use Storage;
 class PanoptesApiService extends HttpRequest
 {
     /**
-     * @var GenericProvider
+     * @var
      */
     public $provider;
 

@@ -22,6 +22,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\NfnExpertReviewJob;
 use App\Jobs\NfnExpertReviewPublishJob;
+use App\Services\Api\ZooniverseTalkApiService;
 use App\Services\Process\ExpertReconcileProcess;
 use Illuminate\Http\RedirectResponse;
 use App\Services\Model\ExpeditionService;
@@ -62,9 +63,10 @@ class ReconcileController extends Controller
      *
      * @param string $expeditionId
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
+     * @param \App\Services\Api\ZooniverseTalkApiService $zooniverseTalkApiService
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function index(string $expeditionId, PanoptesApiService $panoptesApiService)
+    public function index(string $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService)
     {
         $expedition = $this->expeditionService->findWith($expeditionId, ['project.group.owner']);
 
@@ -80,11 +82,12 @@ class ReconcileController extends Controller
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
+        $comments = $zooniverseTalkApiService->getComments($expedition->project_id, $reconciles->first()->subject_id);
         $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
         $imgUrl = $this->expertReconcileService->getImageUrl($reconciles->first()->subject_imageName, $location);
         $columns = $this->expertReconcileService->setColumnMasks($reconciles->first()->columns);
 
-        return view('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition'));
+        return view('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
     }
 
     /**

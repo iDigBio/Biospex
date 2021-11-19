@@ -5,7 +5,7 @@
 @stop
 
 @push('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 @endpush
 
 @section('content')
@@ -56,14 +56,18 @@
                                           name="{{ $mask }}">{{ $reconciles->first()->{$column} }}</textarea>
                             </div>
                             <div class="col-5">
-                                <label class="col-form-label">{{ t('Participants entered for') }} {{ $column }}
-                                    :</label>
+                                <label class="col-form-label">{{ t('Participants entered for') }} {{ $column }}:</label>
                                 @foreach($reconciles->first()->transcriptions as $transcription)
+                                    @php
+                                        $count = CountHelper::getTranscriptionCountForTranscriber($transcription->subject_projectId, $transcription->user_name);
+                                    @endphp
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="radio"
                                                data-column="{{ $mask }}"
                                                value="{{ $transcription->{$column} }}">
                                         <label class="form-check-label" for="{{ $transcription->_id }}">
+                                                <i class="fa fa-flag {{ $count < 500 ? 'fa-flag-grey' : 'fa-flag-green' }}" aria-hidden="true" data-hover="tooltip"
+                                                   title="{{ $transcription->user_name }} has {{ $count }} transcriptions"></i>
                                             {!! $transcription->{$column} ?: '<i>'.t('participant left blank').'</i>' !!}
                                         </label>
                                     </div>
@@ -95,7 +99,23 @@
             @else
                 <div class="row mt-5">
                     <div class="col-12 m-auto justify-content-center text-center">
-                        <p>{{ t('Once you have submitted your expert opinion for each page, go to the last page and click "Publish Reconciled."') }}</p>
+                        <p>{{ t('Once you have submitted your expert opinion for all pages, go to the last page and click "Publish Reconciled."') }}</p>
+                    </div>
+                </div>
+            @endif
+            @if(! empty($comments))
+                <div class="row">
+                    <div class="text-center mx-auto my-4">
+                        <button class="toggle-view-btn btn btn-primary pl-4 pr-4 text-uppercase"
+                                data-toggle="collapse"
+                                data-target="#talk"
+                                data-value="{{ t('toggle talk comments') }}"
+                        >{{ t('toggle talk comments') }}</button>
+                    </div>
+                    <div id="talk" class="col-sm-12 collapse">
+                        <div id="comments" class="row col-sm-12 mx-auto justify-content-center">
+                            @each('admin.reconcile.partials.comments-loop', $comments, 'comment')
+                        </div>
                     </div>
                 </div>
             @endif

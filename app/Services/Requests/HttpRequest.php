@@ -37,9 +37,8 @@ use GuzzleHttp\Pool;
  */
 class HttpRequest
 {
-
     /**
-     * @var GenericProvider
+     * @var
      */
     protected $provider;
 

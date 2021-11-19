@@ -214,6 +214,8 @@ return [
         'scopes'       => env('PANOPTES_SCOPES'),
     ],
 
+    'talk_api_uri' => env('ZOONIVERSE_TALK_API'),
+
     'nfnSearch' => [
         'eol'     => env('NFN_EOL_SEARCH'),
         'mol'     => env('NFN_MOL_SEARCH'),

@@ -289,4 +289,16 @@ class PanoptesTranscriptionService extends BaseModelService
             })->pluck('count', '_id');
         });
     }
+
+    /**
+     * Return count for transcriber.
+     *
+     * @param int $projectId
+     * @param string $transcriber
+     * @return int
+     */
+    public function getTranscriptionCountForTranscriber(int $projectId, string $transcriber): int
+    {
+        return $this->model->where('subject_projectId', $projectId)->where('user_name', $transcriber)->count();
+    }
 }
