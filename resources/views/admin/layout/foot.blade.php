@@ -7,7 +7,7 @@
     <!-- Copyright -->
 </footer>
 @include('common.php-vars-javascript')
-<script src="{{ mix('/js/manifest.js', 'backend') }}"></script>
-<script src="{{ mix('/js/vendor.js', 'backend') }}"></script>
-<script src="{{ mix('/js/admin.js', 'backend') }}"></script>
+<script src="{{ mix('/js/manifest.js') }}"></script>
+<script src="{{ mix('/js/vendor.js') }}"></script>
+<script src="{{ mix('/js/admin.js') }}"></script>
 @stack('scripts')

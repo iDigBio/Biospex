@@ -37,9 +37,8 @@ use GuzzleHttp\Pool;
  */
 class HttpRequest
 {
-
     /**
-     * @var GenericProvider
+     * @var
      */
     protected $provider;
 
@@ -184,6 +183,9 @@ class HttpRequest
         };
     }
 
+    /**
+     * @return \Closure
+     */
     public function retryDelay()
     {
         return function ($numberOfRetries)

@@ -121,16 +121,16 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Return the sluggable configuration array for this model.
+     * Return the sluggable configuration array for this model test.
      *
      * @return array
      */
-    public function sluggable()
+    public function sluggable(): array
     {
         return [
             'slug' => [
-                'source' => 'title',
-            ],
+                'source' => 'title'
+            ]
         ];
     }
 

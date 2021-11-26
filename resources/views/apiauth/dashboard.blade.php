@@ -25,11 +25,6 @@
                 <div class="d-flex align-items-start justify-content-between my-4 mx-auto">
                     <a class="btn btn-primary mr-4" href="https://biospex.docs.apiary.io/#">{{ t('API Docs') }}</a>
                     <a class="btn btn-primary mr-4" href="https://github.com/iDigBio/Biospex">{{ t('GitHub') }}</a>
-                    <a class="btn btn-primary mr-4" rel="nofollow" data-method="delete" href="{{ route('api.get.logout') }}">{{ t('Log Out') }}</a>
-                </div>
-                <div id="app" class="col-md-10 mx-auto my-4">
-                    <!-- let people make clients -->
-                    <passport-clients></passport-clients>
                 </div>
             </div>
         </div>

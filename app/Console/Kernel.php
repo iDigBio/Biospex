@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
             // Create Zooniverse csv files Mon, Wed, Fri
             $schedule->command('zooniverse:csv')
                 ->timezone('America/New_York')
-                ->days([1,3,5])->at('01:00')->before(function () {
+                ->days([1,3,5])->at('01:00')->before(function () { //mon, wed, fri
                     Cache::flush();
                     Artisan::call('lada-cache:flush');
                 });

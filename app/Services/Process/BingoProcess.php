@@ -106,7 +106,7 @@ class BingoProcess
     }
 
     /**
-     * Create bingo map.
+     * Create bingo map. Default Tallahassee if lat/long empty.
      *
      * @param \App\Models\Bingo $bingo
      * @return \Illuminate\Database\Eloquent\Model
@@ -116,8 +116,8 @@ class BingoProcess
         $values = [
             'bingo_id' => $bingo->id,
             'ip' => $this->location->ip,
-            'latitude' => $this->location->latitude,
-            'longitude' => $this->location->longitude,
+            'latitude' => $this->location->latitude == null ? '30.43826' : $this->location->latitude,
+            'longitude' => $this->location->longitude == null ? '-84.28073' : $this->location->longitude,
             'city' => $this->location->city
         ];
 

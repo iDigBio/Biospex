@@ -1,8 +1,10 @@
 {
-    "/js/front.js": "/js/front.js?id=7176f8fc17808d73fd0d",
-    "/css/front.css": "/css/front.css?id=e90069f5514536963a83",
-    "/js/manifest.js": "/js/manifest.js?id=3c768977c2574a34506e",
-    "/js/vendor.js": "/js/vendor.js?id=0743d854d9c656e8ec8d",
+    "/js/front.js": "/js/front.js?id=d2bbf565f0493c8c06fa",
+    "/js/admin.js": "/js/admin.js?id=4be75b2d923e55bb450c",
+    "/js/manifest.js": "/js/manifest.js?id=10232ca82de81dd79879",
+    "/css/admin.css": "/css/admin.css?id=f6f5dacd9401a89b224e",
+    "/css/front.css": "/css/front.css?id=5c23e60a9ce20fddff5b",
+    "/js/vendor.js": "/js/vendor.js?id=6f5c3c575bebf668e3f8",
     "/js/amChartMap.js": "/js/amChartMap.js?id=fe1c295f2766d0cd74ed",
     "/js/amChartMap.min.js": "/js/amChartMap.min.js?id=fe1c295f2766d0cd74ed",
     "/js/amChartTranscript.js": "/js/amChartTranscript.js?id=c47f2153cdf9eb5e0eeb",
@@ -12,5 +14,8 @@
     "/js/amChartEventRate.js": "/js/amChartEventRate.js?id=b10f1784c42814da5833",
     "/js/amChartEventRate.min.js": "/js/amChartEventRate.min.js?id=b10f1784c42814da5833",
     "/js/amChartBingo.js": "/js/amChartBingo.js?id=8490ad22fc00c622ea52",
-    "/js/amChartBingo.min.js": "/js/amChartBingo.min.js?id=8490ad22fc00c622ea52"
+    "/js/amChartBingo.min.js": "/js/amChartBingo.min.js?id=8490ad22fc00c622ea52",
+    "/js/jquery.form.min.js": "/js/jquery.form.min.js?id=f448c593c242d134e973",
+    "/js/expertReview.js": "/js/expertReview.js?id=331668b914669c01c1ac",
+    "/js/expertReview.min.js": "/js/expertReview.min.js?id=331668b914669c01c1ac"
 }

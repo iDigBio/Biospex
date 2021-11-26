@@ -60,12 +60,16 @@ class DateHelper
      * @param $date
      * @param null $format
      * @param null $tz
-     * @return mixed
+     * @return \Illuminate\Support\Carbon|string
      */
     public function formatDate($date, $format = null, $tz = null)
     {
         if (is_null($date)) {
             return Carbon::now();
+        }
+
+        if (!$date instanceof Carbon) {
+            $date = Carbon::parse($date);
         }
 
         return $date->copy()->tz($tz)->format($format);

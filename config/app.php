@@ -233,7 +233,6 @@ return [
         'Flash'            => FlashHelper::class,
         'GeneralHelper'    => GeneralHelper::class,
         'CountHelper'      => CountHelper::class,
-        'ActorEventHelper' => ActorEventHelper::class
     ],
 
 ];
