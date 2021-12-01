@@ -43,6 +43,11 @@ class AppPdfConvertCommand extends Command
     protected $description = 'Used for custom queries when updating database';
 
     /**
+     * @var null
+     */
+    protected $imageDir = null;
+
+    /**
      * @var \App\Services\Csv\Csv
      */
     private $csv;
@@ -61,9 +66,57 @@ class AppPdfConvertCommand extends Command
      */
     public function handle()
     {
+        //$this->convertPdf();
         //$this->renameFiles();
         //$this->renameCsv('fossils/mammal/images.csv','fossils/mammal/imagesNew.csv');
         //$this->renameCsv('fossils/bird/images.csv','fossils/bird/imagesNew.csv');
+    }
+
+    public function convertPdf()
+    {
+        $pdfPath = \Storage::path(config('config.scratch_dir').'/osteology');
+        collect(\File::files($pdfPath))->each(function($file){
+            $this->writeFileToImage($file);
+            $this->combineImages($file);
+            \File::deleteDirectory($this->imageDir);
+            $this->imageDir = null;
+        });
+    }
+
+    private function writeFileToImage($file)
+    {
+        $this->imageDir = \Storage::path(config('config.scratch_dir') . '/'.rand(10,12));
+        \File::makeDirectory($this->imageDir);
+
+        $im = new \Imagick();
+        $im->setResourceLimit(6, 1);
+        $im->setResolution(300,300);
+        $im->readImage($file->getPathname());
+        $im->setBackgroundColor('white');
+        $im->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE );
+        $im->setImageFormat('jpg');
+
+        $im->writeImages($this->imageDir . '/' . $file->getBasename('.pdf') . '.jpg', false);
+        $im->clear();
+    }
+
+    private function combineImages($file)
+    {
+        $name = $file->getBasename('.pdf') . '.jpg';
+
+        $im = new \Imagick();
+        $files = collect(\File::files($this->imageDir));
+        $files->each(function ($file) use (&$im) {
+            $im->setResolution(300,300);
+            $im->readImage($file->getPathName());
+        });
+
+        $im->resetIterator();
+        $combined = $im->appendImages(true);
+        $combined->setImageFormat('jpg');
+        $combined->writeImage( \Storage::path(config('config.scratch_dir') . '/combined/' . $name));
+        $im->clear();
+        $combined->clear();
     }
 
     public function renameFiles()
