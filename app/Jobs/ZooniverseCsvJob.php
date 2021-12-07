@@ -55,6 +55,9 @@ class ZooniverseCsvJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
+     * [media][0][updated_at]
+     * [errors]
+     *
      * @param array $expeditionIds
      * @param int $tries
      * @param bool $delayed
@@ -88,6 +91,18 @@ class ZooniverseCsvJob implements ShouldQueue
         $expeditionId = $filteredIds->shift();
 
         try {
+
+
+
+            if ($result['media'][0]['metadata']['state'] === 'creating') {
+                return null;
+            }
+
+            if ($result['media'][0]['metadata']['state'] === 'ready') {
+                return $result['media'][0]['src'];
+            }
+
+
 
             if (! $this->delayed) {
                 $service->createCsvRequest($expeditionId);

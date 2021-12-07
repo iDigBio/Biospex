@@ -65,12 +65,18 @@ class ZooniverseDownloadCommand extends Command
         try {
             $expeditionId = $this->argument('expeditionId');
 
-            $uri = $service->checkCsvRequest($expeditionId);
-            if (! isset($uri)) {
+            $result = $service->checkCsvRequest($expeditionId);
+
+            if ($result['media'][0]['metadata']['state'] === 'creating') {
+                echo t('CSV returned state of creating.') . PHP_EOL;
+                return;
+            }
+
+            if ($result['media'][0]['metadata']['state'] === 'ready' && !isset($result['media'][0]['src'])) {
                 throw new \Exception(t('Uri is not available at this time.'));
             }
 
-            ZooniverseCsvDownloadJob::dispatch($expeditionId, $uri);
+            ZooniverseCsvDownloadJob::dispatch($expeditionId, $result['media'][0]['src']);
         }
         catch (\Exception $e)
         {

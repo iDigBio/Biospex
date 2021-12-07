@@ -100,17 +100,7 @@ class ZooniverseCsvService
             throw new \Exception(t('Missing required expedition variables for Zooniverse classification check.'));
         }
 
-        $result = $this->sendRequest($expedition->panoptesProject->panoptes_workflow_id, 'GET');
-
-        if ($result['media'][0]['metadata']['state'] === 'creating') {
-            return null;
-        }
-
-        if ($result['media'][0]['metadata']['state'] === 'ready') {
-            return $result['media'][0]['src'];
-        }
-
-        throw new \Exception(t('Result state for checking classification completion is invalid for Expedition ID %s', $expeditionId));
+        return $this->sendRequest($expedition->panoptesProject->panoptes_workflow_id, 'GET');
     }
 
     /**
