@@ -60,11 +60,7 @@ class ZooniverseTalkApiService
     {
         $this->setResourceUri($projectId, $subjectId);
 
-        $talk = Cache::remember(__METHOD__.$projectId.$subjectId, 3600, function () {
-            $response = Http::get($this->resource_uri);
-
-            return $response->json();
-        });
+        $talk = Http::get($this->resource_uri)->json();
 
         return $talk['comments'];
     }
