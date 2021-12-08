@@ -35,7 +35,7 @@ class AppPdfConvertCommand extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'update:queries';
+    protected $signature = 'convert:pdf';
 
     /**
      * The console command description.
@@ -67,7 +67,8 @@ class AppPdfConvertCommand extends Command
     public function handle()
     {
         //$this->convertPdf();
-        //$this->renameFiles();
+        //echo "complete" . PHP_EOL;
+        //$this->renameFiles(); 5:45  1.046    1256 takes 20 minutes, 30 hours for 100K images
         //$this->renameCsv('fossils/mammal/images.csv','fossils/mammal/imagesNew.csv');
         //$this->renameCsv('fossils/bird/images.csv','fossils/bird/imagesNew.csv');
     }
@@ -75,8 +76,10 @@ class AppPdfConvertCommand extends Command
     public function convertPdf()
     {
         $pdfPath = \Storage::path(config('config.scratch_dir').'/osteology');
+        echo $pdfPath . PHP_EOL;
         collect(\File::files($pdfPath))->each(function($file){
             $this->writeFileToImage($file);
+            echo 'writing image' . PHP_EOL;
             $this->combineImages($file);
             \File::deleteDirectory($this->imageDir);
             $this->imageDir = null;
