@@ -27,6 +27,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 
 /**
  * Class ZooniverseCsvJob
@@ -38,19 +39,19 @@ class ZooniverseCsvJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
     /**
-     * @var array
+     * @var \Illuminate\Support\Collection
      */
-    private $expeditionIds;
+    private Collection $expeditionIds;
 
     /**
      * @var bool
      */
-    private $delayed;
+    private bool $delayed;
 
     /**
      * @var int
      */
-    private $tries;
+    private int $tries;
 
     /**
      * Create a new job instance.
@@ -91,18 +92,7 @@ class ZooniverseCsvJob implements ShouldQueue
         $expeditionId = $filteredIds->shift();
 
         try {
-
-
-
-            if ($result['media'][0]['metadata']['state'] === 'creating') {
-                return null;
-            }
-
-            if ($result['media'][0]['metadata']['state'] === 'ready') {
-                return $result['media'][0]['src'];
-            }
-
-
+            $result = $service->checkCsvRequest($expeditionId);
 
             if (! $this->delayed) {
                 $service->createCsvRequest($expeditionId);
@@ -112,6 +102,15 @@ class ZooniverseCsvJob implements ShouldQueue
 
                 return;
             }
+
+            if ($result['media'][0]['metadata']['state'] === 'creating') {
+                return null;
+            }
+
+            if ($result['media'][0]['metadata']['state'] === 'ready') {
+                return $result['media'][0]['src'];
+            }
+
 
             $uri = $service->checkCsvRequest($expeditionId);
             if (! isset($uri)) {

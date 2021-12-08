@@ -87,12 +87,12 @@ class ZooniverseCsvService
      * Build and send request to check csv file creating or ready.
      *
      * @param int $expeditionId
-     * @return mixed|null
+     * @return mixed
      * @throws \Exception
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
-    public function checkCsvRequest(int $expeditionId)
+    public function checkCsvRequest(int $expeditionId): mixed
     {
         $expedition = $this->getExpedition($expeditionId);
 

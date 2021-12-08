@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 /**
@@ -51,6 +52,9 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
+        //$date = Carbon::parse('2021-12-08T08:00:56.216Z', 'UTC')->format('d/m/Y h:m:s');
+        $date = Carbon::parse('2021-12-08T08:00:56.216Z');
+        $now = Carbon::now('UTC');
+        dd($date->diffInHours($now));
     }
 }
