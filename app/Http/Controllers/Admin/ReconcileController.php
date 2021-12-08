@@ -68,7 +68,7 @@ class ReconcileController extends Controller
      */
     public function index(string $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService)
     {
-        $expedition = $this->expeditionService->findWith($expeditionId, ['project.group.owner']);
+        $expedition = $this->expeditionService->findWith($expeditionId, ['project.group.owner', 'panoptesProject']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
@@ -82,7 +82,8 @@ class ReconcileController extends Controller
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        $comments = $zooniverseTalkApiService->getComments($expedition->project_id, $reconciles->first()->subject_id);
+        $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, 69205117);
+
         $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
         $imgUrl = $this->expertReconcileService->getImageUrl($reconciles->first()->subject_imageName, $location);
         $columns = $this->expertReconcileService->setColumnMasks($reconciles->first()->columns);
