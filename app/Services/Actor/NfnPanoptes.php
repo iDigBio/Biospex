@@ -19,7 +19,7 @@
 
 namespace App\Services\Actor;
 
-use App\Jobs\ZooniverseClassificationCountJob;
+use App\Jobs\ZooniverseCsvJob;
 use App\Jobs\ZooniverseExportBuildCsvJob;
 use App\Jobs\ZooniverseExportBuildQueueJob;
 use App\Jobs\ZooniverseExportBuildTarJob;
@@ -84,7 +84,7 @@ class NfnPanoptes
                 $this->sendErrorNotification($exception);
             })->name('Zooniverse Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
         } elseif ($actor->pivot->state === 1) {
-            ZooniverseClassificationCountJob::dispatch($actor->pivot->expedition_id);
+            ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);
         }
     }
 
