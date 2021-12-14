@@ -19,8 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Csv\ZooniverseCsvService;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 /**
@@ -41,17 +39,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\Csv\ZooniverseCsvService
-     */
-    private ZooniverseCsvService $service;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(ZooniverseCsvService $service)
+    public function __construct()
     {
         parent::__construct();
-        $this->service = $service;
     }
 
     /**
@@ -59,13 +51,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $result = $this->service->checkCsvRequest(376);
 
-        if ($this->service->checkDateTime($result)) {
-            echo 'send to job' . PHP_EOL;
-            return;
-        }
-
-        echo 'did not send to job' . PHP_EOL;
     }
 }
