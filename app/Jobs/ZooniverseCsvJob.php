@@ -74,9 +74,13 @@ class ZooniverseCsvJob implements ShouldQueue
         try {
             $result = $service->checkCsvRequest($this->expeditionId);
 
-            if ($service->checkDateTime($result)) {
+            if ($service->checkErrors($result) || $service->checkDateTime($result)) {
                 ZooniverseCreateCsvJob::dispatch($this->expeditionId);
+                $this->delete();
+                return;
             }
+
+            ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addMinutes(30));
 
             $this->delete();
         } catch (\Exception $e) {
