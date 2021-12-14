@@ -34,7 +34,7 @@ class ZooniverseCsvCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'zooniverse:csv {expeditionIds?*} {--delayed}';
+    protected $signature = 'zooniverse:csv {expeditionIds?*}';
 
     /**
      * The console command description.
@@ -64,7 +64,9 @@ class ZooniverseCsvCommand extends Command
         $expeditionIds = empty($this->argument('expeditionIds')) ?
             $this->getExpeditionIds($expeditionService) : $this->argument('expeditionIds');
 
-        ZooniverseCsvJob::dispatch($expeditionIds, $this->option('delayed'));
+        foreach ($expeditionIds as $expeditionId) {
+            ZooniverseCsvJob::dispatch($expeditionId);
+        }
     }
 
     /**

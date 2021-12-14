@@ -21,6 +21,7 @@ namespace App\Services\Csv;
 
 use App\Services\Model\ExpeditionService;
 use App\Services\Api\PanoptesApiService;
+use Carbon\Carbon;
 
 /**
  * Class ZooniverseCsvService
@@ -132,5 +133,40 @@ class ZooniverseCsvService
         $request = $this->panoptesApiService->buildAuthorizedRequest($method, $uri, $extra);
 
         return $this->panoptesApiService->sendAuthorizedRequest($request);
+    }
+
+    /**
+     * Calculate time difference.
+     * If errors, csv doesn't exist yet.
+     * Hours must be greater than 24 hours for Zooniverse to create CSV.
+     *
+     * @param $result
+     * @return bool
+     */
+    public function checkDateTime($result): bool
+    {
+        if (isset($result['errors'])) {
+            return true;
+        }
+
+        if (! isset($result['media'][0]['updated_at']) || empty($result['media'][0]['updated_at'])) {
+            return $this->parseTime($result['media'][0]['created_at']) > 24;
+        }
+
+        return $this->parseTime($result['media'][0]['updated_at']) > 24;
+    }
+
+    /**
+     * Parse time.
+     *
+     * @param string $date
+     * @return int
+     */
+    public function parseTime(string $date): int
+    {
+        $date = Carbon::parse($date);
+        $now = Carbon::now('UTC');
+
+        return $date->diffInHours($now);
     }
 }

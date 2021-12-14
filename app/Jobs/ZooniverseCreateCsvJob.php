@@ -19,24 +19,22 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Csv\ZooniverseCsvService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Class ZooniverseCsvJob
+ * Class ZooniverseCreateCsvJob
  *
  * @package App\Jobs
  */
-class ZooniverseCsvJob implements ShouldQueue
+class ZooniverseCreateCsvJob
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var int
@@ -44,11 +42,6 @@ class ZooniverseCsvJob implements ShouldQueue
     private int $expeditionId;
 
     /**
-     * Create a new job instance.
-     *
-     * [media][0][updated_at]
-     * [errors]
-     *
      * @param int $expeditionId
      */
     public function __construct(int $expeditionId)
@@ -65,18 +58,9 @@ class ZooniverseCsvJob implements ShouldQueue
      */
     public function handle(ZooniverseCsvService $service)
     {
-        if ($this->skipApi($this->expeditionId)) {
-            $this->delete();
-
-            return;
-        }
-
         try {
-            $result = $service->checkCsvRequest($this->expeditionId);
-
-            if ($service->checkDateTime($result)) {
-                ZooniverseCreateCsvJob::dispatch($this->expeditionId);
-            }
+            $service->createCsvRequest($this->expeditionId);
+            ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addMinutes(30));
 
             $this->delete();
         } catch (\Exception $e) {

@@ -19,24 +19,17 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Csv\ZooniverseCsvService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-/**
- * Class ZooniverseCsvJob
- *
- * @package App\Jobs
- */
-class ZooniverseCsvJob implements ShouldQueue
+class ZooniverseProcessCsvJob
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var int
@@ -44,17 +37,19 @@ class ZooniverseCsvJob implements ShouldQueue
     private int $expeditionId;
 
     /**
-     * Create a new job instance.
-     *
-     * [media][0][updated_at]
-     * [errors]
-     *
-     * @param int $expeditionId
+     * @var int
      */
-    public function __construct(int $expeditionId)
+    private int $tries;
+
+    /**
+     * @param int $expeditionId
+     * @param int $tries
+     */
+    public function __construct(int $expeditionId, int $tries = 0)
     {
         $this->onQueue(config('config.classification_tube'));
         $this->expeditionId = $expeditionId;
+        $this->tries = $tries;
     }
 
     /**
@@ -65,18 +60,31 @@ class ZooniverseCsvJob implements ShouldQueue
      */
     public function handle(ZooniverseCsvService $service)
     {
-        if ($this->skipApi($this->expeditionId)) {
-            $this->delete();
-
-            return;
-        }
-
         try {
             $result = $service->checkCsvRequest($this->expeditionId);
 
-            if ($service->checkDateTime($result)) {
-                ZooniverseCreateCsvJob::dispatch($this->expeditionId);
+            if ($result['media'][0]['metadata']['state'] === 'creating') {
+                if ($this->tries === 3) {
+                    throw new \Exception(t('Zooniverse csv creation for Expedition Id %s exceeded number of tries.', $this->expeditionId));
+                }
+
+                $this->tries++;
+
+                $this->dispatch($this->expeditionId, $this->tries)->delay(now()->addMinutes(30));
+
+                $this->delete();
             }
+
+            $uri = $result['media'][0]['src'] ?? null;
+            if ($uri === null) {
+                throw new \Exception(t('Zooniverse csv uri for Expedition Id %s is missing', $this->expeditionId));
+            }
+
+            ZooniverseCsvDownloadJob::withChain([
+                new ZooniverseReconcileJob($this->expeditionId),
+                new ZooniverseTranscriptionJob($this->expeditionId),
+                new ZooniversePusherJob($this->expeditionId),
+            ])->dispatch($this->expeditionId, $uri);
 
             $this->delete();
         } catch (\Exception $e) {
