@@ -54,14 +54,10 @@ class Kernel extends ConsoleKernel
             */
 
             // Trigger workflow manager to handle csv creation and updating expedition/project
-            $schedule->command('workflow:manage')->timezone('America/New_York')->days([
-                    1,
-                    3,
-                    5,
-                ])->at('01:00')->before(function () {
-                    Cache::flush();
-                    Artisan::call('lada-cache:flush');
-                });
+            $schedule->command('workflow:manage')->timezone('America/New_York')->at('01:00')->before(function () {
+                Cache::flush();
+                Artisan::call('lada-cache:flush');
+            });
 
             // WeDigBio classification cron
             $schedule->command('dashboard:records')->everyThirtyMinutes();
