@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     * @param \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -34,36 +34,35 @@ class Kernel extends ConsoleKernel
         $schedule->command('ocrprocess:records')->everyFiveMinutes();
 
         // Failed jobs report used to check ocr
-        $schedule->command('report:failed')
-            ->timezone('America/New_York')
-            ->dailyAt('05:30');
+        $schedule->command('report:failed')->timezone('America/New_York')->dailyAt('05:30');
 
         // Clean imports directory
-        $schedule->command('download:clean')
-            ->timezone('America/New_York')
-            ->dailyAt('06:00');
+        $schedule->command('download:clean')->timezone('America/New_York')->dailyAt('06:00');
 
         // Clean bingo maps
-        $schedule->command('bingo:clean')
-            ->timezone('America/New_York')
-            ->dailyAt('06:05');
+        $schedule->command('bingo:clean')->timezone('America/New_York')->dailyAt('06:05');
 
         if ($this->app->environment('prod')) {
             // Create Zooniverse csv files Mon, Wed, Fri
+            /*
             $schedule->command('zooniverse:csv')
                 ->timezone('America/New_York')
                 ->days([1,3,5])->at('01:00')->before(function () { //mon, wed, fri
                     Cache::flush();
                     Artisan::call('lada-cache:flush');
                 });
+            */
 
-            // Trigger workflow manager to update expeditions and projects
-            $schedule->command('workflow:manage')
-                ->timezone('America/New_York')
-                ->days([1,3,5])->at('04:00')->before(function () {
+            // Trigger workflow manager to handle csv creation and updating expedition/project
+            $schedule->command('workflow:manage')->timezone('America/New_York')->days([
+                    1,
+                    3,
+                    5,
+                ])->at('01:00')->before(function () {
                     Cache::flush();
                     Artisan::call('lada-cache:flush');
                 });
+
             // WeDigBio classification cron
             $schedule->command('dashboard:records')->everyThirtyMinutes();
         }
