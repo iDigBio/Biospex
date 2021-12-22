@@ -25,7 +25,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class ZooniverseCsvDownloadJob
@@ -39,12 +41,12 @@ class ZooniverseCsvDownloadJob implements ShouldQueue
     /**
      * @var int
      */
-    private $expeditionId;
+    private int $expeditionId;
 
     /**
      * @var string
      */
-    private $uri;
+    private string $uri;
 
     /**
      * Create a new job instance.
@@ -63,21 +65,36 @@ class ZooniverseCsvDownloadJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Csv\ZooniverseCsvService $service
-     * @return void
      */
     public function handle(ZooniverseCsvService $service)
     {
-        try {
-            $service->downloadCsv($this->expeditionId, $this->uri);
-        }
-        catch (\Exception $e) {
-            $user = User::find(1);
-            $messages = [
-                t('Error: %s', $e->getMessage()),
-                t('File: %s', $e->getFile()),
-                t('Line: %s', $e->getLine()),
-            ];
-            $user->notify(new JobError(__FILE__, $messages));
-        }
+        $service->downloadCsv($this->expeditionId, $this->uri);
+    }
+
+    /**
+     * Prevent job overlap using expeditionId.
+     *
+     * @return \Illuminate\Queue\Middleware\WithoutOverlapping[]
+     */
+    public function middleware(): array
+    {
+        return [new WithoutOverlapping($this->expeditionId)];
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $user = User::find(1);
+        $messages = [
+            t('Error: %s', $exception->getMessage()),
+            t('File: %s', $exception->getFile()),
+            t('Line: %s', $exception->getLine()),
+        ];
+        $user->notify(new JobError(__FILE__, $messages));
     }
 }

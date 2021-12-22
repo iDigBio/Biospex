@@ -22,12 +22,12 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Process\TranscriptionChartService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Services\Model\ProjectService;
+use Throwable;
 
 /**
  * Class AmChartJob
@@ -43,12 +43,12 @@ class AmChartJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 3600;
+    public int $timeout = 3600;
 
     /**
-     * @var
+     * @var int
      */
-    protected $projectId;
+    protected int $projectId;
 
     /**
      * AmChartJob constructor.
@@ -69,23 +69,27 @@ class AmChartJob implements ShouldQueue
      */
     public function handle(ProjectService $projectService, TranscriptionChartService $service)
     {
-        try {
-            $project = $projectService->getProjectForAmChartJob($this->projectId);
+        $project = $projectService->getProjectForAmChartJob($this->projectId);
 
-            $service->process($project);
+        $service->process($project);
 
-            $this->delete();
-        }
-        catch (Exception $e)
-        {
-            $user = User::find(1);
+        $this->delete();
+    }
 
-            $messages = [
-                'Project Id: '.$this->projectId,
-                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
-            ];
-
-            $user->notify(new JobError(__FILE__, $messages));
-        }
+    /**
+     * Handle a job failure.
+     *
+     * @param \Throwable $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $user = User::find(1);
+        $messages = [
+            t('Error: %s', $exception->getMessage()),
+            t('File: %s', $exception->getFile()),
+            t('Line: %s', $exception->getLine()),
+        ];
+        $user->notify(new JobError(__FILE__, $messages));
     }
 }

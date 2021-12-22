@@ -28,8 +28,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
+use Throwable;
 
 /**
  * Class ZooniversePusherJob
@@ -43,17 +45,17 @@ class ZooniversePusherJob implements ShouldQueue
     /**
      * @var int
      */
-    private $expeditionId;
+    private int $expeditionId;
 
     /**
      * @var int|null
      */
-    private $days;
+    private ?int $days;
 
     /**
      * @var int
      */
-    public $timeout = 300;
+    public int $timeout = 300;
 
     /**
      * Create a new job instance.
@@ -73,44 +75,55 @@ class ZooniversePusherJob implements ShouldQueue
      *
      * @param \App\Services\Process\PusherTranscriptionProcess $pusherTranscriptionProcess
      * @param \App\Services\Process\EventTranscriptionProcess $eventTranscriptionProcess
-     * @return void
+     * @throws \Exception
      */
     public function handle(PusherTranscriptionProcess $pusherTranscriptionProcess, EventTranscriptionProcess $eventTranscriptionProcess)
     {
         if ($this->skipReconcile($this->expeditionId)) {
-            return;
-        }
-
-        try
-        {
-            $expedition = $pusherTranscriptionProcess->getExpedition($this->expeditionId);
-            if (!$expedition) {
-                throw new Exception(t('Could not find Expedition using Id: %', $this->expeditionId));
-            }
-
-            $timestamp = isset($this->days) ? Carbon::now()->subDays($this->days) : Carbon::now()->subDays(3);
-
-            $transcriptions = $pusherTranscriptionProcess->getTranscriptions($expedition->id, $timestamp);
-
-            $transcriptions->each(function ($transcription) use ($pusherTranscriptionProcess, $eventTranscriptionProcess, $expedition) {
-                $pusherTranscriptionProcess->processTranscripts($transcription, $expedition);
-                $eventTranscriptionProcess->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
-            });
+            $this->delete();
 
             return;
         }
-        catch (Exception $e)
-        {
-            $user = User::find(1);
-            $messages = [
-                t('Expedition Id: %s', $this->expeditionId),
-                t('Error: %s', $e->getMessage()),
-                t('File: %s', $e->getFile()),
-                t('Line: %s', $e->getLine()),
-            ];
-            $user->notify(new JobError(__FILE__, $messages));
 
-            return;
+        $expedition = $pusherTranscriptionProcess->getExpedition($this->expeditionId);
+        if (!$expedition) {
+            throw new Exception(t('Could not find Expedition using Id: %', $this->expeditionId));
         }
+
+        $timestamp = isset($this->days) ? Carbon::now()->subDays($this->days) : Carbon::now()->subDays(3);
+
+        $transcriptions = $pusherTranscriptionProcess->getTranscriptions($expedition->id, $timestamp);
+
+        $transcriptions->each(function ($transcription) use ($pusherTranscriptionProcess, $eventTranscriptionProcess, $expedition) {
+            $pusherTranscriptionProcess->processTranscripts($transcription, $expedition);
+            $eventTranscriptionProcess->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
+        });
+    }
+
+    /**
+     * Prevent job overlap using expeditionId.
+     *
+     * @return \Illuminate\Queue\Middleware\WithoutOverlapping[]
+     */
+    public function middleware(): array
+    {
+        return [new WithoutOverlapping($this->expeditionId)];
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param \Throwable $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $user = User::find(1);
+        $messages = [
+            t('Error: %s', $exception->getMessage()),
+            t('File: %s', $exception->getFile()),
+            t('Line: %s', $exception->getLine()),
+        ];
+        $user->notify(new JobError(__FILE__, $messages));
     }
 }

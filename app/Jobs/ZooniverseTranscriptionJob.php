@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Jobs;
 
 use App\Jobs\Traits\SkipNfn;
@@ -23,14 +24,14 @@ use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Csv\Csv;
 use App\Services\Process\PanoptesTranscriptionProcess;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
-use Str;
+use Throwable;
 
 /**
  * Class ZooniverseTranscriptionJob
@@ -46,12 +47,12 @@ class ZooniverseTranscriptionJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 300;
+    public int $timeout = 300;
 
     /**
      * @var int
      */
-    private $expeditionId;
+    private int $expeditionId;
 
     /**
      * Create a new job instance.
@@ -69,52 +70,64 @@ class ZooniverseTranscriptionJob implements ShouldQueue
      *
      * @param \App\Services\Process\PanoptesTranscriptionProcess $transcriptionProcess
      * @param \App\Services\Csv\Csv $csv
-     * @return void
      * @throws \League\Csv\CannotInsertRecord
      */
     public function handle(PanoptesTranscriptionProcess $transcriptionProcess, Csv $csv)
     {
         if ($this->skipReconcile($this->expeditionId)) {
-            return;
-        }
-
-        $user = User::find(1);
-
-        try {
-            $transcriptDir = config('config.nfn_downloads_transcript');
-
-            if (! Storage::exists($transcriptDir.'/'.$this->expeditionId.'.csv')) {
-                $this->delete();
-
-                return;
-            }
-
-            $csvFile = Storage::path($transcriptDir.'/'.$this->expeditionId.'.csv');
-            $transcriptionProcess->process($csvFile, $this->expeditionId);
-
-            $fileName = $transcriptionProcess->checkCsvError();
-            if ($fileName !== null) {
-                $messages = [
-                    t('Expedition Id: %s', $this->expeditionId),
-                    t('Error: ', 'Zooniverse Transcription'),
-                    t('File: %s', __FILE__),
-                    t('Line: %s', 89),
-                ];
-                $user->notify(new JobError(__FILE__, $messages, $fileName));
-            }
+            $this->delete();
 
             return;
         }
-        catch (\Exception $e) {
+
+        $transcriptDir = config('config.nfn_downloads_transcript');
+
+        if (! Storage::exists($transcriptDir.'/'.$this->expeditionId.'.csv')) {
+            $this->delete();
+
+            return;
+        }
+
+        $csvFile = Storage::path($transcriptDir.'/'.$this->expeditionId.'.csv');
+        $transcriptionProcess->process($csvFile, $this->expeditionId);
+
+        $fileName = $transcriptionProcess->checkCsvError();
+        if ($fileName !== null) {
+            $user = User::find(1);
             $messages = [
                 t('Expedition Id: %s', $this->expeditionId),
-                t('Error: %s', $e->getMessage()),
-                t('File: %s', $e->getFile()),
-                t('Line: %s', $e->getLine()),
+                t('Error: ', 'Zooniverse Transcription'),
+                t('File: %s', __FILE__),
+                t('Line: %s', 89),
             ];
-            $user->notify(new JobError(__FILE__, $messages));
-
-            return;
+            $user->notify(new JobError(__FILE__, $messages, $fileName));
         }
+    }
+
+    /**
+     * Prevent job overlap using expeditionId.
+     *
+     * @return \Illuminate\Queue\Middleware\WithoutOverlapping[]
+     */
+    public function middleware(): array
+    {
+        return [new WithoutOverlapping($this->expeditionId)];
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param \Throwable $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $user = User::find(1);
+        $messages = [
+            t('Error: %s', $exception->getMessage()),
+            t('File: %s', $exception->getFile()),
+            t('Line: %s', $exception->getLine()),
+        ];
+        $user->notify(new JobError(__FILE__, $messages));
     }
 }

@@ -19,17 +19,19 @@
 
 namespace App\Jobs;
 
+use App\Models\Actor;
 use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Notifications\NfnTranscriptionsComplete;
 use App\Services\Model\ExpeditionService;
 use App\Services\Api\PanoptesApiService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Throwable;
 
 /**
  * Class ZooniverseClassificationCountJob
@@ -43,12 +45,12 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * @var int
      */
-    private $expeditionId;
+    private int $expeditionId;
 
     /**
      * @var \App\Models\Actor|null
      */
-    private $actor;
+    private ?Actor $actor;
 
     /**
      * Create a new job instance.
@@ -72,48 +74,33 @@ class ZooniverseClassificationCountJob implements ShouldQueue
         ExpeditionService $expeditionService,
         PanoptesApiService $panoptesApiService
     ) {
+        $expedition = $expeditionService->findWith($this->expeditionId, [
+            'project.group.owner',
+            'stat',
+            'nfnActor',
+            'panoptesProject',
+        ]);
 
-        try {
-            $expedition = $expeditionService->findWith($this->expeditionId, [
-                'project.group.owner',
-                'stat',
-                'nfnActor',
-                'panoptesProject',
-            ]);
-
-            if ($expedition === null || $this->workflowIdDoesNotExist($expedition)) {
-                $this->delete();
-
-                return;
-            }
-
-            $workflow = $panoptesApiService->getPanoptesWorkflow($expedition->panoptesProject->panoptes_workflow_id);
-            $panoptesApiService->calculateTotals($workflow, $expedition->id);
-
-            $expedition->stat->subject_count = $panoptesApiService->getSubjectCount();
-            $expedition->stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
-            $expedition->stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
-            $expedition->stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
-            $expedition->stat->percent_completed = $panoptesApiService->getPercentCompleted();
-
-            $expedition->stat->save();
-
-            $this->checkFinishedAt($expedition, $workflow['finished_at']);
-
-            AmChartJob::dispatch($expedition->project_id);
-
+        if ($expedition === null || $this->workflowIdDoesNotExist($expedition)) {
             $this->delete();
-        } catch (Exception $e) {
-            $messages = [
-                'Message: '.$e->getMessage(),
-                'File : '.$e->getFile().': '.$e->getLine(),
-            ];
 
-            $user = User::find(1);
-            $user->notify(new JobError(__FILE__, $messages));
-
-            $this->delete();
+            return;
         }
+
+        $workflow = $panoptesApiService->getPanoptesWorkflow($expedition->panoptesProject->panoptes_workflow_id);
+        $panoptesApiService->calculateTotals($workflow, $expedition->id);
+
+        $expedition->stat->subject_count = $panoptesApiService->getSubjectCount();
+        $expedition->stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
+        $expedition->stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
+        $expedition->stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
+        $expedition->stat->percent_completed = $panoptesApiService->getPercentCompleted();
+
+        $expedition->stat->save();
+
+        $this->checkFinishedAt($expedition, $workflow['finished_at']);
+
+        AmChartJob::dispatch($expedition->project_id);
     }
 
     /**
@@ -144,12 +131,39 @@ class ZooniverseClassificationCountJob implements ShouldQueue
         }
 
         $attributes = [
-            'state' => $expedition->nfnActor->pivot->state++,
-            'completed' => 1
+            'state'     => $expedition->nfnActor->pivot->state++,
+            'completed' => 1,
         ];
 
         $expedition->nfnActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
 
         $expedition->project->group->owner->notify(new NfnTranscriptionsComplete($expedition->title));
+    }
+
+    /**
+     * Prevent job overlap using expeditionId.
+     *
+     * @return \Illuminate\Queue\Middleware\WithoutOverlapping[]
+     */
+    public function middleware(): array
+    {
+        return [new WithoutOverlapping($this->expeditionId)];
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param \Throwable $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $user = User::find(1);
+        $messages = [
+            t('Error: %s', $exception->getMessage()),
+            t('File: %s', $exception->getFile()),
+            t('Line: %s', $exception->getLine()),
+        ];
+        $user->notify(new JobError(__FILE__, $messages));
     }
 }

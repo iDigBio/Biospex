@@ -1,21 +1,4 @@
 <?php
-/*
- * Copyright (C) 2015  Biospex
- * biospex@gmail.com
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
 
 namespace App\Jobs;
 
@@ -27,7 +10,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class ZooniverseCsvJob
@@ -46,10 +31,7 @@ class ZooniverseCsvJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * [media][0][updated_at]
-     * [errors]
-     *
-     * @param int $expeditionId
+     * @return void
      */
     public function __construct(int $expeditionId)
     {
@@ -58,39 +40,51 @@ class ZooniverseCsvJob implements ShouldQueue
     }
 
     /**
-     * Execute Job.
+     * Execute the job.
      *
      * @param \App\Services\Csv\ZooniverseCsvService $service
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
     public function handle(ZooniverseCsvService $service)
     {
         if ($this->skipApi($this->expeditionId)) {
             $this->delete();
-
-            return;
         }
 
-        try {
-            $result = $service->checkCsvRequest($this->expeditionId);
+        $result = $service->checkCsvRequest($this->expeditionId);
 
-            if ($service->checkErrors($result) || $service->checkDateTime($result)) {
-                ZooniverseCreateCsvJob::dispatch($this->expeditionId);
-                $this->delete();
-                return;
-            }
-
-            ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addMinutes(30));
-
-            $this->delete();
-        } catch (\Exception $e) {
-            $user = User::find(1);
-            $messages = [
-                t('Error: %s', $e->getMessage()),
-                t('File: %s', $e->getFile()),
-                t('Line: %s', $e->getLine()),
-            ];
-            $user->notify(new JobError(__FILE__, $messages));
+        if ($service->checkErrors($result) || $service->checkDateTime($result)) {
+            $service->createCsvRequest($this->expeditionId);
         }
+
+        ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addMinutes(30));
+    }
+
+    /**
+     * Prevent job overlap using expeditionId.
+     *
+     * @return \Illuminate\Queue\Middleware\WithoutOverlapping[]
+     */
+    public function middleware()
+    {
+        return [new WithoutOverlapping($this->expeditionId)];
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $user = User::find(1);
+        $messages = [
+            t('Error: %s', $exception->getMessage()),
+            t('File: %s', $exception->getFile()),
+            t('Line: %s', $exception->getLine()),
+        ];
+        $user->notify(new JobError(__FILE__, $messages));
     }
 }

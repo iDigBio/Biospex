@@ -26,7 +26,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class ZooniverseReconcileJob
@@ -42,12 +44,12 @@ class ZooniverseReconcileJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 300;
+    public int $timeout = 300;
 
     /**
      * @var int
      */
-    private $expeditionId;
+    private int $expeditionId;
 
     /**
      * Create a new job instance.
@@ -64,30 +66,41 @@ class ZooniverseReconcileJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Process\ReconcileProcess $service
-     * @return void
      */
     public function handle(ReconcileProcess $service)
     {
         if ($this->skipReconcile($this->expeditionId)) {
+            $this->delete();
             return;
         }
 
-        try {
-            $service->process($this->expeditionId);
+        $service->process($this->expeditionId);
+    }
 
-            return;
-        }
-        catch (\Exception $e) {
-            $user = User::find(1);
-            $messages = [
-                t('Expedition Id: %s', $this->expeditionId),
-                t('Error: %s', $e->getMessage()),
-                t('File: %s', $e->getFile()),
-                t('Line: %s', $e->getLine()),
-            ];
-            $user->notify(new JobError(__FILE__, $messages));
+    /**
+     * Prevent job overlap using expeditionId.
+     *
+     * @return \Illuminate\Queue\Middleware\WithoutOverlapping[]
+     */
+    public function middleware(): array
+    {
+        return [new WithoutOverlapping($this->expeditionId)];
+    }
 
-            return;
-        }
+    /**
+     * Handle a job failure.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $user = User::find(1);
+        $messages = [
+            t('Error: %s', $exception->getMessage()),
+            t('File: %s', $exception->getFile()),
+            t('Line: %s', $exception->getLine()),
+        ];
+        $user->notify(new JobError(__FILE__, $messages));
     }
 }
