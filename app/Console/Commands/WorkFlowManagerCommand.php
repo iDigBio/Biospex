@@ -48,12 +48,12 @@ class WorkFlowManagerCommand extends Command
     /**
      * @var \App\Services\Model\WorkflowManagerService
      */
-    protected $workflowManagerService;
+    protected WorkflowManagerService $workflowManagerService;
 
     /**
-     * @var
+     * @var mixed
      */
-    public $tube;
+    public mixed $tube;
 
     /**
      * WorkFlowManagerCommand constructor.
