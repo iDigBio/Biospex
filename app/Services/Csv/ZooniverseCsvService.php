@@ -33,12 +33,12 @@ class ZooniverseCsvService
     /**
      * @var \App\Services\Model\ExpeditionService
      */
-    private $expeditionService;
+    private ExpeditionService $expeditionService;
 
     /**
      * @var \App\Services\Api\PanoptesApiService
      */
-    private $panoptesApiService;
+    private PanoptesApiService $panoptesApiService;
 
     /**
      * ZooniverseCsvService constructor.
