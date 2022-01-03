@@ -129,7 +129,7 @@ class ZooniverseCsvService
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
-    public function sendRequest(int $workflowId, string $method, array $extra = [])
+    public function sendRequest(int $workflowId, string $method, array $extra = []): mixed
     {
         $this->panoptesApiService->setProvider();
         $this->panoptesApiService->checkAccessToken('panoptes_token');
@@ -160,7 +160,7 @@ class ZooniverseCsvService
      */
     public function checkDateTime(array $result): bool
     {
-        if (! isset($result['media'][0]['updated_at']) || empty($result['media'][0]['updated_at'])) {
+        if (empty($result['media'][0]['updated_at'])) {
             return $this->parseTime($result['media'][0]['created_at']) > 24;
         }
 
