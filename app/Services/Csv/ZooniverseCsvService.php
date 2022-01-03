@@ -22,6 +22,8 @@ namespace App\Services\Csv;
 use App\Services\Model\ExpeditionService;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
+use GuzzleHttp\Exception\GuzzleException;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /**
  * Class ZooniverseCsvService
@@ -90,8 +92,6 @@ class ZooniverseCsvService
      * @param int $expeditionId
      * @return mixed
      * @throws \Exception
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
     public function checkCsvRequest(int $expeditionId): mixed
     {
@@ -101,7 +101,11 @@ class ZooniverseCsvService
             throw new \Exception(t('Missing required expedition variables for Zooniverse classification check.'));
         }
 
-        return $this->sendRequest($expedition->panoptesProject->panoptes_workflow_id, 'GET');
+        try {
+            return $this->sendRequest($expedition->panoptesProject->panoptes_workflow_id, 'GET');
+        } catch (GuzzleException | IdentityProviderException $e) {
+            return false;
+        }
     }
 
     /**

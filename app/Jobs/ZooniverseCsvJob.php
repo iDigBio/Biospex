@@ -43,6 +43,7 @@ class ZooniverseCsvJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Csv\ZooniverseCsvService $service
+     * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
@@ -54,7 +55,7 @@ class ZooniverseCsvJob implements ShouldQueue
 
         $result = $service->checkCsvRequest($this->expeditionId);
 
-        if ($service->checkErrors($result) || $service->checkDateTime($result)) {
+        if (!$result || $service->checkDateTime($result)) {
             $service->createCsvRequest($this->expeditionId);
         }
 
