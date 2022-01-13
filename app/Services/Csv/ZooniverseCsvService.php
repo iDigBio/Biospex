@@ -161,10 +161,10 @@ class ZooniverseCsvService
     public function checkDateTime(array $result): bool
     {
         if (empty($result['media'][0]['updated_at'])) {
-            return $this->parseTime($result['media'][0]['created_at']) > 24;
+            return $this->parseTime($result['media'][0]['created_at']) > 30;
         }
 
-        return $this->parseTime($result['media'][0]['updated_at']) > 24;
+        return $this->parseTime($result['media'][0]['updated_at']) > 30;
     }
 
     /**
