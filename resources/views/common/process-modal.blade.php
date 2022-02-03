@@ -16,11 +16,11 @@
                 <p class="text-center color-action small">{{ t('Stats update every minute.') }}</p>
                 <div class="m-4">
                     <h4>{{ t('Ocr Processes') }}</h4>
-                    <div id="ocr-html">{{ t('No processes running at this time') }}</div>
+                    <div id="ocr-html">{{ t('Checking poll...') }}</div>
                 </div>
                 <div class="m-4">
                     <div><h4>{{ t('Export Processes') }}</h4></div>
-                    <div id="export-html">{{ t('No processes running at this time') }}</div>
+                    <div id="export-html">{{ t('Checking poll...') }}</div>
                 </div>
             </div>
 
