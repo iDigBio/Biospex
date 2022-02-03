@@ -101,7 +101,7 @@ $(function () {
                 $('#ocr-html').html(ocrHtml);
             });
 
-        Echo.channel('export')
+        Echo.channel(Laravel.exportChannel)
             .listen('PollExportEvent', (e) => {
                 let exportHtml = polling_data(e.data);
                 $('#export-html').html(exportHtml);
