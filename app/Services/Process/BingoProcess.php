@@ -118,7 +118,7 @@ class BingoProcess
             'ip' => $this->location->ip,
             'latitude' => $this->location->latitude == null ? '30.43826' : $this->location->latitude,
             'longitude' => $this->location->longitude == null ? '-84.28073' : $this->location->longitude,
-            'city' => $this->location->city
+            'city' => $this->location->city == null ? 'Tallahassee' : $this->location->city
         ];
 
         return $bingo->maps()->create($values);
