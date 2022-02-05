@@ -31,6 +31,7 @@
     "league/oauth2-client": "^2.6",
     "neitanod/forceutf8": "~2.0",
     "pda/pheanstalk": "^4.0",
+    "pusher/pusher-php-server": "^7.0",
     "ramsey/uuid": "^4.1",
     "spiritix/lada-cache": "^5.1",
     "thiagoalessio/tesseract_ocr": "^2.9",
