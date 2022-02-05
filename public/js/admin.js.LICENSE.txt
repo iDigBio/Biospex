@@ -1,8 +1,9 @@
 /*!
- * The buffer module from node.js, for the browser.
+ * Pusher JavaScript Library v7.0.4
+ * https://pusher.com/
  *
- * @author   Feross Aboukhadijeh <http://feross.org>
- * @license  MIT
+ * Copyright 2020, Pusher
+ * Released under the MIT licence.
  */
 
 /*!
@@ -194,10 +195,6 @@
  * Released under the MIT license.
  * http://jquery.org/license
  */
-
-/*! https://mths.be/utf8js v2.1.2 by @mathias */
-
-/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
 /**
  * @license jQuery UI Multiselect
