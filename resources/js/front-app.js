@@ -10,7 +10,7 @@ try {
     window.$ = window.jQuery = require("jquery");
     window.ConfettiGenerator = require("confetti-js/dist/index.min");
 
-    require("bootstrap");
+    //require("bootstrap");
     require("bootstrap-notify/bootstrap-notify");
     require("./common");
     require("./front");

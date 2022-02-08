@@ -29,7 +29,6 @@ mix.js("resources/js/front-app.js", "js/front.js")
         "jquery",
         "bootstrap",
         "bootstrap-notify/bootstrap-notify",
-        "socket.io-client/dist/socket.io",
         "confetti-js/dist/index.min",
         "jquery-ui/ui/widgets/dialog",
         "jquery-ui/ui/widgets/draggable",
