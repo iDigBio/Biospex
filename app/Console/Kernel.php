@@ -43,16 +43,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('bingo:clean')->timezone('America/New_York')->dailyAt('06:05');
 
         if ($this->app->environment('prod')) {
-            // Create Zooniverse csv files Mon, Wed, Fri
-            /*
-            $schedule->command('zooniverse:csv')
-                ->timezone('America/New_York')
-                ->days([1,3,5])->at('01:00')->before(function () { //mon, wed, fri
-                    Cache::flush();
-                    Artisan::call('lada-cache:flush');
-                });
-            */
-
             // Trigger workflow manager to handle csv creation and updating expedition/project
             $schedule->command('workflow:manage')->timezone('America/New_York')->at('01:00')->before(function () {
                 Cache::flush();
