@@ -52,6 +52,16 @@ class Csv
     }
 
     /**
+     * Return Reader.
+     *
+     * @return \League\Csv\Reader
+     */
+    public function getReader(): Reader
+    {
+        return $this->reader;
+    }
+
+    /**
      * Create writer from file path.
      *
      * @param $filePath
@@ -59,6 +69,16 @@ class Csv
     public function writerCreateFromPath($filePath)
     {
         $this->writer = Writer::createFromPath($filePath, 'w+');
+    }
+
+    /**
+     * Return writer.
+     *
+     * @return \League\Csv\Writer
+     */
+    public function getWriter(): Writer
+    {
+        return $this->writer;
     }
 
     /**
