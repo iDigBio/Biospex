@@ -19,12 +19,12 @@
 
 namespace App\Services\Process;
 
-use App\Models\PanoptesProject;
 use App\Models\PusherClassification;
 use App\Services\Model\PusherClassificationService;
 use App\Services\Model\PusherTranscriptionService;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
+use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Uuid\Uuid;
 use Validator;
 
@@ -38,17 +38,17 @@ class PusherDashboardService
     /**
      * @var \App\Services\Api\PanoptesApiService
      */
-    private $apiService;
+    private PanoptesApiService $apiService;
 
     /**
      * @var \App\Services\Model\PusherTranscriptionService
      */
-    private $pusherTranscriptionService;
+    private PusherTranscriptionService $pusherTranscriptionService;
 
     /**
      * @var \App\Services\Model\PusherClassificationService
      */
-    private $pusherClassificationService;
+    private PusherClassificationService $pusherClassificationService;
 
     /**
      * PusherDashboardService constructor.
@@ -72,10 +72,10 @@ class PusherDashboardService
      * Process pusher data for dashboard.
      *
      * @param array $data
-     * @param PanoptesProject $panoptesProject
+     * @param string $title
      * @throws \Exception
      */
-    public function process(array $data, PanoptesProject $panoptesProject)
+    public function process(array $data, string $title)
     {
         $subject = $this->apiService->getPanoptesSubject($data['subject_ids'][0]);
         $user = $data['user_id'] !== null ? $this->apiService->getPanoptesUser($data['user_id']) : null;
@@ -84,7 +84,7 @@ class PusherDashboardService
             return;
         }
 
-        $values = $this->setDashboardData($panoptesProject, $data, $subject, $user);
+        $values = $this->setDashboardData($title, $data, $subject, $user);
 
         $this->pusherClassificationService->updateOrCreate(['classification_id' => $values['classification_id']], ['data' => $values]);
     }
@@ -93,21 +93,24 @@ class PusherDashboardService
      * Build item for dashboard.
      * This is built during the posted data from Pusher
      * $this->buildItem($data, $workflow, $subject, $expedition);
-     *
-     * @param \App\Models\PanoptesProject $panoptesProject
-     * @param array $data
-     * @param array $subject
-     * @param array|null $user
-     * @return array
      */
-    private function setDashboardData(PanoptesProject $panoptesProject, array $data, array $subject, array $user = null): array
+    #[ArrayShape(['classification_id'    => "int",
+                  'project'              => "string",
+                  'description'          => "string",
+                  'guid'                 => "string",
+                  'timestamp'            => "\Carbon\Carbon",
+                  'subject'              => "array",
+                  'contributor'          => "array",
+                  'transcriptionContent' => "array",
+                  'discretionaryState'   => "string"
+    ])] private function setDashboardData(string $title, array $data, array $subject, array $user = null): array
     {
 
         $thumbnailUri = $this->setPusherThumbnailUri($data);
 
         return [
             'classification_id'    => (int) $data['classification_id'],
-            'project'              => $panoptesProject->title,
+            'project'              => $title,
             'description'          => 'Classification Id ' . $data['classification_id'],
             'guid'                 => Uuid::uuid4()->toString(),
             'timestamp'            => Carbon::now(),

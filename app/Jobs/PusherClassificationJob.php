@@ -19,7 +19,6 @@
 
 namespace App\Jobs;
 
-use App\Models\PanoptesProject;
 use App\Services\Process\PusherDashboardService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -48,20 +47,20 @@ class PusherClassificationJob implements ShouldQueue
     private $data;
 
     /**
-     * @var \App\Models\PanoptesProject
+     * @var string
      */
-    private $panoptesProject;
+    private string $title;
 
     /**
      * Create a new job instance.
      *
      * @param array $data
-     * @param PanoptesProject $panoptesProject
+     * @param string $title
      */
-    public function __construct(array $data, PanoptesProject $panoptesProject)
+    public function __construct(array $data, string $title)
     {
         $this->data = $data;
-        $this->panoptesProject = $panoptesProject;
+        $this->title = $title;
         $this->onQueue(config('config.pusher_process_tube'));
     }
 
@@ -73,7 +72,7 @@ class PusherClassificationJob implements ShouldQueue
      */
     public function handle(PusherDashboardService $service)
     {
-        $service->process($this->data, $this->panoptesProject);
+        $service->process($this->data, $this->title);
 
         $this->delete();
     }

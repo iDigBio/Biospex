@@ -20,6 +20,7 @@
 namespace App\Jobs;
 
 use App\Services\Model\PanoptesProjectService;
+use App\Services\Model\WeDigBioProjectService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -62,16 +63,19 @@ class PanoptesPusherJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle(PanoptesProjectService $panoptesProjectService)
+    public function handle(PanoptesProjectService $panoptesProjectService, WeDigBioProjectService $weDigBioProjectService)
     {
-        $result = $panoptesProjectService->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
+        $panoptesProject = $panoptesProjectService->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
+        $weDigBioProject = $weDigBioProjectService->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
 
-        if ($result === null){
+        if ($panoptesProject === null && $weDigBioProject === null){
             $this->delete();
             return;
         }
 
+        $title = $weDigBioProject === null ? $panoptesProject->title : $weDigBioProject->title;
+
         PusherEventTranscriptionJob::dispatch($this->data);
-        PusherClassificationJob::dispatch($this->data, $result);
+        PusherClassificationJob::dispatch($this->data, $title);
     }
 }

@@ -17,49 +17,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Console\Commands;
+namespace App\Services\Model;
 
 use App\Models\PanoptesProject;
 use App\Models\WeDigBioProject;
-use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
- * Class UpdateQueries
+ * Class WeDigBioProjectService
  *
- * @package App\Console\Commands
+ * @package App\Services\Model
  */
-class UpdateQueries extends Command
+class WeDigBioProjectService extends BaseModelService
 {
-    use DispatchesJobs;
-
     /**
-     * The console command name.
+     * PanoptesProjectService constructor.
+     *
+     * @param \App\Models\WeDigBioProject
      */
-    protected $signature = 'update:queries';
-
-    /**
-     * The console command description.
-     */
-    protected $description = 'Used for custom queries when updating database';
-
-    /**
-     * UpdateQueries constructor.
-     */
-    public function __construct()
+    public function __construct(WeDigBioProject $weDigBioProject)
     {
-        parent::__construct();
+
+        $this->model = $weDigBioProject;
     }
 
     /**
-     * Fire command
+     * Find by project and workflow ids.
+     *
+     * @param $projectId
+     * @param $workflowId
+     * @return \App\Models\PanoptesProject|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
-    public function handle()
+    public function findByProjectIdAndWorkflowId($projectId, $workflowId)
     {
-        $records = PanoptesProject::whereNull('project_id')->whereNull('expedition_id')->get();
-        $records->each(function($result){
-            WeDigBioProject::create($result->toArray());
-            $result->delete();
-        });
+        return $this->model->where('panoptes_project_id', $projectId)
+            ->where('panoptes_workflow_id', $workflowId)->first();
     }
 }
