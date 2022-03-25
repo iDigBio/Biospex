@@ -201,7 +201,6 @@ return [
         '#collectionCode'  => ['occurrence' => 'collectionCode'],
         '#catalogNumber'   => ['occurrence' => 'catalogNumber'],
         '#recordId'        => ['occurrence' => 'recordId'],
-        '#imageIdentifier' => '',
         '#expeditionId'    => '',
         '#expeditionTitle' => '',
     ],
