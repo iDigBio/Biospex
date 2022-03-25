@@ -213,6 +213,7 @@ class ExpertReconcileProcess
         foreach ($request as $key => $value) {
             $attributes[base64_decode($key)] = is_null($value) ? '' : $value;
         }
+        $attributes['reviewed'] = 1;
 
         return $this->reconcileService->update($attributes, $id);
     }

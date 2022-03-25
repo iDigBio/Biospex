@@ -19,6 +19,9 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
+use App\Presenters\ReconcilePresenter;
+
 /**
  * Class Reconcile
  *
@@ -26,6 +29,8 @@ namespace App\Models;
  */
 class Reconcile extends BaseMongoModel
 {
+    use Presentable;
+
     /**
      * Set Collection
      */
@@ -47,6 +52,11 @@ class Reconcile extends BaseMongoModel
         'subject_expeditionId' => 'integer',
         'problem' => 'integer'
     ];
+
+    /**
+     * @var string
+     */
+    protected $presenter = ReconcilePresenter::class;
 
     /**
      * Project relation.
