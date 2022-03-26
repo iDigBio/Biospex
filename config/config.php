@@ -188,7 +188,7 @@ return [
     'nfnCsvMap' => [
         'subjectId'        => '_id',
         'imageName'        => '_id',
-        'imageURL'         => 'accessURI',
+        'identifier'       => 'identifier',
         'references'       => ['occurrence' => 'references'],
         'scientificName'   => ['occurrence' => 'scientificName'],
         'country'          => ['occurrence' => 'country'],

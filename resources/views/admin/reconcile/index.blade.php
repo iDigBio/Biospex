@@ -78,6 +78,11 @@
                     </div>
                 @endforeach
                 <div class="row">
+                    <div class="text-center m-auto col-3">
+                        {!! $reconciles->first()->present()->reconcile_reviewed !!}
+                    </div>
+                </div>
+                <div class="row">
                     <div class="form-group m-auto">
                         <button type="submit"
                                 class="btn btn-primary text-uppercase mt-5">{{ t('Save') }}</button>

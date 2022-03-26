@@ -98,7 +98,7 @@ class ZooniverseCsvService
         $expedition = $this->getExpedition($expeditionId);
 
         if ($this->panoptesApiService->checkForRequiredVariables($expedition)) {
-            throw new \Exception(t('Missing required expedition variables for Zooniverse classification check.'));
+            throw new \Exception(t('Missing required expedition variables for Zooniverse classification check for Expedition ID %s.', $expeditionId));
         }
 
         try {
