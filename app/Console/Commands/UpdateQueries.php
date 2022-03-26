@@ -19,8 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\PanoptesProject;
-use App\Models\WeDigBioProject;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -56,10 +54,6 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        $records = PanoptesProject::whereNull('project_id')->whereNull('expedition_id')->get();
-        $records->each(function($result){
-            WeDigBioProject::create($result->toArray());
-            $result->delete();
-        });
+
     }
 }
