@@ -50,7 +50,7 @@ class Kernel extends ConsoleKernel
             });
 
             // WeDigBio classification cron
-            $schedule->command('dashboard:records')->everyThirtyMinutes();
+            $schedule->command('dashboard:records')->everyFiveMinutes();
         }
     }
 
