@@ -34,6 +34,6 @@ class EncodeTranscriptionsCommand extends Command
      */
     public function handle()
     {
-        EncodeTranscriptions::dispatch();
+        EncodeTranscriptions::dispatch()->onConnection('long-beanstalkd')->onQueue(config('config.working_tube'));
     }
 }

@@ -49,6 +49,13 @@ return [
             'retry_after' => 37000,
         ],
 
+        'long-beanstalkd' => [
+            'driver' => 'beanstalkd',
+            'host' => 'localhost',
+            'queue' => 'default',
+            'retry_after' => 300025,
+        ],
+
         'sqs' => [
             'driver' => 'sqs',
             'key' => 'your-public-key',

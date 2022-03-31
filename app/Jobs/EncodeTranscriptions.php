@@ -30,7 +30,7 @@ class EncodeTranscriptions implements ShouldQueue
      */
     public function __construct()
     {
-        $this->onQueue(config('config.working_tube'));
+
     }
 
     /**
@@ -78,15 +78,14 @@ class EncodeTranscriptions implements ShouldQueue
     /**
      * Validate transcription to prevent duplicates.
      *
-     * @param $id
+     * @param int $classificationId
      * @return mixed
      */
-    private function validateTranscription($id): mixed
+    private function validateTranscription(int $classificationId): mixed
     {
-        $rules = ['classification_id' => 'unique:mongodb.panoptes_transcriptions_new, classification_id'];
-        $values = ['classification_id' => (int) $id];
+        $rules = ['classification_id' => 'unique:mongodb.panoptes_transcriptions_new,classification_id'];
+        $values = ['classification_id' => $classificationId];
         $validator = Validator::make($values, $rules);
-        $validator->getPresenceVerifier()->setConnection('mongodb');
 
         // returns true if record exists.
         return $validator->fails();
