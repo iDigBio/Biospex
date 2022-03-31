@@ -48,12 +48,7 @@ class EncodeTranscriptions implements ShouldQueue
                     $newRecord[$newKey] = $value;
                 }
 
-                if ($newRecord['classification_id'] === '') {
-                    \Log::alert($record->_id);
-                    continue;
-                }
-
-                if (! $this->validateTranscription($newRecord['subject_id'])) {
+                if (! $this->validateTranscription($newRecord['classification_id'])) {
                     PanoptesTranscriptionNew::create($newRecord);
                 }
             }
@@ -79,13 +74,13 @@ class EncodeTranscriptions implements ShouldQueue
     /**
      * Validate transcription to prevent duplicates.
      *
-     * @param $subject_id
+     * @param $id
      * @return mixed
      */
-    private function validateTranscription($subject_id): mixed
+    private function validateTranscription($id): mixed
     {
-        $rules = ['subject_id' => 'unique:mongodb.panoptes_transcriptions_new, subject_id'];
-        $values = ['subject_id' => (int) $subject_id];
+        $rules = ['classification_id' => 'unique:mongodb.panoptes_transcriptions_new, classification_id'];
+        $values = ['classification_id' => (int) $id];
         $validator = Validator::make($values, $rules);
         $validator->getPresenceVerifier()->setConnection('mongodb');
 
