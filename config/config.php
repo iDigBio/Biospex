@@ -144,6 +144,7 @@ return [
     'ocr_tube'              => env('QUEUE_OCR_TUBE'),
     'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
     'pusher_process_tube'   => env('QUEUE_PUSHER_PROCESS_TUBE'),
+    'working_tube'          => env('QUEUE_WORKING_TUBE'),
 
     /* Images */
     /* Min and max logo and banner sizes used in Project model for Codesleve Stapler */
