@@ -37,13 +37,20 @@ class EncodeTranscriptions implements ShouldQueue
     {
         $reserved = config('config.reserved_encoded');
         $user = User::find(1);
-
         try {
             foreach (PanoptesTranscription::orderBy('created_at', 'DESC')->cursor() as $record) {
                 $newRecord = [];
                 foreach ($record->getAttributes() as $key => $value) {
+                    if ($key === '_id') {
+                        continue;
+                    }
                     $newKey = (str_contains($key, 'subject_') || in_array($key, $reserved)) ? $key : GeneralHelper::base64UrlEncode($key);
                     $newRecord[$newKey] = $value;
+                }
+
+                if ($newRecord['classification_id'] === '') {
+                    \Log::alert($record->_id);
+                    continue;
                 }
 
                 if (! $this->validateTranscription($newRecord['subject_id'])) {
