@@ -19,18 +19,12 @@ class EncodeTranscriptions implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
-     */
-    private mixed $reserved;
-
-    /**
      * Create a new job instance.
      *
      * @return void
      */
     public function __construct()
     {
-        $this->reserved = config('config.reserved_encoded');
         $this->onQueue(config('config.working_tube'));
     }
 
@@ -41,13 +35,14 @@ class EncodeTranscriptions implements ShouldQueue
      */
     public function handle()
     {
+        $reserved = config('config.reserved_encoded');
         $user = User::find(1);
 
         try {
             foreach (PanoptesTranscription::orderBy('created_at', 'DESC')->cursor() as $record) {
                 $newRecord = [];
                 foreach ($record->getAttributes() as $key => $value) {
-                    $newKey = (str_contains($key, 'subject_') || in_array($key, $this->reserved)) ? $key : GeneralHelper::base64UrlEncode($key);
+                    $newKey = (str_contains($key, 'subject_') || in_array($key, $reserved)) ? $key : GeneralHelper::base64UrlEncode($key);
                     $newRecord[$newKey] = $value;
                 }
 
