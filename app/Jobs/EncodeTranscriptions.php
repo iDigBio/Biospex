@@ -19,6 +19,11 @@ class EncodeTranscriptions implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * @var int
+     */
+    public $timeout = 300000;
+
+    /**
      * Create a new job instance.
      *
      * @return void
