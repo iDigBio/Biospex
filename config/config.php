@@ -256,4 +256,14 @@ return [
         'complete' => 'Complete',
         'hiatus'   => 'Hiatus',
     ],
+
+    'reserved_encoded' => [
+        '_id',
+        'classification_id',
+        'workflow_id',
+        'classification_started_at',
+        'classification_finished_at',
+        'updated_at',
+        'created_at',
+    ],
 ];
