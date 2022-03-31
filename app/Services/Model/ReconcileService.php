@@ -40,6 +40,9 @@ class ReconcileService extends BaseModelService
     }
 
     /**
+     * Get paging for reconcile records.
+     * Encoding is used to match columns in reconcile collection.
+     *
      * @param int $expeditionId
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
@@ -47,7 +50,8 @@ class ReconcileService extends BaseModelService
     {
         return $this->model->with(['transcriptions'])
             ->where('subject_expeditionId', $expeditionId)
-            ->where('problem', 1)->orderBy('subject_id', 'asc')
+            ->where('subject_problem', 1)
+            ->orderBy('subject_id', 'asc')
             ->paginate(1);
     }
 }
