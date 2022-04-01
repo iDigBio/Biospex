@@ -6,6 +6,7 @@ use App\Facades\GeneralHelper;
 use App\Models\PanoptesTranscription;
 use App\Models\PanoptesTranscriptionNew;
 use App\Models\User;
+use App\Notifications\JobComplete;
 use App\Notifications\JobError;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Validator;
 
-class EncodeTranscriptions implements ShouldQueue
+class EncodeTranscriptionsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -60,7 +61,7 @@ class EncodeTranscriptions implements ShouldQueue
             $message = [
                 'Transcript encoding completed'
             ];
-            $user->notify(new JobError(__FILE__, $message));
+            $user->notify(new JobComplete(__FILE__, $message));
 
             $this->delete();
 

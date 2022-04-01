@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\EncodeTranscriptions;
+use App\Jobs\EncodeTranscriptionsJob;
 use Illuminate\Console\Command;
 
 class EncodeTranscriptionsCommand extends Command
@@ -34,6 +34,6 @@ class EncodeTranscriptionsCommand extends Command
      */
     public function handle()
     {
-        EncodeTranscriptions::dispatch()->onConnection('long-beanstalkd')->onQueue(config('config.working_tube'));
+        EncodeTranscriptionsJob::dispatch()->onConnection('long-beanstalkd')->onQueue(config('config.working_tube'));
     }
 }
