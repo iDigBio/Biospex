@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
 use Validator;
 
 class EncodeReconcilesJob implements ShouldQueue
@@ -44,7 +45,12 @@ class EncodeReconcilesJob implements ShouldQueue
         $reserved = config('config.reserved_encoded');
         $user = User::find(1);
         try {
-            foreach (Reconcile::orderBy('created_at', 'DESC')->cursor() as $record) {
+            $timestamp = Carbon::now()->subDays(2);
+            $cursor = Reconcile::where('created_at', '>=', $timestamp)
+                ->orderBy('created_at', 'DESC')
+                ->cursor();
+
+            foreach ($cursor as $record) {
                 if ($this->validateTranscription($record->subject_id)) {
                     continue;
                 }

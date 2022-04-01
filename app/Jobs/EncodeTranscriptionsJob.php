@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Facades\GeneralHelper;
 use App\Models\PanoptesTranscription;
 use App\Models\PanoptesTranscriptionNew;
+use App\Models\Reconcile;
 use App\Models\User;
 use App\Notifications\JobComplete;
 use App\Notifications\JobError;
@@ -13,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
 use Validator;
 
 class EncodeTranscriptionsJob implements ShouldQueue
@@ -44,7 +46,12 @@ class EncodeTranscriptionsJob implements ShouldQueue
         $reserved = config('config.reserved_encoded');
         $user = User::find(1);
         try {
-            foreach (PanoptesTranscription::orderBy('created_at', 'DESC')->cursor() as $record) {
+            $timestamp = Carbon::now()->subDays(2);
+            $cursor = PanoptesTranscription::where('created_at', '>=', $timestamp)
+                ->orderBy('created_at', 'DESC')
+                ->cursor();
+
+            foreach ($cursor as $record) {
                 if ($this->validateTranscription($record->classification_id)) {
                     continue;
                 }
