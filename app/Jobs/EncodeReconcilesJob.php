@@ -50,6 +50,7 @@ class EncodeReconcilesJob implements ShouldQueue
                 ->orderBy('created_at', 'DESC')
                 ->cursor();
 
+            $i=0;
             foreach ($cursor as $record) {
                 if ($this->validateTranscription($record->subject_id)) {
                     continue;
@@ -62,10 +63,12 @@ class EncodeReconcilesJob implements ShouldQueue
                 }
 
                 ReconcileNew::create($newRecord);
+                $i++;
             }
 
             $message = [
-                'Transcript encoding completed'
+                'Transcript encoding completed.',
+                'Reconciles synced: ' . $i
             ];
             $user->notify(new JobComplete(__FILE__, $message));
 

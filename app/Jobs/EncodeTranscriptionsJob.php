@@ -51,6 +51,7 @@ class EncodeTranscriptionsJob implements ShouldQueue
                 ->orderBy('created_at', 'DESC')
                 ->cursor();
 
+            $i=0;
             foreach ($cursor as $record) {
                 if ($this->validateTranscription($record->classification_id)) {
                     continue;
@@ -63,10 +64,12 @@ class EncodeTranscriptionsJob implements ShouldQueue
                 }
 
                 PanoptesTranscriptionNew::create($newRecord);
+                $i++;
             }
 
             $message = [
-                'Transcript encoding completed'
+                'Transcript encoding completed',
+                'Transcripts synced: ' . $i
             ];
             $user->notify(new JobComplete(__FILE__, $message));
 
