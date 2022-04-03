@@ -18,7 +18,7 @@ public/storage
 public/js/working.js
 public/css/working.css
 /resources/assets/vendor
-/resources/lang/.translation_io
+/lang/.translation_io
 tests/_output/
 backups
 
@@ -37,4 +37,4 @@ yarn-error.log
 .env.*
 /.phpunit.result.cache
 /laravel-echo-server.lock
-/resources/lang/.translation_io
+/lang/.translation_io
