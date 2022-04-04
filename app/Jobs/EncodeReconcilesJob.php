@@ -59,7 +59,18 @@ class EncodeReconcilesJob implements ShouldQueue
                 $newRecord = [];
                 foreach ($record->getAttributes() as $key => $value) {
                     $newKey = (str_contains($key, 'subject_') || in_array($key, $reserved)) ? $key : GeneralHelper::base64UrlEncode($key);
+                    $newKey = $newKey === 'problem' ? 'subject_problem' : $newKey;
+                    $newKey = $newKey === 'columns' ? 'subject_columns' : $newKey;
+
                     $newRecord[$newKey] = $value;
+                }
+
+                if(!isset($newRecord['subject_problem'])) {
+                    $newRecord['subject_problem'] = 0;
+                }
+
+                if(!isset($newRecord['subject_columns'])) {
+                    $newRecord['subject_columns'] = '';
                 }
 
                 ReconcileNew::create($newRecord);
