@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Services\Csv\Csv;
+use App\Services\Model\ReconcileService;
 use App\Services\Model\SubjectService;
 use Illuminate\Console\Command;
 
@@ -37,18 +38,24 @@ class FixExpedition extends Command
     private $birdImages;
     
     private $birdOccurrences;
-    
+
+    /**
+     * @var \App\Services\Model\ReconcileService
+     */
+    private ReconcileService $reconcileService;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(Csv $csv, SubjectService $subjectService)
+    public function __construct(Csv $csv, SubjectService $subjectService, ReconcileService $reconcileService)
     {
         parent::__construct();
         $this->csv = $csv;
         $this->subjectService = $subjectService;
         $this->fixDir = \Storage::disk('local')->path('fossils/fix/');
+        $this->reconcileService = $reconcileService;
     }
 
     /**
@@ -64,7 +71,7 @@ class FixExpedition extends Command
         $this->csv->setHeaderOffset();
         $this->birdOccurrences = $this->csv->getRecords();
 
-        $this->csv->readerCreateFromPath($this->fixDir . 'reconciled_with_expert_opinion-374.csv');
+        $this->csv->readerCreateFromPath($this->fixDir . 'reconcile-374.csv');
         $this->csv->setHeaderOffset();
         $header = $this->csv->getHeader();
         $header[] = 'subject_identifier';
@@ -74,6 +81,8 @@ class FixExpedition extends Command
         $this->csv->insertOne($header);
 
         foreach ($reconcileReader as $offset => $record) {
+            $this->fixReconcileWithExpert($record);
+
             $subject = $this->subjectService->find($record['subject_subjectId']);
             $identifier = $subject['identifier'];
 
@@ -124,6 +133,14 @@ class FixExpedition extends Command
             if ($birdOccurrence['id'] === $coreid) {
                 return $birdOccurrence;
             }
+        }
+    }
+
+    public function fixReconcileWithExpert(&$record)
+    {
+        $reconciled = $this->reconcileService->findBy('subject_id', $record['subject_id']);
+        foreach ($record as $key => $value) {
+            $record[$key] = $reconciled[$key] ?? $value;
         }
     }
 }

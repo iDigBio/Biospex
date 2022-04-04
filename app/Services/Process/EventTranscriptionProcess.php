@@ -126,7 +126,7 @@ class EventTranscriptionProcess
                 return $query->where('classification_id', $values['classification_id'])->where('event_id', $values['event_id'])->where('team_id', $values['team_id'])->where('user_id', $values['user_id']);
             }),
         ]);
-
+        // returns true if records exists
         return $validator->fails();
     }
 
