@@ -265,5 +265,7 @@ return [
         'classification_finished_at',
         'updated_at',
         'created_at',
+        'problem',
+        'columns'
     ],
 ];

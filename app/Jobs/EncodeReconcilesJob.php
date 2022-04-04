@@ -45,10 +45,13 @@ class EncodeReconcilesJob implements ShouldQueue
         $reserved = config('config.reserved_encoded');
         $user = User::find(1);
         try {
+            /*
             $timestamp = Carbon::now()->subDays(2);
             $cursor = Reconcile::where('created_at', '>=', $timestamp)
                 ->orderBy('created_at', 'DESC')
                 ->cursor();
+            */
+            $cursor = Reconcile::orderBy('created_at', 'DESC')->cursor();
 
             $i=0;
             foreach ($cursor as $record) {
@@ -59,7 +62,18 @@ class EncodeReconcilesJob implements ShouldQueue
                 $newRecord = [];
                 foreach ($record->getAttributes() as $key => $value) {
                     $newKey = (str_contains($key, 'subject_') || in_array($key, $reserved)) ? $key : GeneralHelper::base64UrlEncode($key);
+                    $newKey = $newKey === 'problem' ? 'subject_problem' : $newKey;
+                    $newKey = $newKey === 'columns' ? 'subject_columns' : $newKey;
+
                     $newRecord[$newKey] = $value;
+                }
+
+                if(!isset($newRecord['subject_problem'])) {
+                    $newRecord['subject_problem'] = 0;
+                }
+
+                if(!isset($newRecord['subject_columns'])) {
+                    $newRecord['subject_columns'] = '';
                 }
 
                 ReconcileNew::create($newRecord);
