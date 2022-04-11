@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\ReconcileRepository;
+use App\Repositories\SubjectRepository;
 use App\Services\Csv\Csv;
-use App\Services\Model\ReconcileService;
-use App\Services\Model\SubjectService;
 use Illuminate\Console\Command;
 
 class FixExpedition extends Command
@@ -29,9 +29,9 @@ class FixExpedition extends Command
     private Csv $csv;
 
     /**
-     * @var \App\Services\Model\SubjectService
+     * @var \App\Repositories\SubjectRepository
      */
-    private SubjectService $subjectService;
+    private SubjectRepository $subjectRepo;
 
     private $fixDir;
     
@@ -40,22 +40,22 @@ class FixExpedition extends Command
     private $birdOccurrences;
 
     /**
-     * @var \App\Services\Model\ReconcileService
+     * @var \App\Repositories\ReconcileRepository
      */
-    private ReconcileService $reconcileService;
+    private ReconcileRepository $reconcileRepo;
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(Csv $csv, SubjectService $subjectService, ReconcileService $reconcileService)
+    public function __construct(Csv $csv, SubjectRepository $subjectRepo, ReconcileRepository $reconcileRepo)
     {
         parent::__construct();
         $this->csv = $csv;
-        $this->subjectService = $subjectService;
+        $this->subjectRepo = $subjectRepo;
         $this->fixDir = \Storage::disk('local')->path('fossils/fix/');
-        $this->reconcileService = $reconcileService;
+        $this->reconcileRepo = $reconcileRepo;
     }
 
     /**
@@ -83,7 +83,7 @@ class FixExpedition extends Command
         foreach ($reconcileReader as $offset => $record) {
             $this->fixReconcileWithExpert($record);
 
-            $subject = $this->subjectService->find($record['subject_subjectId']);
+            $subject = $this->subjectRepo->find($record['subject_subjectId']);
             $identifier = $subject['identifier'];
 
             $birdImage = $this->findBirdImageRecord($identifier);
@@ -138,7 +138,7 @@ class FixExpedition extends Command
 
     public function fixReconcileWithExpert(&$record)
     {
-        $reconciled = $this->reconcileService->findBy('subject_id', $record['subject_id']);
+        $reconciled = $this->reconcileRepo->findBy('subject_id', $record['subject_id']);
         foreach ($record as $key => $value) {
             $record[$key] = $reconciled[$key] ?? $value;
         }

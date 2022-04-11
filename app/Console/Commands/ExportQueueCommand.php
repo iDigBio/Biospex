@@ -19,8 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\ExportQueueRepository;
 use App\Services\Download\DownloadType;
-use App\Services\Model\ExportQueueService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -48,9 +48,9 @@ class ExportQueueCommand extends Command
     protected $description = 'Fire export queue job.';
 
     /**
-     * @var \App\Services\Model\ExportQueueService
+     * @var \App\Repositories\ExportQueueRepository
      */
-    public $exportQueueService;
+    public $exportQueueRepo;
 
     /**
      * @var \App\Services\Download\DownloadType
@@ -60,16 +60,16 @@ class ExportQueueCommand extends Command
     /**
      * ExportQueueCommand constructor.
      *
-     * @param \App\Services\Model\ExportQueueService $exportQueueService
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepo
      * @param \App\Services\Download\DownloadType $downloadType
      */
     public function __construct(
-        ExportQueueService $exportQueueService,
+        ExportQueueRepository $exportQueueRepo,
         DownloadType $downloadType
     )
     {
         parent::__construct();
-        $this->exportQueueService = $exportQueueService;
+        $this->exportQueueRepo = $exportQueueRepo;
         $this->downloadType = $downloadType;
     }
 
@@ -79,7 +79,7 @@ class ExportQueueCommand extends Command
     public function handle()
     {
         $expeditionId = $this->argument('expeditionId');
-        $record = $this->exportQueueService->findWithExpeditionNfnActor($expeditionId);
+        $record = $this->exportQueueRepo->findWithExpeditionNfnActor($expeditionId);
 
         if ($record === null)
         {

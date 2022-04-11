@@ -20,8 +20,6 @@
 namespace App\Http\Controllers\Api\V0;
 
 use App\Jobs\PanoptesPusherJob;
-use App\Services\Model\PanoptesProjectService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
 /**

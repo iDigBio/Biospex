@@ -21,13 +21,13 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Process\ExpertReconcilePublishProcess;
+use App\Services\Reconcile\ExpertReconcilePublishProcess;
 use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use League\Csv\CannotInsertRecord;
 
 /**
@@ -58,7 +58,7 @@ class NfnExpertReviewPublishJob implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param \App\Services\Process\ExpertReconcilePublishProcess $expertReconcilePublishProcess
+     * @param \App\Services\Reconcile\ExpertReconcilePublishProcess $expertReconcilePublishProcess
      */
     public function handle(ExpertReconcilePublishProcess $expertReconcilePublishProcess)
     {

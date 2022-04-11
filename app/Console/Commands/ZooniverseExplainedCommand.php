@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Model\ExpeditionService;
-use App\Services\Process\ReconcileProcess;
+use App\Repositories\ExpeditionRepository;
+use App\Services\Reconcile\ReconcileProcess;
 use Illuminate\Console\Command;
 
 class ZooniverseExplainedCommand extends Command
@@ -35,16 +35,16 @@ class ZooniverseExplainedCommand extends Command
     /**
      * Execute the console command.
      *
-     * @param \App\Services\Model\ExpeditionService $expeditionService
-     * @param \App\Services\Process\ReconcileProcess $reconcileProcessService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Reconcile\ReconcileProcess $reconcileProcessService
      */
-    public function handle(ExpeditionService $expeditionService, ReconcileProcess $reconcileProcessService)
+    public function handle(ExpeditionRepository $expeditionRepo, ReconcileProcess $reconcileProcessService)
     {
         try {
             $expeditionIds = $this->argument('expeditionIds');
 
             foreach ($expeditionIds as $expeditionId) {
-                $expedition = $expeditionService->findExpeditionForExpertReview($expeditionId);
+                $expedition = $expeditionRepo->findExpeditionForExpertReview($expeditionId);
                 $reconcileProcessService->processExplained($expedition);
             }
 

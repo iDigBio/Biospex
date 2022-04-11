@@ -21,8 +21,8 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Process\EventTranscriptionProcess;
-use \App\Services\Process\PusherTranscriptionProcess;
+use App\Services\Classifications\PusherTranscriptionProcess;
+use App\Services\Transcriptions\EventTranscriptionProcess;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -73,8 +73,8 @@ class ZooniversePusherJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Process\PusherTranscriptionProcess $pusherTranscriptionProcess
-     * @param \App\Services\Process\EventTranscriptionProcess $eventTranscriptionProcess
+     * @param \App\Services\Classifications\PusherTranscriptionProcess $pusherTranscriptionProcess
+     * @param \App\Services\Transcriptions\EventTranscriptionProcess $eventTranscriptionProcess
      * @throws \Exception
      */
     public function handle(PusherTranscriptionProcess $pusherTranscriptionProcess, EventTranscriptionProcess $eventTranscriptionProcess)

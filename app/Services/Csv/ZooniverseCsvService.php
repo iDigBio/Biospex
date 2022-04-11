@@ -19,7 +19,7 @@
 
 namespace App\Services\Csv;
 
-use App\Services\Model\ExpeditionService;
+use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
@@ -33,9 +33,9 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 class ZooniverseCsvService
 {
     /**
-     * @var \App\Services\Model\ExpeditionService
+     * @var \App\Repositories\ExpeditionRepository
      */
-    private ExpeditionService $expeditionService;
+    private ExpeditionRepository $expeditionRepo;
 
     /**
      * @var \App\Services\Api\PanoptesApiService
@@ -45,13 +45,13 @@ class ZooniverseCsvService
     /**
      * ZooniverseCsvService constructor.
      *
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      */
-    public function __construct(ExpeditionService $expeditionService, PanoptesApiService $panoptesApiService)
+    public function __construct(ExpeditionRepository $expeditionRepo, PanoptesApiService $panoptesApiService)
     {
 
-        $this->expeditionService = $expeditionService;
+        $this->expeditionRepo = $expeditionRepo;
         $this->panoptesApiService = $panoptesApiService;
     }
 
@@ -63,7 +63,7 @@ class ZooniverseCsvService
      */
     public function getExpedition(int $expeditionId)
     {
-        return $this->expeditionService->getExpeditionForZooniverseProcess($expeditionId);
+        return $this->expeditionRepo->getExpeditionForZooniverseProcess($expeditionId);
     }
 
     /**

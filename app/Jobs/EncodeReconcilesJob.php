@@ -25,6 +25,8 @@ class EncodeReconcilesJob implements ShouldQueue
      */
     public $timeout = 300000;
 
+    private array $reserved;
+
     /**
      * Create a new job instance.
      *
@@ -32,7 +34,7 @@ class EncodeReconcilesJob implements ShouldQueue
      */
     public function __construct()
     {
-        //
+        $this->reserved = config('config.reserved_encoded');
     }
 
     /**
@@ -42,13 +44,9 @@ class EncodeReconcilesJob implements ShouldQueue
      */
     public function handle()
     {
-        $reserved = config('config.reserved_encoded');
         $user = User::find(1);
         try {
-            $timestamp = Carbon::now()->subDays(2);
-            $cursor = Reconcile::where('created_at', '>=', $timestamp)
-                ->orderBy('created_at', 'DESC')
-                ->cursor();
+            $cursor = Reconcile::orderBy('created_at', 'DESC')->cursor();
 
             $i=0;
             foreach ($cursor as $record) {
@@ -57,12 +55,12 @@ class EncodeReconcilesJob implements ShouldQueue
                 }
 
                 $newRecord = [];
-                foreach ($record->getAttributes() as $key => $value) {
-                    $newKey = (str_contains($key, 'subject_') || in_array($key, $reserved)) ? $key : GeneralHelper::base64UrlEncode($key);
-                    $newKey = $newKey === 'problem' ? 'subject_problem' : $newKey;
-                    $newKey = $newKey === 'columns' ? 'subject_columns' : $newKey;
+                foreach ($record->getAttributes() as $field => $value) {
+                    $newField = GeneralHelper::encodeCsvFields($field, $this->reserved);
+                    $newField = $newField === 'problem' ? 'subject_problem' : $newField;
+                    $newField = $newField === 'columns' ? 'subject_columns' : $newField;
 
-                    $newRecord[$newKey] = $value;
+                    $newRecord[$newField] = $value;
                 }
 
                 if(!isset($newRecord['subject_problem'])) {
@@ -78,7 +76,7 @@ class EncodeReconcilesJob implements ShouldQueue
             }
 
             $message = [
-                'Transcript encoding completed.',
+                'Reconciles sync completed.',
                 'Reconciles synced: ' . $i
             ];
             $user->notify(new JobComplete(__FILE__, $message));
@@ -87,7 +85,7 @@ class EncodeReconcilesJob implements ShouldQueue
 
         } catch (\Exception $e) {
             $message = [
-                'Error in Transcript encoding',
+                'Error in Reconciles sync',
                 'Message: ' . $e->getMessage()
             ];
             $user->notify(new JobError(__FILE__, $message));

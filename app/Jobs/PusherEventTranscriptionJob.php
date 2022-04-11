@@ -19,11 +19,11 @@
 
 namespace App\Jobs;
 
-use App\Services\Process\PusherEventService;
+use App\Services\Event\PusherEventService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
 
 /**
  * Class PusherEventTranscriptionJob
@@ -60,7 +60,7 @@ class PusherEventTranscriptionJob implements ShouldQueue
     /**
      * Execute job.
      *
-     * @param \App\Services\Process\PusherEventService $service
+     * @param \App\Services\Event\PusherEventService $service
      */
     public function handle(PusherEventService $service)
     {

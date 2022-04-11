@@ -19,7 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Model\StateCountyService;
+use App\Repositories\StateCountyRepository;
 use App\Services\Csv\Csv;
 use App\Services\Requests\HttpRequest;
 use Illuminate\Console\Command;
@@ -59,11 +59,11 @@ class UpdateGoogleStateCountyTable extends Command
      *
      * @param \App\Services\Requests\HttpRequest $httpRequest
      * @param \App\Services\Csv\Csv $csv
-     * @param \App\Services\Model\StateCountyService $stateCountyService
+     * @param \App\Repositories\StateCountyRepository $stateCountyRepo
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\Csv\Exception
      */
-    public function handle(HttpRequest $httpRequest, Csv $csv, StateCountyService $stateCountyService)
+    public function handle(HttpRequest $httpRequest, Csv $csv, StateCountyRepository $stateCountyRepo)
     {
         $uri = 'https://fusiontables.google.com/exporttable?query=select+*+from+1xdysxZ94uUFIit9eXmnw1fYc6VcQiXhceFd_CVKa&o=csv';
 
@@ -78,7 +78,7 @@ class UpdateGoogleStateCountyTable extends Command
         $csv->setEscape();
         $rows = $csv->fetch();
 
-        $stateCountyService->truncate();
+        $stateCountyRepo->truncate();
 
         foreach ($rows as $row)
         {
@@ -97,7 +97,7 @@ class UpdateGoogleStateCountyTable extends Command
                 'fips_forumla' => $row[11],
                 'has_error' => $row[12],
             ];
-            $stateCountyService->create($attributes);
+            $stateCountyRepo->create($attributes);
         }
     }
 }

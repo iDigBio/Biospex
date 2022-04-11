@@ -22,12 +22,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\NfnExpertReviewJob;
 use App\Jobs\NfnExpertReviewPublishJob;
-use App\Services\Api\ZooniverseTalkApiService;
-use App\Services\Process\ExpertReconcileProcess;
-use Illuminate\Http\RedirectResponse;
-use App\Services\Model\ExpeditionService;
+use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
+use App\Services\Api\ZooniverseTalkApiService;
+use App\Services\Reconcile\ExpertReconcileProcess;
 use Flash;
+use Illuminate\Http\RedirectResponse;
 
 /**
  * Class ReconcileController
@@ -37,25 +37,25 @@ use Flash;
 class ReconcileController extends Controller
 {
     /**
-     * @var \App\Services\Process\ExpertReconcileProcess
+     * @var \App\Services\Reconcile\ExpertReconcileProcess
      */
-    private $expertReconcileService;
+    private $expertreconcileRepo;
 
     /**
-     * @var \App\Services\Model\ExpeditionService
+     * @var \App\Repositories\ExpeditionRepository
      */
-    private $expeditionService;
+    private ExpeditionRepository $expeditionRepo;
 
     /**
      * ReconcileController constructor.
      *
-     * @param \App\Services\Process\ExpertReconcileProcess $expertReconcileService
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Services\Reconcile\ExpertReconcileProcess $expertreconcileRepo
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      */
-    public function __construct(ExpertReconcileProcess $expertReconcileService, ExpeditionService $expeditionService)
+    public function __construct(ExpertReconcileProcess $expertreconcileRepo, ExpeditionRepository $expeditionRepo)
     {
-        $this->expertReconcileService = $expertReconcileService;
-        $this->expeditionService = $expeditionService;
+        $this->expertreconcileRepo = $expertreconcileRepo;
+        $this->expeditionRepo = $expeditionRepo;
     }
 
     /**
@@ -68,13 +68,13 @@ class ReconcileController extends Controller
      */
     public function index(string $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService)
     {
-        $expedition = $this->expeditionService->findWith($expeditionId, ['project.group.owner', 'panoptesProject']);
+        $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner', 'panoptesProject']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        $reconciles = $this->expertReconcileService->getPagination((int) $expedition->id);
+        $reconciles = $this->expertreconcileRepo->getPagination((int) $expedition->id);
 
         if ($reconciles->isEmpty()) {
             Flash::error(t('Reconcile data for processing is missing.'));
@@ -85,8 +85,8 @@ class ReconcileController extends Controller
         $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, 69205117);
 
         $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
-        $imgUrl = $this->expertReconcileService->getImageUrl($reconciles->first()->subject_imageName, $location);
-        $columns = $this->expertReconcileService->setColumnMasks($reconciles->first()->columns);
+        $imgUrl = $this->expertreconcileRepo->getImageUrl($reconciles->first()->subject_imageName, $location);
+        $columns = $this->expertreconcileRepo->setColumnMasks($reconciles->first()->columns);
 
         return view('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
     }
@@ -99,7 +99,7 @@ class ReconcileController extends Controller
      */
     public function create(string $expeditionId): RedirectResponse
     {
-        $expedition = $this->expeditionService->findWith($expeditionId, ['project.group.owner']);
+        $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
@@ -120,7 +120,7 @@ class ReconcileController extends Controller
      */
     public function update(string $expeditionId): RedirectResponse
     {
-        if (! $this->expertReconcileService->updateRecord(request()->all())) {
+        if (! $this->expertreconcileRepo->updateRecord(request()->all())) {
             Flash::warning(t('Error while updating record.'));
 
             return redirect()->back();

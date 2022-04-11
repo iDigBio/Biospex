@@ -20,11 +20,11 @@
 namespace App\Services\Process;
 
 use App\Notifications\GroupInvite;
-use App\Services\Model\GroupService;
-use App\Services\Model\InviteService;
-use App\Services\Model\UserService;
-use Flash;
+use App\Repositories\GroupRepository;
+use App\Repositories\InviteRepository;
+use App\Repositories\UserRepository;
 use Exception;
+use Flash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
@@ -37,36 +37,36 @@ class InviteProcess
 {
 
     /**
-     * @var \App\Services\Model\UserService
+     * @var \App\Repositories\UserRepository
      */
-    private $userService;
+    private $userRepo;
 
     /**
-     * @var \App\Services\Model\InviteService
+     * @var \App\Repositories\InviteRepository
      */
-    private $inviteService;
+    private $inviteRepo;
 
     /**
-     * @var \App\Services\Model\GroupService
+     * @var \App\Repositories\GroupRepository
      */
-    private $groupService;
+    private $groupRepo;
 
     /**
      * InviteProcess constructor.
      *
-     * @param \App\Services\Model\UserService $userService
-     * @param \App\Services\Model\InviteService $inviteService
-     * @param \App\Services\Model\GroupService $groupService
+     * @param \App\Repositories\UserRepository $userRepo
+     * @param \App\Repositories\InviteRepository $inviteRepo
+     * @param \App\Repositories\GroupRepository $groupRepo
      */
     public function __construct(
-        UserService $userService,
-        InviteService $inviteService,
-        GroupService $groupService
+        UserRepository $userRepo,
+        InviteRepository $inviteRepo,
+        GroupRepository $groupRepo
     )
     {
-        $this->userService = $userService;
-        $this->inviteService = $inviteService;
-        $this->groupService = $groupService;
+        $this->userRepo = $userRepo;
+        $this->inviteRepo = $inviteRepo;
+        $this->groupRepo = $groupRepo;
     }
 
     /**
@@ -79,7 +79,7 @@ class InviteProcess
     public function storeInvites($groupId, $request)
     {
         try {
-            $group = $this->groupService->find($groupId);
+            $group = $this->groupRepo->find($groupId);
 
             $requestInvites = collect($request->get('invites'))->reject(function($invite){
                 return empty($invite['email']);
@@ -115,7 +115,7 @@ class InviteProcess
      */
     private function checkExistingUser($email, $group)
     {
-        $user = $this->userService->findBy('email',$email);
+        $user = $this->userRepo->findBy('email',$email);
 
         if ($user === null)
         {
@@ -147,6 +147,6 @@ class InviteProcess
             'code'     => Str::random(10)
         ];
 
-        return $this->inviteService->create($inviteData);
+        return $this->inviteRepo->create($inviteData);
     }
 }

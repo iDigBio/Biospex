@@ -4,8 +4,8 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Model\PusherClassificationService;
-use App\Services\Process\PusherDashboardService;
+use App\Repositories\PusherClassificationRepository;
+use App\Services\Classifications\PusherDashboardService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -38,12 +38,12 @@ class PusherDashboardJob implements ShouldQueue
      * @return void
      */
     public function handle(
-        PusherClassificationService $pusherClassificationService,
+        PusherClassificationRepository $pusherClassificationRepo,
         PusherDashboardService $pusherDashboardService
     ) {
         try {
 
-            $pusherClassificationService->getPusherClassificationModel()->chunk(25, function ($chunk) use (
+            $pusherClassificationRepo->getPusherClassificationModel()->chunk(25, function ($chunk) use (
                 $pusherDashboardService
             ) {
                 $chunk->each(function ($record) use ($pusherDashboardService) {

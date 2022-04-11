@@ -19,8 +19,8 @@
 
 namespace App\Jobs;
 
-use App\Services\Model\PanoptesProjectService;
-use App\Services\Model\WeDigBioProjectService;
+use App\Repositories\PanoptesProjectRepository;
+use App\Repositories\WeDigBioProjectRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -63,10 +63,10 @@ class PanoptesPusherJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle(PanoptesProjectService $panoptesProjectService, WeDigBioProjectService $weDigBioProjectService)
+    public function handle(PanoptesProjectRepository $panoptesProjectRepo, WeDigBioProjectRepository $weDigBioprojectRepo)
     {
-        $panoptesProject = $panoptesProjectService->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
-        $weDigBioProject = $weDigBioProjectService->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
+        $panoptesProject = $panoptesProjectRepo->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
+        $weDigBioProject = $weDigBioprojectRepo->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
 
         if ($panoptesProject === null && $weDigBioProject === null){
             $this->delete();

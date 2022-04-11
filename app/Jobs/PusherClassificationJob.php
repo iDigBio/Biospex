@@ -19,11 +19,11 @@
 
 namespace App\Jobs;
 
-use App\Services\Process\PusherDashboardService;
+use App\Services\Classifications\PusherDashboardService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
 
 /**
  * Class PusherClassificationJob
@@ -67,7 +67,7 @@ class PusherClassificationJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Process\PusherDashboardService $service
+     * @param \App\Services\Classifications\PusherDashboardService $service
      * @throws \Exception
      */
     public function handle(PusherDashboardService $service)

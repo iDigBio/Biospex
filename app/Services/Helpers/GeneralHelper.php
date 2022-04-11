@@ -411,6 +411,18 @@ class GeneralHelper
     }
 
     /**
+     * Encode transcription an reconcile fields.
+     *
+     * @param string $field
+     * @param array $reserved
+     * @return string
+     */
+    public function encodeCsvFields(string $field, array $reserved): string
+    {
+        return (str_contains($field, 'subject_') || in_array($field, $reserved)) ? $field : $this->base64UrlEncode($field);
+    }
+
+    /**
      * Base encode string.
      *
      * @param string $bin

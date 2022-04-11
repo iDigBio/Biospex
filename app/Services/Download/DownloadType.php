@@ -21,9 +21,8 @@ namespace App\Services\Download;
 
 use App\Models\Download;
 use App\Models\Expedition;
-use App\Models\User;
+use App\Repositories\DownloadRepository;
 use App\Services\Actor\ActorFactory;
-use App\Services\Model\DownloadService;
 use File;
 use Storage;
 
@@ -35,9 +34,9 @@ use Storage;
 class DownloadType extends DownloadFileBase
 {
     /**
-     * @var \App\Services\Model\DownloadService
+     * @var \App\Repositories\DownloadRepository
      */
-    private $downloadService;
+    private DownloadRepository $downloadRepo;
 
     /**
      * @var string
@@ -47,12 +46,12 @@ class DownloadType extends DownloadFileBase
     /**
      * DownloadType constructor.
      *
-     * @param \App\Services\Model\DownloadService $downloadService
+     * @param \App\Repositories\DownloadRepository $downloadRepo
      */
     public function __construct(
-        DownloadService $downloadService
+        DownloadRepository $downloadRepo
     ) {
-        $this->downloadService = $downloadService;
+        $this->downloadRepo = $downloadRepo;
         $this->missingMsg = t("The file appears to be missing though the records exist. Please contact the administration.");
     }
 
@@ -183,7 +182,7 @@ class DownloadType extends DownloadFileBase
      */
     public function getDownload(string $downloadId): Download
     {
-        return $this->downloadService->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
+        return $this->downloadRepo->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
     }
 
     /**
@@ -193,7 +192,7 @@ class DownloadType extends DownloadFileBase
      */
     public function deleteExportFiles(string $expeditionId)
     {
-        $downloads = $this->downloadService->getExportFiles($expeditionId);
+        $downloads = $this->downloadRepo->getExportFiles($expeditionId);
         $nfnExportDir = Storage::path(config('config.export_dir'));
 
         $downloads->each(function ($download) use ($nfnExportDir) {

@@ -22,15 +22,14 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\EventCsvExport;
 use App\Notifications\EventCsvExportError;
-use App\Services\Model\EventService;
+use App\Repositories\EventRepository;
 use App\Services\Csv\Csv;
 use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Storage;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Str;
 
 /**
@@ -75,16 +74,16 @@ class EventUserExportCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\EventService $eventService
+     * @param \App\Repositories\EventRepository $eventRepo
      * @param Csv $csv
      * @return void
      */
     public function handle(
-        EventService $eventService,
+        EventRepository $eventRepo,
         Csv $csv
     ) {
         try {
-            $event = $eventService->getEventShow($this->eventId);
+            $event = $eventRepo->getEventShow($this->eventId);
             $rows = $event->teams->flatMap(function ($team) {
                 return $team->users->map(function ($user) use ($team) {
                     return [

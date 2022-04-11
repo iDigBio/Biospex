@@ -19,9 +19,9 @@
 
 namespace App\Services\Csv;
 
-use App\Services\Model\HeaderService;
-use App\Services\Model\PropertyService;
-use App\Services\Model\SubjectService;
+use App\Repositories\HeaderRepository;
+use App\Repositories\PropertyRepository;
+use App\Repositories\SubjectRepository;
 use App\Services\MongoDbService;
 use Carbon\Carbon;
 use Exception;
@@ -39,19 +39,19 @@ use MongoDB\BSON\ObjectId;
 class DarwinCoreCsvImport
 {
     /**
-     * @var \App\Services\Model\PropertyService
+     * @var \App\Repositories\PropertyRepository
      */
-    public $propertyService;
+    public $propertyRepo;
 
     /**
-     * @var SubjectService
+     * @var \App\Repositories\SubjectRepository
      */
-    public $subjectService;
+    public $subjectRepo;
 
     /**
-     * @var \App\Services\Model\HeaderService
+     * @var \App\Repositories\HeaderRepository
      */
-    public $headerService;
+    public $headerRepo;
 
     /**
      * Array for meta file fields: core and extension
@@ -128,25 +128,25 @@ class DarwinCoreCsvImport
     /**
      * Construct
      *
-     * @param \App\Services\Model\PropertyService $propertyService
-     * @param SubjectService $subjectService
-     * @param \App\Services\Model\HeaderService $headerService
+     * @param \App\Repositories\PropertyRepository $propertyRepo
+     * @param \App\Repositories\SubjectRepository $subjectRepo
+     * @param \App\Repositories\HeaderRepository $headerRepo
      * @param Validation $factory
      * @param \App\Services\Csv\Csv $csv
      * @param MongoDbService $mongoDbService
      */
     public function __construct(
-        PropertyService $propertyService,
-        SubjectService $subjectService,
-        HeaderService $headerService,
+        PropertyRepository $propertyRepo,
+        SubjectRepository $subjectRepo,
+        HeaderRepository $headerRepo,
         Validation $factory,
         Csv $csv,
         MongoDbService $mongoDbService
     ) {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
-        $this->propertyService = $propertyService;
-        $this->subjectService = $subjectService;
-        $this->headerService = $headerService;
+        $this->propertyRepo = $propertyRepo;
+        $this->subjectRepo = $subjectRepo;
+        $this->headerRepo = $headerRepo;
         $this->factory = $factory;
         $this->csv = $csv;
         $this->mongoDbService = $mongoDbService;
@@ -349,9 +349,9 @@ class DarwinCoreCsvImport
      */
     protected function setShortNameForQualifiedName($qualified, $short, $namespace)
     {
-        $checkQualified = $this->propertyService->findBy('qualified', $qualified);
+        $checkQualified = $this->propertyRepo->findBy('qualified', $qualified);
 
-        $checkShort = $this->propertyService->findBy('short', $short);
+        $checkShort = $this->propertyRepo->findBy('short', $short);
 
         if ($checkQualified !== null) {
             $short = $checkQualified->short;
@@ -379,7 +379,7 @@ class DarwinCoreCsvImport
             'short'     => $short,
             'namespace' => $namespace,
         ];
-        $this->propertyService->create($array);
+        $this->propertyRepo->create($array);
     }
 
     /**
@@ -527,7 +527,7 @@ class DarwinCoreCsvImport
             unset($subject['language']);
         }
 
-        $this->subjectService->create($subject);
+        $this->subjectRepo->create($subject);
         $this->subjectCount++;
     }
 
@@ -626,19 +626,19 @@ class DarwinCoreCsvImport
     {
         $type = $loadMedia ? 'image' : 'occurrence';
 
-        $result = $this->headerService->findBy('project_id', $this->projectId);
+        $result = $this->headerRepo->findBy('project_id', $this->projectId);
 
         if (empty($result)) {
             $insert = [
                 'project_id' => $this->projectId,
                 'header'     => [$type => $header],
             ];
-            $this->headerService->create($insert);
+            $this->headerRepo->create($insert);
         } else {
             $existingHeader = $result->header;
             $existingHeader[$type] = isset($existingHeader[$type]) ? $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
             $result->header = $existingHeader;
-            $this->headerService->update($result->toArray(), $result->id);
+            $this->headerRepo->update($result->toArray(), $result->id);
         }
     }
 

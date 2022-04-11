@@ -23,7 +23,7 @@ use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Csv\Csv;
-use App\Services\Process\PanoptesTranscriptionProcess;
+use App\Services\Transcriptions\PanoptesTranscriptionProcess;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -68,7 +68,7 @@ class ZooniverseTranscriptionJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Process\PanoptesTranscriptionProcess $transcriptionProcess
+     * @param \App\Services\Transcriptions\PanoptesTranscriptionProcess $transcriptionProcess
      * @param \App\Services\Csv\Csv $csv
      * @throws \League\Csv\CannotInsertRecord
      */

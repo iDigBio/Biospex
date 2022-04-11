@@ -21,9 +21,9 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipNfn;
 use App\Notifications\JobError;
 use App\Notifications\NfnExpertReviewJobComplete;
-use App\Services\Model\ExpeditionService;
-use App\Services\Process\ExpertReconcileProcess;
-use App\Services\Process\ReconcileProcess;
+use App\Repositories\ExpeditionRepository;
+use App\Services\Reconcile\ExpertReconcileProcess;
+use App\Services\Reconcile\ReconcileProcess;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -58,18 +58,18 @@ class NfnExpertReviewJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\ExpeditionService $expeditionService
-     * @param \App\Services\Process\ReconcileProcess $reconcileProcessService
-     * @param \App\Services\Process\ExpertReconcileProcess $expertReconcileService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Reconcile\ReconcileProcess $reconcileProcessService
+     * @param \App\Services\Reconcile\ExpertReconcileProcess $expertreconcileRepo
      * @return void
      */
     public function handle(
-        ExpeditionService $expeditionService,
+        ExpeditionRepository $expeditionRepo,
         ReconcileProcess $reconcileProcessService,
-        ExpertReconcileProcess $expertReconcileService
+        ExpertReconcileProcess $expertreconcileRepo
     )
     {
-        $expedition = $expeditionService->findExpeditionForExpertReview($this->expeditionId);
+        $expedition = $expeditionRepo->findExpeditionForExpertReview($this->expeditionId);
         $user = $expedition->project->group->owner;
 
         try {
@@ -78,8 +78,8 @@ class NfnExpertReviewJob implements ShouldQueue
             }
 
             $reconcileProcessService->processExplained($expedition);
-            $expertReconcileService->migrateReconcileCsv($expedition->id);
-            $expertReconcileService->setReconcileProblems($expedition->id);
+            $expertreconcileRepo->migrateReconcileCsv($expedition->id);
+            $expertreconcileRepo->setReconcileProblems($expedition->id);
 
             $expedition->nfnActor->pivot->expert = 1;
             $expedition->nfnActor->pivot->save();
