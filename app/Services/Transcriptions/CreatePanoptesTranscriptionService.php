@@ -26,42 +26,38 @@ use App\Services\Csv\Csv;
 use Exception;
 use Str;
 use Validator;
-use function App\Services\Process\dd;
-use function collect;
-use function config;
-use function t;
 
 /**
- * Class PanoptesTranscriptionProcess
+ * Class CreatePanoptesTranscriptionService
  *
- * @package App\Services\Process
+ * @package App\Services\Transcriptions
  */
-class PanoptesTranscriptionProcess
+class CreatePanoptesTranscriptionService
 {
     /**
      * @var mixed
      */
-    protected $collection;
+    protected mixed $collection;
 
     /**
-     * @var SubjectRepository
+     * @var \App\Repositories\SubjectRepository
      */
-    protected $subjectRepo;
+    protected SubjectRepository $subjectRepo;
 
     /**
      * @var \App\Repositories\PanoptesTranscriptionRepository
      */
-    protected $panoptesTranscriptionRepo;
+    protected PanoptesTranscriptionRepository $panoptesTranscriptionRepo;
 
     /**
-     * @var \App\Services\Transcriptions\TranscriptionLocationProcess
+     * @var \App\Services\Transcriptions\CreateTranscriptionLocationService
      */
-    protected $transcriptionLocationProcess;
+    protected CreateTranscriptionLocationService $createTranscriptionLocationService;
 
     /**
      * @var array
      */
-    protected $csvError = [];
+    protected array $csvError = [];
 
     /**
      * @var null
@@ -71,32 +67,36 @@ class PanoptesTranscriptionProcess
     /**
      * @var \App\Services\Csv\Csv
      */
-    protected $csv;
+    protected Csv $csv;
 
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
-    protected $nfnMisMatched;
+    protected mixed $nfnMisMatched;
 
+    /**
+     * @var array
+     */
     protected array $reserved;
 
     /**
-     * PanoptesTranscriptionProcess constructor.
+     * CreatePanoptesTranscriptionService constructor.
+     * Used in overnight scripts to create transcriptions from csv to mongodb.
      *
-     * @param SubjectRepository $subjectRepo
+     * @param \App\Repositories\SubjectRepository $subjectRepo
      * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-     * @param \App\Services\Transcriptions\TranscriptionLocationProcess $transcriptionLocationProcess
+     * @param \App\Services\Transcriptions\CreateTranscriptionLocationService $createTranscriptionLocationService
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
         SubjectRepository $subjectRepo,
         PanoptesTranscriptionRepository $panoptesTranscriptionRepo,
-        TranscriptionLocationProcess $transcriptionLocationProcess,
+        CreateTranscriptionLocationService $createTranscriptionLocationService,
         Csv $csv
     ) {
         $this->subjectRepo = $subjectRepo;
         $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
-        $this->transcriptionLocationProcess = $transcriptionLocationProcess;
+        $this->createTranscriptionLocationService = $createTranscriptionLocationService;
         $this->csv = $csv;
         $this->reserved = config('config.reserved_encoded');
 
@@ -141,7 +141,7 @@ class PanoptesTranscriptionProcess
      * @param $header
      * @return array
      */
-    protected function prepareHeader($header)
+    protected function prepareHeader($header): array
     {
         return array_replace($header, array_fill_keys(array_keys($header, 'created_at'), 'create_date'));
     }
@@ -168,16 +168,13 @@ class PanoptesTranscriptionProcess
             return;
         }
 
-        /*
         if ($this->validateTranscription($row['classification_id'])) {
             return;
         }
-        */
 
         /*
          * @TODO This can be removed once Charles expedition has processed
          */
-        /*
         $this->fixMisMatched($row, $expeditionId);
 
         if (trim($row['subject_subjectId'] === null)) {
@@ -192,10 +189,10 @@ class PanoptesTranscriptionProcess
             return;
         }
 
-        $this->transcriptionLocationProcess->buildTranscriptionLocation($row, $subject, $expeditionId);
+        $this->createTranscriptionLocationService->buildTranscriptionLocation($row, $subject, $expeditionId);
 
         $row = array_merge($row, ['subject_projectId' => $subject->project_id]);
-        */
+
         $rowWithEncodeHeaders = collect($row)->mapWithKeys(function($value, $field){
             $newField = GeneralHelper::encodeCsvFields($field, $this->reserved);
             return [$newField => $value];

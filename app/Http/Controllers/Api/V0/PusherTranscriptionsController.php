@@ -20,7 +20,6 @@
 namespace App\Http\Controllers\Api\V0;
 
 use App\Models\PusherTranscription;
-use App\Services\Classifications\PusherTranscriptionProcess;
 use App\Transformers\PusherTranscriptionTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -53,10 +52,9 @@ class PusherTranscriptionsController extends ApiController
      *
      * @TODO Remove league/fractal from composer and remove V0 api
      * @param Request $request
-     * @param \App\Services\Classifications\PusherTranscriptionProcess $service
      * @return mixed
      */
-    public function index(Request $request, PusherTranscriptionProcess $service)
+    public function index(Request $request)
     {
         $totalCount = $this->listApiDashboardCount($request);
         $data = $this->listApiDashboard($request);

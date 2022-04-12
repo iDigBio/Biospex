@@ -21,8 +21,8 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Classifications\PusherTranscriptionProcess;
-use App\Services\Transcriptions\EventTranscriptionProcess;
+use App\Services\Transcriptions\UpdateOrCreatePusherTranscriptionService;
+use App\Services\Transcriptions\CreateEventTranscriptionService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -71,13 +71,18 @@ class ZooniversePusherJob implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Creates or updates existing pusher transcriptions from overnight scripts.
+     * Creates event transcripting in mysql for user if one does not exist.
      *
-     * @param \App\Services\Classifications\PusherTranscriptionProcess $pusherTranscriptionProcess
-     * @param \App\Services\Transcriptions\EventTranscriptionProcess $eventTranscriptionProcess
+     * TODO: Perhaps break this out into two jobs instead
+     *
+     * @param \App\Services\Transcriptions\UpdateOrCreatePusherTranscriptionService $updateOrCreatePusherTranscriptionService
+     * @param \App\Services\Transcriptions\CreateEventTranscriptionService $createEventTranscriptionService
      * @throws \Exception
      */
-    public function handle(PusherTranscriptionProcess $pusherTranscriptionProcess, EventTranscriptionProcess $eventTranscriptionProcess)
+    public function handle(
+        UpdateOrCreatePusherTranscriptionService $updateOrCreatePusherTranscriptionService, 
+        CreateEventTranscriptionService $createEventTranscriptionService)
     {
         if ($this->skipReconcile($this->expeditionId)) {
             $this->delete();
@@ -85,18 +90,18 @@ class ZooniversePusherJob implements ShouldQueue
             return;
         }
 
-        $expedition = $pusherTranscriptionProcess->getExpedition($this->expeditionId);
+        $expedition = $updateOrCreatePusherTranscriptionService->getExpedition($this->expeditionId);
         if (!$expedition) {
             throw new Exception(t('Could not find Expedition using Id: %', $this->expeditionId));
         }
 
         $timestamp = isset($this->days) ? Carbon::now()->subDays($this->days) : Carbon::now()->subDays(3);
 
-        $transcriptions = $pusherTranscriptionProcess->getTranscriptions($expedition->id, $timestamp);
+        $transcriptions = $updateOrCreatePusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
 
-        $transcriptions->each(function ($transcription) use ($pusherTranscriptionProcess, $eventTranscriptionProcess, $expedition) {
-            $pusherTranscriptionProcess->processTranscripts($transcription, $expedition);
-            $eventTranscriptionProcess->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
+        $transcriptions->each(function ($transcription) use ($updateOrCreatePusherTranscriptionService, $createEventTranscriptionService, $expedition) {
+            $updateOrCreatePusherTranscriptionService->processTranscripts($transcription, $expedition);
+            $createEventTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
         });
     }
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2015  Biospex
+ * Copyright (c) 2022. Biospex
  * biospex@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,29 +11,26 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Classifications;
+namespace App\Services\Transcriptions;
 
-use App\Models\PusherClassification;
 use App\Repositories\PusherClassificationRepository;
-use App\Repositories\PusherTranscriptionRepository;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
 use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Uuid\Uuid;
-use Validator;
 
 /**
- * Class PusherDashboardService
+ * Class CreatePusherClassificationService
  *
- * @package App\Services\Process
+ * @package App\Services\Transcriptions
  */
-class PusherDashboardService
+class CreatePusherClassificationService
 {
     /**
      * @var \App\Services\Api\PanoptesApiService
@@ -41,30 +38,22 @@ class PusherDashboardService
     private PanoptesApiService $apiService;
 
     /**
-     * @var \App\Repositories\PusherTranscriptionRepository
-     */
-    private PusherTranscriptionRepository $pusherTranscriptionRepo;
-
-    /**
      * @var \App\Repositories\PusherClassificationRepository
      */
     private PusherClassificationRepository $pusherClassificationRepo;
 
     /**
-     * PusherDashboardService constructor.
+     * CreatePusherClassificationService constructor.
      *
      * @param \App\Services\Api\PanoptesApiService $apiService
-     * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepo
      * @param \App\Repositories\PusherClassificationRepository $pusherClassificationRepo
      */
     public function __construct(
         PanoptesApiService $apiService,
-        PusherTranscriptionRepository $pusherTranscriptionRepo,
         PusherClassificationRepository $pusherClassificationRepo
     )
     {
         $this->apiService = $apiService;
-        $this->pusherTranscriptionRepo = $pusherTranscriptionRepo;
         $this->pusherClassificationRepo = $pusherClassificationRepo;
     }
 
@@ -149,22 +138,6 @@ class PusherDashboardService
     }
 
     /**
-     * Create dashboard item.
-     * Uses classifications stored in database to relieve traffic on MongoDB.
-     *
-     * @param \App\Models\PusherClassification $pusherClassification
-     */
-    public function createDashboardRecord(PusherClassification $pusherClassification)
-    {
-
-        if ($this->validateTranscription($pusherClassification->classification_id)) {
-            return;
-        }
-
-        $this->pusherTranscriptionRepo->create($pusherClassification->data);
-    }
-
-    /**
      * Determine image url.
      *
      * @param array $data
@@ -175,23 +148,5 @@ class PusherDashboardService
         $imageUrl = $data['subject_urls'][0];
 
         return $imageUrl['image/jpeg'] ?? ($imageUrl['image/png'] ?? null);
-    }
-
-    /**
-     * Validate transcription to prevent duplicates.
-     *
-     * @param $classification_id
-     * @return mixed
-     */
-    public function validateTranscription($classification_id): mixed
-    {
-
-        $rules = ['classification_id' => 'unique:mongodb.pusher_transcriptions,classification_id'];
-        $values = ['classification_id' => $classification_id];
-        $validator = Validator::make($values, $rules);
-        $validator->getPresenceVerifier()->setConnection('mongodb');
-
-        // returns true if failed.
-        return $validator->fails();
     }
 }

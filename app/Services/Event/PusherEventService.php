@@ -21,7 +21,7 @@ namespace App\Services\Event;
 
 use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
-use App\Services\Transcriptions\EventTranscriptionProcess;
+use App\Services\Transcriptions\CreateEventTranscriptionService;
 
 /**
  * Class PusherEventService
@@ -31,9 +31,9 @@ use App\Services\Transcriptions\EventTranscriptionProcess;
 class PusherEventService
 {
     /**
-     * @var \App\Services\Transcriptions\EventTranscriptionProcess
+     * @var \App\Services\Transcriptions\CreateEventTranscriptionService
      */
-    private EventTranscriptionProcess $eventTranscriptionProcess;
+    private CreateEventTranscriptionService $createEventTranscriptionService;
 
     /**
      * @var \App\Repositories\ExpeditionRepository
@@ -48,23 +48,24 @@ class PusherEventService
     /**
      * PusherEventService constructor.
      *
-     * @param \App\Services\Transcriptions\EventTranscriptionProcess $eventTranscriptionProcess
+     * @param \App\Services\Transcriptions\CreateEventTranscriptionService $createEventTranscriptionService
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Services\Api\PanoptesApiService $apiService
      */
     public function __construct(
-        EventTranscriptionProcess $eventTranscriptionProcess,
+        CreateEventTranscriptionService $createEventTranscriptionService,
         ExpeditionRepository $expeditionRepo,
         PanoptesApiService $apiService)
     {
 
-        $this->eventTranscriptionProcess = $eventTranscriptionProcess;
+        $this->createEventTranscriptionService = $createEventTranscriptionService;
         $this->expeditionRepo = $expeditionRepo;
         $this->apiService = $apiService;
     }
 
     /**
-     * Process pusher data.
+     * Adds transcription to event for particular user.
+     * @see \App\Jobs\PanoptesPusherJob
      *
      * @param array $data
      */
@@ -84,7 +85,7 @@ class PusherEventService
             return;
         }
 
-        $this->eventTranscriptionProcess->createEventTranscription((int) $data['classification_id'], $expedition->project_id, $user['login']);
+        $this->createEventTranscriptionService->createEventTranscription((int) $data['classification_id'], $expedition->project_id, $user['login']);
     }
 
     /**

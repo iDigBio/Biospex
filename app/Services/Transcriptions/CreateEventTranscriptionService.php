@@ -29,11 +29,11 @@ use MongoDB\BSON\UTCDateTime;
 use Validator;
 
 /**
- * Class EventTranscriptionProcess
+ * Class CreateEventTranscriptionService
  *
- * @package App\Services\Process
+ * @package App\Services\Transcriptions
  */
-class EventTranscriptionProcess
+class CreateEventTranscriptionService
 {
     /**
      * @var \App\Repositories\EventRepository
@@ -51,7 +51,7 @@ class EventTranscriptionProcess
     private EventUserRepository $eventUserRepo;
 
     /**
-     * EventTranscriptionProcess constructor.
+     * CreateEventTranscriptionService constructor.
      *
      * @param \App\Repositories\EventRepository $eventRepo
      * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo

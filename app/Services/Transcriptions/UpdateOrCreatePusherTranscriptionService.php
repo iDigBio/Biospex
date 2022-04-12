@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2015  Biospex
+ * Copyright (c) 2022. Biospex
  * biospex@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,13 +11,13 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Classifications;
+namespace App\Services\Transcriptions;
 
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\PanoptesTranscriptionRepository;
@@ -26,29 +26,29 @@ use Ramsey\Uuid\Uuid;
 use Validator;
 
 /**
- * Class PusherTranscriptionProcess
+ * Class UpdateOrCreatePusherTranscriptionService
  *
- * @package App\Services\Process
+ * @package App\Services\Transcriptions
  */
-class PusherTranscriptionProcess
+class UpdateOrCreatePusherTranscriptionService
 {
     /**
      * @var \App\Repositories\PusherTranscriptionRepository
      */
-    private $pusherTranscriptionRepo;
+    private PusherTranscriptionRepository $pusherTranscriptionRepo;
 
     /**
      * @var \App\Repositories\ExpeditionRepository
      */
-    private $expeditionRepo;
+    private ExpeditionRepository $expeditionRepo;
 
     /**
      * @var \App\Repositories\PanoptesTranscriptionRepository
      */
-    private $panoptesTranscriptionRepo;
+    private PanoptesTranscriptionRepository $panoptesTranscriptionRepo;
 
     /**
-     * PusherTranscriptionProcess constructor.
+     * UpdateOrCreatePusherTranscriptionService constructor.
      *
      * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepo
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
@@ -82,13 +82,15 @@ class PusherTranscriptionProcess
      * @param $timestamp
      * @return mixed
      */
-    public function getTranscriptions($expeditionId, $timestamp = null)
+    public function getTranscriptions($expeditionId, $timestamp = null): mixed
     {
         return $this->panoptesTranscriptionRepo->getTranscriptionForDashboardJob($expeditionId, $timestamp);
     }
 
     /**
      * Process transcripts
+     * Uses transcriptions from overnight job to update any existing,
+     * or create new, pusher transcriptions.
      *
      * @param $transcription
      * @param $expedition
@@ -203,7 +205,7 @@ class PusherTranscriptionProcess
      * @param $transcription
      * @return mixed
      */
-    private function setThumbnailUri($transcription)
+    private function setThumbnailUri($transcription): mixed
     {
         return (empty($transcription->subject_imageURL)) ? $transcription->subject_accessURI : $transcription->subject_imageURL;
     }
@@ -214,7 +216,7 @@ class PusherTranscriptionProcess
      * @param $classification_id
      * @return mixed
      */
-    public function validateTranscription($classification_id)
+    public function validateTranscription($classification_id): mixed
     {
 
         $rules = ['classification_id' => 'unique:mongodb.pusher_transcriptions,classification_id'];

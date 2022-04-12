@@ -4,14 +4,19 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Repositories\PusherClassificationRepository;
-use App\Services\Classifications\PusherDashboardService;
+use App\Repositories\PusherTranscriptionRepository;
+use App\Services\Transcriptions\CreatePusherTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 
-class PusherDashboardJob implements ShouldQueue
+/**
+ * Class PusherTranscriptionJob
+ *
+ * @package App\Jobs
+ */
+class PusherTranscriptionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
@@ -21,6 +26,11 @@ class PusherDashboardJob implements ShouldQueue
      * @var int
      */
     public $timeout = 7200;
+
+    /**
+     * @var \App\Repositories\PusherTranscriptionRepository
+     */
+    private PusherTranscriptionRepository $pusherTranscriptionRepository;
 
     /**
      * Create a new job instance.
@@ -33,26 +43,15 @@ class PusherDashboardJob implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Executes moving pusher classifications to pusher transcriptions in mongodb.
+     * Cron runs every 5 minutes.
      *
      * @return void
      */
-    public function handle(
-        PusherClassificationRepository $pusherClassificationRepo,
-        PusherDashboardService $pusherDashboardService
-    ) {
+    public function handle(CreatePusherTranscriptionService $createPusherTranscriptionService) {
         try {
 
-            $pusherClassificationRepo->getPusherClassificationModel()->chunk(25, function ($chunk) use (
-                $pusherDashboardService
-            ) {
-                $chunk->each(function ($record) use ($pusherDashboardService) {
-                    $pusherDashboardService->createDashboardRecord($record);
-
-                    $record->delete();
-                });
-            });
-
+            $createPusherTranscriptionService->process();
             $this->delete();
 
             return;

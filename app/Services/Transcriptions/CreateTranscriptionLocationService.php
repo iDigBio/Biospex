@@ -25,11 +25,11 @@ use GeneralHelper;
 use function config;
 
 /**
- * Class TranscriptionLocationProcess
+ * Class CreateTranscriptionLocationService
  *
- * @package App\Services\Process
+ * @package App\Services\Transcriptions
  */
-class TranscriptionLocationProcess
+class CreateTranscriptionLocationService
 {
     /**
      * @var \App\Repositories\TranscriptionLocationRepository
@@ -52,7 +52,7 @@ class TranscriptionLocationProcess
     private $dwcOccurrenceFields;
 
     /**
-     * TranscriptionLocationProcess constructor.
+     * CreateTranscriptionLocationService constructor.
      *
      * @param \App\Repositories\TranscriptionLocationRepository $transcriptionLocationRepo
      * @param \App\Repositories\StateCountyRepository $stateCountyRepo

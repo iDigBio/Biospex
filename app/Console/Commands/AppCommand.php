@@ -19,7 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Transcriptions\PanoptesTranscriptionProcess;
+use App\Services\Transcriptions\CreatePanoptesTranscriptionService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
@@ -41,17 +41,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\Transcriptions\PanoptesTranscriptionProcess
+     * @var \App\Services\Transcriptions\CreatePanoptesTranscriptionService
      */
-    private PanoptesTranscriptionProcess $process;
+    private CreatePanoptesTranscriptionService $createPanoptesTranscriptionService;
 
     /**
      * AppCommand constructor.
      */
-    public function __construct(PanoptesTranscriptionProcess $process)
+    public function __construct(CreatePanoptesTranscriptionService $createPanoptesTranscriptionService)
     {
         parent::__construct();
-        $this->process = $process;
+        $this->createPanoptesTranscriptionService = $createPanoptesTranscriptionService;
     }
 
     /**
@@ -61,6 +61,6 @@ class AppCommand extends Command
     {
         $transcriptDir = config('config.nfn_downloads_transcript');
         $csvFile = Storage::path($transcriptDir.'/374.csv');
-        $this->process->process($csvFile, 374);
+        $this->createPanoptesTranscriptionService->process($csvFile, 374);
     }
 }
