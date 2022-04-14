@@ -263,22 +263,39 @@ return [
         'workflow_id',
         'user_name',
         'Country',
-        'StateProvince',
-        'State_Province',
-        'State Province',
         'County',
         'Location',
-        'Collected By',
-        'Collected_By',
-        'CollectedBy',
-        'Scientific Name',
-        'Scientific_Name',
-        'ScientificName',
         'classification_started_at',
         'classification_finished_at',
         'updated_at',
         'created_at',
         'problem',
-        'columns'
+        'columns',
+        'state_province'  => [
+            'StateProvince',
+            'State_Province',
+            'State Province',
+            'State/Province',
+            'subject_stateProvince'
+        ],
+        'collected_by'    => [
+            'Collected By',
+            'Collected_By',
+            'CollectedBy',
+            'Collected By (first collector only)',
+            'subject_collectedBy'
+        ],
+        'scientific_name' => [
+            'Scientific Name',
+            'Scientific_Name',
+            'ScientificName',
+            'subject_scientificName'
+        ]
     ],
 ];
+/*
+Collected By = 1075984
+Collected By (first collector only) = 31655
+
+State/Province = 519711
+ */

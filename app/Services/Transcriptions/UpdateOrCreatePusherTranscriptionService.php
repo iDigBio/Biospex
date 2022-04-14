@@ -19,6 +19,7 @@
 
 namespace App\Services\Transcriptions;
 
+use App\Facades\TranscriptionMapHelper;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\PanoptesTranscriptionRepository;
 use App\Repositories\PusherTranscriptionRepository;
@@ -149,13 +150,13 @@ class UpdateOrCreatePusherTranscriptionService
                 'lat'          => '',
                 'long'         => '',
                 'country'      => $transcription->Country,
-                'province'     => $transcription->State_Province,
+                'province'     => TranscriptionMapHelper::setStateProvince($transcription),
                 'county'       => $transcription->County,
                 'municipality' => '',
                 'locality'     => $transcription->Location,
                 'date'         => '', // which date to use? transcription date is messy
-                'collector'    => $transcription->Collected_By,
-                'taxon'        => $transcription->Scientific_Name,
+                'collector'    => TranscriptionMapHelper::setCollectedBy($transcription),
+                'taxon'        => TranscriptionMapHelper::setScientificName($transcription),
             ],
             'discretionaryState'   => 'Transcribed',
         ];
@@ -181,11 +182,11 @@ class UpdateOrCreatePusherTranscriptionService
 
         $transcriptionContent = [
             'country'   => ! empty($transcription->Country) ? $transcription->Country : $classification->country,
-            'province'  => ! empty($transcription->StateProvince) ? $transcription->StateProvince : $classification->transcriptionContent['province'],
+            'province'  => TranscriptionMapHelper::setStateProvince($transcription, $classification),
             'county'    => ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'],
             'locality'  => ! empty($transcription->Location) ? $transcription->Location : '',
-            'collector' => ! empty($transcription->CollectedBy) ? $transcription->CollectedBy : '',
-            'taxon'     => ! empty($transcription->ScientificName) ? $transcription->ScientificName : $classification->taxon,
+            'collector' => TranscriptionMapHelper::setCollectedBy($transcription, $classification),
+            'taxon'     => TranscriptionMapHelper::setScientificName($transcription, $classification),
         ];
 
         $attributes = [

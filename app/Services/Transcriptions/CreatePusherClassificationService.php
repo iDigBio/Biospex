@@ -61,6 +61,8 @@ class CreatePusherClassificationService
      * Process pusher data for dashboard.
      * Store records temporarily in MySql DB until processed from cron and added to MongoDB.
      *
+     * @see \App\Jobs\PusherTranscriptionJob
+     *
      * @param array $data
      * @param string $title
      * @throws \Exception

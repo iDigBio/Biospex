@@ -19,6 +19,9 @@
 
 namespace App\Console\Commands;
 
+use App\Facades\TranscriptionMapHelper;
+use App\Repositories\PanoptesTranscriptionRepository;
+use App\Repositories\PusherTranscriptionRepository;
 use App\Services\Transcriptions\CreatePanoptesTranscriptionService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -46,12 +49,28 @@ class AppCommand extends Command
     private CreatePanoptesTranscriptionService $createPanoptesTranscriptionService;
 
     /**
+     * @var \App\Repositories\PanoptesTranscriptionRepository
+     */
+    private PanoptesTranscriptionRepository $panoptesTranscriptionRepository;
+
+    /**
+     * @var \App\Repositories\PusherTranscriptionRepository
+     */
+    private PusherTranscriptionRepository $pusherTranscriptionRepository;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct(CreatePanoptesTranscriptionService $createPanoptesTranscriptionService)
+    public function __construct(
+        CreatePanoptesTranscriptionService $createPanoptesTranscriptionService,
+        PanoptesTranscriptionRepository $panoptesTranscriptionRepository,
+        PusherTranscriptionRepository $pusherTranscriptionRepository
+    )
     {
         parent::__construct();
         $this->createPanoptesTranscriptionService = $createPanoptesTranscriptionService;
+        $this->panoptesTranscriptionRepository = $panoptesTranscriptionRepository;
+        $this->pusherTranscriptionRepository = $pusherTranscriptionRepository;
     }
 
     /**
@@ -59,8 +78,14 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $trans = $this->panoptesTranscriptionRepository->findBy('classification_id', 369292409);
+        $class = $this->pusherTranscriptionRepository->findBy('classification_id',369292409);
+
+        dd(TranscriptionMapHelper::setScientificName($trans, $class));
+        /*
         $transcriptDir = config('config.nfn_downloads_transcript');
         $csvFile = Storage::path($transcriptDir.'/374.csv');
         $this->createPanoptesTranscriptionService->process($csvFile, 374);
+        */
     }
 }

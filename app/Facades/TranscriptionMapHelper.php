@@ -22,12 +22,11 @@ namespace App\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * Class DateHelper
+ * Class TranscriptionMapHelper
  * @package App\Facades
  */
-class DateHelper extends Facade
+class TranscriptionMapHelper extends Facade
 {
-
     /**
      * Get the registered name of the component.
      *
@@ -35,6 +34,6 @@ class DateHelper extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'datehelper';
+        return 'transcriptionmaphelper';
     }
 }

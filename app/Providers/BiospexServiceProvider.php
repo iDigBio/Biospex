@@ -19,6 +19,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Helpers\TranscriptionMapHelper;
 use App\Services\Helpers\CountHelper;
 use App\Services\Helpers\DateHelper;
 use App\Services\Helpers\FlashHelper;
@@ -83,7 +85,11 @@ class BiospexServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('counthelper', function(){
-            return new CountHelper();
+            return new CountHelper(app(PanoptesTranscriptionRepository::class));
+        });
+
+        $this->app->singleton('transcriptionmaphelper', function() {
+            return new TranscriptionMapHelper($this->app['config']->get('config.reserved_encoded'));
         });
     }
 }
