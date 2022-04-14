@@ -261,11 +261,36 @@ return [
         '_id',
         'classification_id',
         'workflow_id',
+        'user_name',
+        'Country',
+        'County',
+        'Location',
+        'create_date',
         'classification_started_at',
         'classification_finished_at',
         'updated_at',
         'created_at',
         'problem',
-        'columns'
+        'columns',
+        'state-province'  => [
+            'StateProvince',
+            'State_Province',
+            'State Province',
+            'State/Province',
+            'subject_stateProvince'
+        ],
+        'collected-by'    => [
+            'Collected By',
+            'Collected_By',
+            'CollectedBy',
+            'Collected By (first collector only)',
+            'subject_collectedBy'
+        ],
+        'scientific-name' => [
+            'Scientific Name',
+            'Scientific_Name',
+            'ScientificName',
+            'subject_scientificName'
+        ]
     ],
 ];
