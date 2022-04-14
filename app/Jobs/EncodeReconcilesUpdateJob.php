@@ -16,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Validator;
 
-class EncodeReconcilesJob implements ShouldQueue
+class EncodeReconcilesUpdateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -46,7 +46,10 @@ class EncodeReconcilesJob implements ShouldQueue
     {
         $user = User::find(1);
         try {
-            $cursor = Reconcile::orderBy('created_at', 'DESC')->cursor();
+            $timestamp = Carbon::now()->subDays(2);
+            $cursor = Reconcile::where('created_at', '>=', $timestamp)
+                ->orderBy('created_at', 'DESC')
+                ->cursor();
 
             $i=0;
             foreach ($cursor as $record) {
@@ -76,8 +79,8 @@ class EncodeReconcilesJob implements ShouldQueue
             }
 
             $message = [
-                'Reconciles sync completed.',
-                'Reconciles synced: ' . $i
+                'Reconciles update completed.',
+                'Reconciles updated: ' . $i
             ];
             $user->notify(new JobComplete(__FILE__, $message));
 
@@ -85,7 +88,7 @@ class EncodeReconcilesJob implements ShouldQueue
 
         } catch (\Exception $e) {
             $message = [
-                'Error in Reconciles sync',
+                'Error in Reconciles updating',
                 'Message: ' . $e->getMessage()
             ];
             $user->notify(new JobError(__FILE__, $message));

@@ -2,12 +2,13 @@
 
 namespace App\Jobs;
 
+use App\Facades\GeneralHelper;
+use App\Models\PanoptesTranscription;
+use App\Models\PanoptesTranscriptionNew;
 use App\Models\Reconcile;
-use App\Models\ReconcileNew;
 use App\Models\User;
 use App\Notifications\JobComplete;
 use App\Notifications\JobError;
-use GeneralHelper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,7 +17,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Validator;
 
-class EncodeReconcilesJob implements ShouldQueue
+class EncodeTranscriptionsUpdateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -25,6 +26,9 @@ class EncodeReconcilesJob implements ShouldQueue
      */
     public $timeout = 300000;
 
+    /**
+     * @var array
+     */
     private array $reserved;
 
     /**
@@ -46,38 +50,30 @@ class EncodeReconcilesJob implements ShouldQueue
     {
         $user = User::find(1);
         try {
-            $cursor = Reconcile::orderBy('created_at', 'DESC')->cursor();
+            $timestamp = Carbon::now()->subDays(2);
+            $cursor = PanoptesTranscription::where('created_at', '>=', $timestamp)
+                ->orderBy('created_at', 'DESC')
+                ->cursor();
 
             $i=0;
             foreach ($cursor as $record) {
-                if ($this->validateTranscription($record->subject_id)) {
+                if ($this->validateTranscription($record->classification_id)) {
                     continue;
                 }
 
                 $newRecord = [];
                 foreach ($record->getAttributes() as $field => $value) {
                     $newField = GeneralHelper::encodeCsvFields($field, $this->reserved);
-                    $newField = $newField === 'problem' ? 'subject_problem' : $newField;
-                    $newField = $newField === 'columns' ? 'subject_columns' : $newField;
-
                     $newRecord[$newField] = $value;
                 }
 
-                if(!isset($newRecord['subject_problem'])) {
-                    $newRecord['subject_problem'] = 0;
-                }
-
-                if(!isset($newRecord['subject_columns'])) {
-                    $newRecord['subject_columns'] = '';
-                }
-
-                ReconcileNew::create($newRecord);
+                PanoptesTranscriptionNew::create($newRecord);
                 $i++;
             }
 
             $message = [
-                'Reconciles sync completed.',
-                'Reconciles synced: ' . $i
+                'Transcript update completed',
+                'Transcripts updated: ' . $i
             ];
             $user->notify(new JobComplete(__FILE__, $message));
 
@@ -85,7 +81,7 @@ class EncodeReconcilesJob implements ShouldQueue
 
         } catch (\Exception $e) {
             $message = [
-                'Error in Reconciles sync',
+                'Error in Transcript encoding',
                 'Message: ' . $e->getMessage()
             ];
             $user->notify(new JobError(__FILE__, $message));
@@ -95,15 +91,15 @@ class EncodeReconcilesJob implements ShouldQueue
     }
 
     /**
-     * Validate reconcile to prevent duplicates.
+     * Validate transcription to prevent duplicates.
      *
-     * @param int $subjectId
+     * @param int $classificationId
      * @return mixed
      */
-    private function validateTranscription(int $subjectId): mixed
+    private function validateTranscription(int $classificationId): mixed
     {
-        $rules = ['subject_id' => 'unique:mongodb.reconciles_new,subject_id'];
-        $values = ['subject_id' => $subjectId];
+        $rules = ['classification_id' => 'unique:mongodb.panoptes_transcriptions_new,classification_id'];
+        $values = ['classification_id' => $classificationId];
         $validator = Validator::make($values, $rules);
 
         // returns true if record exists.

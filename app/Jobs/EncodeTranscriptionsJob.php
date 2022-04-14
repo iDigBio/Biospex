@@ -27,13 +27,18 @@ class EncodeTranscriptionsJob implements ShouldQueue
     public $timeout = 300000;
 
     /**
+     * @var array
+     */
+    private array $reserved;
+
+    /**
      * Create a new job instance.
      *
      * @return void
      */
     public function __construct()
     {
-
+        $this->reserved = config('config.reserved_encoded');
     }
 
     /**
@@ -43,13 +48,9 @@ class EncodeTranscriptionsJob implements ShouldQueue
      */
     public function handle()
     {
-        $reserved = config('config.reserved_encoded');
         $user = User::find(1);
         try {
-            $timestamp = Carbon::now()->subDays(2);
-            $cursor = PanoptesTranscription::where('created_at', '>=', $timestamp)
-                ->orderBy('created_at', 'DESC')
-                ->cursor();
+            $cursor = PanoptesTranscription::orderBy('created_at', 'DESC')->cursor();
 
             $i=0;
             foreach ($cursor as $record) {
@@ -58,9 +59,9 @@ class EncodeTranscriptionsJob implements ShouldQueue
                 }
 
                 $newRecord = [];
-                foreach ($record->getAttributes() as $key => $value) {
-                    $newKey = (str_contains($key, 'subject_') || in_array($key, $reserved)) ? $key : GeneralHelper::base64UrlEncode($key);
-                    $newRecord[$newKey] = $value;
+                foreach ($record->getAttributes() as $field => $value) {
+                    $newField = GeneralHelper::encodeCsvFields($field, $this->reserved);
+                    $newRecord[$newField] = $value;
                 }
 
                 PanoptesTranscriptionNew::create($newRecord);
@@ -68,7 +69,7 @@ class EncodeTranscriptionsJob implements ShouldQueue
             }
 
             $message = [
-                'Transcript encoding completed',
+                'Transcript sync completed',
                 'Transcripts synced: ' . $i
             ];
             $user->notify(new JobComplete(__FILE__, $message));
@@ -77,7 +78,7 @@ class EncodeTranscriptionsJob implements ShouldQueue
 
         } catch (\Exception $e) {
             $message = [
-                'Error in Transcript encoding',
+                'Error in Transcript syncing',
                 'Message: ' . $e->getMessage()
             ];
             $user->notify(new JobError(__FILE__, $message));
