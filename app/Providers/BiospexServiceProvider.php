@@ -20,11 +20,11 @@
 namespace App\Providers;
 
 use App\Repositories\PanoptesTranscriptionRepository;
-use App\Services\Helpers\TranscriptionMapHelper;
 use App\Services\Helpers\CountHelper;
 use App\Services\Helpers\DateHelper;
 use App\Services\Helpers\FlashHelper;
 use App\Services\Helpers\GeneralHelper;
+use App\Services\Helpers\TranscriptionMapHelper;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
@@ -39,7 +39,7 @@ class BiospexServiceProvider extends ServiceProvider
     {
         $this->setViewComposers();
     }
-    
+
     public function register()
     {
         $this->registerFacades();

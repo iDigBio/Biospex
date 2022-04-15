@@ -78,6 +78,16 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $result = $this->panoptesTranscriptionRepository->findBy('classification_id', 369292409);
+
+        $newRecord = [];
+        foreach ($result->getAttributes() as $field => $value) {
+            $newField = TranscriptionMapHelper::encodeTranscriptionFields($field);
+            $newRecord[$newField] = $value;
+        }
+
+        dd($newRecord);
+
         $trans = $this->panoptesTranscriptionRepository->findBy('classification_id', 369292409);
         $class = $this->pusherTranscriptionRepository->findBy('classification_id',369292409);
 

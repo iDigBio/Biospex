@@ -265,27 +265,28 @@ return [
         'Country',
         'County',
         'Location',
+        'create_date',
         'classification_started_at',
         'classification_finished_at',
         'updated_at',
         'created_at',
         'problem',
         'columns',
-        'state_province'  => [
+        'state-province'  => [
             'StateProvince',
             'State_Province',
             'State Province',
             'State/Province',
             'subject_stateProvince'
         ],
-        'collected_by'    => [
+        'collected-by'    => [
             'Collected By',
             'Collected_By',
             'CollectedBy',
             'Collected By (first collector only)',
             'subject_collectedBy'
         ],
-        'scientific_name' => [
+        'scientific-name' => [
             'Scientific Name',
             'Scientific_Name',
             'ScientificName',

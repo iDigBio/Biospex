@@ -409,38 +409,4 @@ class GeneralHelper
 
         return Storage::size(config('config.nfn_downloads_dir').'/'.$type.'/'.$file);
     }
-
-    /**
-     * Encode transcription an reconcile fields.
-     *
-     * @param string $field
-     * @param array $reserved
-     * @return string
-     */
-    public function encodeCsvFields(string $field, array $reserved): string
-    {
-        return (str_contains($field, 'subject_') || in_array($field, $reserved)) ? $field : $this->base64UrlEncode($field);
-    }
-
-    /**
-     * Base encode string.
-     *
-     * @param string $bin
-     * @return string
-     */
-    public function base64UrlEncode(string $bin): string
-    {
-        return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($bin));
-    }
-
-    /**
-     * Base decode string.
-     *
-     * @param string $str
-     * @return string
-     */
-    public function base64UrlDecode(string $str): string
-    {
-        return base64_decode(str_replace(['-', '_'], ['+', '/'], $str));
-    }
 }

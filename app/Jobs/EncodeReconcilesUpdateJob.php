@@ -1,13 +1,30 @@
 <?php
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 namespace App\Jobs;
 
+use App\Facades\TranscriptionMapHelper;
 use App\Models\Reconcile;
 use App\Models\ReconcileNew;
 use App\Models\User;
 use App\Notifications\JobComplete;
 use App\Notifications\JobError;
-use GeneralHelper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -25,8 +42,6 @@ class EncodeReconcilesUpdateJob implements ShouldQueue
      */
     public $timeout = 300000;
 
-    private array $reserved;
-
     /**
      * Create a new job instance.
      *
@@ -34,7 +49,7 @@ class EncodeReconcilesUpdateJob implements ShouldQueue
      */
     public function __construct()
     {
-        $this->reserved = config('config.reserved_encoded');
+        $this->onConnection('long-beanstalkd')->onQueue(config('config.working_tube'));
     }
 
     /**
@@ -59,7 +74,7 @@ class EncodeReconcilesUpdateJob implements ShouldQueue
 
                 $newRecord = [];
                 foreach ($record->getAttributes() as $field => $value) {
-                    $newField = GeneralHelper::encodeCsvFields($field, $this->reserved);
+                    $newField = TranscriptionMapHelper::encodeTranscriptionFields($field);
                     $newField = $newField === 'problem' ? 'subject_problem' : $newField;
                     $newField = $newField === 'columns' ? 'subject_columns' : $newField;
 

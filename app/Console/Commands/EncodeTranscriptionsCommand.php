@@ -27,8 +27,6 @@ class EncodeTranscriptionsCommand extends Command
      */
     public function __construct() {
         parent::__construct();
-        $this->onConnection('long-beanstalkd')->onQueue(config('config.working_tube'));
-
     }
 
     /**

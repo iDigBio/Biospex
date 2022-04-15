@@ -48,7 +48,7 @@ class TranscriptionMapHelper
      */
     public function setStateProvince(PanoptesTranscription $panoptesTranscription, PusherTranscription $pusherTranscription = null): mixed
     {
-        foreach ($this->reserved_encoded['state_province'] as $value) {
+        foreach ($this->reserved_encoded['state-province'] as $value) {
             if (isset($panoptesTranscription->{$value})) {
                 return $panoptesTranscription->{$value};
             }
@@ -69,7 +69,7 @@ class TranscriptionMapHelper
      */
     public function setCollectedBy(PanoptesTranscription $panoptesTranscription, PusherTranscription $pusherTranscription = null): mixed
     {
-        foreach ($this->reserved_encoded['collected_by'] as $value) {
+        foreach ($this->reserved_encoded['collected-by'] as $value) {
             if (isset($panoptesTranscription->{$value})) {
                 return $panoptesTranscription->{$value};
             }
@@ -90,7 +90,7 @@ class TranscriptionMapHelper
      */
     public function setScientificName(PanoptesTranscription $panoptesTranscription, PusherTranscription $pusherTranscription = null): mixed
     {
-        foreach ($this->reserved_encoded['scientific_name'] as $value) {
+        foreach ($this->reserved_encoded['scientific-name'] as $value) {
             if (isset($panoptesTranscription->{$value})) {
                 return $panoptesTranscription->{$value};
             }
@@ -101,5 +101,58 @@ class TranscriptionMapHelper
         }
 
         return $pusherTranscription->taxon;
+    }
+
+    /**
+     * Encode transcription an reconcile fields.
+     *
+     * @param string $field
+     * @return string
+     */
+    public function encodeTranscriptionFields(string $field): string
+    {
+        if (str_contains($field, 'subject_') ||
+            in_array($field, $this->reserved_encoded) ||
+            in_array($field, $this->reserved_encoded['state-province']) ||
+            in_array($field, $this->reserved_encoded['collected-by']) ||
+            in_array($field, $this->reserved_encoded['scientific-name'])
+        ) {
+            return $field;
+        }
+
+        return $this->base64UrlEncode($field);
+    }
+
+    /**
+     * Base encode string.
+     *
+     * @param string $bin
+     * @return string
+     */
+    public function base64UrlEncode(string $bin): string
+    {
+        return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($bin));
+    }
+
+    /**
+     * Decode transcription an reconcile fields.
+     *
+     * @param string $field
+     * @return string
+     */
+    public function decodeTranscriptionFields(string $field): string
+    {
+        return (str_contains($field, 'subject_') || in_array($field, $this->reserved_encoded)) ? $field : $this->base64UrlDecode($field);
+    }
+
+    /**
+     * Base decode string.
+     *
+     * @param string $str
+     * @return string
+     */
+    public function base64UrlDecode(string $str): string
+    {
+        return base64_decode(str_replace(['-', '_'], ['+', '/'], $str));
     }
 }
