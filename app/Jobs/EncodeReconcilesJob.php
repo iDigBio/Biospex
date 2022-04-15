@@ -70,11 +70,21 @@ class EncodeReconcilesJob implements ShouldQueue
 
                 $newRecord = [];
                 foreach ($record->getAttributes() as $field => $value) {
-                    $newField = TranscriptionMapHelper::encodeTranscriptionFields($field);
+                    $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
                     $newField = $newField === 'problem' ? 'subject_problem' : $newField;
                     $newField = $newField === 'columns' ? 'subject_columns' : $newField;
-
                     $newRecord[$newField] = $value;
+
+                    if ($newField === 'subject_columns') {
+                        $subject_columns = [];
+                        $columns = explode(',', $value);
+                        foreach ($columns as $column) {
+                            $encodedColumn = TranscriptionMapHelper::encodeTranscriptionField($column);
+                            $subject_columns[] = $encodedColumn;
+                        }
+
+                        $newRecord['subject_columns'] = implode('|', $subject_columns);
+                    }
                 }
 
                 if(!isset($newRecord['subject_problem'])) {

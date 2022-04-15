@@ -74,7 +74,7 @@ class EncodeTranscriptionsUpdateJob implements ShouldQueue
 
                 $newRecord = [];
                 foreach ($record->getAttributes() as $field => $value) {
-                    $newField = TranscriptionMapHelper::encodeTranscriptionFields($field);
+                    $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
                     $newRecord[$newField] = $value;
                 }
 
