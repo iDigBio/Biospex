@@ -262,9 +262,6 @@ return [
         'classification_id',
         'workflow_id',
         'user_name',
-        'Country',
-        'County',
-        'Location',
         'create_date',
         'classification_started_at',
         'classification_finished_at',
@@ -272,25 +269,32 @@ return [
         'created_at',
         'problem',
         'columns',
-        'state-province'  => [
+        'reviewed',
+        'Country',
+        'County',
+        'Location'
+    ],
+
+    'mapped_transcription_fields' => [
+        'province' => [
             'StateProvince',
             'State_Province',
             'State Province',
             'State/Province',
             'subject_stateProvince'
         ],
-        'collected-by'    => [
+        'collector' => [
             'Collected By',
             'Collected_By',
             'CollectedBy',
             'Collected By (first collector only)',
             'subject_collectedBy'
         ],
-        'scientific-name' => [
+        'taxon' => [
             'Scientific Name',
             'Scientific_Name',
             'ScientificName',
             'subject_scientificName'
         ]
-    ],
+    ]
 ];

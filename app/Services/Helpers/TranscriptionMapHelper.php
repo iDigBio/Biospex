@@ -29,49 +29,45 @@ use App\Models\PusherTranscription;
  */
 class TranscriptionMapHelper
 {
-    private array $reserved_encoded;
-
     /**
-     * @param array $reserved_encoded
+     * @var array
      */
-    public function __construct(array $reserved_encoded)
-    {
-        $this->reserved_encoded = $reserved_encoded;
-    }
+    private array $reservedEncoded;
 
     /**
-     * Map state province for pusher classifications using transcript if it exists.
+     * @var array
+     */
+    private array $mappedTranscriptionFields;
+
+    /**
+     * TranscriptionMapHelper construct
      *
-     * @param \App\Models\PanoptesTranscription $panoptesTranscription
-     * @param \App\Models\PusherTranscription|null $pusherTranscription
-     * @return mixed
+     * @param array $reservedEncoded
+     * @param array $mappedTranscriptionFields
      */
-    public function setStateProvince(PanoptesTranscription $panoptesTranscription, PusherTranscription $pusherTranscription = null): mixed
+    public function __construct(array $reservedEncoded, array $mappedTranscriptionFields)
     {
-        foreach ($this->reserved_encoded['state-province'] as $value) {
-            if (isset($panoptesTranscription->{$value})) {
-                return $panoptesTranscription->{$value};
-            }
-        }
-
-        if ($pusherTranscription === null) {
-            return '';
-        }
-
-        return $pusherTranscription->transcriptionContent['province'];
+        $this->reservedEncoded = $reservedEncoded;
+        $this->mappedTranscriptionFields = $mappedTranscriptionFields;
     }
 
     /**
-     * Map collected by for pusher classifications using transcript if it exists.
+     * Map transcription fields that are varied in database.
+     *
+     * @param string $type
      * @param \App\Models\PanoptesTranscription $panoptesTranscription
      * @param \App\Models\PusherTranscription|null $pusherTranscription
      * @return mixed|string
      */
-    public function setCollectedBy(PanoptesTranscription $panoptesTranscription, PusherTranscription $pusherTranscription = null): mixed
-    {
-        foreach ($this->reserved_encoded['collected-by'] as $value) {
-            if (isset($panoptesTranscription->{$value})) {
-                return $panoptesTranscription->{$value};
+    public function mapTranscriptionField(
+        string $type,
+        PanoptesTranscription $panoptesTranscription,
+        PusherTranscription $pusherTranscription = null
+    ): mixed {
+        foreach ($this->mappedTranscriptionFields[$type] as $value) {
+            $encodedValue = $this->decodeTranscriptionField($value);
+            if (isset($panoptesTranscription->{$encodedValue})) {
+                return $panoptesTranscription->{$encodedValue};
             }
         }
 
@@ -79,28 +75,7 @@ class TranscriptionMapHelper
             return '';
         }
 
-        return $pusherTranscription->transcriptionContent['collector'];
-    }
-
-    /**
-     * Map scientific name for pusher classifications using transcript if it exists.
-     * @param \App\Models\PanoptesTranscription $panoptesTranscription
-     * @param \App\Models\PusherTranscription|null $pusherTranscription
-     * @return mixed|string
-     */
-    public function setScientificName(PanoptesTranscription $panoptesTranscription, PusherTranscription $pusherTranscription = null): mixed
-    {
-        foreach ($this->reserved_encoded['scientific-name'] as $value) {
-            if (isset($panoptesTranscription->{$value})) {
-                return $panoptesTranscription->{$value};
-            }
-        }
-
-        if ($pusherTranscription === null) {
-            return '';
-        }
-
-        return $pusherTranscription->taxon;
+        return $type === 'taxon' ? $pusherTranscription->taxon : $pusherTranscription->transcriptionContent[$type];
     }
 
     /**
@@ -111,12 +86,7 @@ class TranscriptionMapHelper
      */
     public function encodeTranscriptionField(string $field): string
     {
-        if (str_contains($field, 'subject_') ||
-            in_array($field, $this->reserved_encoded) ||
-            in_array($field, $this->reserved_encoded['state-province']) ||
-            in_array($field, $this->reserved_encoded['collected-by']) ||
-            in_array($field, $this->reserved_encoded['scientific-name'])
-        ) {
+        if (str_contains($field, 'subject_') || in_array($field, $this->reservedEncoded)) {
             return $field;
         }
 
@@ -142,7 +112,11 @@ class TranscriptionMapHelper
      */
     public function decodeTranscriptionField(string $field): string
     {
-        return (str_contains($field, 'subject_') || in_array($field, $this->reserved_encoded)) ? $field : $this->base64UrlDecode($field);
+        if (str_contains($field, 'subject_') || in_array($field, $this->reservedEncoded)) {
+            return $field;
+        }
+
+        return $this->base64UrlDecode($field);
     }
 
     /**
