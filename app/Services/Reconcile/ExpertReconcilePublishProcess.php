@@ -19,14 +19,13 @@
 
 namespace App\Services\Reconcile;
 
+use App\Facades\TranscriptionMapHelper;
 use App\Notifications\ExpertReviewPublished;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\ReconcileRepository;
 use App\Services\Csv\Csv;
 use Storage;
-use function config;
-use function t;
 
 /**
  * Class ExpertReconcilePublishProcess
@@ -99,7 +98,7 @@ class ExpertReconcilePublishProcess
     {
         $results = $this->reconcileRepo->getBy('subject_expeditionId', (int) $expeditionId);
         $mapped = $results->map(function ($record) {
-            unset($record->_id, $record->columns, $record->problem, $record->updated_at, $record->created_at);
+            unset($record->_id, $record->subject_columns, $record->subject_problem, $record->updated_at, $record->created_at, $record->review);
             return $record;
         });
 
@@ -108,11 +107,15 @@ class ExpertReconcilePublishProcess
         }
 
         $header = array_keys($mapped->first()->toArray());
+        $decodedHeader  = [];
+        foreach ($header as $value) {
+            $decodedHeader[] = TranscriptionMapHelper::decodeTranscriptionField($value);
+        }
 
         $fileName = $expeditionId.'.csv';
         $file = Storage::path(config('config.nfn_downloads_reconciled').'/'.$fileName);
         $this->csv->writerCreateFromPath($file);
-        $this->csv->insertOne($header);
+        $this->csv->insertOne($decodedHeader);
         $this->csv->insertAll($mapped->toArray());
     }
 
