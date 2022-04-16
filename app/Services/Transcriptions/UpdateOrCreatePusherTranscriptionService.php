@@ -150,13 +150,13 @@ class UpdateOrCreatePusherTranscriptionService
                 'lat'          => '',
                 'long'         => '',
                 'country'      => $transcription->Country,
-                'province'     => TranscriptionMapHelper::setStateProvince($transcription),
+                'province'     => TranscriptionMapHelper::mapTranscriptionField('province', $transcription),
                 'county'       => $transcription->County,
                 'municipality' => '',
                 'locality'     => $transcription->Location,
                 'date'         => '', // which date to use? transcription date is messy
-                'collector'    => TranscriptionMapHelper::setCollectedBy($transcription),
-                'taxon'        => TranscriptionMapHelper::setScientificName($transcription),
+                'collector'    => TranscriptionMapHelper::mapTranscriptionField('collector', $transcription),
+                'taxon'        => TranscriptionMapHelper::mapTranscriptionField('taxon', $transcription),
             ],
             'discretionaryState'   => 'Transcribed',
         ];
@@ -182,11 +182,11 @@ class UpdateOrCreatePusherTranscriptionService
 
         $transcriptionContent = [
             'country'   => ! empty($transcription->Country) ? $transcription->Country : $classification->country,
-            'province'  => TranscriptionMapHelper::setStateProvince($transcription, $classification),
+            'province'  => TranscriptionMapHelper::mapTranscriptionField('province', $transcription, $classification),
             'county'    => ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'],
             'locality'  => ! empty($transcription->Location) ? $transcription->Location : '',
-            'collector' => TranscriptionMapHelper::setCollectedBy($transcription, $classification),
-            'taxon'     => TranscriptionMapHelper::setScientificName($transcription, $classification),
+            'collector' => TranscriptionMapHelper::mapTranscriptionField('collector', $transcription, $classification),
+            'taxon'     => TranscriptionMapHelper::mapTranscriptionField('taxon', $transcription, $classification),
         ];
 
         $attributes = [
