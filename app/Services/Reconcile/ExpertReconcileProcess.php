@@ -19,6 +19,7 @@
 
 namespace App\Services\Reconcile;
 
+use App\Facades\TranscriptionMapHelper;
 use App\Repositories\ReconcileRepository;
 use App\Repositories\SubjectRepository;
 use App\Services\Csv\Csv;
@@ -98,10 +99,18 @@ class ExpertReconcileProcess
 
         $filePath = Storage::path($file);
         $rows = $this->getCsvRows($filePath);
-        $rows->each(function($row) {
-            if (!$this->validateReconcile($row['subject_id'])) {
-                $this->reconcileRepo->create($row);
+        $rows->reject(function($row){
+            return $this->validateReconcile($row['subject_id']);
+        })->each(function($row) {
+            $newRecord = [];
+            foreach ($row as $field => $value) {
+                $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
+                $newRecord[$newField] = $value;
+                $newRecord['subject_problem'] = 0;
+                $newRecord['subject_columns'] = '';
             }
+
+            $this->reconcileRepo->create($newRecord);
         });
     }
 
@@ -204,7 +213,8 @@ class ExpertReconcileProcess
     /**
      * Update reconciled record.
      *
-     * Unset unneeded variables and decode columns.
+     * Unset unneeded variables and decode columns. Use str_place for some columns with spaces.
+     *
      * @param array $request
      * @return mixed
      */
@@ -215,7 +225,7 @@ class ExpertReconcileProcess
 
         $attributes = [];
         foreach ($request as $key => $value) {
-            $attributes[base64_decode($key)] = is_null($value) ? '' : $value;
+            $attributes[str_replace('--', ' ', $key)] = is_null($value) ? '' : $value;
         }
         $attributes['reviewed'] = 1;
 
@@ -252,14 +262,15 @@ class ExpertReconcileProcess
             return $problem->isEmpty();
         })->mapWithKeys(function ($problem, $subjectId) {
             $string = $problem->keys()->map(function ($key) {
-                return trim(str_replace('Explanation', '', $key));
-            })->flatten()->join(',');
+                $trimmedKey =  trim(str_replace('Explanation', '', $key));
+                return TranscriptionMapHelper::encodeTranscriptionField($trimmedKey);
+            })->flatten()->join('|');
 
             return [$subjectId => $string];
         })->each(function ($columns, $subjectId) {
             $reconcile = $this->reconcileRepo->findBy('subject_id', $subjectId);
-            $reconcile->problem = 1;
-            $reconcile->columns = $columns;
+            $reconcile->subject_problem = 1;
+            $reconcile->subject_columns = $columns;
             $reconcile->save();
         });
     }
@@ -273,18 +284,18 @@ class ExpertReconcileProcess
      * @param string $field
      * @return bool
      */
-    private function checkForProblem(string $value, string $field)
+    private function checkForProblem(string $value, string $field): bool
     {
-        return strpos($field, 'Explanation') !== false && preg_match($this->problemRegex, $value);
+        return str_contains($field, 'Explanation') && preg_match($this->problemRegex, $value);
     }
 
     /**
      * Validate transcription to prevent duplicates.
      *
      * @param $subject_id
-     * @return mixed
+     * @return bool
      */
-    private function validateReconcile($subject_id)
+    private function validateReconcile($subject_id): bool
     {
         $rules = ['subject_id' => 'unique:mongodb.reconciles,subject_id'];
         $values = ['subject_id' => (int) $subject_id];

@@ -20,7 +20,7 @@ namespace App\Jobs;
 
 use App\Jobs\Traits\SkipNfn;
 use App\Notifications\JobError;
-use App\Notifications\NfnExpertReviewJobComplete;
+use App\Notifications\ExpertReviewJobComplete;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Reconcile\ExpertReconcileProcess;
 use App\Services\Reconcile\ReconcileProcess;
@@ -31,18 +31,18 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Class NfnExpertReviewJob
+ * Class ExpertReconcileReviewJob
  *
  * @package App\Jobs
  */
-class NfnExpertReviewJob implements ShouldQueue
+class ExpertReconcileReviewJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
     /**
      * @var int
      */
-    private $expeditionId;
+    private int $expeditionId;
 
     /**
      * Create a new job instance.
@@ -84,7 +84,7 @@ class NfnExpertReviewJob implements ShouldQueue
             $expedition->nfnActor->pivot->expert = 1;
             $expedition->nfnActor->pivot->save();
 
-            $user->notify(new NfnExpertReviewJobComplete($expedition->title, $expedition->id));
+            $user->notify(new ExpertReviewJobComplete($expedition->title, $expedition->id));
 
             $this->delete();
 

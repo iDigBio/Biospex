@@ -25,13 +25,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * Class NfnExpertReviewPublished
+ * Class ExpertReviewJobComplete
  *
  * @package App\Notifications
  */
-class NfnExpertReviewPublished extends Notification implements ShouldQueue
+class ExpertReviewJobComplete extends Notification implements ShouldQueue
 {
-
     use Queueable;
 
     /**
@@ -40,14 +39,21 @@ class NfnExpertReviewPublished extends Notification implements ShouldQueue
     private $title;
 
     /**
-     * NfnExpertReviewPublished constructor.
+     * @var int
+     */
+    private $expeditionId;
+
+    /**
+     * ExpertReviewPublished constructor.
      *
      * @param string $title
+     * @param int $expeditionId
      */
-    public function __construct(string $title)
+    public function __construct(string $title, int $expeditionId)
     {
-        $this->title = $title;
         $this->onQueue(config('config.default_tube'));
+        $this->title = $title;
+        $this->expeditionId = $expeditionId;
     }
 
     /**
@@ -69,9 +75,14 @@ class NfnExpertReviewPublished extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        $mailMessage->subject(t('Expert Review Reconciled CSV File'));
+        $mailMessage->subject(t('Expert Review Job Complete'));
 
-        return $mailMessage->markdown('mail.nfnexpertreviewpublish', ['title' => $this->title]);
+        $attributes = [
+            'title' => $this->title,
+            'url'     => route('admin.reconciles.index', ['expeditions' => $this->expeditionId]),
+        ];
+
+        return $mailMessage->markdown('mail.expertreviewjobcomplete', $attributes);
     }
 
     /**
@@ -81,8 +92,7 @@ class NfnExpertReviewPublished extends Notification implements ShouldQueue
      */
     public function toArray()
     {
-        return [
-            //
+        return [//
         ];
     }
 }

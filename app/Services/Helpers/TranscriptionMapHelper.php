@@ -109,7 +109,7 @@ class TranscriptionMapHelper
      * @param string $field
      * @return string
      */
-    public function encodeTranscriptionFields(string $field): string
+    public function encodeTranscriptionField(string $field): string
     {
         if (str_contains($field, 'subject_') ||
             in_array($field, $this->reserved_encoded) ||
@@ -140,9 +140,18 @@ class TranscriptionMapHelper
      * @param string $field
      * @return string
      */
-    public function decodeTranscriptionFields(string $field): string
+    public function decodeTranscriptionField(string $field): string
     {
-        return (str_contains($field, 'subject_') || in_array($field, $this->reserved_encoded)) ? $field : $this->base64UrlDecode($field);
+        if (str_contains($field, 'subject_') ||
+            in_array($field, $this->reserved_encoded) ||
+            in_array($field, $this->reserved_encoded['state-province']) ||
+            in_array($field, $this->reserved_encoded['collected-by']) ||
+            in_array($field, $this->reserved_encoded['scientific-name'])
+        ) {
+            return $field;
+        }
+
+        return $this->base64UrlDecode($field);
     }
 
     /**

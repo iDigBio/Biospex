@@ -31,11 +31,11 @@ use Illuminate\Queue\SerializesModels;
 use League\Csv\CannotInsertRecord;
 
 /**
- * Class NfnExpertReviewPublishJob
+ * Class ExpertReconcileReviewPublishJob
  *
  * @package App\Jobs
  */
-class NfnExpertReviewPublishJob implements ShouldQueue
+class ExpertReconcileReviewPublishJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -45,7 +45,7 @@ class NfnExpertReviewPublishJob implements ShouldQueue
     private $expeditionId;
 
     /**
-     * NfnExpertReviewPublishJob constructor.
+     * ExpertReconcileReviewPublishJob constructor.
      *
      * @param string $expeditionId
      */

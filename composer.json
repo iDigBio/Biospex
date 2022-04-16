@@ -16,6 +16,7 @@
     "cviebrock/eloquent-sluggable": "^9.0",
     "czim/laravel-paperclip": "^4.0",
     "fruitcake/laravel-cors": "^2.0",
+    "graham-campbell/markdown": "14.0.x-dev",
     "guzzlehttp/guzzle": "^7.0.1",
     "jenssegers/mongodb": "^3.8",
     "laracasts/utilities": "^3.2",

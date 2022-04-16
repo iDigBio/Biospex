@@ -19,7 +19,7 @@
 
 namespace App\Services\Reconcile;
 
-use App\Notifications\NfnExpertReviewPublished;
+use App\Notifications\ExpertReviewPublished;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\ReconcileRepository;
@@ -147,6 +147,6 @@ class ExpertReconcilePublishProcess
     private function sendEmail(string $expeditionId)
     {
         $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
-        $expedition->project->group->owner->notify(new NfnExpertReviewPublished($expedition->title));
+        $expedition->project->group->owner->notify(new ExpertReviewPublished($expedition->title));
     }
 }

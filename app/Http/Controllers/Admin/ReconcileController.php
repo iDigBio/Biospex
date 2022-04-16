@@ -20,8 +20,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\NfnExpertReviewJob;
-use App\Jobs\NfnExpertReviewPublishJob;
+use App\Jobs\ExpertReconcileReviewJob;
+use App\Jobs\ExpertReconcileReviewPublishJob;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Api\ZooniverseTalkApiService;
@@ -86,7 +86,7 @@ class ReconcileController extends Controller
 
         $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
         $imgUrl = $this->expertreconcileRepo->getImageUrl($reconciles->first()->subject_imageName, $location);
-        $columns = $this->expertreconcileRepo->setColumnMasks($reconciles->first()->columns);
+        $columns = explode('|', $reconciles->first()->subject_columns);
 
         return view('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
     }
@@ -105,7 +105,7 @@ class ReconcileController extends Controller
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        NfnExpertReviewJob::dispatch($expedition->id);
+        ExpertReconcileReviewJob::dispatch($expedition->id);
 
         Flash::success(t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
 
@@ -117,6 +117,8 @@ class ReconcileController extends Controller
      *
      * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function update(string $expeditionId): RedirectResponse
     {
@@ -140,7 +142,7 @@ class ReconcileController extends Controller
      */
     public function publish(string $projectId, string $expeditionId): RedirectResponse
     {
-        NfnExpertReviewPublishJob::dispatch($expeditionId);
+        ExpertReconcileReviewPublishJob::dispatch($expeditionId);
         Flash::success(t('The Expert Review Publish job has been submitted. You will receive and email when it has completed.'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
