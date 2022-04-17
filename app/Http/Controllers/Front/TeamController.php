@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Services\Model\TeamCategoryService;
+use App\Repositories\TeamCategoryRepository;
 
 /**
  * Class TeamController
@@ -31,18 +31,18 @@ class TeamController extends Controller
 {
 
     /**
-     * @var \App\Services\Model\TeamCategoryService
+     * @var \App\Repositories\TeamCategoryRepository
      */
-    public $teamCategoryService;
+    public $teamCategoryRepo;
 
     /**
      * TeamController constructor.
      * 
-     * @param \App\Services\Model\TeamCategoryService $teamCategoryService
+     * @param \App\Repositories\TeamCategoryRepository $teamCategoryRepo
      */
-    public function __construct(TeamCategoryService $teamCategoryService)
+    public function __construct(TeamCategoryRepository $teamCategoryRepo)
     {
-        $this->teamCategoryService = $teamCategoryService;
+        $this->teamCategoryRepo = $teamCategoryRepo;
     }
 
     /**
@@ -52,7 +52,7 @@ class TeamController extends Controller
      */
     public function index()
     {
-        $categories = $this->teamCategoryService->getTeamIndexPage();
+        $categories = $this->teamCategoryRepo->getTeamIndexPage();
 
         return view('front.team.index', compact('categories'));
     }

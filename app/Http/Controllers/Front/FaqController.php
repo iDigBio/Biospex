@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Services\Model\FaqCategoryService;
+use App\Repositories\FaqCategoryRepository;
 
 /**
  * Class FaqController
@@ -31,18 +31,18 @@ class FaqController extends Controller
 {
 
     /**
-     * @var \App\Services\Model\FaqCategoryService
+     * @var \App\Repositories\FaqCategoryRepository
      */
-    public $faqCategoryService;
+    public $faqCategoryRepo;
 
     /**
      * FaqController constructor.
      *
-     * @param \App\Services\Model\FaqCategoryService $faqCategoryService
+     * @param \App\Repositories\FaqCategoryRepository $faqCategoryRepo
      */
-    public function __construct(FaqCategoryService $faqCategoryService)
+    public function __construct(FaqCategoryRepository $faqCategoryRepo)
     {
-        $this->faqCategoryService = $faqCategoryService;
+        $this->faqCategoryRepo = $faqCategoryRepo;
     }
 
     /**
@@ -52,7 +52,7 @@ class FaqController extends Controller
      */
     public function index()
     {
-        $categories = $this->faqCategoryService->getCategoriesWithFaqOrdered();
+        $categories = $this->faqCategoryRepo->getCategoriesWithFaqOrdered();
 
         return view('front.faq.index', compact('categories'));
     }

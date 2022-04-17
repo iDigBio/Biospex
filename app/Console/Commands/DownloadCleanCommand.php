@@ -19,9 +19,9 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\DownloadRepository;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use App\Services\Model\DownloadService;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -38,9 +38,9 @@ class DownloadCleanCommand extends Command
     public $filesystem;
 
     /**
-     * @var \App\Services\Model\DownloadService
+     * @var \App\Repositories\DownloadRepository
      */
-    public $downloadService;
+    public DownloadRepository $downloadRepo;
 
     /**
      * The console command name.
@@ -67,17 +67,17 @@ class DownloadCleanCommand extends Command
      * DownloadCleanCommand constructor.
      *
      * @param Filesystem $filesystem
-     * @param \App\Services\Model\DownloadService $downloadService
+     * @param \App\Repositories\DownloadRepository $downloadRepo
      */
     public function __construct(
         Filesystem $filesystem,
-        DownloadService $downloadService
+        DownloadRepository $downloadRepo
     )
     {
         parent::__construct();
 
         $this->filesystem = $filesystem;
-        $this->downloadService = $downloadService;
+        $this->downloadRepo = $downloadRepo;
 
         $this->nfnExportDir = Storage::path(config('config.export_dir'));
     }
@@ -89,7 +89,7 @@ class DownloadCleanCommand extends Command
      */
     public function handle()
     {
-        $downloads = $this->downloadService->getDownloadsForCleaning();
+        $downloads = $this->downloadRepo->getDownloadsForCleaning();
 
         $downloads->each(function ($download)
         {
@@ -105,7 +105,7 @@ class DownloadCleanCommand extends Command
         $files = collect($this->filesystem->files($this->nfnExportDir));
         $files->each(function($file){
             $fileName = $this->filesystem->basename($file);
-            $result = $this->downloadService->findBy('file', $fileName);
+            $result = $this->downloadRepo->findBy('file', $fileName);
             if ( ! $result)
             {
                 $this->filesystem->delete($file);

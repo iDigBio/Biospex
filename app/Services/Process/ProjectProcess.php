@@ -19,41 +19,41 @@
 
 namespace App\Services\Process;
 
-use App\Services\Model\GroupService;
-use App\Services\Model\WorkflowService;
+use App\Repositories\GroupRepository;
+use App\Repositories\WorkflowRepository;
 use Illuminate\Support\Facades\Notification;
 
 /**
  * Class ProjectProcess
  *
- * @package App\Services\Model
+ * @package App\Repositories
  */
 class ProjectProcess
 {
     /**
-     * @var \App\Services\Model\WorkflowService
+     * @var \App\Repositories\WorkflowRepository
      */
-    private $workflowService;
+    private $workflowRepo;
 
     /**
-     * @var \App\Services\Model\GroupService
+     * @var \App\Repositories\GroupRepository
      */
-    private $groupService;
+    private $groupRepo;
 
     /**
      * CommonVariables constructor.
      *
-     * @param \App\Services\Model\WorkflowService $workflowService
-     * @param \App\Services\Model\GroupService $groupService
+     * @param \App\Repositories\WorkflowRepository $workflowRepo
+     * @param \App\Repositories\GroupRepository $groupRepo
      */
     public function __construct(
-        WorkflowService $workflowService,
-        GroupService $groupService
+        WorkflowRepository $workflowRepo,
+        GroupRepository $groupRepo
     )
     {
 
-        $this->workflowService = $workflowService;
-        $this->groupService = $groupService;
+        $this->workflowRepo = $workflowRepo;
+        $this->groupRepo = $groupRepo;
     }
 
     /**
@@ -61,7 +61,7 @@ class ProjectProcess
      */
     public function workflowSelectOptions()
     {
-        return $this->workflowService->getWorkflowSelect();
+        return $this->workflowRepo->getWorkflowSelect();
     }
 
     /**
@@ -72,7 +72,7 @@ class ProjectProcess
      */
     public function findGroup($groupId)
     {
-        return $this->groupService->find($groupId);
+        return $this->groupRepo->find($groupId);
     }
 
     /**
@@ -83,7 +83,7 @@ class ProjectProcess
      */
     public function getUserGroupCount($userId): int
     {
-        return $this->groupService->getUserGroupCount($userId);
+        return $this->groupRepo->getUserGroupCount($userId);
     }
 
     /**
@@ -94,7 +94,7 @@ class ProjectProcess
      */
     public function userGroupSelectOptions($user)
     {
-        $groups = $this->groupService->getUsersGroupsSelect($user);
+        $groups = $this->groupRepo->getUsersGroupsSelect($user);
 
         return ['' => '--Select--'] + $groups;
     }

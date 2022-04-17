@@ -20,9 +20,8 @@
 namespace App\Console\Commands;
 
 use App\Events\PollExportEvent;
-use App\Facades\GeneralHelper;
 use App\Models\ExportQueue;
-use App\Services\Model\ExportQueueService;
+use App\Repositories\ExportQueueRepository;
 use Illuminate\Console\Command;
 
 /**
@@ -47,9 +46,9 @@ class ExportPollCommand extends Command
     protected $description = 'Command description';
 
     /**
-     * @var \App\Services\Model\ExportQueueService
+     * @var \App\Repositories\ExportQueueRepository
      */
-    private $exportQueueService;
+    private $exportQueueRepo;
 
     /**
      * @var array
@@ -59,13 +58,13 @@ class ExportPollCommand extends Command
     /**
      * ExportPollCommand constructor.
      *
-     * @param \App\Services\Model\ExportQueueService $exportQueueService
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepo
      */
-    public function __construct(ExportQueueService $exportQueueService)
+    public function __construct(ExportQueueRepository $exportQueueRepo)
     {
         parent::__construct();
 
-        $this->exportQueueService = $exportQueueService;
+        $this->exportQueueRepo = $exportQueueRepo;
         $this->exportStages = config('config.export_stages');
     }
 
@@ -74,7 +73,7 @@ class ExportPollCommand extends Command
      */
     public function handle()
     {
-        $queues = $this->exportQueueService->getAllExportQueueOrderByIdAsc();
+        $queues = $this->exportQueueRepo->getAllExportQueueOrderByIdAsc();
 
         $data = ['message' => t('No processes running at this time'), 'payload' => []];
 

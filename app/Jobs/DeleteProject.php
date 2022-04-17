@@ -20,13 +20,13 @@
 namespace App\Jobs;
 
 use App\Models\Project;
-use App\Services\Model\ProjectService;
+use App\Repositories\ProjectRepository;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -57,13 +57,13 @@ class DeleteProject implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\ProjectService $projectService
+     * @param \App\Repositories\ProjectRepository $projectRepo
      * @param \App\Services\MongoDbService $mongoDbService
      * @return void
      */
-    public function handle(ProjectService $projectService, MongoDbService $mongoDbService)
+    public function handle(ProjectRepository $projectRepo, MongoDbService $mongoDbService)
     {
-        $project = $projectService->findWith($this->project->id, ['expeditions.downloads']);
+        $project = $projectRepo->findWith($this->project->id, ['expeditions.downloads']);
 
         $project->expeditions->each(function ($expedition) use ($mongoDbService) {
             $expedition->downloads->each(function ($download){

@@ -29,7 +29,7 @@ use App\Jobs\ZooniverseExportReportJob;
 use App\Jobs\ZooniverseExportRetrieveImageJob;
 use App\Models\Actor;
 use App\Notifications\NfnExportError;
-use App\Services\Model\ExpeditionService;
+use App\Repositories\ExpeditionRepository;
 use Illuminate\Bus\Batch;
 use Notification;
 
@@ -41,9 +41,9 @@ use Notification;
 class NfnPanoptes
 {
     /**
-     * @var \App\Services\Model\ExpeditionService
+     * @var \App\Repositories\ExpeditionRepository
      */
-    private $expeditionService;
+    private $expeditionRepo;
 
     /**
      * @var \App\Models\Actor
@@ -53,12 +53,12 @@ class NfnPanoptes
     /**
      * NfnPanoptes constructor.
      *
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      */
     public function __construct(
-        ExpeditionService $expeditionService
+        ExpeditionRepository $expeditionRepo
     ) {
-        $this->expeditionService = $expeditionService;
+        $this->expeditionRepo = $expeditionRepo;
     }
 
     /**
@@ -95,7 +95,7 @@ class NfnPanoptes
      */
     public function sendErrorNotification(\Exception $exception)
     {
-        $expedition = $this->expeditionService->findNotifyExpeditionUsers($this->actor->pivot->expedition_id);
+        $expedition = $this->expeditionRepo->findNotifyExpeditionUsers($this->actor->pivot->expedition_id);
         $users = $expedition->project->group->users->push($expedition->project->group->owner);
 
         $message = [

@@ -21,12 +21,12 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Process\TranscriptionChartService;
+use App\Repositories\ProjectRepository;
+use App\Services\Chart\TranscriptionChartService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Services\Model\ProjectService;
+use Illuminate\Queue\InteractsWithQueue;
 use Throwable;
 
 /**
@@ -64,12 +64,12 @@ class AmChartJob implements ShouldQueue
     /**
      * Handle job.
      *
-     * @param \App\Services\Model\ProjectService $projectService
-     * @param \App\Services\Process\TranscriptionChartService $service
+     * @param \App\Repositories\ProjectRepository $projectRepo
+     * @param \App\Services\Chart\TranscriptionChartService $service
      */
-    public function handle(ProjectService $projectService, TranscriptionChartService $service)
+    public function handle(ProjectRepository $projectRepo, TranscriptionChartService $service)
     {
-        $project = $projectService->getProjectForAmChartJob($this->projectId);
+        $project = $projectRepo->getProjectForAmChartJob($this->projectId);
 
         $service->process($project);
 

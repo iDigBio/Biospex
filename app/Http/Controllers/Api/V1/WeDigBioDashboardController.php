@@ -22,7 +22,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Resources\WeDigBioDashboard;
 use App\Http\Resources\WeDigBioDashboardCollection;
-use App\Services\Process\WeDigBioDashboardProcess;
+use App\Services\Dashboard\WeDigBioDashboardProcess;
 
 /**
  * Class WeDigBioDashboardController
@@ -32,14 +32,14 @@ use App\Services\Process\WeDigBioDashboardProcess;
 class WeDigBioDashboardController extends ApiController
 {
     /**
-     * @var \App\Services\Process\WeDigBioDashboardProcess
+     * @var \App\Services\Dashboard\WeDigBioDashboardProcess
      */
     private $weDigBioDashboardProcess;
 
     /**
      * WeDigBioDashboardController constructor.
      *
-     * @param \App\Services\Process\WeDigBioDashboardProcess $weDigBioDashboardProcess
+     * @param \App\Services\Dashboard\WeDigBioDashboardProcess $weDigBioDashboardProcess
      */
     public function __construct(WeDigBioDashboardProcess $weDigBioDashboardProcess)
     {

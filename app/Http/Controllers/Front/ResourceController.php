@@ -19,9 +19,9 @@
 
 namespace App\Http\Controllers\Front;
 
-use Flash;
 use App\Http\Controllers\Controller;
-use App\Services\Model\ResourceService;
+use App\Repositories\ResourceRepository;
+use Flash;
 use Storage;
 
 /**
@@ -34,12 +34,12 @@ class ResourceController extends Controller
     /**
      * Show resources.
      *
-     * @param \App\Services\Model\ResourceService $resourceService
+     * @param \App\Repositories\ResourceRepository $resourceRepo
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(ResourceService $resourceService)
+    public function index(ResourceRepository $resourceRepo)
     {
-        $resources = $resourceService->getResourcesOrdered();
+        $resources = $resourceRepo->getResourcesOrdered();
 
         return view('front.resource.index', compact('resources'));
     }
@@ -47,13 +47,13 @@ class ResourceController extends Controller
     /**
      * Download resource file.
      *
-     * @param \App\Services\Model\ResourceService $resourceService
+     * @param \App\Repositories\ResourceRepository $resourceRepo
      * @param $resourceId
      * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function download(ResourceService $resourceService, $resourceId)
+    public function download(ResourceRepository $resourceRepo, $resourceId)
     {
-        $download = $resourceService->find($resourceId);
+        $download = $resourceRepo->find($resourceId);
 
         if (! $download->document->exists() || ! file_exists(public_path('storage' . $download->document->path()))) {
             Flash::error('File cannot be found.');

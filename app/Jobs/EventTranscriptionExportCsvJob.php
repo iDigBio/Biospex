@@ -22,15 +22,15 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\EventCsvExport;
 use App\Notifications\EventCsvExportError;
-use App\Services\Model\EventTranscriptionService;
-use App\Services\Model\PanoptesTranscriptionService;
+use App\Repositories\EventTranscriptionRepository;
+use App\Repositories\PanoptesTranscriptionRepository;
 use App\Services\Csv\Csv;
 use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Str;
 
 /**
@@ -75,23 +75,23 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
-     * @param \App\Services\Model\PanoptesTranscriptionService $panoptesTranscriptionService
+     * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
+     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      * @param Csv $csv
      * @return void
      */
     public function handle(
-        EventTranscriptionService $eventTranscriptionService,
-        PanoptesTranscriptionService $panoptesTranscriptionService,
+        EventTranscriptionRepository $eventTranscriptionRepo,
+        PanoptesTranscriptionRepository $panoptesTranscriptionRepo,
         Csv $csv
     )
     {
         try
         {
-            $ids = $eventTranscriptionService->getEventClassificationIds($this->eventId);
+            $ids = $eventTranscriptionRepo->getEventClassificationIds($this->eventId);
 
-            $transcriptions = $ids->map(function($id) use($panoptesTranscriptionService) {
-                $transcript = $panoptesTranscriptionService->findBy('classification_id', $id);
+            $transcriptions = $ids->map(function($id) use($panoptesTranscriptionRepo) {
+                $transcript = $panoptesTranscriptionRepo->findBy('classification_id', $id);
                 unset($transcript['_id']);
                 return $transcript;
             })->reject(function($transcription){

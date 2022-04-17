@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Services\Process\BingoProcess;
+use App\Services\Games\BingoProcess;
 
 /**
  * Class BingoController
@@ -31,14 +31,14 @@ use App\Services\Process\BingoProcess;
 class BingoController extends Controller
 {
     /**
-     * @var \App\Services\Process\BingoProcess
+     * @var \App\Services\Games\BingoProcess
      */
     private $bingoProcess;
 
     /**
      * BingoController constructor.
      *
-     * @param \App\Services\Process\BingoProcess $bingoProcess
+     * @param \App\Services\Games\BingoProcess $bingoProcess
      */
     public function __construct(BingoProcess $bingoProcess)
     {

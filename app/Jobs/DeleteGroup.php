@@ -20,13 +20,13 @@
 namespace App\Jobs;
 
 use App\Models\Group;
-use App\Services\Model\GroupService;
+use App\Repositories\GroupRepository;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -57,13 +57,13 @@ class DeleteGroup implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\GroupService $groupService
+     * @param \App\Repositories\GroupRepository $groupRepo
      * @param \App\Services\MongoDbService $mongoDbService
      * @return void
      */
-    public function handle(GroupService $groupService, MongoDbService $mongoDbService)
+    public function handle(GroupRepository $groupRepo, MongoDbService $mongoDbService)
     {
-        $group = $groupService->findWith($this->group->id, ['projects.expeditions.downloads']);
+        $group = $groupRepo->findWith($this->group->id, ['projects.expeditions.downloads']);
 
         $group->projects->each(function ($project) use ($mongoDbService) {
             $project->expeditions->each(function ($expedition) use ($mongoDbService) {

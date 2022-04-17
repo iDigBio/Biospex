@@ -66,14 +66,14 @@ class ZooniverseExportReport extends ZooniverseBase implements ActorInterface
      */
     public function process(Actor $actor)
     {
-        $queue = $this->dbService->exportQueueService->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
+        $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
         $queue->processed = 0;
         $queue->stage = 5;
         $queue->save();
 
         \Artisan::call('export:poll');
 
-        $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id, 1);
+        $files = $this->dbService->exportQueueFileRepo->getFilesByQueueId($queue->id, 1);
 
         try {
             $remove = array_flip(['id', 'queue_id', 'error', 'created_at', 'updated_at']);
@@ -88,7 +88,7 @@ class ZooniverseExportReport extends ZooniverseBase implements ActorInterface
                 $this->saveReport($queue, $csvName);
             }
 
-            $expedition = $this->dbService->expeditionService->findNotifyExpeditionUsers($queue->expedition_id);
+            $expedition = $this->dbService->expeditionRepo->findNotifyExpeditionUsers($queue->expedition_id);
             $users = $expedition->project->group->users->push($expedition->project->group->owner);
 
             Notification::send($users, new NfnExportComplete($expedition->title, $fileName));

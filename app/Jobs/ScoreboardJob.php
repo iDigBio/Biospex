@@ -20,12 +20,12 @@
 namespace App\Jobs;
 
 use App\Events\ScoreboardEvent;
-use App\Services\Model\EventService;
+use App\Repositories\EventRepository;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Class ScoreboardJob
@@ -55,12 +55,12 @@ class ScoreboardJob implements ShouldQueue
     /**
      * Job handle.
      *
-     * @param \App\Services\Model\EventService $eventService
+     * @param \App\Repositories\EventRepository $eventRepo
      * @throws \Throwable
      */
-    public function handle(EventService $eventService)
+    public function handle(EventRepository $eventRepo)
     {
-        $events = $eventService->getEventsByProjectId($this->projectId);
+        $events = $eventRepo->getEventsByProjectId($this->projectId);
         $data = $events->mapWithKeys(function($event) {
             return [$event->id => view('common.scoreboard-content', ['event' => $event])->render()];
         });

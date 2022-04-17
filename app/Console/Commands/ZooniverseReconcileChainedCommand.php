@@ -21,7 +21,7 @@ namespace App\Console\Commands;
 use App\Jobs\ZooniversePusherJob;
 use App\Jobs\ZooniverseReconcileJob;
 use App\Jobs\ZooniverseTranscriptionJob;
-use App\Services\Model\ExpeditionService;
+use App\Repositories\ExpeditionRepository;
 use Illuminate\Console\Command;
 
 /**
@@ -58,13 +58,13 @@ class ZooniverseReconcileChainedCommand extends Command
     /**
      * Execute the console command.
      *
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @return void
      */
-    public function handle(ExpeditionService $expeditionService)
+    public function handle(ExpeditionRepository $expeditionRepo)
     {
         $expeditionIds = empty($this->argument('expeditionIds')) ?
-            $this->getExpeditionIds($expeditionService) : $this->argument('expeditionIds');
+            $this->getExpeditionIds($expeditionRepo) : $this->argument('expeditionIds');
 
         foreach ($expeditionIds as $expeditionId) {
             ZooniverseReconcileJob::withChain([
@@ -77,12 +77,12 @@ class ZooniverseReconcileChainedCommand extends Command
     /**
      * Get all expeditions for process if no ids are passed.
      *
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @return array
      */
-    private function getExpeditionIds(ExpeditionService $expeditionService): array
+    private function getExpeditionIds(ExpeditionRepository $expeditionRepo): array
     {
-        $expeditions = $expeditionService->getExpeditionsForZooniverseProcess();
+        $expeditions = $expeditionRepo->getExpeditionsForZooniverseProcess();
 
         return $expeditions->pluck('id')->toArray();
     }

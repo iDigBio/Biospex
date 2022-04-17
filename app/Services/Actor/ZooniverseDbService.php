@@ -19,62 +19,63 @@
 
 namespace App\Services\Actor;
 
-use App\Services\Model\DownloadService;
-use App\Services\Model\ExpeditionService;
-use App\Services\Model\ExportQueueFileService;
-use App\Services\Model\ExportQueueService;
-use App\Services\Model\SubjectService;
+use App\Repositories\DownloadRepository;
+use App\Repositories\ExpeditionRepository;
+use App\Repositories\ExportQueueFileRepository;
+use App\Repositories\ExportQueueRepository;
+use App\Repositories\SubjectRepository;
 
 class ZooniverseDbService
 {
     /**
-     * @var \App\Services\Model\ExportQueueService
+     * @var \App\Repositories\ExportQueueRepository
      */
-    public $exportQueueService;
+    public $exportQueueRepo;
 
     /**
-     * @var \App\Services\Model\ExportQueueFileService
+     * @var \App\Repositories\ExportQueueFileRepository
      */
-    public $exportQueueFileService;
+    public $exportQueueFileRepo;
 
     /**
-     * @var \App\Services\Model\SubjectService
+     * @var \App\Repositories\SubjectRepository
      */
-    public $subjectService;
+    public $subjectRepo;
 
     /**
-     * @var \App\Services\Model\DownloadService
+     * @var \App\Repositories\DownloadRepository
      */
-    public $downloadService;
+    public $downloadRepo;
 
     /**
-     * @var \App\Services\Model\ExpeditionService
+     * @var \App\Repositories\ExpeditionRepository
      */
-    public $expeditionService;
+    public $expeditionRepo;
 
     /**
      * ZooniverseDbService constructor.
+     * TODO: This class is used to bring many dependencies together. Try looking for better solution.
      *
-     * @param \App\Services\Model\ExportQueueService $exportQueueService
-     * @param \App\Services\Model\ExportQueueFileService $exportQueueFileService
-     * @param \App\Services\Model\SubjectService $subjectService
-     * @param \App\Services\Model\DownloadService $downloadService
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepo
+     * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepo
+     * @param \App\Repositories\SubjectRepository $subjectRepo
+     * @param \App\Repositories\DownloadRepository $downloadRepo
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      */
     public function __construct(
-        ExportQueueService $exportQueueService,
-        ExportQueueFileService $exportQueueFileService,
-        SubjectService $subjectService,
-        DownloadService $downloadService,
-        ExpeditionService $expeditionService
+        ExportQueueRepository $exportQueueRepo,
+        ExportQueueFileRepository $exportQueueFileRepo,
+        SubjectRepository $subjectRepo,
+        DownloadRepository $downloadRepo,
+        ExpeditionRepository $expeditionRepo
     )
     {
 
-        $this->exportQueueService = $exportQueueService;
-        $this->exportQueueFileService = $exportQueueFileService;
-        $this->subjectService = $subjectService;
-        $this->downloadService = $downloadService;
-        $this->expeditionService = $expeditionService;
+        $this->exportQueueRepo = $exportQueueRepo;
+        $this->exportQueueFileRepo = $exportQueueFileRepo;
+        $this->subjectRepo = $subjectRepo;
+        $this->downloadRepo = $downloadRepo;
+        $this->expeditionRepo = $expeditionRepo;
     }
 
     /**
@@ -89,7 +90,7 @@ class ZooniverseDbService
         }
 
         foreach ($rejected as $subjectId => $reason) {
-            $file = $this->exportQueueFileService->findBy('subject_id', $subjectId);
+            $file = $this->exportQueueFileRepo->findBy('subject_id', $subjectId);
             if (empty($file)) {
                 \Log::info('empty file ' . $subjectId);
                 continue;

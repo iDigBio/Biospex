@@ -19,11 +19,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BingoFormRequest;
-use App\Services\Model\BingoService;
-use App\Services\Model\ProjectService;
+use App\Repositories\BingoRepository;
+use App\Repositories\ProjectRepository;
+use Flash;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -34,25 +34,25 @@ use Illuminate\Support\Facades\Auth;
 class BingoController extends Controller
 {
     /**
-     * @var \App\Services\Model\BingoService
+     * @var \App\Repositories\BingoRepository
      */
-    private $bingoService;
+    private BingoRepository $bingoRepo;
 
     /**
-     * @var \App\Services\Model\ProjectService
+     * @var \App\Repositories\ProjectRepository
      */
-    private $projectService;
+    private $projectRepo;
 
     /**
      * BingoController constructor.
      *
-     * @param \App\Services\Model\BingoService $bingoService
-     * @param \App\Services\Model\ProjectService $projectService
+     * @param \App\Repositories\BingoRepository $bingoRepo
+     * @param \App\Repositories\ProjectRepository $projectRepo
      */
-    public function __construct(BingoService $bingoService, ProjectService $projectService)
+    public function __construct(BingoRepository $bingoRepo, ProjectRepository $projectRepo)
     {
-        $this->bingoService = $bingoService;
-        $this->projectService = $projectService;
+        $this->bingoRepo = $bingoRepo;
+        $this->projectRepo = $projectRepo;
     }
 
     /**
@@ -62,7 +62,7 @@ class BingoController extends Controller
      */
     public function index()
     {
-        $bingos = $this->bingoService->getAdminIndex(Auth::user()->id);
+        $bingos = $this->bingoRepo->getAdminIndex(Auth::user()->id);
 
         return view('admin.bingo.index', compact('bingos'));
     }
@@ -74,7 +74,7 @@ class BingoController extends Controller
      */
     public function create()
     {
-        $projects = $this->projectService->getProjectEventSelect();
+        $projects = $this->projectRepo->getProjectEventSelect();
 
         return view('admin.bingo.create', compact('projects'));
     }
@@ -87,7 +87,7 @@ class BingoController extends Controller
      */
     public function store(BingoFormRequest $request)
     {
-        $bingo = $this->bingoService->createBingo($request->all());
+        $bingo = $this->bingoRepo->createBingo($request->all());
 
         if ($bingo) {
             Flash::success(t('Record was created successfully.'));
@@ -108,7 +108,7 @@ class BingoController extends Controller
      */
     public function show(string $bingoId)
     {
-        $bingo = $this->bingoService->findWith($bingoId, ['words']);
+        $bingo = $this->bingoRepo->findWith($bingoId, ['words']);
 
         if ( ! $this->checkPermissions('read', $bingo))
         {
@@ -126,8 +126,8 @@ class BingoController extends Controller
      */
     public function edit(string $bingoId)
     {
-        $bingo = $this->bingoService->findWith($bingoId, ['words', 'project']);
-        $projects = $this->projectService->getProjectEventSelect();
+        $bingo = $this->bingoRepo->findWith($bingoId, ['words', 'project']);
+        $projects = $this->projectRepo->getProjectEventSelect();
 
         return view('admin.bingo.edit', compact('bingo', 'projects'));
     }
@@ -141,14 +141,14 @@ class BingoController extends Controller
      */
     public function update(BingoFormRequest $request, string $bingoId)
     {
-        $bingo = $this->bingoService->findWith($bingoId, ['words']);
+        $bingo = $this->bingoRepo->findWith($bingoId, ['words']);
 
         if ( ! $this->checkPermissions('update', $bingo))
         {
             return redirect()->route('admin.bingos.index');
         }
 
-        $result = $this->bingoService->updatebingo($request->all(), $bingoId);
+        $result = $this->bingoRepo->updatebingo($request->all(), $bingoId);
 
         if ($result) {
             Flash::success(t('Record was updated successfully.'));
@@ -169,7 +169,7 @@ class BingoController extends Controller
      */
     public function delete(string $bingoId)
     {
-        $bingo = $this->bingoService->find($bingoId);
+        $bingo = $this->bingoRepo->find($bingoId);
 
         if ( ! $this->checkPermissions('delete', $bingo))
         {

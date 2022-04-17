@@ -19,12 +19,12 @@
 
 namespace App\Providers;
 
+use App\Repositories\PanoptesTranscriptionRepository;
 use App\Services\Helpers\CountHelper;
 use App\Services\Helpers\DateHelper;
 use App\Services\Helpers\FlashHelper;
 use App\Services\Helpers\GeneralHelper;
 use App\Services\Helpers\TranscriptionMapHelper;
-use App\Services\Model\PanoptesTranscriptionService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
@@ -39,7 +39,7 @@ class BiospexServiceProvider extends ServiceProvider
     {
         $this->setViewComposers();
     }
-    
+
     public function register()
     {
         $this->registerFacades();
@@ -85,7 +85,7 @@ class BiospexServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('counthelper', function(){
-            return new CountHelper(app(PanoptesTranscriptionService::class));
+            return new CountHelper(app(PanoptesTranscriptionRepository::class));
         });
 
         $this->app->singleton('transcriptionmaphelper', function() {

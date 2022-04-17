@@ -115,6 +115,7 @@ return [
     'dwcTranscriptFields' => [
         'stateProvince'  => 'state_province',
         'StateProvince'  => 'state_province',
+        'State/Province'  => 'state_province',
         'State Province' => 'state_province',
         'State_Province' => 'state_province',
         'State'          => 'state_province',
@@ -126,6 +127,7 @@ return [
         'stateProvince'  => 'state_province',
         'State_Province' => 'state_province',
         'State Province' => 'state_province',
+        'State/Province' => 'state_province',
         'State'          => 'state_province',
         'County'         => 'county',
     ],
@@ -298,3 +300,9 @@ return [
         ]
     ]
 ];
+/*
+Collected By = 1075984
+Collected By (first collector only) = 31655
+
+State/Province = 519711
+ */

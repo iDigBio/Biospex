@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Services\Model\ExpeditionService;
+use App\Repositories\ExpeditionRepository;
 
 /**
  * Class ExpeditionController
@@ -32,12 +32,12 @@ class ExpeditionController extends Controller
     /**
      * Displays Expeditions on public page.
      *
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(ExpeditionService $expeditionService)
+    public function index(ExpeditionRepository $expeditionRepo)
     {
-        $results = $expeditionService->getExpeditionPublicIndex();
+        $results = $expeditionRepo->getExpeditionPublicIndex();
 
         [$expeditions, $expeditionsCompleted] = $results->partition(function($expedition) {
             return $expedition->nfnActor->pivot->completed === 0;
@@ -49,10 +49,10 @@ class ExpeditionController extends Controller
     /**
      * Displays Completed Expeditions on public page.
      *
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function sort(ExpeditionService $expeditionService)
+    public function sort(ExpeditionRepository $expeditionRepo)
     {
         if ( ! request()->ajax()) {
             return null;
@@ -63,7 +63,7 @@ class ExpeditionController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        [$active, $completed] = $expeditionService->getExpeditionPublicIndex($sort, $order, $projectId)
+        [$active, $completed] = $expeditionRepo->getExpeditionPublicIndex($sort, $order, $projectId)
             ->partition(function($expedition) {
                 return $expedition->nfnActor->pivot->completed === 0;
         });
