@@ -300,9 +300,3 @@ return [
         ]
     ]
 ];
-/*
-Collected By = 1075984
-Collected By (first collector only) = 31655
-
-State/Province = 519711
- */
