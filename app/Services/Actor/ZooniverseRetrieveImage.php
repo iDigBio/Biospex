@@ -62,14 +62,14 @@ class ZooniverseRetrieveImage extends ZooniverseBase implements ActorInterface
      */
     public function process(Actor $actor)
     {
-        $queue = $this->dbService->exportQueueService->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
+        $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
         $queue->processed = 0;
         $queue->stage = 1;
         $queue->save();
 
         \Artisan::call('export:poll');
 
-        $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id);
+        $files = $this->dbService->exportQueueFileRepo->getFilesByQueueId($queue->id);
 
         $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
         $this->setDirectories();

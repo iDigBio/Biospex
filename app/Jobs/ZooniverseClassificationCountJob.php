@@ -24,7 +24,7 @@ use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Notifications\NfnTranscriptionsComplete;
-use App\Services\Model\ExpeditionService;
+use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -66,15 +66,15 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @return void
      */
     public function handle(
-        ExpeditionService $expeditionService,
+        ExpeditionRepository $expeditionRepo,
         PanoptesApiService $panoptesApiService
     ) {
-        $expedition = $expeditionService->findWith($this->expeditionId, [
+        $expedition = $expeditionRepo->findWith($this->expeditionId, [
             'project.group.owner',
             'stat',
             'nfnActor',

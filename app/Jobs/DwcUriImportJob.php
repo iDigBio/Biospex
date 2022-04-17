@@ -20,16 +20,16 @@
 namespace App\Jobs;
 
 use App\Facades\GeneralHelper;
-use App\Services\Model\ImportService;
-use App\Services\Model\ProjectService;
 use App\Notifications\DarwinCoreImportError;
+use App\Repositories\ImportRepository;
+use App\Repositories\ProjectRepository;
 use Exception;
 use finfo;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -54,14 +54,14 @@ class DwcUriImportJob implements ShouldQueue
     public $data;
 
     /**
-     * @var \App\Services\Model\ImportService
+     * @var \App\Repositories\ImportRepository
      */
-    public $importService;
+    public $importRepo;
 
     /**
-     * @var \App\Services\Model\ProjectService
+     * @var \App\Repositories\ProjectRepository
      */
-    public $projectService;
+    public $projectRepo;
 
     /**
      * Create a new job instance.
@@ -77,13 +77,13 @@ class DwcUriImportJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\ImportService $importService
-     * @param \App\Services\Model\ProjectService $projectService
+     * @param \App\Repositories\ImportRepository $importRepo
+     * @param \App\Repositories\ProjectRepository $projectRepo
      * @return void
      */
     public function handle(
-        ImportService $importService,
-        ProjectService $projectService
+        ImportRepository $importRepo,
+        ProjectRepository $projectRepo
     )
     {
         try
@@ -107,7 +107,7 @@ class DwcUriImportJob implements ShouldQueue
                 throw new Exception(t('An error occurred while attempting to save file: %s', $filePath));
             }
 
-            $import = $importService->create([
+            $import = $importRepo->create([
                 'user_id'    => $this->data['user_id'],
                 'project_id' => $this->data['id'],
                 'file'       => $filePath
@@ -117,7 +117,7 @@ class DwcUriImportJob implements ShouldQueue
         }
         catch (Exception $e)
         {
-            $project = $projectService->findWith($this->data['id'], ['group.owner']);
+            $project = $projectRepo->findWith($this->data['id'], ['group.owner']);
 
             $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
         }

@@ -80,14 +80,14 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
      */
     public function process(Actor $actor)
     {
-        $queue = $this->dbService->exportQueueService->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
+        $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
         $queue->processed = 0;
         $queue->stage = 3;
         $queue->save();
 
         \Artisan::call('export:poll');
 
-        $files = $this->dbService->exportQueueFileService->getFilesByQueueId($queue->id);
+        $files = $this->dbService->exportQueueFileRepo->getFilesByQueueId($queue->id);
 
         try {
             $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
@@ -143,7 +143,7 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
      */
     public function mapNfnCsvColumns(ExportQueueFile $file, ExportQueue $queue): array
     {
-        $subject = $this->dbService->subjectService->find($file->subject_id);
+        $subject = $this->dbService->subjectRepo->find($file->subject_id);
 
         $csvArray = [];
         foreach ($this->nfnCsvMap as $key => $item) {

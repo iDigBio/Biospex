@@ -54,7 +54,7 @@ class ZooniverseExportDeleteFiles extends ZooniverseBase implements ActorInterfa
      */
     public function process(Actor $actor)
     {
-        $queue = $this->dbService->exportQueueService->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
+        $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
         $queue->processed = 0;
         $queue->stage = 6;
         $queue->save();

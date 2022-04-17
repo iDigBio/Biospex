@@ -34,6 +34,6 @@ class GeneralHelper extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return \App\Services\Helpers\GeneralHelper::class;
+        return 'generalhelper';
     }
 }

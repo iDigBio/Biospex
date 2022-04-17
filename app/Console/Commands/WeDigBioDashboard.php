@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\PusherDashboardJob;
+use App\Jobs\PusherTranscriptionJob;
 use Illuminate\Console\Command;
 
 class WeDigBioDashboard extends Command
@@ -36,6 +36,6 @@ class WeDigBioDashboard extends Command
      */
     public function handle()
     {
-        PusherDashboardJob::dispatch();
+        PusherTranscriptionJob::dispatch();
     }
 }

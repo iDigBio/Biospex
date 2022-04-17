@@ -20,14 +20,14 @@
 namespace App\Jobs;
 
 use App\Models\PanoptesProject;
-use App\Services\Model\ExpeditionStatService;
+use App\Repositories\ExpeditionStatRepository;
 use App\Services\Api\PanoptesApiService;
 use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Class PanoptesProjectUpdateJob
@@ -58,16 +58,16 @@ class PanoptesProjectUpdateJob implements ShouldQueue
      * Execute job.
      *
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @param \App\Services\Model\ExpeditionStatService $expeditionStatService
+     * @param \App\Repositories\ExpeditionStatRepository $expeditionStatRepo
      */
-    public function handle(PanoptesApiService $panoptesApiService, ExpeditionStatService $expeditionStatService)
+    public function handle(PanoptesApiService $panoptesApiService, ExpeditionStatRepository $expeditionStatRepo)
     {
         try {
             $workflow = $panoptesApiService->getPanoptesWorkflow($this->panoptesProject->panoptes_workflow_id);
 
             $panoptesApiService->calculateTotals($workflow, $this->panoptesProject->expedition_id);
 
-            $stat = $expeditionStatService->findBy('expedition_id', $this->panoptesProject->expedition_id);
+            $stat = $expeditionStatRepo->findBy('expedition_id', $this->panoptesProject->expedition_id);
             $stat->subject_count = $panoptesApiService->getSubjectCount();
             $stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
             $stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();

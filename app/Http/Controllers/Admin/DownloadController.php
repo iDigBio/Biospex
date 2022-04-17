@@ -19,13 +19,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Jobs\ExportDownloadBatchJob;
-use App\Services\Model\ExpeditionService;
-use App\Services\Model\UserService;
+use App\Repositories\ExpeditionRepository;
+use App\Repositories\UserRepository;
 use App\Services\Download\DownloadType;
 use Exception;
 use Flash;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 
@@ -37,14 +37,14 @@ use Illuminate\Support\Facades\Storage;
 class DownloadController extends Controller
 {
     /**
-     * @var \App\Services\Model\UserService
+     * @var \App\Repositories\UserRepository
      */
-    private $userService;
+    private $userRepo;
 
     /**
-     * @var \App\Services\Model\ExpeditionService
+     * @var \App\Repositories\ExpeditionRepository
      */
-    private $expeditionService;
+    private ExpeditionRepository $expeditionRepo;
 
     /**
      * @var \App\Services\Download\DownloadType
@@ -54,17 +54,17 @@ class DownloadController extends Controller
     /**
      * DownloadController constructor.
      *
-     * @param \App\Services\Model\UserService $userService
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\UserRepository $userRepo
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Services\Download\DownloadType $downloadType
      */
     public function __construct(
-        UserService $userService,
-        ExpeditionService $expeditionService,
+        UserRepository $userRepo,
+        ExpeditionRepository $expeditionRepo,
         DownloadType $downloadType
     ) {
-        $this->userService = $userService;
-        $this->expeditionService = $expeditionService;
+        $this->userRepo = $userRepo;
+        $this->expeditionRepo = $expeditionRepo;
         $this->downloadType = $downloadType;
     }
 
@@ -77,8 +77,8 @@ class DownloadController extends Controller
      */
     public function index(string $projectId, string $expeditionId)
     {
-        $user = $this->userService->findWith(request()->user()->id, ['profile']);
-        $expedition = $this->expeditionService->expeditionDownloadsByActor($expeditionId);
+        $user = $this->userRepo->findWith(request()->user()->id, ['profile']);
+        $expedition = $this->expeditionRepo->expeditionDownloadsByActor($expeditionId);
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group);
 
@@ -180,7 +180,7 @@ class DownloadController extends Controller
     {
         try {
             $file = base64_decode($fileName).'.tar.gz';
-            $expedition = $this->expeditionService->findwith($expeditionId, ['project.group']);
+            $expedition = $this->expeditionRepo->findwith($expeditionId, ['project.group']);
 
             if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
@@ -206,7 +206,7 @@ class DownloadController extends Controller
     public function export(string $projectId, string $expeditionId): RedirectResponse
     {
         try {
-            $expedition = $this->expeditionService->findwith($expeditionId, ['nfnActor', 'stat']);
+            $expedition = $this->expeditionRepo->findwith($expeditionId, ['nfnActor', 'stat']);
 
             $this->downloadType->resetExpeditionData($expedition);
 
@@ -228,7 +228,7 @@ class DownloadController extends Controller
      */
     public function summary(string $projectId, string $expeditionId)
     {
-        $expedition = $this->expeditionService->findwith($expeditionId, ['project.group']);
+        $expedition = $this->expeditionRepo->findwith($expeditionId, ['project.group']);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);

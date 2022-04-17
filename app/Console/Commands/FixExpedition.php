@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\ReconcileRepository;
+use App\Repositories\SubjectRepository;
 use App\Services\Csv\Csv;
-use App\Services\Model\SubjectService;
 use Illuminate\Console\Command;
 
 class FixExpedition extends Command
@@ -28,27 +29,33 @@ class FixExpedition extends Command
     private Csv $csv;
 
     /**
-     * @var \App\Services\Model\SubjectService
+     * @var \App\Repositories\SubjectRepository
      */
-    private SubjectService $subjectService;
+    private SubjectRepository $subjectRepo;
 
     private $fixDir;
     
     private $birdImages;
     
     private $birdOccurrences;
-    
+
+    /**
+     * @var \App\Repositories\ReconcileRepository
+     */
+    private ReconcileRepository $reconcileRepo;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(Csv $csv, SubjectService $subjectService)
+    public function __construct(Csv $csv, SubjectRepository $subjectRepo, ReconcileRepository $reconcileRepo)
     {
         parent::__construct();
         $this->csv = $csv;
-        $this->subjectService = $subjectService;
+        $this->subjectRepo = $subjectRepo;
         $this->fixDir = \Storage::disk('local')->path('fossils/fix/');
+        $this->reconcileRepo = $reconcileRepo;
     }
 
     /**
@@ -64,7 +71,7 @@ class FixExpedition extends Command
         $this->csv->setHeaderOffset();
         $this->birdOccurrences = $this->csv->getRecords();
 
-        $this->csv->readerCreateFromPath($this->fixDir . 'reconciled_with_expert_opinion-374.csv');
+        $this->csv->readerCreateFromPath($this->fixDir . 'reconcile-374.csv');
         $this->csv->setHeaderOffset();
         $header = $this->csv->getHeader();
         $header[] = 'subject_identifier';
@@ -74,7 +81,9 @@ class FixExpedition extends Command
         $this->csv->insertOne($header);
 
         foreach ($reconcileReader as $offset => $record) {
-            $subject = $this->subjectService->find($record['subject_subjectId']);
+            $this->fixReconcileWithExpert($record);
+
+            $subject = $this->subjectRepo->find($record['subject_subjectId']);
             $identifier = $subject['identifier'];
 
             $birdImage = $this->findBirdImageRecord($identifier);
@@ -124,6 +133,14 @@ class FixExpedition extends Command
             if ($birdOccurrence['id'] === $coreid) {
                 return $birdOccurrence;
             }
+        }
+    }
+
+    public function fixReconcileWithExpert(&$record)
+    {
+        $reconciled = $this->reconcileRepo->findBy('subject_id', $record['subject_id']);
+        foreach ($record as $key => $value) {
+            $record[$key] = $reconciled[$key] ?? $value;
         }
     }
 }

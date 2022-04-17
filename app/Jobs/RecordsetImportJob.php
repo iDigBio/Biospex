@@ -19,16 +19,16 @@
 
 namespace App\Jobs;
 
-use App\Services\Model\ImportService;
-use App\Services\Model\ProjectService;
 use App\Notifications\DarwinCoreImportError;
+use App\Repositories\ImportRepository;
+use App\Repositories\ProjectRepository;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Storage;
 
 /**
@@ -54,9 +54,9 @@ class RecordsetImportJob implements ShouldQueue
     public $data;
 
     /**
-     * @var \App\Services\Model\ImportService
+     * @var \App\Repositories\ImportRepository
      */
-    public $importService;
+    public $importRepo;
 
     /**
      * Curl response
@@ -78,15 +78,15 @@ class RecordsetImportJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\ImportService $importService
-     * @param \App\Services\Model\ProjectService $projectService
+     * @param \App\Repositories\ImportRepository $importRepo
+     * @param \App\Repositories\ProjectRepository $projectRepo
      */
     public function handle(
-        ImportService $importService,
-        ProjectService $projectService
+        ImportRepository $importRepo,
+        ProjectRepository $projectRepo
     )
     {
-        $this->importService = $importService;
+        $this->importRepo = $importRepo;
 
         try
         {
@@ -95,7 +95,7 @@ class RecordsetImportJob implements ShouldQueue
         }
         catch (Exception $e)
         {
-            $project = $projectService->findWith($this->data['project_id'], ['group.owner']);
+            $project = $projectRepo->findWith($this->data['project_id'], ['group.owner']);
 
             $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
         }
@@ -166,7 +166,7 @@ class RecordsetImportJob implements ShouldQueue
             throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
         }
 
-        return $this->importService->create([
+        return $this->importRepo->create([
             'user_id'    => $this->data['user_id'],
             'project_id' => $this->data['project_id'],
             'file'       => $filePath

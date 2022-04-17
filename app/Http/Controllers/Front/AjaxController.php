@@ -21,9 +21,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Services\Model\AmChartService;
-use App\Services\Model\EventService;
-use App\Services\Process\EventStepChartProcess;
+use App\Repositories\AmChartRepository;
+use App\Repositories\EventRepository;
+use App\Services\Chart\EventStepChartProcess;
 use Artisan;
 use Illuminate\Http\JsonResponse;
 
@@ -48,29 +48,29 @@ class AjaxController extends Controller
     /**
      * Load amChart.
      *
-     * @param \App\Services\Model\AmChartService $amChartService
+     * @param \App\Repositories\AmChartRepository $amChartRepo
      * @param $projectId
      * @return \Illuminate\Http\JsonResponse|mixed
      */
-    public function loadAmChart(AmChartService $amChartService, $projectId)
+    public function loadAmChart(AmChartRepository $amChartRepo, $projectId)
     {
         if (! request()->ajax() || $projectId === null) {
             return response()->json(['html' => 'hitting null']);
         }
 
-        $record = $amChartService->findBy('project_id', $projectId);
+        $record = $amChartRepo->findBy('project_id', $projectId);
 
         return json_decode($record->data);
     }
 
     /**
-     * @param \App\Services\Model\EventService $eventService
+     * @param \App\Repositories\EventRepository $eventRepo
      * @param string $eventId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
-    public function scoreboard(EventService $eventService, string $eventId)
+    public function scoreboard(EventRepository $eventRepo, string $eventId)
     {
-        $event = $eventService->getEventScoreboard($eventId, ['id']);
+        $event = $eventRepo->getEventScoreboard($eventId, ['id']);
 
         if (! request()->ajax() || is_null($event)) {
             return response()->json(['html' => 'Error retrieving the Event']);
@@ -82,7 +82,7 @@ class AjaxController extends Controller
     /**
      * Display for event step charts.
      *
-     * @param \App\Services\Process\EventStepChartProcess $service
+     * @param \App\Services\Chart\EventStepChartProcess $service
      * @param string $eventId
      * @param string|null $timestamp
      * @return \Illuminate\Http\JsonResponse

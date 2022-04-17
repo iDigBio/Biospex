@@ -56,7 +56,7 @@ class ZooniverseBuildQueue implements ActorInterface
         $queue = $this->createQueue($actor);
 
         try {
-            $subjects = $this->dbService->subjectService->getAssignedByExpeditionId($actor->pivot->expedition_id);
+            $subjects = $this->dbService->subjectRepo->getAssignedByExpeditionId($actor->pivot->expedition_id);
 
             $subjects->each(function ($subject) use ($queue) {
                 $this->createQueueFile($queue, $subject);
@@ -85,7 +85,7 @@ class ZooniverseBuildQueue implements ActorInterface
             'actor_id'      => $actor->id,
         ];
 
-        $queue = $this->dbService->exportQueueService->firstOrNew($attributes);
+        $queue = $this->dbService->exportQueueRepo->firstOrNew($attributes);
         $queue->queued = 1;
         $queue->error = 0;
         $queue->stage = 0;
@@ -109,7 +109,7 @@ class ZooniverseBuildQueue implements ActorInterface
             'subject_id' => (string) $subject->_id
         ];
 
-        $file = $this->dbService->exportQueueFileService->firstOrNew($attributes);
+        $file = $this->dbService->exportQueueFileRepo->firstOrNew($attributes);
         $file->url = $subject->accessURI;
         $file->error = 0;
         $file->error_message = null;

@@ -19,8 +19,8 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Repositories\NoticeRepository;
 use Illuminate\Contracts\View\View;
-use App\Services\Model\NoticeService;
 
 /**
  * Class NoticesComposer
@@ -31,18 +31,18 @@ class NoticesComposer
 {
 
     /**
-     * @var \App\Services\Model\NoticeService
+     * @var \App\Repositories\NoticeRepository
      */
-    private $noticeService;
+    private $noticeRepo;
 
     /**
      * Create a new profile composer.
      *
-     * @param \App\Services\Model\NoticeService $noticeService
+     * @param \App\Repositories\NoticeRepository $noticeRepo
      */
-    public function __construct(NoticeService $noticeService)
+    public function __construct(NoticeRepository $noticeRepo)
     {
-        $this->noticeService = $noticeService;
+        $this->noticeRepo = $noticeRepo;
     }
 
     /**
@@ -53,7 +53,7 @@ class NoticesComposer
      */
     public function compose(View $view)
     {
-        $notices = $this->noticeService->getBy('enabled', 1);
+        $notices = $this->noticeRepo->getBy('enabled', 1);
         $notices = $notices->isEmpty() ? null : $notices;
 
         $view->with('notices', $notices);

@@ -115,6 +115,7 @@ return [
     'dwcTranscriptFields' => [
         'stateProvince'  => 'state_province',
         'StateProvince'  => 'state_province',
+        'State/Province'  => 'state_province',
         'State Province' => 'state_province',
         'State_Province' => 'state_province',
         'State'          => 'state_province',
@@ -126,6 +127,7 @@ return [
         'stateProvince'  => 'state_province',
         'State_Province' => 'state_province',
         'State Province' => 'state_province',
+        'State/Province' => 'state_province',
         'State'          => 'state_province',
         'County'         => 'county',
     ],
@@ -144,6 +146,7 @@ return [
     'ocr_tube'              => env('QUEUE_OCR_TUBE'),
     'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
     'pusher_process_tube'   => env('QUEUE_PUSHER_PROCESS_TUBE'),
+    'working_tube'          => env('QUEUE_WORKING_TUBE'),
 
     /* Images */
     /* Min and max logo and banner sizes used in Project model for Codesleve Stapler */
@@ -188,6 +191,7 @@ return [
     'nfnCsvMap' => [
         'subjectId'        => '_id',
         'imageName'        => '_id',
+        'imageURL'         => 'accessURI',
         'identifier'       => 'identifier',
         'references'       => ['occurrence' => 'references'],
         'scientificName'   => ['occurrence' => 'scientificName'],
@@ -254,4 +258,45 @@ return [
         'complete' => 'Complete',
         'hiatus'   => 'Hiatus',
     ],
+
+    'reserved_encoded' => [
+        '_id',
+        'classification_id',
+        'workflow_id',
+        'user_name',
+        'create_date',
+        'classification_started_at',
+        'classification_finished_at',
+        'updated_at',
+        'created_at',
+        'problem',
+        'columns',
+        'reviewed',
+        'Country',
+        'County',
+        'Location'
+    ],
+
+    'mapped_transcription_fields' => [
+        'province' => [
+            'StateProvince',
+            'State_Province',
+            'State Province',
+            'State/Province',
+            'subject_stateProvince'
+        ],
+        'collector' => [
+            'Collected By',
+            'Collected_By',
+            'CollectedBy',
+            'Collected By (first collector only)',
+            'subject_collectedBy'
+        ],
+        'taxon' => [
+            'Scientific Name',
+            'Scientific_Name',
+            'ScientificName',
+            'subject_scientificName'
+        ]
+    ]
 ];

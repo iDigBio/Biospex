@@ -23,14 +23,14 @@ use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Notifications\RecordDeleteComplete;
-use App\Services\Model\ExpeditionService;
-use App\Services\Model\SubjectService;
+use App\Repositories\ExpeditionRepository;
+use App\Repositories\SubjectRepository;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -68,18 +68,18 @@ class DeleteExpedition implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\ExpeditionService $expeditionService
-     * @param \App\Services\Model\SubjectService $subjectService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Repositories\SubjectRepository $subjectRepo
      * @param \App\Services\MongoDbService $mongoDbService
      * @return void
      */
     public function handle(
-        ExpeditionService $expeditionService,
-        SubjectService $subjectService,
+        ExpeditionRepository $expeditionRepo,
+        SubjectRepository $subjectRepo,
         MongoDbService $mongoDbService
     ) {
 
-        $expedition = $expeditionService->findWith($this->expedition->id, ['downloads']);
+        $expedition = $expeditionRepo->findWith($this->expedition->id, ['downloads']);
 
         try {
 
@@ -93,10 +93,10 @@ class DeleteExpedition implements ShouldQueue
             $mongoDbService->setCollection('panoptes_transcriptions');
             $mongoDbService->deleteMany(['subject_expeditionId' => $expedition->id]);
 
-            $subjectIds = $subjectService->findByExpeditionId((int) $this->expedition->id, ['_id'])->pluck('_id');
+            $subjectIds = $subjectRepo->findByExpeditionId((int) $this->expedition->id, ['_id'])->pluck('_id');
 
             if ($subjectIds->isNotEmpty()) {
-                $subjectService->detachSubjects($subjectIds, $expedition->id);
+                $subjectRepo->detachSubjects($subjectIds, $expedition->id);
             }
 
             $expedition->delete();

@@ -20,16 +20,16 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue as Model;
-use App\Services\Model\ExportQueueService;
+use App\Notifications\NfnExportError;
+use App\Repositories\ExportQueueRepository;
 use App\Services\Actor\ActorFactory;
 use Artisan;
 use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Notifications\NfnExportError;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Notification;
 
 /**
@@ -42,7 +42,7 @@ class ExportQueueJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Services\Model\ExportQueueService
+     * @var \App\Repositories\ExportQueueRepository
      */
     private $model;
 
@@ -65,11 +65,11 @@ class ExportQueueJob implements ShouldQueue
     /**
      * Handle ExportQueue Job
      *
-     * @param \App\Services\Model\ExportQueueService $exportQueueService
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepo
      */
-    public function handle(ExportQueueService $exportQueueService)
+    public function handle(ExportQueueRepository $exportQueueRepo)
     {
-        $queue = $exportQueueService->findByIdExpeditionActor($this->model->id, $this->model->expedition_id, $this->model->actor_id);
+        $queue = $exportQueueRepo->findByIdExpeditionActor($this->model->id, $this->model->expedition_id, $this->model->actor_id);
 
         if ($queue === null) {
             $this->delete();
@@ -89,7 +89,7 @@ class ExportQueueJob implements ShouldQueue
 
             $queue->expedition->actors->first()->expeditions()->updateExistingPivot($queue->expedition->id, $attributes);
 
-            $exportQueueService->updateMany($attributes, 'expedition_id', $this->model->expedition_id);
+            $exportQueueRepo->updateMany($attributes, 'expedition_id', $this->model->expedition_id);
 
             $message = $e->getFile().'<br>'.$e->getLine().'<br>'.$e->getMessage();
 

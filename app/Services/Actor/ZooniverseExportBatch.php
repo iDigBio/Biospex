@@ -21,7 +21,7 @@ namespace App\Services\Actor;
 
 use App\Models\Download;
 use App\Notifications\NfnBatchExportComplete;
-use App\Services\Model\DownloadService;
+use App\Repositories\DownloadRepository;
 use App\Services\Csv\Csv;
 use Exception;
 use File;
@@ -45,22 +45,22 @@ class ZooniverseExportBatch extends ZooniverseBase
     private $fileNames = [];
 
     /**
-     * @var \App\Services\Model\DownloadService
+     * @var \App\Repositories\DownloadRepository
      */
-    private $downloadService;
+    private DownloadRepository $downloadRepo;
 
     /**
      * DownloadBatchService constructor.
      *
-     * @param \App\Services\Model\DownloadService $downloadService
+     * @param \App\Repositories\DownloadRepository $downloadRepo
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
-        DownloadService $downloadService,
+        DownloadRepository $downloadRepo,
         Csv $csv
     )
     {
-        $this->downloadService = $downloadService;
+        $this->downloadRepo = $downloadRepo;
         $this->csv = $csv;
     }
 
@@ -72,7 +72,7 @@ class ZooniverseExportBatch extends ZooniverseBase
      */
     public function getDownload(string $downloadId): Download
     {
-        return $this->downloadService->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
+        return $this->downloadRepo->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
     }
 
     /**
