@@ -19,7 +19,7 @@
 
 namespace App\Services\Transcriptions;
 
-use App\Facades\GeneralHelper;
+use App\Facades\TranscriptionMapHelper;
 use App\Repositories\PanoptesTranscriptionRepository;
 use App\Repositories\SubjectRepository;
 use App\Services\Csv\Csv;
@@ -98,10 +98,6 @@ class CreatePanoptesTranscriptionService
         $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
         $this->createTranscriptionLocationService = $createTranscriptionLocationService;
         $this->csv = $csv;
-        $this->reserved = config('config.reserved_encoded');
-
-        // TODO can be removed after fixing Charles issue
-        $this->nfnMisMatched = config('config.nfnMisMatched');
     }
 
     /**
@@ -155,7 +151,6 @@ class CreatePanoptesTranscriptionService
      */
     public function processRow($header, $row, $expeditionId)
     {
-        dd($header);
         if (count($header) !== count($row))
         {
             $message = t('Header column count does not match row count. :headers headers / :rows rows', [
@@ -171,11 +166,6 @@ class CreatePanoptesTranscriptionService
         if ($this->validateTranscription($row['classification_id'])) {
             return;
         }
-
-        /*
-         * @TODO This can be removed once Charles expedition has processed
-         */
-        $this->fixMisMatched($row, $expeditionId);
 
         if (trim($row['subject_subjectId'] === null)) {
             $this->csvError[] = array_merge(['error' => 'Transcript missing subject id'], $row);
@@ -194,11 +184,10 @@ class CreatePanoptesTranscriptionService
         $row = array_merge($row, ['subject_projectId' => $subject->project_id]);
 
         $rowWithEncodeHeaders = collect($row)->mapWithKeys(function($value, $field){
-            $newField = GeneralHelper::encodeCsvFields($field, $this->reserved);
+            $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
             return [$newField => $value];
         })->toArray();
 
-        dd($rowWithEncodeHeaders);
         $this->panoptesTranscriptionRepo->create($rowWithEncodeHeaders);
     }
 
@@ -217,26 +206,6 @@ class CreatePanoptesTranscriptionService
 
         // returns true if record exists.
         return $validator->fails();
-    }
-
-    /**
-     * Fix mismatched column names.
-     *
-     * @TODO This can be removed once Charles expedition has processed
-     * @param $row
-     * @param $expeditionId
-     */
-    private function fixMisMatched(&$row, $expeditionId)
-    {
-        foreach ($this->nfnMisMatched as $key => $value) {
-            if (isset($row[$key])) {
-                $row[$value] = $row[$key];
-            }
-        }
-
-        if (!isset($row['subject_expeditionId'])) {
-            $row['subject_expeditionId'] = $expeditionId;
-        }
     }
 
     /**

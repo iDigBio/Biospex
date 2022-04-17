@@ -56,7 +56,7 @@
                                     <br> {{ $decodedColumn }}:</label>
                                 <textarea class="form-control" rows="3"
                                           id="{{ $encodedColumn }}"
-                                          name="{{ str_replace(' ', '--', $encodedColumn) }}">{{ $reconciles->first()->{$encodedColumn} }}</textarea>
+                                          name="{{ $encodedColumn }}">{{ $reconciles->first()->{$encodedColumn} }}</textarea>
                             </div>
                             <div class="col-5">
                                 <label class="col-form-label">{{ t('Participants entered for') }} {{ $decodedColumn }}:</label>
@@ -66,7 +66,7 @@
                                     @endphp
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="radio"
-                                               data-column="{{ str_replace(' ', '--', $encodedColumn) }}"
+                                               data-column="{{ $encodedColumn }}"
                                                value="{{ $transcription->{$encodedColumn} }}">
                                         <label class="form-check-label" for="{{ $transcription->_id }}">
                                                 <i class="fa fa-flag {{ $count < 500 ? 'fa-flag-grey' : 'fa-flag-green' }}" aria-hidden="true" data-hover="tooltip"

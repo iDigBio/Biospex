@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Reconcile\ExpertReconcileProcess;
 use Illuminate\Console\Command;
 
 /**
@@ -40,18 +39,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\Reconcile\ExpertReconcileProcess
-     */
-    private ExpertReconcileProcess $process;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(ExpertReconcileProcess $process
-    )
+    public function __construct()
     {
         parent::__construct();
-        $this->process = $process;
     }
 
     /**
@@ -59,6 +51,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $this->process->setReconcileProblems(374);
+
     }
 }

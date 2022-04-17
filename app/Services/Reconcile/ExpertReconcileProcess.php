@@ -61,6 +61,8 @@ class ExpertReconcileProcess
      */
     private $problemRegex;
 
+    public $timeout = 1800;
+
     /**
      * ExpertReconcileProcess constructor.
      *
@@ -99,18 +101,18 @@ class ExpertReconcileProcess
 
         $filePath = Storage::path($file);
         $rows = $this->getCsvRows($filePath);
-        $rows->reject(function($row){
-            return $this->validateReconcile($row['subject_id']);
-        })->each(function($row) {
-            $newRecord = [];
-            foreach ($row as $field => $value) {
-                $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
-                $newRecord[$newField] = $value;
-                $newRecord['subject_problem'] = 0;
-                $newRecord['subject_columns'] = '';
-            }
+        $rows->each(function($row) {
+            if (!$this->validateReconcile($row['subject_id'])) {
+                $newRecord = [];
+                foreach ($row as $field => $value) {
+                    $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
+                    $newRecord[$newField] = $value;
+                    $newRecord['subject_problem'] = 0;
+                    $newRecord['subject_columns'] = '';
+                }
 
-            $this->reconcileRepo->create($newRecord);
+                $this->reconcileRepo->create($newRecord);
+            }
         });
     }
 
@@ -192,25 +194,6 @@ class ExpertReconcileProcess
     }
 
     /**
-     * Create masked columns for names.
-     *
-     * When posting names with spaces, PHP converts to underscore. So we mask, and demask on update.
-     * @param string $columns
-     * @return array
-     */
-    public function setColumnMasks(string $columns)
-    {
-        $columnArray = explode(',', $columns);
-        sort($columnArray);
-        $maskedColumns = [];
-        foreach($columnArray as $column) {
-            $maskedColumns[base64_encode($column)] = $column;
-        }
-
-        return $maskedColumns;
-    }
-
-    /**
      * Update reconciled record.
      *
      * Unset unneeded variables and decode columns. Use str_place for some columns with spaces.
@@ -269,6 +252,9 @@ class ExpertReconcileProcess
             return [$subjectId => $string];
         })->each(function ($columns, $subjectId) {
             $reconcile = $this->reconcileRepo->findBy('subject_id', $subjectId);
+            if ($reconcile === null) {
+                return;
+            }
             $reconcile->subject_problem = 1;
             $reconcile->subject_columns = $columns;
             $reconcile->save();

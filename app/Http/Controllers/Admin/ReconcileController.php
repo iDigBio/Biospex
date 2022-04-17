@@ -20,14 +20,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ExpertReconcileReviewJob;
 use App\Jobs\ExpertReconcileReviewPublishJob;
+use App\Jobs\ExpertReviewMigrateReconcilesJob;
+use App\Jobs\ExpertReviewProcessExplainedJob;
+use App\Jobs\ExpertReviewSetProblemsJob;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Api\ZooniverseTalkApiService;
 use App\Services\Reconcile\ExpertReconcileProcess;
 use Flash;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Bus;
 
 /**
  * Class ReconcileController
@@ -39,7 +42,7 @@ class ReconcileController extends Controller
     /**
      * @var \App\Services\Reconcile\ExpertReconcileProcess
      */
-    private $expertreconcileRepo;
+    private ExpertReconcileProcess $expertreconcileRepo;
 
     /**
      * @var \App\Repositories\ExpeditionRepository
@@ -105,7 +108,11 @@ class ReconcileController extends Controller
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        ExpertReconcileReviewJob::dispatch($expedition->id);
+        Bus::batch([
+            new ExpertReviewProcessExplainedJob($expeditionId),
+            new ExpertReviewMigrateReconcilesJob($expeditionId),
+            new ExpertReviewSetProblemsJob($expeditionId)
+        ])->name('Expert Reconcile ' . $expedition->id)->onQueue(config('config.reconcile_tube'))->dispatch();
 
         Flash::success(t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
 

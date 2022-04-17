@@ -16,28 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Jobs;
 
 use App\Jobs\Traits\SkipNfn;
 use App\Notifications\JobError;
-use App\Notifications\ExpertReviewJobComplete;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Reconcile\ExpertReconcileProcess;
-use App\Services\Reconcile\ReconcileProcess;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-/**
- * Class ExpertReconcileReviewJob
- *
- * @package App\Jobs
- */
-class ExpertReconcileReviewJob implements ShouldQueue
+class ExpertReviewMigrateReconcilesJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
 
     /**
      * @var int
@@ -45,28 +40,29 @@ class ExpertReconcileReviewJob implements ShouldQueue
     private int $expeditionId;
 
     /**
+     * @var int
+     */
+    private int $timeout = 1800;
+
+    /**
      * Create a new job instance.
      *
-     * @param int $expeditionId
+     * @return void
      */
-    public function __construct(int $expeditionId )
+    public function __construct(int $expeditionId)
     {
+        //
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.reconcile_tube'));
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Services\Reconcile\ReconcileProcess $reconcileProcessService
-     * @param \App\Services\Reconcile\ExpertReconcileProcess $expertreconcileRepo
      * @return void
      */
     public function handle(
         ExpeditionRepository $expeditionRepo,
-        ReconcileProcess $reconcileProcessService,
-        ExpertReconcileProcess $expertreconcileRepo
+        ExpertReconcileProcess $expertReconcileProcess
     )
     {
         $expedition = $expeditionRepo->findExpeditionForExpertReview($this->expeditionId);
@@ -77,16 +73,8 @@ class ExpertReconcileReviewJob implements ShouldQueue
                 throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [':id' => $expedition->id, ':title' => $expedition->title]));
             }
 
-            $reconcileProcessService->processExplained($expedition);
-            $expertreconcileRepo->migrateReconcileCsv($expedition->id);
-            $expertreconcileRepo->setReconcileProblems($expedition->id);
-
-            $expedition->nfnActor->pivot->expert = 1;
-            $expedition->nfnActor->pivot->save();
-
-            $user->notify(new ExpertReviewJobComplete($expedition->title, $expedition->id));
-
-            $this->delete();
+            $expertReconcileProcess->migrateReconcileCsv($expedition->id);
+            \Log::alert('migrate');
 
         } catch (\Exception $e) {
             $messages = [

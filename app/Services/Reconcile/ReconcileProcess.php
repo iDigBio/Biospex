@@ -28,9 +28,6 @@ use Exception;
 use File;
 use Illuminate\Support\Carbon;
 use Storage;
-use function collect;
-use function config;
-use function t;
 
 /**
  * Class ReconcileProcess
@@ -42,7 +39,7 @@ class ReconcileProcess
     /**
      * @var \App\Repositories\ExpeditionRepository
      */
-    private $expeditionRepo;
+    private ExpeditionRepository $expeditionRepo;
 
     /**
      * @var \App\Repositories\DownloadRepository
@@ -52,47 +49,47 @@ class ReconcileProcess
     /**
      * @var string
      */
-    private $csvPath;
+    private string $csvPath;
 
     /**
      * @var string
      */
-    private $recPath;
+    private string $recPath;
 
     /**
      * @var string
      */
-    private $tranPath;
+    private string $tranPath;
 
     /**
      * @var string
      */
-    private $sumPath;
+    private string $sumPath;
 
     /**
      * @var string
      */
-    private $expPath;
+    private string $expPath;
 
     /**
      * @var string
      */
-    private $pythonPath;
+    private string $pythonPath;
 
     /**
      * @var string
      */
-    private $reconcilePath;
+    private string $reconcilePath;
 
     /**
      * @var string
      */
-    private $command;
+    private string $command;
 
     /**
      * @var \App\Services\Csv\Csv
      */
-    private $csvService;
+    private Csv $csvService;
 
     /**
      * ReconcileProcess constructor.
@@ -251,10 +248,10 @@ class ReconcileProcess
      * @param bool $explained
      * @return string|void
      */
-    protected function setCommand($explained = false)
+    protected function setCommand(bool $explained = false)
     {
         if ($explained) {
-            $this->command = "{$this->pythonPath} {$this->reconcilePath} --explanations --reconciled {$this->expPath} {$this->csvPath}";
+            $this->command = "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->expPath} --explanations {$this->csvPath}";
 
             return;
         }
