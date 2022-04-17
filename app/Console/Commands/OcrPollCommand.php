@@ -20,8 +20,8 @@
 namespace App\Console\Commands;
 
 use App\Events\PollOcrEvent;
+use App\Repositories\OcrQueueRepository;
 use Illuminate\Console\Command;
-use App\Services\Model\OcrQueueService;
 
 /**
  * Class OcrPollCommand
@@ -45,20 +45,20 @@ class OcrPollCommand extends Command
     protected $description = 'Processes information for OCR Polling event.';
 
     /**
-     * @var \App\Services\Model\OcrQueueService
+     * @var \App\Repositories\OcrQueueRepository
      */
-    private $ocrQueueService;
+    private $ocrQueueRepo;
 
     /**
      * OcrPollCommand constructor.
      *
-     * @param \App\Services\Model\OcrQueueService $ocrQueueService
+     * @param \App\Repositories\OcrQueueRepository $ocrQueueRepo
      */
-    public function __construct(OcrQueueService $ocrQueueService)
+    public function __construct(OcrQueueRepository $ocrQueueRepo)
     {
         parent::__construct();
 
-        $this->ocrQueueService = $ocrQueueService;
+        $this->ocrQueueRepo = $ocrQueueRepo;
     }
 
     /**
@@ -66,7 +66,7 @@ class OcrPollCommand extends Command
      */
     public function handle()
     {
-        $records = $this->ocrQueueService->getOcrQueuesForPollCommand();
+        $records = $this->ocrQueueRepo->getOcrQueuesForPollCommand();
 
         $data = ['message' => t('No processes running at this time'), 'payload' => []];
 

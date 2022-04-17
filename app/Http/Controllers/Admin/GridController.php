@@ -21,10 +21,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\GridExportCsvJob;
-use App\Services\Model\ExpeditionService;
-use App\Services\Grid\JqGridEncoder;
+use App\Repositories\ExpeditionRepository;
+use App\Repositories\SubjectRepository;
 use App\Services\Csv\Csv;
-use App\Services\Model\SubjectService;
+use App\Services\Grid\JqGridEncoder;
 use Auth;
 use Exception;
 
@@ -172,11 +172,11 @@ class GridController extends Controller
      * Delete subject if not part of expedition process.
      *
      * @note Removed from jqGrid but keep code in case we need it again.
-     * @param \App\Services\Model\SubjectService $subjectService
-     * @param \App\Services\Model\ExpeditionService $expeditionService
+     * @param \App\Repositories\SubjectRepository $subjectRepo
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete(SubjectService $subjectService, ExpeditionService $expeditionService)
+    public function delete(SubjectRepository $subjectRepo, ExpeditionRepository $expeditionRepo)
     {
         if (! request()->ajax()) {
             return response()->json(['error' => 'Delete must be performed via ajax.'], 404);
@@ -188,18 +188,18 @@ class GridController extends Controller
 
         $subjectIds = explode(',', request()->get('ids'));
 
-        $subjects = $subjectService->whereIn('_id', $subjectIds);
+        $subjects = $subjectRepo->whereIn('_id', $subjectIds);
 
-        $subjects->reject(function ($subject) use($expeditionService) {
+        $subjects->reject(function ($subject) use($expeditionRepo) {
             foreach ($subject->expedition_ids as $expeditionId) {
-                $expedition = $expeditionService->findExpeditionHavingWorkflowManager($expeditionId);
+                $expedition = $expeditionRepo->findExpeditionHavingWorkflowManager($expeditionId);
                 if ($expedition !== null) {
                     return true;
                 }
             }
 
             return false;
-        })->each(function ($subject) use ($subjectService) {
+        })->each(function ($subject) use ($subjectRepo) {
             $subject->delete();
         });
 

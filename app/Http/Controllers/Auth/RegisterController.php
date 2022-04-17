@@ -19,16 +19,16 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Flash;
 use App\Http\Controllers\Controller;
-use App\Services\Model\GroupService;
-use App\Services\Model\InviteService;
 use App\Http\Requests\RegisterFormRequest;
-use App\Services\Model\UserService;
+use App\Repositories\GroupRepository;
+use App\Repositories\InviteRepository;
+use App\Repositories\UserRepository;
 use DateHelper;
+use Flash;
+use Hash;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Hash;
 
 /**
  * Class RegisterController
@@ -63,19 +63,19 @@ class RegisterController extends Controller
     public $loginView = 'auth.login';
 
     /**
-     * @var \App\Services\Model\InviteService
+     * @var \App\Repositories\InviteRepository
      */
-    private $inviteService;
+    private $inviteRepo;
 
     /**
      * Create a new controller instance.
      *
-     * @param \App\Services\Model\InviteService $inviteService
+     * @param \App\Repositories\InviteRepository $inviteRepo
      */
-    public function __construct(InviteService $inviteService)
+    public function __construct(InviteRepository $inviteRepo)
     {
         $this->middleware('guest');
-        $this->inviteService = $inviteService;
+        $this->inviteRepo = $inviteRepo;
     }
 
     /**
@@ -92,7 +92,7 @@ class RegisterController extends Controller
 
         $code = request('code');
 
-        $invite = $this->inviteService->findBy('code', $code);
+        $invite = $this->inviteRepo->findBy('code', $code);
 
         if ( ! empty($code) && ! $invite)
         {
@@ -110,22 +110,22 @@ class RegisterController extends Controller
      * Register the user. Overrides trait so invite is checked.
      *
      * @param \App\Http\Requests\RegisterFormRequest $request
-     * @param \App\Services\Model\UserService $userService
-     * @param \App\Services\Model\GroupService $groupService
+     * @param \App\Repositories\UserRepository $userRepo
+     * @param \App\Repositories\GroupRepository $groupRepo
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function register(RegisterFormRequest $request, UserService $userService, GroupService $groupService)
+    public function register(RegisterFormRequest $request, UserRepository $userRepo, GroupRepository $groupRepo)
     {
         $input = $request->only('email', 'password', 'first_name', 'last_name', 'invite');
         $input['password'] = Hash::make($input['password']);
-        $user = $userService->create($input);
+        $user = $userRepo->create($input);
 
         if ( ! empty($input['invite']))
         {
-            $invite = $this->inviteService->findBy('code', $input['invite']);
+            $invite = $this->inviteRepo->findBy('code', $input['invite']);
             if ($invite->email === $user->email)
             {
-                $group = $groupService->find($invite->group_id);
+                $group = $groupRepo->find($invite->group_id);
                 $user->assignGroup($group);
                 $invite->delete();
             }

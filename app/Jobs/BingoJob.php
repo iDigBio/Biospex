@@ -20,12 +20,12 @@
 namespace App\Jobs;
 
 use App\Events\BingoEvent;
-use App\Services\Model\BingoMapService;
+use App\Repositories\BingoMapRepository;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Class BingoJob
@@ -62,11 +62,11 @@ class BingoJob implements ShouldQueue
     /**
      * Job handle.
      *
-     * @param \App\Services\Model\BingoMapService $bingoMapService
+     * @param \App\Repositories\BingoMapRepository $bingoMapRepo
      */
-    public function handle(BingoMapService $bingoMapService)
+    public function handle(BingoMapRepository $bingoMapRepo)
     {
-        $locations = $bingoMapService->getBy('bingo_id', $this->bingoId);
+        $locations = $bingoMapRepo->getBy('bingo_id', $this->bingoId);
         $data['markers'] = $locations->map(function($location) {
             return [
                 'latitude' => $location->latitude,
@@ -77,7 +77,7 @@ class BingoJob implements ShouldQueue
 
         $data['winner'] = null;
         if ($this->mapId !== null) {
-            $map = $bingoMapService->find($this->mapId);
+            $map = $bingoMapRepo->find($this->mapId);
             $data['winner']['city'] = $map->city;
             $data['winner']['uuid'] = $map->uuid;
         }

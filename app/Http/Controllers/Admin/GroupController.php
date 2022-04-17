@@ -19,14 +19,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Jobs\DeleteGroup;
-use Auth;
-use Flash;
-use App\Services\Model\GroupService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
-use App\Services\Model\UserService;
+use App\Jobs\DeleteGroup;
+use App\Repositories\GroupRepository;
+use App\Repositories\UserRepository;
+use Auth;
 use Exception;
+use Flash;
 
 /**
  * Class GroupController
@@ -36,18 +36,18 @@ use Exception;
 class GroupController extends Controller
 {
     /**
-     * @var \App\Services\Model\GroupService
+     * @var \App\Repositories\GroupRepository
      */
-    private $groupService;
+    private $groupRepo;
 
     /**
      * GroupController constructor.
      *
-     * @param \App\Services\Model\GroupService $groupService
+     * @param \App\Repositories\GroupRepository $groupRepo
      */
-    public function __construct(GroupService $groupService)
+    public function __construct(GroupRepository $groupRepo)
     {
-        $this->groupService = $groupService;
+        $this->groupRepo = $groupRepo;
     }
 
     /**
@@ -57,7 +57,7 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $groups = $this->groupService->getGroupsByUserId(Auth::id());
+        $groups = $this->groupRepo->getGroupsByUserId(Auth::id());
 
         return view('admin.group.index', compact('groups'));
     }
@@ -76,17 +76,17 @@ class GroupController extends Controller
      * Store a newly created group.
      *
      * @param GroupFormRequest $request
-     * @param \App\Services\Model\UserService $userService
+     * @param \App\Repositories\UserRepository $userRepo
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(GroupFormRequest $request, UserService $userService)
+    public function store(GroupFormRequest $request, UserRepository $userRepo)
     {
         $user = Auth::user();
-        $group = $this->groupService->create(['user_id' => $user->id, 'title' => $request->get('title')]);
+        $group = $this->groupRepo->create(['user_id' => $user->id, 'title' => $request->get('title')]);
 
         if ($group) {
             $user->assignGroup($group);
-            $admin = $userService->find(1);
+            $admin = $userRepo->find(1);
             $admin->assignGroup($group);
 
             event('group.saved');
@@ -110,7 +110,7 @@ class GroupController extends Controller
      */
     public function show($groupId)
     {
-        $group = $this->groupService->getGroupShow($groupId);
+        $group = $this->groupRepo->getGroupShow($groupId);
 
         if (! $this->checkPermissions('read', $group)) {
             return redirect()->back();
@@ -127,7 +127,7 @@ class GroupController extends Controller
      */
     public function edit($groupId)
     {
-        $group = $this->groupService->findWith($groupId, ['owner', 'users.profile']);
+        $group = $this->groupRepo->findWith($groupId, ['owner', 'users.profile']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->back();
@@ -149,13 +149,13 @@ class GroupController extends Controller
      */
     public function update(GroupFormRequest $request, $groupId)
     {
-        $group = $this->groupService->find($groupId);
+        $group = $this->groupRepo->find($groupId);
 
         if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->back();
         }
 
-        $this->groupService->update($request->all(), $groupId) ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
+        $this->groupRepo->update($request->all(), $groupId) ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
 
         return redirect()->route('admin.groups.show', [$groupId]);
     }
@@ -168,7 +168,7 @@ class GroupController extends Controller
      */
     public function delete($groupId)
     {
-        $group = $this->groupService->findWith($groupId, ['projects.panoptesProjects', 'projects.workflowManagers']);
+        $group = $this->groupRepo->findWith($groupId, ['projects.panoptesProjects', 'projects.workflowManagers']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->back();
@@ -200,14 +200,14 @@ class GroupController extends Controller
     /**
      * Delete user from group.
      *
-     * @param \App\Services\Model\UserService $userService
+     * @param \App\Repositories\UserRepository $userRepo
      * @param $groupId
      * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteUser(UserService $userService, $groupId, $userId)
+    public function deleteUser(UserRepository $userRepo, $groupId, $userId)
     {
-        $group = $this->groupService->find($groupId);
+        $group = $this->groupRepo->find($groupId);
 
         if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->route('admin.groups.index');
@@ -220,7 +220,7 @@ class GroupController extends Controller
                 return redirect()->route('admin.groups.show', [$groupId]);
             }
 
-            $user = $userService->find($userId);
+            $user = $userRepo->find($userId);
             $user->detachGroup($group->id);
 
             Flash::success(t('User was removed from the group'));

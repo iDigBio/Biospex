@@ -20,7 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\PanoptesProjectUpdateJob;
-use App\Services\Model\PanoptesProjectService;
+use App\Repositories\PanoptesProjectRepository;
 use Illuminate\Console\Command;
 
 /**
@@ -60,15 +60,15 @@ class PanoptesProjectUpdate extends Command
     /**
      * Execute the console command.
      *
-     * @param \App\Services\Model\PanoptesProjectService $panoptesProjectService
+     * @param \App\Repositories\PanoptesProjectRepository $panoptesProjectRepo
      */
-    public function handle(PanoptesProjectService $panoptesProjectService)
+    public function handle(PanoptesProjectRepository $panoptesProjectRepo)
     {
         $this->setIds();
 
         $projects = $this->expeditionIds === null ?
-            $panoptesProjectService->all() :
-            $panoptesProjectService->whereIn('expedition_id', $this->expeditionIds);
+            $panoptesProjectRepo->all() :
+            $panoptesProjectRepo->whereIn('expedition_id', $this->expeditionIds);
 
         $projects->each(function($project){
             PanoptesProjectUpdateJob::dispatch($project);

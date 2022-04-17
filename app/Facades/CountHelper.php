@@ -35,6 +35,6 @@ class CountHelper extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return \App\Services\Helpers\CountHelper::class;
+        return 'counthelper';
     }
 }

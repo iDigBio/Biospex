@@ -20,11 +20,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Facades\DateHelper;
-use Flash;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PasswordFormRequest;
-use App\Services\Model\UserService;
 use App\Http\Requests\EditUserFormRequest;
+use App\Http\Requests\PasswordFormRequest;
+use App\Repositories\UserRepository;
+use Flash;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Hash;
 
@@ -38,18 +38,18 @@ class UserController extends Controller
     use ResetsPasswords;
     
     /**
-     * @var \App\Services\Model\UserService
+     * @var \App\Repositories\UserRepository
      */
     public $userContract;
 
     /**
      * UserController constructor.
      *
-     * @param \App\Services\Model\UserService $userService
+     * @param \App\Repositories\UserRepository $userRepo
      */
-    public function __construct(UserService $userService)
+    public function __construct(UserRepository $userRepo)
     {
-        $this->userService = $userService;
+        $this->userRepo = $userRepo;
     }
 
     /**
@@ -79,7 +79,7 @@ class UserController extends Controller
      */
     public function edit()
     {
-        $user = $this->userService->findWith(request()->user()->id, ['profile']);
+        $user = $this->userRepo->findWith(request()->user()->id, ['profile']);
 
         if ($user->cannot('update', $user))
         {
@@ -102,7 +102,7 @@ class UserController extends Controller
      */
     public function update(EditUserFormRequest $request, $userId)
     {
-        $user = $this->userService->findWith($userId, ['profile']);
+        $user = $this->userRepo->findWith($userId, ['profile']);
 
         if ($user->cannot('update', $user))
         {
@@ -113,7 +113,7 @@ class UserController extends Controller
 
         $input = $request->all();
         $input['notification'] = $request->exists('notification') ? 1 : 0;
-        $result = $this->userService->update($input, $user->id);
+        $result = $this->userRepo->update($input, $user->id);
 
         $user->profile->fill($request->all());
         $user->profile()->save($user->profile);
@@ -138,7 +138,7 @@ class UserController extends Controller
      */
     public function pass(PasswordFormRequest $request)
     {
-        $user = $this->userService->find($request->route('id'));
+        $user = $this->userRepo->find($request->route('id'));
 
         if ( ! policy($user)->pass($user))
         {

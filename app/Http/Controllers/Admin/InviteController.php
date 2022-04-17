@@ -20,9 +20,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\Model\GroupService;
-use App\Services\Model\UserService;
 use App\Http\Requests\InviteFormRequest;
+use App\Repositories\GroupRepository;
+use App\Repositories\UserRepository;
 use App\Services\Process\InviteProcess;
 
 /**
@@ -33,14 +33,14 @@ use App\Services\Process\InviteProcess;
 class InviteController extends Controller
 {
     /**
-     * @var \App\Services\Model\GroupService
+     * @var \App\Repositories\GroupRepository
      */
-    public $groupService;
+    public $groupRepo;
 
     /**
-     * @var \App\Services\Model\UserService
+     * @var \App\Repositories\UserRepository
      */
-    public $userService;
+    public $userRepo;
 
     /**
      * @var \App\Services\Process\InviteProcess
@@ -51,17 +51,17 @@ class InviteController extends Controller
      * InviteController constructor.
      *
      * @param \App\Services\Process\InviteProcess $inviteProcess
-     * @param \App\Services\Model\GroupService $groupService
-     * @param \App\Services\Model\UserService $userService
+     * @param \App\Repositories\GroupRepository $groupRepo
+     * @param \App\Repositories\UserRepository $userRepo
      */
     public function __construct(
         InviteProcess $inviteProcess,
-        GroupService $groupService,
-        UserService $userService
+        GroupRepository $groupRepo,
+        UserRepository $userRepo
     ) {
         $this->inviteProcess = $inviteProcess;
-        $this->groupService = $groupService;
-        $this->userService = $userService;
+        $this->groupRepo = $groupRepo;
+        $this->userRepo = $userRepo;
     }
 
     /**
@@ -72,7 +72,7 @@ class InviteController extends Controller
      */
     public function index($groupId)
     {
-        $group = $this->groupService->findWith($groupId, ['invites']);
+        $group = $this->groupRepo->findWith($groupId, ['invites']);
 
         $error = ! $this->checkPermissions('isOwner', $group);
         $inviteCount = old('entries', $group->invites->count() ?: 1);
@@ -89,7 +89,7 @@ class InviteController extends Controller
      */
     public function store(InviteFormRequest $request, $groupId)
     {
-        $group = $this->groupService->findWith($groupId, ['invites']);
+        $group = $this->groupRepo->findWith($groupId, ['invites']);
 
         $this->inviteProcess->storeInvites($group->id, $request);
 

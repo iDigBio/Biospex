@@ -36,6 +36,6 @@ class FlashHelper extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return \App\Services\Helpers\FlashHelper::class;
+        return 'flash';
     }
 }

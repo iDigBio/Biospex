@@ -20,17 +20,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProjectFormRequest;
 use App\Jobs\DeleteProject;
 use App\Jobs\DeleteUnassignedSubjectsJob;
 use App\Jobs\OcrCreateJob;
-use App\Services\Model\ProjectService;
-use App\Http\Requests\ProjectFormRequest;
+use App\Repositories\ProjectRepository;
 use App\Services\Grid\JqGridEncoder;
 use App\Services\Process\ProjectProcess;
-use Flash;
 use Auth;
 use CountHelper;
 use Exception;
+use Flash;
 use JavaScript;
 
 /**
@@ -41,9 +41,9 @@ use JavaScript;
 class ProjectController extends Controller
 {
     /**
-     * @var \App\Services\Model\ProjectService
+     * @var \App\Repositories\ProjectRepository
      */
-    private $projectService;
+    private $projectRepo;
 
     /**
      * @var \App\Services\Process\ProjectProcess
@@ -53,15 +53,15 @@ class ProjectController extends Controller
     /**
      * ProjectController constructor.
      *
-     * @param \App\Services\Model\ProjectService $projectService
+     * @param \App\Repositories\ProjectRepository $projectRepo
      * @param \App\Services\Process\ProjectProcess $projectProcess
      */
     public function __construct(
-        ProjectService $projectService,
+        ProjectRepository $projectRepo,
         ProjectProcess $projectProcess
     ) {
         $this->projectProcess = $projectProcess;
-        $this->projectService = $projectService;
+        $this->projectRepo = $projectRepo;
     }
 
     /**
@@ -74,7 +74,7 @@ class ProjectController extends Controller
         $user = Auth::user();
 
         $groups = $this->projectProcess->getUserGroupCount($user->id);
-        $projects = $this->projectService->getAdminProjectIndex($user->id);
+        $projects = $this->projectRepo->getAdminProjectIndex($user->id);
 
         return $groups === 0 ? view('admin.welcome') : view('admin.project.index', compact('projects'));
     }
@@ -105,7 +105,7 @@ class ProjectController extends Controller
      */
     public function show($projectId)
     {
-        $project = $this->projectService->getProjectShow($projectId);
+        $project = $this->projectRepo->getProjectShow($projectId);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -143,10 +143,10 @@ class ProjectController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $model = $this->projectService->create($request->all());
+        $model = $this->projectRepo->create($request->all());
 
         if ($model) {
-            $project = $this->projectService->findWith($model->id, ['workflow.actors.contacts']);
+            $project = $this->projectRepo->findWith($model->id, ['workflow.actors.contacts']);
             $this->projectProcess->notifyActorContacts($project);
 
             Flash::success(t('Record was created successfully.'));
@@ -167,7 +167,7 @@ class ProjectController extends Controller
      */
     public function clone($projectId)
     {
-        $project = $this->projectService->findWith($projectId, ['group', 'expeditions.workflowManager']);
+        $project = $this->projectRepo->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
         if (! $project) {
             Flash::error(t('Error retrieving record from database'));
@@ -197,7 +197,7 @@ class ProjectController extends Controller
      */
     public function edit($projectId)
     {
-        $project = $this->projectService->findWith($projectId, ['group', 'resources']);
+        $project = $this->projectRepo->findWith($projectId, ['group', 'resources']);
         if (! $project) {
             Flash::error(t('Error retrieving record from database'));
 
@@ -233,7 +233,7 @@ class ProjectController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $project = $this->projectService->update($request->all(), $projectId);
+        $project = $this->projectRepo->update($request->all(), $projectId);
 
         $project ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
 
@@ -254,7 +254,7 @@ class ProjectController extends Controller
         $user = Auth::user();
         $sort = request()->get('sort');
         $order = request()->get('order');
-        $projects = $this->projectService->getAdminProjectIndex($user->id, $sort, $order);
+        $projects = $this->projectRepo->getAdminProjectIndex($user->id, $sort, $order);
 
         return view('admin.project.partials.project', compact('projects'));
     }
@@ -268,7 +268,7 @@ class ProjectController extends Controller
      */
     public function explore($projectId, JqGridEncoder $grid)
     {
-        $project = $this->projectService->findWith($projectId, ['group']);
+        $project = $this->projectRepo->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -286,7 +286,7 @@ class ProjectController extends Controller
             'route'      => 'explore', // used for export
         ]);
 
-        $subjectAssignedCount = $this->projectService->find($projectId)->expeditionStats->sum('local_subject_count');
+        $subjectAssignedCount = $this->projectRepo->find($projectId)->expeditionStats->sum('local_subject_count');
 
         return view('admin.project.explore', compact('project', 'subjectAssignedCount'));
     }
@@ -299,7 +299,7 @@ class ProjectController extends Controller
      */
     public function delete($projectId)
     {
-        $project = $this->projectService->getProjectForDelete($projectId);
+        $project = $this->projectRepo->getProjectForDelete($projectId);
 
         if (! $this->checkPermissions('isOwner', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -332,7 +332,7 @@ class ProjectController extends Controller
      */
     public function ocr($projectId)
     {
-        $project = $this->projectService->findWith($projectId, ['group']);
+        $project = $this->projectRepo->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -353,7 +353,7 @@ class ProjectController extends Controller
      */
     public function statistics($projectId)
     {
-        $project = $this->projectService->findWith($projectId, ['group']);
+        $project = $this->projectRepo->findWith($projectId, ['group']);
 
         $transcribers = CountHelper::getTranscribersTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
         $transcriptions = CountHelper::getTranscriptionsPerTranscribers($projectId, $transcribers);

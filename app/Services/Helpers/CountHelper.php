@@ -19,7 +19,7 @@
 
 namespace App\Services\Helpers;
 
-use App\Services\Model\PanoptesTranscriptionService;
+use App\Repositories\PanoptesTranscriptionRepository;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -30,18 +30,18 @@ use Illuminate\Support\Facades\Cache;
 class CountHelper
 {
     /**
-     * @var \App\Services\Model\PanoptesTranscriptionService
+     * @var \App\Repositories\PanoptesTranscriptionRepository
      */
-    private $panoptesTranscriptionService;
+    private $panoptesTranscriptionRepo;
 
     /**
      * CountHelper constructor.
      *
-     * @param \App\Services\Model\PanoptesTranscriptionService $panoptesTranscriptionService
+     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      */
-    public function __construct(PanoptesTranscriptionService $panoptesTranscriptionService)
+    public function __construct(PanoptesTranscriptionRepository $panoptesTranscriptionRepo)
     {
-        $this->panoptesTranscriptionService = $panoptesTranscriptionService;
+        $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
     }
 
     /**
@@ -52,7 +52,7 @@ class CountHelper
      */
     public function projectTranscriptionCount($projectId)
     {
-        return $this->panoptesTranscriptionService->getProjectTranscriptionCount($projectId);
+        return $this->panoptesTranscriptionRepo->getProjectTranscriptionCount($projectId);
     }
 
     /**
@@ -63,7 +63,7 @@ class CountHelper
      */
     public function expeditionTranscriptionCount(int $expeditionId)
     {
-        return $this->panoptesTranscriptionService->getExpeditionTranscriptionCount($expeditionId);
+        return $this->panoptesTranscriptionRepo->getExpeditionTranscriptionCount($expeditionId);
     }
 
     /**
@@ -74,7 +74,7 @@ class CountHelper
      */
     public function projectTranscriberCount($projectId)
     {
-        return $this->panoptesTranscriptionService->getProjectTranscriberCount($projectId);
+        return $this->panoptesTranscriptionRepo->getProjectTranscriberCount($projectId);
     }
 
     /**
@@ -85,7 +85,7 @@ class CountHelper
      */
     public function getTranscribersTranscriptionCount($projectId)
     {
-        return $this->panoptesTranscriptionService->getTranscribersTranscriptionCount($projectId);
+        return $this->panoptesTranscriptionRepo->getTranscribersTranscriptionCount($projectId);
     }
 
     /**
@@ -118,7 +118,7 @@ class CountHelper
     public function getTranscriptionCountForTranscriber(int $projectId, string $transcriber)
     {
         return Cache::remember(md5(__METHOD__.$projectId.$transcriber), 86400, function () use ($projectId, $transcriber) {
-            return $this->panoptesTranscriptionService->getTranscriptionCountForTranscriber($projectId, $transcriber);
+            return $this->panoptesTranscriptionRepo->getTranscriptionCountForTranscriber($projectId, $transcriber);
         });
     }
 }

@@ -19,19 +19,19 @@
 
 namespace App\Jobs;
 
-use App\Services\Model\ProjectService;
 use App\Models\Import;
 use App\Notifications\DarwinCoreImportError;
 use App\Notifications\ImportComplete;
+use App\Repositories\ProjectRepository;
 use App\Services\Csv\Csv;
 use App\Services\File\FileService;
 use App\Services\Process\DarwinCore;
 use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Notification;
 
@@ -68,20 +68,20 @@ class DwcFileImportJob implements ShouldQueue
     }
 
     /**
-     * @param \App\Services\Model\ProjectService $projectService
+     * @param \App\Repositories\ProjectRepository $projectRepo
      * @param \App\Services\Process\DarwinCore $dwcProcess
      * @param \App\Services\File\FileService $fileService
      * @param \App\Services\Csv\Csv $csv
      */
     public function handle(
-        ProjectService $projectService,
+        ProjectRepository $projectRepo,
         DarwinCore $dwcProcess,
         FileService $fileService,
         Csv $csv
     ) {
         $scratchFileDir = Storage::path(config('config.scratch_dir').'/'.md5($this->import->file));
 
-        $project = $projectService->getProjectForDarwinImportJob($this->import->project_id);
+        $project = $projectRepo->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
 
         try {

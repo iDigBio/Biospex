@@ -22,8 +22,7 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Csv\Csv;
-use App\Services\Process\PanoptesTranscriptionProcess;
+use App\Services\Transcriptions\CreatePanoptesTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -68,11 +67,10 @@ class ZooniverseTranscriptionJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Process\PanoptesTranscriptionProcess $transcriptionProcess
-     * @param \App\Services\Csv\Csv $csv
+     * @param \App\Services\Transcriptions\CreatePanoptesTranscriptionService $createPanoptesTranscriptionService
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function handle(PanoptesTranscriptionProcess $transcriptionProcess, Csv $csv)
+    public function handle(CreatePanoptesTranscriptionService $createPanoptesTranscriptionService)
     {
         if ($this->skipReconcile($this->expeditionId)) {
             $this->delete();
@@ -89,9 +87,9 @@ class ZooniverseTranscriptionJob implements ShouldQueue
         }
 
         $csvFile = Storage::path($transcriptDir.'/'.$this->expeditionId.'.csv');
-        $transcriptionProcess->process($csvFile, $this->expeditionId);
+        $createPanoptesTranscriptionService->process($csvFile, $this->expeditionId);
 
-        $fileName = $transcriptionProcess->checkCsvError();
+        $fileName = $createPanoptesTranscriptionService->checkCsvError();
         if ($fileName !== null) {
             $user = User::find(1);
             $messages = [

@@ -35,6 +35,6 @@ class DateHelper extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return \App\Services\Helpers\DateHelper::class;
+        return 'datehelper';
     }
 }

@@ -19,8 +19,8 @@
 
 namespace App\Listeners;
 
-use App\Services\Model\ExportQueueService;
 use App\Jobs\ExportQueueJob;
+use App\Repositories\ExportQueueRepository;
 
 /**
  * Class ExportQueueEventSubscriber
@@ -30,18 +30,18 @@ use App\Jobs\ExportQueueJob;
 class ExportQueueEventSubscriber
 {
     /**
-     * @var \App\Services\Model\ExportQueueService
+     * @var \App\Repositories\ExportQueueRepository
      */
-    private $exportQueueService;
+    private $exportQueueRepo;
 
     /**
      * ExportQueueEventSubscriber constructor.
      *
-     * @param \App\Services\Model\ExportQueueService $exportQueueService
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepo
      */
-    public function __construct(ExportQueueService $exportQueueService)
+    public function __construct(ExportQueueRepository $exportQueueRepo)
     {
-        $this->exportQueueService = $exportQueueService;
+        $this->exportQueueRepo = $exportQueueRepo;
     }
 
     /**
@@ -60,7 +60,7 @@ class ExportQueueEventSubscriber
     public function updated()
     {
 
-        $record = $this->exportQueueService->findBy('error', 0);
+        $record = $this->exportQueueRepo->findBy('error', 0);
 
         if ($record === null) {
             return;

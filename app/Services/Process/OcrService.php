@@ -21,11 +21,10 @@ namespace App\Services\Process;
 
 use App\Models\OcrQueue;
 use App\Notifications\OcrProcessComplete;
-use App\Services\Model\OcrQueueService;
+use App\Repositories\OcrQueueRepository;
+use App\Repositories\SubjectRepository;
 use App\Services\Csv\Csv;
-use App\Services\Model\SubjectService;
 use App\Services\MongoDbService;
-use Illuminate\Support\LazyCollection;
 use Storage;
 use Str;
 
@@ -37,9 +36,9 @@ use Str;
 class OcrService
 {
     /**
-     * @var \App\Services\Model\OcrQueueService
+     * @var \App\Repositories\OcrQueueRepository
      */
-    private $ocrQueueService;
+    private $ocrQueueRepo;
 
     /**
      * @var \App\Services\MongoDbService
@@ -57,28 +56,28 @@ class OcrService
     public $folderPath;
 
     /**
-     * @var \App\Services\Model\SubjectService
+     * @var \App\Repositories\SubjectRepository
      */
-    private $subjectService;
+    private $subjectRepo;
 
     /**
      * Ocr constructor.
      *
-     * @param \App\Services\Model\SubjectService $subjectService
-     * @param \App\Services\Model\OcrQueueService $ocrQueueService
+     * @param \App\Repositories\SubjectRepository $subjectRepo
+     * @param \App\Repositories\OcrQueueRepository $ocrQueueRepo
      * @param \App\Services\MongoDbService $mongoDbService
      * @param \App\Services\Csv\Csv $csvService
      */
     public function __construct(
-        SubjectService $subjectService,
-        OcrQueueService $ocrQueueService,
+        SubjectRepository $subjectRepo,
+        OcrQueueRepository $ocrQueueRepo,
         MongoDbService $mongoDbService,
         Csv $csvService
     ) {
-        $this->ocrQueueService = $ocrQueueService;
+        $this->ocrQueueRepo = $ocrQueueRepo;
         $this->mongoDbService = $mongoDbService;
         $this->csvService = $csvService;
-        $this->subjectService = $subjectService;
+        $this->subjectRepo = $subjectRepo;
     }
 
     /**
@@ -111,7 +110,7 @@ class OcrService
      */
     public function findOcrQueueById(int $id)
     {
-        return $this->ocrQueueService->findWith($id, ['project.group.owner']);
+        return $this->ocrQueueRepo->findWith($id, ['project.group.owner']);
     }
 
     /**
@@ -122,7 +121,7 @@ class OcrService
      */
     public function getFirstQueue($reset = false)
     {
-        return $this->ocrQueueService->getFirstQueue($reset);
+        return $this->ocrQueueRepo->getFirstQueue($reset);
     }
 
     /**
@@ -135,7 +134,7 @@ class OcrService
      */
     public function createOcrQueue(int $projectId, int $expeditionId = null, array $data = []): OcrQueue
     {
-        return $this->ocrQueueService->firstOrCreate(['project_id' => $projectId, 'expedition_id' => $expeditionId], $data);
+        return $this->ocrQueueRepo->firstOrCreate(['project_id' => $projectId, 'expedition_id' => $expeditionId], $data);
     }
 
     /**
@@ -148,7 +147,7 @@ class OcrService
      */
     public function getSubjectQueryForOcr(int $projectId, int $expeditionId = null)
     {
-        return $this->subjectService->getSubjectQueryForOcr($projectId, $expeditionId);
+        return $this->subjectRepo->getSubjectQueryForOcr($projectId, $expeditionId);
     }
 
     /**
@@ -161,7 +160,7 @@ class OcrService
      */
     public function getSubjectCountForOcr(int $projectId, int $expeditionId = null, bool $error = false): int
     {
-        return $this->subjectService->getSubjectCountForOcr($projectId, $expeditionId, $error);
+        return $this->subjectRepo->getSubjectCountForOcr($projectId, $expeditionId, $error);
     }
 
     /**
@@ -183,7 +182,7 @@ class OcrService
      */
     public function sendNotify(OcrQueue $queue)
     {
-        $cursor = $this->subjectService->getSubjectErrorCursorForOcr($queue->project_id, $queue->expedition_id);
+        $cursor = $this->subjectRepo->getSubjectErrorCursorForOcr($queue->project_id, $queue->expedition_id);
 
         $subjects = $cursor->map(function ($subject) {
             return [
