@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\EncodeReconcilesJob;
+use App\Jobs\EncodeReconcilesUpdateJob;
 use Illuminate\Console\Command;
 
 class EncodeReconcilesCommand extends Command
@@ -12,7 +13,7 @@ class EncodeReconcilesCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'encode:reconciles';
+    protected $signature = 'encode:reconciles {--sync}';
 
     /**
      * The console command description.
@@ -37,6 +38,12 @@ class EncodeReconcilesCommand extends Command
      */
     public function handle()
     {
-        EncodeReconcilesJob::dispatch()->onConnection('long-beanstalkd')->onQueue(config('config.working_tube'));
+        if ($this->option('sync')) {
+            EncodeReconcilesJob::dispatch();
+
+            return;
+        }
+
+        EncodeReconcilesUpdateJob::dispatch();
     }
 }

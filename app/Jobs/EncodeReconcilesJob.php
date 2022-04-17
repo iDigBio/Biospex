@@ -1,19 +1,35 @@
 <?php
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 namespace App\Jobs;
 
+use App\Facades\TranscriptionMapHelper;
 use App\Models\Reconcile;
 use App\Models\ReconcileNew;
 use App\Models\User;
 use App\Notifications\JobComplete;
 use App\Notifications\JobError;
-use GeneralHelper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Carbon;
 use Validator;
 
 class EncodeReconcilesJob implements ShouldQueue
@@ -32,7 +48,7 @@ class EncodeReconcilesJob implements ShouldQueue
      */
     public function __construct()
     {
-        //
+        $this->onConnection('long-beanstalkd')->onQueue(config('config.working_tube'));
     }
 
     /**
@@ -42,13 +58,9 @@ class EncodeReconcilesJob implements ShouldQueue
      */
     public function handle()
     {
-        $reserved = config('config.reserved_encoded');
         $user = User::find(1);
         try {
-            $timestamp = Carbon::now()->subDays(2);
-            $cursor = Reconcile::where('created_at', '>=', $timestamp)
-                ->orderBy('created_at', 'DESC')
-                ->cursor();
+            $cursor = Reconcile::orderBy('created_at', 'DESC')->cursor();
 
             $i=0;
             foreach ($cursor as $record) {
@@ -57,12 +69,22 @@ class EncodeReconcilesJob implements ShouldQueue
                 }
 
                 $newRecord = [];
-                foreach ($record->getAttributes() as $key => $value) {
-                    $newKey = (str_contains($key, 'subject_') || in_array($key, $reserved)) ? $key : GeneralHelper::base64UrlEncode($key);
-                    $newKey = $newKey === 'problem' ? 'subject_problem' : $newKey;
-                    $newKey = $newKey === 'columns' ? 'subject_columns' : $newKey;
+                foreach ($record->getAttributes() as $field => $value) {
+                    $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
+                    $newField = $newField === 'problem' ? 'subject_problem' : $newField;
+                    $newField = $newField === 'columns' ? 'subject_columns' : $newField;
+                    $newRecord[$newField] = $value;
 
-                    $newRecord[$newKey] = $value;
+                    if ($newField === 'subject_columns') {
+                        $subject_columns = [];
+                        $columns = explode(',', $value);
+                        foreach ($columns as $column) {
+                            $encodedColumn = TranscriptionMapHelper::encodeTranscriptionField($column);
+                            $subject_columns[] = $encodedColumn;
+                        }
+
+                        $newRecord['subject_columns'] = implode('|', $subject_columns);
+                    }
                 }
 
                 if(!isset($newRecord['subject_problem'])) {
@@ -78,7 +100,7 @@ class EncodeReconcilesJob implements ShouldQueue
             }
 
             $message = [
-                'Transcript encoding completed.',
+                'Reconciles sync completed.',
                 'Reconciles synced: ' . $i
             ];
             $user->notify(new JobComplete(__FILE__, $message));
@@ -87,7 +109,7 @@ class EncodeReconcilesJob implements ShouldQueue
 
         } catch (\Exception $e) {
             $message = [
-                'Error in Transcript encoding',
+                'Error in Reconciles sync',
                 'Message: ' . $e->getMessage()
             ];
             $user->notify(new JobError(__FILE__, $message));

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\EncodeTranscriptionsJob;
+use App\Jobs\EncodeTranscriptionsUpdateJob;
 use Illuminate\Console\Command;
 
 class EncodeTranscriptionsCommand extends Command
@@ -12,7 +13,7 @@ class EncodeTranscriptionsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'encode:transcriptions';
+    protected $signature = 'encode:transcriptions {--sync}';
 
     /**
      * The console command description.
@@ -34,6 +35,12 @@ class EncodeTranscriptionsCommand extends Command
      */
     public function handle()
     {
-        EncodeTranscriptionsJob::dispatch()->onConnection('long-beanstalkd')->onQueue(config('config.working_tube'));
+        if ($this->option('sync')) {
+            EncodeTranscriptionsJob::dispatch();
+
+            return;
+        }
+
+        EncodeTranscriptionsUpdateJob::dispatch();
     }
 }

@@ -1,11 +1,27 @@
 <?php
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 namespace App\Jobs;
 
-use App\Facades\GeneralHelper;
+use App\Facades\TranscriptionMapHelper;
 use App\Models\PanoptesTranscription;
 use App\Models\PanoptesTranscriptionNew;
-use App\Models\Reconcile;
 use App\Models\User;
 use App\Notifications\JobComplete;
 use App\Notifications\JobError;
@@ -14,7 +30,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Carbon;
 use Validator;
 
 class EncodeTranscriptionsJob implements ShouldQueue
@@ -33,7 +48,7 @@ class EncodeTranscriptionsJob implements ShouldQueue
      */
     public function __construct()
     {
-
+        $this->onConnection('long-beanstalkd')->onQueue(config('config.working_tube'));
     }
 
     /**
@@ -43,13 +58,9 @@ class EncodeTranscriptionsJob implements ShouldQueue
      */
     public function handle()
     {
-        $reserved = config('config.reserved_encoded');
         $user = User::find(1);
         try {
-            $timestamp = Carbon::now()->subDays(2);
-            $cursor = PanoptesTranscription::where('created_at', '>=', $timestamp)
-                ->orderBy('created_at', 'DESC')
-                ->cursor();
+            $cursor = PanoptesTranscription::orderBy('created_at', 'DESC')->cursor();
 
             $i=0;
             foreach ($cursor as $record) {
@@ -58,9 +69,9 @@ class EncodeTranscriptionsJob implements ShouldQueue
                 }
 
                 $newRecord = [];
-                foreach ($record->getAttributes() as $key => $value) {
-                    $newKey = (str_contains($key, 'subject_') || in_array($key, $reserved)) ? $key : GeneralHelper::base64UrlEncode($key);
-                    $newRecord[$newKey] = $value;
+                foreach ($record->getAttributes() as $field => $value) {
+                    $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
+                    $newRecord[$newField] = $value;
                 }
 
                 PanoptesTranscriptionNew::create($newRecord);
@@ -68,7 +79,7 @@ class EncodeTranscriptionsJob implements ShouldQueue
             }
 
             $message = [
-                'Transcript encoding completed',
+                'Transcript sync completed',
                 'Transcripts synced: ' . $i
             ];
             $user->notify(new JobComplete(__FILE__, $message));
@@ -77,7 +88,7 @@ class EncodeTranscriptionsJob implements ShouldQueue
 
         } catch (\Exception $e) {
             $message = [
-                'Error in Transcript encoding',
+                'Error in Transcript syncing',
                 'Message: ' . $e->getMessage()
             ];
             $user->notify(new JobError(__FILE__, $message));
