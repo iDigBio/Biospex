@@ -123,6 +123,6 @@ class ZooniverseExportReport extends ZooniverseBase implements ActorInterface
             'type' => 'report'
         ];
 
-        $this->dbService->downloadService->updateOrCreate($attributes, $values);
+        $this->dbService->downloadRepo->updateOrCreate($attributes, $values);
     }
 }
