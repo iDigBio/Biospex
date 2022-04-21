@@ -66,7 +66,6 @@ class ZooniverseBuildTar extends ZooniverseBase implements ActorInterface
 
         try {
             $this->deleteFile($this->archiveTarPath);
-            \Phar::unlinkArchive($this->archiveTarPath);
             $this->deleteFile($this->archiveTarGzPath);
 
             $archive = new \PharData($this->archiveTarPath);
@@ -74,7 +73,6 @@ class ZooniverseBuildTar extends ZooniverseBase implements ActorInterface
             $archive->compress(\Phar::GZ);
 
             $this->deleteFile($this->archiveTarPath);
-            \Phar::unlinkArchive($this->archiveTarPath);
 
             $values = [
                 'expedition_id' => $queue->expedition->id,

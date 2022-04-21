@@ -100,6 +100,11 @@ class ZooniverseBase
     protected $archiveTarGzPath;
 
     /**
+     * @var string
+     */
+    protected $randomStr;
+
+    /**
      * Set queue property.
      *
      * @param \App\Models\ExportQueue $queue
@@ -152,6 +157,16 @@ class ZooniverseBase
     }
 
     /**
+     * Creates random string for tar archive name.
+     *
+     * @return void
+     */
+    public function setRandomString()
+    {
+        $this->randomStr = \Str::random(10);
+    }
+
+    /**
      * Set folder name using already created download file name.
      *
      * @param string $fileName
@@ -174,6 +189,7 @@ class ZooniverseBase
             throw new Exception(t('Folder required for export process is missing.'));
         }
 
+        $this->setRandomString();
         $this->setScratchDirectory();
         $this->setWorkingDirectory($delete);
         $this->setTmpDirectory();
@@ -229,7 +245,7 @@ class ZooniverseBase
      */
     private function setArchiveTar()
     {
-        $this->archiveTar = $this->folderName . '.tar';
+        $this->archiveTar = base64_encode($this->randomStr . $this->folderName) . '.tar';
         $this->archiveTarPath = $this->nfnExportDirectory . '/' . $this->archiveTar;
     }
 
@@ -238,7 +254,7 @@ class ZooniverseBase
      */
     protected function setArchiveTarGz()
     {
-        $this->archiveTarGz = $this->folderName . '.tar.gz';
+        $this->archiveTarGz = base64_encode($this->randomStr . $this->folderName) . '.tar.gz';
         $this->archiveTarGzPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
     }
 
