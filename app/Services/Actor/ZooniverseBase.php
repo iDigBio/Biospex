@@ -163,7 +163,7 @@ class ZooniverseBase
      */
     public function setRandomString()
     {
-        $this->randomStr = \Str::random(10);
+        $this->randomStr = md5(\Str::random(10) . $this->folderName);
     }
 
     /**
@@ -245,7 +245,7 @@ class ZooniverseBase
      */
     private function setArchiveTar()
     {
-        $this->archiveTar = base64_encode($this->randomStr . $this->folderName) . '.tar';
+        $this->archiveTar = $this->randomStr . '.tar';
         $this->archiveTarPath = $this->nfnExportDirectory . '/' . $this->archiveTar;
     }
 
@@ -254,7 +254,7 @@ class ZooniverseBase
      */
     protected function setArchiveTarGz()
     {
-        $this->archiveTarGz = base64_encode($this->randomStr . $this->folderName) . '.tar.gz';
+        $this->archiveTarGz = $this->randomStr . '.tar.gz';
         $this->archiveTarGzPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
     }
 
