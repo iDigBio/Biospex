@@ -51,9 +51,6 @@ class Kernel extends ConsoleKernel
 
             // WeDigBio classification cron. Pulls pusher records from MySql table and enters into pusher_transcriptions
             $schedule->command('dashboard:records')->everyFiveMinutes();
-
-            $schedule->command('encode:transcriptions')->timezone('America/New_York')->at('06:00');
-            $schedule->command('encode:reconciles')->timezone('America/New_York')->at('07:00');
         }
     }
 
