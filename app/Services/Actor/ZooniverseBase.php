@@ -181,9 +181,11 @@ class ZooniverseBase
      * Set directories.
      *
      * @param bool $delete
+     * @param bool $batch
+     * @return void
      * @throws \Exception
      */
-    public function setDirectories(bool $delete = false)
+    public function setDirectories(bool $delete = false, bool $batch = false)
     {
         if ($this->folderName === null) {
             throw new Exception(t('Folder required for export process is missing.'));
@@ -195,7 +197,7 @@ class ZooniverseBase
         $this->setTmpDirectory();
         $this->setNfnExportDirectory();
         $this->setArchiveTar();
-        $this->setArchiveTarGz();
+        $this->setArchiveTarGz($batch);
     }
 
     /**
@@ -251,10 +253,12 @@ class ZooniverseBase
 
     /**
      * Set archive tar gz file and path.
+     *
+     * @param bool $batch
      */
-    protected function setArchiveTarGz()
+    protected function setArchiveTarGz(bool $batch = false)
     {
-        $this->archiveTarGz = $this->randomStr . '.tar.gz';
+        $this->archiveTarGz = $batch ? $this->folderName . '.tar.gz' : $this->randomStr . '.tar.gz';
         $this->archiveTarGzPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
     }
 

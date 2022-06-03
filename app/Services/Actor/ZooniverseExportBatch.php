@@ -107,7 +107,7 @@ class ZooniverseExportBatch extends ZooniverseBase
         $this->setActor($download->actor);
         $this->setOwner($download->expedition->project->group->owner);
         $this->setBatchFolder($download->file);
-        $this->setDirectories(true);
+        $this->setDirectories(true, true);
     }
 
     /**
