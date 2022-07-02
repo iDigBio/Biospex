@@ -22,6 +22,7 @@ namespace App\Services\Actor;
 use App\Models\Actor;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
+use App\Models\Subject;
 use App\Services\Csv\Csv;
 use Illuminate\Support\LazyCollection;
 use Exception;
@@ -36,22 +37,22 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
     /**
      * @var \App\Services\Actor\ZooniverseDbService
      */
-    private $dbService;
+    private ZooniverseDbService $dbService;
 
     /**
      * @var \App\Services\Actor\ActorImageService
      */
-    private $actorImageService;
+    private ActorImageService $actorImageService;
 
     /**
      * @var \App\Services\Csv\Csv
      */
-    private $csv;
+    private Csv $csv;
 
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
-    private $nfnCsvMap;
+    private mixed $nfnCsvMap;
 
     /**
      * ZooniverseBuildCsv constructor.
@@ -75,7 +76,7 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
      * Process actor.
      *
      * @param \App\Models\Actor $actor
-     * @return mixed|void
+     * @return void
      * @throws \Exception
      */
     public function process(Actor $actor)
@@ -146,25 +147,21 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
         $subject = $this->dbService->subjectRepo->find($file->subject_id);
 
         $csvArray = [];
+        $presetValues = ['#expeditionId', '#expeditionTitle', 'imageName'];
+
         foreach ($this->nfnCsvMap as $key => $item) {
-            if ($key === '#expeditionId') {
-                $csvArray[$key] = $queue->expedition->id;
-                continue;
-            }
-            if ($key === '#expeditionTitle') {
-                $csvArray[$key] = $queue->expedition->title;
-                continue;
-            }
-            if ($key === 'imageName') {
-                $csvArray[$key] = $file->subject_id.'.jpg';
+            if (in_array($key, $presetValues)) {
+                $this->setPresetValues($csvArray, $key, $file, $queue);
                 continue;
             }
 
+            // If subject not found, add error column and message
             if ($subject === null) {
                 $csvArray['error'] = 'Could not retrieve subject '.$file->subject_id.' from database for export';
                 continue;
             }
 
+            // If item is not array, direct translation
             if (! is_array($item)) {
                 $csvArray[$key] = $item === '' ? '' : $subject->{$item};
                 continue;
@@ -172,15 +169,9 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
 
             $csvArray[$key] = '';
             foreach ($item as $doc => $value) {
-                if (isset($subject->{$doc}[$value])) {
-                    if ($key === 'eol' || $key === 'mol' || $key === 'idigbio') {
-                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}[$value]), config('config.nfnSearch.'.$key));
-                        break;
-                    }
-
-                    $csvArray[$key] = $subject->{$doc}[$value];
-                    break;
-                }
+                is_array($value) ?
+                    $this->setArrayValues($csvArray, $key, $doc, $value, $subject) :
+                    $this->setValues($csvArray, $key, $doc, $value, $subject);
             }
         }
 
@@ -188,6 +179,73 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
         $subject->save();
 
         return $csvArray;
+    }
+
+    /**
+     * Set preset values needing special attention.
+     *
+     * @param $csvArray
+     * @param $key
+     * @param \App\Models\ExportQueueFile $file
+     * @param \App\Models\ExportQueue $queue
+     * @return void
+     */
+    private function setPresetValues(&$csvArray, $key, ExportQueueFile $file, ExportQueue $queue)
+    {
+        if (strcasecmp($key, '#expeditionId') == 0) {
+            $csvArray[$key] = $queue->expedition->id;
+            return;
+        }
+
+        if (strcasecmp($key, '#expeditionTitle') == 0) {
+            $csvArray[$key] = $queue->expedition->title;
+            return;
+        }
+
+        if (strcasecmp($key, 'imageName') == 0) {
+            $csvArray[$key] = $file->subject_id.'.jpg';
+        }
+    }
+
+    /**
+     * Set values of document items if array.
+     *
+     * @param array $csvArray
+     * @param string $key
+     * @param string $doc
+     * @param array $array
+     * @param \App\Models\Subject $subject
+     * @return void
+     */
+    private function setArrayValues(array &$csvArray, string $key, string $doc, array $array, Subject $subject)
+    {
+        foreach ($array as $value) {
+            if (isset($subject->{$doc}[$value])) {
+                $csvArray[$key] = $subject->{$doc}[$value];
+            }
+        }
+    }
+
+    /**
+     * Set values of document if value exists. Set special links.
+     * @param array $csvArray
+     * @param string $key
+     * @param string $doc
+     * @param string $value
+     * @param \App\Models\Subject $subject
+     * @return void
+     */
+    private function setValues(array &$csvArray, string $key, string $doc, string $value, Subject $subject)
+    {
+        $links = ['eol', 'mol', 'idigbio'];
+        if (isset($subject->{$doc}[$value])) {
+            if (in_array($key, $links)) {
+                $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}[$value]), config('config.nfnSearch.'.$key));
+                return;
+            }
+
+            $csvArray[$key] = $subject->{$doc}[$value];
+        }
     }
 
     /**

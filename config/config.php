@@ -115,7 +115,7 @@ return [
     'dwcTranscriptFields' => [
         'stateProvince'  => 'state_province',
         'StateProvince'  => 'state_province',
-        'State/Province'  => 'state_province',
+        'State/Province' => 'state_province',
         'State Province' => 'state_province',
         'State_Province' => 'state_province',
         'State'          => 'state_province',
@@ -189,24 +189,24 @@ return [
     'nfn_project_url'           => env('NFN_PROJECT_URL'),
 
     'nfnCsvMap' => [
-        'subjectId'        => '_id',
-        'imageName'        => '_id',
-        'imageURL'         => 'accessURI',
-        'identifier'       => 'identifier',
-        'references'       => ['occurrence' => 'references'],
-        'scientificName'   => ['occurrence' => 'scientificName'],
-        'country'          => ['occurrence' => 'country'],
-        'stateProvince'    => ['occurrence' => 'stateProvince'],
-        'county'           => ['occurrence' => 'county'],
-        'eol'              => ['occurrence' => 'scientificName'],
-        'mol'              => ['occurrence' => 'scientificName'],
-        'idigbio'          => ['occurrence' => 'scientificName'],
-        '#institutionCode' => ['occurrence' => 'institutionCode'],
-        '#collectionCode'  => ['occurrence' => 'collectionCode'],
-        '#catalogNumber'   => ['occurrence' => 'catalogNumber'],
-        '#recordId'        => ['occurrence' => 'recordId'],
-        '#expeditionId'    => '',
-        '#expeditionTitle' => '',
+        'subjectId'           => '_id',
+        'imageName'           => '_id',
+        'references'          => ['occurrence' => 'references'],
+        'scientificName'      => ['occurrence' => 'scientificName'],
+        'country'             => ['occurrence' => 'country'],
+        'stateProvince'       => ['occurrence' => 'stateProvince'],
+        'county'              => ['occurrence' => 'county'],
+        'eol'                 => ['occurrence' => 'scientificName'],
+        'mol'                 => ['occurrence' => 'scientificName'],
+        'idigbio'             => ['occurrence' => 'scientificName'],
+        '#institutionCode'    => ['occurrence' => 'institutionCode'],
+        '#collectionCode'     => ['occurrence' => 'collectionCode'],
+        '#catalogNumber'      => ['occurrence' => 'catalogNumber'],
+        '#occurrenceRecordId' => ['occurrence' => ['recordID', 'recordId']],
+        '#occurrernceId'      => ['occurrence' => 'id'],
+        '#imageId'            => 'id',
+        '#expeditionId'       => '',
+        '#expeditionTitle'    => '',
     ],
 
     'panoptes' => [
@@ -274,29 +274,29 @@ return [
         'reviewed',
         'Country',
         'County',
-        'Location'
+        'Location',
     ],
 
     'mapped_transcription_fields' => [
-        'province' => [
+        'province'  => [
             'StateProvince',
             'State_Province',
             'State Province',
             'State/Province',
-            'subject_stateProvince'
+            'subject_stateProvince',
         ],
         'collector' => [
             'Collected By',
             'Collected_By',
             'CollectedBy',
             'Collected By (first collector only)',
-            'subject_collectedBy'
+            'subject_collectedBy',
         ],
-        'taxon' => [
+        'taxon'     => [
             'Scientific Name',
             'Scientific_Name',
             'ScientificName',
-            'subject_scientificName'
-        ]
-    ]
+            'subject_scientificName',
+        ],
+    ],
 ];

@@ -120,7 +120,9 @@ class ExpeditionController extends Controller
     /**
      * Sort expedition admin page.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|null
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|null
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function sort()
     {
