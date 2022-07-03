@@ -28,6 +28,8 @@ class FixFieldsStepThree extends FixFieldsBase
      */
     public function start()
     {
+        echo "Starting to remove unused fields on properties" . PHP_EOL;
+
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
 

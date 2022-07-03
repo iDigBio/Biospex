@@ -28,6 +28,8 @@ class FixFieldsStepNine extends FixFieldsBase
      */
     public function start()
     {
+        echo "Starting to match dup mixed occurrence fields to project id." . PHP_EOL;
+
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
 
@@ -46,14 +48,16 @@ class FixFieldsStepNine extends FixFieldsBase
         $properties = collect($this->getPropertiesFile('step5-dupMixed-properties.json'));
 
         $mappedOccurrenceFieldsToProjects = $this->mapFieldsToProjectId($properties, 'occurrenceHeaderProjectIds');
-        $this->writeToFile('step9-occurrencefields-properties.json', $mappedOccurrenceFieldsToProjects);
+        $this->writeToFile('step9-occurrenceMixedFields-properties.json', $mappedOccurrenceFieldsToProjects);
 
         $fieldsOne = [];
         $matched = [];
         $fieldsTwo = [];
 
         $mappedOccurrenceFieldsToProjects->each(function($array, $id) use(&$fieldsOne, &$matched, &$fieldsTwo) {
-            $matched[$id] = $array['matched'];
+            if (isset($array['matched'])) {
+                $matched[$id] = $array['matched'];
+            }
             $fieldsOne[$id] = ['recordID1fd02e92c4bd9b40ed8041b690de4bb3' => 'recordID'];
             $fieldsTwo[$id] = ['recordIDce2dbfd038a66c3b7aa7a8e4a56fc1ac' => 'recordID'];
         });

@@ -209,12 +209,13 @@ class FixFieldsBase
             });
         });
 
-        $array = [];
-
-        return $mappedProjectIds->mapWithKeys(function ($id) use ($properties, &$array, $headerType) {
+        return $mappedProjectIds->mapWithKeys(function ($id) use ($properties, $headerType) {
+            $array = [];
             $properties->each(function ($property, $field) use ($id, &$array, $headerType) {
                 $setField = $this->setGoodName($field);
-                $this->stringComparison($array, $setField, $field);
+                if (in_array($id, $property[$headerType])) {
+                    $this->stringComparison($array, $setField, $field);
+                }
                 collect($property['fields'])->each(function ($object, $oldField) use (
                     &$array,
                     $id,

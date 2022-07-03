@@ -41,6 +41,8 @@ class FixFieldsStepOne extends FixFieldsBase
      */
     public function start()
     {
+        echo "Starting to set counts on properties." . PHP_EOL;
+
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
 

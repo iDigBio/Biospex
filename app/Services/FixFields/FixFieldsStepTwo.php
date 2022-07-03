@@ -28,6 +28,8 @@ class FixFieldsStepTwo extends FixFieldsBase
      */
     public function start()
     {
+        echo "Starting to zero headers in properties." . PHP_EOL;
+
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
 

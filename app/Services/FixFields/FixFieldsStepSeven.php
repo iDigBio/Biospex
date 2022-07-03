@@ -28,6 +28,8 @@ class FixFieldsStepSeven extends FixFieldsBase
      */
     public function start()
     {
+        echo "Starting to match dup occurrence and update fields to project id." . PHP_EOL;
+
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
 

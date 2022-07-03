@@ -142,6 +142,16 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
+        // Step db: run db queries
+        if ($this->argument('step') === "db") {
+            \DB::statement("ALTER TABLE properties CHANGE short short VARCHAR(255) BINARY NOT NULL;");
+            \DB::statement("ALTER TABLE `properties` DROP INDEX `properties_qualified_unique`");
+            \DB::statement("ALTER TABLE `properties`DROP `qualified`");
+            \DB::statement("ALTER TABLE `properties`DROP `namespace`");
+
+            return;
+        }
+
         // Step 1: generate properties with counts
         if ($this->argument('step') === "1") {
             $this->fixFieldsStepOne->start();

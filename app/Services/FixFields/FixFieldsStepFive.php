@@ -29,6 +29,8 @@ class FixFieldsStepFive extends FixFieldsBase
      */
     public function start()
     {
+        echo "Starting to check and set image, occurrence, and mixed dups on properties" . PHP_EOL;
+
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
 
