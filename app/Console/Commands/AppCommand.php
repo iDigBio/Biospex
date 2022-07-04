@@ -19,7 +19,9 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\HeaderRepository;
+use App\Jobs\ZooniverseExportBuildTarJob;
+use App\Repositories\ExpeditionRepository;
+use App\Services\Actor\ZooniverseBuildTar;
 use Illuminate\Console\Command;
 
 /**
@@ -40,20 +42,27 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\HeaderRepository
+     * @var \App\Repositories\ExpeditionRepository
      */
-    private HeaderRepository $headerRepository;
+    private ExpeditionRepository $expeditionRepository;
+
+    /**
+     * @var \App\Services\Actor\ZooniverseBuildTar
+     */
+    private ZooniverseBuildTar $zooniverseBuildTar;
 
     /**
      * AppCommand constructor.
      *
-     * @param \App\Repositories\HeaderRepository $headerRepository
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
      */
     public function __construct(
-        HeaderRepository $headerRepository,
+        ExpeditionRepository $expeditionRepository,
+        ZooniverseBuildTar $zooniverseBuildTar
     ) {
         parent::__construct();
-        $this->headerRepository = $headerRepository;
+        $this->expeditionRepository = $expeditionRepository;
+        $this->zooniverseBuildTar = $zooniverseBuildTar;
     }
 
     /**
@@ -61,8 +70,9 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $record = $this->headerRepository->findBy('project_id', 13);
-        dd($record->header['image']);
+        $expedition = $this->expeditionRepository->findwith(418, ['nfnActor', 'stat']);
+
+        $this->zooniverseBuildTar->process($expedition->nfnActor);
 
     }
 }
