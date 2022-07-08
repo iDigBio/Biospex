@@ -25,7 +25,7 @@ use App\Jobs\ZooniverseExportBuildQueueJob;
 use App\Jobs\ZooniverseExportBuildTarJob;
 use App\Jobs\ZooniverseExportDeleteFilesJob;
 use App\Jobs\ZooniverseExportReportJob;
-use App\Jobs\ZooniverseProcessImageJob;
+use App\Jobs\ZooniverseExportProcessImageJob;
 use App\Models\Actor;
 use App\Notifications\NfnExportError;
 use App\Repositories\ExpeditionRepository;
@@ -73,7 +73,7 @@ class NfnPanoptes
         if ($actor->pivot->state === 0) {
             \Bus::batch([
                 new ZooniverseExportBuildQueueJob($actor),
-                new ZooniverseProcessImageJob($actor),
+                new ZooniverseExportProcessImageJob($actor),
                 new ZooniverseExportBuildCsvJob($actor),
                 new ZooniverseExportBuildTarJob($actor),
                 new ZooniverseExportReportJob($actor),
