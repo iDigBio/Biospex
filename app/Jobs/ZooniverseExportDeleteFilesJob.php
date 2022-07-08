@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
-use App\Services\Actor\ZooniverseExportDeleteFiles;
+use App\Services\Actor\NfnPanoptes\ZooniverseExportDeleteFiles;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -38,7 +38,7 @@ class ZooniverseExportDeleteFilesJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles
+     * @param \App\Services\Actor\NfnPanoptes\ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles
      * @throws \Exception
      */
     public function handle(ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles)

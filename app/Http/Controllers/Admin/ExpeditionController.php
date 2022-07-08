@@ -433,7 +433,7 @@ class ExpeditionController extends Controller
             ]);
 
             if (null === $expedition->panoptesProject) {
-                throw new Exception(t('Zooniverse Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
+                throw new Exception(t('NfnPanoptes Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
             }
 
             if (null !== $expedition->workflowManager) {

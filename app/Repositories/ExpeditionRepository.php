@@ -41,7 +41,7 @@ class ExpeditionRepository extends BaseRepository
     }
 
     /**
-     * Get expeditions for Zooniverse processing.
+     * Get expeditions for NfnPanoptes processing.
      *
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */

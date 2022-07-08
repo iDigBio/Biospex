@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
-use App\Services\Actor\ZooniverseBuildQueue;
+use App\Services\Actor\NfnPanoptes\ZooniverseBuildQueue;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -23,12 +23,12 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     /**
      * @var \App\Models\Actor
      */
-    private $actor;
+    private Actor $actor;
 
     /**
      * @var int
      */
-    public $timeout = 3600;
+    public int $timeout = 3600;
 
     /**
      * Create a new job instance.
@@ -43,7 +43,7 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\ZooniverseBuildQueue $zooniverseBuildQueue
+     * @param \App\Services\Actor\NfnPanoptes\ZooniverseBuildQueue $zooniverseBuildQueue
      * @throws \Exception
      */
     public function handle(ZooniverseBuildQueue $zooniverseBuildQueue)

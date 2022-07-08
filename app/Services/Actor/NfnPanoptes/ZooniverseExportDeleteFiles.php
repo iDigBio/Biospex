@@ -17,9 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor;
+namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Actor;
+use App\Services\Actor\ActorInterface;
 
 /**
  * Class ZooniverseExportDeleteFiles
@@ -28,23 +29,6 @@ use App\Models\Actor;
  */
 class ZooniverseExportDeleteFiles extends ZooniverseBase implements ActorInterface
 {
-    /**
-     * @var \App\Services\Actor\ZooniverseDbService
-     */
-    private $dbService;
-
-    /**
-     * ZooniverseExportDeleteFiles constructor.
-     *
-     * @param \App\Services\Actor\ZooniverseDbService $dbService
-     */
-    public function __construct(
-        ZooniverseDbService $dbService
-    )
-    {
-        $this->dbService = $dbService;
-    }
-
     /**
      * Process actor.
      *
@@ -56,15 +40,15 @@ class ZooniverseExportDeleteFiles extends ZooniverseBase implements ActorInterfa
     {
         $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
         $queue->processed = 0;
-        $queue->stage = 6;
+        $queue->stage = 5;
         $queue->save();
 
         \Artisan::call('export:poll');
 
         try {
-            $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
-            $this->setDirectories();
-            \File::deleteDirectory($this->workingDirectory);
+            $this->actorDirectory->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
+            $this->actorDirectory->setDirectories();
+            \File::deleteDirectory($this->actorDirectory->workingDirectory);
             $queue->delete();
 
             \Artisan::call('export:poll');

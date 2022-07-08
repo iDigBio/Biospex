@@ -19,9 +19,8 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\ZooniverseExportBuildTarJob;
-use App\Repositories\ExpeditionRepository;
-use App\Services\Actor\ZooniverseBuildTar;
+use App\Models\Expedition;
+use App\Services\Actor\NfnPanoptes\ZooniverseExportProcessImage;
 use Illuminate\Console\Command;
 
 /**
@@ -42,27 +41,10 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepository;
-
-    /**
-     * @var \App\Services\Actor\ZooniverseBuildTar
-     */
-    private ZooniverseBuildTar $zooniverseBuildTar;
-
-    /**
      * AppCommand constructor.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
      */
-    public function __construct(
-        ExpeditionRepository $expeditionRepository,
-        ZooniverseBuildTar $zooniverseBuildTar
-    ) {
+    public function __construct() {
         parent::__construct();
-        $this->expeditionRepository = $expeditionRepository;
-        $this->zooniverseBuildTar = $zooniverseBuildTar;
     }
 
     /**
@@ -70,9 +52,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $expedition = $this->expeditionRepository->findwith(418, ['nfnActor', 'stat']);
-
-        $this->zooniverseBuildTar->process($expedition->nfnActor);
 
     }
 }

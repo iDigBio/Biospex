@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
-use App\Services\Actor\ZooniverseBuildTar;
+use App\Services\Actor\NfnPanoptes\ZooniverseBuildTar;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -43,7 +43,7 @@ class ZooniverseExportBuildTarJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\ZooniverseBuildTar $zooniverseBuildTar
+     * @param \App\Services\Actor\NfnPanoptes\ZooniverseBuildTar $zooniverseBuildTar
      * @throws \Exception
      */
     public function handle(ZooniverseBuildTar $zooniverseBuildTar)

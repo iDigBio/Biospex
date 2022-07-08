@@ -19,130 +19,63 @@
 
 namespace App\Services\Actor;
 
-use App\Models\Actor;
-use App\Models\Expedition;
-use App\Models\ExportQueue;
-use App\Models\User;
-use Exception;
 use Illuminate\Support\Facades\File;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 /**
- * Class ZooniverseBase
- *
- * @package App\Services\Actor
+ * ActorDirectory
  */
-class ZooniverseBase
+class ActorDirectory
 {
     /**
-     * @var ExportQueue
+     * @var string
      */
-    protected $queue;
-
-    /**
-     * @var \App\Models\Expedition
-     */
-    protected $expedition;
-
-    /**
-     * @var \App\Models\Actor
-     */
-    protected $actor;
-
-    /**
-     * @var \App\Models\User
-     */
-    protected $owner;
+    public string $folderName;
 
     /**
      * @var string
      */
-    protected $folderName;
+    public string $randomStr;
 
     /**
      * @var string
      */
-    protected $scratchDirectory;
+    public string $scratchDirectory;
 
     /**
      * @var string
      */
-    protected $workingDirectory;
+    public string $workingDirectory;
 
     /**
      * @var string
      */
-    protected $tmpDirectory;
+    public string $tmpDirectory;
 
     /**
      * @var string
      */
-    protected $nfnExportDirectory;
+    public string $exportDirectory;
 
     /**
      * @var string
      */
-    protected $archiveTar;
+    public string $archiveTar;
 
     /**
      * @var string
      */
-    protected $archiveTarPath;
+    public string $archiveTarPath;
 
     /**
      * @var string
      */
-    protected $archiveTarGz;
+    public string $archiveTarGz;
 
     /**
      * @var string
      */
-    protected $archiveTarGzPath;
-
-    /**
-     * @var string
-     */
-    protected $randomStr;
-
-    /**
-     * Set queue property.
-     *
-     * @param \App\Models\ExportQueue $queue
-     */
-    public function setQueue(ExportQueue $queue)
-    {
-        $this->queue = $queue;
-    }
-
-    /**
-     * Set expedition property.
-     *
-     * @param \App\Models\Expedition $expedition
-     */
-    public function setExpedition(Expedition $expedition)
-    {
-        $this->expedition = $expedition;
-    }
-
-    /**
-     * Set actor property.
-     *
-     * @param \App\Models\Actor $actor
-     */
-    public function setActor(Actor $actor)
-    {
-        $this->actor = $actor;
-    }
-
-    /**
-     * Set owner property.
-     *
-     * @param \App\Models\User $user
-     */
-    public function setOwner(User $user)
-    {
-        $this->owner = $user;
-    }
+    public string $archiveTarGzPath;
 
     /**
      * Set folder property.
@@ -157,6 +90,24 @@ class ZooniverseBase
     }
 
     /**
+     * Set directories.
+     *
+     * @param bool $delete
+     * @param bool $batch
+     * @return void
+     */
+    public function setDirectories(bool $delete = false, bool $batch = false)
+    {
+        $this->setRandomString();
+        $this->setScratchDirectory();
+        $this->setWorkingDirectory($delete);
+        $this->setTmpDirectory();
+        $this->setExportDirectory();
+        $this->setArchiveTar();
+        $this->setArchiveTarGz($batch);
+    }
+
+    /**
      * Creates random string for tar archive name.
      *
      * @return void
@@ -164,40 +115,6 @@ class ZooniverseBase
     public function setRandomString()
     {
         $this->randomStr = md5(\Str::random(10) . $this->folderName);
-    }
-
-    /**
-     * Set folder name using already created download file name.
-     *
-     * @param string $fileName
-     */
-    public function setBatchFolder(string $fileName)
-    {
-        $folder = str_replace('.tar.gz', '', $fileName);
-        $this->folderName = $folder;
-    }
-
-    /**
-     * Set directories.
-     *
-     * @param bool $delete
-     * @param bool $batch
-     * @return void
-     * @throws \Exception
-     */
-    public function setDirectories(bool $delete = false, bool $batch = false)
-    {
-        if ($this->folderName === null) {
-            throw new Exception(t('Folder required for export process is missing.'));
-        }
-
-        $this->setRandomString();
-        $this->setScratchDirectory();
-        $this->setWorkingDirectory($delete);
-        $this->setTmpDirectory();
-        $this->setNfnExportDirectory();
-        $this->setArchiveTar();
-        $this->setArchiveTarGz($batch);
     }
 
     /**
@@ -237,9 +154,9 @@ class ZooniverseBase
     /**
      * Set nfn export directory.
      */
-    private function setNfnExportDirectory()
+    private function setExportDirectory()
     {
-        $this->nfnExportDirectory = Storage::path(config('config.export_dir'));
+        $this->exportDirectory = Storage::path(config('config.export_dir'));
     }
 
     /**
@@ -248,7 +165,7 @@ class ZooniverseBase
     private function setArchiveTar()
     {
         $this->archiveTar = $this->randomStr . '.tar';
-        $this->archiveTarPath = $this->nfnExportDirectory . '/' . $this->archiveTar;
+        $this->archiveTarPath = $this->exportDirectory . '/' . $this->archiveTar;
     }
 
     /**
@@ -259,7 +176,18 @@ class ZooniverseBase
     protected function setArchiveTarGz(bool $batch = false)
     {
         $this->archiveTarGz = $batch ? $this->folderName . '.tar.gz' : $this->randomStr . '.tar.gz';
-        $this->archiveTarGzPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
+        $this->archiveTarGzPath = $this->exportDirectory . '/' . $this->archiveTarGz;
+    }
+
+    /**
+     * Set folder name using already created download file name.
+     *
+     * @param string $fileName
+     */
+    public function setBatchFolder(string $fileName)
+    {
+        $folder = str_replace('.tar.gz', '', $fileName);
+        $this->folderName = $folder;
     }
 
     /**
@@ -268,27 +196,9 @@ class ZooniverseBase
      * @param string $fileName
      * @return string
      */
-    protected function setBatchArchiveTarGz(string $fileName): string
+    public function setBatchArchiveTarGz(string $fileName): string
     {
-        return $this->nfnExportDirectory . '/' . $fileName . '.tar.gz';
-    }
-
-    /**
-     * Check if converted file exists and is under file size.
-     *
-     * @param $file
-     * @param bool $subject used if passing a subject id as file
-     * @return bool
-     */
-    protected function checkConvertedFile($file, $subject = false): bool
-    {
-        $fileName = ! $subject ? File::name($file) : $file;
-        $tmpFile = $this->tmpDirectory.'/'.$fileName.'.jpg';
-        if (File::isFile($tmpFile)) {
-            return true;
-        }
-
-        return false;
+        return $this->exportDirectory . '/' . $fileName . '.tar.gz';
     }
 
     /**
@@ -296,10 +206,11 @@ class ZooniverseBase
      *
      * @param string $filePath
      */
-    protected function deleteFile(string $filePath)
+    public function deleteFile(string $filePath)
     {
         if (\File::exists($filePath)) {
             \File::delete($filePath);
         }
     }
+
 }

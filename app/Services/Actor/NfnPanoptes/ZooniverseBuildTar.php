@@ -17,9 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor;
+namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Actor;
+use App\Services\Actor\ActorInterface;
 
 /**
  * Class ZooniverseBuildTar
@@ -28,22 +29,6 @@ use App\Models\Actor;
  */
 class ZooniverseBuildTar extends ZooniverseBase implements ActorInterface
 {
-    /**
-     * @var \App\Services\Actor\ZooniverseDbService
-     */
-    private $dbService;
-
-    /**
-     * ZooniverseBuildTar constructor.
-     *
-     * @param \App\Services\Actor\ZooniverseDbService $dbService
-     */
-    public function __construct(
-        ZooniverseDbService $dbService
-    ) {
-
-        $this->dbService = $dbService;
-    }
 
     /**
      * Process the actor.
@@ -56,42 +41,42 @@ class ZooniverseBuildTar extends ZooniverseBase implements ActorInterface
     {
         $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
         $queue->processed = 0;
-        $queue->stage = 4;
+        $queue->stage = 3;
         $queue->save();
 
         \Artisan::call('export:poll');
 
-        $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
-        $this->setDirectories();
+        $this->actorDirectory->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
+        $this->actorDirectory->setDirectories();
 
         try {
-            $this->deleteFile($this->archiveTarPath);
-            $this->deleteFile($this->archiveTarGzPath);
+            $this->actorDirectory->deleteFile($this->actorDirectory->archiveTarPath);
+            $this->actorDirectory->deleteFile($this->actorDirectory->archiveTarGzPath);
 
-            $archive = new \PharData($this->archiveTarPath);
-            $archive->buildFromIterator(new \DirectoryIterator($this->tmpDirectory), $this->tmpDirectory);
+            $archive = new \PharData($this->actorDirectory->archiveTarPath);
+            $archive->buildFromIterator(new \DirectoryIterator($this->actorDirectory->tmpDirectory), $this->actorDirectory->tmpDirectory);
             $archive->compress(\Phar::GZ);
 
-            $this->deleteFile($this->archiveTarPath);
+            $this->actorDirectory->deleteFile($this->actorDirectory->archiveTarPath);
 
             $values = [
                 'expedition_id' => $queue->expedition->id,
                 'actor_id'      => $actor->id,
-                'file'          => $this->archiveTarGz,
+                'file'          => $this->actorDirectory->archiveTarGz,
                 'type'          => 'export',
             ];
             $attributes = [
                 'expedition_id' => $queue->expedition->id,
                 'actor_id'      => $actor->id,
-                'file'          => $this->archiveTarGz,
+                'file'          => $this->actorDirectory->archiveTarGz,
                 'type'          => 'export',
             ];
 
             $this->dbService->downloadRepo->updateOrCreate($attributes, $values);
 
         } catch (\Exception $exception) {
-            $this->deleteFile($this->archiveTarPath);
-            $this->deleteFile($this->archiveTarGzPath);
+            $this->actorDirectory->deleteFile($this->actorDirectory->archiveTarPath);
+            $this->actorDirectory->deleteFile($this->actorDirectory->archiveTarGzPath);
 
             $queue->error = 1;
             $queue->queued = 0;

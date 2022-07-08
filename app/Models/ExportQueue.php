@@ -48,7 +48,7 @@ class ExportQueue extends BaseEloquentModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function expedition()
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class);
     }
@@ -56,7 +56,7 @@ class ExportQueue extends BaseEloquentModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function actor()
+    public function actor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Actor::class);
     }
@@ -66,7 +66,7 @@ class ExportQueue extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function files()
+    public function files(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ExportQueueFile::class);
     }
@@ -87,7 +87,7 @@ class ExportQueue extends BaseEloquentModel
      * @param $value
      * @return mixed
      */
-    public function getMissingAttribute($value)
+    public function getMissingAttribute($value): mixed
     {
         return empty($value) ? [] : unserialize($value);
     }

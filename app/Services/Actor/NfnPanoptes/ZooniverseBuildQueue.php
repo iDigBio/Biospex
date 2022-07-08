@@ -17,34 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor;
+namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Actor;
 use App\Models\ExportQueue;
+use App\Services\Actor\ActorInterface;
+use function t;
 
 /**
  * Class ZooniverseBuildQueue
  *
  * @package App\Services\Actor
  */
-class ZooniverseBuildQueue implements ActorInterface
+class ZooniverseBuildQueue extends ZooniverseBase implements ActorInterface
 {
-    /**
-     * @var \App\Services\Actor\ZooniverseDbService
-     */
-    private $dbService;
-
-    /**
-     * ZooniverseBuildQueue constructor.
-     *
-     * @param \App\Services\Actor\ZooniverseDbService $dbService
-     */
-    public function __construct(
-        ZooniverseDbService $dbService
-    ) {
-        $this->dbService = $dbService;
-    }
-
     /**
      * Process actor.
      *

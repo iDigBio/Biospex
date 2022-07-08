@@ -58,7 +58,7 @@ class ZooniverseProcessCsvJob implements ShouldQueue
         $result = $service->checkCsvRequest($this->expeditionId);
         if ($result['media'][0]['metadata']['state'] === 'creating') {
             if ($this->attempts() > 3) {
-                throw new \Exception(t('Zooniverse csv creation for Expedition Id %s exceeded number of tries.', $this->expeditionId));
+                throw new \Exception(t('NfnPanoptes csv creation for Expedition Id %s exceeded number of tries.', $this->expeditionId));
             }
 
             $this->release(1800);
@@ -66,7 +66,7 @@ class ZooniverseProcessCsvJob implements ShouldQueue
 
         $uri = $result['media'][0]['src'] ?? null;
         if ($uri === null) {
-            throw new \Exception(t('Zooniverse csv uri for Expedition Id %s is missing', $this->expeditionId));
+            throw new \Exception(t('NfnPanoptes csv uri for Expedition Id %s is missing', $this->expeditionId));
         }
 
         ZooniverseCsvDownloadJob::withChain([

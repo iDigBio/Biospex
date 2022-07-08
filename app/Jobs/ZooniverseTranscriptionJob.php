@@ -94,7 +94,7 @@ class ZooniverseTranscriptionJob implements ShouldQueue
             $user = User::find(1);
             $messages = [
                 t('Expedition Id: %s', $this->expeditionId),
-                t('Error: ', 'Zooniverse Transcription'),
+                t('Error: ', 'NfnPanoptes Transcription'),
                 t('File: %s', __FILE__),
                 t('Line: %s', 89),
             ];

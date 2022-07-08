@@ -520,16 +520,16 @@
         },
         {
             "name": "czim/file-handling",
-            "version": "2.1.2",
+            "version": "2.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/czim/file-handling.git",
-                "reference": "df00cf8f21d926f4dd9667dc76512581bc67b22a"
+                "reference": "4f30d25bc832e907d36127772a8d8a250659611f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/czim/file-handling/zipball/df00cf8f21d926f4dd9667dc76512581bc67b22a",
-                "reference": "df00cf8f21d926f4dd9667dc76512581bc67b22a",
+                "url": "https://api.github.com/repos/czim/file-handling/zipball/4f30d25bc832e907d36127772a8d8a250659611f",
+                "reference": "4f30d25bc832e907d36127772a8d8a250659611f",
                 "shasum": ""
             },
             "require": {
@@ -543,10 +543,10 @@
             "require-dev": {
                 "illuminate/contracts": "*",
                 "mikey179/vfsstream": "^1.6",
-                "mockery/mockery": "0.9.*",
+                "mockery/mockery": "0.9.*|^1.0",
                 "php-coveralls/php-coveralls": "^2.1",
                 "php-ffmpeg/php-ffmpeg": "^0.9.5|^1.0.0",
-                "phpunit/phpunit": "^7.0|^8.0"
+                "phpunit/phpunit": "^7.0|^8.0|^9.0"
             },
             "suggest": {
                 "league/flysystem-aws-s3-v3": "Required for AWS S3 file storage",
@@ -570,9 +570,9 @@
             ],
             "support": {
                 "issues": "https://github.com/czim/file-handling/issues",
-                "source": "https://github.com/czim/file-handling/tree/2.1.2"
+                "source": "https://github.com/czim/file-handling/tree/2.1.3"
             },
-            "time": "2022-06-15T07:09:32+00:00"
+            "time": "2022-07-08T15:35:44+00:00"
         },
         {
             "name": "czim/laravel-paperclip",
@@ -2224,16 +2224,16 @@
         },
         {
             "name": "jenssegers/mongodb",
-            "version": "v3.9.0",
+            "version": "v3.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jenssegers/laravel-mongodb.git",
-                "reference": "1e49c5ec01764327d6e95963ecf5ed90a6a817a2"
+                "reference": "ad4422a98da47c1dad1fc7464e3370269be7a51d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jenssegers/laravel-mongodb/zipball/1e49c5ec01764327d6e95963ecf5ed90a6a817a2",
-                "reference": "1e49c5ec01764327d6e95963ecf5ed90a6a817a2",
+                "url": "https://api.github.com/repos/jenssegers/laravel-mongodb/zipball/ad4422a98da47c1dad1fc7464e3370269be7a51d",
+                "reference": "ad4422a98da47c1dad1fc7464e3370269be7a51d",
                 "shasum": ""
             },
             "require": {
@@ -2290,7 +2290,7 @@
             ],
             "support": {
                 "issues": "https://github.com/jenssegers/laravel-mongodb/issues",
-                "source": "https://github.com/jenssegers/laravel-mongodb/tree/v3.9.0"
+                "source": "https://github.com/jenssegers/laravel-mongodb/tree/v3.9.1"
             },
             "funding": [
                 {
@@ -2302,7 +2302,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-02-17T10:00:31+00:00"
+            "time": "2022-06-29T19:04:13+00:00"
         },
         {
             "name": "laracasts/utilities",
@@ -3729,16 +3729,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.59.0",
+            "version": "2.59.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "9cea2f72585a46d0651ee6d4c8c8f752e78c16c6"
+                "reference": "a9000603ea337c8df16cc41f8b6be95a65f4d0f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/9cea2f72585a46d0651ee6d4c8c8f752e78c16c6",
-                "reference": "9cea2f72585a46d0651ee6d4c8c8f752e78c16c6",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/a9000603ea337c8df16cc41f8b6be95a65f4d0f5",
+                "reference": "a9000603ea337c8df16cc41f8b6be95a65f4d0f5",
                 "shasum": ""
             },
             "require": {
@@ -3827,7 +3827,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-26T20:26:59+00:00"
+            "time": "2022-06-29T21:43:55+00:00"
         },
         {
             "name": "nette/schema",
@@ -4709,16 +4709,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.11.5",
+            "version": "v0.11.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "c23686f9c48ca202710dbb967df8385a952a2daf"
+                "reference": "77fc7270031fbc28f9a7bea31385da5c4855cb7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/c23686f9c48ca202710dbb967df8385a952a2daf",
-                "reference": "c23686f9c48ca202710dbb967df8385a952a2daf",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/77fc7270031fbc28f9a7bea31385da5c4855cb7a",
+                "reference": "77fc7270031fbc28f9a7bea31385da5c4855cb7a",
                 "shasum": ""
             },
             "require": {
@@ -4779,9 +4779,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.11.5"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.11.7"
             },
-            "time": "2022-05-27T18:03:49+00:00"
+            "time": "2022-07-07T13:49:11+00:00"
         },
         {
             "name": "pusher/pusher-php-server",
@@ -7997,16 +7997,16 @@
     "packages-dev": [
         {
             "name": "barryvdh/laravel-debugbar",
-            "version": "v3.6.7",
+            "version": "v3.6.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barryvdh/laravel-debugbar.git",
-                "reference": "b96f9820aaf1ff9afe945207883149e1c7afb298"
+                "reference": "814b36a08a60f4159cdcbb1c466a6a0027440b6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/laravel-debugbar/zipball/b96f9820aaf1ff9afe945207883149e1c7afb298",
-                "reference": "b96f9820aaf1ff9afe945207883149e1c7afb298",
+                "url": "https://api.github.com/repos/barryvdh/laravel-debugbar/zipball/814b36a08a60f4159cdcbb1c466a6a0027440b6c",
+                "reference": "814b36a08a60f4159cdcbb1c466a6a0027440b6c",
                 "shasum": ""
             },
             "require": {
@@ -8066,7 +8066,7 @@
             ],
             "support": {
                 "issues": "https://github.com/barryvdh/laravel-debugbar/issues",
-                "source": "https://github.com/barryvdh/laravel-debugbar/tree/v3.6.7"
+                "source": "https://github.com/barryvdh/laravel-debugbar/tree/v3.6.8"
             },
             "funding": [
                 {
@@ -8078,7 +8078,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-02-09T07:52:32+00:00"
+            "time": "2022-06-08T15:03:05+00:00"
         },
         {
             "name": "barryvdh/laravel-ide-helper",

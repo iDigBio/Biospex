@@ -17,12 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor;
+namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Actor;
 use App\Models\ExportQueue;
 use App\Notifications\NfnExportComplete;
-use App\Services\Csv\Csv;
+use App\Services\Actor\ActorInterface;
 use Notification;
 
 /**
@@ -32,31 +32,6 @@ use Notification;
  */
 class ZooniverseExportReport extends ZooniverseBase implements ActorInterface
 {
-    /**
-     * @var \App\Services\Actor\ZooniverseDbService
-     */
-    private $dbService;
-
-    /**
-     * @var \App\Services\Csv\Csv
-     */
-    private $csv;
-
-    /**
-     * ZooniverseExportReport constructor.
-     *
-     * @param \App\Services\Actor\ZooniverseDbService $dbService
-     * @param \App\Services\Csv\Csv $csv
-     */
-    public function __construct(
-        ZooniverseDbService $dbService,
-        Csv $csv
-    )
-    {
-        $this->dbService = $dbService;
-        $this->csv = $csv;
-    }
-
     /**
      * Process actor.
      *
@@ -68,7 +43,7 @@ class ZooniverseExportReport extends ZooniverseBase implements ActorInterface
     {
         $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
         $queue->processed = 0;
-        $queue->stage = 5;
+        $queue->stage = 4;
         $queue->save();
 
         \Artisan::call('export:poll');

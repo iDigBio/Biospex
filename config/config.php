@@ -49,6 +49,8 @@ return [
     'missing_avatar_small'    => env('APP_URL').'/images/avatars/small/missing.png',
     'missing_avatar_medium'   => env('APP_URL').'/images/avatars/medium/missing.png',
 
+    'image_process_file' => base_path(env('IMAGE_PROCESS_FILE')),
+
     'python_path'    => env('RECONCILIATIONS_PATH').'/venv/bin/python',
     'reconcile_path' => env('RECONCILIATIONS_PATH').'/reconcile.py',
 
@@ -70,12 +72,11 @@ return [
 
     'export_stages'       => [
         'Build Queue', // 0
-        'Retrieve Images', // 1
-        'Convert Images', // 2
-        'Build CSV', // 3
-        'Compress Export File', // 4
-        'Send Report', // 5
-        'Delete Working Files', // 6
+        'Process Images', // 1
+        'Build CSV', // 2
+        'Compress Export File', //3
+        'Send Report', // 4
+        'Delete Working Files', // 5
     ],
 
     /**
@@ -149,13 +150,15 @@ return [
     'working_tube'          => env('QUEUE_WORKING_TUBE'),
 
     /* Images */
-    /* Min and max logo and banner sizes used in Project model for Codesleve Stapler */
-    'thumbDefaultImg'       => 'thumbs/default_thumb.png',
-    'thumbOutputDir'        => 'thumbs',
-    'thumbWidth'            => 300,
-    'thumbHeight'           => 300,
+    /* Min and max logo and banner sizes used in Project model. Max Zoonviverse image. Thumb sizes. */
+    'thumb_default_img'       => 'thumbs/default_thumb.png',
+    'thumb_output_dir'        => 'thumbs',
+    'thumb_width'            => 300,
+    'thumb_height'           => 300,
     'logo'                  => '300x200',
     'banner'                => '1200x250',
+    'nfn_image_width'         => 1500,
+    'nfn_image_height'        => 1500,
 
     /**
      * Columns used in select statement for grid.
