@@ -19,8 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Expedition;
-use App\Services\Actor\NfnPanoptes\ZooniverseExportProcessImage;
 use Illuminate\Console\Command;
 
 /**

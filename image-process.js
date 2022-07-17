@@ -23,7 +23,9 @@ axios.get(url, {responseType: 'arraybuffer'})
 
         sharp(buffer)
             .resize(width, height, {fit: 'inside'}) // max 600k
-            .toFormat('jpg')
+            .jpeg({
+                quality:92
+            }).sharpen()
             .toFile(`${directory}/${filename}`)
             .then(() => {
                 console.log(true)
