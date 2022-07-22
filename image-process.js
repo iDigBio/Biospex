@@ -6,8 +6,8 @@ const extensions = ["jpg", "jpeg", "png", "tif"];
 const filename = process.argv[2]
 const url = process.argv[3];
 const directory = process.argv[4];
-const width = Number(process.argv[5]);
-const height = Number(process.argv[6])
+const w = Number(process.argv[5]);
+const h = Number(process.argv[6])
 
 axios.get(url, {responseType: 'arraybuffer'})
     .then((response) => {
@@ -22,10 +22,15 @@ axios.get(url, {responseType: 'arraybuffer'})
         }
 
         sharp(buffer)
-            .resize(width, height, {fit: 'inside'}) // max 600k
+            .resize({
+                width: w,
+                height: h,
+                fit: 'inside'
+            }) // max 1000k
             .jpeg({
-                quality:92
-            }).sharpen()
+                quality:93,
+                mozjpeg: true
+            })
             .toFile(`${directory}/${filename}`)
             .then(() => {
                 console.log(true)
@@ -35,23 +40,3 @@ axios.get(url, {responseType: 'arraybuffer'})
         console.log(false);
         console.log(`Couldn't process image: ${err}`);
     })
-
-/*
-4:30
-async function constraintImage(buffer, quality = 82, drop = 2) {
-
-    const done = await sharp(buffer).resize({
-        width: 1000,
-        height: 1000,
-        fit: sharp.fit.inside
-    }).jpeg({
-        quality
-    }).toBuffer();
-
-    if (done.byteLength > 2000000) {
-        return constraintImage(buffer, quality - drop);
-    }
-
-    return done;
-}
- */
