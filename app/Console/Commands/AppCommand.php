@@ -19,6 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Expedition;
+use App\Services\Actor\NfnPanoptes\ZooniverseExportProcessImage;
 use Illuminate\Console\Command;
 
 /**
@@ -50,6 +52,20 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $basePath = base_path('imgProcess.js');
+        $folder = \Storage::path('tmp');
 
+        $url = "http://cdn.flmnh.ufl.edu/Herbarium/jpg/116/116667s1.jpg";
+        $fileOne = "116667s1.jpg";
+        $command = "node $basePath $fileOne $url $folder 1500 1500";
+
+        /*
+        $url = "http://cdn.flmnh.ufl.edu/Herbarium/jpg/074/74718s1.jpg";
+        $fileTwo = "74718s1.jpg";
+        $command = "node $basePath $fileTwo $url $folder 1800 1800";
+        */
+
+        exec($command, $output);
+        dd($output);
     }
 }
