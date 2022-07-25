@@ -12,6 +12,7 @@
     "ext-json": "*",
     "ext-mongodb": "*",
     "anhskohbo/no-captcha": "^3.0",
+    "aws/aws-sdk-php": "~3.0",
     "cloudstudio/resource-generator": "^1.5",
     "cviebrock/eloquent-sluggable": "^9.0",
     "czim/laravel-paperclip": "^4.0",
