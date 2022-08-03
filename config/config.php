@@ -23,6 +23,11 @@ return [
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
 
+    'aws_access_key'            => env('AWS_ACCESS_KEY'),
+    'aws_secret_key'            => env('AWS_SECRET_ACCESS_KEY'),
+    'aws_default_region'        => env('AWS_DEFAULT_REGION'),
+    'aws_lambda_export_img_url' => env('AWS_LAMBDA_EXPORT_IMG_URL'),
+
     'charts_dir'                   => 'public/charts',
     'scratch_dir'                  => 'scratch',
     'export_dir'                   => 'exports',
@@ -148,17 +153,18 @@ return [
     'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
     'pusher_process_tube'   => env('QUEUE_PUSHER_PROCESS_TUBE'),
     'working_tube'          => env('QUEUE_WORKING_TUBE'),
+    'lambda_tube'           => env('QUEUE_LAMBDA_TUBE'),
 
     /* Images */
     /* Min and max logo and banner sizes used in Project model. Max Zoonviverse image. Thumb sizes. */
-    'thumb_default_img'       => 'thumbs/default_thumb.png',
-    'thumb_output_dir'        => 'thumbs',
-    'thumb_width'            => 300,
-    'thumb_height'           => 300,
+    'thumb_default_img'     => 'thumbs/default_thumb.png',
+    'thumb_output_dir'      => 'thumbs',
+    'thumb_width'           => 300,
+    'thumb_height'          => 300,
     'logo'                  => '300x200',
     'banner'                => '1200x250',
-    'nfn_image_width'         => 1500,
-    'nfn_image_height'        => 1500,
+    'nfn_image_width'       => 1500,
+    'nfn_image_height'      => 1500,
 
     /**
      * Columns used in select statement for grid.

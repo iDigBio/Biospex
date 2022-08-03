@@ -46,6 +46,7 @@ class ZooniverseCsvJob implements ShouldQueue
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
+     * @throws \Exception
      */
     public function handle(ZooniverseCsvService $service)
     {
@@ -67,7 +68,7 @@ class ZooniverseCsvJob implements ShouldQueue
      *
      * @return \Illuminate\Queue\Middleware\WithoutOverlapping[]
      */
-    public function middleware()
+    public function middleware(): array
     {
         return [new WithoutOverlapping($this->expeditionId)];
     }

@@ -37,7 +37,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('report:failed')->timezone('America/New_York')->dailyAt('05:30');
 
         // Clean imports directory
-        $schedule->command('download:clean')->timezone('America/New_York')->dailyAt('06:00');
+        //$schedule->command('download:clean')->timezone('America/New_York')->dailyAt('06:00');
 
         // Clean bingo maps
         $schedule->command('bingo:clean')->timezone('America/New_York')->dailyAt('06:05');

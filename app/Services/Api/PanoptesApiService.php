@@ -23,7 +23,9 @@ use App\Facades\CountHelper;
 use App\Services\Requests\HttpRequest;
 use Cache;
 use GuzzleHttp\Exception\GuzzleException;
+use JetBrains\PhpStorm\ArrayShape;
 use League\OAuth2\Client\Provider\GenericProvider;
+use Psr\Http\Message\RequestInterface;
 use Storage;
 
 /**
@@ -33,40 +35,43 @@ use Storage;
  */
 class PanoptesApiService extends HttpRequest
 {
-    /**
-     * @var
-     */
-    public $provider;
+    const CONFIG_SHAPE = [
+        'clientId'       => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
+        'clientSecret'   => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
+        'redirectUri'    => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
+        'urlAccessToken' => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
+        'scope'          => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
+    ];
 
     /**
      * @var \Illuminate\Config\Repository
      */
-    private $apiUri;
+    private mixed $apiUri;
 
     /**
      * @var int
      */
-    private $subject_count;
+    private int $subject_count;
 
     /**
      * @var int
      */
-    private $transcriptions_completed;
+    private int $transcriptions_completed;
 
     /**
      * @var int
      */
-    private $transcriptions_goal;
+    private int $transcriptions_goal;
 
     /**
      * @var int
      */
-    private $local_transcriptions_completed;
+    private int $local_transcriptions_completed;
 
     /**
      * @var float
      */
-    private $percent_completed;
+    private float $percent_completed;
 
     /**
      * PanoptesApiService constructor.
@@ -77,31 +82,20 @@ class PanoptesApiService extends HttpRequest
     }
 
     /**
-     * Set provider for NfnPanoptes
+     * Set config values.
      *
-     * @param bool $auth
+     * @return array
      */
-    public function setProvider($auth = true)
+    #[ArrayShape(self::CONFIG_SHAPE)]
+    public function getConfig(): array
     {
-        $config = ! $auth ? [] : [
+        return [
             'clientId'       => config('config.panoptes.clientId'),
             'clientSecret'   => config('config.panoptes.clientSecret'),
             'redirectUri'    => config('config.panoptes.redirectUri'),
             'urlAccessToken' => config('config.panoptes.tokenUri'),
             'scope'          => config('config.panoptes.scopes'),
         ];
-
-        $this->setHttpProvider($config);
-    }
-
-    /**
-     * Get generic provider
-     *
-     * @return GenericProvider
-     */
-    public function getProvider()
-    {
-        return $this->provider;
     }
 
     /**
@@ -112,7 +106,7 @@ class PanoptesApiService extends HttpRequest
      * @param array $extra
      * @return \Psr\Http\Message\RequestInterface
      */
-    public function buildAuthorizedRequest(string $method, string $uri, array $extra = [])
+    public function buildAuthorizedRequest(string $method, string $uri, array $extra = []): RequestInterface
     {
         $options = array_merge([
             'headers' => [
@@ -131,9 +125,9 @@ class PanoptesApiService extends HttpRequest
      * @return mixed
      * @throws GuzzleException
      */
-    public function sendAuthorizedRequest($request)
+    public function sendAuthorizedRequest($request): mixed
     {
-        $response = $this->provider->getHttpClient()->send($request);
+        $response = $this->getHttpClient()->send($request);
 
         return json_decode($response->getBody()->getContents(), true);
     }
@@ -146,11 +140,9 @@ class PanoptesApiService extends HttpRequest
      * @param bool $export
      * @return string
      */
-    public function getPanoptesResourceUri($resource, $id, $export = false)
+    public function getPanoptesResourceUri($resource, $id, bool $export = false): string
     {
-        return !$export ?
-            $this->apiUri . '/' . $resource . '/' . $id :
-            $this->apiUri . '/' . $resource . '/' . $id . '/classifications_export';
+        return ! $export ? $this->apiUri.'/'.$resource.'/'.$id : $this->apiUri.'/'.$resource.'/'.$id.'/classifications_export';
     }
 
     /**
@@ -159,10 +151,10 @@ class PanoptesApiService extends HttpRequest
      * @param $projectId
      * @return array
      */
-    public function getPanoptesProject($projectId)
+    public function getPanoptesProject($projectId): array
     {
         return Cache::remember(__METHOD__.$projectId, 120, function () use ($projectId) {
-            $this->setProvider();
+            $this->setHttpProvider($this->getConfig());
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('projects', $projectId);
             $request = $this->buildAuthorizedRequest('GET', $uri);
@@ -178,10 +170,10 @@ class PanoptesApiService extends HttpRequest
      * @param $workflowId
      * @return mixed
      */
-    public function getPanoptesWorkflow($workflowId)
+    public function getPanoptesWorkflow($workflowId): mixed
     {
         return Cache::remember(__METHOD__.$workflowId, 120, function () use ($workflowId) {
-            $this->setProvider();
+            $this->setHttpProvider($this->getConfig());
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('workflows', $workflowId);
             $request = $this->buildAuthorizedRequest('GET', $uri);
@@ -200,13 +192,13 @@ class PanoptesApiService extends HttpRequest
     public function getPanoptesSubject($subjectId)
     {
         return Cache::remember(__METHOD__.$subjectId, 120, function () use ($subjectId) {
-            $this->setProvider();
+            $this->setHttpProvider($this->getConfig());
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('subjects', $subjectId);
             $request = $this->buildAuthorizedRequest('GET', $uri);
             $results = $this->sendAuthorizedRequest($request);
 
-            return isset($results['subjects'][0]) ? $results['subjects'][0] : null;
+            return $results['subjects'][0] ?? null;
         });
     }
 
@@ -216,114 +208,17 @@ class PanoptesApiService extends HttpRequest
      * @param $userId
      * @return mixed
      */
-    public function getPanoptesUser($userId)
+    public function getPanoptesUser($userId): mixed
     {
         return Cache::remember(__METHOD__.$userId, 120, function () use ($userId) {
-            $this->setProvider();
+            $this->setHttpProvider($this->getConfig());
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('users', $userId);
             $request = $this->buildAuthorizedRequest('GET', $uri);
             $results = $this->sendAuthorizedRequest($request);
 
-            return isset($results['users'][0]) ? $results['users'][0] : null;
+            return $results['users'][0] ?? null;
         });
-    }
-
-    /**
-     * Send requests to build panoptes classifications download.
-     *
-     * @param $expeditions
-     * @return array
-     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
-     */
-    public function panoptesClassificationCreate($expeditions)
-    {
-        /**
-         * @param array $expeditions
-         * @return \Generator
-         */
-        $requests = function ($expeditions)
-        {
-            foreach ($expeditions as $expedition)
-            {
-                if ($this->checkForRequiredVariables($expedition))
-                {
-                    continue;
-                }
-
-                $uri = $this->getPanoptesResourceUri('workflows', $expedition->panoptesProject->panoptes_workflow_id, true);
-                $request = $this->buildAuthorizedRequest('POST', $uri, ['body' => '{"media":{"content_type":"text/csv"}}']);
-
-                yield $expedition->id => $request;
-            }
-        };
-
-        $this->setProvider();
-        $this->checkAccessToken('panoptes_token');
-
-        return $this->poolBatchRequest($requests($expeditions));
-    }
-
-    /**
-     * Download csv panoptes classifications.
-     *
-     * @param $index
-     * @param $source
-     * @return array
-     */
-    public function panoptesClassificationsDownload($index, $source)
-    {
-        $requests = function () use ($index, $source)
-        {
-            yield $index => function ($poolOpts) use ($index, $source)
-            {
-                $reqOpts = [
-                    'sink' => Storage::path(config('config.nfn_downloads_classification') . '/' . $index . '.csv')
-                ];
-
-                if (is_array($poolOpts) && count($poolOpts) > 0)
-                {
-                    $reqOpts = array_merge($poolOpts, $reqOpts); // req > pool
-                }
-
-                return $this->getHttpClient()->getAsync($source, $reqOpts);
-            };
-        };
-
-        $this->setProvider(false);
-
-        return $this->poolBatchRequest($requests());
-    }
-
-    /**
-     * Check panoptes classifications file to see if ready for download.
-     *
-     * @param $expeditions
-     * @return array
-     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
-     */
-    public function panoptesClassificationsFile($expeditions)
-    {
-        $requests = function ($expeditions)
-        {
-            foreach ($expeditions as $expedition)
-            {
-                if ($this->checkForRequiredVariables($expedition))
-                {
-                    continue;
-                }
-
-                $uri = $this->getPanoptesResourceUri('workflows', $expedition->panoptesProject->panoptes_workflow_id, true);
-                $request = $this->buildAuthorizedRequest('GET', $uri);
-
-                yield $expedition->id => $request;
-            }
-        };
-
-        $this->setProvider();
-        $this->checkAccessToken('panoptes_token');
-
-        return $this->poolBatchRequest($requests($expeditions));
     }
 
     /**
@@ -332,12 +227,9 @@ class PanoptesApiService extends HttpRequest
      * @param $expedition
      * @return bool
      */
-    public function checkForRequiredVariables($expedition)
+    public function checkForRequiredVariables($expedition): bool
     {
-        return null === $expedition ||
-            ! isset($expedition->panoptesProject) ||
-            null === $expedition->panoptesProject->panoptes_workflow_id ||
-            null === $expedition->panoptesProject->panoptes_project_id;
+        return null === $expedition || ! isset($expedition->panoptesProject) || null === $expedition->panoptesProject->panoptes_workflow_id || null === $expedition->panoptesProject->panoptes_project_id;
     }
 
     /**
@@ -360,10 +252,9 @@ class PanoptesApiService extends HttpRequest
      *
      * @return false|float|int
      */
-    private function percentCompleted()
+    private function percentCompleted(): float|bool|int
     {
-        $value = ($this->local_transcriptions_completed === 0) ? 0 :
-            ($this->local_transcriptions_completed / $this->transcriptions_goal) * 100;
+        $value = ($this->local_transcriptions_completed === 0) ? 0 : ($this->local_transcriptions_completed / $this->transcriptions_goal) * 100;
 
         return ($value > 100) ? 100 : round($value, 2);
     }
@@ -373,7 +264,7 @@ class PanoptesApiService extends HttpRequest
      *
      * @return int
      */
-    public function getSubjectCount()
+    public function getSubjectCount(): int
     {
         return $this->subject_count;
     }
@@ -383,7 +274,7 @@ class PanoptesApiService extends HttpRequest
      *
      * @return int
      */
-    public function getTranscriptionsCompleted()
+    public function getTranscriptionsCompleted(): int
     {
         return $this->transcriptions_completed;
     }
@@ -393,7 +284,7 @@ class PanoptesApiService extends HttpRequest
      *
      * @return int
      */
-    public function getTranscriptionsGoal()
+    public function getTranscriptionsGoal(): int
     {
         return $this->transcriptions_goal;
     }
@@ -403,7 +294,7 @@ class PanoptesApiService extends HttpRequest
      *
      * @return int
      */
-    public function getLocalTranscriptionsCompleted()
+    public function getLocalTranscriptionsCompleted(): int
     {
         return $this->local_transcriptions_completed;
     }
@@ -413,7 +304,7 @@ class PanoptesApiService extends HttpRequest
      *
      * @return float
      */
-    public function getPercentCompleted()
+    public function getPercentCompleted(): float
     {
         return $this->percent_completed;
     }
@@ -424,7 +315,7 @@ class PanoptesApiService extends HttpRequest
      * @param $subjectId
      * @return mixed|null
      */
-    public function getSubjectImageLocation($subjectId)
+    public function getSubjectImageLocation($subjectId): mixed
     {
         $subject = $this->getPanoptesSubject($subjectId);
         $locations = collect($subject['locations'])->filter(function ($location) {

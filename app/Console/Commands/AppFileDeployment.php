@@ -171,7 +171,8 @@ class AppFileDeployment extends Command
             'QUEUE_OCR_TUBE',
             'QUEUE_PUSHER_TUBE',
             'QUEUE_PUSHER_PROCESS_TUBE',
-            'QUEUE_WORKING_TUBE'
+            'QUEUE_WORKING_TUBE',
+            'QUEUE_LAMBDA_TUBE'
         ]);
     }
 }
