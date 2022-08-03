@@ -211,7 +211,7 @@ class DownloadController extends Controller
             $this->downloadType->resetExpeditionData($expedition);
 
             Flash::success(t('Export generation has started. You will be notified when completed.'));
-        } catch (Exception $e) {
+        } catch (Exception $e) {;
             Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
         }
 

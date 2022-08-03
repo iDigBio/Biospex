@@ -17,14 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor;
+namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Download;
 use App\Notifications\NfnBatchExportComplete;
-use App\Repositories\DownloadRepository;
-use App\Services\Csv\Csv;
 use Exception;
 use File;
+use function route;
+use function t;
 
 /**
  * Class ZooniverseExportBatch
@@ -35,34 +35,9 @@ class ZooniverseExportBatch extends ZooniverseBase
 {
 
     /**
-     * @var \App\Services\Csv\Csv
-     */
-    private $csv;
-
-    /**
      * @var array
      */
     private $fileNames = [];
-
-    /**
-     * @var \App\Repositories\DownloadRepository
-     */
-    private DownloadRepository $downloadRepo;
-
-    /**
-     * DownloadBatchService constructor.
-     *
-     * @param \App\Repositories\DownloadRepository $downloadRepo
-     * @param \App\Services\Csv\Csv $csv
-     */
-    public function __construct(
-        DownloadRepository $downloadRepo,
-        Csv $csv
-    )
-    {
-        $this->downloadRepo = $downloadRepo;
-        $this->csv = $csv;
-    }
 
     /**
      * Get Download.
@@ -72,7 +47,7 @@ class ZooniverseExportBatch extends ZooniverseBase
      */
     public function getDownload(string $downloadId): Download
     {
-        return $this->downloadRepo->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
+        return $this->dbService->downloadRepo->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
     }
 
     /**
@@ -106,8 +81,8 @@ class ZooniverseExportBatch extends ZooniverseBase
         $this->setExpedition($download->expedition);
         $this->setActor($download->actor);
         $this->setOwner($download->expedition->project->group->owner);
-        $this->setBatchFolder($download->file);
-        $this->setDirectories(true);
+        $this->actorDirectory->setBatchFolder($download->file);
+        $this->actorDirectory->setDirectories(true, true);
     }
 
     /**
@@ -202,7 +177,7 @@ class ZooniverseExportBatch extends ZooniverseBase
      */
     private function tarGzFile(string $fileName)
     {
-        $tarFilePath = $this->setBatchArchiveTarGz($fileName);
+        $tarFilePath = $this->actorDirectory->setBatchArchiveTarGz($fileName);
 
         exec("cd {$this->tmpDirectory} && find . \( -name '*.jpg' -o -name '*.csv' \) -print >../export.manifest");
         exec("cd {$this->tmpDirectory} && tar -czf $tarFilePath --files-from ../export.manifest", $out, $ok);

@@ -289,7 +289,7 @@ class DarwinCoreCsvImport
      * @return mixed
      * @throws \Exception
      */
-    public function createShortNameForHeader($row, $key, $qualified, $header)
+    public function createShortNameForHeader($row, $key, $qualified, $header): mixed
     {
         if (! isset($row[$key])) {
             throw new Exception(t('Undefined index for :key => :qualified when building header for csv import.', [':key' => $key, ':qualified' => $qualified]));
@@ -308,15 +308,15 @@ class DarwinCoreCsvImport
      * @param $ns_short
      * @return string
      */
-    public function checkProperty($qualified, $ns_short)
+    public function checkProperty($qualified, $ns_short): string
     {
         if ($qualified === 'id' || $qualified === 'coreid') {
             return $qualified;
         }
 
-        [$namespace, $short] = $this->splitNameSpaceShort($ns_short);
+        $short = $this->splitNameSpaceShort($ns_short);
 
-        $short = $this->setShortNameForQualifiedName($qualified, $short, $namespace);
+        $this->setShortName($short);
 
         return $short;
     }
@@ -324,45 +324,28 @@ class DarwinCoreCsvImport
     /**
      * Splits given namespace into namespace and short name
      *
-     * @param $ns_short
-     * @return array
+     * @param string $ns_short
+     * @return string
      */
-    protected function splitNameSpaceShort($ns_short)
+    protected function splitNameSpaceShort(string $ns_short): string
     {
-        [$namespace, $short] = preg_match('/:/', $ns_short) ? explode(':', $ns_short) : ['', $ns_short];
+        [$namespace, $short] = str_contains($ns_short, ':') ? explode(':', $ns_short) : ['', $ns_short];
 
-        return [$namespace, $short];
+        return $short;
     }
 
     /**
-     * Sets the short name value for qualified names for easier use in headers. Also prevents duplicate short names
-     * with difference qualified names.
+     * Save short name property to database.
      *
-     * If $checkQualified, then short name exists and used.
-     * If $checkQualified is null and $checkShort exists, then create new short combined with random string.
-     * If neither exist, create new qualified and short name.
-     *
-     * @param $qualified
-     * @param $short
-     * @param $namespace
-     * @return string
+     * @param string $short
+     * @return void
      */
-    protected function setShortNameForQualifiedName($qualified, $short, $namespace)
+    protected function setShortName(string $short)
     {
-        $checkQualified = $this->propertyRepo->findBy('qualified', $qualified);
-
         $checkShort = $this->propertyRepo->findBy('short', $short);
-
-        if ($checkQualified !== null) {
-            $short = $checkQualified->short;
-        } elseif ($checkQualified === null && $checkShort !== null) {
-            $short .= md5(Str::random(4));
-            $this->saveProperty($qualified, $short, $namespace);
-        } elseif ($checkQualified === null && $checkShort === null) {
-            $this->saveProperty($qualified, $short, $namespace);
+        if ($checkShort === null) {
+            $this->propertyRepo->create(['short', $short]);
         }
-
-        return $short;
     }
 
     /**
@@ -431,7 +414,7 @@ class DarwinCoreCsvImport
             ->filter(function ($identifier, $key) use ($row) {
                 if (isset($row[$this->header[$key]])
                     && ! empty($row[$this->header[$key]])
-                    && (strpos($row[$this->header[$key]], 'http') === false)) {
+                    && (! str_contains($row[$this->header[$key]], 'http'))) {
                     return true;
                 }
 

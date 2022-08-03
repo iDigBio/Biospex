@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor;
+namespace App\Services\Actor\NfnPanoptes;
 
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
@@ -30,27 +30,27 @@ class ZooniverseDbService
     /**
      * @var \App\Repositories\ExportQueueRepository
      */
-    public $exportQueueRepo;
+    public ExportQueueRepository $exportQueueRepo;
 
     /**
      * @var \App\Repositories\ExportQueueFileRepository
      */
-    public $exportQueueFileRepo;
+    public ExportQueueFileRepository $exportQueueFileRepo;
 
     /**
      * @var \App\Repositories\SubjectRepository
      */
-    public $subjectRepo;
+    public SubjectRepository $subjectRepo;
 
     /**
      * @var \App\Repositories\DownloadRepository
      */
-    public $downloadRepo;
+    public DownloadRepository $downloadRepo;
 
     /**
      * @var \App\Repositories\ExpeditionRepository
      */
-    public $expeditionRepo;
+    public ExpeditionRepository $expeditionRepo;
 
     /**
      * ZooniverseDbService constructor.

@@ -17,16 +17,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor;
+namespace App\Services\Actor\NfnPanoptes;
 
 use App\Jobs\ZooniverseCsvJob;
 use App\Jobs\ZooniverseExportBuildCsvJob;
 use App\Jobs\ZooniverseExportBuildQueueJob;
 use App\Jobs\ZooniverseExportBuildTarJob;
-use App\Jobs\ZooniverseExportConvertImageJob;
 use App\Jobs\ZooniverseExportDeleteFilesJob;
 use App\Jobs\ZooniverseExportReportJob;
-use App\Jobs\ZooniverseExportRetrieveImageJob;
+use App\Jobs\ZooniverseExportProcessImageJob;
 use App\Models\Actor;
 use App\Notifications\NfnExportError;
 use App\Repositories\ExpeditionRepository;
@@ -43,12 +42,12 @@ class NfnPanoptes
     /**
      * @var \App\Repositories\ExpeditionRepository
      */
-    private $expeditionRepo;
+    private ExpeditionRepository $expeditionRepo;
 
     /**
      * @var \App\Models\Actor
      */
-    private $actor;
+    private Actor $actor;
 
     /**
      * NfnPanoptes constructor.
@@ -74,15 +73,14 @@ class NfnPanoptes
         if ($actor->pivot->state === 0) {
             \Bus::batch([
                 new ZooniverseExportBuildQueueJob($actor),
-                new ZooniverseExportRetrieveImageJob($actor),
-                new ZooniverseExportConvertImageJob($actor),
+                new ZooniverseExportProcessImageJob($actor),
                 new ZooniverseExportBuildCsvJob($actor),
                 new ZooniverseExportBuildTarJob($actor),
                 new ZooniverseExportReportJob($actor),
                 new ZooniverseExportDeleteFilesJob($actor)
             ])->catch(function (Batch $batch, \Exception $exception) {
                 $this->sendErrorNotification($exception);
-            })->name('Zooniverse Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
+            })->name('NfnPanoptes Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
         } elseif ($actor->pivot->state === 1) {
             ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);
         }

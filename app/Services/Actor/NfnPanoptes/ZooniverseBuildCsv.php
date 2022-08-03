@@ -17,14 +17,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor;
+namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Actor;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
-use App\Services\Csv\Csv;
-use Illuminate\Support\LazyCollection;
+use App\Models\Subject;
+use App\Services\Actor\ActorInterface;
 use Exception;
+use Illuminate\Support\LazyCollection;
 
 /**
  * Class ZooniverseBuildCsv
@@ -34,55 +35,17 @@ use Exception;
 class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
 {
     /**
-     * @var \App\Services\Actor\ZooniverseDbService
-     */
-    private $dbService;
-
-    /**
-     * @var \App\Services\Actor\ActorImageService
-     */
-    private $actorImageService;
-
-    /**
-     * @var \App\Services\Csv\Csv
-     */
-    private $csv;
-
-    /**
-     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
-     */
-    private $nfnCsvMap;
-
-    /**
-     * ZooniverseBuildCsv constructor.
-     *
-     * @param \App\Services\Actor\ZooniverseDbService $dbService
-     * @param \App\Services\Actor\ActorImageService $actorImageService
-     * @param \App\Services\Csv\Csv $csv
-     */
-    public function __construct(
-        ZooniverseDbService $dbService,
-        ActorImageService $actorImageService,
-        Csv $csv
-    ) {
-        $this->dbService = $dbService;
-        $this->actorImageService = $actorImageService;
-        $this->csv = $csv;
-        $this->nfnCsvMap = config('config.nfnCsvMap');
-    }
-
-    /**
      * Process actor.
      *
      * @param \App\Models\Actor $actor
-     * @return mixed|void
+     * @return void
      * @throws \Exception
      */
     public function process(Actor $actor)
     {
         $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
         $queue->processed = 0;
-        $queue->stage = 3;
+        $queue->stage = 2;
         $queue->save();
 
         \Artisan::call('export:poll');
@@ -90,8 +53,8 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
         $files = $this->dbService->exportQueueFileRepo->getFilesByQueueId($queue->id);
 
         try {
-            $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
-            $this->setDirectories();
+            $this->actorDirectory->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
+            $this->actorDirectory->setDirectories();
 
             $this->csv->writerCreateFromTempFileObj();
             $this->csv->writer->addFormatter($this->csv->setEncoding());
@@ -99,7 +62,7 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
             $first = true;
             $files->chunk(5)->each(function ($chunk) use (&$queue, &$first) {
                 $csvData = $chunk->filter(function ($file) {
-                    return $this->actorImageService->checkFile($this->tmpDirectory.'/'.$file->subject_id.'.jpg', $file->subject_id, true);
+                    return $this->checkFile($this->actorDirectory->tmpDirectory.'/'.$file->subject_id.'.jpg', $file->subject_id);
                 })->map(function ($file) use ($queue) {
                     return $this->mapNfnCsvColumns($file, $queue);
                 });
@@ -107,6 +70,7 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
                 if (empty($csvData)) {
                     throw new Exception(t('CSV data empty while creating file for Expedition ID: %s', $queue->expedition->id));
                 }
+
                 $this->buildCsv($csvData, $first);
                 $first = false;
 
@@ -115,10 +79,10 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
             });
 
             $csvFileName = $queue->expedition->uuid.'.csv';
-            $csvFilePath = $this->tmpDirectory.'/'.$csvFileName;
-            \File::put($csvFilePath, $this->csv->writer->getContent());
+            $csvFilePath = $this->actorDirectory->tmpDirectory.'/'.$csvFileName;
+            \File::put($csvFilePath, $this->csv->writer->toString());
 
-            $this->dbService->updateRejected($this->actorImageService->getRejected());
+            $this->dbService->updateRejected($this->rejected);
 
             if (!$this->checkCsvImageCount($queue)) {
                 throw new Exception(t('The row count in the csv export file does not match image count.'));
@@ -146,25 +110,22 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
         $subject = $this->dbService->subjectRepo->find($file->subject_id);
 
         $csvArray = [];
+        $presetValues = ['#expeditionId', '#expeditionTitle', 'imageName'];
+        $this->setNfnCsvMap();
+
         foreach ($this->nfnCsvMap as $key => $item) {
-            if ($key === '#expeditionId') {
-                $csvArray[$key] = $queue->expedition->id;
-                continue;
-            }
-            if ($key === '#expeditionTitle') {
-                $csvArray[$key] = $queue->expedition->title;
-                continue;
-            }
-            if ($key === 'imageName') {
-                $csvArray[$key] = $file->subject_id.'.jpg';
+            if (in_array($key, $presetValues)) {
+                $this->setPresetValues($csvArray, $key, $file, $queue);
                 continue;
             }
 
+            // If subject not found, add error column and message
             if ($subject === null) {
                 $csvArray['error'] = 'Could not retrieve subject '.$file->subject_id.' from database for export';
                 continue;
             }
 
+            // If item is not array, direct translation
             if (! is_array($item)) {
                 $csvArray[$key] = $item === '' ? '' : $subject->{$item};
                 continue;
@@ -172,15 +133,9 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
 
             $csvArray[$key] = '';
             foreach ($item as $doc => $value) {
-                if (isset($subject->{$doc}[$value])) {
-                    if ($key === 'eol' || $key === 'mol' || $key === 'idigbio') {
-                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}[$value]), config('config.nfnSearch.'.$key));
-                        break;
-                    }
-
-                    $csvArray[$key] = $subject->{$doc}[$value];
-                    break;
-                }
+                is_array($value) ?
+                    $this->setArrayValues($csvArray, $key, $doc, $value, $subject) :
+                    $this->setValues($csvArray, $key, $doc, $value, $subject);
             }
         }
 
@@ -188,6 +143,73 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
         $subject->save();
 
         return $csvArray;
+    }
+
+    /**
+     * Set preset values needing special attention.
+     *
+     * @param $csvArray
+     * @param $key
+     * @param \App\Models\ExportQueueFile $file
+     * @param \App\Models\ExportQueue $queue
+     * @return void
+     */
+    private function setPresetValues(&$csvArray, $key, ExportQueueFile $file, ExportQueue $queue)
+    {
+        if (strcasecmp($key, '#expeditionId') == 0) {
+            $csvArray[$key] = $queue->expedition->id;
+            return;
+        }
+
+        if (strcasecmp($key, '#expeditionTitle') == 0) {
+            $csvArray[$key] = $queue->expedition->title;
+            return;
+        }
+
+        if (strcasecmp($key, 'imageName') == 0) {
+            $csvArray[$key] = $file->subject_id.'.jpg';
+        }
+    }
+
+    /**
+     * Set values of document items if array.
+     *
+     * @param array $csvArray
+     * @param string $key
+     * @param string $doc
+     * @param array $array
+     * @param \App\Models\Subject $subject
+     * @return void
+     */
+    private function setArrayValues(array &$csvArray, string $key, string $doc, array $array, Subject $subject)
+    {
+        foreach ($array as $value) {
+            if (isset($subject->{$doc}[$value])) {
+                $csvArray[$key] = $subject->{$doc}[$value];
+            }
+        }
+    }
+
+    /**
+     * Set values of document if value exists. Set special links.
+     * @param array $csvArray
+     * @param string $key
+     * @param string $doc
+     * @param string $value
+     * @param \App\Models\Subject $subject
+     * @return void
+     */
+    private function setValues(array &$csvArray, string $key, string $doc, string $value, Subject $subject)
+    {
+        $links = ['eol', 'mol', 'idigbio'];
+        if (isset($subject->{$doc}[$value])) {
+            if (in_array($key, $links)) {
+                $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}[$value]), config('config.nfnSearch.'.$key));
+                return;
+            }
+
+            $csvArray[$key] = $subject->{$doc}[$value];
+        }
     }
 
     /**
@@ -215,10 +237,10 @@ class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
      */
     private function checkCsvImageCount(ExportQueue $queue): bool
     {
-        $this->csv->readerCreateFromPath($this->tmpDirectory . '/' . $queue->expedition->uuid . '.csv');
+        $this->csv->readerCreateFromPath($this->actorDirectory->tmpDirectory . '/' . $queue->expedition->uuid . '.csv');
         $csvCount = $this->csv->getReaderCount();
 
-        $fi = new \FilesystemIterator($this->tmpDirectory);
+        $fi = new \FilesystemIterator($this->actorDirectory->tmpDirectory);
         $dirFileCount = iterator_count($fi);
 
         return $csvCount === $dirFileCount;

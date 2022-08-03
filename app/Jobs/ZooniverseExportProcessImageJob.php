@@ -3,27 +3,24 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
-use App\Services\Actor\ZooniverseConvertImage;
+use App\Services\Actor\NfnPanoptes\ZooniverseExportProcessImage;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 
 /**
- * Class ZooniverseExportConvertImageJob
- *
- * @package App\Jobs
+ * Class ZooniverseExportProcessImageJob
  */
-class ZooniverseExportConvertImageJob implements ShouldQueue, ShouldBeUnique
+class ZooniverseExportProcessImageJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * @var \App\Models\Actor
      */
-    private $actor;
+    private Actor $actor;
 
     /**
      * @var int
@@ -37,21 +34,21 @@ class ZooniverseExportConvertImageJob implements ShouldQueue, ShouldBeUnique
      */
     public function __construct(Actor $actor)
     {
+        //
         $this->actor = $actor;
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\ZooniverseConvertImage $zooniverseConvertImage
-     * @throws \Exception
+     * @return void
      */
-    public function handle(ZooniverseConvertImage $zooniverseConvertImage)
+    public function handle(ZooniverseExportProcessImage $zooniverseProcessImage)
     {
         if ($this->batch()->cancelled()) {
             return;
         }
 
-        $zooniverseConvertImage->process($this->actor);
+        $zooniverseProcessImage->process($this->actor);
     }
 }

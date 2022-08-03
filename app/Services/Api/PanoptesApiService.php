@@ -77,7 +77,7 @@ class PanoptesApiService extends HttpRequest
     }
 
     /**
-     * Set provider for Zooniverse
+     * Set provider for NfnPanoptes
      *
      * @param bool $auth
      */

@@ -24,7 +24,6 @@ use App\Notifications\DarwinCoreImportError;
 use App\Notifications\ImportComplete;
 use App\Repositories\ProjectRepository;
 use App\Services\Csv\Csv;
-use App\Services\File\FileService;
 use App\Services\Process\DarwinCore;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -32,6 +31,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Notification;
 
@@ -70,13 +70,11 @@ class DwcFileImportJob implements ShouldQueue
     /**
      * @param \App\Repositories\ProjectRepository $projectRepo
      * @param \App\Services\Process\DarwinCore $dwcProcess
-     * @param \App\Services\File\FileService $fileService
      * @param \App\Services\Csv\Csv $csv
      */
     public function handle(
         ProjectRepository $projectRepo,
         DarwinCore $dwcProcess,
-        FileService $fileService,
         Csv $csv
     ) {
         $scratchFileDir = Storage::path(config('config.scratch_dir').'/'.md5($this->import->file));
@@ -85,10 +83,10 @@ class DwcFileImportJob implements ShouldQueue
         $users = $project->group->users->push($project->group->owner);
 
         try {
-            $fileService->makeDirectory($scratchFileDir);
+            $this->makeDirectory($scratchFileDir);
             $importFilePath = Storage::path($this->import->file);
 
-            $fileService->unzip($importFilePath, $scratchFileDir);
+            $this->unzip($importFilePath, $scratchFileDir);
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
@@ -104,20 +102,49 @@ class DwcFileImportJob implements ShouldQueue
                 OcrCreateJob::dispatch($project->id);
             }
 
-            $fileService->filesystem->cleanDirectory($scratchFileDir);
-            $fileService->filesystem->deleteDirectory($scratchFileDir);
-            $fileService->filesystem->delete($importFilePath);
+            File::cleanDirectory($scratchFileDir);
+            File::deleteDirectory($scratchFileDir);
+            File::delete($importFilePath);
             $this->import->delete();
             $this->delete();
+
         } catch (Exception $e) {
             $this->import->error = 1;
             $this->import->save();
-            $fileService->filesystem->cleanDirectory($scratchFileDir);
-            $fileService->filesystem->deleteDirectory($scratchFileDir);
+            File::cleanDirectory($scratchFileDir);
+            File::deleteDirectory($scratchFileDir);
 
             Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
 
             $this->delete();
         }
+    }
+
+    /**
+     * @param $dir
+     * @throws \Exception
+     */
+    private function makeDirectory($dir)
+    {
+        if ( ! File::isDirectory($dir) && ! File::makeDirectory($dir, 0775, true))
+        {
+            throw new Exception(t('Unable to create directory: :directory', [':directory' => $dir]));
+        }
+
+        if ( ! File::isWritable($dir) && ! chmod($dir, 0775))
+        {
+            throw new Exception(t('Unable to make directory writable: %s', $dir));
+        }
+    }
+
+    /**
+     * Unzip file in directory.
+     *
+     * @param $zipFile
+     * @param $dir
+     */
+    private function unzip($zipFile, $dir)
+    {
+        shell_exec("unzip $zipFile -d $dir");
     }
 }

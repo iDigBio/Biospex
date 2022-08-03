@@ -35,9 +35,5 @@ class Property extends BaseEloquentModel
     /**
      * @inheritDoc
      */
-    protected $fillable = [
-        'qualified',
-        'short',
-        'namespace'
-    ];
+    protected $fillable = ['short'];
 }

@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
-use App\Services\Actor\ZooniverseExportReport;
+use App\Services\Actor\NfnPanoptes\ZooniverseExportReport;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -38,7 +38,7 @@ class ZooniverseExportReportJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\ZooniverseExportReport $zooniverseExportReport
+     * @param \App\Services\Actor\NfnPanoptes\ZooniverseExportReport $zooniverseExportReport
      * @throws \Exception
      */
     public function handle(ZooniverseExportReport $zooniverseExportReport)

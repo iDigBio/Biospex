@@ -37,4 +37,5 @@ yarn-error.log
 .env.*
 /.phpunit.result.cache
 /laravel-echo-server.lock
-/lang/.translation_io
+lang/.translation_io
+imageProcess.js

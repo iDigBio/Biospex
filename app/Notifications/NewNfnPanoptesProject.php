@@ -74,7 +74,7 @@ class NewNfnPanoptesProject extends Notification implements ShouldQueue
         ];
 
         return (new MailMessage)
-            ->subject(t('Biospex - New Zooniverse Project Submitted'))
+            ->subject(t('Biospex - New NfnPanoptes Project Submitted'))
             ->markdown('mail.newnfnpanoptes', $vars);
     }
 

@@ -79,7 +79,7 @@ class ZooniverseCsvService
         $expedition = $this->getExpedition($expeditionId);
 
         if ($this->panoptesApiService->checkForRequiredVariables($expedition)) {
-            throw new \Exception(t('Missing required expedition variables for Zooniverse classification create. Expedition %s', $expeditionId));
+            throw new \Exception(t('Missing required expedition variables for NfnPanoptes classification create. Expedition %s', $expeditionId));
         }
 
         $this->sendRequest($expedition->panoptesProject->panoptes_workflow_id, 'POST', ['body' => '{"media":{"content_type":"text/csv"}}']);
@@ -98,7 +98,7 @@ class ZooniverseCsvService
         $expedition = $this->getExpedition($expeditionId);
 
         if ($this->panoptesApiService->checkForRequiredVariables($expedition)) {
-            throw new \Exception(t('Missing required expedition variables for Zooniverse classification check for Expedition ID %s.', $expeditionId));
+            throw new \Exception(t('Missing required expedition variables for NfnPanoptes classification check for Expedition ID %s.', $expeditionId));
         }
 
         try {
@@ -153,7 +153,7 @@ class ZooniverseCsvService
     /**
      * Calculate time difference.
      * If errors, csv doesn't exist yet.
-     * Hours must be greater than 24 hours for Zooniverse to create CSV.
+     * Hours must be greater than 24 hours for NfnPanoptes to create CSV.
      *
      * @param array $result
      * @return bool

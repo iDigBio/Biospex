@@ -21,13 +21,13 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Actor\ZooniverseExportBatch;
+use App\Services\Actor\NfnPanoptes\ZooniverseExportBatch;
 use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Class ExportDownloadBatchJob
@@ -64,7 +64,7 @@ class ExportDownloadBatchJob implements ShouldQueue
     /**
      * Handle download batch job.
      *
-     * @param \App\Services\Actor\ZooniverseExportBatch $nfnPanoptesExportBatch
+     * @param \App\Services\Actor\NfnPanoptes\ZooniverseExportBatch $nfnPanoptesExportBatch
      */
     public function handle(ZooniverseExportBatch $nfnPanoptesExportBatch)
     {
