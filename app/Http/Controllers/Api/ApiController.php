@@ -19,8 +19,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Response;
 
 /**
  * Class ApiController
@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Response;
  */
 class ApiController extends Controller
 {
-    protected $statusCode = 200;
+    protected int $statusCode = 200;
 
     const CODE_WRONG_ARGS = 'GEN-WRONG-ARGUMENTS';
     const CODE_NOT_FOUND = 'GEN-NOT-FOUND';
@@ -43,7 +43,7 @@ class ApiController extends Controller
      *
      * @return int
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
@@ -55,7 +55,7 @@ class ApiController extends Controller
      *
      * @return self
      */
-    public function setStatusCode($statusCode)
+    public function setStatusCode(int $statusCode): static
     {
         $this->statusCode = $statusCode;
 
@@ -67,7 +67,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    protected function respondWithCreated()
+    protected function respondWithCreated(): Response
     {
         return response()->noContent(201);
     }
@@ -77,17 +77,16 @@ class ApiController extends Controller
      *
      * @param array $array
      * @param array $headers
-     * @return mixed
+     * @return \Illuminate\Http\Response
      */
-    protected function respondWithArray(array $array, array $headers = [])
+    protected function respondWithArray(array $array, array $headers = []): Response
     {
         $content = json_encode($array);
         $contentType = 'application/'.config('api.standardsTree').'.'.config('api.subtype').config('api.version').'+json';
 
-        $response = Response::make($content, $this->statusCode, $headers);
-        $response->header('Content-Type', $contentType);
+        $headers = ['Content-Type' => $contentType];
 
-        return $response;
+        return response($content, $this->statusCode, $headers);
     }
 
     /**
@@ -95,9 +94,9 @@ class ApiController extends Controller
      *
      * @param $message
      * @param $errorCode
-     * @return mixed
+     * @return \Illuminate\Http\Response
      */
-    protected function respondWithError($message, $errorCode)
+    protected function respondWithError($message, $errorCode): Response
     {
         if ($this->statusCode === 200) {
             trigger_error(
@@ -119,9 +118,9 @@ class ApiController extends Controller
      * Generates a Response with a 403 HTTP header and a given message.
      *
      * @param string $message
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function errorForbidden($message = 'Forbidden')
+    public function errorForbidden(string $message = 'Forbidden'): Response
     {
         return $this->setStatusCode(403)
             ->respondWithError($message, self::CODE_FORBIDDEN);
@@ -131,9 +130,9 @@ class ApiController extends Controller
      * Generates a Response with a 500 HTTP header and a given message.
      *
      * @param string $message
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function errorInternalError($message = 'Internal Error')
+    public function errorInternalError(string $message = 'Internal Error'): Response
     {
         return $this->setStatusCode(500)
             ->respondWithError($message, self::CODE_INTERNAL_ERROR);
@@ -143,9 +142,9 @@ class ApiController extends Controller
      * Generates a Response with a 404 HTTP header and a given message.
      *
      * @param string $message
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function errorNotFound($message = 'Resource Not Found')
+    public function errorNotFound(string $message = 'Resource Not Found'): Response
     {
         return $this->setStatusCode(404)
             ->respondWithError($message, self::CODE_NOT_FOUND);
@@ -155,9 +154,9 @@ class ApiController extends Controller
      * Generates a Response with a 401 HTTP header and a given message.
      *
      * @param string $message
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function errorUnauthorized($message = 'Unauthorized')
+    public function errorUnauthorized(string $message = 'Unauthorized'): Response
     {
         return $this->setStatusCode(401)
             ->respondWithError($message, self::CODE_UNAUTHORIZED);
@@ -167,9 +166,9 @@ class ApiController extends Controller
      * Generates a Response with a 400 HTTP header and a given message.
      *
      * @param string $message
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function errorWrongArgs($message = 'Wrong Arguments')
+    public function errorWrongArgs(string $message = 'Wrong Arguments'): Response
     {
         return $this->setStatusCode(400)
             ->respondWithError($message, self::CODE_WRONG_ARGS);

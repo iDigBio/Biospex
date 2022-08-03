@@ -48,7 +48,8 @@ class ExportQueueFile extends BaseEloquentModel
         'subject_id',
         'url',
         'error',
-        'error_message'
+        'error_message',
+        'completed'
     ];
 
     /**

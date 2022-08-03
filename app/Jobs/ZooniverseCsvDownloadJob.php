@@ -65,6 +65,7 @@ class ZooniverseCsvDownloadJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Csv\ZooniverseCsvService $service
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle(ZooniverseCsvService $service)
     {
