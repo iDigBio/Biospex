@@ -19,7 +19,6 @@
 
 namespace App\Services\Csv;
 
-use Illuminate\Support\Facades\Storage;
 use League\Csv\CharsetConverter;
 use League\Csv\Writer;
 use League\Csv\Reader;
@@ -34,12 +33,12 @@ class Csv
     /**
      * @var Reader
      */
-    public $reader;
+    public Reader $reader;
 
     /**
      * @var Writer
      */
-    public $writer;
+    public Writer $writer;
 
     /**
      * Create reader using file path.
@@ -52,6 +51,17 @@ class Csv
     }
 
     /**
+     * Create reader from stream.
+     *
+     * @param $stream
+     * @return void
+     */
+    public function readerCreateFromStream($stream)
+    {
+        $this->reader = Reader::createFromStream($stream);
+    }
+
+    /**
      * Return Reader.
      *
      * @return \League\Csv\Reader
@@ -59,6 +69,17 @@ class Csv
     public function getReader(): Reader
     {
         return $this->reader;
+    }
+
+    /**
+     * Create writer from stream.
+     *
+     * @param $stream
+     * @return void
+     */
+    public function writerCreateFromStream($stream)
+    {
+        $this->writer = Writer::createFromStream($stream);
     }
 
     /**
@@ -177,30 +198,6 @@ class Csv
      */
     public function getReaderCount(): int {
         return count($this->reader);
-    }
-
-    /**
-     * Create Report Csv.
-     *
-     * @param array $data
-     * @param string $fileName
-     * @return string|null
-     * @throws \League\Csv\CannotInsertRecord
-     */
-    public function createReportCsv(array $data, string $fileName): ?string
-    {
-        if (! isset($data) || empty($data)) {
-            return null;
-        }
-
-        $header = array_keys($data[0]);
-
-        $file = Storage::path(config('config.reports_dir').'/'.$fileName);
-        $this->writerCreateFromPath($file);
-        $this->insertOne($header);
-        $this->insertAll($data);
-
-        return base64_encode($fileName);
     }
 
     /**
