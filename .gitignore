@@ -25,6 +25,7 @@ backups
 chart-image.js
 laravel-echo-server.json
 panoptes-pusher.js
+zipExport.js
 codeception.yml
 .gitattributes
 .idea
