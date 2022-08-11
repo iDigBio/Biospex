@@ -20,11 +20,12 @@
 namespace App\Services\Process;
 
 use App\Models\OcrQueue;
+use App\Models\Subject;
 use App\Notifications\OcrProcessComplete;
 use App\Repositories\OcrQueueRepository;
 use App\Repositories\SubjectRepository;
-use App\Services\Csv\Csv;
-use App\Services\MongoDbService;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Storage;
 use Str;
 
@@ -38,46 +39,38 @@ class OcrService
     /**
      * @var \App\Repositories\OcrQueueRepository
      */
-    private $ocrQueueRepo;
+    private OcrQueueRepository $ocrQueueRepo;
 
     /**
-     * @var \App\Services\MongoDbService
+     * @var string
      */
-    private $mongoDbService;
-
-    /**
-     * @var \App\Services\Csv\Csv
-     */
-    private $csvService;
-
-    /**
-     * @var
-     */
-    public $folderPath;
+    public string $folderPath;
 
     /**
      * @var \App\Repositories\SubjectRepository
      */
-    private $subjectRepo;
+    private SubjectRepository $subjectRepo;
+
+    /**
+     * @var \App\Services\Process\CreateReportService
+     */
+    private CreateReportService $createReportService;
 
     /**
      * Ocr constructor.
      *
      * @param \App\Repositories\SubjectRepository $subjectRepo
      * @param \App\Repositories\OcrQueueRepository $ocrQueueRepo
-     * @param \App\Services\MongoDbService $mongoDbService
-     * @param \App\Services\Csv\Csv $csvService
+     * @param \App\Services\Process\CreateReportService $createReportService
      */
     public function __construct(
         SubjectRepository $subjectRepo,
         OcrQueueRepository $ocrQueueRepo,
-        MongoDbService $mongoDbService,
-        Csv $csvService
+        CreateReportService $createReportService
     ) {
         $this->ocrQueueRepo = $ocrQueueRepo;
-        $this->mongoDbService = $mongoDbService;
-        $this->csvService = $csvService;
         $this->subjectRepo = $subjectRepo;
+        $this->createReportService = $createReportService;
     }
 
     /**
@@ -108,7 +101,7 @@ class OcrService
      * @param int $id
      * @return mixed
      */
-    public function findOcrQueueById(int $id)
+    public function findOcrQueueById(int $id): mixed
     {
         return $this->ocrQueueRepo->findWith($id, ['project.group.owner']);
     }
@@ -117,9 +110,9 @@ class OcrService
      * Return ocr queue for command process.
      *
      * @param bool $reset
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null
      */
-    public function getFirstQueue($reset = false)
+    public function getFirstQueue(bool $reset = false): Model|Builder|null
     {
         return $this->ocrQueueRepo->getFirstQueue($reset);
     }
@@ -145,7 +138,7 @@ class OcrService
      *
      * @return \App\Models\Subject|\Illuminate\Database\Eloquent\Builder
      */
-    public function getSubjectQueryForOcr(int $projectId, int $expeditionId = null)
+    public function getSubjectQueryForOcr(int $projectId, int $expeditionId = null): Builder|Subject
     {
         return $this->subjectRepo->getSubjectQueryForOcr($projectId, $expeditionId);
     }
@@ -166,7 +159,8 @@ class OcrService
     /**
      * Send complete notification.
      *
-     * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null $queue
+     * @param \App\Models\OcrQueue $queue
+     * @return void
      * @throws \League\Csv\CannotInsertRecord
      */
     public function complete(OcrQueue $queue)
@@ -177,7 +171,8 @@ class OcrService
     /**
      * Send notification for completed ocr process
      *
-     * @param $queue
+     * @param \App\Models\OcrQueue $queue
+     * @return void
      * @throws \League\Csv\CannotInsertRecord
      */
     public function sendNotify(OcrQueue $queue)
@@ -193,7 +188,7 @@ class OcrService
         });
 
         $csvName = Str::random().'.csv';
-        $fileName = $this->csvService->createReportCsv($subjects->toArray(), $csvName);
+        $fileName = $this->createReportService->createCsvReport($csvName, $subjects->toArray());
 
         $queue->project->group->owner->notify(new OcrProcessComplete($queue->project->title, $fileName));
     }

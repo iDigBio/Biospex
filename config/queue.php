@@ -73,6 +73,15 @@ return [
             'retry_after' => 90,
         ],
 
+        'sqs-plain' => [
+            'driver' => 'sqs-plain',
+            'key'    => env('AWS_ACCESS_KEY', ''),
+            'secret' => env('AWS_SECRET_ACCESS_KEY', ''),
+            'prefix' => env('AWS_QUEUE_URL'),
+            'queue'  => env('AWS_QUEUE'),
+            'region' => env('AWS_DEFAULT_REGION'),
+        ],
+
     ],
 
     /*

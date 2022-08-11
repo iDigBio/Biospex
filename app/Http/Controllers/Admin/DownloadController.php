@@ -28,6 +28,7 @@ use Exception;
 use Flash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Class DownloadController
@@ -39,7 +40,7 @@ class DownloadController extends Controller
     /**
      * @var \App\Repositories\UserRepository
      */
-    private $userRepo;
+    private UserRepository $userRepo;
 
     /**
      * @var \App\Repositories\ExpeditionRepository
@@ -49,7 +50,7 @@ class DownloadController extends Controller
     /**
      * @var \App\Services\Download\DownloadType
      */
-    private $downloadType;
+    private DownloadType $downloadType;
 
     /**
      * DownloadController constructor.
@@ -89,14 +90,12 @@ class DownloadController extends Controller
      * Download report.
      *
      * @param string $fileName
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function report(string $fileName)
+    public function report(string $fileName): StreamedResponse|RedirectResponse
     {
         try {
-            [$reader, $headers] = $this->downloadType->createReportDownload(base64_decode($fileName));
-
-            return response($reader->getContent(), 200, $headers);
+            return $this->downloadType->createReportDownload(base64_decode($fileName));
         } catch (Exception $e) {
             Flash::error($e->getMessage());
 
@@ -147,9 +146,9 @@ class DownloadController extends Controller
      * @param string $projectId
      * @param string $expeditionId
      * @param string $downloadId
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function downloadTar(string $projectId, string $expeditionId, string $downloadId)
+    public function downloadZip(string $projectId, string $expeditionId, string $downloadId): StreamedResponse|RedirectResponse
     {
         try {
             $download = $this->downloadType->getDownload($downloadId);
@@ -158,9 +157,8 @@ class DownloadController extends Controller
                 return redirect()->back();
             }
 
-            [$filePath, $headers] = $this->downloadType->createTarDownload($download);
+            return $this->downloadType->createZipDownload($download);
 
-            return response()->download($filePath, null, $headers);
         } catch (Exception $e) {
             Flash::error($e->getMessage());
 
@@ -174,21 +172,19 @@ class DownloadController extends Controller
      * @param string $projectId
      * @param string $expeditionId
      * @param string $fileName
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function downloadTarBatch(string $projectId, string $expeditionId, string $fileName)
+    public function downloadZipBatch(string $projectId, string $expeditionId, string $fileName): StreamedResponse|RedirectResponse
     {
         try {
-            $file = base64_decode($fileName).'.tar.gz';
+            $file = base64_decode($fileName).'.zip';
             $expedition = $this->expeditionRepo->findwith($expeditionId, ['project.group']);
 
             if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            [$filePath, $headers] = $this->downloadType->createBatchTarDownload($file);
-
-            return response()->download($filePath, $file, $headers);
+            return $this->downloadType->createBatchZipDownload($file);
         } catch (Exception $e) {
             Flash::error($e->getMessage());
 
@@ -211,7 +207,8 @@ class DownloadController extends Controller
             $this->downloadType->resetExpeditionData($expedition);
 
             Flash::success(t('Export generation has started. You will be notified when completed.'));
-        } catch (Exception $e) {;
+        } catch (Exception $e) {
+            ;
             Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
         }
 

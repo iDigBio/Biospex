@@ -51,27 +51,27 @@ class ExpeditionController extends Controller
     /**
      * @var \App\Repositories\ProjectRepository
      */
-    private $projectRepo;
+    private ProjectRepository $projectRepo;
 
     /**
      * @var \App\Repositories\PanoptesProjectRepository
      */
-    private $panoptesProjectRepo;
+    private PanoptesProjectRepository $panoptesProjectRepo;
 
     /**
      * @var \App\Repositories\ExpeditionStatRepository
      */
-    private $expeditionStatRepo;
+    private ExpeditionStatRepository $expeditionStatRepo;
 
     /**
      * @var \App\Repositories\WorkflowManagerRepository
      */
-    private $workflowManagerRepo;
+    private WorkflowManagerRepository $workflowManagerRepo;
 
     /**
      * @var \App\Repositories\SubjectRepository
      */
-    private $subjectRepo;
+    private SubjectRepository $subjectRepo;
 
     /**
      * ExpeditionController constructor.

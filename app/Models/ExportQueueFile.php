@@ -24,6 +24,8 @@ use Jenssegers\Mongodb\Eloquent\HybridRelations;
 /**
  * Class ExportQueueFile
  *
+ * @method inComplete()
+ * @method completed()
  * @package App\Models
  */
 class ExportQueueFile extends BaseEloquentModel
@@ -47,9 +49,8 @@ class ExportQueueFile extends BaseEloquentModel
         'queue_id',
         'subject_id',
         'url',
-        'error',
-        'error_message',
-        'completed'
+        'completed',
+        'error_message'
     ];
 
     /**
@@ -69,5 +70,27 @@ class ExportQueueFile extends BaseEloquentModel
     public function subject()
     {
         return $this->hasOne(Subject::class, '_id', 'subject_id');
+    }
+
+    /**
+     * Scope for completed.
+     *
+     * @param $query
+     * @return void
+     */
+    public function scopeCompleted($query)
+    {
+        $query->where('completed', 1);
+    }
+
+    /**
+     * Scope for incomplete.
+     *
+     * @param $query
+     * @return void
+     */
+    public function scopeInComplete($query)
+    {
+        $query->where('completed', 0);
     }
 }

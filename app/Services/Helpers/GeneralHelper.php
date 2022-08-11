@@ -404,7 +404,7 @@ class GeneralHelper
         }
 
         if ($type === 'report') {
-            return Storage::size(config('config.reports_dir').'/'.$file);
+            return Storage::disk('s3')->size(config('config.reports_dir').'/'.$file);
         }
 
         return Storage::size(config('config.nfn_downloads_dir').'/'.$type.'/'.$file);

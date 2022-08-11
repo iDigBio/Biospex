@@ -56,7 +56,7 @@ class PanoptesPusherController extends ApiController
         if ( ! isset($data['workflow_id'])) {
             return $this->errorWrongArgs(t('Missing workflow_id'));
         }
-
+        // TODO Put back when done
         //PanoptesPusherJob::dispatch($data);
 
         return $this->respondWithCreated();

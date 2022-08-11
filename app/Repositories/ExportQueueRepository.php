@@ -19,6 +19,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Actor;
 use App\Models\ExportQueue;
 
 /**
@@ -104,4 +105,29 @@ class ExportQueueRepository extends BaseRepository
     {
         return $this->model->with(['expedition.nfnActor', 'expedition.stat'])->where('expedition_id', $expeditionId)->first();
     }
+
+    /**
+     * Create queue for export.
+     *
+     * @param \App\Models\Actor $actor
+     * @return \App\Models\ExportQueue
+     */
+    public function createQueue(Actor $actor): ExportQueue
+    {
+        $attributes = [
+            'expedition_id' => $actor->pivot->expedition_id,
+            'actor_id'      => $actor->id,
+        ];
+
+        $queue = $this->model->firstOrNew($attributes);
+        $queue->queued = 1;
+        $queue->error = 0;
+        $queue->stage = 0;
+        $queue->count = $actor->pivot->total;
+        $queue->processed = 0;
+        $queue->save();
+
+        return $queue;
+    }
+
 }

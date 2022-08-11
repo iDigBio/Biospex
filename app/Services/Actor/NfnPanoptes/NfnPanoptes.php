@@ -22,9 +22,10 @@ namespace App\Services\Actor\NfnPanoptes;
 use App\Jobs\ZooniverseCsvJob;
 use App\Jobs\ZooniverseExportBuildCsvJob;
 use App\Jobs\ZooniverseExportBuildQueueJob;
-use App\Jobs\ZooniverseExportBuildTarJob;
+use App\Jobs\ZooniverseExportBuildZipJob;
+use App\Jobs\ZooniverseExportCheckImageProcessJob;
 use App\Jobs\ZooniverseExportDeleteFilesJob;
-use App\Jobs\ZooniverseExportReportJob;
+use App\Jobs\ZooniverseExportCreateReportJob;
 use App\Jobs\ZooniverseExportProcessImageJob;
 use App\Models\Actor;
 use App\Notifications\NfnExportError;
@@ -74,9 +75,10 @@ class NfnPanoptes
             \Bus::batch([
                 new ZooniverseExportBuildQueueJob($actor),
                 new ZooniverseExportProcessImageJob($actor),
+                new ZooniverseExportCheckImageProcessJob($actor),
                 new ZooniverseExportBuildCsvJob($actor),
-                new ZooniverseExportBuildTarJob($actor),
-                new ZooniverseExportReportJob($actor),
+                new ZooniverseExportBuildZipJob($actor),
+                new ZooniverseExportCreateReportJob($actor),
                 new ZooniverseExportDeleteFilesJob($actor)
             ])->catch(function (Batch $batch, \Exception $exception) {
                 $this->sendErrorNotification($exception);

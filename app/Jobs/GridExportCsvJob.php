@@ -23,6 +23,7 @@ use App\Models\User;
 use App\Models\Header;
 use App\Notifications\GridCsvExport;
 use App\Notifications\GridCsvExportError;
+use App\Services\Api\AwsS3ApiService;
 use App\Services\Grid\JqGridEncoder;
 use App\Services\Csv\Csv;
 use App\Facades\GeneralHelper;
@@ -97,9 +98,10 @@ class GridExportCsvJob implements ShouldQueue
      *
      * @param \App\Services\Grid\JqGridEncoder $jqGridEncoder
      * @param Csv $csv
+     * @param \App\Services\Api\AwsS3ApiService $awsS3ApiService
      * @return void
      */
-    public function handle(JqGridEncoder $jqGridEncoder, Csv $csv)
+    public function handle(JqGridEncoder $jqGridEncoder, Csv $csv, AwsS3ApiService $awsS3ApiService)
     {
         $csvName = Str::random().'.csv';
 
@@ -108,8 +110,12 @@ class GridExportCsvJob implements ShouldQueue
             $cursor = $jqGridEncoder->encodeGridExportData($this->postData, $this->route, $this->projectId, $this->expeditionId);
 
             $header = $this->buildHeader();
-            $file = Storage::path(config('config.reports_dir').'/'.$csvName);
-            $csv->writerCreateFromPath($file);
+
+            $bucket = config('filesystems.disks.s3.bucket');
+            $filePath = config('config.reports_dir') . '/' . $csvName;
+
+            $stream = $awsS3ApiService->createS3BucketStream($bucket, $filePath);
+            $csv->writerCreateFromStream($stream);
             $csv->insertOne($header->keys()->toArray());
 
             $cursor->each(function ($subject) use ($header, $csv) {
@@ -126,7 +132,7 @@ class GridExportCsvJob implements ShouldQueue
                 $csv->insertOne($merged->toArray());
             });
 
-            if (!Storage::exists(config('config.reports_dir').'/'.$csvName)) {
+            if (!Storage::disk('s3')->exists(config('config.reports_dir').'/'.$csvName)) {
                 throw new Exception(t('Csv export file is missing.'));
             }
 
@@ -141,7 +147,7 @@ class GridExportCsvJob implements ShouldQueue
                 'Trace: ' . $e->getTraceAsString()
             ];
             $this->user->notify(new GridCsvExportError($message));
-            Storage::delete(config('config.reports_dir').'/'.$csvName);
+            Storage::disk('s3')->delete(config('config.reports_dir').'/'.$csvName);
         }
     }
 

@@ -21,6 +21,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
+use App\Repositories\DownloadRepository;
 use App\Services\Actor\NfnPanoptes\ZooniverseExportBatch;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -43,12 +44,12 @@ class ExportDownloadBatchJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 36000;
+    public int $timeout = 36000;
 
     /**
      * @var string
      */
-    private $downloadId;
+    private string $downloadId;
 
     /**
      * ExportDownloadBatchJob constructor.
@@ -64,11 +65,14 @@ class ExportDownloadBatchJob implements ShouldQueue
     /**
      * Handle download batch job.
      *
+     * @param \App\Repositories\DownloadRepository $downloadRepository
      * @param \App\Services\Actor\NfnPanoptes\ZooniverseExportBatch $nfnPanoptesExportBatch
      */
-    public function handle(ZooniverseExportBatch $nfnPanoptesExportBatch)
+    public function handle(
+        DownloadRepository $downloadRepository,
+        ZooniverseExportBatch $nfnPanoptesExportBatch)
     {
-        $download = $nfnPanoptesExportBatch->getDownload($this->downloadId);
+        $download = $downloadRepository->findWith($this->downloadId, ['expedition.project.group.owner', 'actor']);
 
         try {
             $nfnPanoptesExportBatch->process($download);

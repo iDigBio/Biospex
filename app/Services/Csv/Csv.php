@@ -41,6 +41,26 @@ class Csv
     public Writer $writer;
 
     /**
+     * Return Reader.
+     *
+     * @return \League\Csv\Reader
+     */
+    public function getReader(): Reader
+    {
+        return $this->reader;
+    }
+
+    /**
+     * Return writer.
+     *
+     * @return \League\Csv\Writer
+     */
+    public function getWriter(): Writer
+    {
+        return $this->writer;
+    }
+
+    /**
      * Create reader using file path.
      *
      * @param $file
@@ -62,13 +82,13 @@ class Csv
     }
 
     /**
-     * Return Reader.
+     * Create writer from file path.
      *
-     * @return \League\Csv\Reader
+     * @param $filePath
      */
-    public function getReader(): Reader
+    public function writerCreateFromPath($filePath)
     {
-        return $this->reader;
+        $this->writer = Writer::createFromPath($filePath, 'w+');
     }
 
     /**
@@ -83,56 +103,34 @@ class Csv
     }
 
     /**
-     * Create writer from file path.
+     * Set delimiter.
      *
-     * @param $filePath
-     */
-    public function writerCreateFromPath($filePath)
-    {
-        $this->writer = Writer::createFromPath($filePath, 'w+');
-    }
-
-    /**
-     * Return writer.
-     *
-     * @return \League\Csv\Writer
-     */
-    public function getWriter(): Writer
-    {
-        return $this->writer;
-    }
-
-    /**
-     * Create writer from temp file object.
-     */
-    public function writerCreateFromTempFileObj()
-    {
-        $this->writer = Writer::createFromFileObject(new \SplTempFileObject());
-    }
-
-    /**
      * @param string $delimiter
      * @throws \League\Csv\Exception
      */
-    public function setDelimiter($delimiter = ',')
+    public function setDelimiter(string $delimiter = ',')
     {
         $this->reader->setDelimiter($delimiter);
     }
 
     /**
+     * Set enclosure.
+     *
      * @param string $enclosure
      * @throws \League\Csv\Exception
      */
-    public function setEnclosure($enclosure = '"')
+    public function setEnclosure(string $enclosure = '"')
     {
         $this->reader->setEnclosure($enclosure);
     }
 
     /**
+     * Set escape.
+     *
      * @param string $escape
      * @throws \League\Csv\Exception
      */
-    public function setEscape($escape = '\\')
+    public function setEscape(string $escape = '\\')
     {
         $this->reader->setEscape($escape);
     }
@@ -143,7 +141,7 @@ class Csv
      * @param int $offset
      * @throws \League\Csv\Exception
      */
-    public function setHeaderOffset($offset = 0)
+    public function setHeaderOffset(int $offset = 0)
     {
         $this->reader->setHeaderOffset($offset);
     }
@@ -151,9 +149,9 @@ class Csv
     /**
      * Return header row.
      *
-     * @return mixed
+     * @return string[]
      */
-    public function getHeader()
+    public function getHeader(): array
     {
         return $this->reader->getHeader();
     }
@@ -162,9 +160,9 @@ class Csv
      * Fetch all rows.
      *
      * @param array $header
-     * @return mixed
+     * @return \Iterator
      */
-    public function getRecords($header = [])
+    public function getRecords(array $header = []): \Iterator
     {
         return $this->reader->getRecords($header);
     }

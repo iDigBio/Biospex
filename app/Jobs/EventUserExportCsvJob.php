@@ -23,7 +23,7 @@ use App\Models\User;
 use App\Notifications\EventCsvExport;
 use App\Notifications\EventCsvExportError;
 use App\Repositories\EventRepository;
-use App\Services\Csv\Csv;
+use App\Services\Process\CreateReportService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -75,12 +75,12 @@ class EventUserExportCsvJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Repositories\EventRepository $eventRepo
-     * @param Csv $csv
+     * @param \App\Services\Process\CreateReportService $createReportService
      * @return void
      */
     public function handle(
         EventRepository $eventRepo,
-        Csv $csv
+        CreateReportService $createReportService,
     ) {
         try {
             $event = $eventRepo->getEventShow($this->eventId);
@@ -95,7 +95,7 @@ class EventUserExportCsvJob implements ShouldQueue
             })->toArray();
 
             $csvName = Str::random().'.csv';
-            $fileName = $csv->createReportCsv($rows, $csvName);
+            $fileName = $createReportService->createCsvReport($csvName, $rows);
 
             $this->user->notify(new EventCsvExport($fileName));
 

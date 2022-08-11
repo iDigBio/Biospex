@@ -20,9 +20,7 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 /**
@@ -30,22 +28,15 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
  *
  * @package App\Events
  */
-class PollExportEvent extends Event implements ShouldBroadcast
+class PollExportEvent implements ShouldBroadcast
 {
 
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
 
     /**
      * @var array
      */
-    public $data = [];
-
-    /**
-     * The name of the queue on which to place the event.
-     *
-     * @var string
-     */
-    public $broadcastQueue;
+    public array $data = [];
 
     /**
      * PollExportEvent constructor.
@@ -54,7 +45,16 @@ class PollExportEvent extends Event implements ShouldBroadcast
     public function __construct($data)
     {
         $this->data = $data;
-        $this->broadcastQueue = config('config.event_tube');
+    }
+
+    /**
+     * The name of the queue on which to place the broadcasting job.
+     *
+     * @return string
+     */
+    public function broadcastQueue(): string
+    {
+        return config('config.event_tube');
     }
 
     /**

@@ -19,6 +19,7 @@
 
 namespace App\Repositories;
 
+use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
@@ -37,8 +38,17 @@ class ExportQueueFileRepository extends BaseRepository
      */
     public function __construct(ExportQueueFile $exportQueueFile)
     {
-
         $this->model = $exportQueueFile;
+    }
+
+    /**
+     * Return model.
+     *
+     * @return \App\Models\ExportQueueFile|\Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
+     */
+    public function model(): ExportQueueFile|\Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
+    {
+        return $this->model;
     }
 
     /**
@@ -50,7 +60,7 @@ class ExportQueueFileRepository extends BaseRepository
     public function getFilesWithoutErrorByQueueId(string $queueId): Collection
     {
         return $this->model->with('subject')
-            ->where('queue_id', $queueId)->where('error', 0)->get();
+            ->where('queue_id', $queueId)->where('error_message', 0)->get();
     }
 
     /**
@@ -61,18 +71,72 @@ class ExportQueueFileRepository extends BaseRepository
      */
     public function getFilesWithErrorsByQueueId(string $queueId): Collection
     {
-        return $this->model->where('queue_id', $queueId)->where('error', 1)->get();
+        return $this->model->where('queue_id', $queueId)->where('error_message', 1)->get();
     }
 
     /**
-     * Get all files by queue id.
+     * Get uncompleted export queue file count.
      *
-     * @param string $queueId
-     * @param int $error
-     * @return \Illuminate\Support\LazyCollection
+     * @param int $queueId
+     * @return int
      */
-    public function getFilesByQueueId(string $queueId, int $error = 0): LazyCollection
+    public function getUncompletedCount(int $queueId): int
     {
-        return $this->model->where('queue_id', $queueId)->where('error', $error)->cursor();
+        return $this->model->where('queue_id', $queueId)->inComplete()->count();
+    }
+
+    /**
+     * Create queue file for subject.
+     *
+     * @param \App\Models\ExportQueue $queue
+     * @param $subject
+     */
+    public function createQueueFile(ExportQueue $queue, $subject): void
+    {
+        $attributes = [
+            'queue_id'   => $queue->id,
+            'subject_id' => (string) $subject->_id
+        ];
+
+        $file = $this->model->firstOrNew($attributes);
+        $file->url = $subject->accessURI;
+        $file->error = 0;
+        $file->error_message = null;
+        $file->save();
+    }
+
+    /**
+     * Get queue files with errors for reporting.
+     *
+     * @param int $queueId
+     * @return array
+     */
+    public function getQueueFileErrorsData(int $queueId): array
+    {
+        $data = [];
+        $remove = array_flip(['id', 'queue_id', 'error', 'created_at', 'updated_at']);
+
+        $callback = function ($files) use($remove, &$data) {
+            $data[] = $files->map(function ($file) use ($remove) {
+                return array_diff_key($file->toArray(), $remove);
+            })->toArray();
+        };
+
+        $this->model->where('queue_id', $queueId)
+            ->whereNotNull('error_message')
+            ->chunk(100, $callback);
+
+        return $data;
+    }
+
+    /**
+     * Perform chunk operations on files for lambda.
+     *
+     * @param callable $callback
+     * @return void
+     */
+    public function chunkExportFiles(callable $callback)
+    {
+        $this->model->chunk(config('config.aws_lambda_count'), $callback);
     }
 }

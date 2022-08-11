@@ -23,12 +23,57 @@ use App\Models\Actor;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
 use App\Services\Actor\ActorInterface;
+use App\Services\Actor\Traits\ActorDirectory;
+use App\Repositories\ExportQueueFileRepository;
+use App\Repositories\ExportQueueRepository;
+use App\Services\Api\AwsLambdaApiService;
+use Aws\Lambda\LambdaClient;
+use JetBrains\PhpStorm\ArrayShape;
 
 /**
  * Class ZooniverseExportProcessImage
  */
-class ZooniverseExportProcessImage extends ZooniverseBase implements ActorInterface
+class ZooniverseExportProcessImage  implements ActorInterface
 {
+    use ActorDirectory;
+
+    /**
+     * @var \App\Repositories\ExportQueueRepository
+     */
+    private ExportQueueRepository $exportQueueRepository;
+
+    /**
+     * @var \App\Repositories\ExportQueueFileRepository
+     */
+    private ExportQueueFileRepository $exportQueueFileRepository;
+
+    /**
+     * @var \App\Services\Api\AwsLambdaApiService
+     */
+    private AwsLambdaApiService $awsLambdaApiService;
+
+    /**
+     * @var \App\Models\ExportQueue
+     */
+    private ExportQueue $queue;
+
+    /**
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
+     * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
+     * @param \App\Services\Api\AwsLambdaApiService $awsLambdaApiService
+     */
+    public function __construct(
+        ExportQueueRepository $exportQueueRepository,
+        ExportQueueFileRepository $exportQueueFileRepository,
+        AwsLambdaApiService $awsLambdaApiService
+    )
+    {
+
+        $this->exportQueueRepository = $exportQueueRepository;
+        $this->exportQueueFileRepository = $exportQueueFileRepository;
+        $this->awsLambdaApiService = $awsLambdaApiService;
+    }
+
     /**
      * Process images.
      *
@@ -38,82 +83,89 @@ class ZooniverseExportProcessImage extends ZooniverseBase implements ActorInterf
      */
     public function process(Actor $actor)
     {
-        $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
-        $queue->processed = 0;
-        $queue->stage = 1;
-        $queue->save();
+        $this->queue = $this->exportQueueRepository->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
+        $this->queue->processed = 0;
+        $this->queue->stage = 1;
+        $this->queue->save();
 
         try {
             \Artisan::call('export:poll');
 
-            $files = $this->dbService->exportQueueFileRepo->getFilesByQueueId($queue->id);
+            $this->setFolder($this->queue->id, $actor->id, $this->queue->expedition->uuid);
+            $this->setDirectories();
 
-            $this->actorDirectory->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
-            $this->actorDirectory->setDirectories();
-
-            $files->each(function ($file) use (&$queue) {
-                $this->processImageFile($file, $queue);
-            });
-
-            $this->dbService->updateRejected($this->rejected);
+            $this->processLambdaImageExport();
 
         } catch (\Exception $exception) {
-            $queue->error = 1;
-            $queue->queued = 0;
-            $queue->processed = 0;
-            $queue->save();
+            $this->queue->error = 1;
+            $this->queue->queued = 0;
+            $this->queue->processed = 0;
+            $this->queue->save();
 
             throw new \Exception($exception->getMessage());
         }
     }
 
     /**
-     * Set image vars.
+     * Chunk through export files and send to lambda function.
+     *
+     * @return void
+     */
+    public function processLambdaImageExport()
+    {
+        $callback = function ($files) {
+            $files->reject(function ($file) {
+                return $this->checkFileExistsAndUpdate($file);
+            })->each(function ($file) {
+                $data = $this->createDataArray($file);
+                $this->awsLambdaApiService->lambdaInvokeAsync('imageExportProcess', $data);
+            });
+
+            sleep(config('config.aws_lambda_delay'));
+        };
+
+        $this->exportQueueFileRepository->chunkExportFiles($callback);
+    }
+
+    /**
+     * Create data array.
      *
      * @param \App\Models\ExportQueueFile $file
      * @return array
      */
-    private function setImageVars(ExportQueueFile $file): array
+    #[ArrayShape(['queueId' => "mixed", 'subjectId' => "mixed", 'url' => "mixed", 'dir' => "string"])]
+    private function createDataArray(ExportQueueFile $file): array
     {
         return [
-            str_replace(' ', '%20', $file->url),
-            base_path('image-process.js'),
-            $file->subject_id.'.jpg',
+            'queueId'   => $file->queue_id,
+            'subjectId' => $file->subject_id,
+            'url'       => $file->url,
+            'dir'       => $this->tmpDir,
         ];
     }
 
     /**
-     * Process each file and convert image.
+     * Check if file exists and update process.
+     * Trigger polling if file exists.
      *
      * @param \App\Models\ExportQueueFile $file
-     * @param \App\Models\ExportQueue $queue
-     * @return void
+     * @return bool
      */
-    private function processImageFile(ExportQueueFile $file, ExportQueue $queue)
+    private function checkFileExistsAndUpdate(ExportQueueFile $file): bool
     {
-        try {
-            [$url, $basePath, $fileName] = $this->setImageVars($file);
+        $filePath = $this->tmpDir.'/'.$file->subject_id.'.jpg';
 
-            if (\File::exists($this->actorDirectory->tmpDirectory.'/'.$fileName)) {
-                $queue->processed = $queue->processed + 1;
-                $queue->save();
+        if ($this->checkFileExists($filePath, $file->subject_id)){
+            $this->queue->processed++;
+            $this->queue->save();
 
-                return;
-            }
+            $file->completed = 1;
+            $file->save();
 
-            $output = null;
-            exec("node $basePath $fileName $url {$this->actorDirectory->tmpDirectory} {$this->nfnImageWidth} {$this->nfnImageHeight}", $output);
+            \Artisan::call('export:poll');
 
-            if ($output[0]) {
-                $queue->processed = $queue->processed + 1;
-                $queue->save();
-
-                return;
-            }
-
-            $this->rejected[$fileName] = $output[0];
-        }catch (\Exception $e) {
-            echo $e->getMessage();
+            return true;
         }
+        return false;
     }
 }

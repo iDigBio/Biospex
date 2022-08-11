@@ -19,43 +19,56 @@
 
 namespace App\Jobs;
 
-use App\Repositories\ExportQueueFileRepository;
+use App\Models\Actor;
+use App\Services\Actor\NfnPanoptes\ZooniverseBuildZip;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 
-class LambdaUpdateExportQueueFileJob implements ShouldQueue
+/**
+ * Class ZooniverseExportBuildZipJob
+ *
+ * @package App\Jobs
+ */
+class ZooniverseExportBuildZipJob implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable;
 
-    private array $data;
+    /**
+     * @var \App\Models\Actor
+     */
+    private Actor $actor;
+
+    /**
+     * @var int
+     */
+    public int $timeout = 3600;
 
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param \App\Models\Actor $actor
      */
-    public function __construct(array $data)
+    public function __construct(Actor $actor)
     {
-        $this->data = $data;
-        $this->onQueue(config('config.lambda_tube'));
+        $this->actor = $actor;
     }
 
     /**
      * Execute the job.
      *
-     * @return void
+     * @param \App\Services\Actor\NfnPanoptes\ZooniverseBuildZip $zooniverseBuildTar
+     * @throws \Exception
      */
-    public function handle(ExportQueueFileRepository $exportQueueFileRepository)
+    public function handle(ZooniverseBuildZip $zooniverseBuildTar)
     {
-        $attributes = [
-            'error_message' => $this->data['error_message'],
-            'completed' => 1,
-        ];
+        if ($this->batch()->cancelled()) {
+            return;
+        }
 
-        \Log::alert(json_encode($attributes));
-
-        $exportQueueFileRepository->updateMany($attributes, 'subject_id', $this->data['subject_id']);
+        $zooniverseBuildTar->process($this->actor);
     }
 }

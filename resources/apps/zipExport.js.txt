@@ -1,0 +1,41 @@
+process.env.AWS_SDK_LOAD_CONFIG = true;
+
+let tmpDirPath = process.argv[2];
+let zipPath = process.argv[3];
+let tmpPath = "AWS_EFS_DIR";
+
+let S3Zipper = require('aws-s3-zipper');
+let AWS = require("aws-sdk");
+
+AWS.config.getCredentials(function (err) {
+    if (err) console.log(err.stack);
+    // credentials not loaded
+    else {
+        console.log("Access key:", AWS.config.credentials.accessKeyId);
+    }
+});
+
+let config = {
+    accessKeyId: AWS.config.credentials.accessKeyId,
+    secretAccessKey: AWS.config.credentials.secretAccessKey,
+    region: AWS.config.region,
+    bucket: 'biospex-app'
+};
+
+
+let zipper = new S3Zipper(config);
+
+/// if no path is given to S3 zip file then it will be placed in the same folder
+zipper.zipToS3File({
+    s3FolderName: tmpDirPath,
+    s3ZipFileName: zipPath,
+    tmpDir: tmpPath // optional, defaults to node_modules/aws-s3-zipper
+}, function (err, result) {
+    if (err)
+        console.error(err);
+    else {
+        let lastFile = result.zippedFiles[result.zippedFiles.length - 1];
+        if (lastFile)
+            console.log('last key ', lastFile.Key); // next time start from here
+    }
+});

@@ -19,7 +19,6 @@
 
 namespace App\Services\Actor;
 
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -40,17 +39,17 @@ class ActorDirectory
     /**
      * @var string
      */
-    public string $scratchDirectory;
+    public string $scratchDir;
 
     /**
      * @var string
      */
-    public string $workingDirectory;
+    public string $workingDir;
 
     /**
      * @var string
      */
-    public string $tmpDirectory;
+    public string $tmpDir;
 
     /**
      * @var string
@@ -78,6 +77,11 @@ class ActorDirectory
     public string $archiveTarGzPath;
 
     /**
+     * @var array
+     */
+    public array $rejected  = [];
+
+    /**
      * Set folder property.
      *
      * @param int $queueId
@@ -86,7 +90,7 @@ class ActorDirectory
      */
     public function setFolder(int $queueId, int $actorId, string $expeditionUuid)
     {
-        $this->folderName = $queueId . '-' . $actorId . '-' . $expeditionUuid;
+        $this->folderName = $queueId.'-'.$actorId.'-'.$expeditionUuid;
     }
 
     /**
@@ -114,7 +118,7 @@ class ActorDirectory
      */
     public function setRandomString()
     {
-        $this->randomStr = md5(\Str::random(10) . $this->folderName);
+        $this->randomStr = md5(\Str::random(10).$this->folderName);
     }
 
     /**
@@ -122,7 +126,7 @@ class ActorDirectory
      */
     private function setScratchDirectory()
     {
-        $this->scratchDirectory = Storage::path(config('config.scratch_dir'));
+        $this->scratchDir = config('config.scratch_dir');
     }
 
     /**
@@ -133,13 +137,13 @@ class ActorDirectory
      */
     private function setWorkingDirectory(bool $delete)
     {
-        $this->workingDirectory = $this->scratchDirectory . '/' . $this->folderName;
+        $this->workingDir = $this->scratchDir.'/'.$this->folderName;
 
-        if (File::isDirectory($this->workingDirectory) && $delete) {
-            File::deleteDirectory($this->workingDirectory);
+        if (Storage::disk('s3')->exists($this->workingDir) && $delete) {
+            Storage::disk('s3')->deleteDirectory($this->workingDir);
         }
 
-        File::makeDirectory($this->workingDirectory, 0777, true, true);
+        Storage::disk('s3')->makeDirectory($this->workingDir);
     }
 
     /**
@@ -147,8 +151,8 @@ class ActorDirectory
      */
     private function setTmpDirectory()
     {
-        $this->tmpDirectory = $this->workingDirectory . '/tmp';
-        File::makeDirectory($this->tmpDirectory, 0777, true, true);
+        $this->tmpDir = $this->workingDir.'/tmp';
+        Storage::disk('s3')->makeDirectory($this->tmpDir);
     }
 
     /**
@@ -156,7 +160,7 @@ class ActorDirectory
      */
     private function setExportDirectory()
     {
-        $this->exportDirectory = Storage::path(config('config.export_dir'));
+        $this->exportDirectory = config('config.export_dir');
     }
 
     /**
@@ -164,8 +168,8 @@ class ActorDirectory
      */
     private function setArchiveTar()
     {
-        $this->archiveTar = $this->randomStr . '.tar';
-        $this->archiveTarPath = $this->exportDirectory . '/' . $this->archiveTar;
+        $this->archiveTar = $this->randomStr.'.tar';
+        $this->archiveTarPath = $this->exportDirectory.'/'.$this->archiveTar;
     }
 
     /**
@@ -175,8 +179,8 @@ class ActorDirectory
      */
     protected function setArchiveTarGz(bool $batch = false)
     {
-        $this->archiveTarGz = $batch ? $this->folderName . '.tar.gz' : $this->randomStr . '.tar.gz';
-        $this->archiveTarGzPath = $this->exportDirectory . '/' . $this->archiveTarGz;
+        $this->archiveTarGz = $batch ? $this->folderName.'.tar.gz' : $this->randomStr.'.tar.gz';
+        $this->archiveTarGzPath = $this->exportDirectory.'/'.$this->archiveTarGz;
     }
 
     /**
@@ -198,7 +202,7 @@ class ActorDirectory
      */
     public function setBatchArchiveTarGz(string $fileName): string
     {
-        return $this->exportDirectory . '/' . $fileName . '.tar.gz';
+        return $this->exportDirectory.'/'.$fileName.'.tar.gz';
     }
 
     /**
@@ -208,9 +212,62 @@ class ActorDirectory
      */
     public function deleteFile(string $filePath)
     {
-        if (\File::exists($filePath)) {
-            \File::delete($filePath);
+        if (Storage::disk('s3')->exists($filePath)) {
+            Storage::disk('s3')->delete($filePath);
         }
     }
 
+    /**
+     * Delete directory.
+     *
+     * @param string $dir
+     * @return void
+     */
+    public function deleteDirectory(string $dir)
+    {
+        if (Storage::disk('s3')->exists($dir)) {
+            Storage::disk('s3')->deleteDirectory($dir);
+        }
+    }
+
+    /**
+     * Check if file exists and is image.
+     *
+     * @param string $filePath
+     * @param string $subjectId
+     * @param bool $reject
+     * @return bool
+     */
+    public function checkFileExists(string $filePath, string $subjectId, bool $reject = true): bool
+    {
+        if (! Storage::disk('s3')->exists($filePath)) {
+            if ($reject) {
+                $this->rejected[$subjectId] = 'Image was not downloaded and converted.';
+            }
+
+            return false;
+        }
+
+        if (false === exif_imagetype($filePath)) {
+            if ($reject) {
+                $this->rejected[$subjectId] = 'Converted image file was corrupt.';
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Save file.
+     *
+     * @param string $filePath
+     * @param string $content
+     * @return void
+     */
+    public function putFile(string $filePath, string $content)
+    {
+        Storage::disk('s3')->put($filePath, $content);
+    }
 }

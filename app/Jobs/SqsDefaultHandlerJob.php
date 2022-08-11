@@ -17,45 +17,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+namespace App\Jobs;
 
-use Illuminate\Support\Carbon;
-use MongoDB\BSON\UTCDateTime;
+use Illuminate\Contracts\Queue\Job as LaravelJob;
 
-/**
- * Class PanoptesTranscription
- *
- * @package App\Models
- */
-class PanoptesTranscriptionNew extends BaseMongoModel
+class SqsDefaultHandlerJob
 {
+    protected $data;
 
     /**
-     * Set Collection
-     */
-    protected $collection = 'panoptes_transcriptions_new';
-
-    /**
-     * @var string[]
-     */
-    protected $casts = [
-        'subject_id' => 'int',
-        'classification_id' => 'int',
-        'workflow_id' => 'int',
-        'subject_expeditionId' => 'int',
-        'subject_projectId' => 'int',
-        'transcription_id' => 'string'
-    ];
-
-    /**
-     * OrderBy
+     * Construct
+     * Handle defaults by sending email.
      *
-     * @var array
+     * @return void
      */
-    protected $orderBy = [[]];
-
-    protected static function boot()
+    public function _construct()
     {
-        parent::boot();
+    }
+
+    /**
+     * @param LaravelJob $job
+     * @param array $data
+     */
+    public function handle(LaravelJob $job, array $data)
+    {
+        // This is incoming JSON payload, already decoded to an array
+        var_dump($data);
+
+        // Raw JSON payload from SQS, if necessary
+        var_dump($job->getRawBody());
     }
 }

@@ -19,35 +19,52 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
+use App\Models\Actor;
 use App\Models\Download;
+use App\Models\Expedition;
+use App\Models\User;
 use App\Notifications\NfnBatchExportComplete;
+use App\Services\Actor\Traits\ActorDirectory;
 use Exception;
 use File;
-use function route;
-use function t;
 
 /**
  * Class ZooniverseExportBatch
  *
  * @package App\Services\Actor
  */
-class ZooniverseExportBatch extends ZooniverseBase
+class ZooniverseExportBatch
 {
+
+    use ActorDirectory;
+
+    /**
+     * @var \App\Models\Actor
+     */
+    private Actor $actor;
+
+    /**
+     * @var \App\Models\Expedition
+     */
+    private Expedition $expedition;
+
+    /**
+     * @var \App\Models\User
+     */
+    private User $owner;
 
     /**
      * @var array
      */
-    private $fileNames = [];
+    private array $fileNames = [];
 
     /**
-     * Get Download.
      *
-     * @param string $downloadId
-     * @return \App\Models\Download
      */
-    public function getDownload(string $downloadId): Download
+    public function __construct(
+    )
     {
-        return $this->dbService->downloadRepo->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
+
     }
 
     /**
@@ -63,7 +80,7 @@ class ZooniverseExportBatch extends ZooniverseBase
         $chunks = $this->readCsv();
         $this->processChunks($chunks);
 
-        File::deleteDirectory($this->workingDirectory);
+        File::deleteDirectory($this->workingDir);
 
         $links = $this->buildLinks();
 
@@ -78,11 +95,12 @@ class ZooniverseExportBatch extends ZooniverseBase
      */
     private function setProperties(Download $download)
     {
-        $this->setExpedition($download->expedition);
-        $this->setActor($download->actor);
-        $this->setOwner($download->expedition->project->group->owner);
-        $this->actorDirectory->setBatchFolder($download->file);
-        $this->actorDirectory->setDirectories(true, true);
+        $this->expedition = $download->expedition;
+        $this->actor = $download->actor;
+        $this->owner = $download->expedition->project->group->owner;
+
+        $this->setBatchFolder($download->file);
+        $this->setDirectories(true, true);
     }
 
     /**
@@ -93,7 +111,7 @@ class ZooniverseExportBatch extends ZooniverseBase
     private function extractFile()
     {
         if (File::isFile($this->archiveTarGzPath)) {
-            exec('tar -xzf '.$this->archiveTarGzPath.' --directory '.$this->workingDirectory);
+            exec('tar -xzf '.$this->archiveTarGzPath.' --directory '.$this->workingDir);
 
             return;
         }
@@ -109,7 +127,7 @@ class ZooniverseExportBatch extends ZooniverseBase
      */
     private function readCsv(): array
     {
-        $csv = $this->workingDirectory . '/' . $this->expedition->uuid . '.csv';
+        $csv = $this->workingDir . '/' . $this->expedition->uuid . '.csv';
         $this->csv->readerCreateFromPath($csv);
         $this->csv->setDelimiter();
         $this->csv->setEnclosure();
@@ -137,7 +155,7 @@ class ZooniverseExportBatch extends ZooniverseBase
 
             $this->tarGzFile($fileName);
 
-            File::deleteDirectory($this->tmpDirectory, true);
+            File::deleteDirectory($this->tmpDir, true);
         }
     }
 
@@ -148,8 +166,8 @@ class ZooniverseExportBatch extends ZooniverseBase
      */
     private function moveFile(string $fileName)
     {
-        $filePath = $this->workingDirectory . '/' . $fileName;
-        $tmpPath = $this->tmpDirectory . '/' . $fileName;
+        $filePath = $this->workingDir . '/' . $fileName;
+        $tmpPath = $this->tmpDir . '/' . $fileName;
         File::move($filePath, $tmpPath);
     }
 
@@ -163,7 +181,7 @@ class ZooniverseExportBatch extends ZooniverseBase
     private function createCsv(array $chunk, string $fileName)
     {
         $csvFileName = $fileName . '.csv';
-        $csvFilePath = $this->tmpDirectory.'/'.$csvFileName;
+        $csvFilePath = $this->tmpDir.'/'.$csvFileName;
         $this->csv->writerCreateFromPath($csvFilePath);
         $this->csv->insertOne(array_keys(reset($chunk)));
         $this->csv->insertAll($chunk);
@@ -179,8 +197,8 @@ class ZooniverseExportBatch extends ZooniverseBase
     {
         $tarFilePath = $this->actorDirectory->setBatchArchiveTarGz($fileName);
 
-        exec("cd {$this->tmpDirectory} && find . \( -name '*.jpg' -o -name '*.csv' \) -print >../export.manifest");
-        exec("cd {$this->tmpDirectory} && tar -czf $tarFilePath --files-from ../export.manifest", $out, $ok);
+        exec("cd {$this->tmpDir} && find . \( -name '*.jpg' -o -name '*.csv' \) -print >../export.manifest");
+        exec("cd {$this->tmpDir} && tar -czf $tarFilePath --files-from ../export.manifest", $out, $ok);
 
         if (! $ok) {
             return;

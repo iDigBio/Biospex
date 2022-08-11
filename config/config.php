@@ -5,20 +5,21 @@ return [
     /**
      * Site variables
      */
-    'app_domain'      => env('APP_DOMAIN'),
-    'api_domain'      => env('API_DOMAIN'),
-    'api_url'         => env('API_URL'),
-    'api_version'     => env('API_VERSION'),
-    'api_token'       => env('API_TOKEN'),
-    'current_path'    => env('CURRENT_PATH'),
-    'server_user'     => env('SERVER_USER'),
-    'registration'    => env('REGISTRATION'),
-    'expedition_size' => env('EXPEDITION_SIZE'),
-    'echo_id'         => env('ECHO_ID'),
-    'echo_key'        => env('ECHO_KEY'),
-    'echo_port'       => env('ECHO_PORT'),
-    'echo_ssl_crt'    => env('ECHO_SSL_CRT'),
-    'echo_ssl_key'    => env('ECHO_SSL_KEY'),
+    'app_domain'         => env('APP_DOMAIN'),
+    'api_domain'         => env('API_DOMAIN'),
+    'api_url'            => env('API_URL'),
+    'api_version'        => env('API_VERSION'),
+    'api_token'          => env('API_TOKEN'),
+    'current_path'       => env('CURRENT_PATH'),
+    'server_user'        => env('SERVER_USER'),
+    'registration'       => env('REGISTRATION'),
+    'expedition_size'    => env('EXPEDITION_SIZE'),
+    'echo_id'            => env('ECHO_ID'),
+    'echo_key'           => env('ECHO_KEY'),
+    'echo_port'          => env('ECHO_PORT'),
+    'echo_ssl_crt'       => env('ECHO_SSL_CRT'),
+    'echo_ssl_key'       => env('ECHO_SSL_KEY'),
+    'soketi_config_path' => env('SOKETI_CONFIG_PATH'),
 
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
@@ -27,6 +28,10 @@ return [
     'aws_secret_key'            => env('AWS_SECRET_ACCESS_KEY'),
     'aws_default_region'        => env('AWS_DEFAULT_REGION'),
     'aws_lambda_export_img_url' => env('AWS_LAMBDA_EXPORT_IMG_URL'),
+    'aws_image_export_result'   => env('AWS_IMAGE_EXPORT_RESULT'),
+    'aws_lambda_count'          => env('AWS_LAMBDA_COUNT'),
+    'aws_lambda_delay'          => env('AWS_LAMBDA_DELAY'),
+    'aws_efs_dir'               => env('AWS_EFS_DIR'),
 
     'charts_dir'                   => 'public/charts',
     'scratch_dir'                  => 'scratch',
@@ -78,10 +83,11 @@ return [
     'export_stages'       => [
         'Build Queue', // 0
         'Process Images', // 1
-        'Build CSV', // 2
-        'Compress Export File', //3
-        'Send Report', // 4
-        'Delete Working Files', // 5
+        'Check Image Process', //2
+        'Build CSV', //3
+        'Compress Export File', //4
+        'Creating Report', //5
+        'Delete Working Files', //6
     ],
 
     /**
@@ -110,12 +116,6 @@ return [
                 'http://portal.idigbio.org/terms/recordId',
             ],
         ],
-    ],
-
-    'nfnMisMatched' => [
-        'subject_Subject_ID'       => 'subject_subjectId',
-        'subject_Scientific_Name'  => 'subject_scientificName',
-        'subject_Expedition_Title' => 'subject_expeditionTitle',
     ],
 
     'dwcTranscriptFields' => [
@@ -147,13 +147,10 @@ return [
     'import_tube'           => env('QUEUE_IMPORT_TUBE'),
     'export_tube'           => env('QUEUE_EXPORT_TUBE'),
     'reconcile_tube'        => env('QUEUE_RECONCILE_TUBE'),
-    'stat_tube'             => env('QUEUE_STAT_TUBE'),
     'workflow_tube'         => env('QUEUE_WORKFLOW_TUBE'),
     'ocr_tube'              => env('QUEUE_OCR_TUBE'),
     'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
     'pusher_process_tube'   => env('QUEUE_PUSHER_PROCESS_TUBE'),
-    'working_tube'          => env('QUEUE_WORKING_TUBE'),
-    'lambda_tube'           => env('QUEUE_LAMBDA_TUBE'),
 
     /* Images */
     /* Min and max logo and banner sizes used in Project model. Max Zoonviverse image. Thumb sizes. */

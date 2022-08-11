@@ -21,34 +21,53 @@ namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Actor;
 use App\Services\Actor\ActorInterface;
+use App\Services\Actor\Traits\ActorDirectory;
+use App\Repositories\ExportQueueRepository;
 
 /**
  * Class ZooniverseExportDeleteFiles
  *
  * @package App\Services\Actor
  */
-class ZooniverseExportDeleteFiles extends ZooniverseBase implements ActorInterface
+class ZooniverseExportDeleteFiles implements ActorInterface
 {
+    use ActorDirectory;
+
+    /**
+     * @var \App\Repositories\ExportQueueRepository
+     */
+    private ExportQueueRepository $exportQueueRepository;
+
+    /**
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
+     */
+    public function __construct(
+        ExportQueueRepository $exportQueueRepository
+    )
+    {
+        $this->exportQueueRepository = $exportQueueRepository;
+    }
+
     /**
      * Process actor.
      *
      * @param \App\Models\Actor $actor
-     * @return mixed|void
+     * @return void
      * @throws \Exception
      */
     public function process(Actor $actor)
     {
-        $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
+        $queue = $this->exportQueueRepository->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
         $queue->processed = 0;
-        $queue->stage = 5;
+        $queue->stage = 6;
         $queue->save();
 
         \Artisan::call('export:poll');
 
         try {
-            $this->actorDirectory->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
-            $this->actorDirectory->setDirectories();
-            \File::deleteDirectory($this->actorDirectory->workingDirectory);
+            $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
+            $this->setDirectories();
+            $this->deleteDirectory($this->workingDir);
             $queue->delete();
 
             \Artisan::call('export:poll');

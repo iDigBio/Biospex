@@ -23,6 +23,7 @@ use App\Facades\TranscriptionMapHelper;
 use App\Repositories\PanoptesTranscriptionRepository;
 use App\Repositories\SubjectRepository;
 use App\Services\Csv\Csv;
+use App\Services\Process\CreateReportService;
 use Exception;
 use Str;
 use Validator;
@@ -70,14 +71,14 @@ class CreatePanoptesTranscriptionService
     protected Csv $csv;
 
     /**
-     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
-     */
-    protected mixed $nfnMisMatched;
-
-    /**
      * @var array
      */
     protected array $reserved;
+
+    /**
+     * @var \App\Services\Process\CreateReportService
+     */
+    private CreateReportService $createReportService;
 
     /**
      * CreatePanoptesTranscriptionService constructor.
@@ -86,18 +87,21 @@ class CreatePanoptesTranscriptionService
      * @param \App\Repositories\SubjectRepository $subjectRepo
      * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      * @param \App\Services\Transcriptions\CreateTranscriptionLocationService $createTranscriptionLocationService
+     * @param \App\Services\Process\CreateReportService $createReportService
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
         SubjectRepository $subjectRepo,
         PanoptesTranscriptionRepository $panoptesTranscriptionRepo,
         CreateTranscriptionLocationService $createTranscriptionLocationService,
+        CreateReportService $createReportService,
         Csv $csv
     ) {
         $this->subjectRepo = $subjectRepo;
         $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
         $this->createTranscriptionLocationService = $createTranscriptionLocationService;
         $this->csv = $csv;
+        $this->createReportService = $createReportService;
     }
 
     /**
@@ -222,7 +226,7 @@ class CreatePanoptesTranscriptionService
 
         $csvName = Str::random().'.csv';
 
-        return $this->csv->createReportCsv($this->csvError, $csvName);
+        return $this->createReportService->createCsvReport($csvName, $this->csvError);
     }
 
 }

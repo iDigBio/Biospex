@@ -20,6 +20,7 @@
 namespace App\Services\Download;
 
 use Illuminate\Support\Facades\Storage;
+use JetBrains\PhpStorm\ArrayShape;
 use League\Csv\Reader;
 
 /**
@@ -32,17 +33,17 @@ class DownloadFileBase
     /**
      * @var string|null
      */
-    private $filePath = null;
+    public string|null $filePath = null;
 
     /**
      * @var string|null
      */
-    private $storagePath = null;
+    public string|null $storagePath = null;
 
     /**
      * @var string|null
      */
-    private $headerFileName = null;
+    public string|null $headerFileName = null;
 
     /**
      * Set file path.
@@ -68,7 +69,7 @@ class DownloadFileBase
 
     /**
      * Check file exists to download.
-     *
+     * TODO remove and change to S3 method below
      * @return bool
      * @throws \Exception
      */
@@ -79,6 +80,21 @@ class DownloadFileBase
         }
 
         return Storage::exists($this->filePath);
+    }
+
+    /**
+     * Check file exists to download.
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function checkS3FileExists(): bool
+    {
+        if(!isset($this->filePath)) {
+            throw new \Exception(t('File path must be set.'));
+        }
+
+        return Storage::disk('s3')->exists($this->filePath);
     }
 
     /**
@@ -155,6 +171,7 @@ class DownloadFileBase
      * @return string[]
      * @throws \Exception
      */
+    #[ArrayShape(['Content-Type' => "string", 'Content-disposition' => "string"])]
     public function setTarHeaders(): array
     {
         if(!isset($this->headerFileName)) {
@@ -163,6 +180,29 @@ class DownloadFileBase
 
         return [
             'Content-Type'        => 'application/x-compressed',
+            'Content-disposition' => 'attachment; filename="' . $this->headerFileName . '"',
+        ];
+    }
+
+    /**
+     * Set Zip download headers.
+     *
+     * @return string[]
+     * @throws \Exception
+     */
+    #[ArrayShape(['Content-Type'              => "string",
+                  'Content-Transfer-Encoding' => "string",
+                  'Content-disposition'       => "string"
+    ])]
+    public function setZipHeaders(): array
+    {
+        if(!isset($this->headerFileName)) {
+            throw new \Exception(t('File name must be set.'));
+        }
+
+        return [
+            'Content-Type'        => 'application/zip',
+            'Content-Transfer-Encoding' => 'Binary',
             'Content-disposition' => 'attachment; filename="' . $this->headerFileName . '"',
         ];
     }

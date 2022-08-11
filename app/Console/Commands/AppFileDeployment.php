@@ -90,6 +90,10 @@ class AppFileDeployment extends Command
         $appFiles = File::files($this->resPath.'/apps');
         $appTargets = collect($appFiles)->map(function ($file) {
             $target = $this->appPath.'/'.File::name($file);
+            if (File::exists($target)) {
+                File::delete($target);
+            }
+
             File::copy($file, $target);
 
             return $target;
@@ -98,6 +102,9 @@ class AppFileDeployment extends Command
         $supFiles = File::files($this->resPath.'/supervisord');
         $subTargets = collect($supFiles)->map(function ($file) {
             $target = $this->supPath.'/'.File::name($file);
+            if (File::exists($target)) {
+                File::delete($target);
+            }
             File::copy($file, $target);
 
             return $target;
@@ -117,7 +124,7 @@ class AppFileDeployment extends Command
      * @param $search
      * @return false|\Illuminate\Config\Repository|mixed|string
      */
-    private function configureReplace($search)
+    private function configureReplace($search): mixed
     {
         if ($search === 'APP_URL' || $search === 'APP_ENV') {
             return config(str_replace('_', '.', strtolower($search)));
@@ -166,13 +173,13 @@ class AppFileDeployment extends Command
             'QUEUE_IMPORT_TUBE',
             'QUEUE_EXPORT_TUBE',
             'QUEUE_RECONCILE_TUBE',
-            'QUEUE_STAT_TUBE',
             'QUEUE_WORKFLOW_TUBE',
             'QUEUE_OCR_TUBE',
             'QUEUE_PUSHER_TUBE',
             'QUEUE_PUSHER_PROCESS_TUBE',
-            'QUEUE_WORKING_TUBE',
-            'QUEUE_LAMBDA_TUBE'
+
+            'AWS_IMAGE_EXPORT_RESULT',
+            'AWS_EFS_DIR',
         ]);
     }
 }
