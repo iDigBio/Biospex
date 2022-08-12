@@ -28,7 +28,7 @@ return [
     'aws_secret_key'            => env('AWS_SECRET_ACCESS_KEY'),
     'aws_default_region'        => env('AWS_DEFAULT_REGION'),
     'aws_lambda_export_img_url' => env('AWS_LAMBDA_EXPORT_IMG_URL'),
-    'aws_image_export_result'   => env('AWS_IMAGE_EXPORT_RESULT'),
+    'aws_queue_plain'           => env('AWS_QUEUE_PLAIN'),
     'aws_lambda_count'          => env('AWS_LAMBDA_COUNT'),
     'aws_lambda_delay'          => env('AWS_LAMBDA_DELAY'),
     'aws_efs_dir'               => env('AWS_EFS_DIR'),

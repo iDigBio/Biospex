@@ -134,7 +134,7 @@ class AppFileDeployment extends Command
             return config('database.redis.default.host');
         }
 
-        if (strpos($search, 'QUEUE_') === 0) {
+        if (str_starts_with($search, 'QUEUE_')) {
             $replace = strtolower(str_replace('QUEUE_', '', $search));
 
             return config('config.'.$replace);
@@ -166,6 +166,7 @@ class AppFileDeployment extends Command
             'API_TOKEN',
 
             'NUM_PROCS',
+
             'QUEUE_CHART_TUBE',
             'QUEUE_CLASSIFICATION_TUBE',
             'QUEUE_DEFAULT_TUBE',
@@ -178,7 +179,7 @@ class AppFileDeployment extends Command
             'QUEUE_PUSHER_TUBE',
             'QUEUE_PUSHER_PROCESS_TUBE',
 
-            'AWS_IMAGE_EXPORT_RESULT',
+            'AWS_QUEUE_PLAIN',
             'AWS_EFS_DIR',
         ]);
     }
