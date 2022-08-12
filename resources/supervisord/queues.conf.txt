@@ -128,19 +128,6 @@ autorestart=true
 user=SERVER_USER
 numprocs=NUM_PROCS
 
-[program:QUEUE_STAT_TUBE]
-process_name=%(program_name)s_%(process_num)02d
-directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_STAT_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_STAT_TUBE.log
-redirect_stderr=true
-logfile_maxbytes=50MB                           
-logfile_backups=1
-autostart=true
-autorestart=true
-user=SERVER_USER
-numprocs=NUM_PROCS
-
 [program:QUEUE_WORKFLOW_TUBE]
 process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
@@ -148,19 +135,6 @@ command=php artisan queue:work beanstalkd --force --queue=QUEUE_WORKFLOW_TUBE --
 stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_WORKFLOW_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
-logfile_backups=1
-autostart=true
-autorestart=true
-user=SERVER_USER
-numprocs=NUM_PROCS
-
-[program:QUEUE_WORKING_TUBE]
-process_name=%(program_name)s_%(process_num)02d
-directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_WORKING_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_WORKING_TUBE.log
-redirect_stderr=true
-logfile_maxbytes=50MB
 logfile_backups=1
 autostart=true
 autorestart=true

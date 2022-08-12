@@ -142,12 +142,10 @@ return [
     'import_tube'           => env('QUEUE_IMPORT_TUBE'),
     'export_tube'           => env('QUEUE_EXPORT_TUBE'),
     'reconcile_tube'        => env('QUEUE_RECONCILE_TUBE'),
-    'stat_tube'             => env('QUEUE_STAT_TUBE'),
     'workflow_tube'         => env('QUEUE_WORKFLOW_TUBE'),
     'ocr_tube'              => env('QUEUE_OCR_TUBE'),
     'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
     'pusher_process_tube'   => env('QUEUE_PUSHER_PROCESS_TUBE'),
-    'working_tube'          => env('QUEUE_WORKING_TUBE'),
 
     /* Images */
     /* Min and max logo and banner sizes used in Project model. Max Zoonviverse image. Thumb sizes. */
