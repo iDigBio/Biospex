@@ -100,7 +100,7 @@ class ExportQueueFileRepository extends BaseRepository
 
         $file = $this->model->firstOrNew($attributes);
         $file->url = $subject->accessURI;
-        $file->error = 0;
+        $file->completed = 0;
         $file->error_message = null;
         $file->save();
     }
@@ -114,7 +114,7 @@ class ExportQueueFileRepository extends BaseRepository
     public function getQueueFileErrorsData(int $queueId): array
     {
         $data = [];
-        $remove = array_flip(['id', 'queue_id', 'error', 'created_at', 'updated_at']);
+        $remove = array_flip(['id', 'queue_id', 'error_message', 'created_at', 'updated_at']);
 
         $callback = function ($files) use($remove, &$data) {
             $data[] = $files->map(function ($file) use ($remove) {

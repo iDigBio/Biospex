@@ -76,29 +76,25 @@ class OcrPollCommand extends Command
             return;
         }
 
-        try {
-            $count = 0;
-            $data['payload'] = $records->map(function ($record) use (&$count) {
-                $batches = $count === 0 ? '' : t(n(':batches_queued process remains in queue before processing begins', ':batches_queued processes remain in queue before processing begins', $count), [':batches_queued' => $count]);
+        $count = 0;
+        $data['payload'] = $records->map(function ($record) use (&$count) {
+            $batches = $count === 0 ? '' : t(n(':batches_queued process remains in queue before processing begins', ':batches_queued processes remain in queue before processing begins', $count), [':batches_queued' => $count]);
 
-                $countNumbers = [':processed' => $record->processed, ':total' => $record->total];
-                $ocr = t(n(':processed record of :total completed.', ':processed records of :total completed.', $record->processed), $countNumbers);
+            $countNumbers = [':processed' => $record->processed, ':total' => $record->total];
+            $ocr = t(n(':processed record of :total completed.', ':processed records of :total completed.', $record->processed), $countNumbers);
 
-                $title = $record->expedition !== null ? $record->expedition->title : $record->project->title;
+            $title = $record->expedition !== null ? $record->expedition->title : $record->project->title;
 
-                $notice = view('common.ocr-process', compact('title', 'ocr', 'batches'))->render();
+            $notice = view('common.ocr-process', compact('title', 'ocr', 'batches'))->render();
 
-                $count++;
+            $count++;
 
-                return [
-                    'groupId' => $record->project->group->id,
-                    'notice'  => $notice,
-                ];
-            })->toArray();
+            return [
+                'groupId' => $record->project->group->id,
+                'notice'  => $notice,
+            ];
+        })->toArray();
 
-            PollOcrEvent::dispatch($data);
-        } catch (\Exception $e) {
-            echo $e->getMessage() . PHP_EOL;
-        }
+        PollOcrEvent::dispatch($data);
     }
 }

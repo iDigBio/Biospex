@@ -141,11 +141,11 @@ autorestart=true
 user=SERVER_USER
 numprocs=NUM_PROCS
 
-[program:AWS_QUEUE_PLAIN]
+[program:QUEUE_AWS_IMG_PROCESS_TUBE]
 process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work sqs-plain --force --queue=AWS_QUEUE_PLAIN --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/AWS_QUEUE_PLAIN.log
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_AWS_IMG_PROCESS_TUBE.log
 redirect_stderr=true
 logfile_maxbytes=50MB
 logfile_backups=1

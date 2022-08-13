@@ -89,7 +89,7 @@ class AppLambdaCommand extends Command
                 // The name your created Lamda function
                 'FunctionName'   => 'imageExportProcess',
                 'Payload'        => json_encode($image),
-                //'InvocationType' => 'Event',
+                'InvocationType' => 'Event',
             ]);
 
             echo $result['Payload'] . PHP_EOL;
@@ -107,7 +107,6 @@ class AppLambdaCommand extends Command
         $files = $this->exportQueueFileRepository->findBy('queue_id', 1)->limit($total)->get();
 
         return $files->map(function ($file) {
-            echo $file->url . PHP_EOL;
             return [
                 'queueId' => $file->queue_id,
                 'subjectId'  => $file->subject_id,

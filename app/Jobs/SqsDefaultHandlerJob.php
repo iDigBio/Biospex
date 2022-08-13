@@ -41,10 +41,9 @@ class SqsDefaultHandlerJob
      */
     public function handle(LaravelJob $job, array $data)
     {
-        // This is incoming JSON payload, already decoded to an array
-        var_dump($data);
+        \Log::alert(json_encode($data));
 
         // Raw JSON payload from SQS, if necessary
-        var_dump($job->getRawBody());
+        //var_dump($job->getRawBody());
     }
 }

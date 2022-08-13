@@ -20,6 +20,7 @@
 namespace App\Services\Api;
 
 use Aws\S3\S3Client;
+use Illuminate\Support\Facades\Storage;
 
 class AwsS3ApiService
 {
@@ -33,7 +34,7 @@ class AwsS3ApiService
      */
     public function __construct()
     {
-        $this->client = \Storage::disk('s3')->getClient();
+        $this->client = Storage::disk('s3')->getClient();
     }
 
     /**

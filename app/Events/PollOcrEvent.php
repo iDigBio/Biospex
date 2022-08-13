@@ -20,42 +20,40 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 /**
  * Class PollOcrEvent
  *
  * @package App\Events
  */
-class PollOcrEvent implements ShouldBroadcast
+class PollOcrEvent extends Event implements ShouldBroadcast
 {
-    use Dispatchable;
+    use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * @var array
      */
-    public array $data = [];
+    public $data = [];
 
+    /**
+     * The name of the queue on which to place the event.
+     *
+     * @var string
+     */
+    public $broadcastQueue;
 
     /**
      * PollOcrEvent constructor.
-     *
      * @param $data
      */
     public function __construct($data)
     {
         $this->data = $data;
-    }
-
-    /**
-     * The name of the queue on which to place the broadcasting job.
-     *
-     * @return string
-     */
-    public function broadcastQueue(): string
-    {
-        return config('config.event_tube');
+        $this->broadcastQueue = config('config.event_tube');
     }
 
     /**
@@ -63,7 +61,7 @@ class PollOcrEvent implements ShouldBroadcast
      *
      * @return Channel
      */
-    public function broadcastOn(): Channel
+    public function broadcastOn()
     {
         return new Channel(config('config.poll_ocr_channel'));
     }

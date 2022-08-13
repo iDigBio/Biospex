@@ -65,8 +65,6 @@ class SqsImageExportResultJob
 
         $this->sqsImageExportProcess->process($data);
 
-        \Artisan::call('export:poll');
-
         $job->delete();
     }
 }

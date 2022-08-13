@@ -5,7 +5,7 @@
  */
 return [
     'handlers' => [
-        'image-export-result' => \App\Jobs\SqsImageExportResultJob::class,
+        'imageExportResult' => \App\Jobs\SqsImageExportResultJob::class,
     ],
 
     'default-handler' => App\Jobs\SqsDefaultHandlerJob::class

@@ -178,6 +178,7 @@ class AppFileDeployment extends Command
             'QUEUE_OCR_TUBE',
             'QUEUE_PUSHER_TUBE',
             'QUEUE_PUSHER_PROCESS_TUBE',
+            'QUEUE_AWS_IMG_PROCESS_TUBE',
 
             'AWS_QUEUE_PLAIN',
             'AWS_EFS_DIR',

@@ -49,13 +49,6 @@ return [
             'retry_after' => 37000,
         ],
 
-        'long-beanstalkd' => [
-            'driver' => 'beanstalkd',
-            'host' => 'localhost',
-            'queue' => 'default',
-            'retry_after' => 300025,
-        ],
-
         'sqs' => [
             'driver' => 'sqs',
             'key' => env('AWS_ACCESS_KEY'),
@@ -77,8 +70,8 @@ return [
             'driver' => 'sqs-plain',
             'key'    => env('AWS_ACCESS_KEY', ''),
             'secret' => env('AWS_SECRET_ACCESS_KEY', ''),
-            'prefix' => env('AWS_QUEUE_URL'),
-            'queue'  => env('AWS_QUEUE'),
+            'prefix' => env('AWS_QUEUE_PLAIN_URL'),
+            'queue'  => env('AWS_QUEUE_PLAIN'),
             'region' => env('AWS_DEFAULT_REGION'),
         ],
 

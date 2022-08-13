@@ -62,11 +62,13 @@ class SqsImageExportProcess
     {
         $response = $data['responsePayload'];
         $status = $response['statusCode'];
-        $body = json_decode($response['body']);
+        $body = json_decode($response['body'], true);
 
         $this->updateQueue($body['queueId']);
 
         $this->updateQueueFile($status, $body);
+
+        \Artisan::call('export:poll');
     }
 
     /**

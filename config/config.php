@@ -5,21 +5,20 @@ return [
     /**
      * Site variables
      */
-    'app_domain'         => env('APP_DOMAIN'),
-    'api_domain'         => env('API_DOMAIN'),
-    'api_url'            => env('API_URL'),
-    'api_version'        => env('API_VERSION'),
-    'api_token'          => env('API_TOKEN'),
-    'current_path'       => env('CURRENT_PATH'),
-    'server_user'        => env('SERVER_USER'),
-    'registration'       => env('REGISTRATION'),
-    'expedition_size'    => env('EXPEDITION_SIZE'),
-    'echo_id'            => env('ECHO_ID'),
-    'echo_key'           => env('ECHO_KEY'),
-    'echo_port'          => env('ECHO_PORT'),
-    'echo_ssl_crt'       => env('ECHO_SSL_CRT'),
-    'echo_ssl_key'       => env('ECHO_SSL_KEY'),
-    'soketi_config_path' => env('SOKETI_CONFIG_PATH'),
+    'app_domain'      => env('APP_DOMAIN'),
+    'api_domain'      => env('API_DOMAIN'),
+    'api_url'         => env('API_URL'),
+    'api_version'     => env('API_VERSION'),
+    'api_token'       => env('API_TOKEN'),
+    'current_path'    => env('CURRENT_PATH'),
+    'server_user'     => env('SERVER_USER'),
+    'registration'    => env('REGISTRATION'),
+    'expedition_size' => env('EXPEDITION_SIZE'),
+    'echo_id'         => env('ECHO_ID'),
+    'echo_key'        => env('ECHO_KEY'),
+    'echo_port'       => env('ECHO_PORT'),
+    'echo_ssl_crt'    => env('ECHO_SSL_CRT'),
+    'echo_ssl_key'    => env('ECHO_SSL_KEY'),
 
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
@@ -28,9 +27,9 @@ return [
     'aws_secret_key'            => env('AWS_SECRET_ACCESS_KEY'),
     'aws_default_region'        => env('AWS_DEFAULT_REGION'),
     'aws_lambda_export_img_url' => env('AWS_LAMBDA_EXPORT_IMG_URL'),
-    'aws_queue_plain'           => env('AWS_QUEUE_PLAIN'),
     'aws_lambda_count'          => env('AWS_LAMBDA_COUNT'),
     'aws_lambda_delay'          => env('AWS_LAMBDA_DELAY'),
+    'aws_queue_plain'           => env('AWS_QUEUE_PLAIN'),
     'aws_efs_dir'               => env('AWS_EFS_DIR'),
 
     'charts_dir'                   => 'public/charts',
@@ -151,6 +150,7 @@ return [
     'ocr_tube'              => env('QUEUE_OCR_TUBE'),
     'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
     'pusher_process_tube'   => env('QUEUE_PUSHER_PROCESS_TUBE'),
+    'aws_img_process_tube'  => env('QUEUE_AWS_IMG_PROCESS_TUBE'),
 
     /* Images */
     /* Min and max logo and banner sizes used in Project model. Max Zoonviverse image. Thumb sizes. */
