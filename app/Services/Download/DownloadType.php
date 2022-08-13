@@ -187,14 +187,11 @@ class DownloadType extends DownloadFileBase
     public function deleteExportFiles(string $expeditionId)
     {
         $downloads = $this->downloadRepo->getExportFiles($expeditionId);
-        $nfnExportDir = Storage::path(config('config.export_dir'));
 
-        $downloads->each(function ($download) use ($nfnExportDir) {
-            $file = $nfnExportDir.'/'.$download->file;
-            if (File::isFile($file)) {
-                File::delete($file);
+        $downloads->each(function ($download) {
+            if (Storage::disk('s3')->exists(config('config.export_dir').'/'.$download->file)) {
+                Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
             }
-
             $download->delete();
         });
     }
@@ -209,8 +206,8 @@ class DownloadType extends DownloadFileBase
         $this->deleteExportFiles($expedition->id);
 
         $attributes = [
-            'state'     => 0,
-            'total'     => $expedition->stat->local_subject_count
+            'state' => 0,
+            'total' => $expedition->stat->local_subject_count,
         ];
 
         $expedition->nfnActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
