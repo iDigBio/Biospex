@@ -74,14 +74,12 @@ class NfnPanoptes
         if ($actor->pivot->state === 0) {
             \Bus::batch([
                 new ZooniverseExportBuildQueueJob($actor),
-                /*
                 new ZooniverseExportProcessImageJob($actor),
                 new ZooniverseExportCheckImageProcessJob($actor),
                 new ZooniverseExportBuildCsvJob($actor),
                 new ZooniverseExportBuildZipJob($actor),
                 new ZooniverseExportCreateReportJob($actor),
                 new ZooniverseExportDeleteFilesJob($actor)
-                */
             ])->catch(function (Batch $batch, \Exception $exception) {
                 $this->sendErrorNotification($exception);
             })->name('NfnPanoptes Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
