@@ -103,7 +103,10 @@ class ExportQueueRepository extends BaseRepository
      */
     public function findWithExpeditionNfnActor(int $expeditionId)
     {
-        return $this->model->with(['expedition.nfnActor', 'expedition.stat'])->where('expedition_id', $expeditionId)->first();
+        return $this->model->with(['expedition.nfnActor', 'expedition.stat'])
+            ->where('expedition_id', $expeditionId)
+            ->where('error', 0)
+            ->first();
     }
 
     /**

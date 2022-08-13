@@ -67,7 +67,7 @@ class CreateReportService
         $bucket = config('filesystems.disks.s3.bucket');
         $filePath = config('config.reports_dir') . '/' . $csvName;
 
-        $this->awsS3CsvService->createBucketStream($bucket, $filePath);
+        $this->awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();
         $this->awsS3CsvService->insertOne($header);
         $this->awsS3CsvService->insertAll($data);

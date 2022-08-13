@@ -57,11 +57,12 @@ class AwsS3CsvService
      *
      * @param string $bucket
      * @param string $path
+     * @param string $mode
      * @return void
      */
-    public function createBucketStream(string $bucket, string $path)
+    public function createBucketStream(string $bucket, string $path, string $mode)
     {
-        $this->stream = $this->awsS3ApiService->createS3BucketStream($bucket, $path);
+        $this->stream = $this->awsS3ApiService->createS3BucketStream($bucket, $path, $mode);
     }
 
     /**

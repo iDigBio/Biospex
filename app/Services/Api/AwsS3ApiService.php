@@ -42,9 +42,10 @@ class AwsS3ApiService
      *
      * @param string $bucket
      * @param string $filePath
+     * @param string $mode
      * @return false|resource
      */
-    public function createS3BucketStream(string $bucket, string $filePath)
+    public function createS3BucketStream(string $bucket, string $filePath, string $mode)
     {
         $this->client->registerStreamWrapper();
 
@@ -56,7 +57,7 @@ class AwsS3ApiService
 
         $s3Path = 's3://' . $bucket . '/' . $filePath;
 
-        return fopen($s3Path, 'w+', false, $context);
+        return fopen($s3Path, $mode, false, $context);
     }
 
     /**

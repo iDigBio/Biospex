@@ -20,6 +20,7 @@
 namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Actor;
+use App\Models\ExportQueue;
 use App\Services\Actor\ActorInterface;
 use App\Services\Actor\Traits\ActorDirectory;
 use App\Services\Api\AwsS3ApiService;
@@ -119,7 +120,7 @@ class ZooniverseBuildCsv implements ActorInterface
             $this->setDirectories();
 
             $csvFilePath = $this->tmpDir.'/'.$queue->expedition->uuid.'.csv';
-            $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath);
+            $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'w');
             $this->awsS3CsvService->createCsvWriterFromStream();
             $this->awsS3CsvService->addEncodingFormatter();
 
@@ -145,7 +146,7 @@ class ZooniverseBuildCsv implements ActorInterface
 
             $this->updateRejected($this->rejected);
 
-            if (! $this->checkCsvImageCount()) {
+            if (! $this->checkCsvImageCount($queue)) {
                 throw new Exception(t('The row count in the csv export file does not match image count.'));
             }
         } catch (Exception $exception) {
@@ -178,10 +179,13 @@ class ZooniverseBuildCsv implements ActorInterface
      * Check csv row count to image count.
      * Do not set csv header offset. Since csv is in same dir as image, it will add 1 to the count.
      *
+     * @param \App\Models\ExportQueue $queue
      * @return bool
      */
-    private function checkCsvImageCount(): bool
+    private function checkCsvImageCount(ExportQueue $queue): bool
     {
+        $csvFilePath = $this->tmpDir.'/'.$queue->expedition->uuid.'.csv';
+        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'r');
         $this->awsS3CsvService->createCsvReaderFromStream();
         $csvCount = $this->awsS3CsvService->getReaderCount();
 

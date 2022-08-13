@@ -114,7 +114,7 @@ class GridExportCsvJob implements ShouldQueue
             $bucket = config('filesystems.disks.s3.bucket');
             $filePath = config('config.reports_dir') . '/' . $csvName;
 
-            $stream = $awsS3ApiService->createS3BucketStream($bucket, $filePath);
+            $stream = $awsS3ApiService->createS3BucketStream($bucket, $filePath, 'w');
             $csv->writerCreateFromStream($stream);
             $csv->insertOne($header->keys()->toArray());
 
