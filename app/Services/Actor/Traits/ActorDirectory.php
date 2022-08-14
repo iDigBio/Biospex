@@ -49,11 +49,6 @@ trait ActorDirectory
     /**
      * @var string
      */
-    public string $tmpDir;
-
-    /**
-     * @var string
-     */
     public string $exportDirectory;
 
     /**
@@ -100,7 +95,6 @@ trait ActorDirectory
         $this->setRandomString();
         $this->setScratchDirectory();
         $this->setWorkingDirectory($delete);
-        $this->setTmpDirectory();
         $this->setExportDirectory();
         $this->setArchiveZip($batch);
     }
@@ -138,15 +132,6 @@ trait ActorDirectory
         }
 
         Storage::disk('s3')->makeDirectory($this->workingDir);
-    }
-
-    /**
-     * Set tmp directory.
-     */
-    private function setTmpDirectory()
-    {
-        $this->tmpDir = $this->workingDir.'/tmp';
-        Storage::disk('s3')->makeDirectory($this->tmpDir);
     }
 
     /**

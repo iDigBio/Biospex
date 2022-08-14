@@ -22,7 +22,7 @@ return [
     | Do not change this value in production, it will cause unexpected behavior.
     |
     */
-    'prefix' => 'lada:',
+    'prefix' => 'ladadev:',
 
     /*
     |--------------------------------------------------------------------------

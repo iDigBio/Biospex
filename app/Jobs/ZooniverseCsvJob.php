@@ -28,7 +28,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Queue\SerializesModels;
 use Throwable;
 
 /**
@@ -38,7 +37,7 @@ use Throwable;
  */
 class ZooniverseCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Dispatchable, InteractsWithQueue, Queueable, SkipNfn;
 
     /**
      * @var int
