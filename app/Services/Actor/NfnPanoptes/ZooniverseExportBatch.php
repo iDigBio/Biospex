@@ -155,7 +155,7 @@ class ZooniverseExportBatch
 
             $this->tarGzFile($fileName);
 
-            File::deleteDirectory($this->tmpDir, true);
+            File::deleteDirectory($this->workingDir, true);
         }
     }
 
@@ -167,7 +167,7 @@ class ZooniverseExportBatch
     private function moveFile(string $fileName)
     {
         $filePath = $this->workingDir . '/' . $fileName;
-        $tmpPath = $this->tmpDir . '/' . $fileName;
+        $tmpPath = $this->workingDir . '/' . $fileName;
         File::move($filePath, $tmpPath);
     }
 
@@ -181,7 +181,7 @@ class ZooniverseExportBatch
     private function createCsv(array $chunk, string $fileName)
     {
         $csvFileName = $fileName . '.csv';
-        $csvFilePath = $this->tmpDir.'/'.$csvFileName;
+        $csvFilePath = $this->workingDir.'/'.$csvFileName;
         $this->csv->writerCreateFromPath($csvFilePath);
         $this->csv->insertOne(array_keys(reset($chunk)));
         $this->csv->insertAll($chunk);
@@ -197,8 +197,8 @@ class ZooniverseExportBatch
     {
         $tarFilePath = $this->actorDirectory->setBatchArchiveTarGz($fileName);
 
-        exec("cd {$this->tmpDir} && find . \( -name '*.jpg' -o -name '*.csv' \) -print >../export.manifest");
-        exec("cd {$this->tmpDir} && tar -czf $tarFilePath --files-from ../export.manifest", $out, $ok);
+        exec("cd {$this->workingDir} && find . \( -name '*.jpg' -o -name '*.csv' \) -print >../export.manifest");
+        exec("cd {$this->workingDir} && tar -czf $tarFilePath --files-from ../export.manifest", $out, $ok);
 
         if (! $ok) {
             return;
