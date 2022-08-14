@@ -84,7 +84,7 @@ class ZooniverseBuildZip implements ActorInterface
             $output=null;
             $retval=null;
             $path = config('config.current_path') . '/zipExport.js';
-            exec("node $path {$this->tmpDir} {$this->archiveZipPath}" , $output, $retval);
+            exec("node $path {$this->workingDir} {$this->archiveZipPath}" , $output, $retval);
 
             if ($retval) {
                 throw new \Exception($output);
