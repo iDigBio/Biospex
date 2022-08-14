@@ -27,7 +27,6 @@ use App\Services\Actor\Traits\ActorDirectory;
 use App\Repositories\ExportQueueFileRepository;
 use App\Repositories\ExportQueueRepository;
 use App\Services\Api\AwsLambdaApiService;
-use Aws\Lambda\LambdaClient;
 use JetBrains\PhpStorm\ArrayShape;
 
 /**
@@ -140,7 +139,7 @@ class ZooniverseExportProcessImage  implements ActorInterface
             'queueId'   => $file->queue_id,
             'subjectId' => $file->subject_id,
             'url'       => $file->url,
-            'dir'       => $this->tmpDir,
+            'dir'       => $this->workingDir,
         ];
     }
 
@@ -153,7 +152,7 @@ class ZooniverseExportProcessImage  implements ActorInterface
      */
     private function checkFileExistsAndUpdate(ExportQueueFile $file): bool
     {
-        $filePath = $this->tmpDir.'/'.$file->subject_id.'.jpg';
+        $filePath = $this->workingDir.'/'.$file->subject_id.'.jpg';
 
         if ($this->checkFileExists($filePath, $file->subject_id)){
             $this->queue->processed++;
