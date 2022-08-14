@@ -119,7 +119,7 @@ class ZooniverseBuildCsv implements ActorInterface
             $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
             $this->setDirectories();
 
-            $csvFilePath = $this->tmpDir.'/'.$queue->expedition->uuid.'.csv';
+            $csvFilePath = $this->workingDir.'/'.$queue->expedition->uuid.'.csv';
             $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'w');
             $this->awsS3CsvService->createCsvWriterFromStream();
             $this->awsS3CsvService->addEncodingFormatter();
@@ -128,7 +128,7 @@ class ZooniverseBuildCsv implements ActorInterface
 
             $this->exportQueueFileRepository->chunk(100, function ($chunk) use (&$queue, &$first) {
                 $csvData = $chunk->filter(function ($file) {
-                    return $this->checkFileExists($this->tmpDir.'/'.$file->subject_id.'.jpg', $file->subject_id);
+                    return $this->checkFileExists($this->workingDir.'/'.$file->subject_id.'.jpg', $file->subject_id);
                 })->map(function ($file) use ($queue) {
                     return $this->mapNfnCsvColumnsService->mapColumns($file, $queue);
                 });
@@ -184,12 +184,12 @@ class ZooniverseBuildCsv implements ActorInterface
      */
     private function checkCsvImageCount(ExportQueue $queue): bool
     {
-        $csvFilePath = $this->tmpDir.'/'.$queue->expedition->uuid.'.csv';
+        $csvFilePath = $this->workingDir.'/'.$queue->expedition->uuid.'.csv';
         $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'r');
         $this->awsS3CsvService->createCsvReaderFromStream();
         $csvCount = $this->awsS3CsvService->getReaderCount();
 
-        $dirFileCount = $this->awsS3CsvService->getFileCount(config('filesystems.disks.s3.bucket'), $this->tmpDir);
+        $dirFileCount = $this->awsS3CsvService->getFileCount(config('filesystems.disks.s3.bucket'), $this->workingDir);
 
         return $csvCount === $dirFileCount;
     }
