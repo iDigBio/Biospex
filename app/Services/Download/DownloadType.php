@@ -150,6 +150,28 @@ class DownloadType extends DownloadFileBase
     /**
      * Create tar download file.
      *
+     * @param \App\Models\Download $download
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     * @throws \App\Exceptions\PresenterException
+     * @throws \Exception
+     */
+    public function createTarDownload(Download $download)
+    {
+        $this->setFilePath(config('config.export_dir'), $download->file);
+
+        if (! $this->checkS3FileExists()) {
+            throw new \Exception($this->missingMsg);
+        }
+
+        $this->setHeaderFileName($download->present()->file_type.'-'.$download->file);
+        $headers = $this->setTarHeaders();
+
+        return Storage::disk('s3')->download($this->filePath, $this->headerFileName, $headers);
+    }
+
+    /**
+     * Create tar download file.
+     *
      * @param string $fileName
      * @return \Symfony\Component\HttpFoundation\StreamedResponse
      * @throws \Exception
@@ -164,6 +186,27 @@ class DownloadType extends DownloadFileBase
 
         $this->setHeaderFileName($fileName);
         $headers = $this->setZipHeaders();
+
+        return Storage::disk('s3')->download($this->filePath, $this->headerFileName, $headers);
+    }
+
+    /**
+     * Create tar download file.
+     *
+     * @param string $fileName
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     * @throws \Exception
+     */
+    public function createBatchTarDownload(string $fileName)
+    {
+        $this->setFilePath(config('config.export_dir'), $fileName);
+
+        if (! $this->checkS3FileExists()) {
+            throw new \Exception($this->missingMsg);
+        }
+
+        $this->setHeaderFileName($fileName);
+        $headers = $this->setTarHeaders();
 
         return Storage::disk('s3')->download($this->filePath, $this->headerFileName, $headers);
     }

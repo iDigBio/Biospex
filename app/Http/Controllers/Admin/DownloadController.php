@@ -167,6 +167,31 @@ class DownloadController extends Controller
     }
 
     /**
+     * Create download for tar files.
+     *
+     * @param string $projectId
+     * @param string $expeditionId
+     * @param string $downloadId
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function downloadTar(string $projectId, string $expeditionId, string $downloadId)
+    {
+        try {
+            $download = $this->downloadType->getDownload($downloadId);
+
+            if (! $this->checkPermissions('isOwner', $download->expedition->project->group)) {
+                return redirect()->back();
+            }
+
+            return $this->downloadType->createTarDownload($download);
+        } catch (Exception $e) {
+            Flash::error($e->getMessage());
+
+            return redirect()->back();
+        }
+    }
+
+    /**
      * Download batch export file.
      *
      * @param string $projectId
@@ -185,6 +210,32 @@ class DownloadController extends Controller
             }
 
             return $this->downloadType->createBatchZipDownload($file);
+        } catch (Exception $e) {
+            Flash::error($e->getMessage());
+
+            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        }
+    }
+
+    /**
+     * Download batch export file.
+     *
+     * @param string $projectId
+     * @param string $expeditionId
+     * @param string $fileName
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function downloadTarBatch(string $projectId, string $expeditionId, string $fileName)
+    {
+        try {
+            $file = base64_decode($fileName).'.tar.gz';
+            $expedition = $this->expeditionRepo->findwith($expeditionId, ['project.group']);
+
+            if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
+                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            }
+
+            return $this->downloadType->createBatchTarDownload($file);
         } catch (Exception $e) {
             Flash::error($e->getMessage());
 
