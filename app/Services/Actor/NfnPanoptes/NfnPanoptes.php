@@ -28,8 +28,8 @@ use App\Jobs\ZooniverseExportDeleteFilesJob;
 use App\Jobs\ZooniverseExportCreateReportJob;
 use App\Jobs\ZooniverseExportProcessImageJob;
 use App\Models\Actor;
+use App\Models\Expedition;
 use App\Notifications\NfnExportError;
-use App\Repositories\ExpeditionRepository;
 use Illuminate\Bus\Batch;
 use Notification;
 
@@ -41,27 +41,6 @@ use Notification;
 class NfnPanoptes
 {
     /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
-     * @var \App\Models\Actor
-     */
-    private Actor $actor;
-
-    /**
-     * NfnPanoptes constructor.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     */
-    public function __construct(
-        ExpeditionRepository $expeditionRepo
-    ) {
-        $this->expeditionRepo = $expeditionRepo;
-    }
-
-    /**
      * Process export job.
      *
      * @param \App\Models\Actor $actor
@@ -69,8 +48,6 @@ class NfnPanoptes
      */
     public function actor(Actor $actor)
     {
-        $this->actor = $actor;
-
         if ($actor->pivot->state === 0) {
             \Bus::batch([
                 new ZooniverseExportBuildQueueJob($actor),
@@ -80,33 +57,25 @@ class NfnPanoptes
                 new ZooniverseExportBuildZipJob($actor),
                 new ZooniverseExportCreateReportJob($actor),
                 new ZooniverseExportDeleteFilesJob($actor)
-            ])->catch(function (Batch $batch, \Exception $exception) {
-                \Log::alert($exception->getFile());
-                \Log::alert($exception->getLine());
-                \Log::alert($exception->getMessage());
-                $this->sendErrorNotification($exception);
+            ])->catch(function (Batch $batch, \Throwable $exception) use ($actor) {
+                $message = [
+                    $exception->getFile(),
+                    $exception->getLine(),
+                    $exception->getMessage()
+                ];
+                $expedition = Expedition::with(['project.group' => function($q) {
+                    $q->with(['owner', 'users' => function($q){
+                        $q->where('notification', 1);
+                    }]);
+                }])->find($actor->pivot->expedition_id);
+
+                $users = $expedition->project->group->users->push($expedition->project->group->owner);
+
+                Notification::send($users, new NfnExportError($expedition->title, $expedition->id, $message));
+
             })->name('NfnPanoptes Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
         } elseif ($actor->pivot->state === 1) {
             ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);
         }
-    }
-
-    /**
-     * Send error notification.
-     *
-     * @param \Exception $exception
-     */
-    public function sendErrorNotification(\Exception $exception)
-    {
-        $expedition = $this->expeditionRepo->findNotifyExpeditionUsers($this->actor->pivot->expedition_id);
-        $users = $expedition->project->group->users->push($expedition->project->group->owner);
-
-        $message = [
-            $exception->getFile(),
-            $exception->getLine(),
-            $exception->getMessage()
-        ];
-
-        Notification::send($users, new NfnExportError($expedition->title, $expedition->id, $message));
     }
 }
