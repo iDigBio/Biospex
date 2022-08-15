@@ -19,8 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ExportQueueFileRepository;
-use App\Services\Process\AwsS3CsvService;
 use Illuminate\Console\Command;
 
 /**
@@ -41,25 +39,10 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\ExportQueueFileRepository
-     */
-    private ExportQueueFileRepository $exportQueueFileRepository;
-
-    /**
-     * @var \App\Services\Process\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvProcess;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(
-        ExportQueueFileRepository $exportQueueFileRepository,
-        AwsS3CsvService $awsS3CsvProcess
-    ) {
+    public function __construct() {
         parent::__construct();
-        $this->exportQueueFileRepository = $exportQueueFileRepository;
-        $this->awsS3CsvProcess = $awsS3CsvProcess;
     }
 
     /**
@@ -68,6 +51,5 @@ class AppCommand extends Command
     public function handle()
     {
 
-        \File::cleanDirectory(storage_path('app/tmp'));
     }
 }
