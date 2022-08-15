@@ -81,6 +81,9 @@ class NfnPanoptes
                 new ZooniverseExportCreateReportJob($actor),
                 new ZooniverseExportDeleteFilesJob($actor)
             ])->catch(function (Batch $batch, \Exception $exception) {
+                \Log::alert($exception->getFile());
+                \Log::alert($exception->getLine());
+                \Log::alert($exception->getMessage());
                 $this->sendErrorNotification($exception);
             })->name('NfnPanoptes Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
         } elseif ($actor->pivot->state === 1) {
