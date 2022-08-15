@@ -27,6 +27,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Class ZooniverseExportBuildQueueJob
@@ -38,7 +39,7 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     use Batchable, Dispatchable, InteractsWithQueue, Queueable;
 
     /**
-     * @var \App\Models\Actor
+     * @var //\App\Models\Actor
      */
     private Actor $actor;
 

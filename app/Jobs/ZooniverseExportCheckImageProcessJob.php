@@ -72,6 +72,10 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
         ExportQueueRepository $exportQueueRepository
     )
     {
+        if ($this->batch()->cancelled()) {
+            return;
+        }
+
         $queue = $exportQueueRepository->findByExpeditionAndActorId($this->actor->pivot->expedition_id, $this->actor->id);
         $queue->stage = 2;
         $queue->save();
