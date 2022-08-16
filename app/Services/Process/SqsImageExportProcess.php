@@ -61,17 +61,57 @@ class SqsImageExportProcess
     public function process(array $data)
     {
         try {
-            $status = $data['responsePayload']['statusCode'];
-            $body = json_decode($data['responsePayload']['body'], true);
+            $requestPayload = $data['requestPayload'];
+            $responsePayload = $data['responsePayload'];
 
-            $this->updateQueue($body['queueId']);
+            // If errorMessage, something really went bad.
+            if (isset($responsePayload['errorMessage'])) {
+                $this->handleErrorMessage($requestPayload, $responsePayload['errorMessage']);
 
-            $this->updateQueueFile($status, $body);
+                return;
+            }
+
+            $this->handleResponse($responsePayload);
 
             \Artisan::call('export:poll');
         } catch (\Throwable $throwable) {
             \Log::alert($throwable->getMessage());
         }
+    }
+
+    /**
+     * Handle hard failure of lambda function.
+     *
+     * @param array $requestPayload
+     * @param string $errorMessage
+     * @return void
+     */
+    private function handleErrorMessage(array $requestPayload, string $errorMessage): void
+    {
+        $queueId = $requestPayload['queueId'];
+        $subjectId = $requestPayload['subjectId'];
+        $message = $errorMessage;
+
+        $this->updateQueueFile($subjectId, $message);
+
+        $this->updateQueue($queueId);
+    }
+
+    /**
+     * Handle response for success or failuer.
+     *
+     * @param array $responsePayload
+     * @return void
+     */
+    private function handleResponse(array $responsePayload): void
+    {
+        $statusCode = $responsePayload['statusCode'];
+        $body = json_decode($responsePayload['body'], true);
+        $message = $statusCode === 200 ? null : $body['message'];
+
+        $this->updateQueueFile($body['subjectId'], $message);
+
+        $this->updateQueue($body['queueId']);
     }
 
     /**
@@ -90,18 +130,18 @@ class SqsImageExportProcess
     /**
      * Update queue file with result.
      *
-     * @param int $status
-     * @param array $body
+     * @param string $subjectId
+     * @param string|null $message
      * @return void
      */
-    private function updateQueueFile(int $status, array $body): void
+    private function updateQueueFile(string $subjectId, string $message = null): void
     {
         $data = [
-            'subject_id'    => $body['subjectId'],
+            'subject_id'    => $subjectId,
             'completed'     => 1,
-            'error_message' => $status === 200 ? null : $body['message']
+            'error_message' => $message
         ];
-        $this->exportQueueFileRepository->updateBy($data, 'subject_id', $body['subjectId']);
+        $this->exportQueueFileRepository->updateBy($data, 'subject_id', $subjectId);
     }
 }
 
