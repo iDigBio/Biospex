@@ -123,7 +123,7 @@ class ZooniverseExportProcessImage  implements ActorInterface
             sleep(config('config.aws_lambda_delay'));
         };
 
-        $this->exportQueueFileRepository->chunkExportFiles($callback);
+        $this->exportQueueFileRepository->chunkExportFiles($this->queue->expedition_id, $callback);
     }
 
     /**

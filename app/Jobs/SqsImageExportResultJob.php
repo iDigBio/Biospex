@@ -57,7 +57,7 @@ class SqsImageExportResultJob
      */
     public function handle(LaravelJob $job, array $data = [])
     {
-        if (is_null($data)) {
+        if (empty($data)) {
             $job->delete();
 
             return;

@@ -39,7 +39,7 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     use Batchable, Dispatchable, InteractsWithQueue, Queueable;
 
     /**
-     * @var //\App\Models\Actor
+     * @var \App\Models\Actor
      */
     private Actor $actor;
 

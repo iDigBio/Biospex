@@ -69,6 +69,7 @@ class ZooniverseExportBuildZipJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        $zooniverseBuildTar->process($this->actor);
+        \Log::alert('Zip Job');
+        //$zooniverseBuildTar->process($this->actor);
     }
 }

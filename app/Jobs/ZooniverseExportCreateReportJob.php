@@ -64,6 +64,7 @@ class ZooniverseExportCreateReportJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        $zooniverseExportReport->process($this->actor);
+        \Log::alert('Report');
+        //$zooniverseExportReport->process($this->actor);
     }
 }

@@ -52,11 +52,10 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \App\Models\Actor $actor
      */
-    public function __construct(Actor $actor)
+    public function __construct()
     {
-        $this->actor = $actor;
+        //$this->actor = $actor;
     }
 
     /**
@@ -75,6 +74,9 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
         if ($this->batch()->cancelled()) {
             return;
         }
+
+        \Log::alert('Check Image Process');
+        return;
 
         $queue = $exportQueueRepository->findByExpeditionAndActorId($this->actor->pivot->expedition_id, $this->actor->id);
         $queue->stage = 2;

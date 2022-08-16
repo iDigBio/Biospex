@@ -87,7 +87,7 @@ class AppLambdaCommand extends Command
         collect($data)->each(function($image) use($client) {
             $result = $client->invoke([
                 // The name your created Lamda function
-                'FunctionName'   => 'imageExportProcess',
+                'FunctionName'   => 'imageProcessExport',
                 'Payload'        => json_encode($image),
                 'InvocationType' => 'Event',
             ]);
@@ -104,7 +104,7 @@ class AppLambdaCommand extends Command
      */
     public function generateUrls(int $total): array
     {
-        $files = $this->exportQueueFileRepository->findBy('queue_id', 1)->limit($total)->get();
+        $files = $this->exportQueueFileRepository->findBy('queue_id', 2)->limit($total)->get();
 
         return $files->map(function ($file) {
             return [

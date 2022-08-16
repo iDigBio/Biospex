@@ -60,15 +60,18 @@ class SqsImageExportProcess
      */
     public function process(array $data)
     {
-        $response = $data['responsePayload'];
-        $status = $response['statusCode'];
-        $body = json_decode($response['body'], true);
+        try {
+            $status = $data['responsePayload']['statusCode'];
+            $body = json_decode($data['responsePayload']['body'], true);
 
-        $this->updateQueue($body['queueId']);
+            $this->updateQueue($body['queueId']);
 
-        $this->updateQueueFile($status, $body);
+            $this->updateQueueFile($status, $body);
 
-        \Artisan::call('export:poll');
+            \Artisan::call('export:poll');
+        } catch (\Throwable $throwable) {
+            \Log::alert($throwable->getMessage());
+        }
     }
 
     /**
@@ -101,3 +104,40 @@ class SqsImageExportProcess
         $this->exportQueueFileRepository->updateBy($data, 'subject_id', $body['subjectId']);
     }
 }
+
+/*
+[2022-08-16 16:28:37] dev.ALERT: Array
+(
+    [version] => 1.0
+    [timestamp] => 2022-08-16T16:28:37.532Z
+    [requestContext] => Array
+        (
+            [requestId] => 1a7d4e81-6329-4ae1-9fa9-f2093fe0a2eb
+            [functionArn] => arn:aws:lambda:us-east-2:147899039648:function:imageProcessExport:$LATEST
+            [condition] => Success
+            [approximateInvokeCount] => 2
+        )
+
+    [requestPayload] => Array
+        (
+            [queueId] => 2
+            [subjectId] => 6298bb95c5143f1cc750d5a4
+            [url] => http://cdn.flmnh.ufl.edu/Herbarium/jpg/185/185753a1.jpg
+            [dir] => scratch/testing-scratch
+        )
+
+    [responseContext] => Array
+        (
+            [statusCode] => 200
+            [executedVersion] => $LATEST
+        )
+
+    [responsePayload] => Array
+        (
+            [statusCode] => 500
+            [body] => {"subjectId":"6298bb95c5143f1cc750d5a4","message":{"message":"Missing required key 'Bucket' in params","code":"MissingRequiredParameter","time":"2022-08-16T16:28:37.293Z"}}
+        )
+
+)
+
+ */

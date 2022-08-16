@@ -26,6 +26,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Collection;
 
 /**
  * Class ZooniverseExportProcessImageJob
@@ -47,12 +48,10 @@ class ZooniverseExportProcessImageJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \App\Models\Actor $actor
      */
-    public function __construct(Actor $actor)
+    public function __construct()
     {
-        //
-        $this->actor = $actor;
+        // $this->actor = $actor;
     }
 
     /**
@@ -68,6 +67,8 @@ class ZooniverseExportProcessImageJob implements ShouldQueue
             return;
         }
 
-        $zooniverseProcessImage->process($this->actor);
+        \Log::alert('Finished process job');
+
+        //$zooniverseProcessImage->process($this->actor);
     }
 }

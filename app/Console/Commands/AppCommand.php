@@ -19,6 +19,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Expedition;
+use App\Repositories\ExpeditionRepository;
+use App\Services\Actor\ActorFactory;
 use Illuminate\Console\Command;
 
 /**
@@ -39,10 +42,18 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Repositories\ExpeditionRepository
+     */
+    private ExpeditionRepository $expeditionRepository;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct() {
+    public function __construct(
+        ExpeditionRepository $expeditionRepository
+    ) {
         parent::__construct();
+        $this->expeditionRepository = $expeditionRepository;
     }
 
     /**
@@ -50,6 +61,9 @@ class AppCommand extends Command
      */
     public function handle()
     {
+
+        $expedition = $this->expeditionRepository->findwith(422, ['nfnActor', 'stat']);
+        ActorFactory::create($expedition->nfnActor->class)->actor($expedition->nfnActor);
 
     }
 }

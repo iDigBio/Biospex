@@ -64,6 +64,7 @@ class ZooniverseExportDeleteFilesJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        $zooniverseExportDeleteFiles->process($this->actor);
+        \Log::alert('Delete');
+        //$zooniverseExportDeleteFiles->process($this->actor);
     }
 }

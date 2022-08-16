@@ -69,6 +69,7 @@ class ZooniverseExportBuildCsvJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        $zooniverseBuildCsv->process($this->actor);
+        \Log::alert('Csv Job');
+        //$zooniverseBuildCsv->process($this->actor);
     }
 }

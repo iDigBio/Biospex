@@ -132,11 +132,12 @@ class ExportQueueFileRepository extends BaseRepository
     /**
      * Perform chunk operations on files for lambda.
      *
+     * @param int $expeditionId
      * @param callable $callback
      * @return void
      */
-    public function chunkExportFiles(callable $callback)
+    public function chunkExportFiles(int $expeditionId, callable $callback)
     {
-        $this->model->chunk(config('config.aws_lambda_count'), $callback);
+        $this->model->where('expedition_id', $expeditionId)->chunk(config('config.aws_lambda_count'), $callback);
     }
 }
