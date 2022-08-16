@@ -205,7 +205,7 @@ class ExpeditionController extends Controller
 
         $subjects = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
         $count = count($subjects);
-        $expedition->subjects()->sync($subjects);
+        $expedition->subjects()->attach($subjects);
 
         $values = [
             'local_subject_count' => $count,

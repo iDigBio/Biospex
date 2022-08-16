@@ -159,6 +159,7 @@ class AppFileDeployment extends Command
             'API_TOKEN',
 
             'NUM_PROCS',
+
             'QUEUE_CHART_TUBE',
             'QUEUE_CLASSIFICATION_TUBE',
             'QUEUE_DEFAULT_TUBE',
@@ -166,13 +167,10 @@ class AppFileDeployment extends Command
             'QUEUE_IMPORT_TUBE',
             'QUEUE_EXPORT_TUBE',
             'QUEUE_RECONCILE_TUBE',
-            'QUEUE_STAT_TUBE',
             'QUEUE_WORKFLOW_TUBE',
             'QUEUE_OCR_TUBE',
             'QUEUE_PUSHER_TUBE',
             'QUEUE_PUSHER_PROCESS_TUBE',
-            'QUEUE_WORKING_TUBE',
-            'QUEUE_LAMBDA_TUBE'
         ]);
     }
 }
