@@ -16,14 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Providers;
 
 use App\Listeners\CacheEventSubscriber;
 use App\Listeners\ExportQueueEventSubscriber;
 use App\Listeners\GroupEventSubscriber;
+use App\Listeners\SnsNotificaitonListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Rennokki\LaravelSnsEvents\Events\SnsNotification;
+use Rennokki\LaravelSnsEvents\Events\SnsSubscriptionConfirmation;
 
 /**
  * Class EventServiceProvider
@@ -38,9 +42,15 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        Registered::class => [
+        Registered::class                  => [
             SendEmailVerificationNotification::class,
-        ]
+        ],
+        SnsNotification::class             => [
+            SnsNotificaitonListener::class,
+        ],
+        SnsSubscriptionConfirmation::class => [
+
+        ],
     ];
 
     /**
@@ -51,7 +61,7 @@ class EventServiceProvider extends ServiceProvider
     protected $subscribe = [
         GroupEventSubscriber::class,
         ExportQueueEventSubscriber::class,
-        CacheEventSubscriber::class
+        CacheEventSubscriber::class,
     ];
 
     /**
