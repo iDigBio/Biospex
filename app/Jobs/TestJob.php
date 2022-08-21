@@ -36,8 +36,6 @@ class TestJob implements ShouldQueue
         if ($this->attempts() < 3) {
             \Log::info('releasing attempt ' . $this->attempts());
             $this->release(30);
-
-            return;
         }
 
         \Log::info('Done releasing');
