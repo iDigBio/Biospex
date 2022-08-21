@@ -9,11 +9,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class AppLambdaQueueJob implements ShouldQueue
+class TestJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private string $data;
+    public int $tries = 3;
 
     /**
      * Create a new job instance.
@@ -22,6 +22,7 @@ class AppLambdaQueueJob implements ShouldQueue
      */
     public function __construct()
     {
+        $this->onQueue(config('config.export_tube'));
     }
 
     /**
@@ -31,6 +32,15 @@ class AppLambdaQueueJob implements ShouldQueue
      */
     public function handle()
     {
-        \Log::info('Testing');
+        \Log::info('Attempt ' . $this->attempts());
+        if ($this->attempts() < 3) {
+            \Log::info('releasing attempt ' . $this->attempts());
+            $this->release(30);
+
+            return;
+        }
+
+        \Log::info('Done releasing');
+
     }
 }
