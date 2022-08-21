@@ -140,4 +140,15 @@ class ExportQueueFileRepository extends BaseRepository
     {
         $this->model->where('expedition_id', $expeditionId)->chunk(config('config.aws_lambda_count'), $callback);
     }
+
+    /**
+     * Get count.
+     *
+     * @param int $queueId
+     * @return int
+     */
+    public function getExportFilesCount(int $queueId): int
+    {
+        return $this->model->where('queue_id', $queueId)->count();
+    }
 }

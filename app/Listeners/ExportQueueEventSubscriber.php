@@ -32,7 +32,7 @@ class ExportQueueEventSubscriber
     /**
      * @var \App\Repositories\ExportQueueRepository
      */
-    private $exportQueueRepo;
+    private ExportQueueRepository $exportQueueRepo;
 
     /**
      * ExportQueueEventSubscriber constructor.
@@ -51,35 +51,40 @@ class ExportQueueEventSubscriber
      */
     public function subscribe($events)
     {
-        $events->listen('exportQueue.updated', 'App\Listeners\ExportQueueEventSubscriber@updated');
+        $events->listen('exportQueue.check', 'App\Listeners\ExportQueueEventSubscriber@check');
+        $events->listen('exportQueue.retry', 'App\Listeners\ExportQueueEventSubscriber@retry');
     }
 
     /**
-     * Entity Updated.
+     * Check queue.
      */
-    public function updated()
+    public function check()
     {
+        $exportQueue = $this->exportQueueRepo->findBy('error', 0);
 
-        $record = $this->exportQueueRepo->findBy('error', 0);
-
-        if ($record === null) {
+        if ($exportQueue === null || $exportQueue->queued) {
             return;
         }
 
-        if ($record->queued) {
-            ExportQueueJob::dispatch($record);
+        $exportQueue->queued = 1;
+        $exportQueue->save();
 
+        ExportQueueJob::dispatch($exportQueue);
+    }
+
+    public function retry()
+    {
+        $exportQueue = $this->exportQueueRepo->getQueueForRetry();
+
+        if ($exportQueue === null) {
             return;
         }
 
-        if (! $record->queued) {
-            $record->queued = 1;
-            $record->save();
+        $exportQueue->error = 0;
+        $exportQueue->processed = 0;
+        $exportQueue->save();
 
-            ExportQueueJob::dispatch($record);
-
-            return;
-        }
+        ExportQueueJob::dispatch($exportQueue);
     }
 }
 

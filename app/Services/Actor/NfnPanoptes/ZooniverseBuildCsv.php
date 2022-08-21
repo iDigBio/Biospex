@@ -19,9 +19,9 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
-use App\Models\Actor;
+use App\Jobs\ZooniverseExportBuildZipJob;
 use App\Models\ExportQueue;
-use App\Services\Actor\ActorInterface;
+use App\Services\Actor\QueueInterface;
 use App\Services\Actor\Traits\ActorDirectory;
 use App\Services\Api\AwsS3ApiService;
 use App\Services\Csv\Csv;
@@ -34,10 +34,8 @@ use Illuminate\Support\Collection;
 
 /**
  * Class ZooniverseBuildCsv
- *
- * @package App\Services\Actor
  */
-class ZooniverseBuildCsv implements ActorInterface
+class ZooniverseBuildCsv implements QueueInterface
 {
     use ActorDirectory;
 
@@ -102,61 +100,54 @@ class ZooniverseBuildCsv implements ActorInterface
     /**
      * Process actor.
      *
-     * @param \App\Models\Actor $actor
+     * @param \App\Models\ExportQueue $exportQueue
      * @return void
      * @throws \Exception
      */
-    public function process(Actor $actor)
+    public function process(ExportQueue $exportQueue)
     {
-        $queue = $this->exportQueueRepository->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
-        $queue->processed = 0;
-        $queue->stage = 3;
-        $queue->save();
+        $exportQueue->load(['expedition']);
+        $exportQueue->processed = 0;
+        $exportQueue->stage = 4;
+        $exportQueue->save();
 
-        try {
-            \Artisan::call('export:poll');
+        //\Artisan::call('export:poll');
 
-            $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
-            $this->setDirectories();
+        $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
+        $this->setDirectories();
 
-            $csvFilePath = $this->workingDir.'/'.$queue->expedition->uuid.'.csv';
-            $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'w');
-            $this->awsS3CsvService->createCsvWriterFromStream();
-            $this->awsS3CsvService->addEncodingFormatter();
+        $csvFilePath = $this->workingDir.'/'.$exportQueue->expedition->uuid.'.csv';
+        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'w');
+        $this->awsS3CsvService->createCsvWriterFromStream();
+        $this->awsS3CsvService->addEncodingFormatter();
 
-            $first = true;
+        $first = true;
 
-            $this->exportQueueFileRepository->chunk(100, function ($chunk) use (&$queue, &$first) {
-                $csvData = $chunk->filter(function ($file) {
-                    return $this->checkFileExists($this->workingDir.'/'.$file->subject_id.'.jpg', $file->subject_id);
-                })->map(function ($file) use ($queue) {
-                    return $this->mapNfnCsvColumnsService->mapColumns($file, $queue);
-                });
-
-                if (empty($csvData)) {
-                    throw new Exception(t('CSV data empty while creating file for Expedition ID: %s', $queue->expedition->id));
-                }
-
-                $this->buildCsv($csvData, $first);
-                $first = false;
-
-                $queue->processed = $queue->processed + $chunk->count();
-                $queue->save();
+        $this->exportQueueFileRepository->chunk(100, function ($chunk) use (&$exportQueue, &$first) {
+            $csvData = $chunk->filter(function ($file) {
+                return $this->checkFileExists($this->workingDir.'/'.$file->subject_id.'.jpg', $file->subject_id);
+            })->map(function ($file) use ($exportQueue) {
+                return $this->mapNfnCsvColumnsService->mapColumns($file, $exportQueue);
             });
 
-            $this->updateRejected($this->rejected);
-
-            if (! $this->checkCsvImageCount($queue)) {
-                throw new Exception(t('The row count in the csv export file does not match image count.'));
+            if (empty($csvData)) {
+                throw new Exception(t('CSV data empty while creating file for Expedition ID: %s', $exportQueue->expedition->id));
             }
-        } catch (Exception $exception) {
-            $queue->error = 1;
-            $queue->queued = 0;
-            $queue->processed = 0;
-            $queue->save();
 
-            throw new Exception($exception->getMessage());
+            $this->buildCsv($csvData, $first);
+            $first = false;
+
+            $exportQueue->processed = $exportQueue->processed + $chunk->count();
+            $exportQueue->save();
+        });
+
+        $this->updateRejected($this->rejected);
+
+        if (! $this->checkCsvImageCount($exportQueue)) {
+            throw new Exception(t('The row count in the csv export file does not match image count.'));
         }
+
+        ZooniverseExportBuildZipJob::dispatch($exportQueue);
     }
 
     /**
@@ -179,12 +170,12 @@ class ZooniverseBuildCsv implements ActorInterface
      * Check csv row count to image count.
      * Do not set csv header offset. Since csv is in same dir as image, it will add 1 to the count.
      *
-     * @param \App\Models\ExportQueue $queue
+     * @param \App\Models\ExportQueue $exportQueue
      * @return bool
      */
-    private function checkCsvImageCount(ExportQueue $queue): bool
+    private function checkCsvImageCount(ExportQueue $exportQueue): bool
     {
-        $csvFilePath = $this->workingDir.'/'.$queue->expedition->uuid.'.csv';
+        $csvFilePath = $this->workingDir.'/'.$exportQueue->expedition->uuid.'.csv';
         $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'r');
         $this->awsS3CsvService->createCsvReaderFromStream();
         $csvCount = $this->awsS3CsvService->getReaderCount();

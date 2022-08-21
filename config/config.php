@@ -81,12 +81,13 @@ return [
 
     'export_stages'       => [
         'Build Queue', // 0
-        'Process Images', // 1
-        'Check Image Process', //2
-        'Build CSV', //3
-        'Compress Export File', //4
-        'Creating Report', //5
-        'Delete Working Files', //6
+        'Build Image Requests', // 1
+        'Send Lambda Requests', //2
+        'Check Image Process', //3
+        'Build CSV', //4
+        'Compress Export File', //5
+        'Creating Report', //6
+        'Delete Working Files', //7
     ],
 
     /**
@@ -145,6 +146,7 @@ return [
     'event_tube'            => env('QUEUE_EVENT_TUBE'),
     'import_tube'           => env('QUEUE_IMPORT_TUBE'),
     'export_tube'           => env('QUEUE_EXPORT_TUBE'),
+    'lambda_tube'           => env('QUEUE_LAMBDA_TUBE'),
     'reconcile_tube'        => env('QUEUE_RECONCILE_TUBE'),
     'workflow_tube'         => env('QUEUE_WORKFLOW_TUBE'),
     'ocr_tube'              => env('QUEUE_OCR_TUBE'),

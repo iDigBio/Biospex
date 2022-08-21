@@ -78,19 +78,19 @@ class CreateReportService
     /**
      * Save report.
      *
-     * @param \App\Models\ExportQueue $queue
+     * @param \App\Models\ExportQueue $exportQueue
      * @param string $csvName
      */
-    public function saveReport(ExportQueue $queue, string $csvName)
+    public function saveReport(ExportQueue $exportQueue, string $csvName)
     {
         $attributes = [
-            'expedition_id' => $queue->expedition_id,
-            'actor_id' => $queue->actor_id,
+            'expedition_id' => $exportQueue->expedition_id,
+            'actor_id' => $exportQueue->actor_id,
             'type' => 'report'
         ];
         $values = [
-            'expedition_id' => $queue->expedition_id,
-            'actor_id' => $queue->actor_id,
+            'expedition_id' => $exportQueue->expedition_id,
+            'actor_id' => $exportQueue->actor_id,
             'file' => $csvName,
             'type' => 'report'
         ];

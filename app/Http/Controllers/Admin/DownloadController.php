@@ -253,11 +253,9 @@ class DownloadController extends Controller
     public function export(string $projectId, string $expeditionId): RedirectResponse
     {
         try {
-            $expedition = $this->expeditionRepo->findwith($expeditionId, ['nfnActor', 'stat']);
+            \Artisan::call('export:queue', ['expeditionId' => $expeditionId]);
 
-            $this->downloadType->resetExpeditionData($expedition);
-
-            Flash::success(t('Export generation has started. You will be notified when completed.'));
+            Flash::success(t('Export generation has been added to the job queue. You will be notified when completed.'));
         } catch (Exception $e) {
             ;
             Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));

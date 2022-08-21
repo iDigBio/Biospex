@@ -54,12 +54,10 @@
                        data-toggle="modal"
                        data-target="#process-modal">{{ t('Processes') }}</a>
                     @can('isAdmin', Auth::user())
-                        <a href="/admin/nova" class="dropdown-item text-uppercase"
+                        <a href="/admin/nova" target="_blank" class="dropdown-item text-uppercase"
                            type="button">{{ t('Nova') }}</a>
-                        @if(config('telescope.enabled') === true)
-                        <a href="/admin/telescope" class="dropdown-item text-uppercase"
-                           type="button">{{ t('Telescope') }}</a>
-                        @endif
+                        <a href="/admin/horizon" target="_blank" class="dropdown-item text-uppercase"
+                           type="button">{{ t('Horizon') }}</a>
                         <a href="{{ route('admin.mail.index') }}" class="dropdown-item text-uppercase"
                            type="button">{{ t('Mail') }}</a>
                     @endcan

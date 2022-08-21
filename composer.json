@@ -23,6 +23,7 @@
     "jenssegers/mongodb": "^3.8",
     "laracasts/utilities": "^3.2",
     "laravel/framework": "^9.0",
+    "laravel/horizon": "^5.10",
     "laravel/nova": "^3.30.0",
     "laravel/sanctum": "^2.8",
     "laravel/tinker": "^2.5",
@@ -97,7 +98,8 @@
       "Illuminate\\Foundation\\ComposerScripts::postUpdate",
       "@php artisan ide-helper:generate",
       "@php artisan ide-helper:meta",
-      "@php artisan nova:publish"
+      "@php artisan nova:publish",
+      "@php artisan horizon:publish --ansi"
     ]
   }
 }

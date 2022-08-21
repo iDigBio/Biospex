@@ -79,6 +79,8 @@ class ZooniverseProcessCsvJob implements ShouldQueue
             }
 
             $this->release(1800);
+
+            return;
         }
 
         $uri = $result['media'][0]['src'] ?? null;

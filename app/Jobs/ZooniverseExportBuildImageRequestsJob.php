@@ -21,8 +21,7 @@ namespace App\Jobs;
 
 use App\Models\ExportQueue;
 use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actor\NfnPanoptes\ZooniverseExportCreateReport;
-use Illuminate\Bus\Batchable;
+use App\Services\Actor\NfnPanoptes\ZooniverseExportBuildImageRequests;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -32,16 +31,21 @@ use Illuminate\Queue\SerializesModels;
 use Throwable;
 
 /**
- * Class ZooniverseExportCreateReportJob
+ * Class ZooniverseExportBuildImageRequestsJob
  */
-class ZooniverseExportCreateReportJob implements ShouldQueue, ShouldBeUnique
+class ZooniverseExportBuildImageRequestsJob implements ShouldQueue, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NfnErrorNotification;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NfnErrorNotification;
 
     /**
      * @var \App\Models\ExportQueue
      */
-    private ExportQueue $exportQueue;
+    public ExportQueue $exportQueue;
+
+    /**
+     * @var int
+     */
+    public int $timeout = 3600;
 
     /**
      * Create a new job instance.
@@ -57,12 +61,13 @@ class ZooniverseExportCreateReportJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\NfnPanoptes\ZooniverseExportCreateReport $zooniverseExportReport
+     * @param \App\Services\Actor\NfnPanoptes\ZooniverseExportBuildImageRequests $zooniverseBuildRequests
+     * @return void
      * @throws \Exception
      */
-    public function handle(ZooniverseExportCreateReport $zooniverseExportReport)
+    public function handle(ZooniverseExportBuildImageRequests $zooniverseBuildRequests)
     {
-        $zooniverseExportReport->process($this->exportQueue);
+        $zooniverseBuildRequests->process($this->exportQueue);
     }
 
     /**

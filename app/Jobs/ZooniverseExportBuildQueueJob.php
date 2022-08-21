@@ -20,14 +20,14 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
+use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
 use App\Services\Actor\NfnPanoptes\ZooniverseBuildQueue;
-use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class ZooniverseExportBuildQueueJob
@@ -36,7 +36,7 @@ use Illuminate\Queue\SerializesModels;
  */
 class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, NfnErrorNotification;
 
     /**
      * @var \App\Models\Actor
@@ -46,7 +46,7 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     /**
      * @var int
      */
-    public int $timeout = 3600;
+    public int $timeout = 300;
 
     /**
      * Create a new job instance.
@@ -56,6 +56,7 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     public function __construct(Actor $actor)
     {
         $this->actor = $actor;
+        $this->onQueue(config('config.default_tube'));
     }
 
     /**
@@ -66,10 +67,17 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(ZooniverseBuildQueue $zooniverseBuildQueue)
     {
-        if ($this->batch()->cancelled()) {
-            return;
-        }
-
         $zooniverseBuildQueue->process($this->actor);
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $this->sendAdminError($this->actor, $exception);
     }
 }

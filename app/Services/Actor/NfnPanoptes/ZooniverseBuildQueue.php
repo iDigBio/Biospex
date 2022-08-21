@@ -58,8 +58,7 @@ class ZooniverseBuildQueue implements ActorInterface
         ExportQueueRepository $exportQueueRepository,
         ExportQueueFileRepository $exportQueueFileRepository,
         SubjectRepository $subjectRepository
-    )
-    {
+    ) {
         $this->exportQueueRepository = $exportQueueRepository;
         $this->exportQueueFileRepository = $exportQueueFileRepository;
         $this->subjectRepository = $subjectRepository;
@@ -74,22 +73,22 @@ class ZooniverseBuildQueue implements ActorInterface
      */
     public function process(Actor $actor)
     {
-        $queue = $this->exportQueueRepository->createQueue($actor);
+        $queue = $this->exportQueueRepository->createQueue($actor->pivot->expedition_id, $actor->id, $actor->pivot->total);
 
         try {
-            $subjects = $this->subjectRepository->getAssignedByExpeditionId($actor->pivot->expedition_id);
+            $subjects = $this->subjectRepository->getAssignedByExpeditionId($queue->expedition_id);
 
             $subjects->each(function ($subject) use ($queue) {
                 $this->exportQueueFileRepository->createQueueFile($queue, $subject);
             });
-
+            event('exportQueue.check');
         } catch (\Exception $e) {
             $queue->error = 1;
             $queue->queued = 0;
             $queue->processed = 0;
             $queue->save();
 
-            throw new \Exception(t('Error while trying to create queue files for export: %s', $e->getMessage() . ' ' . $e->getTraceAsString()));
+            throw new \Exception($e->getMessage());
         }
     }
 }

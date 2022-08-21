@@ -19,12 +19,11 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
-use App\Models\Actor;
+use App\Jobs\ZooniverseExportDeleteFilesJob;
+use App\Models\ExportQueue;
 use App\Notifications\NfnExportComplete;
-use App\Services\Actor\ActorInterface;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\ExportQueueFileRepository;
-use App\Repositories\ExportQueueRepository;
+use App\Services\Actor\QueueInterface;
 use App\Services\Process\CreateReportService;
 use Notification;
 
@@ -33,22 +32,12 @@ use Notification;
  *
  * @package App\Services\Actor
  */
-class ZooniverseExportCreateReport implements ActorInterface
+class ZooniverseExportCreateReport implements QueueInterface
 {
-    /**
-     * @var \App\Repositories\ExportQueueRepository
-     */
-    private ExportQueueRepository $exportQueueRepository;
-
     /**
      * @var \App\Repositories\ExportQueueFileRepository
      */
     private ExportQueueFileRepository $exportQueueFileRepository;
-
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepository;
 
     /**
      * @var \App\Services\Process\CreateReportService
@@ -56,60 +45,53 @@ class ZooniverseExportCreateReport implements ActorInterface
     private CreateReportService $createReportService;
 
     /**
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
+     * Construct.
+     *
      * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
      * @param \App\Services\Process\CreateReportService $createReportService
      */
     public function __construct(
-        ExportQueueRepository $exportQueueRepository,
         ExportQueueFileRepository $exportQueueFileRepository,
-        ExpeditionRepository $expeditionRepository,
         CreateReportService $createReportService
     )
     {
-
-        $this->exportQueueRepository = $exportQueueRepository;
         $this->exportQueueFileRepository = $exportQueueFileRepository;
-        $this->expeditionRepository = $expeditionRepository;
         $this->createReportService = $createReportService;
     }
 
     /**
      * Process actor.
      *
-     * @param \App\Models\Actor $actor
+     * @param \App\Models\ExportQueue $exportQueue
      * @return void
      * @throws \Exception
      */
-    public function process(Actor $actor)
+    public function process(ExportQueue $exportQueue)
     {
-        $queue = $this->exportQueueRepository->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
-        $queue->processed = 0;
-        $queue->stage = 5;
-        $queue->save();
+        $exportQueue->load([
+            'expedition.project.group' => function($q) {
+                $q->with(['owner', 'users' => function($q){
+                    $q->where('notification', 1);
+                }]);
+            }
+        ]);
 
-        \Artisan::call('export:poll');
+        $exportQueue->processed = 0;
+        $exportQueue->stage = 6;
+        $exportQueue->save();
 
-        try {
-            $data = $this->exportQueueFileRepository->getQueueFileErrorsData($queue->id);
+        //\Artisan::call('export:poll');
 
-            $csvName = md5($queue->id).'.csv';
-            $fileName = $this->createReportService->createCsvReport($csvName, $data);
-            $this->createReportService->saveReport($queue, $csvName);
+        $data = $this->exportQueueFileRepository->getQueueFileErrorsData($exportQueue->id);
 
-            $expedition = $this->expeditionRepository->findNotifyExpeditionUsers($queue->expedition_id);
-            $users = $expedition->project->group->users->push($expedition->project->group->owner);
+        $csvName = md5($exportQueue->id).'.csv';
+        $fileName = $this->createReportService->createCsvReport($csvName, $data);
+        $this->createReportService->saveReport($exportQueue, $csvName);
 
-            Notification::send($users, new NfnExportComplete($expedition->title, $fileName));
+        $users = $exportQueue->expedition->project->group->users->push($exportQueue->expedition->project->group->owner);
 
-        } catch (\Exception $exception) {
-            $queue->error = 1;
-            $queue->queued = 0;
-            $queue->processed = 0;
-            $queue->save();
+        Notification::send($users, new NfnExportComplete($exportQueue->expedition->title, $fileName));
 
-            throw new \Exception($exception->getMessage());
-        }
+        ZooniverseExportDeleteFilesJob::dispatch($exportQueue);
     }
 }

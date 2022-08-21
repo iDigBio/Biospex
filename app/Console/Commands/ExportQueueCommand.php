@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\ExpeditionRepository;
 use App\Repositories\ExportQueueRepository;
 use App\Services\Download\DownloadType;
 use Illuminate\Console\Command;
@@ -38,39 +39,46 @@ class ExportQueueCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'export:queue {expeditionId}';
+    protected $signature = 'export:queue {expeditionId?} {--R|retry}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Fire export queue job.';
-
-    /**
-     * @var \App\Repositories\ExportQueueRepository
-     */
-    public $exportQueueRepo;
+    protected $description = 'Fire export queue process. Expedition Id resets the Expedition.';
 
     /**
      * @var \App\Services\Download\DownloadType
      */
-    private $downloadType;
+    private DownloadType $downloadType;
+
+    /**
+     * @var \App\Repositories\ExpeditionRepository
+     */
+    private ExpeditionRepository $expeditionRepository;
+
+    /**
+     * @var \App\Repositories\ExportQueueRepository
+     */
+    private ExportQueueRepository $exportQueueRepository;
 
     /**
      * ExportQueueCommand constructor.
      *
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepo
      * @param \App\Services\Download\DownloadType $downloadType
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
      */
     public function __construct(
-        ExportQueueRepository $exportQueueRepo,
-        DownloadType $downloadType
-    )
-    {
+        DownloadType $downloadType,
+        ExpeditionRepository $expeditionRepository,
+        ExportQueueRepository $exportQueueRepository
+    ) {
         parent::__construct();
-        $this->exportQueueRepo = $exportQueueRepo;
         $this->downloadType = $downloadType;
+        $this->expeditionRepository = $expeditionRepository;
+        $this->exportQueueRepository = $exportQueueRepository;
     }
 
     /**
@@ -78,14 +86,34 @@ class ExportQueueCommand extends Command
      */
     public function handle()
     {
+        is_null($this->argument('expeditionId')) ?
+            $this->handleExportQueue() :
+            $this->handleExpeditionReset();
+    }
+
+    /**
+     * Handles starting the export queue.
+     *
+     * @return void
+     */
+    private function handleExportQueue()
+    {
+        $this->option('retry') ? event('exportQueue.retry') : event('exportQueue.check');
+    }
+
+    /**
+     * Handles resetting Expedition attributes from command line.
+     *
+     * @return void
+     */
+    private function handleExpeditionReset()
+    {
         $expeditionId = $this->argument('expeditionId');
-        $record = $this->exportQueueRepo->findWithExpeditionNfnActor($expeditionId);
+        $expedition = $this->expeditionRepository->findWith($expeditionId, ['nfnActor', 'stat']);
 
-        if ($record === null)
-        {
-            return;
-        }
+        $exportQueue = $this->exportQueueRepository->findBy('expedition_id', $expeditionId);
+        if (!is_null($exportQueue)) $exportQueue->delete();
 
-        $this->downloadType->resetExpeditionData($record->expedition);
+        $this->downloadType->resetExpeditionData($expedition);
     }
 }

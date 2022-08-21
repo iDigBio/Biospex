@@ -20,6 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
+use App\Models\ExportQueue;
+use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
 use App\Services\Actor\NfnPanoptes\ZooniverseBuildCsv;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -27,20 +29,20 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class ZooniverseExportBuildCsvJob
- *
- * @package App\Jobs
  */
 class ZooniverseExportBuildCsvJob implements ShouldQueue, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NfnErrorNotification;
 
     /**
-     * @var \App\Models\Actor
+     * @var \App\Models\ExportQueue
      */
-    private Actor $actor;
+    private ExportQueue $exportQueue;
 
     /**
      * @var int
@@ -50,11 +52,12 @@ class ZooniverseExportBuildCsvJob implements ShouldQueue, ShouldBeUnique
     /**
      * Create a new job instance.
      *
-     * @param \App\Models\Actor $actor
+     * @param \App\Models\ExportQueue $exportQueue
      */
-    public function __construct(Actor $actor)
+    public function __construct(ExportQueue $exportQueue)
     {
-        $this->actor = $actor;
+        $this->exportQueue = $exportQueue;
+        $this->onQueue(config('config.export_tube'));
     }
 
     /**
@@ -65,11 +68,17 @@ class ZooniverseExportBuildCsvJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(ZooniverseBuildCsv $zooniverseBuildCsv)
     {
-        if ($this->batch()->cancelled()) {
-            return;
-        }
+        $zooniverseBuildCsv->process($this->exportQueue);
+    }
 
-        \Log::alert('Csv Job');
-        //$zooniverseBuildCsv->process($this->actor);
+    /**
+     * Handle a job failure.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $this->sendErrorNotification($this->exportQueue, $exception);
     }
 }

@@ -19,18 +19,17 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
-use App\Models\Actor;
-use App\Services\Actor\ActorInterface;
+use App\Jobs\ZooniverseExportCreateReportJob;
+use App\Models\ExportQueue;
+use App\Services\Actor\QueueInterface;
 use App\Services\Actor\Traits\ActorDirectory;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExportQueueRepository;
 
 /**
  * Class ZooniverseBuildZip
- *
- * @package App\Services\Actor
  */
-class ZooniverseBuildZip implements ActorInterface
+class ZooniverseBuildZip implements QueueInterface
 {
     use ActorDirectory;
 
@@ -62,60 +61,50 @@ class ZooniverseBuildZip implements ActorInterface
     /**
      * Process the actor.
      *
-     * @param \App\Models\Actor $actor
+     * @param \App\Models\ExportQueue $exportQueue
      * @return void
      * @throws \Exception
      */
-    public function process(Actor $actor)
+    public function process(ExportQueue $exportQueue)
     {
-        $queue = $this->exportQueueRepository->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
-        $queue->processed = 0;
-        $queue->stage = 4;
-        $queue->save();
+        $exportQueue->load(['expedition']);
+        $exportQueue->processed = 0;
+        $exportQueue->stage = 5;
+        $exportQueue->save();
 
-        \Artisan::call('export:poll');
+        //\Artisan::call('export:poll');
 
-        $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
+        $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
         $this->setDirectories();
 
-        try {
-            $this->deleteFile($this->archiveZipPath);
+        $this->deleteFile($this->archiveZipPath);
 
-            $output=null;
-            $retval=null;
-            $path = config('config.current_path') . '/zipExport.js';
-            exec("node $path {$this->workingDir} {$this->archiveZipPath}" , $output, $retval);
+        $output=null;
+        $retval=null;
+        $path = config('config.current_path') . '/zipExport.js';
+        exec("node $path {$this->workingDir} {$this->archiveZipPath}" , $output, $retval);
 
-            if ($retval) {
-                throw new \Exception($output);
-            }
-
-            $values = [
-                'expedition_id' => $queue->expedition->id,
-                'actor_id'      => $actor->id,
-                'file'          => $this->archiveZip,
-                'type'          => 'export',
-            ];
-            $attributes = [
-                'expedition_id' => $queue->expedition->id,
-                'actor_id'      => $actor->id,
-                'file'          => $this->archiveZip,
-                'type'          => 'export',
-            ];
-
-            $this->downloadRepository->updateOrCreate($attributes, $values);
-
-            $this->cleanDirectory(config('config.aws_efs_dir'));
-
-        } catch (\Exception $exception) {
-            $this->deleteFile($this->archiveZipPath);
-
-            $queue->error = 1;
-            $queue->queued = 0;
-            $queue->processed = 0;
-            $queue->save();
-
-            throw new \Exception($exception->getMessage());
+        if ($retval) {
+            throw new \Exception($output);
         }
+
+        $values = [
+            'expedition_id' => $exportQueue->expedition_id,
+            'actor_id'      => $exportQueue->actor_id,
+            'file'          => $this->archiveZip,
+            'type'          => 'export',
+        ];
+        $attributes = [
+            'expedition_id' => $exportQueue->expedition_id,
+            'actor_id'      => $exportQueue->actor_id,
+            'file'          => $this->archiveZip,
+            'type'          => 'export',
+        ];
+
+        $this->downloadRepository->updateOrCreate($attributes, $values);
+
+        $this->cleanDirectory(config('config.aws_efs_dir'));
+
+        ZooniverseExportCreateReportJob::dispatch($exportQueue);
     }
 }

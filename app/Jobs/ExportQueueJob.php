@@ -19,18 +19,15 @@
 
 namespace App\Jobs;
 
-use App\Models\ExportQueue as Model;
-use App\Notifications\NfnExportError;
-use App\Repositories\ExportQueueRepository;
-use App\Services\Actor\ActorFactory;
-use Artisan;
+use App\Models\ExportQueue;
+use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Notification;
+use Throwable;
 
 /**
  * Class ExportQueueJob
@@ -39,67 +36,72 @@ use Notification;
  */
 class ExportQueueJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NfnErrorNotification;
 
     /**
-     * @var \App\Repositories\ExportQueueRepository
+     * @var \App\Models\ExportQueue
      */
-    private $model;
+    private ExportQueue $exportQueue;
 
     /**
      * @var int
      */
-    public $timeout = 36000;
+    public int $timeout = 300;
 
     /**
      * ExportQueueJob constructor.
      *
-     * @param Model $model
+     * @param \App\Models\ExportQueue $exportQueue
      */
-    public function __construct(Model $model)
+    public function __construct(ExportQueue $exportQueue)
     {
-        $this->model = $model;
+        $this->exportQueue = $exportQueue;
         $this->onQueue(config('config.export_tube'));
     }
 
     /**
      * Handle ExportQueue Job
      *
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepo
+     * @return void
+     * @throws \Exception
      */
-    public function handle(ExportQueueRepository $exportQueueRepo)
+    public function handle()
     {
-        $queue = $exportQueueRepo->findByIdExpeditionActor($this->model->id, $this->model->expedition_id, $this->model->actor_id);
-
-        if ($queue === null) {
-            $this->delete();
-
-            return;
+        switch ($this->exportQueue->stage) {
+            case 1:
+                ZooniverseExportBuildImageRequestsJob::dispatch($this->exportQueue);
+                break;
+            case 2:
+                ZooniverseExportLambdaJob::dispatch($this->exportQueue);
+                break;
+            case 3:
+                ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue);
+                break;
+            case 4:
+                ZooniverseExportBuildCsvJob::dispatch($this->exportQueue);
+                break;
+            case 5:
+                ZooniverseExportBuildZipJob::dispatch($this->exportQueue);
+                break;
+            case 6:
+                ZooniverseExportCreateReportJob::dispatch($this->exportQueue);
+                break;
+            case 7:
+                ZooniverseExportDeleteFilesJob::dispatch($this->exportQueue);
+                break;
+            default:
+                throw new Exception(t('Export Queue error. No stage value given'));
         }
+    }
 
-        try {
-            $class = ActorFactory::create($queue->expedition->actors->first()->class);
-            $class->processQueue($queue);
-            Artisan::call('export:poll');
-            $this->delete();
-        } catch (Exception $e) {
-            $attributes = [
-                'error'  => 1
-            ];
-
-            $queue->expedition->actors->first()->expeditions()->updateExistingPivot($queue->expedition->id, $attributes);
-
-            $exportQueueRepo->updateMany($attributes, 'expedition_id', $this->model->expedition_id);
-
-            $message = $e->getFile().'<br>'.$e->getLine().'<br>'.$e->getMessage();
-
-            $users = $queue->expedition->project->group->users->push($queue->expedition->project->group->owner);
-
-            Notification::send($users, new NfnExportError($queue->expedition->title, $queue->expedition->id, $message));
-
-            Artisan::call('export:queue');
-
-            $this->delete();
-        }
+    /**
+     * Handle a job failure.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $this->sendErrorNotification($this->exportQueue, $exception);
     }
 }

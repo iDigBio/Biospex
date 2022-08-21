@@ -73,7 +73,7 @@ class SqsImageExportProcess
 
             $this->handleResponse($responsePayload);
 
-            \Artisan::call('export:poll');
+            //\Artisan::call('export:poll');
         } catch (\Throwable $throwable) {
             \Log::alert($throwable->getMessage());
         }

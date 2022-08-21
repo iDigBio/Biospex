@@ -19,61 +19,38 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
-use App\Models\Actor;
-use App\Services\Actor\ActorInterface;
+use App\Models\ExportQueue;
+use App\Services\Actor\QueueInterface;
 use App\Services\Actor\Traits\ActorDirectory;
-use App\Repositories\ExportQueueRepository;
 
 /**
  * Class ZooniverseExportDeleteFiles
- *
- * @package App\Services\Actor
  */
-class ZooniverseExportDeleteFiles implements ActorInterface
+class ZooniverseExportDeleteFiles implements QueueInterface
 {
     use ActorDirectory;
 
     /**
-     * @var \App\Repositories\ExportQueueRepository
-     */
-    private ExportQueueRepository $exportQueueRepository;
-
-    /**
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
-     */
-    public function __construct(
-        ExportQueueRepository $exportQueueRepository
-    )
-    {
-        $this->exportQueueRepository = $exportQueueRepository;
-    }
-
-    /**
      * Process actor.
      *
-     * @param \App\Models\Actor $actor
+     * @param \App\Models\ExportQueue $exportQueue
      * @return void
-     * @throws \Exception
      */
-    public function process(Actor $actor)
+    public function process(ExportQueue $exportQueue)
     {
-        $queue = $this->exportQueueRepository->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
-        $queue->processed = 0;
-        $queue->stage = 6;
-        $queue->save();
+        $exportQueue->load(['expedition']);
+        $exportQueue->processed = 0;
+        $exportQueue->stage = 7;
+        $exportQueue->save();
 
-        \Artisan::call('export:poll');
+        //\Artisan::call('export:poll');
 
-        try {
-            $this->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
-            $this->setDirectories();
-            $this->deleteDirectory($this->workingDir);
-            $queue->delete();
+        $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
+        $this->setDirectories();
+        $this->deleteDirectory($this->workingDir);
+        $exportQueue->delete();
 
-            \Artisan::call('export:poll');
-
-        } catch (\Exception $exception) {
-            throw new \Exception($exception->getMessage());
-        }
+        //\Artisan::call('export:poll');
+        \Artisan::call('exportQueue.check');
     }
 }

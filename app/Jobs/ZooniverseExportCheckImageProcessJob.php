@@ -19,23 +19,27 @@
 
 namespace App\Jobs;
 
-use App\Models\Actor;
+use App\Models\ExportQueue;
 use App\Repositories\ExportQueueFileRepository;
-use App\Repositories\ExportQueueRepository;
-use Illuminate\Bus\Batchable;
+use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
- * Class ZooniverseProcessCsvJob
- *
- * @package App\Jobs
+ * Class ZooniverseExportCheckImageProcessJob
  */
 class ZooniverseExportCheckImageProcessJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NfnErrorNotification;
+
+    /**
+     * @var \App\Models\ExportQueue
+     */
+    private ExportQueue $exportQueue;
 
     /**
      * The number of times the job may be attempted.
@@ -45,55 +49,57 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
     public int $tries = 3;
 
     /**
-     * @var \App\Models\Actor
-     */
-    private Actor $actor;
-
-    /**
      * Create a new job instance.
      *
+     * @param \App\Models\ExportQueue $exportQueue
      */
-    public function __construct()
+    public function __construct(ExportQueue $exportQueue)
     {
-        //$this->actor = $actor;
+        $this->exportQueue = $exportQueue;
+        $this->onQueue(config('config.export_tube'));
     }
 
     /**
      * Execute the job.
      *
      * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
      * @return void
      * @throws \Exception
      */
     public function handle(
         ExportQueueFileRepository $exportQueueFileRepository,
-        ExportQueueRepository $exportQueueRepository
     )
     {
-        if ($this->batch()->cancelled()) {
-            return;
-        }
+        $this->release(30);
 
-        \Log::alert('Check Image Process');
         return;
+        $this->exportQueue->stage = 3;
+        $this->exportQueue->save();
 
-        $queue = $exportQueueRepository->findByExpeditionAndActorId($this->actor->pivot->expedition_id, $this->actor->id);
-        $queue->stage = 2;
-        $queue->save();
-
-        $count = $exportQueueFileRepository->getUncompletedCount($queue->id);
+        $count = $exportQueueFileRepository->getUncompletedCount($this->exportQueue->id);
+        \Log::alert('Incomplete count = ' . $count);
 
         if ($count === 0) {
-            return;
+            \Log::alert('Complete');
+            //ZooniverseExportBuildCsvJob::dispatch($this->exportQueue);
+            $this->delete();
         }
 
-        if ($this->attempts() > 3) {
-            throw new \Exception(t('Queue %s exceeded number of tries.', $queue->id));
+        if ($this->attempts() < 4) {
+            \Log::alert('attempt '.$this->attempts());
+            //ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue)->delay(30);
+            $this->release(30);
         }
-
-        $this->release(900);
     }
 
-
+    /**
+     * Handle a job failure.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $this->sendErrorNotification($this->exportQueue, $exception);
+    }
 }
