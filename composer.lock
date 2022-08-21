@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d86473bc02a36014bdb241231a1eaca6",
+    "content-hash": "f0c25b9cb89ae2c28d499412afdc6c88",
     "packages": [
         {
             "name": "anhskohbo/no-captcha",
@@ -175,6 +175,64 @@
                 "source": "https://github.com/awslabs/aws-crt-php/tree/v1.0.2"
             },
             "time": "2021-09-03T22:57:30+00:00"
+        },
+        {
+            "name": "aws/aws-php-sns-message-validator",
+            "version": "1.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aws/aws-php-sns-message-validator.git",
+                "reference": "e494478af24470d8051bc7244833f1056378d0b7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aws/aws-php-sns-message-validator/zipball/e494478af24470d8051bc7244833f1056378d0b7",
+                "reference": "e494478af24470d8051bc7244833f1056378d0b7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "php": ">=5.4",
+                "psr/http-message": "^1.0"
+            },
+            "require-dev": {
+                "guzzlehttp/psr7": "^1.4",
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "^2.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Aws\\Sns\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Amazon Web Services",
+                    "homepage": "http://aws.amazon.com"
+                }
+            ],
+            "description": "Amazon SNS message validation for PHP",
+            "homepage": "http://aws.amazon.com/sdkforphp",
+            "keywords": [
+                "SNS",
+                "amazon",
+                "aws",
+                "cloud",
+                "message",
+                "sdk",
+                "webhooks"
+            ],
+            "support": {
+                "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
+                "issues": "https://github.com/aws/aws-sns-message-validator/issues",
+                "source": "https://github.com/aws/aws-php-sns-message-validator/tree/1.7.0"
+            },
+            "time": "2022-04-22T18:26:26+00:00"
         },
         {
             "name": "aws/aws-sdk-php",
@@ -1409,70 +1467,6 @@
                 }
             ],
             "time": "2022-01-18T15:43:28+00:00"
-        },
-        {
-            "name": "dusterio/laravel-plain-sqs",
-            "version": "v0.1.24",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dusterio/laravel-plain-sqs.git",
-                "reference": "f64447c595dff2a235c7f271bf9e3170c009b411"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dusterio/laravel-plain-sqs/zipball/f64447c595dff2a235c7f271bf9e3170c009b411",
-                "reference": "f64447c595dff2a235c7f271bf9e3170c009b411",
-                "shasum": ""
-            },
-            "require": {
-                "aws/aws-sdk-php": "~3.0",
-                "illuminate/bus": "5.*|^6.0|^7.0|^8.0|^9.0",
-                "illuminate/queue": "5.*|^6.0|^7.0|^8.0|^9.0",
-                "illuminate/support": "5.*|^6.0|^7.0|^8.0|^9.0",
-                "php": ">=5.5.0"
-            },
-            "require-dev": {
-                "codeclimate/php-test-reporter": "dev-master",
-                "phpunit/phpunit": "3.7.*|^9.5.10"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Dusterio\\PlainSqs\\Integrations\\LaravelServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Dusterio\\PlainSqs\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Denis Mysenko",
-                    "email": "denis@mysenko.com",
-                    "homepage": "https://www.mysenko.com"
-                }
-            ],
-            "description": "Custom SQS connector for Laravel that supports custom format JSON",
-            "homepage": "https://github.com/dusterio/laravel-plain-sqs",
-            "keywords": [
-                "aws",
-                "laravel",
-                "lumen",
-                "php",
-                "sqs"
-            ],
-            "support": {
-                "issues": "https://github.com/dusterio/laravel-plain-sqs/issues",
-                "source": "https://github.com/dusterio/laravel-plain-sqs/tree/v0.1.24"
-            },
-            "time": "2022-03-02T02:33:01+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -5485,6 +5479,73 @@
                 }
             ],
             "time": "2022-08-05T17:58:37+00:00"
+        },
+        {
+            "name": "rennokki/laravel-sns-events",
+            "version": "7.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/renoki-co/laravel-sns-events.git",
+                "reference": "7950190dcedfcb5e01117f7aae20c2998b959a84"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/renoki-co/laravel-sns-events/zipball/7950190dcedfcb5e01117f7aae20c2998b959a84",
+                "reference": "7950190dcedfcb5e01117f7aae20c2998b959a84",
+                "shasum": ""
+            },
+            "require": {
+                "aws/aws-php-sns-message-validator": "^1.6",
+                "illuminate/http": "^8.83|^9.0.1",
+                "illuminate/routing": "^8.83|^9.0.1",
+                "illuminate/support": "^8.83|^9.0.1"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.5",
+                "orchestra/testbench": "^6.28|^7.0",
+                "orchestra/testbench-core": "^6.28|^7.0",
+                "phpunit/phpunit": "^9.5.13"
+            },
+            "type": "package",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Rennokki\\LaravelSnsEvents\\LaravelSnsEventsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Rennokki\\LaravelSnsEvents\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Renoki",
+                    "email": "alex@renoki.org",
+                    "homepage": "https://github.com/rennokki",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Laravel SNS Events eases the processing of incoming SNS webhooks using Laravel Events.",
+            "keywords": [
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/renoki-co/laravel-sns-events/issues",
+                "source": "https://github.com/renoki-co/laravel-sns-events/tree/7.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/rennokki",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-02-09T21:37:08+00:00"
         },
         {
             "name": "spatie/once",

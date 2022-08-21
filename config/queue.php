@@ -79,16 +79,6 @@ return [
             'retry_after' => 1200, // Run for max 20 minutes
             'block_for'   => null,
         ],
-
-        'sqs-plain' => [
-            'driver' => 'sqs-plain',
-            'key'    => env('AWS_ACCESS_KEY', ''),
-            'secret' => env('AWS_SECRET_ACCESS_KEY', ''),
-            'prefix' => env('AWS_QUEUE_PLAIN_URL'),
-            'queue'  => env('AWS_QUEUE_PLAIN'),
-            'region' => env('AWS_DEFAULT_REGION'),
-        ],
-
     ],
 
     /*

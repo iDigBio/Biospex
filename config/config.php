@@ -29,7 +29,6 @@ return [
     'aws_lambda_export_img_url' => env('AWS_LAMBDA_EXPORT_IMG_URL'),
     'aws_lambda_count'          => env('AWS_LAMBDA_COUNT'),
     'aws_lambda_delay'          => env('AWS_LAMBDA_DELAY'),
-    'aws_queue_plain'           => env('AWS_QUEUE_PLAIN'),
     'aws_efs_dir'               => env('AWS_EFS_DIR'),
 
     'charts_dir'                   => 'public/charts',
@@ -152,7 +151,6 @@ return [
     'ocr_tube'              => env('QUEUE_OCR_TUBE'),
     'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
     'pusher_process_tube'   => env('QUEUE_PUSHER_PROCESS_TUBE'),
-    'aws_img_process_tube'  => env('QUEUE_AWS_IMG_PROCESS_TUBE'),
 
     /* Images */
     /* Min and max logo and banner sizes used in Project model. Max Zoonviverse image. Thumb sizes. */
