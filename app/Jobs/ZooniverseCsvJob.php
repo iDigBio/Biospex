@@ -51,7 +51,7 @@ class ZooniverseCsvJob implements ShouldQueue
      */
     public function __construct(int $expeditionId)
     {
-        $this->onQueue(config('config.classification_tube'));
+        $this->onQueue(config('config.queues.classification'));
         $this->expeditionId = $expeditionId;
     }
 

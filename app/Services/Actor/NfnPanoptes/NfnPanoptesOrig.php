@@ -73,7 +73,7 @@ class NfnPanoptesOrig
 
                 Notification::send($users, new NfnExportError($expedition->title, $expedition->id, $message));
 
-            })->name('NfnPanoptes Export '.$actor->pivot->expedition_id)->onQueue(config('config.export_tube'))->dispatch();
+            })->name('NfnPanoptes Export '.$actor->pivot->expedition_id)->onQueue(config('config.queues.export'))->dispatch();
         } elseif ($actor->pivot->state === 1) {
             ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);
         }

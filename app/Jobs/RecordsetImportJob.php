@@ -72,7 +72,7 @@ class RecordsetImportJob implements ShouldQueue
     public function __construct($data)
     {
         $this->data = $data;
-        $this->onQueue(config('config.import_tube'));
+        $this->onQueue(config('config.queues.import'));
     }
 
     /**

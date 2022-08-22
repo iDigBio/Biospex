@@ -69,7 +69,7 @@ class ZooniverseExportLambdaJob implements ShouldQueue
         $this->exportQueue = $exportQueue;
         $this->data = $data;
         $this->complete = $complete;
-        $this->onQueue(config('config.export_tube'));
+        $this->onQueue(config('config.queues.export'));
     }
 
     /**

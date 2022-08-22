@@ -45,12 +45,12 @@
     "barryvdh/laravel-debugbar": "^3.5",
     "barryvdh/laravel-ide-helper": "^2.8",
     "beyondcode/laravel-dump-server": "^1.4",
-    "spatie/laravel-ignition": "^1.0",
     "fakerphp/faker": "^1.9.1",
     "kitloong/laravel-migrations-generator": "^v5.2.0",
     "mockery/mockery": "^1.4.2",
     "nunomaduro/collision": "^6.1",
-    "phpunit/phpunit": "^9.3.3"
+    "phpunit/phpunit": "^9.3.3",
+    "spatie/laravel-ignition": "^1.0"
   },
   "repositories": [
     {

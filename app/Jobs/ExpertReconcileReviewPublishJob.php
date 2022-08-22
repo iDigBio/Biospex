@@ -52,7 +52,7 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
     public function __construct(string $expeditionId)
     {
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.reconcile_tube'));
+        $this->onQueue(config('config.queues.reconcile'));
     }
 
     /**

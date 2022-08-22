@@ -46,7 +46,7 @@ class NfnTranscriptionsComplete extends Notification implements ShouldQueue
     public function __construct(string $title)
     {
         $this->title = $title;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**

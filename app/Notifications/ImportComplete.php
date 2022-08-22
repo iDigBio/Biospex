@@ -60,7 +60,7 @@ class ImportComplete extends Notification implements ShouldQueue
         $this->project = $project;
         $this->dupName = $dupName;
         $this->rejName = $rejName;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**

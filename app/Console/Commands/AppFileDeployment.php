@@ -137,7 +137,7 @@ class AppFileDeployment extends Command
         if (str_starts_with($search, 'QUEUE_')) {
             $replace = strtolower(str_replace('QUEUE_', '', $search));
 
-            return config('config.'.$replace);
+            return config('config.queues.'.$replace);
         }
 
         if ($search === 'MAP_PRIVATE_KEY') {
@@ -167,17 +167,18 @@ class AppFileDeployment extends Command
 
             'NUM_PROCS',
 
-            'QUEUE_CHART_TUBE',
-            'QUEUE_CLASSIFICATION_TUBE',
-            'QUEUE_DEFAULT_TUBE',
-            'QUEUE_EVENT_TUBE',
-            'QUEUE_IMPORT_TUBE',
-            'QUEUE_EXPORT_TUBE',
-            'QUEUE_RECONCILE_TUBE',
-            'QUEUE_WORKFLOW_TUBE',
-            'QUEUE_OCR_TUBE',
-            'QUEUE_PUSHER_TUBE',
-            'QUEUE_PUSHER_PROCESS_TUBE',
+            'QUEUE_CHART',
+            'QUEUE_CLASSIFICATION',
+            'QUEUE_DEFAULT',
+            'QUEUE_EVENT',
+            'QUEUE_IMPORT',
+            'QUEUE_EXPORT',
+            'QUEUE_RECONCILE',
+            'QUEUE_SNS_IMAGE',
+            'QUEUE_WORKFLOW',
+            'QUEUE_OCR',
+            'QUEUE_PUSHER_TRANSCRIPTIONS',
+            'QUEUE_PUSHER_PROCESS',
 
             'AWS_EFS_DIR',
         ]);

@@ -104,7 +104,7 @@ class AppLambdaCommand extends Command
      */
     public function generateUrls(int $total): array
     {
-        $files = $this->exportQueueFileRepository->findBy('queue_id', 2)->limit($total)->get();
+        $files = $this->exportQueueFileRepository->findBy('queue_id', 10)->limit($total)->get();
 
         return $files->map(function ($file) {
             return [

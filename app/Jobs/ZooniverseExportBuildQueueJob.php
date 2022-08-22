@@ -56,7 +56,7 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     public function __construct(Actor $actor)
     {
         $this->actor = $actor;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**

@@ -65,7 +65,7 @@ class DarwinCoreFileImportCommand extends Command
         parent::__construct();
 
         $this->importRepo = $importRepo;
-        $this->tube = config('config.import_tube');
+        $this->tube = config('config.queues.import');
     }
 
     /**

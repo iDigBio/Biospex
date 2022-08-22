@@ -23,9 +23,9 @@ use App\Repositories\ExportQueueFileRepository;
 use App\Repositories\ExportQueueRepository;
 
 /**
- * Class SqsImageExportProcess
+ * Class SnsImageExportResultProcess
  */
-class SqsImageExportProcess
+class SnsImageExportResultProcess
 {
     /**
      * @var \App\Repositories\ExportQueueRepository
@@ -53,16 +53,16 @@ class SqsImageExportProcess
     }
 
     /**
-     * Process result from Lambda function.
+     * Process result via sns from Lambda function.
      *
-     * @param array $data
+     * @param array $content
      * @return void
      */
-    public function process(array $data)
+    public function process(array $content)
     {
         try {
-            $requestPayload = $data['requestPayload'];
-            $responsePayload = $data['responsePayload'];
+            $requestPayload = $content['requestPayload'];
+            $responsePayload = $content['responsePayload'];
 
             // If errorMessage, something really went bad.
             if (isset($responsePayload['errorMessage'])) {
@@ -136,12 +136,12 @@ class SqsImageExportProcess
      */
     private function updateQueueFile(string $subjectId, string $message = null): void
     {
-        $data = [
+        $attributes = [
             'subject_id'    => $subjectId,
             'completed'     => 1,
             'error_message' => $message
         ];
-        $this->exportQueueFileRepository->updateBy($data, 'subject_id', $subjectId);
+        $this->exportQueueFileRepository->updateBy($attributes, 'subject_id', $subjectId);
     }
 }
 

@@ -57,7 +57,7 @@ class ZooniverseExportBuildZipJob implements ShouldQueue, ShouldBeUnique
     public function __construct(ExportQueue $exportQueue)
     {
         $this->exportQueue = $exportQueue;
-        $this->onQueue(config('config.export_tube'));
+        $this->onQueue(config('config.queues.export'));
     }
 
     /**

@@ -22,7 +22,7 @@ class TestJob implements ShouldQueue
      */
     public function __construct()
     {
-        $this->onQueue(config('config.export_tube'));
+        $this->onQueue(config('config.queues.export'));
     }
 
     /**

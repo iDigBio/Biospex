@@ -56,7 +56,7 @@ class PollExportEvent extends Event implements ShouldBroadcast
      */
     public function broadcastQueue(): string
     {
-        return config('config.event_tube');
+        return config('config.queues.event');
     }
 
     /**

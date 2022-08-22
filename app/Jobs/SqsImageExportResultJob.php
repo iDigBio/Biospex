@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Services\Process\SqsImageExportProcess;
+use App\Services\Process\SnsImageExportResultProcess;
 use Illuminate\Contracts\Queue\Job as LaravelJob;
 use Illuminate\Foundation\Bus\Dispatchable;
 
@@ -33,17 +33,17 @@ class SqsImageExportResultJob
     protected array $data;
 
     /**
-     * @var \App\Services\Process\SqsImageExportProcess
+     * @var \App\Services\Process\SnsImageExportResultProcess
      */
-    private SqsImageExportProcess $sqsImageExportProcess;
+    private SnsImageExportResultProcess $sqsImageExportProcess;
 
     /**
      * Construct.
      *
-     * @param \App\Services\Process\SqsImageExportProcess $sqsImageExportProcess
+     * @param \App\Services\Process\SnsImageExportResultProcess $sqsImageExportProcess
      */
     public function __construct(
-        SqsImageExportProcess $sqsImageExportProcess
+        SnsImageExportResultProcess $sqsImageExportProcess
     )
     {
         $this->sqsImageExportProcess = $sqsImageExportProcess;

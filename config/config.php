@@ -137,20 +137,22 @@ return [
         'County'         => 'county',
     ],
 
-    /* Beanstalk Tubes */
+    /* Beanstalk Queues */
     'num_procs'             => env('NUM_PROCS'),
-    'chart_tube'            => env('QUEUE_CHART_TUBE'),
-    'classification_tube'   => env('QUEUE_CLASSIFICATION_TUBE'),
-    'default_tube'          => env('QUEUE_DEFAULT_TUBE'),
-    'event_tube'            => env('QUEUE_EVENT_TUBE'),
-    'import_tube'           => env('QUEUE_IMPORT_TUBE'),
-    'export_tube'           => env('QUEUE_EXPORT_TUBE'),
-    'lambda_tube'           => env('QUEUE_LAMBDA_TUBE'),
-    'reconcile_tube'        => env('QUEUE_RECONCILE_TUBE'),
-    'workflow_tube'         => env('QUEUE_WORKFLOW_TUBE'),
-    'ocr_tube'              => env('QUEUE_OCR_TUBE'),
-    'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
-    'pusher_process_tube'   => env('QUEUE_PUSHER_PROCESS_TUBE'),
+    'queues'                => [
+        'chart'                 => env('QUEUE_CHART'),
+        'classification'        => env('QUEUE_CLASSIFICATION'),
+        'default'               => env('QUEUE_DEFAULT'),
+        'event'                 => env('QUEUE_EVENT'),
+        'import'                => env('QUEUE_IMPORT'),
+        'export'                => env('QUEUE_EXPORT'),
+        'reconcile'             => env('QUEUE_RECONCILE'),
+        'sns_image'             => env('QUEUE_SNS_IMAGE'),
+        'workflow'              => env('QUEUE_WORKFLOW'),
+        'ocr'                   => env('QUEUE_OCR'),
+        'pusher_transcriptions' => env('QUEUE_PUSHER_TRANSCRIPTIONS'),
+        'pusher_process'        => env('QUEUE_PUSHER_PROCESS'),
+    ],
 
     /* Images */
     /* Min and max logo and banner sizes used in Project model. Max Zoonviverse image. Thumb sizes. */
