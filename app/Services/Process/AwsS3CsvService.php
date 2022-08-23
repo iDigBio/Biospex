@@ -105,7 +105,7 @@ class AwsS3CsvService
      */
     public function insertAll(array $data)
     {
-        $this->insertAll($data);
+        $this->csv->insertAll($data);
     }
 
     /**
