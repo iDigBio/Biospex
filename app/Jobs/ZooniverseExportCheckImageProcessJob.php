@@ -49,6 +49,18 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
     public int $tries = 3;
 
     /**
+     * @var int
+     */
+    public int $timeout = 300;
+
+    /**
+     * Indicate if the job should be marked as failed on timeout.
+     *
+     * @var bool
+     */
+    public bool $failOnTimeout = true;
+
+    /**
      * Create a new job instance.
      *
      * @param \App\Models\ExportQueue $exportQueue
@@ -70,25 +82,18 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
         ExportQueueFileRepository $exportQueueFileRepository,
     )
     {
-        $this->release(30);
-
-        return;
-        $this->exportQueue->stage = 3;
-        $this->exportQueue->save();
-
         $count = $exportQueueFileRepository->getUncompletedCount($this->exportQueue->id);
-        \Log::alert('Incomplete count = ' . $count);
 
         if ($count === 0) {
-            \Log::alert('Complete');
-            //ZooniverseExportBuildCsvJob::dispatch($this->exportQueue);
+            $this->exportQueue->stage = 4;
+            $this->exportQueue->save();
+
+            ZooniverseExportBuildCsvJob::dispatch($this->exportQueue);
             $this->delete();
         }
 
         if ($this->attempts() < 4) {
-            \Log::alert('attempt '.$this->attempts());
-            //ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue)->delay(30);
-            $this->release(30);
+            $this->release(60);
         }
     }
 

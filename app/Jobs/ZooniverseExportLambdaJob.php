@@ -55,7 +55,14 @@ class ZooniverseExportLambdaJob implements ShouldQueue
     /**
      * @var int
      */
-    public int $timeout = 3600;
+    public int $timeout = 1800;
+
+    /**
+     * Indicate if the job should be marked as failed on timeout.
+     *
+     * @var bool
+     */
+    public bool $failOnTimeout = true;
 
     /**
      * Create a new job instance.
@@ -82,25 +89,16 @@ class ZooniverseExportLambdaJob implements ShouldQueue
     public function handle(
         AwsLambdaApiService $awsLambdaApiService,
     ) {
-
-        $this->exportQueue->processed = 0;
-        $this->exportQueue->stage = 2;
-        $this->exportQueue->save();
-
-        //\Artisan::call('export:poll');
-
-        $complete = $this->complete ? 'true' : 'false';
-        \Log::alert($complete);
-
         $this->data->each(function ($attributes) use ($awsLambdaApiService) {
-            //$awsLambdaApiService->lambdaInvokeAsync('imageExportProcess', $attributes);
+            $awsLambdaApiService->lambdaInvokeAsync(config('config.aws_lambda_export_function'), $attributes);
         });
-        \Log::alert('sent ' . $this->data->count() . ' lambda requests');
-
-        $this->exportQueue->processed = $this->exportQueue->processed + count($this->data);
-        $this->exportQueue->save();
 
         if ($this->complete) {
+            $this->exportQueue->stage = 3;
+            $this->exportQueue->save();
+
+            \Artisan::call('export:poll');
+
             ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue)->delay(60);
         }
     }
@@ -113,6 +111,7 @@ class ZooniverseExportLambdaJob implements ShouldQueue
      */
     public function failed(Throwable $exception)
     {
+        exec("sudo systemctl restart beanstalkd");
         $this->sendErrorNotification($this->exportQueue, $exception);
     }
 }

@@ -42,6 +42,7 @@ class SnsNotificaitonListener implements ShouldQueue
     {
         // $event->payload is the data passed to the event.
         $content = json_decode($event->payload['message']['Message'], true);
+        \Log::info(json_encode($content));
         $this->snsImageExportResultProcess->process($content);
     }
 }

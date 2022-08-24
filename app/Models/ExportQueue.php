@@ -29,7 +29,7 @@ class ExportQueue extends BaseEloquentModel
     /**
      * @ineritDoc
      */
-    protected $table = 'queues.exports';
+    protected $table = 'export_queues';
 
     /**
      * @inheritDoc

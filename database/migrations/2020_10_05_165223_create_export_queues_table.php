@@ -13,7 +13,7 @@ class CreateExportQueuesTable extends Migration
      */
     public function up()
     {
-        Schema::create('queues.exports', function (Blueprint $table) {
+        Schema::create('export_queues', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('expedition_id');
             $table->unsignedInteger('actor_id')->index('queues.exports_actor_id_foreign');
@@ -34,6 +34,6 @@ class CreateExportQueuesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('queues.exports');
+        Schema::dropIfExists('export_queues');
     }
 }

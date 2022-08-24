@@ -32,13 +32,7 @@ class TestJob implements ShouldQueue
      */
     public function handle()
     {
-        \Log::info('Attempt ' . $this->attempts());
-        if ($this->attempts() < 3) {
-            \Log::info('releasing attempt ' . $this->attempts());
-            $this->release(30);
-        }
 
-        \Log::info('Done releasing');
-
+        \Log::info($this->job->getJobId());
     }
 }

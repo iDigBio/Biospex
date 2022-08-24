@@ -72,6 +72,11 @@ class ExportQueueEventSubscriber
         ExportQueueJob::dispatch($exportQueue);
     }
 
+    /**
+     * Retry currently queued expedition.
+     *
+     * @return void
+     */
     public function retry()
     {
         $exportQueue = $this->exportQueueRepo->getQueueForRetry();

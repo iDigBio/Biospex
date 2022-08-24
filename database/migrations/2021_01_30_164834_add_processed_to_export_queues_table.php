@@ -13,7 +13,7 @@ class AddProcessedToExportQueuesTable extends Migration
      */
     public function up()
     {
-        Schema::table('queues.exports', function (Blueprint $table) {
+        Schema::table('export_queues', function (Blueprint $table) {
             $table->integer('processed')->default(0)->index()->after('count');
         });
     }
@@ -25,7 +25,7 @@ class AddProcessedToExportQueuesTable extends Migration
      */
     public function down()
     {
-        Schema::table('queues.exports', function (Blueprint $table) {
+        Schema::table('export_queues', function (Blueprint $table) {
             $table->dropColumn('processed');
         });
     }

@@ -13,7 +13,7 @@ class CreateExportQueueFilesTable extends Migration
      */
     public function up()
     {
-        Schema::create('queues.export_files', function (Blueprint $table) {
+        Schema::create('export_queue_files', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('queue_id')->index('queues.export_files_queue_id_foreign');
             $table->string('subject_id', 30)->nullable()->unique();
@@ -31,6 +31,6 @@ class CreateExportQueueFilesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('queues.export_files');
+        Schema::dropIfExists('export_queue_files');
     }
 }

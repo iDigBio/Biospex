@@ -44,6 +44,18 @@ class ZooniverseExportCreateReportJob implements ShouldQueue, ShouldBeUnique
     private ExportQueue $exportQueue;
 
     /**
+     * @var int
+     */
+    public int $timeout = 900;
+
+    /**
+     * Indicate if the job should be marked as failed on timeout.
+     *
+     * @var bool
+     */
+    public bool $failOnTimeout = true;
+
+    /**
      * Create a new job instance.
      *
      * @param \App\Models\ExportQueue $exportQueue

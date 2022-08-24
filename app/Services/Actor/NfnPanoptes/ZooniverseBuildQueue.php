@@ -19,7 +19,9 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
+use App\Jobs\ZooniverseExportBuildImageRequestsJob;
 use App\Models\Actor;
+use App\Models\ExportQueue;
 use App\Services\Actor\ActorInterface;
 use App\Repositories\ExportQueueFileRepository;
 use App\Repositories\ExportQueueRepository;
@@ -73,22 +75,28 @@ class ZooniverseBuildQueue implements ActorInterface
      */
     public function process(Actor $actor)
     {
-        $queue = $this->exportQueueRepository->createQueue($actor->pivot->expedition_id, $actor->id, $actor->pivot->total);
+        $this->exportQueueRepository->createQueue($actor->pivot->expedition_id, $actor->id, $actor->pivot->total);
+    }
 
-        try {
-            $subjects = $this->subjectRepository->getAssignedByExpeditionId($queue->expedition_id);
+    /**
+     * Build queue files table.
+     *
+     * @param \App\Models\ExportQueue $exportQueue
+     * @return void
+     */
+    public function buildFiles(ExportQueue $exportQueue)
+    {
+        $subjects = $this->subjectRepository->getAssignedByExpeditionId($exportQueue->expedition_id);
 
-            $subjects->each(function ($subject) use ($queue) {
-                $this->exportQueueFileRepository->createQueueFile($queue, $subject);
-            });
-            event('exportQueue.check');
-        } catch (\Exception $e) {
-            $queue->error = 1;
-            $queue->queued = 0;
-            $queue->processed = 0;
-            $queue->save();
+        $subjects->each(function ($subject) use ($exportQueue) {
+            $this->exportQueueFileRepository->createQueueFile($exportQueue, $subject);
+        });
 
-            throw new \Exception($e->getMessage());
-        }
+        $exportQueue->stage = 1;
+        $exportQueue->save();
+
+        \Artisan::call('export:poll');
+
+        ZooniverseExportBuildImageRequestsJob::dispatch($exportQueue);
     }
 }

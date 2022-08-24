@@ -19,16 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\ATestJob;
-use App\Jobs\TestJob;
-use App\Models\Expedition;
-use App\Models\ExportQueue;
-use App\Models\ExportQueueFile;
-use App\Repositories\ExpeditionRepository;
-use App\Repositories\ExportQueueFileRepository;
-use App\Services\Actor\ActorFactory;
 use Illuminate\Console\Command;
-use JetBrains\PhpStorm\ArrayShape;
 
 /**
  * Class AppCommand
@@ -48,25 +39,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepository;
-
-    /**
-     * @var \App\Repositories\ExportQueueFileRepository
-     */
-    private ExportQueueFileRepository $exportQueueFileRepository;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(
-        ExpeditionRepository $expeditionRepository,
-        ExportQueueFileRepository $exportQueueFileRepository
-    ) {
+    public function __construct()
+    {
         parent::__construct();
-        $this->expeditionRepository = $expeditionRepository;
-        $this->exportQueueFileRepository = $exportQueueFileRepository;
     }
 
     /**
@@ -74,30 +51,21 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        TestJob::dispatch();
-        //$queue = ExportQueue::with(['expedition', 'actor'])->find(1);
-        //dd($queue->actor->id);
 
-        //$expedition = $this->expeditionRepository->findwith(422, ['nfnActor', 'stat']);
-        //ActorFactory::create($expedition->nfnActor->class)->actor($expedition->nfnActor);
 
     }
 
-    /**
-     * Create data array.
-     *
-     * @param \App\Models\ExportQueueFile $file
-     * @return array
-     */
-    #[ArrayShape(['queueId' => "mixed", 'subjectId' => "mixed", 'url' => "mixed", 'dir' => "string"])]
-    private function createDataArray(ExportQueueFile $file): array
+    public function clearTube($tube)
     {
-        return [
-            'queueId'   => $file->queue_id,
-            'subjectId' => $file->subject_id,
-            'url'       => $file->url,
-            'dir'       => 'testing',
-        ];
+        /*
+        try
+        {
+            while($job = $pheanstalk->peekReady($tube))
+            {
+                $pheanstalk->delete($job);
+            }
+        }
+        catch(\Pheanstalk_Exception_ServerException $e){}
+        */
     }
-
 }

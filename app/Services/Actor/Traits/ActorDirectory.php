@@ -34,11 +34,6 @@ trait ActorDirectory
     /**
      * @var string
      */
-    public string $randomStr;
-
-    /**
-     * @var string
-     */
     public string $scratchDir;
 
     /**
@@ -72,6 +67,11 @@ trait ActorDirectory
     public array $rejected  = [];
 
     /**
+     * @var string
+     */
+    public string $expeditiionUuid;
+
+    /**
      * Set folder property.
      *
      * @param int $queueId
@@ -80,6 +80,7 @@ trait ActorDirectory
      */
     public function setFolder(int $queueId, int $actorId, string $expeditionUuid)
     {
+        $this->expeditiionUuid = $expeditionUuid;
         $this->folderName = $queueId.'-'.$actorId.'-'.$expeditionUuid;
     }
 
@@ -92,21 +93,10 @@ trait ActorDirectory
      */
     public function setDirectories(bool $delete = false, bool $batch = false)
     {
-        $this->setRandomString();
         $this->setScratchDirectory();
         $this->setWorkingDirectory($delete);
         $this->setExportDirectory();
         $this->setArchiveZip($batch);
-    }
-
-    /**
-     * Creates random string for tar archive name.
-     *
-     * @return void
-     */
-    public function setRandomString()
-    {
-        $this->randomStr = md5(\Str::random(10).$this->folderName);
     }
 
     /**
@@ -149,7 +139,7 @@ trait ActorDirectory
      */
     protected function setArchiveZip(bool $batch = false)
     {
-        $this->archiveZip = $batch ? $this->folderName.'.zip' : $this->randomStr.'.zip';
+        $this->archiveZip = $batch ? $this->folderName.'.zip' : md5($this->folderName).'.zip';
         $this->archiveZipPath = $this->exportDirectory.'/'.$this->archiveZip;
     }
 

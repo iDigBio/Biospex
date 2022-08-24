@@ -68,11 +68,6 @@ class ZooniverseBuildZip implements QueueInterface
     public function process(ExportQueue $exportQueue)
     {
         $exportQueue->load(['expedition']);
-        $exportQueue->processed = 0;
-        $exportQueue->stage = 5;
-        $exportQueue->save();
-
-        //\Artisan::call('export:poll');
 
         $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
         $this->setDirectories();
@@ -82,7 +77,18 @@ class ZooniverseBuildZip implements QueueInterface
         $output=null;
         $retval=null;
         $path = config('config.current_path') . '/zipExport.js';
+
+        $start_time = microtime(true);
+
         exec("node $path {$this->workingDir} {$this->archiveZipPath}" , $output, $retval);
+
+        // End clock time in seconds
+        $end_time = microtime(true);
+
+        // Calculate script execution time
+        $execution_time = ($end_time - $start_time);
+
+        \Log::alert(" Execution time of script = ".$execution_time." sec");
 
         if ($retval) {
             throw new \Exception($output);
@@ -104,6 +110,11 @@ class ZooniverseBuildZip implements QueueInterface
         $this->downloadRepository->updateOrCreate($attributes, $values);
 
         $this->cleanDirectory(config('config.aws_efs_dir'));
+
+        $exportQueue->stage = 6;
+        $exportQueue->save();
+
+        \Artisan::call('export:poll');
 
         ZooniverseExportCreateReportJob::dispatch($exportQueue);
     }

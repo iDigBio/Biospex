@@ -42,7 +42,7 @@ class ZooniverseExportBuildImageRequests implements QueueInterface
     /**
      * @var \App\Models\ExportQueue
      */
-    private ExportQueue $queue;
+    private ExportQueue $exportQueue;
 
     /**
      * Construct.
@@ -58,49 +58,47 @@ class ZooniverseExportBuildImageRequests implements QueueInterface
     /**
      * Process images.
      *
-     * @param \App\Models\ExportQueue $queue
+     * @param \App\Models\ExportQueue $exportQueue
      * @return void
      * @throws \Exception
      */
-    public function process(ExportQueue $queue)
+    public function process(ExportQueue $exportQueue)
     {
-        $queue->load(['expedition']);
-        $queue->processed = 0;
-        $queue->stage = 1;
-        $queue->save();
+        $exportQueue->load(['expedition']);
 
-        //\Artisan::call('export:poll');
-
-        $this->setFolder($queue->id, $queue->actor->id, $queue->expedition->uuid);
+        $this->setFolder($exportQueue->id, $exportQueue->actor->id, $exportQueue->expedition->uuid);
         $this->setDirectories();
 
         $lambdaCount = config('config.aws_lambda_count');
-        $total = $this->exportQueueFileRepository->getExportFilesCount($queue->id);
+        $total = $this->exportQueueFileRepository->getExportFilesCount($exportQueue->id);
 
         $multiplier = 0;
         $this->exportQueueFileRepository->model()
-            ->where('queue_id', $queue->id)
-            ->chunk($lambdaCount, function ($files) use ($queue, &$multiplier, &$total) {
+            ->where('queue_id', $exportQueue->id)
+            ->chunk($lambdaCount, function ($files) use ($exportQueue, &$multiplier, &$total) {
                 $total = $total - $files->count();
 
-                $data = $files->reject(function ($file) use ($queue) {
-                    return $this->checkFileExistsAndUpdate($queue, $file);
+                $data = $files->reject(function ($file) use ($exportQueue) {
+                    return $this->checkFileExistsAndUpdate($exportQueue, $file);
                 })->map(function ($file) {
                     return $this->createDataArray($file);
                 });
 
-                $queue->processed = $queue->processed + $data->count();
-                $queue->save();
+                $exportQueue->processed = $exportQueue->processed + $data->count();
+                $exportQueue->save();
+                \Artisan::call('export:poll');
 
                 $multiplier++;
                 $delay = $multiplier === 1 ? 0 : $multiplier * 30;
 
-                \Log::alert('Processed ' . $queue->processed);
-                \Log::alert('Adding delay ' . $delay);
-                \Log::alert('Total Left ' . $total);
-
-                ZooniverseExportLambdaJob::dispatch($queue, $data, $total === 0)->delay($delay);
+                ZooniverseExportLambdaJob::dispatch($exportQueue, $data, $total === 0)->delay($delay);
         });
+
+        $exportQueue->processed = 0;
+        $exportQueue->stage = 2;
+        $exportQueue->save();
+
+        \Artisan::call('export:poll');
     }
 
     /**
@@ -124,20 +122,22 @@ class ZooniverseExportBuildImageRequests implements QueueInterface
      * Check if file exists and update process.
      * Trigger polling if file exists.
      *
-     * @param \App\Models\ExportQueue $queue
+     * @param \App\Models\ExportQueue $exportQueue
      * @param \App\Models\ExportQueueFile $file
      * @return bool
      */
-    private function checkFileExistsAndUpdate(ExportQueue $queue, ExportQueueFile $file): bool
+    private function checkFileExistsAndUpdate(ExportQueue $exportQueue, ExportQueueFile $file): bool
     {
         $filePath = $this->workingDir.'/'.$file->subject_id.'.jpg';
 
         if ($this->checkFileExists($filePath, $file->subject_id)) {
-            $queue->processed++;
-            $queue->save();
+            $exportQueue->processed++;
+            $exportQueue->save();
 
             $file->completed = 1;
             $file->save();
+
+            \Artisan::call('export:poll');
 
             return true;
         }

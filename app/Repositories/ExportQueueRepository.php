@@ -74,7 +74,7 @@ class ExportQueueRepository extends BaseRepository
         $queue = $this->model->firstOrNew($attributes);
         $queue->queued = 0;
         $queue->error = 0;
-        $queue->stage = 1;
+        $queue->stage = 0;
         $queue->count = $total;
         $queue->processed = 0;
         $queue->save();

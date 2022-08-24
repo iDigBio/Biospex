@@ -107,11 +107,6 @@ class ZooniverseBuildCsv implements QueueInterface
     public function process(ExportQueue $exportQueue)
     {
         $exportQueue->load(['expedition']);
-        $exportQueue->processed = 0;
-        $exportQueue->stage = 4;
-        $exportQueue->save();
-
-        //\Artisan::call('export:poll');
 
         $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
         $this->setDirectories();
@@ -123,7 +118,7 @@ class ZooniverseBuildCsv implements QueueInterface
 
         $first = true;
 
-        $this->exportQueueFileRepository->chunk(100, function ($chunk) use (&$exportQueue, &$first) {
+        $this->exportQueueFileRepository->model()->chunk(100, function ($chunk) use (&$exportQueue, &$first) {
             $csvData = $chunk->filter(function ($file) {
                 return $this->checkFileExists($this->workingDir.'/'.$file->subject_id.'.jpg', $file->subject_id);
             })->map(function ($file) use ($exportQueue) {
@@ -146,6 +141,11 @@ class ZooniverseBuildCsv implements QueueInterface
         if (! $this->checkCsvImageCount($exportQueue)) {
             throw new Exception(t('The row count in the csv export file does not match image count.'));
         }
+
+        $exportQueue->stage = 5;
+        $exportQueue->save();
+
+        \Artisan::call('export:poll');
 
         ZooniverseExportBuildZipJob::dispatch($exportQueue);
     }
@@ -202,7 +202,7 @@ class ZooniverseBuildCsv implements QueueInterface
                 \Log::info('empty file ' . $subjectId);
                 continue;
             }
-            $file->error = 1;
+
             $file->error_message .= $reason;
             $file->save();
         }

@@ -52,29 +52,6 @@ class ExportQueueFileRepository extends BaseRepository
     }
 
     /**
-     * Get all files without errors by queue id.
-     *
-     * @param string $queueId
-     * @return \Illuminate\Support\Collection
-     */
-    public function getFilesWithoutErrorByQueueId(string $queueId): Collection
-    {
-        return $this->model->with('subject')
-            ->where('queue_id', $queueId)->where('error_message', 0)->get();
-    }
-
-    /**
-     * Get files with errors by queue id.
-     *
-     * @param string $queueId
-     * @return \Illuminate\Support\Collection
-     */
-    public function getFilesWithErrorsByQueueId(string $queueId): Collection
-    {
-        return $this->model->where('queue_id', $queueId)->where('error_message', 1)->get();
-    }
-
-    /**
      * Get uncompleted export queue file count.
      *
      * @param int $queueId
@@ -114,10 +91,10 @@ class ExportQueueFileRepository extends BaseRepository
     public function getQueueFileErrorsData(int $queueId): array
     {
         $data = [];
-        $remove = array_flip(['id', 'queue_id', 'error_message', 'created_at', 'updated_at']);
+        $remove = array_flip(['id', 'queue_id', 'completed', 'created_at', 'updated_at']);
 
         $callback = function ($files) use($remove, &$data) {
-            $data[] = $files->map(function ($file) use ($remove) {
+            $data = $files->map(function ($file) use ($remove) {
                 return array_diff_key($file->toArray(), $remove);
             })->toArray();
         };
@@ -127,18 +104,6 @@ class ExportQueueFileRepository extends BaseRepository
             ->chunk(100, $callback);
 
         return $data;
-    }
-
-    /**
-     * Perform chunk operations on files for lambda.
-     *
-     * @param int $expeditionId
-     * @param callable $callback
-     * @return void
-     */
-    public function chunkExportFiles(int $expeditionId, callable $callback)
-    {
-        $this->model->where('expedition_id', $expeditionId)->chunk(config('config.aws_lambda_count'), $callback);
     }
 
     /**

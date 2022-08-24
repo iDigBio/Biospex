@@ -13,8 +13,8 @@ class AddForeignKeysToExportQueueFilesTable extends Migration
      */
     public function up()
     {
-        Schema::table('queues.export_files', function (Blueprint $table) {
-            $table->foreign('queue_id')->references('id')->on('queues.exports')->onUpdate('CASCADE')->onDelete('CASCADE');
+        Schema::table('export_queue_files', function (Blueprint $table) {
+            $table->foreign('queue_id')->references('id')->on('export_queues')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 
@@ -25,7 +25,7 @@ class AddForeignKeysToExportQueueFilesTable extends Migration
      */
     public function down()
     {
-        Schema::table('queues.export_files', function (Blueprint $table) {
+        Schema::table('export_queue_files', function (Blueprint $table) {
             $table->dropForeign('queues.export_files_queue_id_foreign');
         });
     }

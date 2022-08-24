@@ -113,7 +113,7 @@ class ExportPollCommand extends Command
         $stage = $this->exportStages[$queue->stage];
         $title = $queue->expedition->title;
 
-        $count = ($queue->stage === 1 || $queue->stage === 2);
+        $count = ($queue->stage === 1);
         $processedRecords = $count ? t(' :processed of :total completed.', [
             ':processed' => $processed,
             ':total'     => $queue->count,

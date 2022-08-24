@@ -23,13 +23,14 @@ return [
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
 
-    'aws_access_key'            => env('AWS_ACCESS_KEY'),
-    'aws_secret_key'            => env('AWS_SECRET_ACCESS_KEY'),
-    'aws_default_region'        => env('AWS_DEFAULT_REGION'),
-    'aws_lambda_export_img_url' => env('AWS_LAMBDA_EXPORT_IMG_URL'),
-    'aws_lambda_count'          => env('AWS_LAMBDA_COUNT'),
-    'aws_lambda_delay'          => env('AWS_LAMBDA_DELAY'),
-    'aws_efs_dir'               => env('AWS_EFS_DIR'),
+    'aws_access_key'             => env('AWS_ACCESS_KEY'),
+    'aws_secret_key'             => env('AWS_SECRET_ACCESS_KEY'),
+    'aws_default_region'         => env('AWS_DEFAULT_REGION'),
+    'aws_lambda_export_img_url'  => env('AWS_LAMBDA_EXPORT_IMG_URL'),
+    'aws_lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION'),
+    'aws_lambda_count'           => env('AWS_LAMBDA_COUNT'),
+    'aws_lambda_delay'           => env('AWS_LAMBDA_DELAY'),
+    'aws_efs_dir'                => env('AWS_EFS_DIR'),
 
     'charts_dir'                   => 'public/charts',
     'scratch_dir'                  => 'scratch',
@@ -79,14 +80,14 @@ return [
     ],
 
     'export_stages'       => [
-        'Build Queue', // 0
-        'Build Image Requests', // 1
-        'Send Lambda Requests', //2
-        'Check Image Process', //3
-        'Build CSV', //4
-        'Compress Export File', //5
-        'Creating Report', //6
-        'Delete Working Files', //7
+        'Building File Queue', // 0
+        'Building Image Requests', // 1
+        'Sending Lambda Requests', // 2
+        'Checking Image Process', // 3
+        'Building CSV', // 4
+        'Compressing Export File', // 5
+        'Creating Report', // 6
+        'Deleting Working Files', // 7
     ],
 
     /**

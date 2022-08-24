@@ -72,7 +72,7 @@ class CreateReportService
         $this->awsS3CsvService->insertOne($header);
         $this->awsS3CsvService->insertAll($data);
 
-        return base64_decode($csvName);
+        return base64_encode($csvName);
     }
 
     /**

@@ -42,11 +42,11 @@ return [
             'after_commit' => false,
         ],
 
-        'beanstalkd' => [
+        'beanstalkd' => [ // default timeout 60 seconds
             'driver'       => 'beanstalkd',
             'host'         => 'localhost',
             'queue'        => 'default',
-            'retry_after'  => 37000,
+            'retry_after'  => 36000,
             'block_for'    => 0,
             'after_commit' => false,
         ],
@@ -70,14 +70,6 @@ return [
             'retry_after'  => 90,
             'block_for'    => null,
             'after_commit' => false,
-        ],
-
-        'redis-long' => [
-            'driver'      => 'redis',
-            'connection'  => 'default',
-            'queue'       => 'default_long',
-            'retry_after' => 1200, // Run for max 20 minutes
-            'block_for'   => null,
         ],
     ],
 

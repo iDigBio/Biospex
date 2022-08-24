@@ -68,23 +68,26 @@ class ExportQueueJob implements ShouldQueue
     public function handle()
     {
         switch ($this->exportQueue->stage) {
+            case 0:
+                ZooniverseExportBuildFilesQueueJob::dispatch($this->exportQueue); // set stage 1
+                break;
             case 1:
-                ZooniverseExportBuildImageRequestsJob::dispatch($this->exportQueue);
+                ZooniverseExportBuildImageRequestsJob::dispatch($this->exportQueue); //set stage 2
                 break;
             case 2:
-                ZooniverseExportLambdaJob::dispatch($this->exportQueue);
+                ZooniverseExportLambdaJob::dispatch($this->exportQueue); // set stage 3
                 break;
             case 3:
-                ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue);
+                ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue); // set stage 4
                 break;
             case 4:
-                ZooniverseExportBuildCsvJob::dispatch($this->exportQueue);
+                ZooniverseExportBuildCsvJob::dispatch($this->exportQueue); // set stage 5
                 break;
             case 5:
-                ZooniverseExportBuildZipJob::dispatch($this->exportQueue);
+                ZooniverseExportBuildZipJob::dispatch($this->exportQueue); //set stage 6
                 break;
             case 6:
-                ZooniverseExportCreateReportJob::dispatch($this->exportQueue);
+                ZooniverseExportCreateReportJob::dispatch($this->exportQueue); // set stage 7
                 break;
             case 7:
                 ZooniverseExportDeleteFilesJob::dispatch($this->exportQueue);

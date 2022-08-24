@@ -76,21 +76,22 @@ class ZooniverseExportCreateReport implements QueueInterface
             }
         ]);
 
-        $exportQueue->processed = 0;
-        $exportQueue->stage = 6;
-        $exportQueue->save();
-
-        //\Artisan::call('export:poll');
-
         $data = $this->exportQueueFileRepository->getQueueFileErrorsData($exportQueue->id);
 
-        $csvName = md5($exportQueue->id).'.csv';
+        $csvName = $exportQueue->expedition->uuid.'.csv';
         $fileName = $this->createReportService->createCsvReport($csvName, $data);
+
         $this->createReportService->saveReport($exportQueue, $csvName);
 
         $users = $exportQueue->expedition->project->group->users->push($exportQueue->expedition->project->group->owner);
 
         Notification::send($users, new NfnExportComplete($exportQueue->expedition->title, $fileName));
+
+        $exportQueue->processed = 0;
+        $exportQueue->stage = 7;
+        $exportQueue->save();
+
+        \Artisan::call('export:poll');
 
         ZooniverseExportDeleteFilesJob::dispatch($exportQueue);
     }

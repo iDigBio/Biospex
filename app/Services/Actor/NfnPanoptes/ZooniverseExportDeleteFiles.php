@@ -39,18 +39,13 @@ class ZooniverseExportDeleteFiles implements QueueInterface
     public function process(ExportQueue $exportQueue)
     {
         $exportQueue->load(['expedition']);
-        $exportQueue->processed = 0;
-        $exportQueue->stage = 7;
-        $exportQueue->save();
-
-        //\Artisan::call('export:poll');
 
         $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
         $this->setDirectories();
         $this->deleteDirectory($this->workingDir);
         $exportQueue->delete();
 
-        //\Artisan::call('export:poll');
-        \Artisan::call('exportQueue.check');
+        \Artisan::call('export:poll');
+        event('exportQueue.check');
     }
 }
