@@ -81,7 +81,9 @@ class ZooniverseExportCreateReport implements QueueInterface
         $csvName = $exportQueue->expedition->uuid.'.csv';
         $fileName = $this->createReportService->createCsvReport($csvName, $data);
 
-        $this->createReportService->saveReport($exportQueue, $csvName);
+        if ($fileName) {
+            $this->createReportService->saveReport($exportQueue, $csvName);
+        }
 
         $users = $exportQueue->expedition->project->group->users->push($exportQueue->expedition->project->group->owner);
 
