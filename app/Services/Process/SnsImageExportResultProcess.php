@@ -125,6 +125,7 @@ class SnsImageExportResultProcess
         $queue = $this->exportQueueRepository->find($queueId);
         $queue->processed = $queue->processed + 1;
         $queue->save();
+        \Artisan::call('export:poll');
     }
 
     /**

@@ -94,11 +94,6 @@ class ZooniverseExportLambdaJob implements ShouldQueue
         });
 
         if ($this->complete) {
-            $this->exportQueue->stage = 3;
-            $this->exportQueue->save();
-
-            \Artisan::call('export:poll');
-
             ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue)->delay(60);
         }
     }

@@ -82,7 +82,7 @@ return [
     'export_stages'       => [
         'Building File Queue', // 0
         'Building Image Requests', // 1
-        'Sending Lambda Requests', // 2
+        'Processing Image Requests', // 2
         'Checking Image Process', // 3
         'Building CSV', // 4
         'Compressing Export File', // 5
