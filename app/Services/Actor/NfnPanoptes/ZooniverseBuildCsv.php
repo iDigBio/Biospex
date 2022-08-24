@@ -203,7 +203,7 @@ class ZooniverseBuildCsv implements QueueInterface
                 continue;
             }
 
-            $file->error_message .= $reason;
+            $file->error_message .= ' ' . $reason;
             $file->save();
         }
     }
