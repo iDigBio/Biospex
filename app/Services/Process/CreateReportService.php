@@ -62,6 +62,10 @@ class CreateReportService
      */
     public function createCsvReport(string $csvName, array $data): bool|string
     {
+        if (empty($data)) {
+            return false;
+        }
+
         $header = array_keys($data[0]);
 
         $bucket = config('filesystems.disks.s3.bucket');
