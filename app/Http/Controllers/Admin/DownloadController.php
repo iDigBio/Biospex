@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ExportDownloadBatchJob;
+use App\Models\Download;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\UserRepository;
 use App\Services\Download\DownloadType;
@@ -141,14 +142,15 @@ class DownloadController extends Controller
     }
 
     /**
-     * Create download for tar files.
+     * Download compressed file.
+     * Using zip or gz for backwards compatibility.
      *
      * @param string $projectId
      * @param string $expeditionId
      * @param string $downloadId
      * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function downloadZip(string $projectId, string $expeditionId, string $downloadId): StreamedResponse|RedirectResponse
+    public function downloadExport(string $projectId, string $expeditionId, string $downloadId)
     {
         try {
             $download = $this->downloadType->getDownload($downloadId);
@@ -157,33 +159,12 @@ class DownloadController extends Controller
                 return redirect()->back();
             }
 
-            return $this->downloadType->createZipDownload($download);
+            $extension = substr(strrchr($download->file, '.'), 1);
 
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
+            return $extension === 'zip' ?
+                $this->downloadType->createZipDownload($download) :
+                $this->downloadType->createTarDownload($download);
 
-            return redirect()->back();
-        }
-    }
-
-    /**
-     * Create download for tar files.
-     *
-     * @param string $projectId
-     * @param string $expeditionId
-     * @param string $downloadId
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
-     */
-    public function downloadTar(string $projectId, string $expeditionId, string $downloadId)
-    {
-        try {
-            $download = $this->downloadType->getDownload($downloadId);
-
-            if (! $this->checkPermissions('isOwner', $download->expedition->project->group)) {
-                return redirect()->back();
-            }
-
-            return $this->downloadType->createTarDownload($download);
         } catch (Exception $e) {
             Flash::error($e->getMessage());
 
