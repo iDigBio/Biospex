@@ -93,7 +93,7 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
         }
 
         if ($this->attempts() < 4) {
-            $this->release(60);
+            $this->release(30);
         }
     }
 
