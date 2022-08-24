@@ -58,12 +58,13 @@
                                             @endif
                                         @endcan
                                     @else
-                                        <a href="{{ route('admin.downloads.downloadTar', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                        <a href="{{ route('admin.downloads.downloadExport', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                            class="mr-4"
                                            data-hover="tooltip"
                                            data-placement="left"
                                            data-original-title="{{ t('Download %s file', $download->type) }} ">
                                             <i class="fas fa-file-archive fa-2x"></i></a>
+                                    <!--
                                         <a href="{{ route('admin.downloads.batch', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                            class="prevent-default"
                                            data-method="get"
@@ -73,6 +74,7 @@
                                            data-original-title="{{ t('Download %s batches', $download->type) }}"
                                            data-content="{{ t('This action will split the Export file into several batch files that can be downloaded separately. You will be notified by email when the process is complete. Do you wish to continue?') }}">
                                             <i class="fas fa-file-download fa-2x"></i></a>
+                                            -->
                                     @endif
                                 </td>
                             </tr>
