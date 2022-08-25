@@ -94,7 +94,7 @@ class ZooniverseExportLambdaJob implements ShouldQueue
         });
 
         if ($this->complete) {
-            ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue)->delay(60);
+            ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue)->delay(config('config.aws_lambda_delay') * 3);
         }
     }
 
