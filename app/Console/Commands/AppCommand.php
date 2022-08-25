@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ExportQueueFile;
 use Illuminate\Console\Command;
 
 /**
@@ -51,7 +52,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
 
     }
 
