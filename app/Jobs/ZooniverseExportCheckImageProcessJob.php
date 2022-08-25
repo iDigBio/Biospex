@@ -84,16 +84,15 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
     {
         $count = $exportQueueFileRepository->getUncompletedCount($this->exportQueue->id);
 
+        if ($this->attempts() < 4 && $count !== 0) {
+            $this->release(config('config.aws_lambda_delay'));
+        }
+
         if ($count === 0) {
             $this->exportQueue->stage = 4;
             $this->exportQueue->save();
 
             ZooniverseExportBuildCsvJob::dispatch($this->exportQueue);
-            $this->delete();
-        }
-
-        if ($this->attempts() < 4) {
-            $this->release(30);
         }
     }
 
