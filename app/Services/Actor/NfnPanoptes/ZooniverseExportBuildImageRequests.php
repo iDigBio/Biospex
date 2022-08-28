@@ -89,7 +89,7 @@ class ZooniverseExportBuildImageRequests implements QueueInterface
                 \Artisan::call('export:poll');
 
                 $multiplier++;
-                $delay = $multiplier === 1 ? 0 : $multiplier * 30;
+                $delay = $multiplier === 1 ? 0 : $multiplier * config('config.aws_lambda_delay');
 
                 ZooniverseExportLambdaJob::dispatch($exportQueue, $data, $total === 0)->delay($delay);
         });
