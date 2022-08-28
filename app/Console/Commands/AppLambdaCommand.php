@@ -19,7 +19,8 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ExportQueueFileRepository;
+use App\Repositories\ExportQueueRepository;
+use App\Services\Actor\Traits\ActorDirectory;
 use Aws\Lambda\LambdaClient;
 use Illuminate\Console\Command;
 use \Illuminate\Foundation\Bus\DispatchesJobs;
@@ -31,7 +32,7 @@ use \Illuminate\Foundation\Bus\DispatchesJobs;
  */
 class AppLambdaCommand extends Command
 {
-    use DispatchesJobs;
+    use DispatchesJobs, ActorDirectory;
 
     /**
      * The console command name.
@@ -44,18 +45,18 @@ class AppLambdaCommand extends Command
     protected $description = 'Used to test sqs lambda code';
 
     /**
-     * @var \App\Repositories\ExportQueueFileRepository
+     * @var \App\Repositories\ExportQueueRepository
      */
-    private ExportQueueFileRepository $exportQueueFileRepository;
+    private ExportQueueRepository $exportQueueRepository;
 
     /**
      * AppCommand constructor.
      */
     public function __construct(
-        ExportQueueFileRepository $exportQueueFileRepository
+        ExportQueueRepository $exportQueueRepository
     ) {
         parent::__construct();
-        $this->exportQueueFileRepository = $exportQueueFileRepository;
+        $this->exportQueueRepository = $exportQueueRepository;
     }
 
     /**
@@ -65,22 +66,52 @@ class AppLambdaCommand extends Command
      */
     public function handle()
     {
-        $this->lambdaClient();
+        $this->imageTar();
+        //$this->imageProcess();
     }
 
     /**
      * @return void
      */
-    public function lambdaClient()
+    public function imageTar()
     {
-        $client = new LambdaClient([
-            'credentials' => [
-                'key'    => config('config.aws_access_key'),
-                'secret' => config('config.aws_secret_key'),
-            ],
-            'version'     => '2015-03-31',
-            'region'      => config('config.aws_default_region'),
+        $exportQueue = $this->exportQueueRepository->findWith(1, ['expedition']);
+        $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
+        $this->setDirectories();
+
+
+        $client = $this->getLambdaClient();
+
+        $data = [
+            'queueId' => $exportQueue->id, //event.queueId;
+            'sourcePath' => $this->workingDir, //event.sourcePath;
+            'outputFilename' =>  md5($this->folderName) //event.outputFilename;
+        ];
+
+        $start_time = microtime(true);
+
+        $result = $client->invoke([
+            // The name your created Lamda function
+            'FunctionName'   => 'imageTarGz',
+            'Payload'        => json_encode($data),
         ]);
+
+        echo $result['Payload'] . PHP_EOL;
+
+        // End clock time in seconds
+        $end_time = microtime(true);
+
+        // Calculate script execution time
+        $execution_time = ($end_time - $start_time);
+        echo " Execution time of script = ".$execution_time." sec" . PHP_EOL;
+    }
+
+    /**
+     * @return void
+     */
+    public function imageProcess()
+    {
+        $client = $this->getLambdaClient();
 
         $data = $this->generateUrls(1);
 
@@ -114,5 +145,20 @@ class AppLambdaCommand extends Command
                 'dir' => "scratch/testing-scratch",
             ];
         })->toArray();
+    }
+
+    /**
+     * @return \Aws\Lambda\LambdaClient
+     */
+    private function getLambdaClient(): LambdaClient
+    {
+        return new LambdaClient([
+            'credentials' => [
+                'key'    => config('config.aws_access_key'),
+                'secret' => config('config.aws_secret_key'),
+            ],
+            'version'     => '2015-03-31',
+            'region'      => config('config.aws_default_region'),
+        ]);
     }
 }
