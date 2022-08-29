@@ -46,7 +46,7 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
      *
      * @var int
      */
-    public int $tries = 3;
+    public int $tries = 5;
 
     /**
      * @var int
@@ -84,7 +84,7 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
     {
         $count = $exportQueueFileRepository->getUncompletedCount($this->exportQueue->id);
 
-        if ($this->attempts() < 4 && $count !== 0) {
+        if ($this->attempts() < 5 && $count !== 0) {
             $this->release(config('config.aws_lambda_delay'));
         }
 
