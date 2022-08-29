@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\ExportQueueFile;
 use Illuminate\Console\Command;
 
 /**
