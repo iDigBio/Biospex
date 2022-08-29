@@ -73,7 +73,6 @@ class SnsImageExportResultProcess
 
             $this->handleResponse($responsePayload);
 
-            //\Artisan::call('export:poll');
         } catch (\Throwable $throwable) {
             \Log::alert($throwable->getMessage());
         }
@@ -107,7 +106,8 @@ class SnsImageExportResultProcess
     {
         $statusCode = $responsePayload['statusCode'];
         $body = json_decode($responsePayload['body'], true);
-        $message = $statusCode === 200 ? null : $body['message'];
+        $message = $statusCode === 200 ? null :
+            (is_array($body['message']) ? json_encode($body['message']) : $body['message']);
 
         $this->updateQueueFile($body['subjectId'], $message);
 
@@ -125,7 +125,6 @@ class SnsImageExportResultProcess
         $queue = $this->exportQueueRepository->find($queueId);
         $queue->processed = $queue->processed + 1;
         $queue->save();
-        \Artisan::call('export:poll');
     }
 
     /**
