@@ -76,7 +76,6 @@ class ExpertReviewProcessExplainedJob implements ShouldQueue
             }
 
             $reconcileProcess->processExplained($expedition);
-            \Log::alert('processed explained');
 
         } catch (\Exception $e) {
             $messages = [

@@ -199,8 +199,7 @@ class ZooniverseBuildCsv implements QueueInterface
         foreach ($rejected as $subjectId => $reason) {
             $file = $this->exportQueueFileRepository->findBy('subject_id', $subjectId);
             if (empty($file)) {
-                \Log::info('empty file ' . $subjectId);
-                continue;
+                $reason .= t(' Empty file result from DB for: %s', $subjectId);
             }
 
             $file->error_message .= ' ' . $reason;
