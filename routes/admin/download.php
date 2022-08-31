@@ -27,5 +27,3 @@ Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{files}/tar-
 Route::get('projects/{projects}/expeditions/{expeditions}/export', [DownloadController::class, 'export'])->name('admin.downloads.export');
 Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/batch', [DownloadController::class, 'batch'])->name('admin.downloads.batch');
 Route::get('projects/{projects}/expeditions/{expeditions}/summary', [DownloadController::class, 'summary'])->name('admin.downloads.summary');
-
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/export', [DownloadController::class, 'downloadExport'])->name('admin.downloads.downloadExport');

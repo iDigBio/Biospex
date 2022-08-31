@@ -28,6 +28,7 @@ use App\Services\Download\DownloadType;
 use Exception;
 use Flash;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -134,37 +135,6 @@ class DownloadController extends Controller
             [$reader, $headers] = $this->downloadType->createCsvDownload($download);
 
             return response($reader->getContent(), 200, $headers);
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
-
-            return redirect()->back();
-        }
-    }
-
-    /**
-     * Download compressed file.
-     * Using zip or gz for backwards compatibility.
-     *
-     * @param string $projectId
-     * @param string $expeditionId
-     * @param string $downloadId
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
-     */
-    public function downloadExport(string $projectId, string $expeditionId, string $downloadId)
-    {
-        try {
-            $download = $this->downloadType->getDownload($downloadId);
-
-            if (! $this->checkPermissions('isOwner', $download->expedition->project->group)) {
-                return redirect()->back();
-            }
-
-            $extension = substr(strrchr($download->file, '.'), 1);
-
-            return $extension === 'zip' ?
-                $this->downloadType->createZipDownload($download) :
-                $this->downloadType->createTarDownload($download);
-
         } catch (Exception $e) {
             Flash::error($e->getMessage());
 

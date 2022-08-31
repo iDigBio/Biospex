@@ -202,7 +202,7 @@ class DownloadFileBase
 
         return [
             'Content-Type'        => 'application/zip',
-            'Content-Transfer-Encoding' => 'Binary',
+            //'Content-Transfer-Encoding' => 'Binary',
             'Content-disposition' => 'attachment; filename="' . $this->headerFileName . '"',
         ];
     }

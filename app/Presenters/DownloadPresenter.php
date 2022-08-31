@@ -19,6 +19,8 @@
 
 namespace App\Presenters;
 
+use Illuminate\Support\Facades\Storage;
+
 /**
  * Class DownloadPresenter
  *
@@ -34,7 +36,7 @@ class DownloadPresenter extends Presenter
     public function fileType()
     {
         if ($this->model->type === 'reconciled') {
-           return 'reconciled_with_expert_opinion';
+            return 'reconciled_with_expert_opinion';
         }
 
         if ($this->model->type === 'report') {
@@ -42,5 +44,15 @@ class DownloadPresenter extends Presenter
         }
 
         return $this->model->type;
+    }
+
+    /**
+     * Return export file url.
+     *
+     * @return string
+     */
+    public function exportDownload(): string
+    {
+        return Storage::disk('s3')->temporaryUrl(config('config.export_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
     }
 }

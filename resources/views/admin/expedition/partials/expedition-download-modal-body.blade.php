@@ -58,7 +58,7 @@
                                             @endif
                                         @endcan
                                     @else
-                                        <a href="{{ route('admin.downloads.downloadExport', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                        <a href="{{ $download->present()->export_download }}"
                                            class="mr-4"
                                            data-hover="tooltip"
                                            data-placement="left"

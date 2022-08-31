@@ -24,6 +24,7 @@ use App\Models\Expedition;
 use App\Repositories\DownloadRepository;
 use App\Services\Actor\ActorFactory;
 use File;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -123,50 +124,6 @@ class DownloadType extends DownloadFileBase
         $reader = $this->getReader();
 
         return [$reader, $headers];
-    }
-
-    /**
-     * Create download for zip export file.
-     *
-     * @param \App\Models\Download $download
-     * @return \Symfony\Component\HttpFoundation\StreamedResponse
-     * @throws \App\Exceptions\PresenterException
-     * @throws \Exception
-     */
-    public function createZipDownload(Download $download): StreamedResponse
-    {
-        $this->setFilePath(config('config.export_dir'), $download->file);
-
-        if (! $this->checkS3FileExists()) {
-            throw new \Exception($this->missingMsg);
-        }
-
-        $this->setHeaderFileName($download->present()->file_type.'-'.$download->file);
-        $headers = $this->setZipHeaders();
-
-        return Storage::disk('s3')->download($this->filePath, $this->headerFileName, $headers);
-    }
-
-    /**
-     * Create tar download file.
-     *
-     * @param \App\Models\Download $download
-     * @return \Symfony\Component\HttpFoundation\StreamedResponse
-     * @throws \App\Exceptions\PresenterException
-     * @throws \Exception
-     */
-    public function createTarDownload(Download $download)
-    {
-        $this->setFilePath(config('config.export_dir'), $download->file);
-
-        if (! $this->checkS3FileExists()) {
-            throw new \Exception($this->missingMsg);
-        }
-
-        $this->setHeaderFileName($download->present()->file_type.'-'.$download->file);
-        $headers = $this->setTarHeaders();
-
-        return Storage::disk('s3')->download($this->filePath, $this->headerFileName, $headers);
     }
 
     /**
