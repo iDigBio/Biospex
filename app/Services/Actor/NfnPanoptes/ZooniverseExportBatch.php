@@ -124,7 +124,7 @@ class ZooniverseExportBatch
     {
         if (Storage::disk('s3')->exists($this->exportArchiveFilePath)) {
             $archivePath = config('filesystems.disks.s3.bucket') . '/' . $this->exportArchiveFilePath;
-            $efsArchivePath = $this->efsBatchDir . '/' . $this->exportArchiveFile;
+            $efsArchivePath = Storage::disk('efs')->path("{$this->efsBatchDir}/{$this->exportArchiveFile}");
 
             \Log::alert("aws s3 cp s3://$archivePath $efsArchivePath");
             exec("aws s3 cp s3://$archivePath $efsArchivePath", $output, $retval);

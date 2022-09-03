@@ -49,11 +49,6 @@ trait ActorDirectory
     /**
      * @var string
      */
-    public string $archiveTarPath;
-
-    /**
-     * @var string
-     */
     public string $exportArchiveFile;
 
     /**
@@ -140,7 +135,7 @@ trait ActorDirectory
      */
     private function setEfsBatchDirectory()
     {
-        $this->efsBatchDir = Storage::disk('efs')->path(config('config.aws_efs_batch_dir'));
+        $this->efsBatchDir = config('config.aws_efs_batch_dir');
     }
 
     /**
