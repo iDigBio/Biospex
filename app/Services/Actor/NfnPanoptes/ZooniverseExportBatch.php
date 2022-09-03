@@ -126,11 +126,13 @@ class ZooniverseExportBatch
             $archivePath = config('filesystems.disks.s3.bucket') . '/' . $this->exportArchiveFilePath;
             $efsArchivePath = Storage::disk('efs')->path($this->efsBatchDir . '/' . $this->exportArchiveFile);
 
+            \Log::alert("aws s3 cp s3://$archivePath $efsArchivePath");
             exec("aws s3 cp s3://$archivePath $efsArchivePath", $output, $retval);
             if ($retval !== 0) {
                 throw new Exception("Could not copy $archivePath to $efsArchivePath");
             }
 
+            \Log::alert("unzip $efsArchivePath -d {$this->batchWorkingDir}");
             exec("unzip $efsArchivePath -d {$this->batchWorkingDir}", $output, $retvalue);
             if ($retvalue !== 0) {
                 throw new Exception("Could not unzip $efsArchivePath");
