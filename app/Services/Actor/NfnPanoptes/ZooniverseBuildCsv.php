@@ -149,7 +149,7 @@ class ZooniverseBuildCsv implements QueueInterface
 
         \Artisan::call('export:poll');
 
-        ZooniverseExportBuildZipJob::dispatch($exportQueue);
+        //ZooniverseExportBuildZipJob::dispatch($exportQueue);
     }
 
     /**
