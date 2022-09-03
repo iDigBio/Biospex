@@ -56,7 +56,11 @@ return [
             'throw' => false,
             'visibility' => 'private'
         ],
-
+        'efs' => [
+            'driver' => 'local',
+            'root' => '/efs',
+            'throw' => false,
+        ]
     ],
 
     /*

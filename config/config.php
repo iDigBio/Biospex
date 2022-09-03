@@ -30,7 +30,8 @@ return [
     'aws_lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION'),
     'aws_lambda_count'           => env('AWS_LAMBDA_COUNT'),
     'aws_lambda_delay'           => env('AWS_LAMBDA_DELAY'),
-    'aws_efs_dir'                => env('AWS_EFS_DIR'),
+    'aws_efs_lambda_dir'         => env('AWS_EFS_LAMBDA_DIR'),
+    'aws_efs_batch_dir'          => env('AWS_EFS_BATCH_DIR'),
 
     'charts_dir'                   => 'public/charts',
     'scratch_dir'                  => 'scratch',

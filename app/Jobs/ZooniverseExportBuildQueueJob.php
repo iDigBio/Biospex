@@ -75,6 +75,6 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
      */
     public function failed(Throwable $exception)
     {
-        $this->sendAdminError($this->actor, $exception);
+        $this->sendAdminError($exception);
     }
 }

@@ -72,7 +72,7 @@ class ZooniverseBuildZip implements QueueInterface
         $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
         $this->setDirectories();
 
-        $this->deleteFile($this->archiveZipPath);
+        $this->deleteFile($this->exportArchiveFilePath);
 
         $output=null;
         $retval=null;
@@ -80,7 +80,7 @@ class ZooniverseBuildZip implements QueueInterface
 
         $start_time = microtime(true);
 
-        exec("node $path {$this->workingDir} {$this->archiveZipPath}" , $output, $retval);
+        exec("node $path {$this->workingDir} {$this->exportArchiveFilePath}" , $output, $retval);
 
         // End clock time in seconds
         $end_time = microtime(true);
@@ -97,19 +97,19 @@ class ZooniverseBuildZip implements QueueInterface
         $values = [
             'expedition_id' => $exportQueue->expedition_id,
             'actor_id'      => $exportQueue->actor_id,
-            'file'          => $this->archiveZip,
+            'file'          => $this->exportArchiveFile,
             'type'          => 'export',
         ];
         $attributes = [
             'expedition_id' => $exportQueue->expedition_id,
             'actor_id'      => $exportQueue->actor_id,
-            'file'          => $this->archiveZip,
+            'file'          => $this->exportArchiveFile,
             'type'          => 'export',
         ];
 
         $this->downloadRepository->updateOrCreate($attributes, $values);
 
-        $this->cleanDirectory(config('config.aws_efs_dir'));
+        $this->cleanDirectory(config('config.aws_efs_lambda_dir'));
 
         $exportQueue->stage = 6;
         $exportQueue->save();

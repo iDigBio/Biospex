@@ -21,14 +21,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ExportDownloadBatchJob;
-use App\Models\Download;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\UserRepository;
 use App\Services\Download\DownloadType;
 use Exception;
 use Flash;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -221,7 +219,6 @@ class DownloadController extends Controller
      * @param string $projectId
      * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse|string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function summary(string $projectId, string $expeditionId)
     {

@@ -20,6 +20,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Queue;
+use Pheanstalk\Pheanstalk;
 
 /**
  * Class AppCommand
@@ -39,6 +41,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \Pheanstalk\Pheanstalk
+     */
+    private Pheanstalk $pheanstalk;
+
+    /**
      * AppCommand constructor.
      */
     public function __construct()
@@ -47,11 +54,21 @@ class AppCommand extends Command
     }
 
     /**
-     *
+     * peek, peakReady, peekBuried, peakDelayed
      */
     public function handle()
     {
+        try
+        {
+            $pheanstalk = Queue::getPheanstalk();
+            $pheanstalk->useTube('default');
 
+            while($job = $pheanstalk->peekReady())
+            {
+                $pheanstalk->delete($job);
+            }
+        }
+        catch(\Exception $e){}
     }
 
     public function clearTube($tube)

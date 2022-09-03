@@ -136,6 +136,8 @@ class ZooniverseBuildCsv implements QueueInterface
             $exportQueue->save();
         });
 
+        $this->awsS3CsvService->closeBucketStream();
+
         $this->updateRejected($this->rejected);
 
         if (! $this->checkCsvImageCount($exportQueue)) {
@@ -181,6 +183,8 @@ class ZooniverseBuildCsv implements QueueInterface
         $csvCount = $this->awsS3CsvService->getReaderCount();
 
         $dirFileCount = $this->awsS3CsvService->getFileCount(config('filesystems.disks.s3.bucket'), $this->workingDir);
+
+        $this->awsS3CsvService->closeBucketStream();
 
         return $csvCount === $dirFileCount;
     }

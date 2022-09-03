@@ -66,6 +66,16 @@ class AwsS3CsvService
     }
 
     /**
+     * Close bucket stream.
+     *
+     * @return void
+     */
+    public function closeBucketStream()
+    {
+        $this->awsS3ApiService->closeS3BucketStream($this->stream);
+    }
+
+    /**
      * Create csv write from s3 bucket stream.
      *
      * @return void
@@ -108,6 +118,8 @@ class AwsS3CsvService
         $this->csv->insertAll($data);
     }
 
+
+
     /**
      * Add encoding formatter.
      *
@@ -126,6 +138,29 @@ class AwsS3CsvService
     public function setEncoding(): CharsetConverter
     {
         return $this->csv->setEncoding();
+    }
+
+    /**
+     * Set delimiter.
+     *
+     * @throws \League\Csv\Exception
+     */
+    public function setDelimiter()
+    {
+        $this->csv->setDelimiter();
+    }
+
+    /**
+     * Set header offset.
+     * Helps return headers with getRecords.
+     *
+     * @param int $offset
+     * @return void
+     * @throws \League\Csv\Exception
+     */
+    public function setHeaderOffset(int $offset = 0)
+    {
+        $this->csv->setHeaderOffset($offset);
     }
 
     /**
@@ -148,5 +183,16 @@ class AwsS3CsvService
     #[Pure] public function getReaderCount(): int
     {
         return $this->csv->getReaderCount();
+    }
+
+    /**
+     * Get records from CSV.
+     *
+     * @param array $header
+     * @return \Iterator
+     */
+    public function getRecords(array $header = []): \Iterator
+    {
+        return $this->csv->getRecords($header);
     }
 }

@@ -139,6 +139,7 @@ class Csv
      * Set header offset.
      *
      * @param int $offset
+     * @return void
      * @throws \League\Csv\Exception
      */
     public function setHeaderOffset(int $offset = 0)

@@ -25,6 +25,7 @@ use App\Models\User;
 use App\Notifications\JobError;
 use App\Notifications\NfnExportError;
 use Illuminate\Support\Facades\Notification;
+use Throwable;
 
 trait NfnErrorNotification
 {
@@ -35,7 +36,7 @@ trait NfnErrorNotification
      * @param \Throwable $exception
      * @return void
      */
-    private function sendErrorNotification(ExportQueue $exportQueue, \Throwable $exception)
+    private function sendErrorNotification(ExportQueue $exportQueue, Throwable $exception)
     {
         $exportQueue->load([
             'expedition.project.group' => function($q) {
@@ -66,17 +67,16 @@ trait NfnErrorNotification
     /**
      * Send email to Admin.
      *
-     * @param \App\Models\Actor $actor
      * @param \Throwable $exception
      * @return void
      */
-    private function sendAdminError(Actor $actor, \Throwable $exception)
+    private function sendAdminError(Throwable $exception)
     {
         $user = User::find(1);
         $messages = [
-            'Actor Id: ' . $actor->id,
-            'Expedition Id: ' . $actor->pivot->expedition_id,
-            'Error:' . $exception->getFile() . ': ' . $exception->getLine() . ' - ' . $exception->getMessage()
+            'File: ' . $exception->getFile(),
+            'Line: ' . $exception->getLine(),
+            'Error:' . $exception->getMessage()
         ];
         $user->notify(new JobError(__FILE__, $messages));
     }

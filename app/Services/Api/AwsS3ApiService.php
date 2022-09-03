@@ -61,6 +61,17 @@ class AwsS3ApiService
     }
 
     /**
+     * Close bucket stream.
+     *
+     * @param resource $stream
+     * @return bool
+     */
+    public function closeS3BucketStream($stream): bool
+    {
+        return fclose($stream);
+    }
+
+    /**
      * Get file count in bucket directory.
      *
      * Count returns top directory so subtract 1.

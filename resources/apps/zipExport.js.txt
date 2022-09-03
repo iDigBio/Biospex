@@ -2,7 +2,7 @@ process.env.AWS_SDK_LOAD_CONFIG = true;
 
 let tmpDirPath = process.argv[2];
 let zipPath = process.argv[3];
-let tmpPath = "AWS_EFS_DIR";
+let tmpPath = "AWS_EFS_LAMBDA_DIR";
 
 let S3Zipper = require('aws-s3-zipper');
 let AWS = require("aws-sdk");

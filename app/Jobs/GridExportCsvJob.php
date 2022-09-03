@@ -23,9 +23,8 @@ use App\Models\User;
 use App\Models\Header;
 use App\Notifications\GridCsvExport;
 use App\Notifications\GridCsvExportError;
-use App\Services\Api\AwsS3ApiService;
+use App\Services\Process\AwsS3CsvService;
 use App\Services\Grid\JqGridEncoder;
-use App\Services\Csv\Csv;
 use App\Facades\GeneralHelper;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -97,11 +96,10 @@ class GridExportCsvJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Grid\JqGridEncoder $jqGridEncoder
-     * @param Csv $csv
-     * @param \App\Services\Api\AwsS3ApiService $awsS3ApiService
+     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
      * @return void
      */
-    public function handle(JqGridEncoder $jqGridEncoder, Csv $csv, AwsS3ApiService $awsS3ApiService)
+    public function handle(JqGridEncoder $jqGridEncoder, AwsS3CsvService $awsS3CsvService)
     {
         $csvName = Str::random().'.csv';
 
@@ -114,11 +112,11 @@ class GridExportCsvJob implements ShouldQueue
             $bucket = config('filesystems.disks.s3.bucket');
             $filePath = config('config.reports_dir') . '/' . $csvName;
 
-            $stream = $awsS3ApiService->createS3BucketStream($bucket, $filePath, 'w');
-            $csv->writerCreateFromStream($stream);
-            $csv->insertOne($header->keys()->toArray());
+            $awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
+            $awsS3CsvService->createCsvWriterFromStream();
+            $awsS3CsvService->insertOne($header->keys()->toArray());
 
-            $cursor->each(function ($subject) use ($header, $csv) {
+            $cursor->each(function ($subject) use ($header, $awsS3CsvService) {
                 $subjectArray = $subject->getAttributes();
                 $subjectArray['_id'] = (string) $subject->_id;
                 $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
@@ -129,8 +127,10 @@ class GridExportCsvJob implements ShouldQueue
 
                 $merged = $header->merge($subjectArray);
 
-                $csv->insertOne($merged->toArray());
+                $awsS3CsvService->insertOne($merged->toArray());
             });
+
+            $awsS3CsvService->closeBucketStream();
 
             if (!Storage::disk('s3')->exists(config('config.reports_dir').'/'.$csvName)) {
                 throw new Exception(t('Csv export file is missing.'));
