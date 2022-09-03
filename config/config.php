@@ -33,6 +33,7 @@ return [
     'aws_efs_lambda_dir'         => env('AWS_EFS_LAMBDA_DIR'),
     'aws_efs_batch_dir'          => env('AWS_EFS_BATCH_DIR'),
 
+    'batch_dir'                    => 'batches',
     'charts_dir'                   => 'public/charts',
     'scratch_dir'                  => 'scratch',
     'export_dir'                   => 'exports',

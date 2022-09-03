@@ -69,16 +69,6 @@ trait ActorDirectory
     /**
      * @var string
      */
-    public string $efsBatchDir;
-
-    /**
-     * @var string
-     */
-    public string $batchWorkingDir;
-
-    /**
-     * @var string
-     */
     public string $batchTmpDir;
 
     /**
@@ -108,19 +98,6 @@ trait ActorDirectory
     }
 
     /**
-     * Set directories.
-     *
-     * @return void
-     */
-    public function setBatchDirectories()
-    {
-        $this->setEfsBatchDirectory();
-        $this->setBatchWorkingDirectory();
-        $this->setExportDirectory();
-        $this->setExportArchiveFileAndPath();
-    }
-
-    /**
      * Set scratch directory.
      */
     private function setScratchDirectory()
@@ -128,15 +105,6 @@ trait ActorDirectory
         $this->scratchDir = config('config.scratch_dir');
     }
 
-    /**
-     * Set EFS batch directory.
-     *
-     * @return void
-     */
-    private function setEfsBatchDirectory()
-    {
-        $this->efsBatchDir = config('config.aws_efs_batch_dir');
-    }
 
     /**
      * Set working directory.
@@ -146,30 +114,6 @@ trait ActorDirectory
         $this->workingDir = $this->scratchDir.'/'.$this->folderName;
 
         Storage::disk('s3')->makeDirectory($this->workingDir);
-    }
-
-    /**
-     * Set working directory for batch file creation.
-     *
-     * @return void
-     */
-    private function setBatchWorkingDirectory()
-    {
-        $this->batchWorkingDir = $this->efsBatchDir.'/'.$this->folderName;
-
-        Storage::disk('efs')->makeDirectory($this->batchWorkingDir);
-    }
-
-    /**
-     * Set temp directory for zipping batch files.
-     *
-     * @param string $dir
-     * @return void
-     */
-    private function setBatchTmpDirectory(string $dir)
-    {
-        $this->batchTmpDir = $this->batchWorkingDir . '/' . $dir;
-        Storage::disk('efs')->makeDirectory($this->batchTmpDir);
     }
 
     /**
@@ -187,29 +131,6 @@ trait ActorDirectory
     {
         $this->exportArchiveFile = $this->folderName.'.zip';
         $this->exportArchiveFilePath = $this->exportDirectory.'/'.$this->exportArchiveFile;
-    }
-
-    /**
-     * Set folder name using already created download file name.
-     * Backwards compatible for tar.gz.
-     *
-     * @param string $fileName
-     */
-    public function setBatchFolderName(string $fileName)
-    {
-        $filePath = Storage::disk('s3')->path(config('config.export_dir') . '/' . $fileName);
-        $this->folderName = \File::name($filePath);
-    }
-
-    /**
-     * Set batch zip file names.
-     *
-     * @param string $fileName
-     * @return string
-     */
-    public function setBatchExportZipFile(string $fileName): string
-    {
-        return $this->exportDirectory . '/' . $fileName . '.zip';
     }
 
     /**

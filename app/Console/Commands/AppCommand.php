@@ -58,6 +58,12 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        dd(\Storage::disk('efs')->path(''));
+    }
+
+    public function clearTube($tube)
+    {
+        /*
         try
         {
             $pheanstalk = Queue::getPheanstalk();
@@ -69,19 +75,6 @@ class AppCommand extends Command
             }
         }
         catch(\Exception $e){}
-    }
-
-    public function clearTube($tube)
-    {
-        /*
-        try
-        {
-            while($job = $pheanstalk->peekReady($tube))
-            {
-                $pheanstalk->delete($job);
-            }
-        }
-        catch(\Pheanstalk_Exception_ServerException $e){}
         */
     }
 }
