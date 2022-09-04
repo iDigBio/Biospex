@@ -71,6 +71,7 @@ class ZooniverseBuildZip implements QueueInterface
         $exportQueue->load(['expedition']);
 
         $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
+
         $this->setDirectories();
 
         $this->deleteFile($this->exportArchiveFilePath);
@@ -117,13 +118,14 @@ class ZooniverseBuildZip implements QueueInterface
      */
     private function zipDirectory()
     {
-        $efsWorkDirFolder = Storage::disk('s3')->path($this->efsWorkDirFolder);
+        $efsWorkDirFolder = Storage::disk('efs')->path($this->efsWorkDirFolder);
         $efsWorkDir = Storage::disk('efs')->path($this->efsWorkDir);
 
-        exec("zip $efsWorkDir/{$this->exportArchiveFile} $efsWorkDirFolder" , $output, $retval);
+        \Log::alert("zip -r -j $efsWorkDir/{$this->exportArchiveFile} $efsWorkDirFolder");
+        exec("zip -r $efsWorkDir/{$this->exportArchiveFile} $efsWorkDirFolder" , $output, $retval);
 
         if ($retval !== 0) {
-            throw new \Exception(t("Could not create zip file $efsWorkDirFolder/{$this->exportArchiveFile} from $efsWorkDirFolder"));
+            throw new \Exception(t("Could not create zip file $efsWorkDir/{$this->exportArchiveFile} from $efsWorkDirFolder"));
         }
     }
 
@@ -137,6 +139,7 @@ class ZooniverseBuildZip implements QueueInterface
     {
         $bucketPath = config('filesystems.disks.s3.bucket') . '/' . $this->exportDirectory;
         $efsZipFle = Storage::disk('efs')->path("{$this->efsWorkDir}/{$this->exportArchiveFile}");
+        \Log::alert("aws s3 mv $efsZipFle s3://$bucketPath");
         exec("aws s3 mv $efsZipFle s3://$bucketPath", $out, $ret);
         if ($ret !== 0) {
             throw new \Exception("Could not copy $efsZipFle to $bucketPath");
