@@ -91,10 +91,10 @@ class ZooniverseExportBatch
     {
         if ($this->checkS3ExportFileExists()) {
 
-            \Log::alert("aws s3 cp s3://{$this->existingExportFilePath} {$this->fullEfsBatchDir}/{$this->existingExportFile}");
-            exec("aws s3 cp s3://{$this->existingExportFilePath} {$this->fullEfsBatchDir}/{$this->existingExportFile}", $output, $retval);
+            \Log::alert("aws s3 cp {$this->existingBucketExportFile} {$this->fullEfsBatchDir}/{$this->existingExportFile}");
+            exec("aws s3 cp {$this->existingBucketExportFile} {$this->fullEfsBatchDir}/{$this->existingExportFile}", $output, $retval);
             if ($retval !== 0) {
-                throw new Exception("Could not copy {$this->existingExportFilePath} to {$this->fullEfsBatchDir}/{$this->existingExportFile}");
+                throw new Exception("Could not copy {$this->existingBucketExportFile} to {$this->fullEfsBatchDir}/{$this->existingExportFile}");
             }
 
             return;
@@ -204,7 +204,7 @@ class ZooniverseExportBatch
         $batchExportZipFile = Storage::disk('efs')->path($this->batchWorkingDir.'/'.$fileName.'.zip');
         $batchTmpDirPath = Storage::disk('efs')->path($this->batchTmpDir);
 
-        exec("zip {$batchExportZipFile} $batchTmpDirPath", $out, $ok);
+        exec("zip -r -j {$batchExportZipFile} $batchTmpDirPath", $out, $ok);
 
         if ($ok === 0) {
             return;
@@ -224,11 +224,11 @@ class ZooniverseExportBatch
     {
         $batchExportZipFile = Storage::disk('efs')->path($this->batchWorkingDir.'/'.$fileName.'.zip');
 
-        \Log::alert("aws s3 cp $batchExportZipFile s3://{$this->fullExportBatchDir}");
-        exec("aws s3 cp $batchExportZipFile s3://{$this->fullExportBatchDir}", $output, $retval);
+        \Log::alert("aws s3 mv $batchExportZipFile {$this->bucketBatchDir}");
+        exec("aws s3 mv $batchExportZipFile {$this->bucketBatchDir}/$fileName.zip", $output, $retval);
 
         if ($retval !== 0) {
-            throw new Exception("Could not copy $batchExportZipFile to s3://{$this->fullExportBatchDir}");
+            throw new Exception("Could not copy $batchExportZipFile to {$this->bucketBatchDir}");
         }
     }
 

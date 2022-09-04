@@ -54,10 +54,11 @@ trait ActorBatchDirectory
     public string $batchWorkingDir;
     public string $fullBatchWorkingDir;
     public string $exportDir;
-    public string $fullExportBatchDir;
+    public string $bucketBatchDir;
     public string $existingExportFile;
-    public string $existingExportFilePath;
+    public string $existingBucketExportFile;
     public string $batchTmpDir;
+    public string $bucketPath;
 
     /**
      * Set properties.
@@ -91,11 +92,22 @@ trait ActorBatchDirectory
      */
     public function setBatchDirectories()
     {
+        $this->setBucketPath();
         $this->setEfsBatchDirectory();
         $this->setBatchWorkingDirectory();
         $this->setExportDirectory();
         $this->setExportBatchDirectory();
         $this->setExistingExportFileAndPath();
+    }
+
+    /**
+     * Set bucket path for aws s3 commands.
+     *
+     * @return void
+     */
+    private function setBucketPath()
+    {
+        $this->bucketPath = 's3://' . config('filesystems.disks.s3.bucket');
     }
 
     /**
@@ -136,7 +148,7 @@ trait ActorBatchDirectory
      */
     public function setExportBatchDirectory()
     {
-        $this->fullExportBatchDir = config('filesystems.disks.s3.bucket') . '/' . config('config.batch_dir');
+        $this->bucketBatchDir = $this->bucketPath . '/' . config('config.batch_dir');
     }
 
     /**
@@ -145,7 +157,7 @@ trait ActorBatchDirectory
     protected function setExistingExportFileAndPath()
     {
         $this->existingExportFile = $this->folderName.'.zip';
-        $this->existingExportFilePath = config('filesystems.disks.s3.bucket') . '/' . $this->exportDir.'/'.$this->existingExportFile;
+        $this->existingBucketExportFile = $this->bucketPath . '/' . $this->exportDir.'/'.$this->existingExportFile;
     }
 
     /**
