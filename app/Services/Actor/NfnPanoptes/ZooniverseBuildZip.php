@@ -91,7 +91,7 @@ class ZooniverseBuildZip implements QueueInterface
 
         \Artisan::call('export:poll');
 
-        ZooniverseExportCreateReportJob::dispatch($exportQueue);
+        //ZooniverseExportCreateReportJob::dispatch($exportQueue);
     }
 
     /**
