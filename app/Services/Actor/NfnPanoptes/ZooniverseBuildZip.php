@@ -102,9 +102,9 @@ class ZooniverseBuildZip implements QueueInterface
      */
     private function copyFilesToEfs()
     {
-        $bucketPath = config('filesystems.disks.s3.bucket') . '/' . $this->workingDir;
+        $bucketPath = $this->bucketPath . '/' . $this->workingDir;
         $efsPath = Storage::disk('efs')->path($this->efsWorkDirFolder);
-        exec("aws s3 cp s3://$bucketPath $efsPath --recursive", $out, $ret);
+        exec("aws s3 cp $bucketPath $efsPath --recursive", $out, $ret);
         if ($ret !== 0) {
             throw new \Exception("Could not copy $bucketPath to $efsPath");
         }
@@ -137,10 +137,10 @@ class ZooniverseBuildZip implements QueueInterface
      */
     private function moveZipFile()
     {
-        $bucketPathZip = config('filesystems.disks.s3.bucket') . '/' . $this->exportDirectory . '/' . $this->exportArchiveFile;
+        $bucketPathZip = $this->bucketPath . '/' . $this->exportDirectory . '/' . $this->exportArchiveFile;
         $efsZipFle = Storage::disk('efs')->path("{$this->efsWorkDir}/{$this->exportArchiveFile}");
-        \Log::alert("aws mv cp $efsZipFle s3://$bucketPathZip");
-        exec("aws s3 mv $efsZipFle s3://$bucketPathZip", $out, $ret);
+        \Log::alert("aws mv cp $efsZipFle $bucketPathZip");
+        exec("aws s3 mv $efsZipFle $bucketPathZip", $out, $ret);
         if ($ret !== 0) {
             throw new \Exception("Could not copy $efsZipFle to $bucketPathZip");
         }

@@ -82,6 +82,11 @@ trait ActorDirectory
     public string $efsWorkDirFolder;
 
     /**
+     * @var string
+     */
+    public string $bucketPath;
+
+    /**
      * Set folder property.
      *
      * @param int $queueId
@@ -106,6 +111,7 @@ trait ActorDirectory
         $this->setExportDirectory();
         $this->setExportArchiveFileAndPath();
         $this->setEfsWorkDirectory();
+        $this->setBucketPath();
     }
 
     /**
@@ -138,7 +144,7 @@ trait ActorDirectory
     /**
      * Set archive tar gz file and path.
      */
-    protected function setExportArchiveFileAndPath()
+    private function setExportArchiveFileAndPath()
     {
         $this->exportArchiveFile = $this->folderName.'.zip';
         $this->exportArchiveFilePath = $this->exportDirectory.'/'.$this->exportArchiveFile;
@@ -149,12 +155,22 @@ trait ActorDirectory
      *
      * @return void
      */
-    public function setEfsWorkDirectory()
+    private function setEfsWorkDirectory()
     {
         $this->efsWorkDir = config('config.aws_efs_work_dir');
         $this->efsWorkDirFolder = $this->efsWorkDir . '/' . $this->folderName;
         Storage::disk('efs')->makeDirectory($this->efsWorkDirFolder);
 
+    }
+
+    /**
+     * Set bucket path.
+     *
+     * @return void
+     */
+    private function setBucketPath()
+    {
+        $this->bucketPath = 's3//' . config('filesystems.disks.s3.bucket');
     }
 
     /**
