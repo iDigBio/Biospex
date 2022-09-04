@@ -104,7 +104,7 @@ class ZooniverseBuildZip implements QueueInterface
     {
         $bucketPath = config('filesystems.disks.s3.bucket') . '/' . $this->workingDir;
         $efsPath = Storage::disk('efs')->path($this->efsWorkDirFolder);
-        exec("aws s3 mv s3://$bucketPath $efsPath --recursive", $out, $ret);
+        exec("aws s3 cp s3://$bucketPath $efsPath --recursive", $out, $ret);
         if ($ret !== 0) {
             throw new \Exception("Could not copy $bucketPath to $efsPath");
         }
