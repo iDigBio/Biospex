@@ -91,8 +91,8 @@ class ZooniverseExportBatch
     {
         if ($this->checkS3ExportFileExists()) {
 
-            \Log::alert("aws s3 cp {$this->existingBucketExportFile} {$this->fullEfsBatchDir}/{$this->existingExportFile}");
-            exec("aws s3 cp {$this->existingBucketExportFile} {$this->fullEfsBatchDir}/{$this->existingExportFile}", $output, $retval);
+            \Log::alert("aws s3 cp {$this->existingBucketExportFile} {$this->fullEfsBatchDir}");
+            exec("aws s3 cp {$this->existingBucketExportFile} {$this->fullEfsBatchDir}", $output, $retval);
             if ($retval !== 0) {
                 throw new Exception("Could not copy {$this->existingBucketExportFile} to {$this->fullEfsBatchDir}/{$this->existingExportFile}");
             }
