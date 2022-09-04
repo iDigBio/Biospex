@@ -84,8 +84,6 @@ class ZooniverseBuildZip implements QueueInterface
 
         $this->createDownload($exportQueue);
 
-        $this->cleanLocalDirectory(Storage::disk('efs')->path($this->efsWorkDirFolder));
-
         $exportQueue->stage = 6;
         $exportQueue->save();
 

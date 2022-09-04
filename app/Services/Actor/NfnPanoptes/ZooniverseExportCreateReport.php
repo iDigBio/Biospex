@@ -95,6 +95,6 @@ class ZooniverseExportCreateReport implements QueueInterface
 
         \Artisan::call('export:poll');
 
-        //ZooniverseExportDeleteFilesJob::dispatch($exportQueue);
+        ZooniverseExportDeleteFilesJob::dispatch($exportQueue);
     }
 }
