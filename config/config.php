@@ -32,6 +32,7 @@ return [
     'aws_lambda_delay'           => env('AWS_LAMBDA_DELAY'),
     'aws_efs_lambda_dir'         => env('AWS_EFS_LAMBDA_DIR'),
     'aws_efs_batch_dir'          => env('AWS_EFS_BATCH_DIR'),
+    'aws_efs_work_dir'          => env('AWS_EFS_WORK_DIR'),
 
     'batch_dir'                    => 'batches',
     'charts_dir'                   => 'public/charts',

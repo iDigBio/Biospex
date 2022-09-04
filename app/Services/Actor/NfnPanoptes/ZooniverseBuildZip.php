@@ -25,6 +25,7 @@ use App\Services\Actor\QueueInterface;
 use App\Services\Actor\Traits\ActorDirectory;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExportQueueRepository;
+use Storage;
 
 /**
  * Class ZooniverseBuildZip
@@ -74,26 +75,82 @@ class ZooniverseBuildZip implements QueueInterface
 
         $this->deleteFile($this->exportArchiveFilePath);
 
-        $output=null;
-        $retval=null;
-        $path = config('config.current_path') . '/zipExport.js';
+        $this->copyFilesToEfs();
 
-        $start_time = microtime(true);
+        $this->zipDirectory();
 
-        exec("node $path {$this->workingDir} {$this->exportArchiveFilePath}" , $output, $retval);
+        $this->moveZipFile();
 
-        // End clock time in seconds
-        $end_time = microtime(true);
+        $this->createDownload($exportQueue);
 
-        // Calculate script execution time
-        $execution_time = ($end_time - $start_time);
+        $this->cleanLocalDirectory($this->efsWorkDirFolder);
 
-        \Log::alert(" Execution time of script = ".$execution_time." sec");
+        $exportQueue->stage = 6;
+        $exportQueue->save();
 
-        if ($retval) {
-            throw new \Exception($output);
+        \Artisan::call('export:poll');
+
+        ZooniverseExportCreateReportJob::dispatch($exportQueue);
+    }
+
+    /**
+     * Copy exported files from s3 to efs.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    private function copyFilesToEfs()
+    {
+        $bucketPath = config('filesystems.disks.s3.bucket') . '/' . $this->workingDir;
+        $efsPath = Storage::disk('efs')->path($this->efsWorkDirFolder);
+        exec("aws s3 mv s3://$bucketPath $efsPath --recursive", $out, $ret);
+        if ($ret !== 0) {
+            throw new \Exception("Could not copy $bucketPath to $efsPath");
         }
+    }
 
+    /**
+     * Create zip file from efs directory.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    private function zipDirectory()
+    {
+        $efsWorkDirFolder = Storage::disk('s3')->path($this->efsWorkDirFolder);
+        $efsWorkDir = Storage::disk('efs')->path($this->efsWorkDir);
+
+        exec("zip $efsWorkDir/{$this->exportArchiveFile} $efsWorkDirFolder" , $output, $retval);
+
+        if ($retval !== 0) {
+            throw new \Exception(t("Could not create zip file $efsWorkDirFolder/{$this->exportArchiveFile} from $efsWorkDirFolder"));
+        }
+    }
+
+    /**
+     * Move zip file to s3 bucket.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    private function moveZipFile()
+    {
+        $bucketPath = config('filesystems.disks.s3.bucket') . '/' . $this->exportDirectory;
+        $efsZipFle = Storage::disk('efs')->path("{$this->efsWorkDir}/{$this->exportArchiveFile}");
+        exec("aws s3 mv $efsZipFle s3://$bucketPath", $out, $ret);
+        if ($ret !== 0) {
+            throw new \Exception("Could not copy $efsZipFle to $bucketPath");
+        }
+    }
+
+    /**
+     * Create download file.
+     *
+     * @param \App\Models\ExportQueue $exportQueue
+     * @return void
+     */
+    private function createDownload(ExportQueue $exportQueue)
+    {
         $values = [
             'expedition_id' => $exportQueue->expedition_id,
             'actor_id'      => $exportQueue->actor_id,
@@ -108,14 +165,5 @@ class ZooniverseBuildZip implements QueueInterface
         ];
 
         $this->downloadRepository->updateOrCreate($attributes, $values);
-
-        $this->cleanDirectory(config('config.aws_efs_lambda_dir'));
-
-        $exportQueue->stage = 6;
-        $exportQueue->save();
-
-        \Artisan::call('export:poll');
-
-        ZooniverseExportCreateReportJob::dispatch($exportQueue);
     }
 }

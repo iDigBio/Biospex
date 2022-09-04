@@ -72,6 +72,16 @@ trait ActorDirectory
     public string $batchTmpDir;
 
     /**
+     * @var string
+     */
+    public string $efsWorkDir;
+
+    /**
+     * @var string
+     */
+    public string $efsWorkDirFolder;
+
+    /**
      * Set folder property.
      *
      * @param int $queueId
@@ -95,6 +105,7 @@ trait ActorDirectory
         $this->setWorkingDirectory();
         $this->setExportDirectory();
         $this->setExportArchiveFileAndPath();
+        $this->setEfsWorkDirectory();
     }
 
     /**
@@ -131,6 +142,19 @@ trait ActorDirectory
     {
         $this->exportArchiveFile = $this->folderName.'.zip';
         $this->exportArchiveFilePath = $this->exportDirectory.'/'.$this->exportArchiveFile;
+    }
+
+    /**
+     * Set efs batch directory.
+     *
+     * @return void
+     */
+    public function setEfsWorkDirectory()
+    {
+        $this->efsWorkDir = config('config.aws_efs_work_dir');
+        $this->efsWorkDirFolder = $this->efsWorkDir . '/' . $this->folderName;
+        Storage::disk('efs')->makeDirectory($this->efsWorkDirFolder);
+
     }
 
     /**
@@ -185,8 +209,8 @@ trait ActorDirectory
      * @param string $dirPath
      * @return void
      */
-    public function cleanDirectory(string $dirPath)
+    public function cleanLocalDirectory(string $dirPath)
     {
-        \File::cleanDirectory($dirPath);
+        \File::deleteDirectory($dirPath);
     }
 }
