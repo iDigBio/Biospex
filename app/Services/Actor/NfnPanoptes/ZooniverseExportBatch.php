@@ -73,8 +73,8 @@ class ZooniverseExportBatch
         $this->setCsvReader();
         $this->processCsvRows();
 
-        Storage::disk('efs')->delete($this->batchWorkingDir);
-        Storage::disk('efs')->delete("{$this->efsBatchDir}/{{$this->existingExportFile}}");
+        Storage::disk('efs')->deleteDirectory($this->batchWorkingDir);
+        Storage::disk('efs')->delete("{$this->efsBatchDir}/{$this->existingExportFile}");
 
         $links = $this->buildLinks();
 
