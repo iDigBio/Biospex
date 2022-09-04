@@ -170,7 +170,7 @@ trait ActorDirectory
      */
     private function setBucketPath()
     {
-        $this->bucketPath = 's3//' . config('filesystems.disks.s3.bucket');
+        $this->bucketPath = 's3://' . config('filesystems.disks.s3.bucket');
     }
 
     /**
