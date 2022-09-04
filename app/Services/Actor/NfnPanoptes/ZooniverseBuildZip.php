@@ -91,7 +91,7 @@ class ZooniverseBuildZip implements QueueInterface
 
         \Artisan::call('export:poll');
 
-        //ZooniverseExportCreateReportJob::dispatch($exportQueue);
+        ZooniverseExportCreateReportJob::dispatch($exportQueue);
     }
 
     /**
@@ -121,7 +121,6 @@ class ZooniverseBuildZip implements QueueInterface
         $efsWorkDirFolder = Storage::disk('efs')->path($this->efsWorkDirFolder);
         $efsWorkDir = Storage::disk('efs')->path($this->efsWorkDir);
 
-        \Log::alert("zip -r -j $efsWorkDir/{$this->exportArchiveFile} $efsWorkDirFolder");
         exec("zip -r -j $efsWorkDir/{$this->exportArchiveFile} $efsWorkDirFolder" , $output, $retval);
 
         if ($retval !== 0) {
@@ -139,7 +138,7 @@ class ZooniverseBuildZip implements QueueInterface
     {
         $bucketPathZip = $this->bucketPath . '/' . $this->exportDirectory . '/' . $this->exportArchiveFile;
         $efsZipFle = Storage::disk('efs')->path("{$this->efsWorkDir}/{$this->exportArchiveFile}");
-        \Log::alert("aws mv cp $efsZipFle $bucketPathZip");
+
         exec("aws s3 mv $efsZipFle $bucketPathZip", $out, $ret);
         if ($ret !== 0) {
             throw new \Exception("Could not copy $efsZipFle to $bucketPathZip");
