@@ -241,7 +241,7 @@ class ZooniverseExportBatch
     {
         $links = [];
         foreach ($this->fileNames as $fileName) {
-            $url = Storage::disk('s3')->temporaryUrl(config('config.batch_dir').'/'.$fileName, now()->addHours(72), ['ResponseContentDisposition' => 'attachment']);
+            $url = Storage::disk('s3')->temporaryUrl(config('config.batch_dir').'/'.$fileName . '.zip', now()->addHours(72), ['ResponseContentDisposition' => 'attachment']);
 
             $links[] = '<a href="'.$url.'">'.$fileName.'</a>';
         }
