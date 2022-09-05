@@ -73,7 +73,6 @@ class ZooniverseExportBatch
         $this->setCsvReader();
         $this->processCsvRows();
 
-        \Log::alert("rm -r {$this->fullBatchWorkingDir}");
         exec("rm -r {$this->fullBatchWorkingDir}");
 
         Storage::disk('efs')->delete("{$this->efsBatchDir}/{$this->existingExportFile}");
@@ -160,7 +159,6 @@ class ZooniverseExportBatch
 
             $this->uploadZipToS3($fileName);
 
-            \Log::alert("rm -r {$this->fullBatchTmpDir}");
             exec("rm -r {$this->fullBatchTmpDir}");
         }
     }
@@ -225,7 +223,6 @@ class ZooniverseExportBatch
     {
         $batchExportZipFile = Storage::disk('efs')->path($this->batchWorkingDir.'/'.$fileName.'.zip');
 
-        \Log::alert("aws s3 mv $batchExportZipFile {$this->bucketBatchDir}");
         exec("aws s3 mv $batchExportZipFile {$this->bucketBatchDir}/$fileName.zip", $output, $retval);
 
         if ($retval !== 0) {
