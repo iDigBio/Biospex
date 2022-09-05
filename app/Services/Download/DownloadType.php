@@ -66,7 +66,7 @@ class DownloadType extends DownloadFileBase
      */
     public function createReportDownload(string $fileName)
     {
-        $this->setFilePath(config('config.reports_dir'), $fileName);
+        $this->setFilePath(config('config.aws_s3_reports_dir'), $fileName);
 
         if (! $this->checkS3FileExists()) {
             throw new \Exception($this->missingMsg);
@@ -88,7 +88,7 @@ class DownloadType extends DownloadFileBase
      */
     public function createHtmlDownload(Download $download): array
     {
-        $this->setFilePath(config('config.nfn_downloads_summary'), $download->file);
+        $this->setFilePath(config('config.aws_s3_nfn_downloads.summary'), $download->file);
 
         if (! $this->checkFileExists()) {
             throw new \Exception($this->missingMsg);
@@ -135,7 +135,7 @@ class DownloadType extends DownloadFileBase
      */
     public function createBatchZipDownload(string $fileName): StreamedResponse
     {
-        $this->setFilePath(config('config.export_dir'), $fileName);
+        $this->setFilePath(config('config.aws_s3_export_dir'), $fileName);
 
         if (! $this->checkS3FileExists()) {
             throw new \Exception($this->missingMsg);
@@ -156,7 +156,7 @@ class DownloadType extends DownloadFileBase
      */
     public function createBatchTarDownload(string $fileName)
     {
-        $this->setFilePath(config('config.export_dir'), $fileName);
+        $this->setFilePath(config('config.aws_s3_export_dir'), $fileName);
 
         if (! $this->checkS3FileExists()) {
             throw new \Exception($this->missingMsg);
@@ -189,8 +189,8 @@ class DownloadType extends DownloadFileBase
         $downloads = $this->downloadRepo->getExportFiles($expeditionId);
 
         $downloads->each(function ($download) {
-            if (Storage::disk('s3')->exists(config('config.export_dir').'/'.$download->file)) {
-                Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
+            if (Storage::disk('s3')->exists(config('config.aws_s3_export_dir').'/'.$download->file)) {
+                Storage::disk('s3')->delete(config('config.aws_s3_export_dir').'/'.$download->file);
             }
             $download->delete();
         });

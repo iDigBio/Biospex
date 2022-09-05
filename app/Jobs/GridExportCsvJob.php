@@ -110,7 +110,7 @@ class GridExportCsvJob implements ShouldQueue
             $header = $this->buildHeader();
 
             $bucket = config('filesystems.disks.s3.bucket');
-            $filePath = config('config.reports_dir') . '/' . $csvName;
+            $filePath = config('config.aws_s3_reports_dir') . '/' . $csvName;
 
             $awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
             $awsS3CsvService->createCsvWriterFromStream();
@@ -132,7 +132,7 @@ class GridExportCsvJob implements ShouldQueue
 
             $awsS3CsvService->closeBucketStream();
 
-            if (!Storage::disk('s3')->exists(config('config.reports_dir').'/'.$csvName)) {
+            if (!Storage::disk('s3')->exists(config('config.aws_s3_reports_dir').'/'.$csvName)) {
                 throw new Exception(t('Csv export file is missing.'));
             }
 
@@ -147,7 +147,7 @@ class GridExportCsvJob implements ShouldQueue
                 'Trace: ' . $e->getTraceAsString()
             ];
             $this->user->notify(new GridCsvExportError($message));
-            Storage::disk('s3')->delete(config('config.reports_dir').'/'.$csvName);
+            Storage::disk('s3')->delete(config('config.aws_s3_reports_dir').'/'.$csvName);
         }
     }
 

@@ -113,7 +113,7 @@ class ExpertReconcilePublishProcess
         }
 
         $fileName = $expeditionId.'.csv';
-        $file = Storage::path(config('config.nfn_downloads_reconciled').'/'.$fileName);
+        $file = Storage::path(config('config.aws_s3_nfn_downloads.reconciled').'/'.$fileName);
         $this->csv->writerCreateFromPath($file);
         $this->csv->insertOne($decodedHeader);
         $this->csv->insertAll($mapped->toArray());

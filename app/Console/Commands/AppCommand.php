@@ -58,7 +58,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        dd(\Storage::disk('efs')->path(config('config.aws_efs_work_dir') . '/somefolder'));
+
         // "aws s3 mv s3://biospex-app/scratch/2-2-c5afceb7-b475-4628-8cdc-6fb2d0b939d5 /efs/batch/ --recursive"
     }
 

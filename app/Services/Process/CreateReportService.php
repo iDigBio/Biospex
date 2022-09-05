@@ -57,19 +57,19 @@ class CreateReportService
      *
      * @param string $csvName
      * @param array $data
-     * @return false|string
+     * @return string|null
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function createCsvReport(string $csvName, array $data): bool|string
+    public function createCsvReport(string $csvName, array $data): ?string
     {
         if (empty($data)) {
-            return false;
+            return null;
         }
 
         $header = array_keys($data[0]);
 
         $bucket = config('filesystems.disks.s3.bucket');
-        $filePath = config('config.reports_dir') . '/' . $csvName;
+        $filePath = config('config.aws_s3_reports_dir') . '/' . $csvName;
 
         $this->awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();

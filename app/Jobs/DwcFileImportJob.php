@@ -78,13 +78,13 @@ class DwcFileImportJob implements ShouldQueue
         CreateReportService $createReportService
     ) {
         $scratchFileDir = Storage::disk('efs')->path(config('config.aws_efs_scratch_dir').'/'.md5($this->import->file));
+        $importFilePath = Storage::disk('efs')->path($this->import->file);
 
         $project = $projectRepo->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
 
         try {
             $this->makeDirectory($scratchFileDir);
-            $importFilePath = Storage::disk('efs')->path($this->import->file);
 
             $this->unzip($importFilePath, $scratchFileDir);
 
@@ -114,7 +114,7 @@ class DwcFileImportJob implements ShouldQueue
             File::cleanDirectory($scratchFileDir);
             File::deleteDirectory($scratchFileDir);
 
-            Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
+            Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $e->getMessage() . $e->getFile() . $e->getLine()));
 
             $this->delete();
         }

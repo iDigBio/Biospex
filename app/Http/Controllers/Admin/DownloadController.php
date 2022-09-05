@@ -228,13 +228,13 @@ class DownloadController extends Controller
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
 
-        if (! Storage::exists(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html')) {
+        if (! Storage::exists(config('config.aws_s3_nfn_downloads.summary').'/'.$expeditionId.'.html')) {
             Flash::warning(t('File does not exist'));
 
             return redirect()->back();
         }
 
-        return Storage::get(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html');
+        return Storage::get(config('config.aws_s3_nfn_downloads.summary').'/'.$expeditionId.'.html');
     }
 
     /**

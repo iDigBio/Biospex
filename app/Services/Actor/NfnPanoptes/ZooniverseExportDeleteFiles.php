@@ -43,7 +43,7 @@ class ZooniverseExportDeleteFiles implements QueueInterface
         $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
         $this->setDirectories();
         $this->deleteDirectory($this->workingDir);
-        $this->cleanLocalDirectory(\Storage::disk('efs')->path($this->efsWorkDirFolder));
+        $this->cleanLocalDirectory(\Storage::disk('efs')->path($this->efsExportDirFolder));
         $exportQueue->delete();
 
         \Artisan::call('export:poll');

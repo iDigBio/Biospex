@@ -97,8 +97,8 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
                 return $transcription === null;
             });
 
-            $csvFileName = $fileName = Str::random() . '.csv';
-            $fileName = $transcriptions->isEmpty() ? null : $createReportService->createCsvReport($csvFileName, $transcriptions->toArray());
+            $csvFileName = Str::random() . '.csv';
+            $fileName = $createReportService->createCsvReport($csvFileName, $transcriptions->toArray());
 
             $this->user->notify(new EventCsvExport($fileName));
         }

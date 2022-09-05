@@ -60,7 +60,7 @@ class ImportController extends Controller
     {
         try {
             $projectId = request()->input('project_id');
-            $path = request()->file('dwc-file')->store('imports/subjects');
+            $path = request()->file('dwc-file')->store(config('config.aws_efs_import_dir'), 'efs');
 
             $import = $importRepo->create([
                 'user_id'    => Auth::user()->id,

@@ -67,7 +67,7 @@ class DeleteProject implements ShouldQueue
 
         $project->expeditions->each(function ($expedition) use ($mongoDbService) {
             $expedition->downloads->each(function ($download){
-                Storage::delete(config('config.export_dir').'/'.$download->file);
+                Storage::delete(config('config.aws_s3_export_dir').'/'.$download->file);
             });
 
             $mongoDbService->setCollection('pusher_transcriptions');

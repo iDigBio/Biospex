@@ -180,8 +180,6 @@ class AppFileDeployment extends Command
             'QUEUE_PUSHER_TRANSCRIPTIONS',
             'QUEUE_PUSHER_PROCESS',
             'QUEUE_LAMBDA',
-
-            'AWS_EFS_LAMBDA_DIR',
         ]);
     }
 }

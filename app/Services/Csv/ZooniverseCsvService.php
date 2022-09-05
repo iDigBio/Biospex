@@ -120,7 +120,7 @@ class ZooniverseCsvService
     public function downloadCsv(int $expeditionId, string $uri)
     {
         $opts = [
-            'sink' => Storage::path(config('config.nfn_downloads_classification') . '/' . $expeditionId . '.csv')
+            'sink' => Storage::path(config('config.aws_s3_nfn_downloads.classification') . '/' . $expeditionId . '.csv')
         ];
 
         $this->panoptesApiService->setHttpProvider();

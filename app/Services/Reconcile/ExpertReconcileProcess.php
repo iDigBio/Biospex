@@ -91,7 +91,7 @@ class ExpertReconcileProcess
      */
     public function migrateReconcileCsv(string $expeditionId)
     {
-        $file = config('config.nfn_downloads_reconcile').'/'.$expeditionId.'.csv';
+        $file = config('config.aws_s3_nfn_downloads.reconcile').'/'.$expeditionId.'.csv';
 
         if (!Storage::exists($file)) {
             $message = t('File does not exist.');
@@ -223,7 +223,7 @@ class ExpertReconcileProcess
      */
     public function setReconcileProblems(int $expeditionId)
     {
-        $file = config('config.nfn_downloads_explained').'/'.$expeditionId.'.csv';
+        $file = config('config.aws_s3_nfn_downloads.explained').'/'.$expeditionId.'.csv';
 
         if (! Storage::exists($file)) {
             $message = t('File does not exist.');

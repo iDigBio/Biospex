@@ -78,7 +78,7 @@ class ZooniverseTranscriptionJob implements ShouldQueue
             return;
         }
 
-        $transcriptDir = config('config.nfn_downloads_transcript');
+        $transcriptDir = config('config.aws_s3_nfn_downloads.transcript');
 
         if (! Storage::exists($transcriptDir.'/'.$this->expeditionId.'.csv')) {
             $this->delete();

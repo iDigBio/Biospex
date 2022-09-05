@@ -157,14 +157,14 @@ class RecordsetImportJob implements ShouldQueue
     public function download()
     {
         $fileName = $this->data['id'] . '.zip';
-        $filePath = Storage::path(config('config.import_dir') . '/' . $fileName);
-
         $file = file_get_contents($this->response->download_url);
 
-        if (Storage::put($filePath, $file) === false)
+        if (Storage::disk('efs')->put(config('config.aws_efs_import_dir') . '/' . $fileName, $file) === false)
         {
             throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
         }
+
+        $filePath = Storage::path(config('config.aws_efs_import_dir') . '/' . $fileName);
 
         return $this->importRepo->create([
             'user_id'    => $this->data['user_id'],

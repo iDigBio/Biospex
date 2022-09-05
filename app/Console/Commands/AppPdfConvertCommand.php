@@ -75,7 +75,7 @@ class AppPdfConvertCommand extends Command
 
     public function convertPdf()
     {
-        $pdfPath = \Storage::path(config('config.scratch_dir').'/osteology');
+        $pdfPath = \Storage::path(config('config.aws_s3_scratch_dir').'/osteology');
         echo $pdfPath . PHP_EOL;
         collect(\File::files($pdfPath))->each(function($file){
             $this->writeFileToImage($file);
@@ -88,7 +88,7 @@ class AppPdfConvertCommand extends Command
 
     private function writeFileToImage($file)
     {
-        $this->imageDir = \Storage::path(config('config.scratch_dir') . '/'.rand(10,12));
+        $this->imageDir = \Storage::path(config('config.aws_s3_scratch_dir') . '/'.rand(10,12));
         \File::makeDirectory($this->imageDir);
 
         $im = new \Imagick();
@@ -117,7 +117,7 @@ class AppPdfConvertCommand extends Command
         $im->resetIterator();
         $combined = $im->appendImages(true);
         $combined->setImageFormat('jpg');
-        $combined->writeImage( \Storage::path(config('config.scratch_dir') . '/combined/' . $name));
+        $combined->writeImage( \Storage::path(config('config.aws_s3_scratch_dir') . '/combined/' . $name));
         $im->clear();
         $combined->clear();
     }

@@ -186,11 +186,11 @@ class ReconcileProcess
      */
     protected function setPaths($expeditionId)
     {
-        $this->csvPath = Storage::path(config('config.nfn_downloads_classification').'/'.$expeditionId.'.csv');
-        $this->recPath = Storage::path(config('config.nfn_downloads_reconcile').'/'.$expeditionId.'.csv');
-        $this->tranPath = Storage::path(config('config.nfn_downloads_transcript').'/'.$expeditionId.'.csv');
-        $this->sumPath = Storage::path(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html');
-        $this->expPath = Storage::path(config('config.nfn_downloads_explained').'/'.$expeditionId.'.csv');
+        $this->csvPath = Storage::path(config('config.aws_s3_nfn_downloads.classification').'/'.$expeditionId.'.csv');
+        $this->recPath = Storage::path(config('config.aws_s3_nfn_downloads.reconcile').'/'.$expeditionId.'.csv');
+        $this->tranPath = Storage::path(config('config.aws_s3_nfn_downloads.transcript').'/'.$expeditionId.'.csv');
+        $this->sumPath = Storage::path(config('config.aws_s3_nfn_downloads.summary').'/'.$expeditionId.'.html');
+        $this->expPath = Storage::path(config('config.aws_s3_nfn_downloads.explained').'/'.$expeditionId.'.csv');
 
         $this->pythonPath = config('config.python_path');
         $this->reconcilePath = config('config.reconcile_path');
