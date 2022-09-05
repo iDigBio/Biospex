@@ -59,6 +59,7 @@ trait ActorBatchDirectory
     public string $existingBucketExportFile;
     public string $batchTmpDir;
     public string $bucketPath;
+    public string $fullBatchTmpDir;
 
     /**
      * Set properties.
@@ -161,6 +162,19 @@ trait ActorBatchDirectory
     }
 
     /**
+     * Set temp directory for zipping batch files.
+     *
+     * @param string $dir
+     * @return void
+     */
+    private function setBatchTmpDirectory(string $dir)
+    {
+        $this->batchTmpDir = $this->batchWorkingDir . '/' . $dir;
+        Storage::disk('efs')->makeDirectory($this->batchTmpDir);
+        $this->fullBatchTmpDir = Storage::disk('efs')->path($this->batchTmpDir);
+    }
+
+    /**
      * Check s3 export file exists.
      *
      * @return bool
@@ -178,17 +192,5 @@ trait ActorBatchDirectory
     public function checkEfsExportFileExists(): bool
     {
         return Storage::disk('efs')->exists($this->efsBatchDir . '/' . $this->existingExportFile);
-    }
-
-    /**
-     * Set temp directory for zipping batch files.
-     *
-     * @param string $dir
-     * @return void
-     */
-    private function setBatchTmpDirectory(string $dir)
-    {
-        $this->batchTmpDir = $this->batchWorkingDir . '/' . $dir;
-        Storage::disk('efs')->makeDirectory($this->batchTmpDir);
     }
 }
