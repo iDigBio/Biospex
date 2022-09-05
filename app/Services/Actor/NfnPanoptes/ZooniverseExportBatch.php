@@ -73,7 +73,9 @@ class ZooniverseExportBatch
         $this->setCsvReader();
         $this->processCsvRows();
 
-        Storage::disk('efs')->deleteDirectory($this->batchWorkingDir);
+        \Log::alert("rm -rf {$this->fullBatchWorkingDir}");
+        exec("rm -rf {$this->fullBatchWorkingDir}");
+
         Storage::disk('efs')->delete("{$this->efsBatchDir}/{$this->existingExportFile}");
 
         $links = $this->buildLinks();
@@ -91,7 +93,6 @@ class ZooniverseExportBatch
     {
         if ($this->checkS3ExportFileExists()) {
 
-            \Log::alert("aws s3 cp {$this->existingBucketExportFile} {$this->fullEfsBatchDir}");
             exec("aws s3 cp {$this->existingBucketExportFile} {$this->fullEfsBatchDir}", $output, $retval);
             if ($retval !== 0) {
                 throw new Exception("Could not copy {$this->existingBucketExportFile} to {$this->fullEfsBatchDir}/{$this->existingExportFile}");
@@ -112,7 +113,6 @@ class ZooniverseExportBatch
     {
         if ($this->checkEfsExportFileExists()) {
 
-            \Log::alert("unzip {$this->fullEfsBatchDir}/{$this->existingExportFile} -d {$this->fullBatchWorkingDir}");
             exec("unzip {$this->fullEfsBatchDir}/{$this->existingExportFile} -d {$this->fullBatchWorkingDir}", $output, $retvalue);
             if ($retvalue !== 0) {
                 throw new Exception("Could not unzip {$this->fullEfsBatchDir}/{$this->existingExportFile}");
@@ -160,7 +160,8 @@ class ZooniverseExportBatch
 
             $this->uploadZipToS3($fileName);
 
-            Storage::disk('efs')->delete($this->batchTmpDir);
+            \Log::alert("rm -rf {$this->fullBatchTmpDir}");
+            exec("rm -rf {$this->fullBatchTmpDir}");
         }
     }
 
