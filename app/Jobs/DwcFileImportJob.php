@@ -77,14 +77,14 @@ class DwcFileImportJob implements ShouldQueue
         DarwinCore $dwcProcess,
         CreateReportService $createReportService
     ) {
-        $scratchFileDir = Storage::path(config('config.scratch_dir').'/'.md5($this->import->file));
+        $scratchFileDir = Storage::disk('efs')->path(config('config.aws_efs_scratch_dir').'/'.md5($this->import->file));
 
         $project = $projectRepo->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
 
         try {
             $this->makeDirectory($scratchFileDir);
-            $importFilePath = Storage::path($this->import->file);
+            $importFilePath = Storage::disk('efs')->path($this->import->file);
 
             $this->unzip($importFilePath, $scratchFileDir);
 
