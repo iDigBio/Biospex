@@ -7,6 +7,8 @@
 {{ t('Join Now') }}
 @endcomponent
 
+{{ t('If clicking button does not work, right click and open in new window.') }}
+
 {{ t('Thank you') }},
 {{ config('app.name') }}
 @endcomponent
