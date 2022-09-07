@@ -31,25 +31,20 @@ return [
     'aws_lambda_count'           => env('AWS_LAMBDA_COUNT'),
     'aws_lambda_delay'           => env('AWS_LAMBDA_DELAY'),
 
-    'aws_efs_batch_dir'   => env('AWS_EFS_BATCH_DIR', 'batch'),
-    'aws_efs_export_dir'  => env('AWS_EFS_EXPORT_DIR', 'export'),
-    'aws_efs_import_dir'  => env('AWS_EFS_IMPORT_DIR', 'import'),
-    'aws_efs_scratch_dir' => env('AWS_EFS_SCRATCH_DIR', 'scratch'),
-
-    'aws_s3_batch_dir'     => env('AWS_S3_BATCH_DIR', 'batches'),
-    'aws_s3_scratch_dir'   => env('AWS_S3_SCRATCH_DIR', 'scratch'),
-    'aws_s3_export_dir'    => env('AWS_S3_EXPORT_DIR', 'exports'),
-    'aws_s3_reports_dir'   => env('AWS_S3_REPORT_DIR', 'reports'),
-    'aws_s3_nfn_downloads' => [
-        'dir'                     => env('NFN_DOWNLOADS_DIR', 'nfndownloads'),
-        'classification'          => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/classification',
-        'reconcile'               => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/reconcile',
-        'summary'                 => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/summary',
-        'transcript'              => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/transcript',
-        'nfn_downloads_explained' => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/explained',
+    'batch_dir'   => env('BATCH_DIR', 'batch'),
+    'export_dir'  => env('EXPORT_DIR', 'export'),
+    'import_dir'  => env('IMPORT_DIR', 'import'),
+    'report_dir'  => env('REPORT_DIR', 'report'),
+    'scratch_dir' => env('SCRATCH_DIR', 'scratch'),
+    'zooniverse_dir'     => [
+        'dir'            => env('ZOONIVERSE_DIR', 'zooniverse'),
+        'classification' => env('ZOONIVERSE_DIR', 'zooniverse').'/classification',
+        'reconcile'      => env('ZOONIVERSE_DIR', 'zooniverse').'/reconcile',
+        'reconciled'     => env('ZOONIVERSE_DIR', 'zooniverse').'/reconciled',
+        'summary'        => env('ZOONIVERSE_DIR', 'zooniverse').'/summary',
+        'transcript'     => env('ZOONIVERSE_DIR', 'zooniverse').'/transcript',
+        'explained'      => env('ZOONIVERSE_DIR', 'zooniverse').'/explained',
     ],
-
-    'import_dir' => 'import',
 
     'nfn_file_types'              => [
         'classification',

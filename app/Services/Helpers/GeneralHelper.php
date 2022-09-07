@@ -377,17 +377,17 @@ class GeneralHelper
      * @param $file
      * @return bool
      */
-    public function downloadFileExists($type, $file)
+    public function downloadFileExists($type, $file): bool
     {
         if ($type === 'export') {
-            return Storage::disk('s3')->exists(config('config.aws_s3_export_dir').'/'.$file);
+            return Storage::disk('s3')->exists(config('config.export_dir').'/'.$file);
         }
 
         if ($type === 'report') {
-            return Storage::disk('s3')->exists(config('config.aws_s3_reports_dir').'/'.$file);
+            return Storage::disk('s3')->exists(config('config.report_dir').'/'.$file);
         }
 
-        return Storage::disk('s3')->exists(config('config.aws_s3_nfn_downloads.dir').'/'.$type.'/'.$file);
+        return Storage::disk('s3')->exists(config('config.zooniverse_dir.dir').'/'.$type.'/'.$file);
     }
 
     /**
@@ -397,16 +397,16 @@ class GeneralHelper
      * @param $file
      * @return int
      */
-    public function downloadFileSize($type, $file)
+    public function downloadFileSize($type, $file): int
     {
         if ($type === 'export') {
-            return Storage::disk('s3')->size(config('config.aws_s3_export_dir').'/'.$file);
+            return Storage::disk('s3')->size(config('config.export_dir').'/'.$file);
         }
 
         if ($type === 'report') {
-            return Storage::disk('s3')->disk('s3')->size(config('config.aws_s3_reports_dir').'/'.$file);
+            return Storage::disk('s3')->disk('s3')->size(config('config.report_dir').'/'.$file);
         }
 
-        return Storage::disk('s3')->size(config('config.aws_s3_nfn_downloads.dir').'/'.$type.'/'.$file);
+        return Storage::disk('s3')->size(config('config.zooniverse_dir.dir').'/'.$type.'/'.$file);
     }
 }

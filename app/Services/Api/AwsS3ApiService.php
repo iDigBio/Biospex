@@ -43,32 +43,25 @@ class AwsS3ApiService
      * @param string $bucket
      * @param string $filePath
      * @param string $mode
+     * @param bool $seekable
      * @return false|resource
      */
-    public function createS3BucketStream(string $bucket, string $filePath, string $mode)
+    public function createS3BucketStream(string $bucket, string $filePath, string $mode, bool $seekable = true)
     {
         $this->client->registerStreamWrapper();
 
-        $context = stream_context_create(array(
-            's3' => array(
-                'seekable' => true
-            )
-        ));
+        $context = null;
+        if ($seekable) {
+            $context = stream_context_create([
+                's3' => [
+                    'seekable' => true
+                ]
+            ]);
+        }
 
         $s3Path = 's3://' . $bucket . '/' . $filePath;
 
         return fopen($s3Path, $mode, false, $context);
-    }
-
-    /**
-     * Close bucket stream.
-     *
-     * @param resource $stream
-     * @return bool
-     */
-    public function closeS3BucketStream($stream): bool
-    {
-        return fclose($stream);
     }
 
     /**
@@ -89,6 +82,4 @@ class AwsS3ApiService
 
         return count(iterator_to_array($objects, false)) - 1;
     }
-
-
 }

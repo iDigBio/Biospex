@@ -21,9 +21,5 @@ use App\Http\Controllers\Admin\DownloadController;
 
 Route::get('projects/{projects}/expeditions/{expeditions}/downloads', [DownloadController::class, 'index'])->name('admin.downloads.index');
 Route::get('reports/{file}', [DownloadController::class, 'report'])->name('admin.downloads.report');
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}', [DownloadController::class, 'download'])->name('admin.downloads.download');
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{files}/zip-batch', [DownloadController::class, 'downloadZipBatch'])->name('admin.downloads.downloadZipBatch');
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{files}/tar-batch', [DownloadController::class, 'downloadTarBatch'])->name('admin.downloads.downloadTarBatch');
 Route::get('projects/{projects}/expeditions/{expeditions}/export', [DownloadController::class, 'export'])->name('admin.downloads.export');
 Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/batch', [DownloadController::class, 'batch'])->name('admin.downloads.batch');
-Route::get('projects/{projects}/expeditions/{expeditions}/summary', [DownloadController::class, 'summary'])->name('admin.downloads.summary');

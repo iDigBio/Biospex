@@ -24,8 +24,7 @@ use App\Notifications\ExpertReviewPublished;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\ReconcileRepository;
-use App\Services\Csv\Csv;
-use Storage;
+use App\Services\Process\AwsS3CsvService;
 
 /**
  * Class ExpertReconcilePublishProcess
@@ -37,7 +36,7 @@ class ExpertReconcilePublishProcess
     /**
      * @var \App\Repositories\ReconcileRepository
      */
-    private $reconcileRepo;
+    private ReconcileRepository $reconcileRepo;
 
     /**
      * @var \App\Repositories\DownloadRepository
@@ -47,12 +46,12 @@ class ExpertReconcilePublishProcess
     /**
      * @var \App\Repositories\ExpeditionRepository
      */
-    private $expeditionRepo;
+    private ExpeditionRepository $expeditionRepo;
 
     /**
-     * @var \App\Services\Csv\Csv
+     * @var \App\Services\Process\AwsS3CsvService
      */
-    private $csv;
+    private AwsS3CsvService $awsS3CsvService;
 
     /**
      * ExpertReconcilePublishService constructor.
@@ -60,19 +59,19 @@ class ExpertReconcilePublishProcess
      * @param \App\Repositories\ReconcileRepository $reconcileRepo
      * @param \App\Repositories\DownloadRepository $downloadRepo
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Services\Csv\Csv $csv
+     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         ReconcileRepository $reconcileRepo,
         DownloadRepository $downloadRepo,
         ExpeditionRepository $expeditionRepo,
-        Csv $csv
+        AwsS3CsvService $awsS3CsvService
     )
     {
         $this->reconcileRepo = $reconcileRepo;
         $this->downloadRepo = $downloadRepo;
         $this->expeditionRepo = $expeditionRepo;
-        $this->csv = $csv;
+        $this->awsS3CsvService = $awsS3CsvService;
     }
 
     /**
@@ -112,11 +111,11 @@ class ExpertReconcilePublishProcess
             $decodedHeader[] = TranscriptionMapHelper::decodeTranscriptionField($value);
         }
 
-        $fileName = $expeditionId.'.csv';
-        $file = Storage::path(config('config.aws_s3_nfn_downloads.reconciled').'/'.$fileName);
-        $this->csv->writerCreateFromPath($file);
-        $this->csv->insertOne($decodedHeader);
-        $this->csv->insertAll($mapped->toArray());
+        $file = config('config.zooniverse_dir.reconciled') . '/' . $expeditionId.'.csv';
+        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $file, 'w');
+        $this->awsS3CsvService->createCsvWriterFromStream();
+        $this->awsS3CsvService->csv->insertOne($decodedHeader);
+        $this->awsS3CsvService->csv->insertAll($mapped->toArray());
     }
 
     /**

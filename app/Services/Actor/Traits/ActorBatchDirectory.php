@@ -82,7 +82,7 @@ trait ActorBatchDirectory
      */
     public function setBatchFolderName(string $fileName)
     {
-        $filePath = Storage::disk('s3')->path(config('config.aws_s3_export_dir') . '/' . $fileName);
+        $filePath = Storage::disk('s3')->path(config('config.export_dir') . '/' . $fileName);
         $this->folderName = \File::name($filePath);
     }
 
@@ -118,7 +118,7 @@ trait ActorBatchDirectory
      */
     private function setEfsBatchDirectory()
     {
-        $this->efsBatchDir = config('config.aws_efs_batch_dir');
+        $this->efsBatchDir = config('config.batch_dir');
         $this->fullEfsBatchDir = Storage::disk('efs')->path($this->efsBatchDir);
     }
 
@@ -139,7 +139,7 @@ trait ActorBatchDirectory
      */
     private function setExportDirectory()
     {
-        $this->exportDir = config('config.aws_s3_export_dir');
+        $this->exportDir = config('config.export_dir');
     }
 
     /**
@@ -149,7 +149,7 @@ trait ActorBatchDirectory
      */
     public function setExportBatchDirectory()
     {
-        $this->bucketBatchDir = $this->bucketPath . '/' . config('config.aws_s3_batch_dir');
+        $this->bucketBatchDir = $this->bucketPath . '/' . config('config.batch_dir');
     }
 
     /**

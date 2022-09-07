@@ -69,13 +69,12 @@ class CreateReportService
         $header = array_keys($data[0]);
 
         $bucket = config('filesystems.disks.s3.bucket');
-        $filePath = config('config.aws_s3_reports_dir') . '/' . $csvName;
+        $filePath = config('config.report_dir') . '/' . $csvName;
 
         $this->awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();
-        $this->awsS3CsvService->insertOne($header);
-        $this->awsS3CsvService->insertAll($data);
-        $this->awsS3CsvService->closeBucketStream();
+        $this->awsS3CsvService->csv->insertOne($header);
+        $this->awsS3CsvService->csv->insertAll($data);
 
         return base64_encode($csvName);
     }

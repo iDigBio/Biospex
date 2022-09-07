@@ -22,17 +22,14 @@ namespace App\Services\Reconcile;
 use App\Facades\TranscriptionMapHelper;
 use App\Repositories\ReconcileRepository;
 use App\Repositories\SubjectRepository;
-use App\Services\Csv\Csv;
+use App\Services\Process\AwsS3CsvService;
 use Exception;
 use File;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Session;
 use Storage;
 use Validator;
-use function collect;
-use function config;
-use function t;
-use function view;
 
 /**
  * Class ExpertReconcileProcess
@@ -44,41 +41,44 @@ class ExpertReconcileProcess
     /**
      * @var \App\Repositories\ReconcileRepository
      */
-    private $reconcileRepo;
-
-    /**
-     * @var \App\Services\Csv\Csv
-     */
-    private $csv;
+    private ReconcileRepository $reconcileRepo;
 
     /**
      * @var SubjectRepository
      */
-    private $subjectRepo;
+    private SubjectRepository $subjectRepo;
+
+    /**
+     * @var \App\Services\Process\AwsS3CsvService
+     */
+    private AwsS3CsvService $awsS3CsvService;
 
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
-    private $problemRegex;
+    private mixed $problemRegex;
 
-    public $timeout = 1800;
+    /**
+     * @var int
+     */
+    public int $timeout = 1800;
 
     /**
      * ExpertReconcileProcess constructor.
      *
      * @param \App\Repositories\ReconcileRepository $reconcileRepo
-     * @param \App\Services\Csv\Csv $csv
      * @param \App\Repositories\SubjectRepository $subjectRepo
+     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         ReconcileRepository $reconcileRepo,
-        Csv $csv,
-        SubjectRepository $subjectRepo
+        SubjectRepository $subjectRepo,
+        AwsS3CsvService $awsS3CsvService
     ) {
 
         $this->reconcileRepo = $reconcileRepo;
-        $this->csv = $csv;
         $this->subjectRepo = $subjectRepo;
+        $this->awsS3CsvService = $awsS3CsvService;
 
         $this->problemRegex = config('config.nfn_reconcile_problem_regex');
     }
@@ -91,18 +91,18 @@ class ExpertReconcileProcess
      */
     public function migrateReconcileCsv(string $expeditionId)
     {
-        $file = config('config.aws_s3_nfn_downloads.reconcile').'/'.$expeditionId.'.csv';
+        $file = config('config.zooniverse_dir.reconcile').'/'.$expeditionId.'.csv';
 
-        if (!Storage::exists($file)) {
+        if (! Storage::disk('s3')->exists($file)) {
             $message = t('File does not exist.');
             $method = __METHOD__;
             throw new Exception(view('common.exception', compact('message', 'method', 'file')));
         }
 
-        $filePath = Storage::path($file);
-        $rows = $this->getCsvRows($filePath);
-        $rows->each(function($row) {
-            if (!$this->validateReconcile($row['subject_id'])) {
+        $rows = $this->getCsvRows($file);
+
+        $rows->each(function ($row) {
+            if (! $this->validateReconcile($row['subject_id'])) {
                 $newRecord = [];
                 foreach ($row as $field => $value) {
                     $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
@@ -119,16 +119,17 @@ class ExpertReconcileProcess
     /**
      * Get csv rows from file.
      *
-     * @param $filePath
+     * @param string $file
      * @return \Illuminate\Support\Collection
      * @throws \League\Csv\Exception
      */
-    public function getCsvRows($filePath): Collection
+    public function getCsvRows(string $file): Collection
     {
-        $this->csv->readerCreateFromPath($filePath);
-        $this->csv->setHeaderOffset();
+        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $file, 'r');
+        $this->awsS3CsvService->createCsvReaderFromStream();
+        $this->awsS3CsvService->csv->setHeaderOffset();
 
-        return collect($this->csv->getRecords($this->csv->getHeader()));
+        return collect($this->awsS3CsvService->csv->getRecords($this->awsS3CsvService->csv->getHeader()));
     }
 
     /**
@@ -160,9 +161,9 @@ class ExpertReconcileProcess
      * Get pagination results.
      *
      * @param int $expeditionId
-     * @return mixed
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getPagination(int $expeditionId)
+    public function getPagination(int $expeditionId): LengthAwarePaginator
     {
         return $this->reconcileRepo->paging($expeditionId);
     }
@@ -174,7 +175,7 @@ class ExpertReconcileProcess
      * @param string|null $location
      * @return mixed
      */
-    public function getImageUrl(string $imageName, string $location = null)
+    public function getImageUrl(string $imageName, string $location = null): mixed
     {
         return $location !== null ? $location : $this->getAccessUri($imageName);
     }
@@ -185,7 +186,7 @@ class ExpertReconcileProcess
      * @param $imageName
      * @return mixed
      */
-    public function getAccessUri($imageName)
+    public function getAccessUri($imageName): mixed
     {
         $id = File::name($imageName);
         $subject = $this->subjectRepo->find($id, ['accessURI']);
@@ -201,7 +202,7 @@ class ExpertReconcileProcess
      * @param array $request
      * @return mixed
      */
-    public function updateRecord(array $request)
+    public function updateRecord(array $request): mixed
     {
         $id = $request['_id'];
         unset($request['_id'], $request['_method'], $request['_token'], $request['page'], $request['radio']);
@@ -223,7 +224,7 @@ class ExpertReconcileProcess
      */
     public function setReconcileProblems(int $expeditionId)
     {
-        $file = config('config.aws_s3_nfn_downloads.explained').'/'.$expeditionId.'.csv';
+        $file = config('config.zooniverse_dir.explained').'/'.$expeditionId.'.csv';
 
         if (! Storage::exists($file)) {
             $message = t('File does not exist.');
@@ -231,9 +232,7 @@ class ExpertReconcileProcess
             throw new Exception(view('common.exception', compact('message', 'method', 'file')));
         }
 
-        $filePath = Storage::path($file);
-
-        $rows = $this->getCsvRows($filePath);
+        $rows = $this->getCsvRows($file);
 
         $rows->mapWithKeys(function ($row) {
             $problems = collect($row)->filter(function ($value, $field) {
@@ -245,7 +244,8 @@ class ExpertReconcileProcess
             return $problem->isEmpty();
         })->mapWithKeys(function ($problem, $subjectId) {
             $string = $problem->keys()->map(function ($key) {
-                $trimmedKey =  trim(str_replace('Explanation', '', $key));
+                $trimmedKey = trim(str_replace('Explanation', '', $key));
+
                 return TranscriptionMapHelper::encodeTranscriptionField($trimmedKey);
             })->flatten()->join('|');
 

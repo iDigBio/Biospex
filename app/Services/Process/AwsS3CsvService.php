@@ -21,20 +21,18 @@ namespace App\Services\Process;
 
 use App\Services\Api\AwsS3ApiService;
 use App\Services\Csv\Csv;
-use JetBrains\PhpStorm\Pure;
-use League\Csv\CharsetConverter;
 
 class AwsS3CsvService
 {
     /**
      * @var \App\Services\Api\AwsS3ApiService
      */
-    private AwsS3ApiService $awsS3ApiService;
+    public AwsS3ApiService $awsS3ApiService;
 
     /**
      * @var \App\Services\Csv\Csv
      */
-    private Csv $csv;
+    public Csv $csv;
 
     /**
      * @var false|resource
@@ -66,16 +64,6 @@ class AwsS3CsvService
     }
 
     /**
-     * Close bucket stream.
-     *
-     * @return void
-     */
-    public function closeBucketStream()
-    {
-        $this->awsS3ApiService->closeS3BucketStream($this->stream);
-    }
-
-    /**
      * Create csv write from s3 bucket stream.
      *
      * @return void
@@ -93,106 +81,5 @@ class AwsS3CsvService
     public function createCsvReaderFromStream()
     {
         $this->csv->readerCreateFromStream($this->stream);
-    }
-
-    /**
-     * Insert one row.
-     *
-     * @param array $data
-     * @return void
-     * @throws \League\Csv\CannotInsertRecord
-     */
-    public function insertOne(array $data)
-    {
-        $this->csv->insertOne($data);
-    }
-
-    /**
-     * Insert all rows.
-     *
-     * @param array $data
-     * @return void
-     */
-    public function insertAll(array $data)
-    {
-        $this->csv->insertAll($data);
-    }
-
-
-
-    /**
-     * Add encoding formatter.
-     *
-     * @return void
-     */
-    public function addEncodingFormatter()
-    {
-        $this->csv->writer->addFormatter($this->setEncoding());
-    }
-
-    /**
-     * Set encoding.
-     *
-     * @return \League\Csv\CharsetConverter
-     */
-    public function setEncoding(): CharsetConverter
-    {
-        return $this->csv->setEncoding();
-    }
-
-    /**
-     * Set delimiter.
-     *
-     * @throws \League\Csv\Exception
-     */
-    public function setDelimiter()
-    {
-        $this->csv->setDelimiter();
-    }
-
-    /**
-     * Set header offset.
-     * Helps return headers with getRecords.
-     *
-     * @param int $offset
-     * @return void
-     * @throws \League\Csv\Exception
-     */
-    public function setHeaderOffset(int $offset = 0)
-    {
-        $this->csv->setHeaderOffset($offset);
-    }
-
-    /**
-     * Get file path.
-     *
-     * @param string $bucket
-     * @param string $dirPath
-     * @return int
-     */
-    public function getFileCount(string $bucket, string $dirPath): int
-    {
-        return $this->awsS3ApiService->getFileCount($bucket, $dirPath);
-    }
-
-    /**
-     * Return reader count.
-     *
-     * @return int
-     */
-    #[Pure] public function getReaderCount(): int
-    {
-        return $this->csv->getReaderCount();
-    }
-
-    /**
-     * Get records from CSV.
-     *
-     * @param array $header
-     * @return \Iterator
-     */
-    public function getRecords(array $header = []): \Iterator
-    {
-        return $this->csv->getRecords($header);
     }
 }

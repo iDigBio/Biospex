@@ -78,16 +78,14 @@ class ZooniverseTranscriptionJob implements ShouldQueue
             return;
         }
 
-        $transcriptDir = config('config.aws_s3_nfn_downloads.transcript');
-
-        if (! Storage::exists($transcriptDir.'/'.$this->expeditionId.'.csv')) {
+        $csvFilePath = config('config.zooniverse_dir.transcript') . "/{$this->expeditionId}.csv";
+        if (! Storage::disk('s3')->exists($csvFilePath)) {
             $this->delete();
 
             return;
         }
 
-        $csvFile = Storage::path($transcriptDir.'/'.$this->expeditionId.'.csv');
-        $createPanoptesTranscriptionService->process($csvFile, $this->expeditionId);
+        $createPanoptesTranscriptionService->process($csvFilePath, $this->expeditionId);
 
         $fileName = $createPanoptesTranscriptionService->checkCsvError();
         if ($fileName !== null) {

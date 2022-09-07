@@ -119,7 +119,7 @@ trait ActorDirectory
      */
     private function setScratchDirectory()
     {
-        $this->scratchDir = config('config.aws_s3_scratch_dir');
+        $this->scratchDir = config('config.scratch_dir');
     }
 
 
@@ -138,7 +138,7 @@ trait ActorDirectory
      */
     private function setExportDirectory()
     {
-        $this->exportDirectory = config('config.aws_s3_export_dir');
+        $this->exportDirectory = config('config.export_dir');
     }
 
     /**
@@ -157,7 +157,7 @@ trait ActorDirectory
      */
     private function setEfsExportDirectory()
     {
-        $this->efsExportDir = config('config.aws_efs_export_dir');
+        $this->efsExportDir = config('config.export_dir');
         $this->efsExportDirFolder = $this->efsExportDir . '/' . $this->folderName;
         Storage::disk('efs')->makeDirectory($this->efsExportDirFolder);
 

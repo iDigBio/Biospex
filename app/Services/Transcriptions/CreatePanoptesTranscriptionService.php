@@ -22,7 +22,7 @@ namespace App\Services\Transcriptions;
 use App\Facades\TranscriptionMapHelper;
 use App\Repositories\PanoptesTranscriptionRepository;
 use App\Repositories\SubjectRepository;
-use App\Services\Csv\Csv;
+use App\Services\Process\AwsS3CsvService;
 use App\Services\Process\CreateReportService;
 use Exception;
 use Str;
@@ -56,29 +56,19 @@ class CreatePanoptesTranscriptionService
     protected CreateTranscriptionLocationService $createTranscriptionLocationService;
 
     /**
-     * @var array
-     */
-    protected array $csvError = [];
-
-    /**
-     * @var null
-     */
-    public $csvFile = null;
-
-    /**
-     * @var \App\Services\Csv\Csv
-     */
-    protected Csv $csv;
-
-    /**
-     * @var array
-     */
-    protected array $reserved;
-
-    /**
      * @var \App\Services\Process\CreateReportService
      */
     private CreateReportService $createReportService;
+
+    /**
+     * @var \App\Services\Process\AwsS3CsvService
+     */
+    private AwsS3CsvService $awsS3CsvService;
+
+    /**
+     * @var array
+     */
+    protected array $csvError = [];
 
     /**
      * CreatePanoptesTranscriptionService constructor.
@@ -88,20 +78,20 @@ class CreatePanoptesTranscriptionService
      * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      * @param \App\Services\Transcriptions\CreateTranscriptionLocationService $createTranscriptionLocationService
      * @param \App\Services\Process\CreateReportService $createReportService
-     * @param \App\Services\Csv\Csv $csv
+     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         SubjectRepository $subjectRepo,
         PanoptesTranscriptionRepository $panoptesTranscriptionRepo,
         CreateTranscriptionLocationService $createTranscriptionLocationService,
         CreateReportService $createReportService,
-        Csv $csv
+        AwsS3CsvService $awsS3CsvService
     ) {
         $this->subjectRepo = $subjectRepo;
         $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
         $this->createTranscriptionLocationService = $createTranscriptionLocationService;
-        $this->csv = $csv;
         $this->createReportService = $createReportService;
+        $this->awsS3CsvService = $awsS3CsvService;
     }
 
     /**
@@ -113,14 +103,15 @@ class CreatePanoptesTranscriptionService
     public function process($file, $expeditionId)
     {
         try {
-            $this->csv->readerCreateFromPath($file);
-            $this->csv->setDelimiter();
-            $this->csv->setEnclosure();
-            $this->csv->setEscape('"');
-            $this->csv->setHeaderOffset();
+            $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $file, 'r');
+            $this->awsS3CsvService->createCsvReaderFromStream();
+            $this->awsS3CsvService->csv->setDelimiter();
+            $this->awsS3CsvService->csv->setEnclosure();
+            $this->awsS3CsvService->csv->setEscape('"');
+            $this->awsS3CsvService->csv->setHeaderOffset();
 
-            $header = $this->prepareHeader($this->csv->getHeader());
-            $rows = $this->csv->getRecords($header);
+            $header = $this->prepareHeader($this->awsS3CsvService->csv->getHeader());
+            $rows = $this->awsS3CsvService->csv->getRecords($header);
             foreach ($rows as $offset => $row) {
                 $this->processRow($header, $row, $expeditionId);
             }

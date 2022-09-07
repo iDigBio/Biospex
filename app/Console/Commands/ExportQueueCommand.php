@@ -19,11 +19,14 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Expedition;
+use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\ExportQueueRepository;
-use App\Services\Download\DownloadType;
+use App\Services\Actor\ActorFactory;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class ExportQueueCommand
@@ -49,11 +52,6 @@ class ExportQueueCommand extends Command
     protected $description = 'Fire export queue process. Expedition Id resets the Expedition.';
 
     /**
-     * @var \App\Services\Download\DownloadType
-     */
-    private DownloadType $downloadType;
-
-    /**
      * @var \App\Repositories\ExpeditionRepository
      */
     private ExpeditionRepository $expeditionRepository;
@@ -64,21 +62,26 @@ class ExportQueueCommand extends Command
     private ExportQueueRepository $exportQueueRepository;
 
     /**
+     * @var \App\Repositories\DownloadRepository
+     */
+    private DownloadRepository $downloadRepository;
+
+    /**
      * ExportQueueCommand constructor.
      *
-     * @param \App\Services\Download\DownloadType $downloadType
      * @param \App\Repositories\ExpeditionRepository $expeditionRepository
      * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
+     * @param \App\Repositories\DownloadRepository $downloadRepository
      */
     public function __construct(
-        DownloadType $downloadType,
         ExpeditionRepository $expeditionRepository,
-        ExportQueueRepository $exportQueueRepository
+        ExportQueueRepository $exportQueueRepository,
+        DownloadRepository $downloadRepository
     ) {
         parent::__construct();
-        $this->downloadType = $downloadType;
         $this->expeditionRepository = $expeditionRepository;
         $this->exportQueueRepository = $exportQueueRepository;
+        $this->downloadRepository = $downloadRepository;
     }
 
     /**
@@ -114,6 +117,42 @@ class ExportQueueCommand extends Command
         $exportQueue = $this->exportQueueRepository->findBy('expedition_id', $expeditionId);
         if (!is_null($exportQueue)) $exportQueue->delete();
 
-        $this->downloadType->resetExpeditionData($expedition);
+        $this->resetExpeditionData($expedition);
+    }
+
+    /**
+     * Reset data for expedition when regenerating export.
+     *
+     * @param \App\Models\Expedition $expedition
+     */
+    public function resetExpeditionData(Expedition $expedition)
+    {
+        $this->deleteExportFiles($expedition->id);
+
+        $attributes = [
+            'state' => 0,
+            'total' => $expedition->stat->local_subject_count,
+        ];
+
+        $expedition->nfnActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+
+        ActorFactory::create($expedition->nfnActor->class)->actor($expedition->nfnActor);
+    }
+
+    /**
+     * Delete existing exports files for expedition.
+     *
+     * @param string $expeditionId
+     */
+    public function deleteExportFiles(string $expeditionId)
+    {
+        $downloads = $this->downloadRepository->getExportFiles($expeditionId);
+
+        $downloads->each(function ($download) {
+            if (Storage::disk('s3')->exists(config('config.export_dir').'/'.$download->file)) {
+                Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
+            }
+            $download->delete();
+        });
     }
 }

@@ -114,7 +114,7 @@ class ZooniverseBuildCsv implements QueueInterface
         $csvFilePath = $this->workingDir.'/'.$exportQueue->expedition->uuid.'.csv';
         $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();
-        $this->awsS3CsvService->addEncodingFormatter();
+        $this->awsS3CsvService->csv->addEncodingFormatter();
 
         $first = true;
 
@@ -135,8 +135,6 @@ class ZooniverseBuildCsv implements QueueInterface
             $exportQueue->processed = $exportQueue->processed + $chunk->count();
             $exportQueue->save();
         });
-
-        $this->awsS3CsvService->closeBucketStream();
 
         $this->updateRejected($this->rejected);
 
@@ -162,10 +160,10 @@ class ZooniverseBuildCsv implements QueueInterface
     private function buildCsv(Collection $data, bool $first = false)
     {
         if ($first) {
-            $this->awsS3CsvService->insertOne(array_keys($data->first()));
+            $this->awsS3CsvService->csv->insertOne(array_keys($data->first()));
         }
 
-        $this->awsS3CsvService->insertAll($data->toArray());
+        $this->awsS3CsvService->csv->insertAll($data->toArray());
     }
 
     /**
@@ -180,11 +178,9 @@ class ZooniverseBuildCsv implements QueueInterface
         $csvFilePath = $this->workingDir.'/'.$exportQueue->expedition->uuid.'.csv';
         $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'r');
         $this->awsS3CsvService->createCsvReaderFromStream();
-        $csvCount = $this->awsS3CsvService->getReaderCount();
+        $csvCount = $this->awsS3CsvService->csv->getReaderCount();
 
-        $dirFileCount = $this->awsS3CsvService->getFileCount(config('filesystems.disks.s3.bucket'), $this->workingDir);
-
-        $this->awsS3CsvService->closeBucketStream();
+        $dirFileCount = $this->awsS3CsvService->awsS3ApiService->getFileCount(config('filesystems.disks.s3.bucket'), $this->workingDir);
 
         return $csvCount === $dirFileCount;
     }

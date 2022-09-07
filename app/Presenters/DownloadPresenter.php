@@ -53,6 +53,38 @@ class DownloadPresenter extends Presenter
      */
     public function exportDownload(): string
     {
-        return Storage::disk('s3')->temporaryUrl(config('config.aws_s3_export_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
+        return Storage::disk('s3')->temporaryUrl(config('config.export_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
+    }
+
+    /**
+     * Return report file url.
+     *
+     * @return string
+     */
+    public function reportDownload(): string
+    {
+        return Storage::disk('s3')->temporaryUrl(config('config.report_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
+    }
+
+    /**
+     * Return csv file url.
+     *
+     * @return string
+     */
+    public function otherDownload(): string
+    {
+        $filename = "{$this->model->type}-{$this->model->file}";
+        return Storage::disk('s3')->temporaryUrl(config('config.zooniverse_dir.'.$this->model->type).'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename='.$filename]);
+    }
+
+
+    /**
+     * Return summary file url.
+     *
+     * @return string
+     */
+    public function summaryHtml(): string
+    {
+        return Storage::disk('s3')->temporaryUrl(config('config.zooniverse_dir.summary').'/'.$this->model->file, now()->addMinutes(30));
     }
 }

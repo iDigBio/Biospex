@@ -36,20 +36,20 @@
                                     @if ($download->type != 'export')
                                         @can('isOwner', $expedition->project->group)
                                             @if ($download->type === 'report')
-                                                <a href="{{ route('admin.downloads.report', ['file' => base64_encode($download->file)]) }}"
+                                                <a href="{{ $download->present()->report_download }}"
                                                    data-hover="tooltip"
                                                    data-placement="left"
                                                    target="_blank"
                                                    title="{{ t('Download') }} {{ $download->type }}">
                                                     <i class="fas fa-file-download fa-2x pl-2 ml-2"></i></a>
                                             @else
-                                                <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                                <a href="{{ $download->present()->other_download }}"
                                                    data-hover="tooltip"
                                                    data-placement="left"
                                                    title="{{ t('Download') }} {{ $download->present()->file_type }}">
                                                     <i class="fas fa-file-download fa-2x"></i></a>
                                                 @if ($download->type === 'summary')
-                                                    <a href="{{ route('admin.downloads.summary', [$expedition->project->id, $expedition->id]) }}"
+                                                    <a href="{{ $download->present()->summary_html }}"
                                                        data-hover="tooltip" target="_blank"
                                                        data-placement="left"
                                                        title="{{ t('View') }} {{ $download->type }}">

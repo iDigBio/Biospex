@@ -20,6 +20,7 @@
 namespace App\Services\Csv;
 
 use App\Repositories\ExpeditionRepository;
+use App\Services\Api\AwsS3ApiService;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
@@ -44,16 +45,26 @@ class ZooniverseCsvService
     private PanoptesApiService $panoptesApiService;
 
     /**
+     * @var \App\Services\Api\AwsS3ApiService
+     */
+    private AwsS3ApiService $awsS3ApiService;
+
+    /**
      * ZooniverseCsvService constructor.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
+     * @param \App\Services\Api\AwsS3ApiService $awsS3ApiService
      */
-    public function __construct(ExpeditionRepository $expeditionRepo, PanoptesApiService $panoptesApiService)
+    public function __construct(
+        ExpeditionRepository $expeditionRepo,
+        PanoptesApiService $panoptesApiService,
+        AwsS3ApiService $awsS3ApiService
+    )
     {
-
         $this->expeditionRepo = $expeditionRepo;
         $this->panoptesApiService = $panoptesApiService;
+        $this->awsS3ApiService = $awsS3ApiService;
     }
 
     /**
@@ -119,10 +130,11 @@ class ZooniverseCsvService
      */
     public function downloadCsv(int $expeditionId, string $uri)
     {
+        $filePath = config('config.zooniverse_dir.classification') . '/' . $expeditionId . '.csv';
+        $stream = $this->awsS3ApiService->createS3BucketStream(config('filesystems.disks.s3.bucket'), $filePath, 'w', false);
         $opts = [
-            'sink' => Storage::path(config('config.aws_s3_nfn_downloads.classification') . '/' . $expeditionId . '.csv')
+            'sink' => $stream
         ];
-
         $this->panoptesApiService->setHttpProvider();
         $this->panoptesApiService->getHttpClient()->request('GET', $uri, $opts);
     }

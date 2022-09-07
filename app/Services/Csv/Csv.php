@@ -210,4 +210,14 @@ class Csv
             ->inputEncoding('utf-8')
             ->outputEncoding('utf-8');
     }
+
+    /**
+     * Add formatter.
+     *
+     * @return void
+     */
+    public function addEncodingFormatter()
+    {
+        $this->writer->addFormatter($this->setEncoding());
+    }
 }
