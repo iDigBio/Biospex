@@ -111,10 +111,15 @@ class DwcFileImportJob implements ShouldQueue
         } catch (Exception $e) {
             $this->import->error = 1;
             $this->import->save();
-            File::cleanDirectory($scratchFileDir);
-            File::deleteDirectory($scratchFileDir);
+            //File::cleanDirectory($scratchFileDir);
+            //File::deleteDirectory($scratchFileDir);
 
-            Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $e->getMessage() . $e->getFile() . $e->getLine()));
+            $message = [
+                'File: ' . $e->getFile(),
+                'Line: ' . $e->getLine(),
+                'Message: ' . $e->getMessage()
+            ];
+            Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $message));
 
             $this->delete();
         }

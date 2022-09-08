@@ -58,9 +58,9 @@ class DarwinCoreImportError extends Notification implements ShouldQueue
      *
      * @param string $title
      * @param int $identifier
-     * @param string $message
+     * @param array $message
      */
-    public function __construct(string $title, int $identifier, string $message)
+    public function __construct(string $title, int $identifier, array $message)
     {
         $this->title = $title;
         $this->identifier = $identifier;
@@ -86,10 +86,12 @@ class DarwinCoreImportError extends Notification implements ShouldQueue
      */
     public function toMail()
     {
+        $message = implode('<br>', $this->message);
+
         $attributes = [
             'title' => $this->title,
             'id' => $this->identifier,
-            'message' => $this->message
+            'message' => $message
         ];
 
         return (new MailMessage)

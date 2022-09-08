@@ -119,7 +119,13 @@ class DwcUriImportJob implements ShouldQueue
         {
             $project = $projectRepo->findWith($this->data['id'], ['group.owner']);
 
-            $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
+            $message = [
+                'File: ' . $e->getFile(),
+                'Line: ' . $e->getLine(),
+                'Message: ' . $e->getMessage()
+            ];
+
+            $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $message));
         }
     }
 
