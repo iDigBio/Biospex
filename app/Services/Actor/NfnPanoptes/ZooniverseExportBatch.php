@@ -112,15 +112,30 @@ class ZooniverseExportBatch
     {
         if ($this->checkEfsExportFileExists()) {
 
-            exec("unzip {$this->fullEfsBatchDir}/{$this->existingExportFile} -d {$this->fullBatchWorkingDir}", $output, $retvalue);
+            $cmd = $this->setCommand();
+            exec($cmd, $output, $retvalue);
+
             if ($retvalue !== 0) {
-                throw new Exception("Could not unzip {$this->fullEfsBatchDir}/{$this->existingExportFile}");
+                throw new Exception("Could not decompress {$this->fullEfsBatchDir}/{$this->existingExportFile}");
             }
 
             return;
         }
 
         throw new Exception(t('The archive file does not exist.'));
+    }
+
+    /**
+     * Set command based on extension type.
+     *
+     * @return string
+     */
+    private function setCommand(): string
+    {
+        return $this->fileExtension === '.zip' ?
+            "unzip {$this->fullEfsBatchDir}/{$this->existingExportFile} -d {$this->fullBatchWorkingDir}" :
+            "tar -xf {$this->fullEfsBatchDir}/{$this->existingExportFile} -C {$this->fullBatchWorkingDir}";
+
     }
 
     /**

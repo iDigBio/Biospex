@@ -49,16 +49,28 @@ trait ActorBatchDirectory
      */
     public string $folderName;
 
+    public string $fileExtension;
+
     public string $efsBatchDir;
+
     public string $fullEfsBatchDir;
+
     public string $batchWorkingDir;
+
     public string $fullBatchWorkingDir;
+
     public string $exportDir;
+
     public string $bucketBatchDir;
+
     public string $existingExportFile;
+
     public string $existingBucketExportFile;
+
     public string $batchTmpDir;
+
     public string $bucketPath;
+
     public string $fullBatchTmpDir;
 
     /**
@@ -76,14 +88,31 @@ trait ActorBatchDirectory
 
     /**
      * Set folder name using already created download file name.
-     * Backwards compatible for tar.gz.
+     * Backwards compatible for tar.gz. TODO can eventually remove when tar.gz not used.
      *
      * @param string $fileName
      */
     public function setBatchFolderName(string $fileName)
     {
-        $filePath = Storage::disk('s3')->path(config('config.export_dir') . '/' . $fileName);
-        $this->folderName = \File::name($filePath);
+        $this->folderName = $this->stripExtension($fileName);
+    }
+
+    /**
+     * Strip file extension and return name.
+     * Backwards compatible with .tar.gz files.
+     *
+     * @param string $fileName
+     * @return array|string
+     */
+    public function stripExtension(string $fileName): array|string
+    {
+        if (str_ends_with($fileName, '.tar.gz')) {
+            $this->fileExtension = '.tar.gz';
+            return str_replace('.tar.gz', '', $fileName);
+        }
+
+        $this->fileExtension = '.zip';
+        return \File::name($fileName);
     }
 
     /**
@@ -108,7 +137,7 @@ trait ActorBatchDirectory
      */
     private function setBucketPath()
     {
-        $this->bucketPath = 's3://' . config('filesystems.disks.s3.bucket');
+        $this->bucketPath = 's3://'.config('filesystems.disks.s3.bucket');
     }
 
     /**
@@ -149,7 +178,7 @@ trait ActorBatchDirectory
      */
     public function setExportBatchDirectory()
     {
-        $this->bucketBatchDir = $this->bucketPath . '/' . config('config.batch_dir');
+        $this->bucketBatchDir = $this->bucketPath.'/'.config('config.batch_dir');
     }
 
     /**
@@ -157,8 +186,8 @@ trait ActorBatchDirectory
      */
     protected function setExistingExportFileAndPath()
     {
-        $this->existingExportFile = $this->folderName.'.zip';
-        $this->existingBucketExportFile = $this->bucketPath . '/' . $this->exportDir.'/'.$this->existingExportFile;
+        $this->existingExportFile = $this->folderName.$this->fileExtension;
+        $this->existingBucketExportFile = $this->bucketPath.'/'.$this->exportDir.'/'.$this->existingExportFile;
     }
 
     /**
@@ -169,7 +198,7 @@ trait ActorBatchDirectory
      */
     private function setBatchTmpDirectory(string $dir)
     {
-        $this->batchTmpDir = $this->batchWorkingDir . '/' . $dir;
+        $this->batchTmpDir = $this->batchWorkingDir.'/'.$dir;
         Storage::disk('efs')->makeDirectory($this->batchTmpDir);
         $this->fullBatchTmpDir = Storage::disk('efs')->path($this->batchTmpDir);
     }
@@ -181,7 +210,7 @@ trait ActorBatchDirectory
      */
     public function checkS3ExportFileExists(): bool
     {
-        return Storage::disk('s3')->exists($this->exportDir . '/' . $this->existingExportFile);
+        return Storage::disk('s3')->exists($this->exportDir.'/'.$this->existingExportFile);
     }
 
     /**
@@ -191,6 +220,6 @@ trait ActorBatchDirectory
      */
     public function checkEfsExportFileExists(): bool
     {
-        return Storage::disk('efs')->exists($this->efsBatchDir . '/' . $this->existingExportFile);
+        return Storage::disk('efs')->exists($this->efsBatchDir.'/'.$this->existingExportFile);
     }
 }
