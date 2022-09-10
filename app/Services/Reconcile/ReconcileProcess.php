@@ -103,11 +103,6 @@ class ReconcileProcess
     private string $command;
 
     /**
-     * @var string
-     */
-    private string $bucket;
-
-    /**
      * ReconcileProcess constructor.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
@@ -118,8 +113,6 @@ class ReconcileProcess
     {
         $this->expeditionRepo = $expeditionRepo;
         $this->downloadRepo = $downloadRepo;
-
-        $this->bucket = config('filesystems.disks.s3.bucket');
         $this->csv = $csv;
     }
 
@@ -162,12 +155,14 @@ class ReconcileProcess
                 ]));
             }
 
-            $this->uploadFileToS3('classification', $this->csvFullPath, $expedition->id . 'csv');
-            $this->uploadFileToS3('reconcile', $this->recFullPath, $expedition->id . 'csv');
-            $this->uploadFileToS3('transcript', $this->tranFullPath, $expedition->id . 'csv');
-            $this->uploadFileToS3('summary', $this->sumFullPath, $expedition->id . 'csv');
+            $this->uploadFileToS3('classification', $this->csvFullPath, $expedition->id);
+            $this->uploadFileToS3('reconcile', $this->recFullPath, $expedition->id);
+            $this->uploadFileToS3('transcript', $this->tranFullPath, $expedition->id);
+            $this->uploadFileToS3('summary', $this->sumFullPath, $expedition->id);
 
             $this->updateOrCreateDownloads($expeditionId);
+
+            $this->cleanDirs();
 
         } catch (Exception $e) {
             $user = User::find(1);
@@ -208,7 +203,9 @@ class ReconcileProcess
             ]));
         }
 
-        $this->uploadFileToS3('explained', $this->expFullPath, $expedition->id . 'csv');
+        $this->uploadFileToS3('explained', $this->expFullPath, $expedition->id);
+
+        $this->cleanDirs();
     }
 
     /**
@@ -338,8 +335,23 @@ class ReconcileProcess
      */
     protected function uploadFileToS3(string $dir, string $efsFullPath, string $fileName)
     {
-        $s3Dir = $this->bucket . '/' . config('config.zooniverse_dir.' . $dir);
-        Storage::disk('s3')->putFileAs($s3Dir, $efsFullPath, $fileName);
-        File::delete($efsFullPath);
+        $s3Dir = config('config.zooniverse_dir.' . $dir);
+        Storage::disk('s3')->putFileAs($s3Dir, $efsFullPath, $fileName.'.csv');;
+    }
+
+    /**
+     * Clean all directories.
+     *
+     * @return void
+     */
+    protected function cleanDirs()
+    {
+
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.classification')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconcile')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconciled')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.transcript')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.summary')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.explained')));
     }
 }
