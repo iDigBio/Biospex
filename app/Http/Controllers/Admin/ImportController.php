@@ -74,9 +74,9 @@ class ImportController extends Controller
 
             return redirect()->back();
         }
-        catch(Exception $e)
+        catch(\Throwable $t)
         {
-            Flash::error(t('Error uploading file'));
+            Flash::error(t('Error uploading file. %', $t->getMessage()));
 
             return redirect()->back();
         }
