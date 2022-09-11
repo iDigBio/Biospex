@@ -211,10 +211,11 @@ class MongoDbService
      *
      * @param array $attributes
      * @param array $criteria
+     * @return \MongoDB\UpdateResult
      */
-    public function updateMany(array $attributes, array $criteria)
+    public function updateMany(array $attributes, array $criteria): \MongoDB\UpdateResult
     {
-        $this->clientCollection->updateMany($criteria, $attributes);
+        return $this->clientCollection->updateMany($criteria, $attributes);
     }
 
     /**

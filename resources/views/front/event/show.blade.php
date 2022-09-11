@@ -28,7 +28,7 @@
         </div>
         <div class="row">
             <p class="text-justify col-6 mx-auto mt-4"><b>{{ t('Important') }}: </b>
-                {{ t('Transcriptions will only count during the scheduled Event times. Please be sure to log in to Zooniverse when digitizing or your digitization will not count. To participate on a Team, please contact the Event sponsor.') }}
+                {{ t('Transcriptions will only count during the scheduled Event times. Please be sure to log in to NfnPanoptes when digitizing or your digitization will not count. To participate on a Team, please contact the Event sponsor.') }}
             </p>
         </div>
     @endif

@@ -26,7 +26,6 @@ use App\Services\MongoDbService;
 use Carbon\Carbon;
 use Exception;
 use ForceUTF8\Encoding;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Factory as Validation;
 use Illuminate\Validation\Rule;
 use MongoDB\BSON\ObjectId;
@@ -41,64 +40,64 @@ class DarwinCoreCsvImport
     /**
      * @var \App\Repositories\PropertyRepository
      */
-    public $propertyRepo;
+    public PropertyRepository $propertyRepo;
 
     /**
      * @var \App\Repositories\SubjectRepository
      */
-    public $subjectRepo;
+    public SubjectRepository $subjectRepo;
 
     /**
      * @var \App\Repositories\HeaderRepository
      */
-    public $headerRepo;
+    public HeaderRepository $headerRepo;
 
     /**
      * Array for meta file fields: core and extension
      *
      * @var array
      */
-    public $metaFields;
+    public array $metaFields;
 
     /**
      * Whether media is core or extension in meta file
      *
      * @var bool
      */
-    public $mediaIsCore;
+    public bool $mediaIsCore;
 
     /**
      * Type: core or extension
      *
      * @var string
      */
-    public $type;
+    public string $type;
 
     /**
      * Id of project
      *
-     * @var bool
+     * @var int
      */
-    public $projectId;
+    public int $projectId;
 
     /**
      * Rejected multimedia array
      *
      * @var array
      */
-    public $rejectedMultimedia = [];
+    public array $rejectedMultimedia = [];
 
     /**
      * Duplicate images array
      *
      * @var array
      */
-    public $duplicateArray = [];
+    public array $duplicateArray = [];
 
     /**
      * @var Validation
      */
-    public $factory;
+    public Validation $factory;
 
     /**
      * @var array
@@ -224,7 +223,7 @@ class DarwinCoreCsvImport
      * @return array
      * @throws \Exception
      */
-    public function processCsvHeader($header, $type)
+    public function processCsvHeader($header, $type): array
     {
         $filtered = $this->filterByMetaFileIndex($header, $type);
         $headerBuild = $this->buildHeaderUsingShortNames($filtered, $type);
@@ -269,11 +268,11 @@ class DarwinCoreCsvImport
      * @return array
      * @throws \Exception
      */
-    public function buildHeaderUsingShortNames($row, $type)
+    public function buildHeaderUsingShortNames($row, $type): array
     {
         $header = [];
         foreach ($this->metaFields[$type] as $key => $qualified) {
-            $header = $this->createShortNameForHeader($row, $key, $qualified, $header);
+            $this->createShortNameForHeader($row, $key, $qualified, $header);
         }
 
         return $header;
@@ -286,19 +285,16 @@ class DarwinCoreCsvImport
      * @param $key
      * @param $qualified
      * @param $header
-     * @return mixed
      * @throws \Exception
      */
-    public function createShortNameForHeader($row, $key, $qualified, $header)
+    public function createShortNameForHeader($row, $key, $qualified, &$header)
     {
         if (! isset($row[$key])) {
             throw new Exception(t('Undefined index for :key => :qualified when building header for csv import.', [':key' => $key, ':qualified' => $qualified]));
         }
 
-        $short = $this->checkProperty($qualified, $row[$key]);
+        $short = $this->checkProperty($qualified, $row[$key], $header);
         $header[$key] = $short;
-
-        return $header;
     }
 
     /**
@@ -306,63 +302,50 @@ class DarwinCoreCsvImport
      *
      * @param $qualified
      * @param $ns_short
+     * @param $header
      * @return string
      */
-    public function checkProperty($qualified, $ns_short)
+    public function checkProperty($qualified, $ns_short, &$header): string
     {
         if ($qualified === 'id' || $qualified === 'coreid') {
             return $qualified;
         }
 
-        [$namespace, $short] = $this->splitNameSpaceShort($ns_short);
+        $short = $this->splitNameSpaceShort($ns_short);
+        if (in_array(trim($short), $header)) {
+            $short = $ns_short;
+        }
 
-        $short = $this->setShortNameForQualifiedName($qualified, $short, $namespace);
+        $this->setShortName($short);
 
-        return $short;
+        return trim($short);
     }
 
     /**
      * Splits given namespace into namespace and short name
      *
-     * @param $ns_short
-     * @return array
+     * @param string $ns_short
+     * @return string
      */
-    protected function splitNameSpaceShort($ns_short)
+    protected function splitNameSpaceShort(string $ns_short): string
     {
-        [$namespace, $short] = preg_match('/:/', $ns_short) ? explode(':', $ns_short) : ['', $ns_short];
+        [$namespace, $short] = str_contains($ns_short, ':') ? explode(':', $ns_short) : ['', $ns_short];
 
-        return [$namespace, $short];
+        return $short;
     }
 
     /**
-     * Sets the short name value for qualified names for easier use in headers. Also prevents duplicate short names
-     * with difference qualified names.
+     * Save short name property to database.
      *
-     * If $checkQualified, then short name exists and used.
-     * If $checkQualified is null and $checkShort exists, then create new short combined with random string.
-     * If neither exist, create new qualified and short name.
-     *
-     * @param $qualified
-     * @param $short
-     * @param $namespace
-     * @return string
+     * @param string $short
+     * @return void
      */
-    protected function setShortNameForQualifiedName($qualified, $short, $namespace)
+    protected function setShortName(string $short)
     {
-        $checkQualified = $this->propertyRepo->findBy('qualified', $qualified);
-
         $checkShort = $this->propertyRepo->findBy('short', $short);
-
-        if ($checkQualified !== null) {
-            $short = $checkQualified->short;
-        } elseif ($checkQualified === null && $checkShort !== null) {
-            $short .= md5(Str::random(4));
-            $this->saveProperty($qualified, $short, $namespace);
-        } elseif ($checkQualified === null && $checkShort === null) {
-            $this->saveProperty($qualified, $short, $namespace);
+        if ($checkShort === null) {
+            $this->propertyRepo->create(['short' => $short]);
         }
-
-        return $short;
     }
 
     /**
@@ -431,7 +414,7 @@ class DarwinCoreCsvImport
             ->filter(function ($identifier, $key) use ($row) {
                 if (isset($row[$this->header[$key]])
                     && ! empty($row[$this->header[$key]])
-                    && (strpos($row[$this->header[$key]], 'http') === false)) {
+                    && (! str_contains($row[$this->header[$key]], 'http'))) {
                     return true;
                 }
 

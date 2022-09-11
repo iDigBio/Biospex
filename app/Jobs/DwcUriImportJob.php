@@ -71,7 +71,7 @@ class DwcUriImportJob implements ShouldQueue
     public function __construct($data)
     {
         $this->data = $data;
-        $this->onQueue(config('config.import_tube'));
+        $this->onQueue(config('config.queues.import'));
     }
 
     /**
@@ -89,7 +89,7 @@ class DwcUriImportJob implements ShouldQueue
         try
         {
             $fileName = basename($this->data['url']);
-            $filePath = Storage::path(config('config.import_dir') . '/' . $fileName);
+            $filePath = Storage::path(config('config.aws_s3_import_dir') . '/' . $fileName);
 
             $file = file_get_contents(GeneralHelper::urlEncode($this->data['url']));
             if ($file === false)
@@ -102,7 +102,7 @@ class DwcUriImportJob implements ShouldQueue
                 throw new Exception(t('Wrong file type for zip download'));
             }
 
-            if (Storage::put($filePath, $file) === false)
+            if (Storage::put(config('config.aws_s3_import_dir') . '/' . $fileName, $file) === false)
             {
                 throw new Exception(t('An error occurred while attempting to save file: %s', $filePath));
             }
@@ -119,7 +119,13 @@ class DwcUriImportJob implements ShouldQueue
         {
             $project = $projectRepo->findWith($this->data['id'], ['group.owner']);
 
-            $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
+            $message = [
+                'File: ' . $e->getFile(),
+                'Line: ' . $e->getLine(),
+                'Message: ' . $e->getMessage()
+            ];
+
+            $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $message));
         }
     }
 

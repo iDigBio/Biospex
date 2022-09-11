@@ -23,8 +23,7 @@ use App\Models\Import;
 use App\Notifications\DarwinCoreImportError;
 use App\Notifications\ImportComplete;
 use App\Repositories\ProjectRepository;
-use App\Services\Csv\Csv;
-use App\Services\File\FileService;
+use App\Services\Process\CreateReportService;
 use App\Services\Process\DarwinCore;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -32,6 +31,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Notification;
 
@@ -49,12 +49,12 @@ class DwcFileImportJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 1800;
+    public int $timeout = 1800;
 
     /**
      * @var Import
      */
-    public $import;
+    public Import $import;
 
     /**
      * Create a new job instance.
@@ -64,39 +64,37 @@ class DwcFileImportJob implements ShouldQueue
     public function __construct(Import $import)
     {
         $this->import = $import;
-        $this->onQueue(config('config.import_tube'));
+        $this->onQueue(config('config.queues.import'));
     }
 
     /**
      * @param \App\Repositories\ProjectRepository $projectRepo
      * @param \App\Services\Process\DarwinCore $dwcProcess
-     * @param \App\Services\File\FileService $fileService
-     * @param \App\Services\Csv\Csv $csv
+     * @param \App\Services\Process\CreateReportService $createReportService
      */
     public function handle(
         ProjectRepository $projectRepo,
         DarwinCore $dwcProcess,
-        FileService $fileService,
-        Csv $csv
+        CreateReportService $createReportService
     ) {
-        $scratchFileDir = Storage::path(config('config.scratch_dir').'/'.md5($this->import->file));
+        $scratchFileDir = Storage::disk('efs')->path(config('config.scratch_dir').'/'.md5($this->import->file));
+        $importFilePath = Storage::disk('efs')->path($this->import->file);
 
         $project = $projectRepo->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
 
         try {
-            $fileService->makeDirectory($scratchFileDir);
-            $importFilePath = Storage::path($this->import->file);
+            $this->makeDirectory($scratchFileDir);
 
-            $fileService->unzip($importFilePath, $scratchFileDir);
+            $this->unzip($importFilePath, $scratchFileDir);
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
             $dupsCsvName = md5($this->import->id).'dup.csv';
-            $dupName = $csv->createReportCsv($dwcProcess->getDuplicates(), $dupsCsvName);
+            $dupName = $createReportService->createCsvReport($dupsCsvName, $dwcProcess->getDuplicates());
 
             $rejCsvName = md5($this->import->id).'rej.csv';
-            $rejName = $csv->createReportCsv($dwcProcess->getRejectedMedia(), $rejCsvName);
+            $rejName = $createReportService->createCsvReport($rejCsvName, $dwcProcess->getRejectedMedia());
 
             Notification::send($users, new ImportComplete($project->title, $dupName, $rejName));
 
@@ -104,20 +102,54 @@ class DwcFileImportJob implements ShouldQueue
                 OcrCreateJob::dispatch($project->id);
             }
 
-            $fileService->filesystem->cleanDirectory($scratchFileDir);
-            $fileService->filesystem->deleteDirectory($scratchFileDir);
-            $fileService->filesystem->delete($importFilePath);
+            File::cleanDirectory($scratchFileDir);
+            File::deleteDirectory($scratchFileDir);
+            File::delete($importFilePath);
             $this->import->delete();
             $this->delete();
+
         } catch (Exception $e) {
             $this->import->error = 1;
             $this->import->save();
-            $fileService->filesystem->cleanDirectory($scratchFileDir);
-            $fileService->filesystem->deleteDirectory($scratchFileDir);
+            //File::cleanDirectory($scratchFileDir);
+            //File::deleteDirectory($scratchFileDir);
 
-            Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
+            $message = [
+                'File: ' . $e->getFile(),
+                'Line: ' . $e->getLine(),
+                'Message: ' . $e->getMessage()
+            ];
+            Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $message));
 
             $this->delete();
         }
+    }
+
+    /**
+     * @param $dir
+     * @throws \Exception
+     */
+    private function makeDirectory($dir)
+    {
+        if ( ! File::isDirectory($dir) && ! File::makeDirectory($dir, 0775, true))
+        {
+            throw new Exception(t('Unable to create directory: :directory', [':directory' => $dir]));
+        }
+
+        if ( ! File::isWritable($dir) && ! chmod($dir, 0775))
+        {
+            throw new Exception(t('Unable to make directory writable: %s', $dir));
+        }
+    }
+
+    /**
+     * Unzip file in directory.
+     *
+     * @param $zipFile
+     * @param $dir
+     */
+    private function unzip($zipFile, $dir)
+    {
+        shell_exec("unzip $zipFile -d $dir");
     }
 }

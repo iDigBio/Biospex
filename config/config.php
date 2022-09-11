@@ -23,31 +23,44 @@ return [
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
 
-    'charts_dir'                   => 'public/charts',
-    'scratch_dir'                  => 'scratch',
-    'export_dir'                   => 'exports',
-    'reports_dir'                  => 'reports',
-    'import_dir'                   => 'subjects',
-    'nfn_downloads_dir'            => env('NFN_DOWNLOADS_DIR', 'nfndownloads'),
-    'nfn_downloads_classification' => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/classification',
-    'nfn_downloads_reconcile'      => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/reconcile',
-    'nfn_downloads_reconciled'     => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/reconciled',
-    'nfn_downloads_summary'        => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/summary',
-    'nfn_downloads_transcript'     => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/transcript',
-    'nfn_downloads_explained'      => env('NFN_DOWNLOADS_DIR', 'nfndownloads').'/explained',
-    'nfn_file_types'               => [
+    'aws_access_key'             => env('AWS_ACCESS_KEY'),
+    'aws_secret_key'             => env('AWS_SECRET_ACCESS_KEY'),
+    'aws_default_region'         => env('AWS_DEFAULT_REGION'),
+    'aws_lambda_export_img_url'  => env('AWS_LAMBDA_EXPORT_IMG_URL'),
+    'aws_lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION'),
+    'aws_lambda_count'           => env('AWS_LAMBDA_COUNT'),
+    'aws_lambda_delay'           => env('AWS_LAMBDA_DELAY'),
+
+    'batch_dir'   => env('BATCH_DIR', 'batch'),
+    'export_dir'  => env('EXPORT_DIR', 'export'),
+    'import_dir'  => env('IMPORT_DIR', 'import'),
+    'report_dir'  => env('REPORT_DIR', 'report'),
+    'scratch_dir' => env('SCRATCH_DIR', 'scratch'),
+    'zooniverse_dir'     => [
+        'dir'            => env('ZOONIVERSE_DIR', 'zooniverse'),
+        'classification' => env('ZOONIVERSE_DIR', 'zooniverse').'/classification',
+        'reconcile'      => env('ZOONIVERSE_DIR', 'zooniverse').'/reconcile',
+        'reconciled'     => env('ZOONIVERSE_DIR', 'zooniverse').'/reconciled',
+        'summary'        => env('ZOONIVERSE_DIR', 'zooniverse').'/summary',
+        'transcript'     => env('ZOONIVERSE_DIR', 'zooniverse').'/transcript',
+        'explained'      => env('ZOONIVERSE_DIR', 'zooniverse').'/explained',
+    ],
+
+    'nfn_file_types'              => [
         'classification',
         'transcript',
         'reconcile',
         'summary',
         'reconciled_with_expert_opinion',
     ],
-    'nfn_reconcile_problem_regex'  => env('NFN_RECONCILE_PROBLEM_REGEX'),
+    'nfn_reconcile_problem_regex' => env('NFN_RECONCILE_PROBLEM_REGEX'),
 
     'missing_project_logo'    => env('APP_URL').'/images/placeholders/project.png',
     'missing_expedition_logo' => env('APP_URL').'/images/placeholders/card-image-place-holder02.jpg',
     'missing_avatar_small'    => env('APP_URL').'/images/avatars/small/missing.png',
     'missing_avatar_medium'   => env('APP_URL').'/images/avatars/medium/missing.png',
+
+    'image_process_file' => base_path(env('IMAGE_PROCESS_FILE')),
 
     'python_path'    => env('RECONCILIATIONS_PATH').'/venv/bin/python',
     'reconcile_path' => env('RECONCILIATIONS_PATH').'/reconcile.py',
@@ -69,13 +82,14 @@ return [
     ],
 
     'export_stages'       => [
-        'Build Queue', // 0
-        'Retrieve Images', // 1
-        'Convert Images', // 2
-        'Build CSV', // 3
-        'Compress Export File', // 4
-        'Send Report', // 5
-        'Delete Working Files', // 6
+        'Building File Queue', // 0
+        'Building Image Requests', // 1
+        'Processing Image Requests', // 2
+        'Checking Image Process', // 3
+        'Building CSV', // 4
+        'Compressing Export File', // 5
+        'Creating Report', // 6
+        'Deleting Working Files', // 7
     ],
 
     /**
@@ -106,16 +120,10 @@ return [
         ],
     ],
 
-    'nfnMisMatched' => [
-        'subject_Subject_ID'       => 'subject_subjectId',
-        'subject_Scientific_Name'  => 'subject_scientificName',
-        'subject_Expedition_Title' => 'subject_expeditionTitle',
-    ],
-
     'dwcTranscriptFields' => [
         'stateProvince'  => 'state_province',
         'StateProvince'  => 'state_province',
-        'State/Province'  => 'state_province',
+        'State/Province' => 'state_province',
         'State Province' => 'state_province',
         'State_Province' => 'state_province',
         'State'          => 'state_province',
@@ -132,30 +140,34 @@ return [
         'County'         => 'county',
     ],
 
-    /* Beanstalk Tubes */
+    /* Beanstalk Queues */
     'num_procs'             => env('NUM_PROCS'),
-    'chart_tube'            => env('QUEUE_CHART_TUBE'),
-    'classification_tube'   => env('QUEUE_CLASSIFICATION_TUBE'),
-    'default_tube'          => env('QUEUE_DEFAULT_TUBE'),
-    'event_tube'            => env('QUEUE_EVENT_TUBE'),
-    'import_tube'           => env('QUEUE_IMPORT_TUBE'),
-    'export_tube'           => env('QUEUE_EXPORT_TUBE'),
-    'reconcile_tube'        => env('QUEUE_RECONCILE_TUBE'),
-    'stat_tube'             => env('QUEUE_STAT_TUBE'),
-    'workflow_tube'         => env('QUEUE_WORKFLOW_TUBE'),
-    'ocr_tube'              => env('QUEUE_OCR_TUBE'),
-    'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
-    'pusher_process_tube'   => env('QUEUE_PUSHER_PROCESS_TUBE'),
-    'working_tube'          => env('QUEUE_WORKING_TUBE'),
+    'queues'                => [
+        'chart'                 => env('QUEUE_CHART'),
+        'classification'        => env('QUEUE_CLASSIFICATION'),
+        'default'               => env('QUEUE_DEFAULT'),
+        'event'                 => env('QUEUE_EVENT'),
+        'export'                => env('QUEUE_EXPORT'),
+        'import'                => env('QUEUE_IMPORT'),
+        'lambda'                => env('QUEUE_LAMBDA'),
+        'ocr'                   => env('QUEUE_OCR'),
+        'pusher_transcriptions' => env('QUEUE_PUSHER_TRANSCRIPTIONS'),
+        'pusher_process'        => env('QUEUE_PUSHER_PROCESS'),
+        'reconcile'             => env('QUEUE_RECONCILE'),
+        'sns_image'             => env('QUEUE_SNS_IMAGE'),
+        'workflow'              => env('QUEUE_WORKFLOW'),
+    ],
 
     /* Images */
-    /* Min and max logo and banner sizes used in Project model for Codesleve Stapler */
-    'thumbDefaultImg'       => 'thumbs/default_thumb.png',
-    'thumbOutputDir'        => 'thumbs',
-    'thumbWidth'            => 300,
-    'thumbHeight'           => 300,
+    /* Min and max logo and banner sizes used in Project model. Max Zoonviverse image. Thumb sizes. */
+    'thumb_default_img'     => 'thumbs/default_thumb.png',
+    'thumb_output_dir'      => 'thumbs',
+    'thumb_width'           => 300,
+    'thumb_height'          => 300,
     'logo'                  => '300x200',
     'banner'                => '1200x250',
+    'nfn_image_width'       => 1500,
+    'nfn_image_height'      => 1500,
 
     /**
      * Columns used in select statement for grid.
@@ -189,24 +201,24 @@ return [
     'nfn_project_url'           => env('NFN_PROJECT_URL'),
 
     'nfnCsvMap' => [
-        'subjectId'        => '_id',
-        'imageName'        => '_id',
-        'imageURL'         => 'accessURI',
-        'identifier'       => 'identifier',
-        'references'       => ['occurrence' => 'references'],
-        'scientificName'   => ['occurrence' => 'scientificName'],
-        'country'          => ['occurrence' => 'country'],
-        'stateProvince'    => ['occurrence' => 'stateProvince'],
-        'county'           => ['occurrence' => 'county'],
-        'eol'              => ['occurrence' => 'scientificName'],
-        'mol'              => ['occurrence' => 'scientificName'],
-        'idigbio'          => ['occurrence' => 'scientificName'],
-        '#institutionCode' => ['occurrence' => 'institutionCode'],
-        '#collectionCode'  => ['occurrence' => 'collectionCode'],
-        '#catalogNumber'   => ['occurrence' => 'catalogNumber'],
-        '#recordId'        => ['occurrence' => 'recordId'],
-        '#expeditionId'    => '',
-        '#expeditionTitle' => '',
+        'subjectId'           => '_id',
+        'imageName'           => '_id',
+        'references'          => ['occurrence' => 'references'],
+        'scientificName'      => ['occurrence' => 'scientificName'],
+        'country'             => ['occurrence' => 'country'],
+        'stateProvince'       => ['occurrence' => 'stateProvince'],
+        'county'              => ['occurrence' => 'county'],
+        'eol'                 => ['occurrence' => 'scientificName'],
+        'mol'                 => ['occurrence' => 'scientificName'],
+        'idigbio'             => ['occurrence' => 'scientificName'],
+        '#institutionCode'    => ['occurrence' => 'institutionCode'],
+        '#collectionCode'     => ['occurrence' => 'collectionCode'],
+        '#catalogNumber'      => ['occurrence' => 'catalogNumber'],
+        '#occurrenceRecordId' => ['occurrence' => ['recordID', 'recordId']],
+        '#occurrernceId'      => ['occurrence' => 'id'],
+        '#imageId'            => 'id',
+        '#expeditionId'       => '',
+        '#expeditionTitle'    => '',
     ],
 
     'panoptes' => [
@@ -274,29 +286,29 @@ return [
         'reviewed',
         'Country',
         'County',
-        'Location'
+        'Location',
     ],
 
     'mapped_transcription_fields' => [
-        'province' => [
+        'province'  => [
             'StateProvince',
             'State_Province',
             'State Province',
             'State/Province',
-            'subject_stateProvince'
+            'subject_stateProvince',
         ],
         'collector' => [
             'Collected By',
             'Collected_By',
             'CollectedBy',
             'Collected By (first collector only)',
-            'subject_collectedBy'
+            'subject_collectedBy',
         ],
-        'taxon' => [
+        'taxon'     => [
             'Scientific Name',
             'Scientific_Name',
             'ScientificName',
-            'subject_scientificName'
-        ]
-    ]
+            'subject_scientificName',
+        ],
+    ],
 ];

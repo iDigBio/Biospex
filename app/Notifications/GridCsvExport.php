@@ -60,7 +60,7 @@ class GridCsvExport extends Notification implements ShouldQueue
         $this->route = $route;
         $this->projectId = $projectId;
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**

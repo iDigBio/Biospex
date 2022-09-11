@@ -40,7 +40,7 @@ class ZooniverseReconcileCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Start reconcile process for Zooniverse classification.';
+    protected $description = 'Start reconcile process for NfnPanoptes classification.';
 
     /**
      * Create a new command instance.

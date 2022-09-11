@@ -57,17 +57,6 @@ class SubjectRepository extends BaseRepository
     }
 
     /**
-     * Get subjects by expedition id and return using lazycollection.
-     *
-     * @param $expeditionId
-     * @return \Illuminate\Support\LazyCollection
-     */
-    public function getAssignedByExpeditionId($expeditionId): LazyCollection
-    {
-        return $this->model->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])->timeout(86400)->cursor();
-    }
-
-    /**
      * Find by expedition id.
      *
      * @param $expeditionId
@@ -82,6 +71,17 @@ class SubjectRepository extends BaseRepository
         ) {
             return $this->model->where('expedition_ids', $expeditionId)->get($attributes);
         });
+    }
+
+    /**
+     * Get subjects by expedition id and return using lazycollection.
+     *
+     * @param $expeditionId
+     * @return \Illuminate\Support\LazyCollection
+     */
+    public function getAssignedByExpeditionId($expeditionId): LazyCollection
+    {
+        return $this->model->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])->timeout(86400)->cursor();
     }
 
     /**

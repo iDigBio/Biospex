@@ -65,7 +65,7 @@ class ZooniversePusherJob implements ShouldQueue
      */
     public function __construct(int $expeditionId, int $days = null)
     {
-        $this->onQueue(config('config.reconcile_tube'));
+        $this->onQueue(config('config.queues.reconcile'));
         $this->expeditionId = $expeditionId;
         $this->days = $days;
     }

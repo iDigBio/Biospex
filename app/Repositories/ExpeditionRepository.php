@@ -41,7 +41,7 @@ class ExpeditionRepository extends BaseRepository
     }
 
     /**
-     * Get expeditions for Zooniverse processing.
+     * Get expeditions for NfnPanoptes processing.
      *
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
@@ -172,21 +172,6 @@ class ExpeditionRepository extends BaseRepository
             ->has('panoptesProject')->whereHas('nfnActor', function ($query) {
                 $query->where('completed', 0);
             })->find($expeditionId);
-    }
-
-    /**
-     * Return expedition with group owner and users who will be notified.
-     *
-     * @param int $expeditionId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
-     */
-    public function findNotifyExpeditionUsers(int $expeditionId)
-    {
-        return $this->model->with(['project.group' => function($q) {
-            $q->with(['owner', 'users' => function($q){
-                $q->where('notification', 1);
-            }]);
-        }])->find($expeditionId);
     }
 
     /**

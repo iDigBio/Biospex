@@ -42,7 +42,7 @@ class ZooniverseDownloadCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Sends request for Zooniverse csv download if ';
+    protected $description = 'Sends request for NfnPanoptes csv download if ';
 
     /**
      * Create a new command instance.

@@ -15,6 +15,7 @@
 @component('mail::button', ['url' => $rejUrl])
 {{ t('Download Rejected') }}
 @endcomponent
+{{ t('If clicking button does not work, right click and open in new window.') }}
 @endisset
 
 {{ t('Thank you') }},

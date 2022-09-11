@@ -50,7 +50,7 @@ class PanoptesProjectUpdateJob implements ShouldQueue
      */
     public function __construct(PanoptesProject $panoptesProject)
     {
-        $this->onQueue(config('config.classification_tube'));
+        $this->onQueue(config('config.queues.classification'));
         $this->panoptesProject = $panoptesProject;
     }
 

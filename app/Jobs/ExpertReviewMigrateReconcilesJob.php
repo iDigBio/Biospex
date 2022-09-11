@@ -74,7 +74,6 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
             }
 
             $expertReconcileProcess->migrateReconcileCsv($expedition->id);
-            \Log::alert('migrate');
 
         } catch (\Exception $e) {
             $messages = [

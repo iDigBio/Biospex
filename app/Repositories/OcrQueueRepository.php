@@ -20,6 +20,8 @@
 namespace App\Repositories;
 
 use App\Models\OcrQueue;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class OcrQueueRepository
@@ -55,9 +57,9 @@ class OcrQueueRepository extends BaseRepository
      * Get ocr queue for process command.
      *
      * @param bool $reset
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null
      */
-    public function getFirstQueue($reset = false)
+    public function getFirstQueue(bool $reset = false): Model|Builder|null
     {
         return $reset ?
             $this->model->orderBy('id', 'asc')->first() :

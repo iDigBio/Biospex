@@ -34,6 +34,6 @@ class ActorFactory
      */
     public static function create(string $class)
     {
-        return app('App\Services\Actor\\' . $class);
+        return app('App\Services\Actor\\' . $class . '\\' . $class);
     }
 }

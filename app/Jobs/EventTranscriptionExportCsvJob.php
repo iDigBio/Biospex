@@ -24,7 +24,7 @@ use App\Notifications\EventCsvExport;
 use App\Notifications\EventCsvExportError;
 use App\Repositories\EventTranscriptionRepository;
 use App\Repositories\PanoptesTranscriptionRepository;
-use App\Services\Csv\Csv;
+use App\Services\Process\CreateReportService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -69,7 +69,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
     {
         $this->user = $user;
         $this->eventId = $eventId;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**
@@ -77,13 +77,12 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
      *
      * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
      * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-     * @param Csv $csv
      * @return void
      */
     public function handle(
         EventTranscriptionRepository $eventTranscriptionRepo,
         PanoptesTranscriptionRepository $panoptesTranscriptionRepo,
-        Csv $csv
+        CreateReportService $createReportService,
     )
     {
         try
@@ -98,8 +97,8 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
                 return $transcription === null;
             });
 
-            $csvFileName = $fileName = Str::random() . '.csv';
-            $fileName = $transcriptions->isEmpty() ? null : $csv->createReportCsv($transcriptions->toArray(), $csvFileName);
+            $csvFileName = Str::random() . '.csv';
+            $fileName = $createReportService->createCsvReport($csvFileName, $transcriptions->toArray());
 
             $this->user->notify(new EventCsvExport($fileName));
         }

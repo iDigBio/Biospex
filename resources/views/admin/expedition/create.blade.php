@@ -61,10 +61,10 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="panoptes_workflow_id" class="col-form-label">{{ t('Zooniverse Workflow Id') }}:</label>
+                            <label for="panoptes_workflow_id" class="col-form-label">{{ t('NfnPanoptes Workflow Id') }}:</label>
                             <input type="text" name="panoptes_workflow_id" id="panoptes_workflow_id"
                                    class="form-control {{ ($errors->has('panoptes_workflow_id')) ? 'has-error' : '' }}"
-                                   placeholder="{{ t('Enter Workflow Id after Expedition submitted to Zooniverse') }}"
+                                   placeholder="{{ t('Enter Workflow Id after Expedition submitted to NfnPanoptes') }}"
                                    value="{{ old('panoptes_workflow_id') }}">
                             <span class="invalid-feedback">{{ $errors->first('panoptes_workflow_id') }}</span>
                         </div>

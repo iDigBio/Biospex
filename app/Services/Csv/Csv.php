@@ -19,7 +19,6 @@
 
 namespace App\Services\Csv;
 
-use Illuminate\Support\Facades\Storage;
 use League\Csv\CharsetConverter;
 use League\Csv\Writer;
 use League\Csv\Reader;
@@ -34,22 +33,12 @@ class Csv
     /**
      * @var Reader
      */
-    public $reader;
+    public Reader $reader;
 
     /**
      * @var Writer
      */
-    public $writer;
-
-    /**
-     * Create reader using file path.
-     *
-     * @param $file
-     */
-    public function readerCreateFromPath($file)
-    {
-        $this->reader = Reader::createFromPath($file);
-    }
+    public Writer $writer;
 
     /**
      * Return Reader.
@@ -59,16 +48,6 @@ class Csv
     public function getReader(): Reader
     {
         return $this->reader;
-    }
-
-    /**
-     * Create writer from file path.
-     *
-     * @param $filePath
-     */
-    public function writerCreateFromPath($filePath)
-    {
-        $this->writer = Writer::createFromPath($filePath, 'w+');
     }
 
     /**
@@ -82,36 +61,76 @@ class Csv
     }
 
     /**
-     * Create writer from temp file object.
+     * Create reader using file path.
+     *
+     * @param $file
      */
-    public function writerCreateFromTempFileObj()
+    public function readerCreateFromPath($file)
     {
-        $this->writer = Writer::createFromFileObject(new \SplTempFileObject());
+        $this->reader = Reader::createFromPath($file);
     }
 
     /**
+     * Create reader from stream.
+     *
+     * @param $stream
+     * @return void
+     */
+    public function readerCreateFromStream($stream)
+    {
+        $this->reader = Reader::createFromStream($stream);
+    }
+
+    /**
+     * Create writer from file path.
+     *
+     * @param $filePath
+     */
+    public function writerCreateFromPath($filePath)
+    {
+        $this->writer = Writer::createFromPath($filePath, 'w+');
+    }
+
+    /**
+     * Create writer from stream.
+     *
+     * @param $stream
+     * @return void
+     */
+    public function writerCreateFromStream($stream)
+    {
+        $this->writer = Writer::createFromStream($stream);
+    }
+
+    /**
+     * Set delimiter.
+     *
      * @param string $delimiter
      * @throws \League\Csv\Exception
      */
-    public function setDelimiter($delimiter = ',')
+    public function setDelimiter(string $delimiter = ',')
     {
         $this->reader->setDelimiter($delimiter);
     }
 
     /**
+     * Set enclosure.
+     *
      * @param string $enclosure
      * @throws \League\Csv\Exception
      */
-    public function setEnclosure($enclosure = '"')
+    public function setEnclosure(string $enclosure = '"')
     {
         $this->reader->setEnclosure($enclosure);
     }
 
     /**
+     * Set escape.
+     *
      * @param string $escape
      * @throws \League\Csv\Exception
      */
-    public function setEscape($escape = '\\')
+    public function setEscape(string $escape = '\\')
     {
         $this->reader->setEscape($escape);
     }
@@ -120,9 +139,10 @@ class Csv
      * Set header offset.
      *
      * @param int $offset
+     * @return void
      * @throws \League\Csv\Exception
      */
-    public function setHeaderOffset($offset = 0)
+    public function setHeaderOffset(int $offset = 0)
     {
         $this->reader->setHeaderOffset($offset);
     }
@@ -130,9 +150,9 @@ class Csv
     /**
      * Return header row.
      *
-     * @return mixed
+     * @return string[]
      */
-    public function getHeader()
+    public function getHeader(): array
     {
         return $this->reader->getHeader();
     }
@@ -141,9 +161,9 @@ class Csv
      * Fetch all rows.
      *
      * @param array $header
-     * @return mixed
+     * @return \Iterator
      */
-    public function getRecords($header = [])
+    public function getRecords(array $header = []): \Iterator
     {
         return $this->reader->getRecords($header);
     }
@@ -180,30 +200,6 @@ class Csv
     }
 
     /**
-     * Create Report Csv.
-     *
-     * @param array $data
-     * @param string $fileName
-     * @return string|null
-     * @throws \League\Csv\CannotInsertRecord
-     */
-    public function createReportCsv(array $data, string $fileName): ?string
-    {
-        if (! isset($data) || empty($data)) {
-            return null;
-        }
-
-        $header = array_keys($data[0]);
-
-        $file = Storage::path(config('config.reports_dir').'/'.$fileName);
-        $this->writerCreateFromPath($file);
-        $this->insertOne($header);
-        $this->insertAll($data);
-
-        return base64_encode($fileName);
-    }
-
-    /**
      * Set encoding.
      *
      * @return \League\Csv\CharsetConverter
@@ -213,5 +209,15 @@ class Csv
         return (new CharsetConverter())
             ->inputEncoding('utf-8')
             ->outputEncoding('utf-8');
+    }
+
+    /**
+     * Add formatter.
+     *
+     * @return void
+     */
+    public function addEncodingFormatter()
+    {
+        $this->writer->addFormatter($this->setEncoding());
     }
 }
