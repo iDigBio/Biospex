@@ -27,7 +27,6 @@ interface ActorInterface
      * Process function for actors.
      *
      * @param \App\Models\Actor $actor
-     * @return mixed
      */
     public function process(Actor $actor);
 }

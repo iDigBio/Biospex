@@ -72,7 +72,7 @@ class RecordsetImportJob implements ShouldQueue
     public function __construct($data)
     {
         $this->data = $data;
-        $this->onQueue(config('config.import_tube'));
+        $this->onQueue(config('config.queues.import'));
     }
 
     /**
@@ -97,7 +97,13 @@ class RecordsetImportJob implements ShouldQueue
         {
             $project = $projectRepo->findWith($this->data['project_id'], ['group.owner']);
 
-            $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
+            $message = [
+                'File: ' . $e->getFile(),
+                'Line: ' . $e->getLine(),
+                'Message: ' . $e->getMessage()
+            ];
+
+            $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $message));
         }
     }
 
@@ -157,14 +163,14 @@ class RecordsetImportJob implements ShouldQueue
     public function download()
     {
         $fileName = $this->data['id'] . '.zip';
-        $filePath = Storage::path(config('config.import_dir') . '/' . $fileName);
-
         $file = file_get_contents($this->response->download_url);
 
-        if (Storage::put($filePath, $file) === false)
+        if (Storage::disk('efs')->put(config('config.import_dir') . '/' . $fileName, $file) === false)
         {
             throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
         }
+
+        $filePath = Storage::path(config('config.import_dir') . '/' . $fileName);
 
         return $this->importRepo->create([
             'user_id'    => $this->data['user_id'],

@@ -36,20 +36,20 @@
                                     @if ($download->type != 'export')
                                         @can('isOwner', $expedition->project->group)
                                             @if ($download->type === 'report')
-                                                <a href="{{ route('admin.downloads.report', ['file' => base64_encode($download->file)]) }}"
+                                                <a href="{{ $download->present()->report_download }}"
                                                    data-hover="tooltip"
                                                    data-placement="left"
                                                    target="_blank"
                                                    title="{{ t('Download') }} {{ $download->type }}">
                                                     <i class="fas fa-file-download fa-2x pl-2 ml-2"></i></a>
                                             @else
-                                                <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                                <a href="{{ $download->present()->other_download }}"
                                                    data-hover="tooltip"
                                                    data-placement="left"
                                                    title="{{ t('Download') }} {{ $download->present()->file_type }}">
                                                     <i class="fas fa-file-download fa-2x"></i></a>
                                                 @if ($download->type === 'summary')
-                                                    <a href="{{ route('admin.downloads.summary', [$expedition->project->id, $expedition->id]) }}"
+                                                    <a href="{{ $download->present()->summary_html }}"
                                                        data-hover="tooltip" target="_blank"
                                                        data-placement="left"
                                                        title="{{ t('View') }} {{ $download->type }}">
@@ -58,12 +58,13 @@
                                             @endif
                                         @endcan
                                     @else
-                                        <a href="{{ route('admin.downloads.downloadTar', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                        <a href="{{ $download->present()->export_download }}"
                                            class="mr-4"
                                            data-hover="tooltip"
                                            data-placement="left"
                                            data-original-title="{{ t('Download %s file', $download->type) }} ">
                                             <i class="fas fa-file-archive fa-2x"></i></a>
+
                                         <a href="{{ route('admin.downloads.batch', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                            class="prevent-default"
                                            data-method="get"
@@ -73,6 +74,7 @@
                                            data-original-title="{{ t('Download %s batches', $download->type) }}"
                                            data-content="{{ t('This action will split the Export file into several batch files that can be downloaded separately. You will be notified by email when the process is complete. Do you wish to continue?') }}">
                                             <i class="fas fa-file-download fa-2x"></i></a>
+
                                     @endif
                                 </td>
                             </tr>

@@ -19,7 +19,11 @@
 
 namespace App\Repositories;
 
+use App\Models\Actor;
 use App\Models\ExportQueue;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class ExportQueueRepository
@@ -42,66 +46,50 @@ class ExportQueueRepository extends BaseRepository
     /**
      * Get exports for poll command.
      *
-     * @return \App\Models\ExportQueue[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getAllExportQueueOrderByIdAsc()
+    public function getAllExportQueueOrderByIdAsc(): Collection
     {
         return $this->model->with('expedition.project.group')
             ->where('error', 0)
             ->orderBy('id', 'asc')
-            ->get('*');
+            ->get();
     }
 
     /**
-     * Find by id and actor.
-     *
-     * @param $queueId
-     * @param $expeditionId
-     * @param $actorId
-     * @param array|string[] $attributes
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
-     */
-    public function findByIdExpeditionActor($queueId, $expeditionId, $actorId, array $attributes = ['*'])
-    {
-        return $this->model->with([
-            'expedition.actors' => function($q) use($expeditionId, $actorId) {
-                $q->where('expedition_id', $expeditionId);
-                $q->where('actor_id', $actorId);
-            },
-            'expedition.project.group' => function($q){
-                $q->with(['owner', 'users' => function($q){
-                    $q->where('notification', 1);
-                }]);
-            }
-        ])->whereHas('expedition.actors', function ($query) use ($expeditionId, $actorId) {
-            $query->where('expedition_id', $expeditionId);
-            $query->where('actor_id', $actorId);
-        })->find($queueId);
-    }
-
-    /**
-     * Find queue by expedition and actor ids.
+     * Create queue for export.
      *
      * @param int $expeditionId
      * @param int $actorId
-     * @return mixed
+     * @param int $total
+     * @return \App\Models\ExportQueue
      */
-    public function findByExpeditionAndActorId(int $expeditionId, int $actorId)
+    public function createQueue(int $expeditionId, int $actorId, int $total): ExportQueue
     {
-        return $this->model->with('expedition')
-            ->where('expedition_id', $expeditionId)
-            ->where('actor_id', $actorId)
-            ->get()->first();
+        $attributes = [
+            'expedition_id' => $expeditionId,
+            'actor_id'      => $actorId,
+        ];
+
+        $queue = $this->model->firstOrNew($attributes);
+        $queue->queued = 0;
+        $queue->error = 0;
+        $queue->stage = 0;
+        $queue->count = $total;
+        $queue->processed = 0;
+        $queue->save();
+
+        return $queue;
     }
 
     /**
-     * Return queue with expedition and nfnActor
+     * Get queue for retry using command.
      *
-     * @param int $expeditionId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     * @return \App\Models\ExportQueue|null
      */
-    public function findWithExpeditionNfnActor(int $expeditionId)
+    public function getQueueForRetry(): ?ExportQueue
     {
-        return $this->model->with(['expedition.nfnActor', 'expedition.stat'])->where('expedition_id', $expeditionId)->first();
+        return $this->model->where('queued', 1)->first();
     }
+
 }

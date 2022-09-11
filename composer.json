@@ -27,12 +27,14 @@
     "laravel/tinker": "^2.5",
     "laravel/ui": "^3.0",
     "league/csv": "^9.6",
+    "league/flysystem-aws-s3-v3": "^3.0",
     "league/fractal": "^0.20",
     "league/oauth2-client": "^2.6",
     "neitanod/forceutf8": "~2.0",
     "pda/pheanstalk": "^4.0",
     "pusher/pusher-php-server": "^7.0",
     "ramsey/uuid": "^4.1",
+    "rennokki/laravel-sns-events": "^7.1",
     "spiritix/lada-cache": "^5.1",
     "symfony/http-client": "^6.0",
     "symfony/mailgun-mailer": "^6.0",
@@ -43,12 +45,12 @@
     "barryvdh/laravel-debugbar": "^3.5",
     "barryvdh/laravel-ide-helper": "^2.8",
     "beyondcode/laravel-dump-server": "^1.4",
-    "spatie/laravel-ignition": "^1.0",
     "fakerphp/faker": "^1.9.1",
     "kitloong/laravel-migrations-generator": "^v5.2.0",
     "mockery/mockery": "^1.4.2",
     "nunomaduro/collision": "^6.1",
-    "phpunit/phpunit": "^9.3.3"
+    "phpunit/phpunit": "^9.3.3",
+    "spatie/laravel-ignition": "^1.0"
   },
   "repositories": [
     {

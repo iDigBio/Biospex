@@ -1,99 +1,8 @@
-[program:QUEUE_CHART_TUBE]
+[program:QUEUE_CHART]
 process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_CHART_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_CHART_TUBE.log
-redirect_stderr=true
-logfile_maxbytes=50MB                           
-logfile_backups=1
-autostart=true
-autorestart=true
-user=SERVER_USER
-numprocs=NUM_PROCS
-
-[program:QUEUE_CLASSIFICATION_TUBE]
-process_name=%(program_name)s_%(process_num)02d
-directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_CLASSIFICATION_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_CLASSIFICATION_TUBE.log
-redirect_stderr=true
-logfile_maxbytes=50MB                           
-logfile_backups=1
-autostart=true
-autorestart=true
-user=SERVER_USER
-numprocs=NUM_PROCS
-
-[program:QUEUE_DEFAULT_TUBE]
-process_name=%(program_name)s_%(process_num)02d
-directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_DEFAULT_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_DEFAULT_TUBE.log
-redirect_stderr=true
-logfile_maxbytes=50MB                           
-logfile_backups=1
-autostart=true
-autorestart=true
-user=SERVER_USER
-numprocs=NUM_PROCS
-
-[program:QUEUE_EVENT_TUBE]
-process_name=%(program_name)s_%(process_num)02d
-directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_EVENT_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_EVENT_TUBE.log
-redirect_stderr=true
-logfile_maxbytes=50MB                           
-logfile_backups=1
-autostart=true
-autorestart=true
-user=SERVER_USER
-numprocs=NUM_PROCS
-
-[program:QUEUE_EXPORT_TUBE]
-process_name=%(program_name)s_%(process_num)02d
-directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_EXPORT_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_EXPORT_TUBE.log
-redirect_stderr=true
-logfile_maxbytes=50MB                           
-logfile_backups=1
-autostart=true
-autorestart=true
-user=SERVER_USER
-numprocs=NUM_PROCS
-
-[program:QUEUE_IMPORT_TUBE]
-process_name=%(program_name)s_%(process_num)02d
-directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_IMPORT_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_IMPORT_TUBE.log
-redirect_stderr=true
-logfile_maxbytes=50MB                           
-logfile_backups=1
-autostart=true
-autorestart=true
-user=SERVER_USER
-numprocs=NUM_PROCS
-
-[program:QUEUE_OCR_TUBE]
-process_name=%(program_name)s_%(process_num)02d
-directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_OCR_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_OCR_TUBE.log
-redirect_stderr=true
-logfile_maxbytes=50MB                           
-logfile_backups=1
-autostart=true
-autorestart=true
-user=SERVER_USER
-numprocs=NUM_PROCS
-
-[program:QUEUE_PUSHER_TUBE]
-process_name=%(program_name)s_%(process_num)02d
-directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_PUSHER_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_PUSHER_TUBE.log
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_CHART --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_CHART.log
 redirect_stderr=true
 logfile_maxbytes=50MB
 logfile_backups=1
@@ -102,11 +11,11 @@ autorestart=true
 user=SERVER_USER
 numprocs=NUM_PROCS
 
-[program:QUEUE_PUSHER_PROCESS_TUBE]
+[program:QUEUE_CLASSIFICATION]
 process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_PUSHER_PROCESS_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_PUSHER_PROCESS_TUBE.log
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_CLASSIFICATION --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_CLASSIFICATION.log
 redirect_stderr=true
 logfile_maxbytes=50MB
 logfile_backups=1
@@ -115,11 +24,11 @@ autorestart=true
 user=SERVER_USER
 numprocs=NUM_PROCS
 
-[program:QUEUE_RECONCILE_TUBE]
+[program:QUEUE_DEFAULT]
 process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_RECONCILE_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_RECONCILE_TUBE.log
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_DEFAULT --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_DEFAULT.log
 redirect_stderr=true
 logfile_maxbytes=50MB
 logfile_backups=1
@@ -128,11 +37,24 @@ autorestart=true
 user=SERVER_USER
 numprocs=NUM_PROCS
 
-[program:QUEUE_WORKFLOW_TUBE]
+[program:QUEUE_EVENT]
 process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --force --queue=QUEUE_WORKFLOW_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_WORKFLOW_TUBE.log
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_EVENT --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_EVENT.log
+redirect_stderr=true
+logfile_maxbytes=50MB
+logfile_backups=1
+autostart=true
+autorestart=true
+user=SERVER_USER
+numprocs=NUM_PROCS
+
+[program:QUEUE_EXPORT]
+process_name=%(program_name)s_%(process_num)02d
+directory=CURRENT_PATH
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_EXPORT --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_EXPORT.log
 redirect_stderr=true
 logfile_maxbytes=50MB                           
 logfile_backups=1
@@ -140,3 +62,108 @@ autostart=true
 autorestart=true
 user=SERVER_USER
 numprocs=NUM_PROCS
+
+[program:QUEUE_IMPORT]
+process_name=%(program_name)s_%(process_num)02d
+directory=CURRENT_PATH
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_IMPORT --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_IMPORT.log
+redirect_stderr=true
+logfile_maxbytes=50MB
+logfile_backups=1
+autostart=true
+autorestart=true
+user=SERVER_USER
+numprocs=NUM_PROCS
+
+[program:QUEUE_LAMBDA]
+process_name=%(program_name)s_%(process_num)02d
+directory=CURRENT_PATH
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_LAMBDA --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_LAMBDA.log
+redirect_stderr=true
+logfile_maxbytes=50MB
+logfile_backups=1
+autostart=true
+autorestart=true
+user=SERVER_USER
+numprocs=NUM_PROCS
+
+[program:QUEUE_OCR]
+process_name=%(program_name)s_%(process_num)02d
+directory=CURRENT_PATH
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_OCR --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_OCR.log
+redirect_stderr=true
+logfile_maxbytes=50MB
+logfile_backups=1
+autostart=true
+autorestart=true
+user=SERVER_USER
+numprocs=NUM_PROCS
+
+[program:QUEUE_PUSHER_TRANSCRIPTIONS]
+process_name=%(program_name)s_%(process_num)02d
+directory=CURRENT_PATH
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_PUSHER_TRANSCRIPTIONS --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_PUSHER_TRANSCRIPTIONS.log
+redirect_stderr=true
+logfile_maxbytes=50MB
+logfile_backups=1
+autostart=true
+autorestart=true
+user=SERVER_USER
+numprocs=NUM_PROCS
+
+[program:QUEUE_PUSHER_PROCESS]
+process_name=%(program_name)s_%(process_num)02d
+directory=CURRENT_PATH
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_PUSHER_PROCESS --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_PUSHER_PROCESS.log
+redirect_stderr=true
+logfile_maxbytes=50MB
+logfile_backups=1
+autostart=true
+autorestart=true
+user=SERVER_USER
+numprocs=NUM_PROCS
+
+[program:QUEUE_RECONCILE]
+process_name=%(program_name)s_%(process_num)02d
+directory=CURRENT_PATH
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_RECONCILE --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_RECONCILE.log
+redirect_stderr=true
+logfile_maxbytes=50MB
+logfile_backups=1
+autostart=true
+autorestart=true
+user=SERVER_USER
+numprocs=NUM_PROCS
+
+[program:QUEUE_SNS_IMAGE]
+process_name=%(program_name)s_%(process_num)02d
+directory=CURRENT_PATH
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_SNS_IMAGE --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_SNS_IMAGE.log
+redirect_stderr=true
+logfile_maxbytes=50MB
+logfile_backups=1
+autostart=true
+autorestart=true
+user=SERVER_USER
+numprocs=NUM_PROCS
+
+[program:QUEUE_WORKFLOW]
+process_name=%(program_name)s_%(process_num)02d
+directory=CURRENT_PATH
+command=php artisan queue:work beanstalkd --force --queue=QUEUE_WORKFLOW --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/QUEUE_WORKFLOW.log
+redirect_stderr=true
+logfile_maxbytes=50MB
+logfile_backups=1
+autostart=true
+autorestart=true
+user=SERVER_USER
+numprocs=NUM_PROCS
+

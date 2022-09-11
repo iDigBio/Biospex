@@ -170,6 +170,22 @@ class BaseRepository
     }
 
     /**
+     * Update record using attribute and value.
+     *
+     * @param array $data
+     * @param string $attribute
+     * @param string $value
+     * @return false
+     */
+    public function updateBy(array $data, string $attribute, string $value)
+    {
+        $model = $this->findBy($attribute, $value);
+        $result = $model->fill($data)->save();
+
+        return $result ? $model : false;
+    }
+
+    /**
      * Update or Create.
      *
      * @param array $attributes

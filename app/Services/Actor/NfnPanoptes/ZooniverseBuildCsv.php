@@ -19,230 +19,191 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
-use App\Models\Actor;
+use App\Jobs\ZooniverseExportBuildZipJob;
 use App\Models\ExportQueue;
-use App\Models\ExportQueueFile;
-use App\Models\Subject;
-use App\Services\Actor\ActorInterface;
+use App\Services\Actor\QueueInterface;
+use App\Services\Actor\Traits\ActorDirectory;
+use App\Services\Api\AwsS3ApiService;
+use App\Services\Csv\Csv;
+use App\Repositories\ExportQueueFileRepository;
+use App\Repositories\ExportQueueRepository;
+use App\Services\Process\AwsS3CsvService;
+use App\Services\Process\MapNfnCsvColumnsService;
 use Exception;
-use Illuminate\Support\LazyCollection;
+use Illuminate\Support\Collection;
 
 /**
  * Class ZooniverseBuildCsv
- *
- * @package App\Services\Actor
  */
-class ZooniverseBuildCsv extends ZooniverseBase implements ActorInterface
+class ZooniverseBuildCsv implements QueueInterface
 {
+    use ActorDirectory;
+
+    /**
+     * @var \App\Repositories\ExportQueueRepository
+     */
+    private ExportQueueRepository $exportQueueRepository;
+
+    /**
+     * @var \App\Repositories\ExportQueueFileRepository
+     */
+    private ExportQueueFileRepository $exportQueueFileRepository;
+
+    /**
+     * @var \App\Services\Api\AwsS3ApiService
+     */
+    private AwsS3ApiService $awsS3ApiService;
+
+    /**
+     * @var \App\Services\Csv\Csv
+     */
+    private Csv $csv;
+
+    /**
+     * @var \App\Services\Process\AwsS3CsvService
+     */
+    private AwsS3CsvService $awsS3CsvService;
+
+    /**
+     * @var \App\Services\Process\MapNfnCsvColumnsService
+     */
+    private MapNfnCsvColumnsService $mapNfnCsvColumnsService;
+
+    /**
+     * @var mixed|\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application
+     */
+    private mixed $nfnCsvMap;
+
+    /**
+     * Construct.
+     *
+     * TODO check later to break this into other classes to reduce DI.
+     *
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
+     * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
+     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
+     * @param \App\Services\Process\MapNfnCsvColumnsService $mapNfnCsvColumnsService
+     */
+    public function __construct(
+        ExportQueueRepository $exportQueueRepository,
+        ExportQueueFileRepository $exportQueueFileRepository,
+        AwsS3CsvService $awsS3CsvService,
+        MapNfnCsvColumnsService $mapNfnCsvColumnsService
+    )
+    {
+        $this->exportQueueRepository = $exportQueueRepository;
+        $this->exportQueueFileRepository = $exportQueueFileRepository;
+        $this->awsS3CsvService = $awsS3CsvService;
+        $this->mapNfnCsvColumnsService = $mapNfnCsvColumnsService;
+    }
+
     /**
      * Process actor.
      *
-     * @param \App\Models\Actor $actor
+     * @param \App\Models\ExportQueue $exportQueue
      * @return void
      * @throws \Exception
      */
-    public function process(Actor $actor)
+    public function process(ExportQueue $exportQueue)
     {
-        $queue = $this->dbService->exportQueueRepo->findByExpeditionAndActorId($actor->pivot->expedition_id, $actor->id);
-        $queue->processed = 0;
-        $queue->stage = 2;
-        $queue->save();
+        $exportQueue->load(['expedition']);
+
+        $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
+        $this->setDirectories();
+
+        $csvFilePath = $this->workingDir.'/'.$exportQueue->expedition->uuid.'.csv';
+        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'w');
+        $this->awsS3CsvService->createCsvWriterFromStream();
+        $this->awsS3CsvService->csv->addEncodingFormatter();
+
+        $first = true;
+
+        $this->exportQueueFileRepository->model()->chunk(100, function ($chunk) use (&$exportQueue, &$first) {
+            $csvData = $chunk->filter(function ($file) {
+                return $this->checkFileExists($this->workingDir.'/'.$file->subject_id.'.jpg', $file->subject_id);
+            })->map(function ($file) use ($exportQueue) {
+                return $this->mapNfnCsvColumnsService->mapColumns($file, $exportQueue);
+            });
+
+            if (empty($csvData)) {
+                throw new Exception(t('CSV data empty while creating file for Expedition ID: %s', $exportQueue->expedition->id));
+            }
+
+            $this->buildCsv($csvData, $first);
+            $first = false;
+
+            $exportQueue->processed = $exportQueue->processed + $chunk->count();
+            $exportQueue->save();
+        });
+
+        $this->updateRejected($this->rejected);
+
+        if (! $this->checkCsvImageCount($exportQueue)) {
+            throw new Exception(t('The row count in the csv export file does not match image count.'));
+        }
+
+        $exportQueue->stage = 5;
+        $exportQueue->save();
 
         \Artisan::call('export:poll');
 
-        $files = $this->dbService->exportQueueFileRepo->getFilesByQueueId($queue->id);
-
-        try {
-            $this->actorDirectory->setFolder($queue->id, $actor->id, $queue->expedition->uuid);
-            $this->actorDirectory->setDirectories();
-
-            $this->csv->writerCreateFromTempFileObj();
-            $this->csv->writer->addFormatter($this->csv->setEncoding());
-
-            $first = true;
-            $files->chunk(5)->each(function ($chunk) use (&$queue, &$first) {
-                $csvData = $chunk->filter(function ($file) {
-                    return $this->checkFile($this->actorDirectory->tmpDirectory.'/'.$file->subject_id.'.jpg', $file->subject_id);
-                })->map(function ($file) use ($queue) {
-                    return $this->mapNfnCsvColumns($file, $queue);
-                });
-
-                if (empty($csvData)) {
-                    throw new Exception(t('CSV data empty while creating file for Expedition ID: %s', $queue->expedition->id));
-                }
-
-                $this->buildCsv($csvData, $first);
-                $first = false;
-
-                $queue->processed = $queue->processed + $chunk->count();
-                $queue->save();
-            });
-
-            $csvFileName = $queue->expedition->uuid.'.csv';
-            $csvFilePath = $this->actorDirectory->tmpDirectory.'/'.$csvFileName;
-            \File::put($csvFilePath, $this->csv->writer->toString());
-
-            $this->dbService->updateRejected($this->rejected);
-
-            if (!$this->checkCsvImageCount($queue)) {
-                throw new Exception(t('The row count in the csv export file does not match image count.'));
-            }
-
-        } catch (Exception $exception) {
-            $queue->error = 1;
-            $queue->queued = 0;
-            $queue->processed = 0;
-            $queue->save();
-
-            throw new Exception($exception->getMessage());
-        }
-    }
-
-    /**
-     * Map nfn csvExport values.
-     *
-     * @param \App\Models\ExportQueueFile $file
-     * @param \App\Models\ExportQueue $queue
-     * @return array
-     */
-    public function mapNfnCsvColumns(ExportQueueFile $file, ExportQueue $queue): array
-    {
-        $subject = $this->dbService->subjectRepo->find($file->subject_id);
-
-        $csvArray = [];
-        $presetValues = ['#expeditionId', '#expeditionTitle', 'imageName'];
-        $this->setNfnCsvMap();
-
-        foreach ($this->nfnCsvMap as $key => $item) {
-            if (in_array($key, $presetValues)) {
-                $this->setPresetValues($csvArray, $key, $file, $queue);
-                continue;
-            }
-
-            // If subject not found, add error column and message
-            if ($subject === null) {
-                $csvArray['error'] = 'Could not retrieve subject '.$file->subject_id.' from database for export';
-                continue;
-            }
-
-            // If item is not array, direct translation
-            if (! is_array($item)) {
-                $csvArray[$key] = $item === '' ? '' : $subject->{$item};
-                continue;
-            }
-
-            $csvArray[$key] = '';
-            foreach ($item as $doc => $value) {
-                is_array($value) ?
-                    $this->setArrayValues($csvArray, $key, $doc, $value, $subject) :
-                    $this->setValues($csvArray, $key, $doc, $value, $subject);
-            }
-        }
-
-        $subject->exported = true;
-        $subject->save();
-
-        return $csvArray;
-    }
-
-    /**
-     * Set preset values needing special attention.
-     *
-     * @param $csvArray
-     * @param $key
-     * @param \App\Models\ExportQueueFile $file
-     * @param \App\Models\ExportQueue $queue
-     * @return void
-     */
-    private function setPresetValues(&$csvArray, $key, ExportQueueFile $file, ExportQueue $queue)
-    {
-        if (strcasecmp($key, '#expeditionId') == 0) {
-            $csvArray[$key] = $queue->expedition->id;
-            return;
-        }
-
-        if (strcasecmp($key, '#expeditionTitle') == 0) {
-            $csvArray[$key] = $queue->expedition->title;
-            return;
-        }
-
-        if (strcasecmp($key, 'imageName') == 0) {
-            $csvArray[$key] = $file->subject_id.'.jpg';
-        }
-    }
-
-    /**
-     * Set values of document items if array.
-     *
-     * @param array $csvArray
-     * @param string $key
-     * @param string $doc
-     * @param array $array
-     * @param \App\Models\Subject $subject
-     * @return void
-     */
-    private function setArrayValues(array &$csvArray, string $key, string $doc, array $array, Subject $subject)
-    {
-        foreach ($array as $value) {
-            if (isset($subject->{$doc}[$value])) {
-                $csvArray[$key] = $subject->{$doc}[$value];
-            }
-        }
-    }
-
-    /**
-     * Set values of document if value exists. Set special links.
-     * @param array $csvArray
-     * @param string $key
-     * @param string $doc
-     * @param string $value
-     * @param \App\Models\Subject $subject
-     * @return void
-     */
-    private function setValues(array &$csvArray, string $key, string $doc, string $value, Subject $subject)
-    {
-        $links = ['eol', 'mol', 'idigbio'];
-        if (isset($subject->{$doc}[$value])) {
-            if (in_array($key, $links)) {
-                $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}[$value]), config('config.nfnSearch.'.$key));
-                return;
-            }
-
-            $csvArray[$key] = $subject->{$doc}[$value];
-        }
+        ZooniverseExportBuildZipJob::dispatch($exportQueue);
     }
 
     /**
      * Create csv file.
      *
-     * @param \Illuminate\Support\LazyCollection $data
+     * @param \Illuminate\Support\Collection $data
      * @param bool $first
      * @throws \League\Csv\CannotInsertRecord
      */
-    private function buildCsv(LazyCollection $data, bool $first = false)
+    private function buildCsv(Collection $data, bool $first = false)
     {
         if ($first) {
-            $this->csv->insertOne(array_keys($data->first()));
+            $this->awsS3CsvService->csv->insertOne(array_keys($data->first()));
         }
 
-        $this->csv->insertAll($data);
+        $this->awsS3CsvService->csv->insertAll($data->toArray());
     }
 
     /**
      * Check csv row count to image count.
      * Do not set csv header offset. Since csv is in same dir as image, it will add 1 to the count.
      *
-     * @param \App\Models\ExportQueue $queue
+     * @param \App\Models\ExportQueue $exportQueue
      * @return bool
      */
-    private function checkCsvImageCount(ExportQueue $queue): bool
+    private function checkCsvImageCount(ExportQueue $exportQueue): bool
     {
-        $this->csv->readerCreateFromPath($this->actorDirectory->tmpDirectory . '/' . $queue->expedition->uuid . '.csv');
-        $csvCount = $this->csv->getReaderCount();
+        $csvFilePath = $this->workingDir.'/'.$exportQueue->expedition->uuid.'.csv';
+        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'r');
+        $this->awsS3CsvService->createCsvReaderFromStream();
+        $csvCount = $this->awsS3CsvService->csv->getReaderCount();
 
-        $fi = new \FilesystemIterator($this->actorDirectory->tmpDirectory);
-        $dirFileCount = iterator_count($fi);
+        $dirFileCount = $this->awsS3CsvService->awsS3ApiService->getFileCount(config('filesystems.disks.s3.bucket'), $this->workingDir);
 
         return $csvCount === $dirFileCount;
+    }
+
+    /**
+     * Update rejected files.
+     *
+     * @param array $rejected
+     */
+    public function updateRejected(array $rejected = [])
+    {
+        if (empty($rejected)) {
+            return;
+        }
+
+        foreach ($rejected as $subjectId => $reason) {
+            $file = $this->exportQueueFileRepository->findBy('subject_id', $subjectId);
+            if (empty($file)) {
+                $reason .= t(' Empty file result from DB for: %s', $subjectId);
+            }
+
+            $file->error_message .= ' ' . $reason;
+            $file->save();
+        }
     }
 }

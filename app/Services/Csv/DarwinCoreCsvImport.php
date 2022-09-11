@@ -26,7 +26,6 @@ use App\Services\MongoDbService;
 use Carbon\Carbon;
 use Exception;
 use ForceUTF8\Encoding;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Factory as Validation;
 use Illuminate\Validation\Rule;
 use MongoDB\BSON\ObjectId;
@@ -41,64 +40,64 @@ class DarwinCoreCsvImport
     /**
      * @var \App\Repositories\PropertyRepository
      */
-    public $propertyRepo;
+    public PropertyRepository $propertyRepo;
 
     /**
      * @var \App\Repositories\SubjectRepository
      */
-    public $subjectRepo;
+    public SubjectRepository $subjectRepo;
 
     /**
      * @var \App\Repositories\HeaderRepository
      */
-    public $headerRepo;
+    public HeaderRepository $headerRepo;
 
     /**
      * Array for meta file fields: core and extension
      *
      * @var array
      */
-    public $metaFields;
+    public array $metaFields;
 
     /**
      * Whether media is core or extension in meta file
      *
      * @var bool
      */
-    public $mediaIsCore;
+    public bool $mediaIsCore;
 
     /**
      * Type: core or extension
      *
      * @var string
      */
-    public $type;
+    public string $type;
 
     /**
      * Id of project
      *
-     * @var bool
+     * @var int
      */
-    public $projectId;
+    public int $projectId;
 
     /**
      * Rejected multimedia array
      *
      * @var array
      */
-    public $rejectedMultimedia = [];
+    public array $rejectedMultimedia = [];
 
     /**
      * Duplicate images array
      *
      * @var array
      */
-    public $duplicateArray = [];
+    public array $duplicateArray = [];
 
     /**
      * @var Validation
      */
-    public $factory;
+    public Validation $factory;
 
     /**
      * @var array
@@ -224,7 +223,7 @@ class DarwinCoreCsvImport
      * @return array
      * @throws \Exception
      */
-    public function processCsvHeader($header, $type)
+    public function processCsvHeader($header, $type): array
     {
         $filtered = $this->filterByMetaFileIndex($header, $type);
         $headerBuild = $this->buildHeaderUsingShortNames($filtered, $type);
@@ -269,7 +268,7 @@ class DarwinCoreCsvImport
      * @return array
      * @throws \Exception
      */
-    public function buildHeaderUsingShortNames($row, $type)
+    public function buildHeaderUsingShortNames($row, $type): array
     {
         $header = [];
         foreach ($this->metaFields[$type] as $key => $qualified) {
@@ -286,7 +285,6 @@ class DarwinCoreCsvImport
      * @param $key
      * @param $qualified
      * @param $header
-     * @return mixed
      * @throws \Exception
      */
     public function createShortNameForHeader($row, $key, $qualified, &$header)

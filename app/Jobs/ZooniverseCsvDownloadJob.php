@@ -56,7 +56,7 @@ class ZooniverseCsvDownloadJob implements ShouldQueue
      */
     public function __construct(int $expeditionId, string $uri)
     {
-        $this->onQueue(config('config.reconcile_tube'));
+        $this->onQueue(config('config.queues.reconcile'));
         $this->expeditionId = $expeditionId;
         $this->uri = $uri;
     }

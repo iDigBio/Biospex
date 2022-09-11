@@ -20,6 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Events\PollExportEvent;
+use App\Events\TestPoll;
 use App\Models\ExportQueue;
 use App\Repositories\ExportQueueRepository;
 use Illuminate\Console\Command;

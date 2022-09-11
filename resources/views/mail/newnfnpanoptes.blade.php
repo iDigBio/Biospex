@@ -3,8 +3,11 @@
 
 
 {{ $contact }}
+
 {{ $email }}
+
 {{ $title }}
+
 {{ $description }}
 
 {{ t('Thank you') }},

@@ -19,10 +19,11 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ExportQueueFileRepository;
-use App\Services\Api\AwsSignatureV4;
-use App\Services\Requests\HttpRequest;
+use App\Repositories\ExportQueueRepository;
+use App\Services\Actor\Traits\ActorDirectory;
+use Aws\Lambda\LambdaClient;
 use Illuminate\Console\Command;
+use \Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
  * Class AppCommand
@@ -31,6 +32,8 @@ use Illuminate\Console\Command;
  */
 class AppLambdaCommand extends Command
 {
+    use DispatchesJobs, ActorDirectory;
+
     /**
      * The console command name.
      */
@@ -42,32 +45,18 @@ class AppLambdaCommand extends Command
     protected $description = 'Used to test sqs lambda code';
 
     /**
-     * @var \App\Services\Requests\HttpRequest
+     * @var \App\Repositories\ExportQueueRepository
      */
-    private HttpRequest $httpRequest;
-
-    /**
-     * @var \App\Services\Api\AwsSignatureV4
-     */
-    private AwsSignatureV4 $awsSignatureV4;
-
-    /**
-     * @var \App\Repositories\ExportQueueFileRepository
-     */
-    private ExportQueueFileRepository $exportQueueFileRepository;
+    private ExportQueueRepository $exportQueueRepository;
 
     /**
      * AppCommand constructor.
      */
     public function __construct(
-        HttpRequest $httpRequest,
-        AwsSignatureV4 $awsSignatureV4,
-        ExportQueueFileRepository $exportQueueFileRepository)
-    {
+        ExportQueueRepository $exportQueueRepository
+    ) {
         parent::__construct();
-        $this->httpRequest = $httpRequest;
-        $this->awsSignatureV4 = $awsSignatureV4;
-        $this->exportQueueFileRepository = $exportQueueFileRepository;
+        $this->exportQueueRepository = $exportQueueRepository;
     }
 
     /**
@@ -77,83 +66,65 @@ class AppLambdaCommand extends Command
      */
     public function handle()
     {
-        $this->httpApi();
+        $this->imageTar();
+        //$this->imageProcess();
     }
 
     /**
-     * Test api method.
-     *
      * @return void
      */
-    public function httpApi()
+    public function imageTar()
     {
-        $config = [
-            'host'              => 'lambda.us-east-2.amazonaws.com',
-            'uri'               => '/2015-03-31/functions/imageExportProcess/invocations',
-            'queryString'       => '',
-            'accessKey'         => config('config.aws_access_key'),
-            'secretKey'         => config('config.aws_secret_key'),
-            'region'            => config('config.aws_default_region'),
-            'service'           => 'lambda',
-            'httpRequestMethod' => 'POST',
-            //'data'              => '',
-            'debug'             => false,
+        $exportQueue = $this->exportQueueRepository->findWith(1, ['expedition']);
+        $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
+        $this->setDirectories();
+
+
+        $client = $this->getLambdaClient();
+
+        $data = [
+            'queueId' => $exportQueue->id, //event.queueId;
+            'sourcePath' => $this->workingDir, //event.sourcePath;
+            'outputFilename' =>  md5($this->folderName) //event.outputFilename;
         ];
 
-        $this->httpRequest->setHttpProvider();
+        $start_time = microtime(true);
 
-        $promiseGenerator = function ($data) use ($config) {
-            foreach ($data as $values) {
+        $result = $client->invoke([
+            // The name your created Lamda function
+            'FunctionName'   => 'imageTarGz',
+            'Payload'        => json_encode($data),
+        ]);
 
-                $config['data'] = json_encode($values);
-                $this->awsSignatureV4->setConfig($config);
-                $this->awsSignatureV4->createAwsSignature();
-                $headers = $this->awsSignatureV4->getRequestHeaders();
-                $requestUrl = $this->awsSignatureV4->getRequestUrl();
+        echo $result['Payload'] . PHP_EOL;
 
-                yield function () use ($headers, $requestUrl, $config) {
-                    return $this->httpRequest->getHttpClient()->requestAsync($config['httpRequestMethod'], $requestUrl, [
-                        'headers' => $headers,
-                        'body' => $config['data'],
-                    ]);
-                };
-            }
-        };
+        // End clock time in seconds
+        $end_time = microtime(true);
 
-        // Create the generator that yields # of total promises.
-        $data = $this->generateUrls(10);
-        $promises = $promiseGenerator($data);
-
-        // Set pool config.
-        $poolConfig = [
-            'concurrency' => 10,
-            'fulfilled'   => function ($result) {
-                echo $result->getBody() . PHP_EOL;
-                //$this->echoResponse($result);
-            },
-            'rejected'    => function ($reason) {
-                echo $reason->getBody() . PHP_EOL;
-                //$this->echoResponse($reason);
-            },
-        ];
-
-        $pool = $this->httpRequest->pool($promises, $poolConfig);
-        $pool->promise()->wait();
+        // Calculate script execution time
+        $execution_time = ($end_time - $start_time);
+        echo " Execution time of script = ".$execution_time." sec" . PHP_EOL;
     }
 
     /**
-     * Temp method to output lambda response.
-     *
-     * @param $result
      * @return void
      */
-    public function echoResponse($result)
+    public function imageProcess()
     {
-        $content = json_decode($result->getBody());
-        $body = json_decode($content->body);
-        echo $content->statusCode . PHP_EOL;
-        echo $body->subjectId . PHP_EOL;
-        echo $body->message . PHP_EOL;
+        $client = $this->getLambdaClient();
+
+        $data = $this->generateUrls(1);
+
+        collect($data)->each(function($image) use($client) {
+            $result = $client->invoke([
+                // The name your created Lamda function
+                'FunctionName'   => 'imageProcessExport',
+                'Payload'        => json_encode($image),
+                'InvocationType' => 'Event',
+            ]);
+
+            echo $result['Payload'] . PHP_EOL;
+        });
     }
 
     /**
@@ -164,14 +135,30 @@ class AppLambdaCommand extends Command
      */
     public function generateUrls(int $total): array
     {
-        $files = $this->exportQueueFileRepository->findBy('queue_id',1)->limit($total)->get();
+        $files = $this->exportQueueFileRepository->findBy('queue_id', 10)->limit($total)->get();
 
-        return $files->map(function($file) {
+        return $files->map(function ($file) {
             return [
-                'id'  => $file->subject_id,
+                'queueId' => $file->queue_id,
+                'subjectId'  => $file->subject_id,
                 'url' => $file->url,
-                'dir' => "scratch/testing-scratch"
+                'dir' => "scratch/testing-scratch",
             ];
         })->toArray();
+    }
+
+    /**
+     * @return \Aws\Lambda\LambdaClient
+     */
+    private function getLambdaClient(): LambdaClient
+    {
+        return new LambdaClient([
+            'credentials' => [
+                'key'    => config('config.aws_access_key'),
+                'secret' => config('config.aws_secret_key'),
+            ],
+            'version'     => '2015-03-31',
+            'region'      => config('config.aws_default_region'),
+        ]);
     }
 }

@@ -62,7 +62,7 @@ class DeleteExpedition implements ShouldQueue
     {
         $this->user = $user;
         $this->expedition = $expedition;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**

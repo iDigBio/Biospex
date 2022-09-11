@@ -23,8 +23,8 @@ use App\Models\User;
 use App\Models\Header;
 use App\Notifications\GridCsvExport;
 use App\Notifications\GridCsvExportError;
+use App\Services\Process\AwsS3CsvService;
 use App\Services\Grid\JqGridEncoder;
-use App\Services\Csv\Csv;
 use App\Facades\GeneralHelper;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -89,17 +89,17 @@ class GridExportCsvJob implements ShouldQueue
         $this->expeditionId = $data['expeditionId'];
         $this->postData = $data['postData'];
         $this->route = $data['route'];
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**
      * Execute the job.
      *
      * @param \App\Services\Grid\JqGridEncoder $jqGridEncoder
-     * @param Csv $csv
+     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
      * @return void
      */
-    public function handle(JqGridEncoder $jqGridEncoder, Csv $csv)
+    public function handle(JqGridEncoder $jqGridEncoder, AwsS3CsvService $awsS3CsvService)
     {
         $csvName = Str::random().'.csv';
 
@@ -108,11 +108,15 @@ class GridExportCsvJob implements ShouldQueue
             $cursor = $jqGridEncoder->encodeGridExportData($this->postData, $this->route, $this->projectId, $this->expeditionId);
 
             $header = $this->buildHeader();
-            $file = Storage::path(config('config.reports_dir').'/'.$csvName);
-            $csv->writerCreateFromPath($file);
-            $csv->insertOne($header->keys()->toArray());
 
-            $cursor->each(function ($subject) use ($header, $csv) {
+            $bucket = config('filesystems.disks.s3.bucket');
+            $filePath = config('config.report_dir') . '/' . $csvName;
+
+            $awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
+            $awsS3CsvService->createCsvWriterFromStream();
+            $awsS3CsvService->csv->insertOne($header->keys()->toArray());
+
+            $cursor->each(function ($subject) use ($header, $awsS3CsvService) {
                 $subjectArray = $subject->getAttributes();
                 $subjectArray['_id'] = (string) $subject->_id;
                 $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
@@ -123,10 +127,10 @@ class GridExportCsvJob implements ShouldQueue
 
                 $merged = $header->merge($subjectArray);
 
-                $csv->insertOne($merged->toArray());
+                $awsS3CsvService->csv->insertOne($merged->toArray());
             });
 
-            if (!Storage::exists(config('config.reports_dir').'/'.$csvName)) {
+            if (!Storage::disk('s3')->exists(config('config.report_dir').'/'.$csvName)) {
                 throw new Exception(t('Csv export file is missing.'));
             }
 
@@ -141,7 +145,7 @@ class GridExportCsvJob implements ShouldQueue
                 'Trace: ' . $e->getTraceAsString()
             ];
             $this->user->notify(new GridCsvExportError($message));
-            Storage::delete(config('config.reports_dir').'/'.$csvName);
+            Storage::disk('s3')->delete(config('config.report_dir').'/'.$csvName);
         }
     }
 
