@@ -28,6 +28,8 @@ use App\Repositories\ProjectRepository;
 use Auth;
 use Exception;
 use Flash;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 /**
  * Class ImportController
@@ -43,7 +45,7 @@ class ImportController extends Controller
      * @param $projectId
      * @return \Illuminate\View\View
      */
-    public function index(ProjectRepository $projectRepo, $projectId)
+    public function index(ProjectRepository $projectRepo, $projectId): View
     {
         $project = $projectRepo->find($projectId);
 
@@ -56,7 +58,7 @@ class ImportController extends Controller
      * @param \App\Repositories\ImportRepository $importRepo
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function dwcFile(ImportRepository $importRepo)
+    public function dwcFile(ImportRepository $importRepo): RedirectResponse
     {
         try {
             $projectId = request()->input('project_id');
@@ -87,7 +89,7 @@ class ImportController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function recordSet()
+    public function recordSet(): RedirectResponse
     {
         try
         {
@@ -118,7 +120,7 @@ class ImportController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function dwcUri()
+    public function dwcUri(): RedirectResponse
     {
         try
         {
