@@ -19,15 +19,11 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\AppLambdaQueueJob;
+use App\Jobs\TestJob;
 use App\Models\Expedition;
-use App\Models\User;
 use App\Services\Actor\NfnPanoptes\ZooniverseExportProcessImage;
 use Illuminate\Console\Command;
-
-use Aws\Sdk;
-use GuzzleHttp\Promise;
-use GuzzleHttp\Handler\CurlMultiHandler;
-use GuzzleHttp\HandlerStack;
 
 /**
  * Class AppCommand
@@ -58,11 +54,8 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        $token = $user->createToken('LambdaImageProcess', ['lamba:update']);
-        dd($token);
-
-
+        TestJob::dispatch();
+        //AppLambdaQueueJob::dispatch();
         /*
         $basePath = base_path('imgProcess.js');
         $folder = \Storage::path('tmp');
@@ -70,7 +63,7 @@ class AppCommand extends Command
         $url = "http://cdn.flmnh.ufl.edu/Herbarium/jpg/116/116667s1.jpg";
         $fileOne = "116667s1.jpg";
         $command = "node $basePath $fileOne $url $folder 1500 1500";
-
+        */
         /*
         $url = "http://cdn.flmnh.ufl.edu/Herbarium/jpg/074/74718s1.jpg";
         $fileTwo = "74718s1.jpg";
@@ -79,39 +72,5 @@ class AppCommand extends Command
 
         //exec($command, $output);
         //dd($output);
-    }
-
-
-    public function batch()
-    {
-        $sdk = new Sdk(['region' => 'us-east-1', 'version' => 'latest']);
-        $s3Client = $sdk->createLambda();
-        $bucket = 'my-bucket';
-
-        $promiseGenerator = function ($total) use ($s3Client, $bucket) {
-            for ($i = 0; $i < $total; $i++) {
-                yield $s3Client->getObjectAsync([
-                    'Key'    => sprintf('test%s.text', $i),
-                    'Bucket' => $bucket,
-                ]);
-            }
-        };
-
-        $fulfilled = function($result) {
-            echo 'Got result: ' . var_export($result->toArray(), true) . "\n\n";
-        };
-
-        $rejected = function($reason) {
-            echo 'Rejected: ' . $reason . "\n\n";
-        };
-
-        // Create the generator that yields 1000 total promises.
-        $promises = $promiseGenerator(1000);
-        // Create a promise that sends 50 promises concurrently by reading from
-        // a queue of promises.
-        $each = Promise\each_limit($promises, 50, $fulfilled, $rejected);
-        // Trigger a wait. Note that if you use an event loop then this is not
-        // necessary.
-        $each->wait();
     }
 }

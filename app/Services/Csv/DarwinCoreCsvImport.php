@@ -273,7 +273,7 @@ class DarwinCoreCsvImport
     {
         $header = [];
         foreach ($this->metaFields[$type] as $key => $qualified) {
-            $header = $this->createShortNameForHeader($row, $key, $qualified, $header);
+            $this->createShortNameForHeader($row, $key, $qualified, $header);
         }
 
         return $header;
@@ -289,16 +289,14 @@ class DarwinCoreCsvImport
      * @return mixed
      * @throws \Exception
      */
-    public function createShortNameForHeader($row, $key, $qualified, $header): mixed
+    public function createShortNameForHeader($row, $key, $qualified, &$header)
     {
         if (! isset($row[$key])) {
             throw new Exception(t('Undefined index for :key => :qualified when building header for csv import.', [':key' => $key, ':qualified' => $qualified]));
         }
 
-        $short = $this->checkProperty($qualified, $row[$key]);
+        $short = $this->checkProperty($qualified, $row[$key], $header);
         $header[$key] = $short;
-
-        return $header;
     }
 
     /**
@@ -306,19 +304,23 @@ class DarwinCoreCsvImport
      *
      * @param $qualified
      * @param $ns_short
+     * @param $header
      * @return string
      */
-    public function checkProperty($qualified, $ns_short): string
+    public function checkProperty($qualified, $ns_short, &$header): string
     {
         if ($qualified === 'id' || $qualified === 'coreid') {
             return $qualified;
         }
 
         $short = $this->splitNameSpaceShort($ns_short);
+        if (in_array(trim($short), $header)) {
+            $short = $ns_short;
+        }
 
         $this->setShortName($short);
 
-        return $short;
+        return trim($short);
     }
 
     /**
@@ -344,7 +346,7 @@ class DarwinCoreCsvImport
     {
         $checkShort = $this->propertyRepo->findBy('short', $short);
         if ($checkShort === null) {
-            $this->propertyRepo->create(['short', $short]);
+            $this->propertyRepo->create(['short' => $short]);
         }
     }
 
