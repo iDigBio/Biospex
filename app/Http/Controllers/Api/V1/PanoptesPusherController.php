@@ -56,8 +56,8 @@ class PanoptesPusherController extends ApiController
         if ( ! isset($data['workflow_id'])) {
             return $this->errorWrongArgs(t('Missing workflow_id'));
         }
-        // TODO Put back when done. Check for whether to queue (https://divinglaravel.com/conditionally-pushing-event-listeners-to-queue)
-        //PanoptesPusherJob::dispatch($data);
+
+        PanoptesPusherJob::dispatch($data);
 
         return $this->respondWithCreated();
     }

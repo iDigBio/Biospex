@@ -56,8 +56,7 @@ class PanoptesPusherController extends ApiController
             return;
         }
 
-        // TODO Put back when done
-        //PanoptesPusherJob::dispatch($data);
+        PanoptesPusherJob::dispatch($data);
 
         return $this->respondWithCreated();
     }

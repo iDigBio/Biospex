@@ -1,4 +1,3 @@
-/*
 const axios = require('axios');
 const Pusher = require('pusher-js');
 const https = require('https');
@@ -24,4 +23,3 @@ channel.bind('classification', function (data) {
         config
     ).catch(console.log);
 });
-*/
