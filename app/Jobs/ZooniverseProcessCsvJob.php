@@ -66,7 +66,6 @@ class ZooniverseProcessCsvJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Csv\ZooniverseCsvService $service
-     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      * @throws \Exception
      */
