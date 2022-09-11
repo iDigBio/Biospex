@@ -226,7 +226,7 @@ class ExpertReconcileProcess
     {
         $file = config('config.zooniverse_dir.explained').'/'.$expeditionId.'.csv';
 
-        if (! Storage::exists($file)) {
+        if (! Storage::disk('s3')->exists($file)) {
             $message = t('File does not exist.');
             $method = __METHOD__;
             throw new Exception(view('common.exception', compact('message', 'method', 'file')));
