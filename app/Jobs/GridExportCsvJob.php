@@ -23,10 +23,12 @@ use App\Models\User;
 use App\Models\Header;
 use App\Notifications\GridCsvExport;
 use App\Notifications\GridCsvExportError;
+use App\Services\Csv\Csv;
 use App\Services\Process\AwsS3CsvService;
 use App\Services\Grid\JqGridEncoder;
 use App\Facades\GeneralHelper;
 use Exception;
+use File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
@@ -96,27 +98,26 @@ class GridExportCsvJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Grid\JqGridEncoder $jqGridEncoder
-     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
+     * @param \App\Services\Csv\Csv $csv
      * @return void
      */
-    public function handle(JqGridEncoder $jqGridEncoder, AwsS3CsvService $awsS3CsvService)
+    public function handle(JqGridEncoder $jqGridEncoder, Csv $csv)
     {
         $csvName = Str::random().'.csv';
 
         try {
 
-            $cursor = $jqGridEncoder->encodeGridExportData($this->postData, $this->route, $this->projectId, $this->expeditionId);
-
             $header = $this->buildHeader();
 
-            $bucket = config('filesystems.disks.s3.bucket');
-            $filePath = config('config.report_dir') . '/' . $csvName;
+            $filePath = config('config.report_dir').'/'.$csvName;
+            $efsFullPath = Storage::disk('efs')->path($filePath);
 
-            $awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
-            $awsS3CsvService->createCsvWriterFromStream();
-            $awsS3CsvService->csv->insertOne($header->keys()->toArray());
+            $csv->writerCreateFromPath($efsFullPath);
+            $csv->insertOne($header->keys()->toArray());
 
-            $cursor->each(function ($subject) use ($header, $awsS3CsvService) {
+            $cursor = $jqGridEncoder->encodeGridExportData($this->postData, $this->route, $this->projectId, $this->expeditionId);
+
+            $cursor->each(function ($subject) use ($header, $csv) {
                 $subjectArray = $subject->getAttributes();
                 $subjectArray['_id'] = (string) $subject->_id;
                 $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
@@ -127,22 +128,25 @@ class GridExportCsvJob implements ShouldQueue
 
                 $merged = $header->merge($subjectArray);
 
-                $awsS3CsvService->csv->insertOne($merged->toArray());
+                $csv->insertOne($merged->toArray());
             });
 
-            if (!Storage::disk('s3')->exists(config('config.report_dir').'/'.$csvName)) {
-                throw new Exception(t('Csv export file is missing.'));
+            if (! Storage::disk('efs')->exists($filePath)) {
+                throw new Exception(t('Csv export file is missing from EFS drive.'));
             }
+
+
+            Storage::disk('s3')->putFileAs(config('config.report_dir'), $efsFullPath, $csvName);
+            File::delete($efsFullPath);
 
             $route = route('admin.downloads.report', ['file' => base64_encode($csvName)]);
             $this->user->notify(new GridCsvExport($route, $this->projectId, $this->expeditionId));
-
         } catch (Exception $e) {
             $message = [
-                'Project Id: ' . $this->projectId,
-                'Expedition Id: ' . $this->expeditionId,
-                'Error: ' . $e->getMessage(),
-                'Trace: ' . $e->getTraceAsString()
+                'Project Id: '.$this->projectId,
+                'Expedition Id: '.$this->expeditionId,
+                'Error: '.$e->getMessage(),
+                'Trace: '.$e->getTraceAsString(),
             ];
             $this->user->notify(new GridCsvExportError($message));
             Storage::disk('s3')->delete(config('config.report_dir').'/'.$csvName);
@@ -159,7 +163,8 @@ class GridExportCsvJob implements ShouldQueue
         $header = Header::where('project_id', $this->projectId)->first()->header['image'];
         array_unshift($header, '_id', 'project_id', 'id', 'expedition_ids', 'exported');
         array_push($header, 'ocr', 'occurrence', 'updated_at', 'created_at');
-        return collect($header)->flip()->map(function($value, $key) {
+
+        return collect($header)->flip()->map(function ($value, $key) {
             return "";
         });
     }

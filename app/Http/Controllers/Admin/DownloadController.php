@@ -88,9 +88,13 @@ class DownloadController extends Controller
      */
     public function report(string $fileName): Redirector|RedirectResponse|Application
     {
-        $url = Storage::disk('s3')->temporaryUrl(config('config.report_dir').'/'.base64_decode($fileName), now()->addMinutes(5), ['ResponseContentDisposition' => 'attachment;']);
+        $file = base64_decode($fileName);
 
-        return redirect($url);
+        return redirect(Storage::disk('s3')->temporaryUrl(
+            config('config.report_dir').'/'.$file,
+            now()->addMinutes(5),
+            ['ResponseContentDisposition' => 'attachment; filename='.$file]
+        ));
     }
 
     /**

@@ -66,12 +66,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.classification')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconcile')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconciled')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.transcript')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.summary')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.explained')));
         // "aws s3 mv s3://biospex-app/scratch/2-2-c5afceb7-b475-4628-8cdc-6fb2d0b939d5 /efs/batch/ --recursive"
     }
 
