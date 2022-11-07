@@ -19,6 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
+use App\Notifications\JobComplete;
 use App\Services\Reconcile\ReconcileProcess;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -65,6 +67,12 @@ class AppCommand extends Command
      * @return void
      */
     public function handle()
+    {
+        $user = User::find(1);
+        $user->notify(new JobComplete('file', ['test', 'something']));
+    }
+
+    public function clean()
     {
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.classification')));
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconcile')));

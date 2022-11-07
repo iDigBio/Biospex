@@ -35,8 +35,6 @@
     "ramsey/uuid": "^4.1",
     "rennokki/laravel-sns-events": "^7.1",
     "spiritix/lada-cache": "^5.1",
-    "symfony/http-client": "^6.0",
-    "symfony/mailgun-mailer": "^6.0",
     "thiagoalessio/tesseract_ocr": "^2.9",
     "tio/laravel": "^1.10"
   },

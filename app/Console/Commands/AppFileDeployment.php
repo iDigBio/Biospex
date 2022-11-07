@@ -88,24 +88,28 @@ class AppFileDeployment extends Command
     {
         // copy needed files to locations
         $appFiles = File::files($this->resPath.'/apps');
-        $appTargets = collect($appFiles)->map(function ($file) {
-            $target = $this->appPath.'/'.File::name($file);
+        $appTargets = collect($appFiles)->reject(function ($file) {
+            return $this->rejectFiles($file);
+        })->map(function ($file) {
+            $target = $this->appPath.'/'.$file->getBaseName();
             if (File::exists($target)) {
                 File::delete($target);
             }
 
-            File::copy($file, $target);
+            File::copy($file->getPathname(), $target);
 
             return $target;
         });
 
         $supFiles = File::files($this->resPath.'/supervisord');
-        $subTargets = collect($supFiles)->map(function ($file) {
-            $target = $this->supPath.'/'.File::name($file);
+        $subTargets = collect($supFiles)->reject(function ($file) {
+            return $this->rejectFiles($file);
+        })->map(function ($file) {
+            $target = $this->supPath.'/'.$file->getBaseName();
             if (File::exists($target)) {
                 File::delete($target);
             }
-            File::copy($file, $target);
+            File::copy($file->getPathname(), $target);
 
             return $target;
         });
@@ -181,5 +185,21 @@ class AppFileDeployment extends Command
             'QUEUE_PUSHER_PROCESS',
             'QUEUE_LAMBDA',
         ]);
+    }
+
+    /**
+     * check file.
+     *
+     * @param $file
+     * @return bool
+     */
+    private function rejectFiles($file): bool
+    {
+        $files = [
+            'panoptes-pusher.conf',
+            'panoptes-pusher.js',
+        ];
+
+        return config('app.env') !== 'production' && in_array($file->getBaseName(), $files);
     }
 }
