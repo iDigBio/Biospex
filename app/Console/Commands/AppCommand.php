@@ -68,8 +68,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        $user->notify(new JobComplete('file', ['test', 'something']));
+
     }
 
     public function clean()
