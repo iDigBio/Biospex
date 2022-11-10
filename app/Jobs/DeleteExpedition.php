@@ -84,7 +84,7 @@ class DeleteExpedition implements ShouldQueue
         try {
 
             $expedition->downloads->each(function ($download) {
-                Storage::delete(config('config.export_dir').'/'.$download->file);
+                Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
             });
 
             $mongoDbService->setCollection('pusher_transcriptions');
