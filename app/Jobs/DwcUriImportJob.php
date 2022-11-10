@@ -89,7 +89,7 @@ class DwcUriImportJob implements ShouldQueue
         try
         {
             $fileName = basename($this->data['url']);
-            $filePath = Storage::path(config('config.aws_s3_import_dir') . '/' . $fileName);
+            $filePath = Storage::disk('efs')->path(config('config.import_dir').'/'.$fileName);
 
             $file = file_get_contents(GeneralHelper::urlEncode($this->data['url']));
             if ($file === false)
@@ -102,7 +102,7 @@ class DwcUriImportJob implements ShouldQueue
                 throw new Exception(t('Wrong file type for zip download'));
             }
 
-            if (Storage::put(config('config.aws_s3_import_dir') . '/' . $fileName, $file) === false)
+            if (Storage::put(config('config.import_dir') . '/' . $fileName, $file) === false)
             {
                 throw new Exception(t('An error occurred while attempting to save file: %s', $filePath));
             }
