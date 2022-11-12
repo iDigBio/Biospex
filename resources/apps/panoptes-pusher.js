@@ -1,0 +1,27 @@
+/*
+const axios = require('axios');
+const Pusher = require('pusher-js');
+const https = require('https');
+const pusher = new Pusher('79e8e05ea522377ba6db');
+const channel = pusher.subscribe('panoptes');
+
+const config = {
+    httpsAgent: new https.Agent({
+        rejectUnauthorized: false,
+    }),
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Authorization': 'Bearer '.concat('API_TOKEN')
+    }
+}
+
+channel.bind('classification', function (data) {
+    axios.post(
+        'API_URL/API_VERSION/panoptes-pusher',
+        JSON.stringify(data),
+        config
+    ).catch(console.log);
+});
+*/
