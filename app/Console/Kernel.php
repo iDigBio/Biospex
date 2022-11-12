@@ -41,7 +41,7 @@ class Kernel extends ConsoleKernel
         // Clean bingo maps
         $schedule->command('bingo:clean')->timezone('America/New_York')->dailyAt('06:05');
 
-        if ($this->app->environment('prod')) {
+        if ($this->app->environment('production')) {
             // Trigger workflow manager to handle csv creation and updating expedition/project
             $schedule->command('workflow:manage')->timezone('America/New_York')->at('01:00')->before(function () {
                 Cache::flush();
