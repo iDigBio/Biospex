@@ -404,7 +404,7 @@ class GeneralHelper
         }
 
         if ($type === 'report') {
-            return Storage::disk('s3')->disk('s3')->size(config('config.report_dir').'/'.$file);
+            return Storage::disk('s3')->size(config('config.report_dir').'/'.$file);
         }
 
         return Storage::disk('s3')->size(config('config.zooniverse_dir.dir').'/'.$type.'/'.$file);
