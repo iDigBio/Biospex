@@ -336,7 +336,8 @@ class ReconcileProcess
     protected function uploadFileToS3(string $dir, string $efsFullPath, string $fileName)
     {
         $s3Dir = config('config.zooniverse_dir.' . $dir);
-        Storage::disk('s3')->putFileAs($s3Dir, $efsFullPath, $fileName.'.csv');;
+        $ext = $dir !== 'summary' ? '.csv' : '.html';
+        Storage::disk('s3')->putFileAs($s3Dir, $efsFullPath, $fileName.$ext);
     }
 
     /**
