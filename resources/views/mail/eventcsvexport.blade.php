@@ -6,8 +6,9 @@
 
 @isset($url)
 @component('mail::button', ['url' => $url])
-    {{ t('Download Event CSV') }}
+{{ t('Download Event CSV') }}
 @endcomponent
+{{ t('If clicking button does not work, right click and open in new window.') }}
 @endisset
 
 {{ t('Thank you') }},

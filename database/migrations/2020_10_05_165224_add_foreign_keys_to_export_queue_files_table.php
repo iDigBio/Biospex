@@ -26,7 +26,7 @@ class AddForeignKeysToExportQueueFilesTable extends Migration
     public function down()
     {
         Schema::table('export_queue_files', function (Blueprint $table) {
-            $table->dropForeign('export_queue_files_queue_id_foreign');
+            $table->dropForeign('queues.export_files_queue_id_foreign');
         });
     }
 }

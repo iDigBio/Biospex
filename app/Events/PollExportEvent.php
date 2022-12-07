@@ -41,20 +41,22 @@ class PollExportEvent extends Event implements ShouldBroadcast
     public $data = [];
 
     /**
-     * The name of the queue on which to place the event.
-     *
-     * @var string
-     */
-    public $broadcastQueue;
-
-    /**
      * PollExportEvent constructor.
      * @param $data
      */
     public function __construct($data)
     {
         $this->data = $data;
-        $this->broadcastQueue = config('config.event_tube');
+    }
+
+    /**
+     * The name of the queue on which to place the broadcasting job.
+     *
+     * @return string
+     */
+    public function broadcastQueue(): string
+    {
+        return config('config.queues.event');
     }
 
     /**

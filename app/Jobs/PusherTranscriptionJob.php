@@ -39,7 +39,7 @@ class PusherTranscriptionJob implements ShouldQueue
      */
     public function __construct()
     {
-        $this->onQueue(config('config.pusher_process_tube'));
+        $this->onQueue(config('config.queus.pusher_process'));
     }
 
     /**

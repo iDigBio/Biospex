@@ -23,7 +23,7 @@ use App\Models\Import;
 use App\Notifications\DarwinCoreImportError;
 use App\Notifications\ImportComplete;
 use App\Repositories\ProjectRepository;
-use App\Services\Csv\Csv;
+use App\Services\Process\CreateReportService;
 use App\Services\Process\DarwinCore;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -49,12 +49,12 @@ class DwcFileImportJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 1800;
+    public int $timeout = 1800;
 
     /**
      * @var Import
      */
-    public $import;
+    public Import $import;
 
     /**
      * Create a new job instance.
@@ -64,37 +64,37 @@ class DwcFileImportJob implements ShouldQueue
     public function __construct(Import $import)
     {
         $this->import = $import;
-        $this->onQueue(config('config.import_tube'));
+        $this->onQueue(config('config.queues.import'));
     }
 
     /**
      * @param \App\Repositories\ProjectRepository $projectRepo
      * @param \App\Services\Process\DarwinCore $dwcProcess
-     * @param \App\Services\Csv\Csv $csv
+     * @param \App\Services\Process\CreateReportService $createReportService
      */
     public function handle(
         ProjectRepository $projectRepo,
         DarwinCore $dwcProcess,
-        Csv $csv
+        CreateReportService $createReportService
     ) {
-        $scratchFileDir = Storage::path(config('config.scratch_dir').'/'.md5($this->import->file));
+        $scratchFileDir = Storage::disk('efs')->path(config('config.scratch_dir').'/'.md5($this->import->file));
+        $importFilePath = Storage::disk('efs')->path($this->import->file);
 
         $project = $projectRepo->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
 
         try {
             $this->makeDirectory($scratchFileDir);
-            $importFilePath = Storage::path($this->import->file);
 
             $this->unzip($importFilePath, $scratchFileDir);
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
             $dupsCsvName = md5($this->import->id).'dup.csv';
-            $dupName = $csv->createReportCsv($dwcProcess->getDuplicates(), $dupsCsvName);
+            $dupName = $createReportService->createCsvReport($dupsCsvName, $dwcProcess->getDuplicates());
 
             $rejCsvName = md5($this->import->id).'rej.csv';
-            $rejName = $csv->createReportCsv($dwcProcess->getRejectedMedia(), $rejCsvName);
+            $rejName = $createReportService->createCsvReport($rejCsvName, $dwcProcess->getRejectedMedia());
 
             Notification::send($users, new ImportComplete($project->title, $dupName, $rejName));
 
@@ -111,10 +111,15 @@ class DwcFileImportJob implements ShouldQueue
         } catch (Exception $e) {
             $this->import->error = 1;
             $this->import->save();
-            File::cleanDirectory($scratchFileDir);
-            File::deleteDirectory($scratchFileDir);
+            //File::cleanDirectory($scratchFileDir);
+            //File::deleteDirectory($scratchFileDir);
 
-            Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $e->getMessage()));
+            $message = [
+                'File: ' . $e->getFile(),
+                'Line: ' . $e->getLine(),
+                'Message: ' . $e->getMessage()
+            ];
+            Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $message));
 
             $this->delete();
         }

@@ -19,10 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\AppLambdaQueueJob;
-use App\Jobs\TestJob;
-use App\Models\Expedition;
-use App\Services\Actor\NfnPanoptes\ZooniverseExportProcessImage;
 use Illuminate\Console\Command;
 
 /**
@@ -45,32 +41,50 @@ class AppCommand extends Command
     /**
      * AppCommand constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
     /**
-     *
+     * @return void
      */
     public function handle()
     {
-        TestJob::dispatch();
-        //AppLambdaQueueJob::dispatch();
-        /*
-        $basePath = base_path('imgProcess.js');
-        $folder = \Storage::path('tmp');
+    }
 
-        $url = "http://cdn.flmnh.ufl.edu/Herbarium/jpg/116/116667s1.jpg";
-        $fileOne = "116667s1.jpg";
-        $command = "node $basePath $fileOne $url $folder 1500 1500";
-        */
+    public function clean()
+    {
         /*
-        $url = "http://cdn.flmnh.ufl.edu/Herbarium/jpg/074/74718s1.jpg";
-        $fileTwo = "74718s1.jpg";
-        $command = "node $basePath $fileTwo $url $folder 1800 1800";
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.classification')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconcile')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconciled')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.transcript')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.summary')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.explained')));
         */
+        // "aws s3 mv s3://biospex-app/scratch/2-2-c5afceb7-b475-4628-8cdc-6fb2d0b939d5 /efs/batch/ --recursive"
+    }
 
-        //exec($command, $output);
-        //dd($output);
+    /**
+     * peek, peakReady, peekBuried, peakDelayed
+     * https://panoptesuploads.blob.core.windows.net/private/workflow_classifications_export/74d14c7b-10dd-4aae-affe-a229d7daf8fa.csv?sp=r&sv=2017-11-09&se=2022-09-06T20%3A43%3A18Z&sr=b&sig=gCyUMcgFllP9wRvrPzcmx19NkTZy%2B5ih76iOk%2BJa2fk%3D
+     * https://panoptesuploads.blob.core.windows.net/private/workflow_classifications_export/828fc103-fcf6-4af7-9d33-faf9cc4691f3.csv?sp=r&sv=2017-11-09&se=2022-09-06T20%3A43%3A18Z&sr=b&sig=cuV%2FVtIjJXmEXCt0WASP7JFX%2BKrs2HssqNjNebs5qFI%3D
+     */
+    public function clearTube($tube)
+    {
+        /*
+        try
+        {
+            $pheanstalk = Queue::getPheanstalk();
+            $pheanstalk->useTube('default');
+
+            while($job = $pheanstalk->peekReady())
+            {
+                $pheanstalk->delete($job);
+            }
+        }
+        catch(\Exception $e){}
+        */
     }
 }

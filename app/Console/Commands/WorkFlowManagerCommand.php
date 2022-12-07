@@ -63,7 +63,7 @@ class WorkFlowManagerCommand extends Command
     public function __construct(WorkflowManagerRepository $workflowManagerRepo)
     {
         parent::__construct();
-        $this->tube = config('config.workflow_tube');
+        $this->tube = config('config.queues.workflow');
         $this->workflowManagerRepo = $workflowManagerRepo;
     }
 

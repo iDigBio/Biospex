@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\ApiController;
 use App\Http\Resources\WeDigBioDashboard;
 use App\Http\Resources\WeDigBioDashboardCollection;
 use App\Services\Dashboard\WeDigBioDashboardProcess;
+use Illuminate\Http\Response;
 
 /**
  * Class WeDigBioDashboardController
@@ -34,7 +35,7 @@ class WeDigBioDashboardController extends ApiController
     /**
      * @var \App\Services\Dashboard\WeDigBioDashboardProcess
      */
-    private $weDigBioDashboardProcess;
+    private WeDigBioDashboardProcess $weDigBioDashboardProcess;
 
     /**
      * WeDigBioDashboardController constructor.
@@ -62,14 +63,10 @@ class WeDigBioDashboardController extends ApiController
      *     @Parameter("expedition_uuid", description="Biospex Expedition ID resource belongs to.")
      * })
      *
-     * @return mixed
+     * @return \App\Http\Resources\WeDigBioDashboardCollection|\Illuminate\Http\Response
      */
-    public function index()
+    public function index(): Response|WeDigBioDashboardCollection
     {
-        if(!request()->user()->tokenCan('wedigbio-dashboard:read')) {
-            return $this->errorUnauthorized();
-        }
-
         $request = request()->all();
         $this->weDigBioDashboardProcess->setDashboardQuery($request);
         $numFound = $this->weDigBioDashboardProcess->getTotalCount();
@@ -89,9 +86,9 @@ class WeDigBioDashboardController extends ApiController
     /**
      * Store resource.
      *
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(): Response
     {
         return $this->errorForbidden();
     }
@@ -108,14 +105,10 @@ class WeDigBioDashboardController extends ApiController
      * })
      *
      * @param string $guid
-     * @return mixed
+     * @return \App\Http\Resources\WeDigBioDashboard|\Illuminate\Http\Response
      */
-    public function show(string $guid)
+    public function show(string $guid): Response|WeDigBioDashboard
     {
-        if(!request()->user()->tokenCan('wedigbio-dashboard:read')) {
-            return $this->errorUnauthorized();
-        }
-
         $result = $this->weDigBioDashboardProcess->showApiDashboard($guid);
 
         return (new WeDigBioDashboard($result))->resourceRoute('api.v1.wedigbio-dashboard.show');
@@ -124,9 +117,9 @@ class WeDigBioDashboardController extends ApiController
     /**
      * Update resource.
      *
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
-    public function update()
+    public function update(): Response
     {
         return $this->errorForbidden();
     }
@@ -134,9 +127,9 @@ class WeDigBioDashboardController extends ApiController
     /**
      * Destroy resource.
      *
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
-    public function destroy()
+    public function destroy(): Response
     {
         return $this->errorForbidden();
     }

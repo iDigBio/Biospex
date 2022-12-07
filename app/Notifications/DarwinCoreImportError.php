@@ -58,15 +58,15 @@ class DarwinCoreImportError extends Notification implements ShouldQueue
      *
      * @param string $title
      * @param int $identifier
-     * @param string $message
+     * @param array $message
      */
-    public function __construct(string $title, int $identifier, string $message)
+    public function __construct(string $title, int $identifier, array $message)
     {
         $this->title = $title;
         $this->identifier = $identifier;
         $this->message = $message;
         $this->adminEmail = config('mail.from.address');
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**
@@ -86,10 +86,12 @@ class DarwinCoreImportError extends Notification implements ShouldQueue
      */
     public function toMail()
     {
+        $message = implode('<br>', $this->message);
+
         $attributes = [
             'title' => $this->title,
             'id' => $this->identifier,
-            'message' => $this->message
+            'message' => $message
         ];
 
         return (new MailMessage)

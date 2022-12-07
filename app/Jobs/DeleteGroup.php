@@ -51,7 +51,7 @@ class DeleteGroup implements ShouldQueue
     public function __construct(Group $group)
     {
         $this->group = $group;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**
@@ -68,7 +68,7 @@ class DeleteGroup implements ShouldQueue
         $group->projects->each(function ($project) use ($mongoDbService) {
             $project->expeditions->each(function ($expedition) use ($mongoDbService) {
                 $expedition->downloads->each(function ($download) {
-                    Storage::delete(config('config.export_dir').'/'.$download->file);
+                    Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
                 });
 
                 $mongoDbService->setCollection('panoptes_transcriptions');

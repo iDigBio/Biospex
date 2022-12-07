@@ -88,17 +88,28 @@ class AppFileDeployment extends Command
     {
         // copy needed files to locations
         $appFiles = File::files($this->resPath.'/apps');
-        $appTargets = collect($appFiles)->map(function ($file) {
-            $target = $this->appPath.'/'.File::name($file);
-            File::copy($file, $target);
+        $appTargets = collect($appFiles)->reject(function ($file) {
+            return $this->rejectFiles($file);
+        })->map(function ($file) {
+            $target = $this->appPath.'/'.$file->getBaseName();
+            if (File::exists($target)) {
+                File::delete($target);
+            }
+
+            File::copy($file->getPathname(), $target);
 
             return $target;
         });
 
         $supFiles = File::files($this->resPath.'/supervisord');
-        $subTargets = collect($supFiles)->map(function ($file) {
-            $target = $this->supPath.'/'.File::name($file);
-            File::copy($file, $target);
+        $subTargets = collect($supFiles)->reject(function ($file) {
+            return $this->rejectFiles($file);
+        })->map(function ($file) {
+            $target = $this->supPath.'/'.$file->getBaseName();
+            if (File::exists($target)) {
+                File::delete($target);
+            }
+            File::copy($file->getPathname(), $target);
 
             return $target;
         });
@@ -117,7 +128,7 @@ class AppFileDeployment extends Command
      * @param $search
      * @return false|\Illuminate\Config\Repository|mixed|string
      */
-    private function configureReplace($search)
+    private function configureReplace($search): mixed
     {
         if ($search === 'APP_URL' || $search === 'APP_ENV') {
             return config(str_replace('_', '.', strtolower($search)));
@@ -127,10 +138,10 @@ class AppFileDeployment extends Command
             return config('database.redis.default.host');
         }
 
-        if (strpos($search, 'QUEUE_') === 0) {
+        if (str_starts_with($search, 'QUEUE_')) {
             $replace = strtolower(str_replace('QUEUE_', '', $search));
 
-            return config('config.'.$replace);
+            return config('config.queues.'.$replace);
         }
 
         if ($search === 'MAP_PRIVATE_KEY') {
@@ -160,17 +171,35 @@ class AppFileDeployment extends Command
 
             'NUM_PROCS',
 
-            'QUEUE_CHART_TUBE',
-            'QUEUE_CLASSIFICATION_TUBE',
-            'QUEUE_DEFAULT_TUBE',
-            'QUEUE_EVENT_TUBE',
-            'QUEUE_IMPORT_TUBE',
-            'QUEUE_EXPORT_TUBE',
-            'QUEUE_RECONCILE_TUBE',
-            'QUEUE_WORKFLOW_TUBE',
-            'QUEUE_OCR_TUBE',
-            'QUEUE_PUSHER_TUBE',
-            'QUEUE_PUSHER_PROCESS_TUBE',
+            'QUEUE_CHART',
+            'QUEUE_CLASSIFICATION',
+            'QUEUE_DEFAULT',
+            'QUEUE_EVENT',
+            'QUEUE_IMPORT',
+            'QUEUE_EXPORT',
+            'QUEUE_RECONCILE',
+            'QUEUE_SNS_IMAGE',
+            'QUEUE_WORKFLOW',
+            'QUEUE_OCR',
+            'QUEUE_PUSHER_TRANSCRIPTIONS',
+            'QUEUE_PUSHER_PROCESS',
+            'QUEUE_LAMBDA',
         ]);
+    }
+
+    /**
+     * check file.
+     *
+     * @param $file
+     * @return bool
+     */
+    private function rejectFiles($file): bool
+    {
+        $files = [
+            'panoptes-pusher.conf',
+            'panoptes-pusher.js',
+        ];
+
+        return config('app.env') !== 'production' && in_array($file->getBaseName(), $files);
     }
 }

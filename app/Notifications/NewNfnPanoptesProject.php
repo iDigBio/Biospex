@@ -46,7 +46,7 @@ class NewNfnPanoptesProject extends Notification implements ShouldQueue
     public function __construct($project)
     {
         $this->project = $project;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**

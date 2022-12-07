@@ -175,21 +175,6 @@ class ExpeditionRepository extends BaseRepository
     }
 
     /**
-     * Return expedition with group owner and users who will be notified.
-     *
-     * @param int $expeditionId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
-     */
-    public function findNotifyExpeditionUsers(int $expeditionId)
-    {
-        return $this->model->with(['project.group' => function($q) {
-            $q->with(['owner', 'users' => function($q){
-                $q->where('notification', 1);
-            }]);
-        }])->find($expeditionId);
-    }
-
-    /**
      * Sort results for expedition indexes.
      *
      * @param $projectId

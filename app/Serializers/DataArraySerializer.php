@@ -28,7 +28,7 @@ use League\Fractal\Serializer\ArraySerializer;
  */
 class DataArraySerializer extends ArraySerializer
 {
-    public function collection($resourceKey, array $data)
+    public function collection(?string $resourceKey, array $data): array
     {
         if ($resourceKey === null) {
             return ['data' => $data];
@@ -36,7 +36,7 @@ class DataArraySerializer extends ArraySerializer
         return [$resourceKey => $data];
     }
 
-    public function item($resourceKey, array $data)
+    public function item(?string $resourceKey, array $data): array
     {
         if ($resourceKey === null) {
             return ['data' => $data];

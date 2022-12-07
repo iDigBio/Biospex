@@ -19,86 +19,84 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
+use App\Jobs\ZooniverseExportBuildImageRequestsJob;
 use App\Models\Actor;
 use App\Models\ExportQueue;
 use App\Services\Actor\ActorInterface;
-use function t;
+use App\Repositories\ExportQueueFileRepository;
+use App\Repositories\ExportQueueRepository;
+use App\Repositories\SubjectRepository;
 
 /**
  * Class ZooniverseBuildQueue
  *
  * @package App\Services\Actor
  */
-class ZooniverseBuildQueue extends ZooniverseBase implements ActorInterface
+class ZooniverseBuildQueue implements ActorInterface
 {
+    /**
+     * @var \App\Repositories\ExportQueueRepository
+     */
+    private ExportQueueRepository $exportQueueRepository;
+
+    /**
+     * @var \App\Repositories\ExportQueueFileRepository
+     */
+    private ExportQueueFileRepository $exportQueueFileRepository;
+
+    /**
+     * @var \App\Repositories\SubjectRepository
+     */
+    private SubjectRepository $subjectRepository;
+
+    /**
+     * Construct.
+     *
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
+     * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
+     * @param \App\Repositories\SubjectRepository $subjectRepository
+     */
+    public function __construct(
+        ExportQueueRepository $exportQueueRepository,
+        ExportQueueFileRepository $exportQueueFileRepository,
+        SubjectRepository $subjectRepository
+    ) {
+        $this->exportQueueRepository = $exportQueueRepository;
+        $this->exportQueueFileRepository = $exportQueueFileRepository;
+        $this->subjectRepository = $subjectRepository;
+    }
+
     /**
      * Process actor.
      *
      * @param \App\Models\Actor $actor
+     * @return void
      * @throws \Exception
      */
     public function process(Actor $actor)
     {
-        $queue = $this->createQueue($actor);
-
-        try {
-            $subjects = $this->dbService->subjectRepo->getAssignedByExpeditionId($actor->pivot->expedition_id);
-
-            $subjects->each(function ($subject) use ($queue) {
-                $this->createQueueFile($queue, $subject);
-            });
-
-        } catch (\Exception $e) {
-            $queue->error = 1;
-            $queue->queued = 0;
-            $queue->processed = 0;
-            $queue->save();
-
-            throw new \Exception(t('Error while trying to create queue files for export: %s', $e->getMessage() . ' ' . $e->getTraceAsString()));
-        }
+        $this->exportQueueRepository->createQueue($actor->pivot->expedition_id, $actor->id, $actor->pivot->total);
     }
 
     /**
-     * Create queue for export.
+     * Build queue files table.
      *
-     * @param \App\Models\Actor $actor
-     * @return \App\Models\ExportQueue
+     * @param \App\Models\ExportQueue $exportQueue
+     * @return void
      */
-    private function createQueue(Actor $actor): ExportQueue
+    public function buildFiles(ExportQueue $exportQueue)
     {
-        $attributes = [
-            'expedition_id' => $actor->pivot->expedition_id,
-            'actor_id'      => $actor->id,
-        ];
+        $subjects = $this->subjectRepository->getAssignedByExpeditionId($exportQueue->expedition_id);
 
-        $queue = $this->dbService->exportQueueRepo->firstOrNew($attributes);
-        $queue->queued = 1;
-        $queue->error = 0;
-        $queue->stage = 0;
-        $queue->count = $actor->pivot->total;
-        $queue->processed = 0;
-        $queue->save();
+        $subjects->each(function ($subject) use ($exportQueue) {
+            $this->exportQueueFileRepository->createQueueFile($exportQueue, $subject);
+        });
 
-        return $queue;
-    }
+        $exportQueue->stage = 1;
+        $exportQueue->save();
 
-    /**
-     * Create queue file for subject.
-     *
-     * @param \App\Models\ExportQueue $queue
-     * @param $subject
-     */
-    protected function createQueueFile(ExportQueue $queue, $subject): void
-    {
-        $attributes = [
-            'queue_id'   => $queue->id,
-            'subject_id' => (string) $subject->_id
-        ];
+        \Artisan::call('export:poll');
 
-        $file = $this->dbService->exportQueueFileRepo->firstOrNew($attributes);
-        $file->url = $subject->accessURI;
-        $file->error = 0;
-        $file->error_message = null;
-        $file->save();
+        ZooniverseExportBuildImageRequestsJob::dispatch($exportQueue);
     }
 }

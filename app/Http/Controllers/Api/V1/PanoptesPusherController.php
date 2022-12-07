@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Jobs\PanoptesPusherJob;
-use Illuminate\Support\Facades\Response;
+use Illuminate\Http\Response;
 
 /**
  * Class PanoptesPusherController
@@ -33,7 +33,7 @@ class PanoptesPusherController extends ApiController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
     public function index(): Response
     {
@@ -43,9 +43,9 @@ class PanoptesPusherController extends ApiController
     /**
      * Process Panoptes data from pusher stream.
      *
-     * @return \Illuminate\Http\Response|\Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(): Response
     {
         if (! request()->isJson()) {
             return $this->errorWrongArgs(t('JSON request required'));
@@ -65,7 +65,7 @@ class PanoptesPusherController extends ApiController
     /**
      * Display the specified resource.
      *
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
     public function show(): Response
     {
@@ -75,7 +75,7 @@ class PanoptesPusherController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
     public function update(): Response
     {
@@ -85,7 +85,7 @@ class PanoptesPusherController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
     public function destroy(): Response
     {

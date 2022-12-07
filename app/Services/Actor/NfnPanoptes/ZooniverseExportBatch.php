@@ -21,33 +21,39 @@ namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Download;
 use App\Notifications\NfnBatchExportComplete;
+use App\Services\Actor\Traits\ActorBatchDirectory;
+use App\Services\Csv\Csv;
 use Exception;
 use File;
-use function route;
-use function t;
+use Storage;
 
 /**
  * Class ZooniverseExportBatch
  *
  * @package App\Services\Actor
  */
-class ZooniverseExportBatch extends ZooniverseBase
+class ZooniverseExportBatch
 {
+    use ActorBatchDirectory;
 
     /**
      * @var array
      */
-    private $fileNames = [];
+    private array $fileNames = [];
 
     /**
-     * Get Download.
-     *
-     * @param string $downloadId
-     * @return \App\Models\Download
+     * @var \App\Services\Csv\Csv
      */
-    public function getDownload(string $downloadId): Download
+    private Csv $csv;
+
+    /**
+     * Construct
+     *
+     * @param \App\Services\Csv\Csv $csv
+     */
+    public function __construct(Csv $csv)
     {
-        return $this->dbService->downloadRepo->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
+        $this->csv = $csv;
     }
 
     /**
@@ -59,11 +65,17 @@ class ZooniverseExportBatch extends ZooniverseBase
     public function process(Download $download)
     {
         $this->setProperties($download);
+        $this->setBatchFolderName($download->file);
+        $this->setBatchDirectories();
+        $this->copyExistingFile();
         $this->extractFile();
-        $chunks = $this->readCsv();
-        $this->processChunks($chunks);
 
-        File::deleteDirectory($this->workingDirectory);
+        $this->setCsvReader();
+        $this->processCsvRows();
+
+        exec("rm -r {$this->fullBatchWorkingDir}");
+
+        Storage::disk('efs')->delete("{$this->efsBatchDir}/{$this->existingExportFile}");
 
         $links = $this->buildLinks();
 
@@ -71,18 +83,24 @@ class ZooniverseExportBatch extends ZooniverseBase
     }
 
     /**
-     * Set properties.
+     * Copy existing export file to efs batch directory.
      *
-     * @param \App\Models\Download $download
+     * @return void
      * @throws \Exception
      */
-    private function setProperties(Download $download)
+    private function copyExistingFile()
     {
-        $this->setExpedition($download->expedition);
-        $this->setActor($download->actor);
-        $this->setOwner($download->expedition->project->group->owner);
-        $this->actorDirectory->setBatchFolder($download->file);
-        $this->actorDirectory->setDirectories(true, true);
+        if ($this->checkS3ExportFileExists()) {
+
+            exec("aws s3 cp {$this->existingBucketExportFile} {$this->fullEfsBatchDir}", $output, $retval);
+            if ($retval !== 0) {
+                throw new Exception("Could not copy {$this->existingBucketExportFile} to {$this->fullEfsBatchDir}/{$this->existingExportFile}");
+            }
+
+            return;
+        }
+
+        throw new Exception(t('The existing export file does not exist.'));
     }
 
     /**
@@ -92,8 +110,14 @@ class ZooniverseExportBatch extends ZooniverseBase
      */
     private function extractFile()
     {
-        if (File::isFile($this->archiveTarGzPath)) {
-            exec('tar -xzf '.$this->archiveTarGzPath.' --directory '.$this->workingDirectory);
+        if ($this->checkEfsExportFileExists()) {
+
+            $cmd = $this->setCommand();
+            exec($cmd, $output, $retvalue);
+
+            if ($retvalue !== 0) {
+                throw new Exception("Could not decompress {$this->fullEfsBatchDir}/{$this->existingExportFile}");
+            }
 
             return;
         }
@@ -102,42 +126,55 @@ class ZooniverseExportBatch extends ZooniverseBase
     }
 
     /**
+     * Set command based on extension type.
+     *
+     * @return string
+     */
+    private function setCommand(): string
+    {
+        return $this->fileExtension === '.zip' ?
+            "unzip {$this->fullEfsBatchDir}/{$this->existingExportFile} -d {$this->fullBatchWorkingDir}" :
+            "tar -xf {$this->fullEfsBatchDir}/{$this->existingExportFile} -C {$this->fullBatchWorkingDir}";
+
+    }
+
+    /**
      * Read Csv file into array chunks.
      *
-     * @return array
      * @throws \League\Csv\Exception
      */
-    private function readCsv(): array
+    private function setCsvReader()
     {
-        $csv = $this->workingDirectory . '/' . $this->expedition->uuid . '.csv';
-        $this->csv->readerCreateFromPath($csv);
-        $this->csv->setDelimiter();
-        $this->csv->setEnclosure();
+        $csvFilePath = $this->batchWorkingDir.'/'.$this->expedition->uuid.'.csv';
+        $this->csv->readerCreateFromPath(Storage::disk('efs')->path($csvFilePath));
         $this->csv->setHeaderOffset();
-
-        return array_chunk(iterator_to_array($this->csv->getRecords(), true), 1000);
     }
 
     /**
      * Process chunked csv array.
      *
-     * @param array $chunks
      * @throws \League\Csv\CannotInsertRecord|\Exception
      */
-    private function processChunks(array $chunks)
+    private function processCsvRows()
     {
+        $chunks = array_chunk(iterator_to_array($this->csv->getRecords(), true), 1000);
+
         foreach ($chunks as $batch => $chunk) {
-            foreach($chunk as $row) {
+
+            $this->fileNames[] = $fileName = $batch.'-'.$this->actor->id.'-'.$this->expedition->uuid;
+            $this->setBatchTmpDirectory($fileName);
+
+            foreach ($chunk as $row) {
                 $this->moveFile($row['imageName']);
             }
 
-            $this->fileNames[] = $fileName = $batch . '-' . $this->actor->id . '-' . $this->expedition->uuid;
-
             $this->createCsv($chunk, $fileName);
 
-            $this->tarGzFile($fileName);
+            $this->createZipFile($fileName);
 
-            File::deleteDirectory($this->tmpDirectory, true);
+            $this->uploadZipToS3($fileName);
+
+            exec("rm -r {$this->fullBatchTmpDir}");
         }
     }
 
@@ -148,8 +185,8 @@ class ZooniverseExportBatch extends ZooniverseBase
      */
     private function moveFile(string $fileName)
     {
-        $filePath = $this->workingDirectory . '/' . $fileName;
-        $tmpPath = $this->tmpDirectory . '/' . $fileName;
+        $filePath = Storage::disk('efs')->path($this->batchWorkingDir.'/'.$fileName);
+        $tmpPath = Storage::disk('efs')->path($this->batchTmpDir.'/'.$fileName);
         File::move($filePath, $tmpPath);
     }
 
@@ -162,31 +199,50 @@ class ZooniverseExportBatch extends ZooniverseBase
      */
     private function createCsv(array $chunk, string $fileName)
     {
-        $csvFileName = $fileName . '.csv';
-        $csvFilePath = $this->tmpDirectory.'/'.$csvFileName;
-        $this->csv->writerCreateFromPath($csvFilePath);
+        $csvFileName = $fileName.'.csv';
+        $csvFilePath = $this->batchTmpDir.'/'.$csvFileName;
+
+        $this->csv->writerCreateFromPath(Storage::disk('efs')->path($csvFilePath));
         $this->csv->insertOne(array_keys(reset($chunk)));
         $this->csv->insertAll($chunk);
     }
 
     /**
-     * Create tar gx file for batch.
+     * Create zip file for batch.
      *
      * @param string $fileName
      * @throws \Exception
      */
-    private function tarGzFile(string $fileName)
+    private function createZipFile(string $fileName)
     {
-        $tarFilePath = $this->actorDirectory->setBatchArchiveTarGz($fileName);
+        $batchExportZipFile = Storage::disk('efs')->path($this->batchWorkingDir.'/'.$fileName.'.zip');
+        $batchTmpDirPath = Storage::disk('efs')->path($this->batchTmpDir);
 
-        exec("cd {$this->tmpDirectory} && find . \( -name '*.jpg' -o -name '*.csv' \) -print >../export.manifest");
-        exec("cd {$this->tmpDirectory} && tar -czf $tarFilePath --files-from ../export.manifest", $out, $ok);
+        exec("zip -r -j {$batchExportZipFile} $batchTmpDirPath", $out, $ok);
 
-        if (! $ok) {
+        if ($ok === 0) {
             return;
         }
 
-        throw new Exception('Could not create compressed export batch file for Expedition: ' . $this->expedition->title);
+        throw new Exception('Could not create compressed export batch file for Expedition: '.$this->expedition->title);
+    }
+
+    /**
+     * Upload batch zip to s3 bucket.
+     *
+     * @param string $fileName
+     * @return void
+     * @throws \Exception
+     */
+    private function uploadZipToS3(string $fileName)
+    {
+        $batchExportZipFile = Storage::disk('efs')->path($this->batchWorkingDir.'/'.$fileName.'.zip');
+
+        exec("aws s3 mv $batchExportZipFile {$this->bucketBatchDir}/$fileName.zip", $output, $retval);
+
+        if ($retval !== 0) {
+            throw new Exception("Could not copy $batchExportZipFile to {$this->bucketBatchDir}");
+        }
     }
 
     /**
@@ -198,13 +254,9 @@ class ZooniverseExportBatch extends ZooniverseBase
     {
         $links = [];
         foreach ($this->fileNames as $fileName) {
-            $url = route('admin.downloads.downloadTarBatch', [
-                'projects' => $this->expedition->project_id,
-                'expeditions' => $this->expedition->id,
-                'files' => base64_encode($fileName)
-            ]);
+            $url = Storage::disk('s3')->temporaryUrl(config('config.batch_dir').'/'.$fileName . '.zip', now()->addHours(72), ['ResponseContentDisposition' => 'attachment']);
 
-            $links[] = '<a href="'.$url.'">' . $fileName . '</a>';
+            $links[] = '<a href="'.$url.'">'.$fileName.'</a>';
         }
 
         return $links;

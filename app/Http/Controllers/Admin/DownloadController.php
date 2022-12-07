@@ -23,11 +23,14 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ExportDownloadBatchJob;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\UserRepository;
-use App\Services\Download\DownloadType;
 use Exception;
 use Flash;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 /**
  * Class DownloadController
@@ -39,7 +42,7 @@ class DownloadController extends Controller
     /**
      * @var \App\Repositories\UserRepository
      */
-    private $userRepo;
+    private UserRepository $userRepo;
 
     /**
      * @var \App\Repositories\ExpeditionRepository
@@ -47,25 +50,17 @@ class DownloadController extends Controller
     private ExpeditionRepository $expeditionRepo;
 
     /**
-     * @var \App\Services\Download\DownloadType
-     */
-    private $downloadType;
-
-    /**
      * DownloadController constructor.
      *
      * @param \App\Repositories\UserRepository $userRepo
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Services\Download\DownloadType $downloadType
      */
     public function __construct(
         UserRepository $userRepo,
         ExpeditionRepository $expeditionRepo,
-        DownloadType $downloadType
     ) {
         $this->userRepo = $userRepo;
         $this->expeditionRepo = $expeditionRepo;
-        $this->downloadType = $downloadType;
     }
 
     /**
@@ -75,7 +70,7 @@ class DownloadController extends Controller
      * @param string $expeditionId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(string $projectId, string $expeditionId)
+    public function index(string $projectId, string $expeditionId): Factory|View
     {
         $user = $this->userRepo->findWith(request()->user()->id, ['profile']);
         $expedition = $this->expeditionRepo->expeditionDownloadsByActor($expeditionId);
@@ -89,111 +84,13 @@ class DownloadController extends Controller
      * Download report.
      *
      * @param string $fileName
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function report(string $fileName)
+    public function report(string $fileName): Redirector|RedirectResponse|Application
     {
-        try {
-            [$reader, $headers] = $this->downloadType->createReportDownload(base64_decode($fileName));
+        $url = Storage::disk('s3')->temporaryUrl(config('config.report_dir').'/'.base64_decode($fileName), now()->addMinutes(5), ['ResponseContentDisposition' => 'attachment;']);
 
-            return response($reader->getContent(), 200, $headers);
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
-
-            return redirect()->route('admin.projects.index');
-        }
-    }
-
-    /**
-     * Create downloads for csv and html.
-     *
-     * @param string $projectId
-     * @param string $expeditionId
-     * @param string $downloadId
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
-    public function download(string $projectId, string $expeditionId, string $downloadId)
-    {
-        try {
-
-            $download = $this->downloadType->getDownload($downloadId);
-
-            if (! $download) {
-                Flash::error(t("The file record appears to be missing. If you'd like to have the file generated, please use the generate button in the Expedition tools."));
-
-                return redirect()->back();
-            }
-
-            if ($download->type === 'summary') {
-
-                [$filePath, $headers] = $this->downloadType->createHtmlDownload($download);
-
-                return response()->download($filePath, null, $headers);
-            }
-
-            [$reader, $headers] = $this->downloadType->createCsvDownload($download);
-
-            return response($reader->getContent(), 200, $headers);
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
-
-            return redirect()->back();
-        }
-    }
-
-    /**
-     * Create download for tar files.
-     *
-     * @param string $projectId
-     * @param string $expeditionId
-     * @param string $downloadId
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
-    public function downloadTar(string $projectId, string $expeditionId, string $downloadId)
-    {
-        try {
-            $download = $this->downloadType->getDownload($downloadId);
-
-            if (! $this->checkPermissions('isOwner', $download->expedition->project->group)) {
-                return redirect()->back();
-            }
-
-            [$filePath, $headers] = $this->downloadType->createTarDownload($download);
-
-            return response()->download($filePath, null, $headers);
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
-
-            return redirect()->back();
-        }
-    }
-
-    /**
-     * Download batch export file.
-     *
-     * @param string $projectId
-     * @param string $expeditionId
-     * @param string $fileName
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
-    public function downloadTarBatch(string $projectId, string $expeditionId, string $fileName)
-    {
-        try {
-            $file = base64_decode($fileName).'.tar.gz';
-            $expedition = $this->expeditionRepo->findwith($expeditionId, ['project.group']);
-
-            if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
-                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-            }
-
-            [$filePath, $headers] = $this->downloadType->createBatchTarDownload($file);
-
-            return response()->download($filePath, $file, $headers);
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
-
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-        }
+        return redirect($url);
     }
 
     /**
@@ -206,41 +103,15 @@ class DownloadController extends Controller
     public function export(string $projectId, string $expeditionId): RedirectResponse
     {
         try {
-            $expedition = $this->expeditionRepo->findwith($expeditionId, ['nfnActor', 'stat']);
+            \Artisan::call('export:queue', ['expeditionId' => $expeditionId]);
 
-            $this->downloadType->resetExpeditionData($expedition);
-
-            Flash::success(t('Export generation has started. You will be notified when completed.'));
-        } catch (Exception $e) {;
+            Flash::success(t('Export generation has been added to the job queue. You will be notified when completed.'));
+        } catch (Exception $e) {
+            ;
             Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
         }
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-    }
-
-    /**
-     * Display summary.
-     *
-     * @param string $projectId
-     * @param string $expeditionId
-     * @return \Illuminate\Http\RedirectResponse|string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    public function summary(string $projectId, string $expeditionId)
-    {
-        $expedition = $this->expeditionRepo->findwith($expeditionId, ['project.group']);
-
-        if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-        }
-
-        if (! Storage::exists(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html')) {
-            Flash::warning(t('File does not exist'));
-
-            return redirect()->back();
-        }
-
-        return Storage::get(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html');
     }
 
     /**

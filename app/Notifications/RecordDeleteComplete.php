@@ -46,7 +46,7 @@ class RecordDeleteComplete extends Notification implements ShouldQueue
     public function __construct(array $message)
     {
         $this->message = $message;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**

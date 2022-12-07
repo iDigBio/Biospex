@@ -60,7 +60,7 @@ class ImportController extends Controller
     {
         try {
             $projectId = request()->input('project_id');
-            $path = request()->file('dwc-file')->store('imports/subjects');
+            $path = request()->file('dwc-file')->store(config('config.import_dir'), 'efs');
 
             $import = $importRepo->create([
                 'user_id'    => Auth::user()->id,
@@ -74,9 +74,9 @@ class ImportController extends Controller
 
             return redirect()->back();
         }
-        catch(Exception $e)
+        catch(\Throwable $t)
         {
-            Flash::error(t('Error uploading file'));
+            Flash::error(t('Error uploading file. %', $t->getMessage()));
 
             return redirect()->back();
         }
