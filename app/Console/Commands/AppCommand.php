@@ -19,12 +19,16 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Subject;
 use App\Models\User;
 use App\Notifications\JobComplete;
+use App\Services\Csv\Csv;
+use App\Services\MongoDbService;
 use App\Services\Reconcile\ReconcileProcess;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use MongoDB\BSON\ObjectId;
 use Pheanstalk\Pheanstalk;
 
 /**
@@ -45,40 +49,39 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \Pheanstalk\Pheanstalk
-     */
-    private Pheanstalk $pheanstalk;
-
-    /**
-     * @var \App\Services\Reconcile\ReconcileProcess
-     */
-    private ReconcileProcess $reconcileProcess;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(ReconcileProcess $reconcileProcess)
+    public function __construct()
     {
         parent::__construct();
-        $this->reconcileProcess = $reconcileProcess;
     }
 
     /**
      * @return void
      */
-    public function handle()
+    public function handle(Csv $csv)
     {
+        $csv->readerCreateFromPath(storage_path('app/428-fix.csv'));
+        $csv->setHeaderOffset();
+        $records = $csv->getRecords();
 
+        foreach ($records as $row) {
+            $subject = Subject::find($row['subjectId']);
+            $subject['expedition_ids'] = array_merge($subject['expedition_ids'], [428]);
+            $subject->save();
+        }
     }
 
     public function clean()
     {
+        /*
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.classification')));
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconcile')));
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconciled')));
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.transcript')));
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.summary')));
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.explained')));
+        */
         // "aws s3 mv s3://biospex-app/scratch/2-2-c5afceb7-b475-4628-8cdc-6fb2d0b939d5 /efs/batch/ --recursive"
     }
 
