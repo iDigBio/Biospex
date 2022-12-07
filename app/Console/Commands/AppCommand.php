@@ -19,17 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Subject;
-use App\Models\User;
-use App\Notifications\JobComplete;
-use App\Services\Csv\Csv;
-use App\Services\MongoDbService;
-use App\Services\Reconcile\ReconcileProcess;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
-use MongoDB\BSON\ObjectId;
-use Pheanstalk\Pheanstalk;
 
 /**
  * Class AppCommand
@@ -59,18 +49,8 @@ class AppCommand extends Command
     /**
      * @return void
      */
-    public function handle(Csv $csv)
+    public function handle()
     {
-        $csv->readerCreateFromPath(storage_path('app/428-fix.csv'));
-        $csv->setHeaderOffset();
-        $records = $csv->getRecords();
-
-        foreach ($records as $row) {
-            echo $row['subjectId'] . PHP_EOL;
-            $subject = Subject::find($row['subjectId']);
-            $subject['expedition_ids'] = array_merge($subject['expedition_ids'], [428]);
-            $subject->save();
-        }
     }
 
     public function clean()
