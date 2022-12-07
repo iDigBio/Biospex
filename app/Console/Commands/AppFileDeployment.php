@@ -92,6 +92,7 @@ class AppFileDeployment extends Command
             return $this->rejectFiles($file);
         })->map(function ($file) {
             $target = $this->appPath.'/'.$file->getBaseName();
+            echo 'app ' . $target . PHP_EOL;
             if (File::exists($target)) {
                 File::delete($target);
             }
@@ -106,6 +107,7 @@ class AppFileDeployment extends Command
             return $this->rejectFiles($file);
         })->map(function ($file) {
             $target = $this->supPath.'/'.$file->getBaseName();
+            echo 'sup ' . $target . PHP_EOL;
             if (File::exists($target)) {
                 File::delete($target);
             }
@@ -200,6 +202,6 @@ class AppFileDeployment extends Command
             'panoptes-pusher.js',
         ];
 
-        return config('app.env') !== 'production' && in_array($file->getBaseName(), $files);
+        return config('app.env') === 'dev' && in_array($file->getBaseName(), $files);
     }
 }
