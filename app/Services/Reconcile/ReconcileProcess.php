@@ -19,6 +19,7 @@
 
 namespace App\Services\Reconcile;
 
+use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Repositories\DownloadRepository;
@@ -47,24 +48,14 @@ class ReconcileProcess
     private DownloadRepository $downloadRepo;
 
     /**
+     * @var \App\Services\Csv\Csv
+     */
+    private Csv $csv;
+
+    /**
      * @var string
      */
     private string $csvPath;
-
-    /**
-     * @var string
-     */
-    private string $recPath;
-
-    /**
-     * @var string
-     */
-    private string $tranPath;
-
-    /**
-     * @var string
-     */
-    private string $sumPath;
 
     /**
      * @var string
@@ -84,25 +75,45 @@ class ReconcileProcess
     /**
      * @var string
      */
-    private string $command;
+    private string $csvFullPath;
 
     /**
-     * @var \App\Services\Csv\Csv
+     * @var string
      */
-    private Csv $csvService;
+    private string $recFullPath;
+
+    /**
+     * @var string
+     */
+    private string $tranFullPath;
+
+    /**
+     * @var string
+     */
+    private string $sumFullPath;
+
+    /**
+     * @var string
+     */
+    private string $expFullPath;
+
+    /**
+     * @var string
+     */
+    private string $command;
 
     /**
      * ReconcileProcess constructor.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Repositories\DownloadRepository $downloadRepo
-     * @param \App\Services\Csv\Csv $csvService
+     * @param \App\Services\Csv\Csv $csv
      */
-    public function __construct(ExpeditionRepository $expeditionRepo, DownloadRepository $downloadRepo, Csv $csvService)
+    public function __construct(ExpeditionRepository $expeditionRepo, DownloadRepository $downloadRepo, Csv $csv)
     {
         $this->expeditionRepo = $expeditionRepo;
         $this->downloadRepo = $downloadRepo;
-        $this->csvService = $csvService;
+        $this->csv = $csv;
     }
 
     /**
@@ -118,14 +129,18 @@ class ReconcileProcess
 
             $this->setPaths($expeditionId);
 
-            if (! File::exists($this->csvPath) || ! isset($expedition->panoptesProject)) {
+            Storage::disk('efs')->put($this->csvPath, Storage::disk('s3')->get($this->csvPath));
+
+            if (! File::exists($this->csvFullPath) || ! isset($expedition->panoptesProject)) {
+                echo 'file does not exist' . PHP_EOL;
                 throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
                     ':method' => __METHOD__,
-                    ':path'   => $this->csvPath,
+                    ':path'   => $this->csvFullPath
                 ]));
             }
 
-            if (! $this->checkFileEmpty()) {
+            if (! $this->checkCsvEmpty()) {
+                File::delete($this->csvFullPath);
                 return;
             }
 
@@ -140,7 +155,15 @@ class ReconcileProcess
                 ]));
             }
 
+            $this->uploadFileToS3('classification', $this->csvFullPath, $expedition->id);
+            $this->uploadFileToS3('reconcile', $this->recFullPath, $expedition->id);
+            $this->uploadFileToS3('transcript', $this->tranFullPath, $expedition->id);
+            $this->uploadFileToS3('summary', $this->sumFullPath, $expedition->id);
+
             $this->updateOrCreateDownloads($expeditionId);
+
+            $this->cleanDirs();
+
         } catch (Exception $e) {
             $user = User::find(1);
             $message = [
@@ -156,14 +179,16 @@ class ReconcileProcess
      * @param \App\Models\Expedition $expedition
      * @throws \Exception
      */
-    public function processExplained(\App\Models\Expedition $expedition)
+    public function processExplained(Expedition $expedition)
     {
         $this->setPaths($expedition->id);
 
-        if (! File::exists($this->csvPath) || $expedition->nfnActor->pivot->completed === 0) {
+        Storage::disk('efs')->put($this->csvPath, Storage::disk('s3')->get($this->csvPath));
+
+        if (! File::exists($this->csvFullPath) || $expedition->nfnActor->pivot->completed === 0) {
             throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
                 ':method' => __METHOD__,
-                ':path'   => $this->csvPath,
+                ':path'   => $this->csvFullPath
             ]));
         }
 
@@ -171,12 +196,16 @@ class ReconcileProcess
 
         $this->runCommand();
 
-        if (! File::exists($this->expPath)) {
+        if (! File::exists($this->expFullPath)) {
             throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
                 ':method' => __METHOD__,
                 ':path'   => $this->expPath,
             ]));
         }
+
+        $this->uploadFileToS3('explained', $this->expFullPath, $expedition->id);
+
+        $this->cleanDirs();
     }
 
     /**
@@ -186,11 +215,15 @@ class ReconcileProcess
      */
     protected function setPaths($expeditionId)
     {
-        $this->csvPath = Storage::path(config('config.nfn_downloads_classification').'/'.$expeditionId.'.csv');
-        $this->recPath = Storage::path(config('config.nfn_downloads_reconcile').'/'.$expeditionId.'.csv');
-        $this->tranPath = Storage::path(config('config.nfn_downloads_transcript').'/'.$expeditionId.'.csv');
-        $this->sumPath = Storage::path(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html');
-        $this->expPath = Storage::path(config('config.nfn_downloads_explained').'/'.$expeditionId.'.csv');
+        $this->csvPath = config('config.zooniverse_dir.classification').'/'.$expeditionId.'.csv';
+        $this->csvFullPath = Storage::disk('efs')->path($this->csvPath);
+
+        $this->recFullPath = Storage::disk('efs')->path(config('config.zooniverse_dir.reconcile').'/'.$expeditionId.'.csv');
+        $this->tranFullPath = Storage::disk('efs')->path(config('config.zooniverse_dir.transcript').'/'.$expeditionId.'.csv');
+        $this->sumFullPath = Storage::disk('efs')->path(config('config.zooniverse_dir.summary').'/'.$expeditionId.'.html');
+
+        $this->expPath = config('config.zooniverse_dir.explained').'/'.$expeditionId.'.csv';
+        $this->expFullPath = Storage::disk('efs')->path($this->expPath);
 
         $this->pythonPath = config('config.python_path');
         $this->reconcilePath = config('config.reconcile_path');
@@ -202,15 +235,15 @@ class ReconcileProcess
      * @return int
      * @throws \League\Csv\Exception
      */
-    protected function checkFileEmpty()
+    protected function checkCsvEmpty(): int
     {
-        $this->csvService->readerCreateFromPath($this->csvPath);
-        $this->csvService->setDelimiter();
-        $this->csvService->setEnclosure();
-        $this->csvService->setEscape('"');
-        $this->csvService->setHeaderOffset();
+        $this->csv->readerCreateFromPath($this->csvFullPath);
+        $this->csv->setDelimiter();
+        $this->csv->setEnclosure();
+        $this->csv->setEscape('"');
+        $this->csv->setHeaderOffset();
 
-        return $this->csvService->getReaderCount(); // false if 0
+        return $this->csv->getReaderCount(); // false if 0
     }
 
     /**
@@ -218,9 +251,13 @@ class ReconcileProcess
      *
      * @return bool
      */
-    protected function checkFilesExist()
+    protected function checkFilesExist(): bool
     {
-        if (File::exists($this->csvPath) && File::exists($this->tranPath) && File::exists($this->recPath) && File::exists($this->sumPath)) {
+        if (File::exists($this->csvFullPath) &&
+            File::exists($this->tranFullPath) &&
+            File::exists($this->recFullPath) &&
+            File::exists($this->sumFullPath))
+        {
             return true;
         }
 
@@ -246,17 +283,17 @@ class ReconcileProcess
      * Set command string.
      *
      * @param bool $explained
-     * @return string|void
+     * @return void
      */
     protected function setCommand(bool $explained = false)
     {
         if ($explained) {
-            $this->command = "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->expPath} --explanations {$this->csvPath}";
+            $this->command = "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->expFullPath} --explanations {$this->csvFullPath}";
 
             return;
         }
 
-        $this->command = "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->recPath} --unreconciled {$this->tranPath} --summary {$this->sumPath} {$this->csvPath}";
+        $this->command = "{$this->pythonPath} {$this->reconcilePath} --reconciled {$this->recFullPath} --unreconciled {$this->tranFullPath} --summary {$this->sumFullPath} {$this->csvFullPath}";
     }
 
     /**
@@ -286,5 +323,36 @@ class ReconcileProcess
 
             $this->downloadRepo->updateOrCreate($attributes, $values);
         });
+    }
+
+    /**
+     * Upload efs file to s3.
+     *
+     * @param string $dir
+     * @param string $efsFullPath
+     * @param string $fileName
+     * @return void
+     */
+    protected function uploadFileToS3(string $dir, string $efsFullPath, string $fileName)
+    {
+        $s3Dir = config('config.zooniverse_dir.' . $dir);
+        $ext = $dir !== 'summary' ? '.csv' : '.html';
+        Storage::disk('s3')->putFileAs($s3Dir, $efsFullPath, $fileName.$ext);
+    }
+
+    /**
+     * Clean all directories.
+     *
+     * @return void
+     */
+    protected function cleanDirs()
+    {
+
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.classification')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconcile')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconciled')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.transcript')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.summary')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.explained')));
     }
 }

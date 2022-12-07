@@ -24,3 +24,4 @@ Route::get('ajax/scoreboard/{event}', [AjaxController::class, 'scoreboard'])->na
 Route::get('ajax/step/{event}/{load?}', [AjaxController::class, 'eventStepChart'])->name('ajax.get.step');
 Route::get('poll', [AjaxController::class, 'poll'])->name('ajax.get.poll');
 Route::get('bingos/{bingo}/winner/{map}', [AjaxController::class, 'bingoWinner'])->name('ajax.get.bingoWinner');
+

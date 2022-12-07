@@ -19,15 +19,14 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
-use App\Notifications\JobError;
-use App\Services\Actor\ZooniverseExportBatch;
-use Exception;
+use App\Repositories\DownloadRepository;
+use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
+use App\Services\Actor\NfnPanoptes\ZooniverseExportBatch;
 use Illuminate\Bus\Queueable;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Throwable;
 
 /**
  * Class ExportDownloadBatchJob
@@ -36,52 +35,48 @@ use Illuminate\Contracts\Queue\ShouldQueue;
  */
 class ExportDownloadBatchJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, NfnErrorNotification;
 
     /**
      * The number of seconds the job can run before timing out.
      *
      * @var int
      */
-    public $timeout = 36000;
+    public int $timeout = 3600;
 
     /**
-     * @var string
+     * @var int
      */
-    private $downloadId;
+    private int $downloadId;
 
     /**
      * ExportDownloadBatchJob constructor.
      *
-     * @param string $downloadId
+     * @param int $downloadId
      */
-    public function __construct(string $downloadId)
+    public function __construct(int $downloadId)
     {
-        $this->onQueue(config('config.export_tube'));
         $this->downloadId = $downloadId;
+        $this->onQueue(config('config.queues.export'));
     }
 
     /**
      * Handle download batch job.
      *
-     * @param \App\Services\Actor\ZooniverseExportBatch $nfnPanoptesExportBatch
+     * @param \App\Repositories\DownloadRepository $downloadRepository
+     * @param \App\Services\Actor\NfnPanoptes\ZooniverseExportBatch $nfnPanoptesExportBatch
      */
-    public function handle(ZooniverseExportBatch $nfnPanoptesExportBatch)
+    public function handle(
+        DownloadRepository $downloadRepository,
+        ZooniverseExportBatch $nfnPanoptesExportBatch)
     {
-        $download = $nfnPanoptesExportBatch->getDownload($this->downloadId);
+        $download = $downloadRepository->findWith($this->downloadId, ['expedition.project.group.owner', 'actor']);
 
         try {
             $nfnPanoptesExportBatch->process($download);
         }
-        catch (Exception $e) {
-            $user = User::find(1);
-            $message = [
-                'Actor:' . $download->actor_id,
-                'Expedition: ' . $download->expedition_id,
-                'Message: ' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
-            ];
-            $user->notify(new JobError(__FILE__, $message));
-
+        catch (Throwable $e) {
+            $this->sendAdminError($e);
             $this->delete();
         }
     }

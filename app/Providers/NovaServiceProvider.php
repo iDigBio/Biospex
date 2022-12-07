@@ -1,33 +1,11 @@
 <?php
-/*
- * Copyright (C) 2015  Biospex
- * biospex@gmail.com
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+
 namespace App\Providers;
 
-use Laravel\Nova\Nova;
-use Laravel\Nova\Cards\Help;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
 
-/**
- * Class NovaServiceProvider
- *
- * @package App\Providers
- */
 class NovaServiceProvider extends NovaApplicationServiceProvider
 {
     /**
@@ -48,9 +26,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function routes()
     {
         Nova::routes()
-            ->withAuthenticationRoutes()
-            ->withPasswordResetRoutes()
-            ->register();
+                ->withAuthenticationRoutes()
+                ->withPasswordResetRoutes()
+                ->register();
     }
 
     /**
@@ -68,14 +46,14 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     }
 
     /**
-     * Get the cards that should be displayed on the Nova dashboard.
+     * Get the dashboards that should be listed in the Nova sidebar.
      *
      * @return array
      */
-    protected function cards()
+    protected function dashboards()
     {
         return [
-            new Help,
+            new \App\Nova\Dashboards\Main,
         ];
     }
 
@@ -86,9 +64,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     public function tools()
     {
-        return [
-            new \Cloudstudio\ResourceGenerator\ResourceGenerator(),
-        ];
+        return [];
     }
 
     /**

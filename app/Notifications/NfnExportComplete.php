@@ -54,7 +54,7 @@ class NfnExportComplete extends Notification implements ShouldQueue
     {
         $this->title = $title;
         $this->fileName = $fileName;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**
@@ -78,7 +78,7 @@ class NfnExportComplete extends Notification implements ShouldQueue
 
         $attributes = [
             'title' => $this->title,
-            'url' => isset($this->fileName) ? route('admin.downloads.report', ['file' => $this->fileName]) : null,
+            'url' => !$this->fileName ? null : route('admin.downloads.report', ['file' => $this->fileName]),
         ];
 
         return $mailMessage->subject(t('BIOSPEX Export Completed'))->markdown('mail.nfnexportcomplete', $attributes);

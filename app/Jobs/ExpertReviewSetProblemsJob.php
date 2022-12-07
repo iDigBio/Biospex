@@ -75,7 +75,6 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
             }
 
             $expertReconcileProcess->setReconcileProblems($expedition->id);
-            \Log::alert('setting problems');
 
             $expedition->nfnActor->pivot->expert = 1;
             $expedition->nfnActor->pivot->save();

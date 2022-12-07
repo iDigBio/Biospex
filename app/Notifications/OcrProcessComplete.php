@@ -53,7 +53,7 @@ class OcrProcessComplete extends Notification implements ShouldQueue
     {
         $this->title = $title;
         $this->fileName = $fileName;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**

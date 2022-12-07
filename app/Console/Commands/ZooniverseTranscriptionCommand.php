@@ -40,7 +40,7 @@ class ZooniverseTranscriptionCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Process expedition reconciled transcription files for Zooniverse.';
+    protected $description = 'Process expedition reconciled transcription files for NfnPanoptes.';
 
     /**
      * Create a new command instance.

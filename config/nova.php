@@ -1,11 +1,26 @@
 <?php
 
+use Laravel\Nova\Actions\ActionResource;
+use Laravel\Nova\Http\Middleware\Authenticate;
 use Laravel\Nova\Http\Middleware\Authorize;
 use Laravel\Nova\Http\Middleware\BootTools;
-use Laravel\Nova\Http\Middleware\Authenticate;
 use Laravel\Nova\Http\Middleware\DispatchServingNovaEvent;
+use Laravel\Nova\Http\Middleware\HandleInertiaRequests;
 
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Nova License Key
+    |--------------------------------------------------------------------------
+    |
+    | The following configuration option contains your Nova license key. On
+    | non-local domains, Nova will verify that the Nova installation has
+    | a valid license associated with the application's active domain.
+    |
+    */
+
+    'license_key' => env('NOVA_LICENSE_KEY'),
 
     /*
     |--------------------------------------------------------------------------
@@ -18,20 +33,20 @@ return [
     |
     */
 
-    'name' => 'Bisopex Admin',
+    'name' => env('NOVA_APP_NAME', env('APP_NAME')),
 
     /*
     |--------------------------------------------------------------------------
-    | Nova App URL
+    | Nova Domain Name
     |--------------------------------------------------------------------------
     |
-    | This URL is where users will be directed when clicking the application
-    | name in the Nova navigation bar. You are free to change this URL to
-    | any location you wish depending on the needs of your application.
+    | This value is the "domain name" associated with your application. This
+    | can be used to prevent Nova's internal routes from being registered
+    | on subdomains which do not need access to your admin application.
     |
     */
 
-    'url' => env('APP_URL', '/'),
+    'domain' => env('NOVA_DOMAIN_NAME', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -61,6 +76,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Nova Password Reset Broker
+    |--------------------------------------------------------------------------
+    |
+    | This configuration option defines the password broker that will be
+    | used when passwords are reset. This option should mirror one of
+    | the password reset options defined in the "auth" config file.
+    |
+    */
+
+    'passwords' => env('NOVA_PASSWORDS', null),
+
+    /*
+    |--------------------------------------------------------------------------
     | Nova Route Middleware
     |--------------------------------------------------------------------------
     |
@@ -72,9 +100,14 @@ return [
 
     'middleware' => [
         'web',
-        Authenticate::class,
+        HandleInertiaRequests::class,
         DispatchServingNovaEvent::class,
         BootTools::class,
+    ],
+
+    'api_middleware' => [
+        'nova',
+        Authenticate::class,
         Authorize::class,
     ],
 
@@ -83,12 +116,100 @@ return [
     | Nova Pagination Type
     |--------------------------------------------------------------------------
     |
-    | This option defines the pagination visual style used by Resources. You
-    | may choose between two types: "simple" and "links". Feel free to set
-    | this option to the visual style you like for your application.
+    | This option defines the visual style used in Nova's resource pagination
+    | views. You may select between "simple", "load-more", and "links" for
+    | your applications. Feel free to adjust this option to your choice.
     |
     */
 
     'pagination' => 'simple',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Nova Storage Disk
+    |--------------------------------------------------------------------------
+    |
+    | This configuration option allows you to define the default disk that
+    | will be used to store files using the Image, File, and other file
+    | related field types. You're welcome to use any configured disk.
+    |
+     */
+
+    'storage_disk' => env('NOVA_STORAGE_DISK', 'public'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Nova Currency
+    |--------------------------------------------------------------------------
+    |
+    | This configuration option allows you to define the default currency
+    | used by the Currency field within Nova. You may change this to a
+    | valid ISO 4217 currency code to suit your application's needs.
+    |
+    */
+
+    'currency' => 'USD',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Branding
+    |--------------------------------------------------------------------------
+    |
+    | These configuration values allow you to customize the branding of the
+    | Nova interface, including the primary color and the logo that will
+    | be displayed within the Nova interface. This logo value must be
+    | the absolute path to an SVG logo within the local filesystem.
+    |
+    */
+
+    // 'brand' => [
+    //     'logo' => resource_path('/img/example-logo.svg'),
+
+    //     'colors' => [
+    //         "400" => "24, 182, 155, 0.5",
+    //         "500" => "24, 182, 155",
+    //         "600" => "24, 182, 155, 0.75",
+    //     ]
+    // ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Nova Action Resource Class
+    |--------------------------------------------------------------------------
+    |
+    | This configuration option allows you to specify a custom resource class
+    | to use for action log entries instead of the default that ships with
+    | Nova, thus allowing for the addition of additional UI form fields.
+    |
+    */
+
+    'actions' => [
+        'resource' => ActionResource::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Nova Impersonation Redirection URLs
+    |--------------------------------------------------------------------------
+    |
+    | This configuration option allows you to specify a URL where Nova should
+    | redirect an administrator after impersonating another user and a URL
+    | to redirect the administrator after stopping impersonating a user.
+    |
+    */
+
+    'impersonation' => [
+        'started' => '/',
+        'stopped' => '/',
+    ],
+
+    /*
+     * Using custom routes so Nova login/logout do not show
+     */
+    'routes' => [
+        'logout' => '/logout',
+        'login' => '/login',
+        'forgot_password' => '/forgot-password',
+        'reset_password' => '/reset-password'
+    ]
 ];

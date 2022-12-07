@@ -66,7 +66,7 @@ class JobError extends Notification implements ShouldQueue
         $this->file = $file;
         $this->fileName = $fileName;
         $this->adminEmail = config('mail.from.address');
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**

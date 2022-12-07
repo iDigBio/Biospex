@@ -64,7 +64,7 @@ class OcrCreateJob implements ShouldQueue
     {
         $this->projectId = $projectId;
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**

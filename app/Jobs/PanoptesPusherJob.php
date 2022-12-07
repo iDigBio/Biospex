@@ -57,7 +57,7 @@ class PanoptesPusherJob implements ShouldQueue
     public function __construct(array $data)
     {
         $this->data = $data;
-        $this->onQueue(config('config.pusher_tube'));
+        $this->onQueue(config('config.queues.pusher_transcriptions'));
     }
 
     /**

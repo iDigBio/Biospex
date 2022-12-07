@@ -34,7 +34,7 @@ class UpdateQueries extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'update:queries';
+    protected $signature = 'update:queries {step}';
 
     /**
      * The console command description.
@@ -44,8 +44,7 @@ class UpdateQueries extends Command
     /**
      * UpdateQueries constructor.
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -56,4 +55,5 @@ class UpdateQueries extends Command
     {
 
     }
+
 }

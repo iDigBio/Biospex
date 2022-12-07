@@ -81,6 +81,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('v1')->middleware([
                 'api',
                 'auth:sanctum',
+                'ability:panoptes-pusher:read,panoptes-pusher:create,wedigbio-dashboard:read,lambda:update'
             ])->group(function () {
                 $this->require_files('routes/api/v1');
             });

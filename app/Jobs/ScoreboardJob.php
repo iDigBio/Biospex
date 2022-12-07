@@ -49,7 +49,7 @@ class ScoreboardJob implements ShouldQueue
     public function __construct($projectId)
     {
         $this->projectId = $projectId;
-        $this->onQueue(config('config.event_tube'));
+        $this->onQueue(config('config.queues.event'));
     }
 
     /**

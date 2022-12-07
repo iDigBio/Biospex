@@ -19,9 +19,8 @@
 
 namespace App\Services\Image;
 
-use App\Services\File\FileService;
 use Exception;
-use GuzzleHttp\Client;
+use Illuminate\Support\Facades\File;
 use Storage;
 
 /**
@@ -29,46 +28,44 @@ use Storage;
  *
  * @package App\Services\Image
  */
-class Thumbnail extends ImagickService
+class Thumbnail
 {
-    /**
-     * @var FileService
-     */
-    public $fileService;
 
     /**
      * @var mixed
      */
-    public $defaultThumbImg;
-
-    /**
-     * @var mixed
-     */
-    public $tnWidth;
-
-    /**
-     * @var mixed
-     */
-    public $tnHeight;
+    public mixed $defaultThumbImg;
 
     /**
      * @var string
      */
-    public $thumbDirectory;
+    public string $tnWidth;
+
+    /**
+     * @var string
+     */
+    public string $tnHeight;
+
+    /**
+     * @var string
+     */
+    public string $thumbDirectory;
+
+    /**
+     * @var string
+     */
+    public string $imageProcessFile;
 
     /**
      * Thumbnail constructor.
-     *
-     * @param FileService $fileService
      */
-    public function __construct(FileService $fileService)
+    public function __construct()
     {
-        $this->fileService = $fileService;
-
-        $this->defaultThumbImg = Storage::disk('public')->path(config('config.thumbDefaultImg'));
-        $this->tnWidth = config('config.thumbWidth');
-        $this->tnHeight = config('config.thumbHeight');
-        $this->thumbDirectory = Storage::disk('public')->path(config('config.thumbOutputDir').'/'.$this->tnWidth.'_'.$this->tnHeight);
+        $this->defaultThumbImg = Storage::disk('public')->path(config('config.thumb_default_img'));
+        $this->tnWidth = config('config.thumb_width');
+        $this->tnHeight = config('config.thumb_height');
+        $this->thumbDirectory = Storage::disk('public')->path(config('config.thumb_output_dir').'/'.$this->tnWidth.'_'.$this->tnHeight);
+        $this->imageProcessFile = config('config.image_process_file');
     }
 
     /**
@@ -78,15 +75,14 @@ class Thumbnail extends ImagickService
      * @return string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getThumbnail($url)
+    public function getThumbnail($url): string
     {
         $thumbName = md5($url).'.jpg';
         $thumbFile = $this->thumbDirectory.'/'.$thumbName;
 
         try {
-            if (! $this->fileService->filesystem->isFile($thumbFile)) {
-                $image = $this->thumbFromUrl($url);
-                $this->createThumbnail($url, $image);
+            if (! File::isFile($thumbFile)) {
+                $this->processImage($url, $thumbName);
             }
         } catch (Exception $e) {
             return $this->getFile($this->defaultThumbImg);
@@ -96,34 +92,22 @@ class Thumbnail extends ImagickService
     }
 
     /**
-     * Create thumbnail.
+     * Get image and create thumbnail.
      *
-     * @param $url
-     * @param $image
+     * @param string $url
+     * @param string $fileName
+     * @return void
      * @throws \Exception
      */
-    protected function createThumbnail($url, $image)
+    protected function processImage(string $url, string $fileName)
     {
-        $this->createImagickObject();
-        $this->readImagickFromBlob($image);
-        $this->setDestinationImageWidth($this->tnWidth);
-        $this->setDestinationImageHeight($this->tnHeight);
-        $this->resizeImage();
-        $this->writeImagickImageToFile($this->thumbDirectory.'/'.md5($url).'.jpg');
-    }
+        $output = null;
+        $command = "node {$this->imageProcessFile} $fileName $url {$this->thumbDirectory} {$this->tnWidth} {$this->tnHeight}";
+        exec($command, $output);
 
-    /**
-     * Get image from url source.
-     *
-     * @param $url
-     * @return string
-     */
-    protected function thumbFromUrl($url)
-    {
-        $client = new Client();
-        $response = $client->get($url);
-
-        return $response->getBody()->getContents();
+        if (!$output[0]) {
+            throw new Exception('Could not retrieve image for thumbnail.');
+        }
     }
 
     /**
@@ -133,12 +117,12 @@ class Thumbnail extends ImagickService
      * @return string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function getFile($thumbFile)
+    protected function getFile($thumbFile): string
     {
-        if ($this->fileService->filesystem->isFile($thumbFile)) {
-            return $this->fileService->filesystem->get($thumbFile);
+        if (File::isFile($thumbFile)) {
+            return File::get($thumbFile);
         }
 
-        return $this->fileService->filesystem->get($this->defaultThumbImg);
+        return File::get($this->defaultThumbImg);
     }
 }

@@ -51,27 +51,27 @@ class ExpeditionController extends Controller
     /**
      * @var \App\Repositories\ProjectRepository
      */
-    private $projectRepo;
+    private ProjectRepository $projectRepo;
 
     /**
      * @var \App\Repositories\PanoptesProjectRepository
      */
-    private $panoptesProjectRepo;
+    private PanoptesProjectRepository $panoptesProjectRepo;
 
     /**
      * @var \App\Repositories\ExpeditionStatRepository
      */
-    private $expeditionStatRepo;
+    private ExpeditionStatRepository $expeditionStatRepo;
 
     /**
      * @var \App\Repositories\WorkflowManagerRepository
      */
-    private $workflowManagerRepo;
+    private WorkflowManagerRepository $workflowManagerRepo;
 
     /**
      * @var \App\Repositories\SubjectRepository
      */
-    private $subjectRepo;
+    private SubjectRepository $subjectRepo;
 
     /**
      * ExpeditionController constructor.
@@ -120,7 +120,9 @@ class ExpeditionController extends Controller
     /**
      * Sort expedition admin page.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|null
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|null
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function sort()
     {
@@ -203,7 +205,7 @@ class ExpeditionController extends Controller
 
         $subjects = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
         $count = count($subjects);
-        $expedition->subjects()->sync($subjects);
+        $expedition->subjects()->attach($subjects);
 
         $values = [
             'local_subject_count' => $count,
@@ -431,7 +433,7 @@ class ExpeditionController extends Controller
             ]);
 
             if (null === $expedition->panoptesProject) {
-                throw new Exception(t('Zooniverse Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
+                throw new Exception(t('NfnPanoptes Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
             }
 
             if (null !== $expedition->workflowManager) {

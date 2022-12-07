@@ -20,9 +20,11 @@
 namespace App\Services\Csv;
 
 use App\Repositories\ExpeditionRepository;
+use App\Services\Api\AwsS3ApiService;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Storage;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /**
@@ -43,16 +45,26 @@ class ZooniverseCsvService
     private PanoptesApiService $panoptesApiService;
 
     /**
+     * @var \App\Services\Api\AwsS3ApiService
+     */
+    private AwsS3ApiService $awsS3ApiService;
+
+    /**
      * ZooniverseCsvService constructor.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
+     * @param \App\Services\Api\AwsS3ApiService $awsS3ApiService
      */
-    public function __construct(ExpeditionRepository $expeditionRepo, PanoptesApiService $panoptesApiService)
+    public function __construct(
+        ExpeditionRepository $expeditionRepo,
+        PanoptesApiService $panoptesApiService,
+        AwsS3ApiService $awsS3ApiService
+    )
     {
-
         $this->expeditionRepo = $expeditionRepo;
         $this->panoptesApiService = $panoptesApiService;
+        $this->awsS3ApiService = $awsS3ApiService;
     }
 
     /**
@@ -61,7 +73,7 @@ class ZooniverseCsvService
      * @param int $expeditionId
      * @return mixed
      */
-    public function getExpedition(int $expeditionId)
+    public function getExpedition(int $expeditionId): mixed
     {
         return $this->expeditionRepo->getExpeditionForZooniverseProcess($expeditionId);
     }
@@ -79,10 +91,10 @@ class ZooniverseCsvService
         $expedition = $this->getExpedition($expeditionId);
 
         if ($this->panoptesApiService->checkForRequiredVariables($expedition)) {
-            throw new \Exception(t('Missing required expedition variables for Zooniverse classification create. Expedition %s', $expeditionId));
+            throw new \Exception(t('Missing required expedition variables for NfnPanoptes classification create. Expedition %s', $expeditionId));
         }
 
-        $this->sendRequest($expedition->panoptesProject->panoptes_workflow_id, 'POST', ['body' => '{"media":{"content_type":"text/csv"}}']);
+        $this->sendWorkflowRequest($expedition->panoptesProject->panoptes_workflow_id, 'POST', ['body' => '{"media":{"content_type":"text/csv"}}']);
 
     }
 
@@ -98,11 +110,11 @@ class ZooniverseCsvService
         $expedition = $this->getExpedition($expeditionId);
 
         if ($this->panoptesApiService->checkForRequiredVariables($expedition)) {
-            throw new \Exception(t('Missing required expedition variables for Zooniverse classification check for Expedition ID %s.', $expeditionId));
+            throw new \Exception(t('Missing required expedition variables for NfnPanoptes classification check for Expedition ID %s.', $expeditionId));
         }
 
         try {
-            return $this->sendRequest($expedition->panoptesProject->panoptes_workflow_id, 'GET');
+            return $this->sendWorkflowRequest($expedition->panoptesProject->panoptes_workflow_id, 'GET');
         } catch (GuzzleException | IdentityProviderException $e) {
             return false;
         }
@@ -113,10 +125,18 @@ class ZooniverseCsvService
      *
      * @param int $expeditionId
      * @param string $uri
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function downloadCsv(int $expeditionId, string $uri)
     {
-        $this->panoptesApiService->panoptesClassificationsDownload($expeditionId, $uri);
+        $filePath = config('config.zooniverse_dir.classification') . '/' . $expeditionId . '.csv';
+        $stream = $this->awsS3ApiService->createS3BucketStream(config('filesystems.disks.s3.bucket'), $filePath, 'w', false);
+        $opts = [
+            'sink' => $stream
+        ];
+        $this->panoptesApiService->setHttpProvider();
+        $this->panoptesApiService->getHttpClient()->request('GET', $uri, $opts);
     }
 
     /**
@@ -129,9 +149,9 @@ class ZooniverseCsvService
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
-    public function sendRequest(int $workflowId, string $method, array $extra = []): mixed
+    public function sendWorkflowRequest(int $workflowId, string $method, array $extra = []): mixed
     {
-        $this->panoptesApiService->setProvider();
+        $this->panoptesApiService->setHttpProvider($this->panoptesApiService->getConfig());
         $this->panoptesApiService->checkAccessToken('panoptes_token');
         $uri = $this->panoptesApiService->getPanoptesResourceUri('workflows', $workflowId, true);
         $request = $this->panoptesApiService->buildAuthorizedRequest($method, $uri, $extra);
@@ -153,7 +173,7 @@ class ZooniverseCsvService
     /**
      * Calculate time difference.
      * If errors, csv doesn't exist yet.
-     * Hours must be greater than 24 hours for Zooniverse to create CSV.
+     * Hours must be greater than 24 hours for NfnPanoptes to create CSV.
      *
      * @param array $result
      * @return bool

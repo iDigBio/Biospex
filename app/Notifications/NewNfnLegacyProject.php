@@ -47,7 +47,7 @@ class NewNfnLegacyProject extends Notification implements ShouldQueue
     public function __construct($project)
     {
         $this->project = $project;
-        $this->onQueue(config('config.default_tube'));
+        $this->onQueue(config('config.queues.default'));
     }
 
     /**
@@ -75,7 +75,7 @@ class NewNfnLegacyProject extends Notification implements ShouldQueue
         ];
 
         return (new MailMessage)
-            ->subject(t('Biospex - New Zooniverse Project Submitted'))
+            ->subject(t('Biospex - New NfnPanoptes Project Submitted'))
             ->markdown('mail.newnfnlegacy', $vars);
     }
 

@@ -33,7 +33,7 @@
                 <h2 class="text-center pt-4">{{ t('Events') }}</h2>
                 <div class="row card-body">
                     <div class="text-justify">
-                        {{ t('Events focus on creating data for a particular Project. Event participants are organized into one or more Teams. If the focus is collaboration, create one Team. If it is competitive, then multiple Teams. You will share a Team-specific sign-up link with team members, at which they will provide just their Zooniverse userid. This enables BIOSPEX to keep score during activity at Zooniverse.') }}
+                        {{ t('Events focus on creating data for a particular Project. Event participants are organized into one or more Teams. If the focus is collaboration, create one Team. If it is competitive, then multiple Teams. You will share a Team-specific sign-up link with team members, at which they will provide just their NfnPanoptes userid. This enables BIOSPEX to keep score during activity at NfnPanoptes.') }}
                     </div>
                     <div class="mx-auto mt-5">
                         <a href="{{ route('admin.events.create') }}" type="submit"

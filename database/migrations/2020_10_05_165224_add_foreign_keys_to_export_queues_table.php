@@ -27,8 +27,8 @@ class AddForeignKeysToExportQueuesTable extends Migration
     public function down()
     {
         Schema::table('export_queues', function (Blueprint $table) {
-            $table->dropForeign('export_queues_actor_id_foreign');
-            $table->dropForeign('export_queues_expedition_id_foreign');
+            $table->dropForeign('queues.exports_actor_id_foreign');
+            $table->dropForeign('queues.exports_expedition_id_foreign');
         });
     }
 }

@@ -20,6 +20,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\ApiController;
+use Illuminate\Http\Response;
 
 /**
  * Class PanoptesTranscriptionController
@@ -29,41 +30,41 @@ use App\Http\Controllers\Api\ApiController;
 class PanoptesTranscriptionController extends ApiController
 {
     /**
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): Response
     {
         return $this->errorUnauthorized();
     }
 
     /**
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(): Response
     {
         return $this->errorUnauthorized();
     }
 
     /**
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show(): Response
     {
         return $this->errorUnauthorized();
     }
 
     /**
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
-    public function update()
+    public function update(): Response
     {
         return $this->errorUnauthorized();
     }
 
     /**
-     * @return \Illuminate\Support\Facades\Response
+     * @return \Illuminate\Http\Response
      */
-    public function destroy()
+    public function destroy(): Response
     {
         return $this->errorUnauthorized();
     }

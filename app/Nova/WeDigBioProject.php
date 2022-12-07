@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2015  Biospex
+ * Copyright (c) 2022. Biospex
  * biospex@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,17 +11,18 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 namespace App\Nova;
 
-use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Http\Requests\NovaRequest;
+use function t;
 
 /**
  * Class WeDigBioProject
@@ -79,10 +80,10 @@ class WeDigBioProject extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return  array
      */
-    public function fields(Request $request)
+    public function fields(NovaRequest $request)
     {
         return [
             ID::make(t('Id'), 'id')->sortable(),
@@ -96,10 +97,10 @@ class WeDigBioProject extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return  array
      */
-    public function cards(Request $request)
+    public function cards(NovaRequest $request)
     {
         return [];
     }
@@ -107,10 +108,10 @@ class WeDigBioProject extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return  array
      */
-    public function filters(Request $request)
+    public function filters(NovaRequest $request)
     {
         return [];
     }
@@ -118,10 +119,10 @@ class WeDigBioProject extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return  array
      */
-    public function lenses(Request $request)
+    public function lenses(NovaRequest $request)
     {
         return [];
     }
@@ -129,10 +130,10 @@ class WeDigBioProject extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return  array
      */
-    public function actions(Request $request)
+    public function actions(NovaRequest $request)
     {
         return [];
     }
