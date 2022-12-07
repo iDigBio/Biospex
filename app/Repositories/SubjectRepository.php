@@ -267,7 +267,7 @@ class SubjectRepository extends BaseRepository
             $query->orderBy($field, $sort);
         }
 
-        return $query->orderBy('_id', 'desc')->cursor();
+        return $query->orderBy('_id', 'desc')->lazy();
     }
 
     /**
