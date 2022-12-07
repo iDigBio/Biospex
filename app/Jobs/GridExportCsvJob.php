@@ -131,7 +131,7 @@ class GridExportCsvJob implements ShouldQueue
             });
 
             if (!Storage::disk('s3')->exists(config('config.report_dir').'/'.$csvName)) {
-                throw new Exception(t('Csv export file is missing.'));
+                throw new Exception(t('Csv export file is missing: %s', config('config.report_dir').'/'.$csvName));
             }
 
             $route = route('admin.downloads.report', ['file' => base64_encode($csvName)]);
