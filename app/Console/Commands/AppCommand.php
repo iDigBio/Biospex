@@ -66,6 +66,7 @@ class AppCommand extends Command
         $records = $csv->getRecords();
 
         foreach ($records as $row) {
+            echo $row['subjectId'] . PHP_EOL;
             $subject = Subject::find($row['subjectId']);
             $subject['expedition_ids'] = array_merge($subject['expedition_ids'], [428]);
             $subject->save();
