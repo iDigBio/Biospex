@@ -77,7 +77,7 @@ class GridModel
         } else {
             $headers = $result->header;
             array_unshift($headers['image'], 'assigned', 'exported', 'expedition_ids', 'id');
-            array_push($headers['image'], 'ocr');
+            $headers['image'][] = 'ocr';
         }
 
         $colNames = $headers['image'];
