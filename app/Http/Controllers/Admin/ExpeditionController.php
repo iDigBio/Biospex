@@ -378,11 +378,10 @@ class ExpeditionController extends Controller
             // If process already in place, do not update subjects.
             $workflowManager = $this->workflowManagerRepo->findBy('expedition_id', $expedition->id);
             if ($workflowManager === null) {
-                $expedition->load('subjects');
                 $subjectIds = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
                 $count = count($subjectIds);
 
-                $oldIds = collect($expedition->subjects->pluck('_id'));
+                $oldIds = collect($this->subjectRepo->findByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id'));
                 $newIds = collect($subjectIds);
 
                 $detachIds = $oldIds->diff($newIds);
