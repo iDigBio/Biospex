@@ -63,14 +63,9 @@ class SubjectRepository extends BaseRepository
      * @param array|string[] $attributes
      * @return array|mixed
      */
-    public function findByExpeditionId($expeditionId, array $attributes = ['*'])
+    public function findByExpeditionId($expeditionId, array $attributes = ['*']): mixed
     {
-        return \Cache::tags((string) $expeditionId . serialize($attributes))->remember(__METHOD__, 14440, function () use (
-            $expeditionId,
-            $attributes
-        ) {
-            return $this->model->where('expedition_ids', $expeditionId)->get($attributes);
-        });
+        return $this->model->where('expedition_ids', $expeditionId)->get($attributes);
     }
 
     /**
