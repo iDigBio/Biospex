@@ -92,7 +92,6 @@ class AppFileDeployment extends Command
             return $this->rejectFiles($file);
         })->map(function ($file) {
             $target = $this->appPath.'/'.$file->getBaseName();
-            echo 'app ' . $target . PHP_EOL;
             if (File::exists($target)) {
                 File::delete($target);
             }
@@ -107,7 +106,6 @@ class AppFileDeployment extends Command
             return $this->rejectFiles($file);
         })->map(function ($file) {
             $target = $this->supPath.'/'.$file->getBaseName();
-            echo 'sup ' . $target . PHP_EOL;
             if (File::exists($target)) {
                 File::delete($target);
             }
@@ -132,8 +130,8 @@ class AppFileDeployment extends Command
      */
     private function configureReplace($search): mixed
     {
-        if ($search === 'APP_URL' || $search === 'APP_ENV') {
-            return config(str_replace('_', '.', strtolower($search)));
+        if (str_starts_with($search, 'APP_')) {
+            return config('config.' . strtolower($search));
         }
 
         if ($search === 'REDIS_HOST') {
@@ -161,6 +159,7 @@ class AppFileDeployment extends Command
         $this->apps = collect([
             'APP_URL',
             'APP_ENV',
+            'APP_DOMAIN',
 
             'SERVER_USER',
             'CURRENT_PATH',
