@@ -51,6 +51,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
+
     }
 
     public function clean()
