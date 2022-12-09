@@ -19,7 +19,6 @@
 
 namespace App\Providers;
 
-use App\Listeners\CacheEventSubscriber;
 use App\Listeners\ExportQueueEventSubscriber;
 use App\Listeners\GroupEventSubscriber;
 use App\Listeners\SnsNotificaitonListener;
@@ -61,7 +60,6 @@ class EventServiceProvider extends ServiceProvider
     protected $subscribe = [
         GroupEventSubscriber::class,
         ExportQueueEventSubscriber::class,
-        CacheEventSubscriber::class,
     ];
 
     /**

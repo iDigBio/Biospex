@@ -5,7 +5,9 @@ return [
     /**
      * Site variables
      */
+    'app_env'         => env('APP_ENV'),
     'app_domain'      => env('APP_DOMAIN'),
+    'app_url'         => env('APP_URL'),
     'api_domain'      => env('API_DOMAIN'),
     'api_url'         => env('API_URL'),
     'api_version'     => env('API_VERSION'),
@@ -31,12 +33,12 @@ return [
     'aws_lambda_count'           => env('AWS_LAMBDA_COUNT'),
     'aws_lambda_delay'           => env('AWS_LAMBDA_DELAY'),
 
-    'batch_dir'   => env('BATCH_DIR', 'batch'),
-    'export_dir'  => env('EXPORT_DIR', 'export'),
-    'import_dir'  => env('IMPORT_DIR', 'import'),
-    'report_dir'  => env('REPORT_DIR', 'report'),
-    'scratch_dir' => env('SCRATCH_DIR', 'scratch'),
-    'zooniverse_dir'     => [
+    'batch_dir'      => env('BATCH_DIR', 'batch'),
+    'export_dir'     => env('EXPORT_DIR', 'export'),
+    'import_dir'     => env('IMPORT_DIR', 'import'),
+    'report_dir'     => env('REPORT_DIR', 'report'),
+    'scratch_dir'    => env('SCRATCH_DIR', 'scratch'),
+    'zooniverse_dir' => [
         'dir'            => env('ZOONIVERSE_DIR', 'zooniverse'),
         'classification' => env('ZOONIVERSE_DIR', 'zooniverse').'/classification',
         'reconcile'      => env('ZOONIVERSE_DIR', 'zooniverse').'/reconcile',
