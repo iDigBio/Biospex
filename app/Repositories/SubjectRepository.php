@@ -20,6 +20,7 @@
 namespace App\Repositories;
 
 use App\Models\Subject;
+use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 use function collect;
 use function event;
@@ -32,12 +33,12 @@ use function event;
 class SubjectRepository extends BaseRepository
 {
     /**
-     * @var 
+     * @var
      */
     private $groupAnd;
 
     /**
-     * @var 
+     * @var
      */
     private $groupOpProcessed;
 
@@ -93,7 +94,6 @@ class SubjectRepository extends BaseRepository
         $query = $query->where('ocr', '')->timeout(86400);
 
         return $query;
-
     }
 
     /**
@@ -111,7 +111,6 @@ class SubjectRepository extends BaseRepository
         $query = $query->where('ocr', 'like', '%Error:%');
 
         return $query->cursor();
-
     }
 
     /**
@@ -126,44 +125,42 @@ class SubjectRepository extends BaseRepository
     {
         $query = $this->model->where('project_id', $projectId);
         $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = !$error ? $query->where('ocr', '') : $query->where('ocr', 'like', '%Error:%');
+        $query = ! $error ? $query->where('ocr', '') : $query->where('ocr', 'like', '%Error:%');
 
         return $query->count();
-
     }
 
     /**
      * Detach subjects from expedition.
      *
-     * @param $subjectIds
-     * @param $expeditionId
+     * @param \Illuminate\Support\Collection $subjectIds
+     * @param int $expeditionId
      */
-    public function detachSubjects($subjectIds, $expeditionId)
+    public function detachSubjects(Collection $subjectIds, int $expeditionId)
     {
         $subjectIds->each(function ($subjectId) use ($expeditionId) {
             $subject = $this->model->find($subjectId);
-            $subject->expedition_ids = collect($subject->expedition_ids)->diff($expeditionId)->toArray();
+            $subject->expedition_ids = collect($subject->expedition_ids)->filter(function ($value) use ($expeditionId) {
+                return $value != $expeditionId;
+            })->unique()->toArray();
+
             $subject->save();
         });
-
-        event('cache.flush', $expeditionId);
     }
 
     /**
      * Attach subjects to expedition.
      *
-     * @param $subjectIds
-     * @param $expeditionId
+     * @param \Illuminate\Support\Collection $subjectIds
+     * @param int $expeditionId
      */
-    public function attachSubjects($subjectIds, $expeditionId)
+    public function attachSubjects(Collection $subjectIds, int $expeditionId)
     {
         $subjectIds->each(function ($subjectId) use ($expeditionId) {
             $subject = $this->model->find($subjectId);
-            $subject->expedition_ids = collect($subject->expedition_ids)->push($expeditionId)->toArray();
+            $subject->expedition_ids = collect($subject->expedition_ids)->push($expeditionId)->unique()->toArray();
             $subject->save();
         });
-
-        event('cache.flush', $expeditionId);
     }
 
     /**
@@ -357,6 +354,7 @@ class SubjectRepository extends BaseRepository
      * ni: is not in
      *
      * 'eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'
+     *
      * @param $rule
      * @param $query
      */
@@ -513,9 +511,7 @@ class SubjectRepository extends BaseRepository
      */
     protected function setWhere(&$query, $field, $operation, $data)
     {
-        ($this->groupAnd || ! $this->groupOpProcessed) ?
-            $query->where($field, $operation, $data) :
-            $query->orWhere($field, $operation, $data);
+        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->where($field, $operation, $data) : $query->orWhere($field, $operation, $data);
 
         $this->setGroupOpProcessed(true);
     }
@@ -529,9 +525,7 @@ class SubjectRepository extends BaseRepository
      */
     protected function setWhereRaw(&$query, $field, $data)
     {
-        ($this->groupAnd || ! $this->groupOpProcessed) ?
-            $query->whereRaw([$field => $data]) :
-            $query->orWhereRaw([$field => $data]);
+        ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereRaw([$field => $data]) : $query->orWhereRaw([$field => $data]);
 
         $this->setGroupOpProcessed(true);
     }
