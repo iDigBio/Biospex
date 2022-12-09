@@ -349,7 +349,7 @@ class ExpeditionController extends Controller
      */
     public function update(ExpeditionFormRequest $request, $projectId, $expeditionId)
     {
-        $project = $this->projectRepo->findWith($projectId, ['group']);
+        $project = $this->projectRepo->findWith($projectId, ['group', 'workflow.actors']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -361,12 +361,12 @@ class ExpeditionController extends Controller
             if ($request->filled('panoptes_workflow_id')) {
                 $attributes = [
                     'project_id'    => $project->id,
-                    'expedition_id' => $expedition->id,
+                    'expedition_id' => $expeditionId,
                 ];
 
                 $values = [
                     'project_id'           => $project->id,
-                    'expedition_id'        => $expedition->id,
+                    'expedition_id'        => $expeditionId,
                     'panoptes_workflow_id' => $request->get('panoptes_workflow_id'),
                 ];
 
@@ -376,9 +376,10 @@ class ExpeditionController extends Controller
             }
 
             // If process already in place, do not update subjects.
-            $workflowManager = $this->workflowManagerRepo->findBy('expedition_id', $expedition->id);
+            $workflowManager = $this->workflowManagerRepo->findBy('expedition_id', $expeditionId);
             if ($workflowManager === null) {
                 $subjectIds = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
+
                 $count = count($subjectIds);
 
                 $oldIds = collect($this->subjectRepo->findByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id'));
@@ -387,20 +388,29 @@ class ExpeditionController extends Controller
                 $detachIds = $oldIds->diff($newIds);
                 $attachIds = $newIds->diff($oldIds);
 
-                $this->subjectRepo->detachSubjects($detachIds, $expedition->id);
-                $this->subjectRepo->attachSubjects($attachIds, $expedition->id);
+                $this->subjectRepo->detachSubjects($detachIds, $expeditionId);
+                $this->subjectRepo->attachSubjects($attachIds, $expeditionId);
 
                 $values = [
                     'local_subject_count' => $count,
                 ];
 
-                $this->expeditionStatRepo->updateOrCreate(['expedition_id' => $expedition->id], $values);
+                $this->expeditionStatRepo->updateOrCreate(['expedition_id' => $expeditionId], $values);
+
+                $project->workflow->actors->reject(function ($actor) {
+                    return $actor->private;
+                })->each(function ($actor) use ($expedition, $count) {
+                    $sync = [
+                        $actor->id => ['order' => $actor->pivot->order, 'state' => 0, 'total' => $count],
+                    ];
+                    $expedition->actors()->sync($sync, false);
+                });
             }
 
             // Success!
             Flash::success(t('Record was updated successfully.'));
 
-            return redirect()->route('admin.expeditions.show', [$project->id, $expedition->id]);
+            return redirect()->route('admin.expeditions.show', [$project->id, $expeditionId]);
         } catch (Exception $e) {
             Flash::error(t('An error occurred when saving record.'));
 
