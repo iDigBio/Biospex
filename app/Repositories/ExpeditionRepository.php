@@ -88,6 +88,7 @@ class ExpeditionRepository extends BaseRepository
             'stat',
             'nfnActor',
             'panoptesProject',
+            'workflowManager'
         ])->whereHas('project.group.users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         });
