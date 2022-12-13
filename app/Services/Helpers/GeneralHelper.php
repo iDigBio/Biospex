@@ -19,6 +19,7 @@
 
 namespace App\Services\Helpers;
 
+use App\Models\Expedition;
 use Carbon\Carbon;
 use Exception;
 use Schema;
@@ -408,5 +409,16 @@ class GeneralHelper
         }
 
         return Storage::disk('s3')->size(config('config.zooniverse_dir.dir').'/'.$type.'/'.$file);
+    }
+
+    /**
+     * Check subjects and export file existence.
+     *
+     * @param \App\Models\Expedition $expedition
+     * @return bool
+     */
+    public function exportFileCheck(Expedition $expedition)
+    {
+        return isset($expedition->downloads->first()->file) && GeneralHelper::downloadFileExists('export', $expedition->downloads->first()->file);
     }
 }
