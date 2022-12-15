@@ -263,4 +263,18 @@ class ExpeditionPresenter extends Presenter
             data-content="'. t('This will generate a new export file. Any previous exports will be overwritten. Do you wish to Continue?').'">
             '. t('Generate Export File').'</a>';
     }
+
+    /**
+     * Return button and path for generating export file.
+     *
+     * @return string
+     */
+    public function expeditionWorkflowBtn()
+    {
+        return '<a href="" class="prevent-default btn btn-primary rounded-0 mb-1"
+            data-dismiss="modal"
+            data-toggle="modal"
+            data-target="#expedition-workflow-form-modal"
+            data-title="'. t('Edit Workflow Id').'">'.t('Edit Workflow Id').'</a>';
+    }
 }

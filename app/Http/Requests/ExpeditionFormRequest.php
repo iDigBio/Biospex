@@ -49,8 +49,7 @@ class ExpeditionFormRequest extends Request
             'logo'                    => [
                 'image',
                 new FileUploadNameValidation(),
-            ],
-            'panoptes_workflow_id' => 'integer|nullable'
+            ]
         ];
     }
 

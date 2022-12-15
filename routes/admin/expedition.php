@@ -34,3 +34,5 @@ Route::get('projects/{projects}/expeditions/{expeditions}/clone', [ExpeditionCon
 Route::post('projects/{projects}/expeditions/{expeditions}/process', [ExpeditionController::class, 'process'])->name('admin.expeditions.process');
 Route::delete('projects/{projects}/expeditions/{expeditions}/stop', [ExpeditionController::class, 'stop'])->name('admin.expeditions.stop');
 Route::post('projects/{projects}/expeditions/{expeditions}/ocr', [ExpeditionController::class, 'ocr'])->name('admin.expeditions.ocr');
+
+Route::post('projects/{projects}/expeditions/{expeditions}/workflow', [ExpeditionController::class, 'workflowId'])->name('admin.expeditions.workflowId');

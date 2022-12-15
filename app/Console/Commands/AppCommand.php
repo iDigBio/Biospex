@@ -19,8 +19,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Expedition;
+use App\Repositories\ExpeditionRepository;
 use Illuminate\Console\Command;
+
 
 /**
  * Class AppCommand
@@ -52,8 +53,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $test = Expedition::find(433)->with('subjectsCount');
-        dd($test);
+
     }
 
     public function clean()

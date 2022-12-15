@@ -417,8 +417,21 @@ class GeneralHelper
      * @param \App\Models\Expedition $expedition
      * @return bool
      */
-    public function exportFileCheck(Expedition $expedition)
+    public function exportFileCheck(Expedition $expedition): bool
     {
         return isset($expedition->downloads->first()->file) && GeneralHelper::downloadFileExists('export', $expedition->downloads->first()->file);
+    }
+
+    /**
+     * Check panoptes workflow and project set.
+     *
+     * @param \App\Models\Expedition $expedition
+     * @return bool
+     */
+    public function checkPanoptesWorkflow(Expedition $expedition): bool
+    {
+        return isset($expedition->panoptesProject) &&
+            $expedition->panoptesProject->panoptes_workflow_id !== null &&
+            $expedition->panoptesProject->panoptes_project_id !== null;
     }
 }

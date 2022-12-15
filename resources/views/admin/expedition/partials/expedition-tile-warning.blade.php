@@ -1,9 +1,13 @@
-<!--
-Check expedition->panoptesProject->panoptes_workflow_id && expedition->panoptesProject->panoptes_project_id are not null
-Check expedition->stat->local_subject_count for subjects
--->
-@if($expedition->stat->local_subject_count > 0)
-    @if(!isset($expedition->panoptesProject) || $expedition->panoptesProject->panoptes_workflow_id === null)
+@if((isset($expedition->nfnActor->pivot) && $expedition->nfnActor->pivot->completed === 0) && $expedition->stat->local_subject_count > 0)
+    @if(! \App\Facades\GeneralHelper::exportFileCheck($expedition))
+        <div class="d-flex align-items-start mb-0" data-hover="tooltip" data-html="true"
+             title="<div class='text-left'>{{ t('The Export file has not been generated. Select the tools icon for the Expedition and select generate file.') }}</div>">
+        <span role="button" class="small text-danger">
+        {{ t('Export File generation needed.') }}
+        <i class="fa fa-question-circle" aria-hidden="true"></i>
+        </span>
+        </div>
+    @elseif(!isset($expedition->panoptesProject) || $expedition->panoptesProject->panoptes_workflow_id === null)
         <div class="d-flex align-items-start mb-0" data-hover="tooltip" data-html="true"
              title="<div class='text-left'>{{ t('The Expedition has subjects but workflow id has not been entered. Select the tools icon for the Expedition to add workflow id.') }}</div>">
         <span role="button" class="small text-danger">
@@ -21,7 +25,7 @@ Check expedition->stat->local_subject_count for subjects
         </div>
     @elseif($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
         <div class="d-flex align-items-start mb-0" data-hover="tooltip" data-html="true"
-             title="<div class='text-left'>{{ t('The Expedition is ready to start processing. Please select Start Processing in the Expedition tools icon when you are ready to begin.') }}</div>">
+             title="<div class='text-left'>{{ t('The Expedition is ready to start processing. Please select Start Expedition Processing in the Expedition tools icon when you are ready to begin.') }}</div>">
         <span role="button" class="small text-danger">
         {{ t('Expedition process not running.') }}
         <i class="fa fa-question-circle" aria-hidden="true"></i>

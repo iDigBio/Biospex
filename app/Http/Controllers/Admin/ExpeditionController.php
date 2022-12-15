@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
+use App\Http\Requests\WorkflowIdFormRequest;
 use App\Jobs\DeleteExpedition;
 use App\Jobs\OcrCreateJob;
 use App\Jobs\PanoptesProjectUpdateJob;
@@ -243,6 +244,7 @@ class ExpeditionController extends Controller
             'downloads',
             'workflowManager',
             'stat',
+            'panoptesProject',
         ];
 
         $expedition = $this->expeditionRepo->findWith($expeditionId, $relations);
@@ -357,23 +359,6 @@ class ExpeditionController extends Controller
 
         try {
             $expedition = $this->expeditionRepo->update($request->all(), $expeditionId);
-
-            if ($request->filled('panoptes_workflow_id')) {
-                $attributes = [
-                    'project_id'    => $project->id,
-                    'expedition_id' => $expeditionId,
-                ];
-
-                $values = [
-                    'project_id'           => $project->id,
-                    'expedition_id'        => $expeditionId,
-                    'panoptes_workflow_id' => $request->get('panoptes_workflow_id'),
-                ];
-
-                $panoptesProject = $this->panoptesProjectRepo->updateOrCreate($attributes, $values);
-
-                PanoptesProjectUpdateJob::dispatch($panoptesProject);
-            }
 
             // If process already in place, do not update subjects.
             $workflowManager = $this->workflowManagerRepo->findBy('expedition_id', $expeditionId);
@@ -524,6 +509,53 @@ class ExpeditionController extends Controller
         Flash::success(t('Expedition process has been stopped locally. This does not stop any processing occurring on remote sites.'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+    }
+
+    /**
+     * Update or create the workflow id.
+     *
+     * @param \App\Http\Requests\WorkflowIdFormRequest $request
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function workflowId(WorkflowIdFormRequest $request, $projectId, $expeditionId)
+    {
+        if (! request()->ajax()) {
+            return response()->json(['code' => 400, 'message' => t('Request must be ajax.')]);
+        }
+
+        $project = $this->projectRepo->findWith($projectId, ['group']);
+
+        if (! $this->checkPermissions('updateProject', $project->group)) {
+            return response()->json(['code' => 401, 'message' => t('You are not authorized to update project.')]);
+        }
+
+        try {
+            if ($request->filled('panoptes_workflow_id')) {
+                $attributes = [
+                    'project_id'    => $projectId,
+                    'expedition_id' => $expeditionId,
+                ];
+
+                $values = [
+                    'project_id'           => $project->id,
+                    'expedition_id'        => $expeditionId,
+                    'panoptes_workflow_id' => $request->get('panoptes_workflow_id'),
+                ];
+
+                $panoptesProject = $this->panoptesProjectRepo->updateOrCreate($attributes, $values);
+
+                PanoptesProjectUpdateJob::dispatch($panoptesProject);
+
+                return response()->json(['code' => 200, 'message' => 'Workflow id is updated.']);
+            }
+
+            throw new Exception(t('Could not update Panoptes Workflow Id.'));
+        }
+        catch (Exception $exception) {
+            return response()->json(['code' => 401, 'message' => $exception->getMessage()]);
+        }
     }
 
     /**

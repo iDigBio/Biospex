@@ -60,18 +60,6 @@
                                      src="{{ $expedition->present()->show_medium_logo }}"/>
                             </div>
                         </div>
-
-                        @if(in_array($expedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
-                            <div class="form-group">
-                                <label for="panoptes_workflow_id"
-                                       class="col-form-label">{{ t('NfnPanoptes Workflow Id') }}:</label>
-                                <input type="text" name="panoptes_workflow_id" id="panoptes_workflow_id"
-                                       class="form-control {{ ($errors->has('panoptes_workflow_id')) ? 'has-error' : '' }}"
-                                       placeholder="{{ t('Enter Workflow Id after Expedition submitted to NfnPanoptes') }}"
-                                       value="{{ old('panoptes_workflow_id', $expedition->panoptesProject->panoptes_workflow_id ?? '') }}">
-                                <span class="invalid-feedback">{{ $errors->first('workflow') }}</span>
-                            </div>
-                        @endif
                     </div>
                 </div>
             </div>
