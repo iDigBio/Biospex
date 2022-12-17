@@ -18,7 +18,6 @@
     @stack('styles')
 </head>
 <body>
-@include('common.notices')
 @yield('header')
 <div class="container mb-4">
     @yield('content')
