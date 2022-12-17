@@ -1,7 +1,7 @@
 @if((isset($expedition->nfnActor->pivot) && $expedition->nfnActor->pivot->completed === 0) && $expedition->stat->local_subject_count > 0)
     @if(! \App\Facades\GeneralHelper::exportFileCheck($expedition))
         <div class="d-flex align-items-start mb-0" data-hover="tooltip" data-html="true"
-             title="<div class='text-left'>{{ t('The Export file has not been generated. Select the tools icon for the Expedition and select generate file.') }}</div>">
+             title="<div class='text-left'>{{ t('The Export file has not been generated. Select the tools icon for the Expedition and select Generate Export File.') }}</div>">
         <span role="button" class="small text-danger">
         {{ t('Export File generation needed.') }}
         <i class="fa fa-question-circle" aria-hidden="true"></i>
@@ -9,7 +9,7 @@
         </div>
     @elseif(!isset($expedition->panoptesProject) || $expedition->panoptesProject->panoptes_workflow_id === null)
         <div class="d-flex align-items-start mb-0" data-hover="tooltip" data-html="true"
-             title="<div class='text-left'>{{ t('The Expedition has subjects but workflow id has not been entered. Select the tools icon for the Expedition to add workflow id.') }}</div>">
+             title="<div class='text-left'>{{ t('The Expedition export file has been generated but workflow id has not been entered. Select the tools icon for the Expedition and select Edit Workflow Id.') }}</div>">
         <span role="button" class="small text-danger">
         {{ t('Zooniverse Workflow Id missing.') }}
         <i class="fa fa-question-circle" aria-hidden="true"></i>

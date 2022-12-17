@@ -21,7 +21,7 @@ namespace App\Console\Commands;
 
 use App\Repositories\ExpeditionRepository;
 use Illuminate\Console\Command;
-
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AppCommand
@@ -53,7 +53,11 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
+        $filePath = config('config.report_dir') . '/03afdbd66e7929b125f8597834fa83a4.csv';
+        if (!Storage::disk('s3')->exists($filePath)) {
+            echo 'Csv export file is missing: ' . $filePath . PHP_EOL;
+        }
+        echo 'done' . PHP_EOL;
     }
 
     public function clean()
