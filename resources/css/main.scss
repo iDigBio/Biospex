@@ -610,16 +610,16 @@ h2.home-header-cta {
     background-color: #eeeff9;
 }
 
-.faq.btn {
+.faq.btn, .update.btn {
     font-weight: bold;
-    color: #7287a5;
+    /*color: #7287a5;*/
     background-color: transparent;
     text-decoration: none;
     white-space:normal !important;
     word-wrap: break-word;
 }
 
-.faq.btn:hover {
+.faq.btn:hover, .update.btn:hover {
     color: #e83f29;
 }
 
