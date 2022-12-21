@@ -53,9 +53,11 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $filePath = config('config.report_dir') . '/03afdbd66e7929b125f8597834fa83a4.csv';
-        if (!Storage::disk('s3')->exists($filePath)) {
-            echo 'Csv export file is missing: ' . $filePath . PHP_EOL;
+        //$filePath = 'report/sgrlh0JwrbRORSs7.csv';
+        $filePath = 'report';
+
+        if (Storage::disk('s3')->exists($filePath)) {
+            echo 'true: ' . $filePath . PHP_EOL;
         }
         echo 'done' . PHP_EOL;
     }

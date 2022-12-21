@@ -129,6 +129,7 @@ class GridExportCsvJob implements ShouldQueue
 
                 $awsS3CsvService->csv->insertOne($merged->toArray());
             });
+            $awsS3CsvService->closeBucketStream();
 
             if (!Storage::disk('s3')->exists($filePath)) {
                 throw new Exception(t('Csv export file is missing: %s', $filePath));

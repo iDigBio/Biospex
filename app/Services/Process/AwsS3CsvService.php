@@ -64,6 +64,16 @@ class AwsS3CsvService
     }
 
     /**
+     * Close bucket stream.
+     *
+     * @return bool
+     */
+    public function closeBucketStream(): bool
+    {
+        return fclose($this->stream);
+    }
+
+    /**
      * Create csv write from s3 bucket stream.
      *
      * @return void
