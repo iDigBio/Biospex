@@ -75,6 +75,7 @@ class CreateReportService
         $this->awsS3CsvService->createCsvWriterFromStream();
         $this->awsS3CsvService->csv->insertOne($header);
         $this->awsS3CsvService->csv->insertAll($data);
+        $this->awsS3CsvService->closeBucketStream();
 
         return base64_encode($csvName);
     }

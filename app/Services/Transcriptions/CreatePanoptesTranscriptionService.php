@@ -112,6 +112,8 @@ class CreatePanoptesTranscriptionService
 
             $header = $this->prepareHeader($this->awsS3CsvService->csv->getHeader());
             $rows = $this->awsS3CsvService->csv->getRecords($header);
+            $this->awsS3CsvService->closeBucketStream();
+
             foreach ($rows as $offset => $row) {
                 $this->processRow($header, $row, $expeditionId);
             }

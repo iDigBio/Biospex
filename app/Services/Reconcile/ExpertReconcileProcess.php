@@ -129,7 +129,11 @@ class ExpertReconcileProcess
         $this->awsS3CsvService->createCsvReaderFromStream();
         $this->awsS3CsvService->csv->setHeaderOffset();
 
-        return collect($this->awsS3CsvService->csv->getRecords($this->awsS3CsvService->csv->getHeader()));
+        $rows = collect($this->awsS3CsvService->csv->getRecords($this->awsS3CsvService->csv->getHeader()));
+
+        $this->awsS3CsvService->closeBucketStream();
+
+        return $rows;
     }
 
     /**
