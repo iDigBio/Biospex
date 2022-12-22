@@ -131,8 +131,6 @@ class ExpertReconcileProcess
 
         $rows = collect($this->awsS3CsvService->csv->getRecords($this->awsS3CsvService->csv->getHeader()));
 
-        $this->awsS3CsvService->closeBucketStream();
-
         return $rows;
     }
 

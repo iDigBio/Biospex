@@ -138,8 +138,6 @@ class ZooniverseBuildCsv implements QueueInterface
 
         $this->updateRejected($this->rejected);
 
-        $this->awsS3CsvService->closeBucketStream();
-
         if (! $this->checkCsvImageCount($exportQueue)) {
             throw new Exception(t('The row count in the csv export file does not match image count.'));
         }
@@ -183,8 +181,6 @@ class ZooniverseBuildCsv implements QueueInterface
         $csvCount = $this->awsS3CsvService->csv->getReaderCount();
 
         $dirFileCount = $this->awsS3CsvService->awsS3ApiService->getFileCount(config('filesystems.disks.s3.bucket'), $this->workingDir);
-
-        $this->awsS3CsvService->closeBucketStream();
 
         return $csvCount === $dirFileCount;
     }

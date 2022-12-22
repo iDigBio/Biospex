@@ -116,7 +116,6 @@ class ExpertReconcilePublishProcess
         $this->awsS3CsvService->createCsvWriterFromStream();
         $this->awsS3CsvService->csv->insertOne($decodedHeader);
         $this->awsS3CsvService->csv->insertAll($mapped->toArray());
-        $this->awsS3CsvService->closeBucketStream();
     }
 
     /**
