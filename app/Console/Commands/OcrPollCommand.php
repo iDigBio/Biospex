@@ -69,8 +69,6 @@ class OcrPollCommand extends Command
         $records = $this->ocrQueueRepo->getOcrQueuesForPollCommand();
 
         $data = ['message' => t('No processes running at this time'), 'payload' => []];
-        PollOcrEvent::dispatch($data);
-        return;
 
         if ($records->isEmpty()) {
             PollOcrEvent::dispatch($data);
