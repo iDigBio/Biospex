@@ -148,11 +148,12 @@ $(function () {
             },
             setMultipleSelect = function () {
                 if (!checkbox) return;
-                $grid.jqGrid("resetSelection");
+                //$grid.jqGrid("resetSelection");
                 let ids = $grid.jqGrid('getDataIDs');
                 for (let i = 0; i < ids.length; i++) {
                     if ($.inArray(ids[i], selected) !== -1){
-                        $grid.jqGrid('setSelection', ids[i], false);
+                        //$grid.jqGrid('setSelection', ids[i], false);
+                        $grid.setSelection(ids[i], false);
                     }
                 }
             },
@@ -219,7 +220,6 @@ $(function () {
                 saveColumnState.call($(this), this.p.remapColumns);
                 setMultipleSelect();
                 setSelectedCount();
-
             }
         })
             .jqGrid("navGrid", {add: false, edit: false, del: false, search: true}, {}, {}, {}, {
