@@ -43,7 +43,14 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
     /**
      * @var int
      */
-    private int $timeout = 1800;
+    public int $timeout = 1800;
+
+    /**
+     * Indicate if the job should be marked as failed on timeout.
+     *
+     * @var bool
+     */
+    public bool $failOnTimeout = true;
 
     /**
      * Create a new job instance.

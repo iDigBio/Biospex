@@ -53,7 +53,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        \App\Jobs\ExpertReviewMigrateReconcilesJob::dispatch(425);
+        \App\Jobs\ExpertReviewSetProblemsJob::dispatch(425);
     }
 
     public function clean()
