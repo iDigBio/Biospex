@@ -53,13 +53,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        //$filePath = 'report/sgrlh0JwrbRORSs7.csv';
-        $filePath = 'report';
-
-        if (Storage::disk('s3')->exists($filePath)) {
-            echo 'true: ' . $filePath . PHP_EOL;
-        }
-        echo 'done' . PHP_EOL;
+        \App\Jobs\ExpertReviewMigrateReconcilesJob::dispatch(425);
     }
 
     public function clean()

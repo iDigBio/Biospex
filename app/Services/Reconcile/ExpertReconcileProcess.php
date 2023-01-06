@@ -102,17 +102,19 @@ class ExpertReconcileProcess
         $rows = $this->getCsvRows($file);
 
         $rows->each(function ($row) {
-            if (! $this->validateReconcile($row['subject_id'])) {
-                $newRecord = [];
-                foreach ($row as $field => $value) {
-                    $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
-                    $newRecord[$newField] = $value;
-                    $newRecord['subject_problem'] = 0;
-                    $newRecord['subject_columns'] = '';
-                }
-
-                $this->reconcileRepo->create($newRecord);
+            if ($this->validateReconcile($row['subject_id'])) {
+                \Log::alert($row['subject_id'] . ' exists');
+                return;
             }
+            $newRecord = [];
+            foreach ($row as $field => $value) {
+                $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
+                $newRecord[$newField] = $value;
+                $newRecord['subject_problem'] = 0;
+                $newRecord['subject_columns'] = '';
+            }
+            \Log::alert($row['subject_id'] . ' created');
+            $this->reconcileRepo->create($newRecord);
         });
     }
 
