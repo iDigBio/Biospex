@@ -101,9 +101,11 @@ class ExpertReconcileProcess
 
         $rows = $this->getCsvRows($file);
 
-        $rows->each(function ($row) {
+        $exist = 0;
+        $create = 0;
+        $rows->each(function ($row) use(&$exist, &$create) {
             if ($this->validateReconcile($row['subject_id'])) {
-                \Log::alert($row['subject_id'] . ' exists');
+                $exist++;
                 return;
             }
             $newRecord = [];
@@ -113,9 +115,11 @@ class ExpertReconcileProcess
                 $newRecord['subject_problem'] = 0;
                 $newRecord['subject_columns'] = '';
             }
-            \Log::alert($row['subject_id'] . ' created');
+            $create++;
             $this->reconcileRepo->create($newRecord);
         });
+        \Log::alert("$exist exists");
+        \Log::alert("$create create");
     }
 
     /**
