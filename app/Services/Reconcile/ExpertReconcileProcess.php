@@ -96,7 +96,6 @@ class ExpertReconcileProcess
 
         $rows = $this->getCsvRows($file);
 
-        $create = 0;
         $rows->reject(function ($row) {
             return $this->validateReconcile($row['subject_id']);
         })->each(function ($row) use (&$create) {
@@ -107,12 +106,8 @@ class ExpertReconcileProcess
                 $newRecord['subject_problem'] = 0;
                 $newRecord['subject_columns'] = '';
             }
-            \Log::alert($row['subject_id'] . ' created');
-            $create++;
             $this->reconcileRepo->create($newRecord);
         });
-
-        \Log::alert("$create created");
     }
 
     /**
