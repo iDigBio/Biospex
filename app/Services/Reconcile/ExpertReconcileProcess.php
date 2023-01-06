@@ -59,11 +59,6 @@ class ExpertReconcileProcess
     private mixed $problemRegex;
 
     /**
-     * @var int
-     */
-    public int $timeout = 1800;
-
-    /**
      * ExpertReconcileProcess constructor.
      *
      * @param \App\Repositories\ReconcileRepository $reconcileRepo
@@ -101,16 +96,10 @@ class ExpertReconcileProcess
 
         $rows = $this->getCsvRows($file);
 
-        \Log::alert($rows->count());
-
-        $exist = 0;
         $create = 0;
-        $rows->each(function ($row) use(&$exist, &$create) {
-            if ($this->validateReconcile($row['subject_id'])) {
-                //\Log::alert($row['subject_id'] . ' exists');
-                $exist++;
-                return;
-            }
+        $rows->reject(function ($row) {
+            return $this->validateReconcile($row['subject_id']);
+        })->each(function ($row) use (&$create) {
             $newRecord = [];
             foreach ($row as $field => $value) {
                 $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
@@ -118,12 +107,11 @@ class ExpertReconcileProcess
                 $newRecord['subject_problem'] = 0;
                 $newRecord['subject_columns'] = '';
             }
-            //\Log::alert($row['subject_id'] . ' created');
+            \Log::alert($row['subject_id'] . ' created');
             $create++;
             $this->reconcileRepo->create($newRecord);
         });
 
-        \Log::alert("$exist exists");
         \Log::alert("$create create");
     }
 
@@ -140,9 +128,7 @@ class ExpertReconcileProcess
         $this->awsS3CsvService->createCsvReaderFromStream();
         $this->awsS3CsvService->csv->setHeaderOffset();
 
-        $rows = collect($this->awsS3CsvService->csv->getRecords($this->awsS3CsvService->csv->getHeader()));
-
-        return $rows;
+        return collect($this->awsS3CsvService->csv->getRecords($this->awsS3CsvService->csv->getHeader()));
     }
 
     /**
