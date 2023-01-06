@@ -96,6 +96,19 @@ class ExpertReconcileProcess
 
         $rows = $this->getCsvRows($file);
 
+        $count = 0;
+        $rows->each(function ($row) use(&$count) {
+            if ($this->validateReconcile($row['subject_id'])) {
+                \Log::alert($row['subject_id'] . ' exists');
+                $count++;
+                return;
+            }
+            $count++;
+            \Log::alert($row['subject_id'] . ' does not exist');
+        });
+        \Log::alert($count);
+
+        /*
         $create = 0;
         $rows->reject(function ($row) {
             return $this->validateReconcile($row['subject_id']);
@@ -113,6 +126,7 @@ class ExpertReconcileProcess
         });
 
         \Log::alert("$create create");
+        */
     }
 
     /**
