@@ -99,8 +99,9 @@ class ExpertReconcileProcess
         $count = 0;
         $rows->each(function ($row) use(&$count) {
             if ($this->validateReconcile($row['subject_id'])) {
-                \Log::alert($row['subject_id'] . ' exists');
                 $count++;
+                \Log::alert($row['subject_id'] . ' exists');
+                \Log::alert($count);
                 return;
             }
             $count++;
