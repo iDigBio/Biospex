@@ -75,7 +75,7 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
 
             $expertReconcileProcess->migrateReconcileCsv($expedition->id);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $messages = [
                 'Message: ' .  $e->getMessage(),
                 'File : ' . $e->getFile() . ': ' . $e->getLine()
