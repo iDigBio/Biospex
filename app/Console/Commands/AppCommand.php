@@ -19,9 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ExpeditionRepository;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AppCommand
@@ -53,8 +51,9 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        \App\Jobs\ExpertReviewSetProblemsJob::dispatch(425);
+
     }
+
 
     public function clean()
     {
