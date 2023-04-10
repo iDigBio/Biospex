@@ -4,6 +4,7 @@ node_modules
 /vendor
 /public/vendor
 /A-Notes
+storage/cmd.txt
 storage/testing
 storage/app/classifications/*
 storage/app/exports/*
