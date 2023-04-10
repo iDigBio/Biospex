@@ -72,10 +72,10 @@ return [
 
     'ocr_disable' => env('OCR_DISABLE', false),
 
-    'poll_ocr_channel'        => env('POLL_OCR_CHANNEL'),
-    'poll_export_channel'     => env('POLL_EXPORT_CHANNEL'),
-    'poll_scoreboard_channel' => env('POLL_SCOREBOARD_CHANNEL'),
-    'poll_bingo_channel'      => env('POLL_BINGO_CHANNEL'),
+    'poll_ocr_channel'    => env('POLL_OCR_CHANNEL'),
+    'poll_export_channel' => env('POLL_EXPORT_CHANNEL'),
+    'poll_board_channel'  => env('POLL_BOARD_CHANNEL'),
+    'poll_bingo_channel'  => env('POLL_BINGO_CHANNEL'),
 
     'project_resources' => [
         'Website URL',
