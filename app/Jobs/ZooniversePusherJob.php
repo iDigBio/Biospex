@@ -22,7 +22,7 @@ use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Transcriptions\UpdateOrCreatePusherTranscriptionService;
-use App\Services\Transcriptions\CreateEventTranscriptionService;
+use App\Services\Transcriptions\CreateBiospexEventTranscriptionService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -77,12 +77,12 @@ class ZooniversePusherJob implements ShouldQueue
      * TODO: Perhaps break this out into two jobs instead
      *
      * @param \App\Services\Transcriptions\UpdateOrCreatePusherTranscriptionService $updateOrCreatePusherTranscriptionService
-     * @param \App\Services\Transcriptions\CreateEventTranscriptionService $createEventTranscriptionService
+     * @param \App\Services\Transcriptions\CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService
      * @throws \Exception
      */
     public function handle(
         UpdateOrCreatePusherTranscriptionService $updateOrCreatePusherTranscriptionService, 
-        CreateEventTranscriptionService $createEventTranscriptionService)
+        CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService)
     {
         if ($this->skipReconcile($this->expeditionId)) {
             $this->delete();
@@ -99,9 +99,9 @@ class ZooniversePusherJob implements ShouldQueue
 
         $transcriptions = $updateOrCreatePusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
 
-        $transcriptions->each(function ($transcription) use ($updateOrCreatePusherTranscriptionService, $createEventTranscriptionService, $expedition) {
+        $transcriptions->each(function ($transcription) use ($updateOrCreatePusherTranscriptionService, $createBiospexEventTranscriptionService, $expedition) {
             $updateOrCreatePusherTranscriptionService->processTranscripts($transcription, $expedition);
-            $createEventTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
+            $createBiospexEventTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
         });
     }
 

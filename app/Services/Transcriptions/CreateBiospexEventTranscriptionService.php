@@ -29,11 +29,11 @@ use MongoDB\BSON\UTCDateTime;
 use Validator;
 
 /**
- * Class CreateEventTranscriptionService
+ * Class CreateBiospexEventTranscriptionService
  *
  * @package App\Services\Transcriptions
  */
-class CreateEventTranscriptionService
+class CreateBiospexEventTranscriptionService
 {
     /**
      * @var \App\Repositories\EventRepository
@@ -51,7 +51,7 @@ class CreateEventTranscriptionService
     private EventUserRepository $eventUserRepo;
 
     /**
-     * CreateEventTranscriptionService constructor.
+     * CreateBiospexEventTranscriptionService constructor.
      *
      * @param \App\Repositories\EventRepository $eventRepo
      * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
@@ -89,7 +89,7 @@ class CreateEventTranscriptionService
 
         $timestamp = $this->setDate($date);
 
-        $events = $this->eventRepo->checkEventExistsForClassificationUserByDate($projectId, $user->id, $timestamp);
+        $events = $this->eventRepo->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp);
 
         $events->each(function ($event) use ($classification_id, $user) {
             $event->teams->each(function ($team) use ($event, $classification_id, $user) {

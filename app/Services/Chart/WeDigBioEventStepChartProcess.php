@@ -21,67 +21,70 @@ namespace App\Services\Chart;
 
 use App\Facades\GeneralHelper;
 use App\Models\Event;
-use App\Repositories\EventRepository;
-use App\Repositories\EventTranscriptionRepository;
+use App\Models\WeDigBioEventDate;
+use App\Repositories\WeDigBioEventDateRepository;
+use App\Repositories\WeDigBioEventTranscriptionRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use function collect;
 
 /**
- * Class EventStepChartProcess
+ * Class WeDigBioEventStepChartProcess
  *
  * @package App\Services\Process
  */
-class EventStepChartProcess
+class WeDigBioEventStepChartProcess
 {
     /**
-     * @var \App\Repositories\EventRepository
+     * @var \App\Repositories\WeDigBioEventDateRepository
      */
-    private EventRepository $eventRepo;
+    private WeDigBioEventDateRepository $weDigBioEventDateRepository;
 
     /**
-     * @var \App\Repositories\EventTranscriptionRepository
+     * @var \App\Repositories\WeDigBioEventTranscriptionRepository
      */
-    private EventTranscriptionRepository $eventTranscriptionRepo;
+    private WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository;
 
     /**
      * AjaxService constructor.
      *
-     * @param \App\Repositories\EventRepository $eventRepo
-     * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
+     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
+     * @param \App\Repositories\WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository
      */
     public function __construct(
-        EventRepository $eventRepo,
-        EventTranscriptionRepository $eventTranscriptionRepo
+        WeDigBioEventDateRepository $weDigBioEventDateRepository,
+        WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository
     ) {
-        $this->eventRepo = $eventRepo;
-        $this->eventTranscriptionRepo = $eventTranscriptionRepo;
+
+        $this->weDigBioEventDateRepository = $weDigBioEventDateRepository;
+        $this->weDigBioEventTranscriptionRepository = $weDigBioEventTranscriptionRepository;
     }
 
     /**
      * Get event transcription data for step chart.
      *
-     * @param string $eventId
+     * @param int $dateId
      * @param string|null $timestamp
-     * @return array
+     * @return array|null
      */
-    public function eventStepChart(string $eventId, string $timestamp = null): ?array
+    public function getWeDigBioEventRateChart(int $dateId, string $timestamp = null): ?array
     {
-        $event = $this->eventRepo->findWith($eventId, ['teams']);
-        if ($event === null) {
+        $weDigBioDate = $this->weDigBioEventDateRepository->find($dateId);
+
+        if ($weDigBioDate === null) {
             return null;
         }
 
-        $loadTime = $this->getLoadTime($event, $timestamp);
+        $loadTime = $this->getLoadTime($weDigBioDate, $timestamp);
 
-        $startLoad = $loadTime->copy()->format('Y-m-d H:i:s');
-        $endLoad = $this->getEndLoad($event, $loadTime, $timestamp);
+        $startLoad = $loadTime->copy();
 
-        $intervals = $this->setTimeIntervals($event, $startLoad, $endLoad, $timestamp);
+        $endLoad = $this->getEndLoad($weDigBioDate, $loadTime, $timestamp);
 
-        $transcriptions = $this->eventTranscriptionRepo->getEventStepChartTranscriptions($eventId, $startLoad, $endLoad);
+        $intervals = $this->setTimeIntervals($startLoad, $endLoad, $timestamp);
 
-        return $transcriptions->isEmpty() ? $this->processEmptyResult($event, $intervals) : $this->processTranscriptionResult($event, $transcriptions, $intervals);
+        $transcriptions = $this->weDigBioEventTranscriptionRepository->getProjectStepChartTranscriptions($dateId, $startLoad, $endLoad);
+
+        return $transcriptions->isEmpty() ? $this->processEmptyResult($weDigBioDate, $intervals) : $this->processTranscriptionResult($weDigBioDate, $transcriptions, $intervals);
     }
 
     /**
@@ -204,49 +207,61 @@ class EventStepChartProcess
     /**
      * Get the load time given.
      *
-     * @param \App\Models\Event $event
+     * @param \App\Models\WeDigBioEventDate $weDigBioEventDate
      * @param string|null $timestamp
-     * @return \Carbon\Carbon
+     * @return \Illuminate\Support\Carbon
      */
-    protected function getLoadTime(Event $event, string $timestamp = null): \Carbon\Carbon
+    protected function getLoadTime(WeDigBioEventDate $weDigBioEventDate, string $timestamp = null): Carbon
     {
         return $timestamp === null ?
-            Carbon::parse($event->start_date) :
-            Carbon::createFromTimestampMs($timestamp)->floorMinutes(5);
+            $weDigBioEventDate->start_date :
+            Carbon::createFromTimestampMs($timestamp, 'UTC')->floorMinutes(5);
     }
 
     /**
-     * Get end load time. If event is over, it will display all points from beginning to end.
+     * Get end load time. If wedigbio event is over, it will display all points from beginning to end.
      *
-     * @param \App\Models\Event $event
-     * @param \Carbon\Carbon $loadTime
+     * @param \App\Models\WeDigBioEventDate $weDigBioEventDate
+     * @param \Illuminate\Support\Carbon $loadTime
      * @param string|null $timestamp
-     * @return string
+     * @return \Illuminate\Support\Carbon
      */
-    protected function getEndLoad(Event $event, \Carbon\Carbon $loadTime, string $timestamp = null): string
+    protected function getEndLoad(WeDigBioEventDate $weDigBioEventDate, Carbon $loadTime, string $timestamp = null): Carbon
     {
-        if (GeneralHelper::eventAfter($event)) {
-            return Carbon::parse($event->end_date)->format('Y-m-d H:i:s');
+        if ($this->checkEndDate($weDigBioEventDate)) {
+            return $weDigBioEventDate->end_date;
         }
 
         return $timestamp === null ?
-            Carbon::now()->floorMinutes(5)->format('Y-m-d H:i:s') :
-            $loadTime->addMinutes(5)->format('Y-m-d H:i:s');
+            Carbon::now('UTC')->floorMinutes(5) : $loadTime->addMinutes(5);
+    }
+
+    /**
+     * Check if now is after end date for event.
+     *
+     * @param \App\Models\WeDigBioEventDate $weDigBioEventDate
+     * @return bool
+     */
+    protected function checkEndDate(WeDigBioEventDate $weDigBioEventDate): bool
+    {
+        $now = Carbon::now('UTC');
+
+        return $now->gt($weDigBioEventDate->end_date);
     }
 
     /**
      * Get 5 minute time intervals.
      *
-     * @param \App\Models\Event $event
-     * @param string $startLoad
-     * @param string $endLoad
+     * @param \Illuminate\Support\Carbon $startLoad
+     * @param \Illuminate\Support\Carbon $endLoad
      * @param string|null $timestamp
      * @return \Illuminate\Support\Collection
      */
-    protected function setTimeIntervals(Event $event, string $startLoad, string $endLoad, string $timestamp = null): Collection
+    protected function setTimeIntervals(Carbon $startLoad, Carbon $endLoad, string $timestamp = null): Collection
     {
-        $start = Carbon::parse($startLoad)->timezone($event->timezone);
-        $end = Carbon::parse($endLoad)->timezone($event->timezone);
+        $start = Carbon::parse($startLoad)->timezone('UTC');
+        $end = Carbon::parse($endLoad)->timezone('UTC');
+        dd($end);
 
         do {
             $intervals[] = $timestamp == null ?

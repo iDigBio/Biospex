@@ -19,7 +19,15 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Project;
+use App\Models\WeDigBioEventDate;
+use App\Models\WeDigBioEventTranscription;
+use App\Repositories\WeDigBioEventTranscriptionRepository;
+use App\Services\Chart\BiospexEventStepChartProcess;
+use App\Services\Chart\WeDigBioEventStepChartProcess;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class AppCommand
@@ -49,9 +57,23 @@ class AppCommand extends Command
     /**
      * @return void
      */
-    public function handle()
+    public function handle(
+        WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository,
+        WeDigBioEventStepChartProcess $process)
     {
 
+        dd($weDigBioEventTranscriptionRepository->getTotal(1));
+
+        //$process->getWeDigBioEventRateChart(1);
+
+        //$result = WeDigBioEventDate::where('active', '=', 1)->get()->first();
+
+        //$date = Carbon::now('UTC');
+        //dd($date);
+        //dd($date->between($result->start_date, $result->end_date));
+
+        //$monthName = $date->format('F');
+        //dd($monthName);
     }
 
 

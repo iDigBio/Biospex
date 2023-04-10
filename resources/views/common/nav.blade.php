@@ -10,9 +10,9 @@
 <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav ml-auto">
         <li class="nav-item mr-2 dropdown">
-            <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
+            <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown00" data-toggle="dropdown" aria-haspopup="true"
                aria-expanded="false">{{ t('About') }}</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
+            <div class="dropdown-menu" aria-labelledby="dropdown00">
                 <a class="dropdown-item text-uppercase" href="{{ route('front.teams.index') }}">{{ t('Team') }}</a>
                 <a class="dropdown-item text-uppercase" href="{{ route('front.faqs.index') }}">{{ t('FAQ') }}</a>
                 <a class="dropdown-item text-uppercase" href="{{ route('front.resources.index') }}">{{ t('Resources') }}</a>
@@ -28,6 +28,18 @@
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.events.index') }}">{{ t('Events') }}</a>
         </li>
+
+        <li class="nav-item mr-2 dropdown">
+            <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">{{ t('WeDigBio') }}</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown01">
+                <a class="dropdown-item text-uppercase" href="#" data-toggle="modal" data-target="#wedigbio-progress-modal">{{ t('Progress') }}</a>
+                <a class="dropdown-item text-uppercase" href="#" data-toggle="modal" data-target="#wedigbio-rate-modal">{{ t('Rates') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.wedigbio.index') }}">{{ t('Past Results') }}</a>
+                <a class="dropdown-item text-uppercase" href="https://wedigbio.org" target="_blank">{{ t('WeDigBio Website') }}</a>
+            </div>
+        </li>
+
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.bingos.index') }}">{{ t('Games') }}</a>
         </li>

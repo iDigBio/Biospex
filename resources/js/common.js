@@ -107,6 +107,39 @@ $(function () {
                 $('#export-html').html(exportHtml);
             });
     }
+
+    $('#wedigbio-progress-modal').on('show.bs.modal', function (e) {
+        let $modal = $(this).find('.modal-body');
+        let $button = $(e.relatedTarget); // Button that triggered the modal
+        let channel = $button.data('channel');
+        let eventId = $button.data('event');
+
+        $modal.html('<div class="loader mx-auto"></div>');
+
+        $modal.load($button.data('href'), function () {
+            let $clock = $modal.find('.clockdiv');
+            let deadline = $modal.find('#date').html(); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
+            if (deadline === null) {
+                return;
+            }
+            initializeClock($clock, deadline);
+
+            Echo.channel(channel)
+                .listen('ScoreboardEvent', (e) => {
+                    $.each(e.data, function (id, val) {
+                        if (Number(id) === Number(eventId)) {
+                            $modal.html(val);
+                            $clock = $modal.find('.clockdiv');
+                            deadline = $modal.find('#date').html();
+                            initializeClock($clock, deadline);
+                        }
+                    });
+                });
+        });
+    }).on('hidden.bs.modal', function () {
+        $(this).find('.modal-body').html('');
+        clearInterval(timeInterval);
+    });
 });
 
 // Fetch poll data

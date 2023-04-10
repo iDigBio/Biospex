@@ -20,6 +20,7 @@
 namespace App\Http\Controllers\Api\V0;
 
 use App\Jobs\PanoptesPusherJob;
+use App\Jobs\ZooniversePusherHandlerJob;
 use Illuminate\Support\Facades\Response;
 
 /**
@@ -56,7 +57,7 @@ class PanoptesPusherController extends ApiController
             return;
         }
 
-        PanoptesPusherJob::dispatch($data);
+        ZooniversePusherHandlerJob::dispatch($data);
 
         return $this->respondWithCreated();
     }

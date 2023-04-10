@@ -179,14 +179,14 @@ class EventRepository extends BaseRepository
     }
 
     /**
-     * Check if classifications exist for event.
+     * Get any ongoing events for user using project id and dates.
      *
      * @param int $projectId
      * @param int $userId
      * @param string $date
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection|array
      */
-    public function checkEventExistsForClassificationUserByDate(int $projectId, int $userId, string $date)
+    public function getAnyEventsForUserByProjectIdAndDate(int $projectId, int $userId, string $date): \Illuminate\Database\Eloquent\Collection|array
     {
         $callback = function ($q) use($userId){
             $q->where('user_id', $userId);

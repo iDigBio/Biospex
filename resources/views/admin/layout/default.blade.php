@@ -12,6 +12,8 @@
 <div class="container mb-4">
     @include('common.notices')
     @yield('content')
+    @include('common.wedigbio-progress-modal')
+    @include('common.wedigbio-rate-modal')
     @include('common.process-modal')
 </div>
 @include('admin.layout.foot')

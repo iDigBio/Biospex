@@ -21,19 +21,12 @@ namespace App\Jobs;
 
 use App\Repositories\PanoptesProjectRepository;
 use App\Repositories\WeDigBioProjectRepository;
-use App\Services\Event\PusherEventService;
-use App\Services\Transcriptions\CreatePusherClassificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 
-/**
- * Class PanoptesPusherJob
- *
- * @package App\Jobs
- */
-class PanoptesPusherJob implements ShouldQueue
+class ZooniversePusherHandlerJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
@@ -57,39 +50,39 @@ class PanoptesPusherJob implements ShouldQueue
     public function __construct(array $data)
     {
         $this->data = $data;
-        $this->onQueue(config('config.queues.pusher_transcriptions'));
+        $this->onQueue(config('config.queues.zooniverse_pusher_handler'));
     }
 
     /**
-     * Handles incoming pusher classifications.
-     * If not in the system, reject. If in the system, process.
+     * Execute the job.
      *
-     * @param \App\Repositories\PanoptesProjectRepository $panoptesProjectRepo
-     * @param \App\Repositories\WeDigBioProjectRepository $weDigBioprojectRepo
-     * @param \App\Services\Event\PusherEventService $pusherEventService
-     * @param \App\Services\Transcriptions\CreatePusherClassificationService $createPusherClassificationService
      * @return void
-     * @throws \Exception
      */
     public function handle(
         PanoptesProjectRepository $panoptesProjectRepo,
         WeDigBioProjectRepository $weDigBioprojectRepo,
-        PusherEventService $pusherEventService,
-        CreatePusherClassificationService $createPusherClassificationService
-    )
-    {
+    ) {
         $panoptesProject = $panoptesProjectRepo->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
         $weDigBioProject = $weDigBioprojectRepo->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
 
-        if ($panoptesProject === null && $weDigBioProject === null){
+        if ($panoptesProject === null && $weDigBioProject === null) {
             $this->delete();
+
             return;
         }
 
         $title = $weDigBioProject === null ? $panoptesProject->title : $weDigBioProject->title;
+        $projectId = $weDigBioProject === null ? null : $panoptesProject->project_id;
+        $expeditionId = $weDigBioProject === null ? null : $panoptesProject->expedition_id;
 
-        $pusherEventService->process($this->data);
+        ZooniverseClassificationJob::dispatch($this->data, $title);
 
-        $createPusherClassificationService->process($this->data, $title);
+        if ($expeditionId !== null) {
+            ZooniverseBiospexEventJob::dispatch($this->data, $expeditionId);
+        }
+
+        if ($projectId !== null) {
+            ZooniverseWeDigBioEventJob::dispatch($this->data, $projectId);
+        }
     }
 }

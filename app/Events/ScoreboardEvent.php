@@ -72,6 +72,6 @@ class ScoreboardEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel(config('config.poll_scoreboard_channel') . '.' . $this->projectId);
+        return new Channel(config('config.poll_board_channel') . '.' . $this->projectId);
     }
 }

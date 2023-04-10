@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Jobs\PanoptesPusherJob;
+use App\Jobs\ZooniversePusherHandlerJob;
 use Illuminate\Http\Response;
 
 /**
@@ -57,7 +58,7 @@ class PanoptesPusherController extends ApiController
             return $this->errorWrongArgs(t('Missing workflow_id'));
         }
 
-        PanoptesPusherJob::dispatch($data);
+        ZooniversePusherHandlerJob::dispatch($data);
 
         return $this->respondWithCreated();
     }

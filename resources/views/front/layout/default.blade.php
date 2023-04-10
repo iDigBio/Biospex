@@ -21,6 +21,8 @@
 @yield('header')
 <div class="container mb-4">
     @yield('content')
+    @include('common.wedigbio-progress-modal')
+    @include('common.wedigbio-rate-modal')
     @if(Auth::check())
         @include('common.process-modal')
     @endif

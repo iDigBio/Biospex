@@ -21,19 +21,19 @@ namespace App\Services\Event;
 
 use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
-use App\Services\Transcriptions\CreateEventTranscriptionService;
+use App\Services\Transcriptions\CreateBiospexEventTranscriptionService;
 
 /**
- * Class PusherEventService
+ * Class BiospexEventService
  *
  * @package App\Services\Process
  */
-class PusherEventService
+class BiospexEventService
 {
     /**
-     * @var \App\Services\Transcriptions\CreateEventTranscriptionService
+     * @var \App\Services\Transcriptions\CreateBiospexEventTranscriptionService
      */
-    private CreateEventTranscriptionService $createEventTranscriptionService;
+    private CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService;
 
     /**
      * @var \App\Repositories\ExpeditionRepository
@@ -46,34 +46,34 @@ class PusherEventService
     private PanoptesApiService $apiService;
 
     /**
-     * PusherEventService constructor.
+     * BiospexEventService constructor.
      *
-     * @param \App\Services\Transcriptions\CreateEventTranscriptionService $createEventTranscriptionService
+     * @param \App\Services\Transcriptions\CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Services\Api\PanoptesApiService $apiService
      */
     public function __construct(
-        CreateEventTranscriptionService $createEventTranscriptionService,
+        CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService,
         ExpeditionRepository $expeditionRepo,
         PanoptesApiService $apiService)
     {
 
-        $this->createEventTranscriptionService = $createEventTranscriptionService;
+        $this->createBiospexEventTranscriptionService = $createBiospexEventTranscriptionService;
         $this->expeditionRepo = $expeditionRepo;
         $this->apiService = $apiService;
     }
 
     /**
      * Adds transcription to event for particular user.
-     * @see \App\Jobs\PanoptesPusherJob
      *
      * @param array $data
+     * @param int $expeditionId
+     * @see \App\Jobs\PanoptesPusherJob
+     *
      */
-    public function process(array $data)
+    public function process(array $data, int $expeditionId)
     {
-        $subject = $this->apiService->getPanoptesSubject($data['subject_ids'][0]);
-
-        $expedition = $this->getExpeditionBySubject($subject);
+        $expedition = $this->expeditionRepo->find($expeditionId);
 
         if ($expedition === null) {
             return;
@@ -85,21 +85,6 @@ class PusherEventService
             return;
         }
 
-        $this->createEventTranscriptionService->createEventTranscription((int) $data['classification_id'], $expedition->project_id, $user['login']);
-    }
-
-    /**
-     * Get expedition.
-     *
-     * @param $subject
-     * @return mixed|null
-     */
-    public function getExpeditionBySubject($subject): mixed
-    {
-        if (empty($subject['metadata']['#expeditionId'])) {
-            return null;
-        }
-
-        return $this->expeditionRepo->find($subject['metadata']['#expeditionId']);
+        $this->createBiospexEventTranscriptionService->createEventTranscription((int) $data['classification_id'], $expedition->project_id, $user['login']);
     }
 }

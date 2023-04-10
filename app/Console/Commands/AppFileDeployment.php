@@ -64,7 +64,7 @@ class AppFileDeployment extends Command
     /**
      * @var Collection
      */
-    private $apps;
+    private Collection $config;
 
     /**
      * Create a new command instance.
@@ -78,7 +78,7 @@ class AppFileDeployment extends Command
         $this->resPath = base_path('resources');
         $this->appPath = base_path();
         $this->supPath = Storage::path('supervisord');
-        $this->setAppsConfigs();
+        $this->setConfig();
     }
 
     /**
@@ -116,7 +116,7 @@ class AppFileDeployment extends Command
 
         $files = $appTargets->merge($subTargets);
 
-        $this->apps->each(function ($search) use ($files) {
+        $this->config->each(function ($search) use ($files) {
             $replace = $this->configureReplace($search);
             $files->each(function ($file) use ($search, $replace) {
                 exec("sed -i 's*$search*$replace*g' $file");
@@ -154,38 +154,9 @@ class AppFileDeployment extends Command
     /**
      * Set search and replace arrays.
      */
-    private function setAppsConfigs()
+    private function setConfig()
     {
-        $this->apps = collect([
-            'APP_URL',
-            'APP_ENV',
-            'APP_DOMAIN',
-
-            'SERVER_USER',
-            'CURRENT_PATH',
-
-            'REDIS_HOST',
-
-            'API_URL',
-            'API_VERSION',
-            'API_TOKEN',
-
-            'NUM_PROCS',
-
-            'QUEUE_CHART',
-            'QUEUE_CLASSIFICATION',
-            'QUEUE_DEFAULT',
-            'QUEUE_EVENT',
-            'QUEUE_IMPORT',
-            'QUEUE_EXPORT',
-            'QUEUE_RECONCILE',
-            'QUEUE_SNS_IMAGE',
-            'QUEUE_WORKFLOW',
-            'QUEUE_OCR',
-            'QUEUE_PUSHER_TRANSCRIPTIONS',
-            'QUEUE_PUSHER_PROCESS',
-            'QUEUE_LAMBDA',
-        ]);
+        $this->config = collect(config('config.deployment_fields'));
     }
 
     /**
