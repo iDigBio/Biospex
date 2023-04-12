@@ -21,6 +21,7 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
 use App\Notifications\JobError;
+use App\Services\Transcriptions\CreateWeDigBioTranscriptionService;
 use App\Services\Transcriptions\UpdateOrCreatePusherTranscriptionService;
 use App\Services\Transcriptions\CreateBiospexEventTranscriptionService;
 use Exception;
@@ -78,11 +79,13 @@ class ZooniversePusherJob implements ShouldQueue
      *
      * @param \App\Services\Transcriptions\UpdateOrCreatePusherTranscriptionService $updateOrCreatePusherTranscriptionService
      * @param \App\Services\Transcriptions\CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService
+     * @param \App\Services\Transcriptions\CreateWeDigBioTranscriptionService $createWeDigBioTranscriptionService
      * @throws \Exception
      */
     public function handle(
         UpdateOrCreatePusherTranscriptionService $updateOrCreatePusherTranscriptionService, 
-        CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService)
+        CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService,
+        CreateWeDigBioTranscriptionService $createWeDigBioTranscriptionService)
     {
         if ($this->skipReconcile($this->expeditionId)) {
             $this->delete();
@@ -99,9 +102,14 @@ class ZooniversePusherJob implements ShouldQueue
 
         $transcriptions = $updateOrCreatePusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
 
-        $transcriptions->each(function ($transcription) use ($updateOrCreatePusherTranscriptionService, $createBiospexEventTranscriptionService, $expedition) {
+        $transcriptions->each(function ($transcription) use (
+            $updateOrCreatePusherTranscriptionService,
+            $createBiospexEventTranscriptionService,
+            $createWeDigBioTranscriptionService,
+            $expedition) {
             $updateOrCreatePusherTranscriptionService->processTranscripts($transcription, $expedition);
             $createBiospexEventTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
+            $createWeDigBioTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id);
         });
     }
 
