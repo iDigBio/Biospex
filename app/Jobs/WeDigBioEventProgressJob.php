@@ -19,54 +19,47 @@
 
 namespace App\Jobs;
 
-use App\Services\Event\WeDigBioEventService;
+use App\Events\WeDigBioProgressEvent;
+use App\Repositories\WeDigBioEventDateRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
-class ZooniverseWeDigBioEventJob implements ShouldQueue
+class WeDigBioEventProgressJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
-
-    /**
-     * The number of seconds the job can run before timing out.
-     *
-     * @var int
-     */
-    public int $timeout = 60;
-
-    /**
-     * @var array
-     */
-    private array $data;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var int
      */
-    private int $projectId;
+    private int $dateId;
 
     /**
      * Create a new job instance.
-     * Handles WeDigBio even transcriptions
-     * @see \App\Jobs\ZooniversePusherHandlerJob
      *
-     * @return void
+     * @param int $dateId
      */
-    public function __construct(array $data, int $projectId)
+    public function __construct(int $dateId)
     {
-        $this->data = $data;
-        $this->projectId = $projectId;
-        $this->onQueue(config('config.queues.zooniverse_wedigbio_event'));
+        $this->dateId = $dateId;
+        $this->onQueue(config('config.queues.event'));
     }
 
     /**
-     * Execute the job.
+     * Handle Job.
      *
+     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
      * @return void
      */
-    public function handle(WeDigBioEventService $weDigBioEventService)
+    public function handle(WeDigBioEventDateRepository $weDigBioEventDateRepository)
     {
-        $weDigBioEventService->process($this->data, $this->projectId);
+        $weDigBioDate = $weDigBioEventDateRepository->getWeDigBioEventTranscriptions($this->dateId);
+        $id = $weDigBioDate->active ? 0 : $weDigBioDate->id;
+
+        $data = [$id => view('common.wedigbio-progress-content', compact('weDigBioDate'))->render()];
+
+        WeDigBioProgressEvent::dispatch($id, $data);
     }
 }

@@ -63,8 +63,6 @@
         </script>
     @endif
     @if(isset($transcriptions))
-        <script src="//www.amcharts.com/lib/4/core.js"></script>
-        <script src="//www.amcharts.com/lib/4/charts.js"></script>
         <script src="{{ asset('js/amChartStat.min.js')}}"></script>
     @endif
 @endpush

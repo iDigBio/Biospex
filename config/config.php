@@ -72,10 +72,11 @@ return [
 
     'ocr_disable' => env('OCR_DISABLE', false),
 
-    'poll_ocr_channel'        => env('POLL_OCR_CHANNEL'),
-    'poll_export_channel'     => env('POLL_EXPORT_CHANNEL'),
-    'poll_board_channel' => env('POLL_BOARD_CHANNEL'),
-    'poll_bingo_channel'      => env('POLL_BINGO_CHANNEL'),
+    'poll_ocr_channel'               => env('POLL_OCR_CHANNEL'),
+    'poll_export_channel'            => env('POLL_EXPORT_CHANNEL'),
+    'poll_board_channel'             => env('POLL_BOARD_CHANNEL'),
+    'poll_bingo_channel'             => env('POLL_BINGO_CHANNEL'),
+    'poll_wedigbio_progress_channel' => env('POLL_WEDIGBIO_PROGRESS_CHANNEL'),
 
     'project_resources' => [
         'Website URL',
@@ -154,9 +155,9 @@ return [
         'lambda'                    => env('QUEUE_LAMBDA'),
         'ocr'                       => env('QUEUE_OCR'),
         'zooniverse_biospex_event'  => env('QUEUE_ZOONIVERSE_BIOSPEX_EVENT'),
-        'zooniverse_classification'  => env('QUEUE_ZOONIVERSE_CLASSIFICATION'),
+        'zooniverse_classification' => env('QUEUE_ZOONIVERSE_CLASSIFICATION'),
         'zooniverse_pusher_handler' => env('QUEUE_ZOONIVERSE_PUSHER_HANDLER'),
-        'zooniverse_wedigbio_event'  => env('QUEUE_ZOONIVERSE_WEDIGBIO_EVENT'),
+        'zooniverse_wedigbio_event' => env('QUEUE_ZOONIVERSE_WEDIGBIO_EVENT'),
         'pusher_process'            => env('QUEUE_PUSHER_PROCESS'),
         'reconcile'                 => env('QUEUE_RECONCILE'),
         'sns_image'                 => env('QUEUE_SNS_IMAGE'),

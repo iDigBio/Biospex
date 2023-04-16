@@ -19,15 +19,16 @@
 
 namespace App\Models;
 
-
 use App\Models\Traits\Presentable;
+use App\Presenters\WeDigBioDatePresenter;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WeDigBioEventDate extends BaseEloquentModel
 {
     use Presentable;
 
     /**
-     * @var string
+     * @inheritDoc
      */
     protected $connection = 'mysql';
 
@@ -57,5 +58,38 @@ class WeDigBioEventDate extends BaseEloquentModel
     /**
      * @var string
      */
-    protected $presenter = DownloadPresenter::class;
+    protected string $presenter = WeDigBioDatePresenter::class;
+
+    /**
+     * Transcriptions relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function transcriptions(): HasMany
+    {
+        return $this->hasMany(WeDigBioEventTranscription::class, 'date_id', 'id');
+    }
+
+    /**
+     * Scope for active.
+     *
+     * @param $query
+     * @return mixed
+     */
+    public function scopeActive($query): mixed
+    {
+        return $query->where('active', 1);
+    }
+
+    /**
+     * Scope for date or active depending on if date id is empty.
+     *
+     * @param $query
+     * @param $dateId
+     * @return mixed
+     */
+    public function scopeDateOrActive($query, $dateId = null): mixed
+    {
+        return $dateId === null ? $query->active()->first() : $query->find($dateId);
+    }
 }

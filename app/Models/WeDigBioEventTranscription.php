@@ -29,7 +29,7 @@ class WeDigBioEventTranscription extends BaseEloquentModel
     use HasFactory, HybridRelations;
 
     /**
-     * @var string
+     * @inheritDoc
      */
     protected $connection = 'mysql';
 
@@ -39,12 +39,16 @@ class WeDigBioEventTranscription extends BaseEloquentModel
     protected $table = 'wedigbio_event_transcriptions';
 
     /**
+     * Dates are fillable to accommodate adding missed records overnight.
+     *
      * @inheritDoc
      */
     protected $fillable = [
         'classification_id',
         'project_id',
-        'date_id'
+        'date_id',
+        'created_at',
+        'updated_at'
     ];
 
     /**

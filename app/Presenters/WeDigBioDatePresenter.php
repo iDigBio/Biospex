@@ -19,6 +19,7 @@
 
 namespace App\Presenters;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -30,6 +31,28 @@ class WeDigBioDatePresenter extends Presenter
 {
     public function progressTitle()
     {
-        return 'WEDIGBIO ' . $this->model->start_date->isoFormat('MMMM Do YYYY') . ' to ' . $this->model->end_date->isoFormat('MMMM Do YYYY');
+        return $this->model->start_date->isoFormat('MMMM Do') . ' to ' . $this->model->end_date->isoFormat('MMMM Do YYYY');
+    }
+
+    /**
+     * Return date for scoreboard.
+     *
+     * start_date count down
+     * event end date count down
+     * after end date completed
+     *
+     * @return string
+     */
+    public function progressDate()
+    {
+        $now = Carbon::now(new DateTimeZone('UTC'));
+        $start_date = $this->model->start_date->setTimezone('UTC');
+        $end_date = $this->model->end_date->setTimeZone('UTC');
+
+        if ($now->gt($end_date)) {
+            return 'Completed';
+        }
+
+        return $end_date->gt($start_date) ? $end_date->toIso8601ZuluString() : $start_date->toIso8601ZuluString();
     }
 }

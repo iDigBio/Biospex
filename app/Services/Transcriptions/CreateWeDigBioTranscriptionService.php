@@ -19,7 +19,8 @@
 
 namespace App\Services\Transcriptions;
 
-use App\Jobs\ScoreboardJob;
+use App\Events\WeDigBioProgressEvent;
+use App\Jobs\WeDigBioEventProgressJob;
 use App\Models\WeDigBioEventDate;
 use App\Repositories\WeDigBioEventDateRepository;
 use App\Repositories\WeDigBioEventTranscriptionRepository;
@@ -74,45 +75,44 @@ class CreateWeDigBioTranscriptionService
     ) {
         $wedigbioDate = $this->weDigBioEventDateRepository->findBy('active', 1);
 
-        if (! $this->checkDate($wedigbioDate)) {
+        $timestamp = $this->setDate($date);
+
+        if (! $this->checkDate($wedigbioDate, $timestamp)) {
             return;
         }
 
-        $values = [
+        $attributes = [
             'classification_id' => $classification_id,
             'project_id'        => $projectId,
             'date_id'           => $wedigbioDate->id
         ];
 
-        if ($this->validateClassification($values)) {
+        if ($this->validateClassification($attributes)) {
             return;
         }
 
-        $this->weDigBioEventTranscriptionRepository->create($values);
+        $values = array_merge($attributes, ['created_at' => $timestamp->toDateTimeString(), 'updated_at' => $timestamp->toDateTimeString()]);
 
-        /**
-         * TODO Create similar scoreboard upate job for wedigbio projects.
-         *
-        if ($events->isNotEmpty() && !isset($date)) {
-            ScoreboardJob::dispatch($projectId);
-        }
-         */
+        $this->weDigBioEventTranscriptionRepository->create($values);
+        \Cache::forget('wedigbio-event-transcription');
+
+        WeDigBioEventProgressJob::dispatch($wedigbioDate->id);
     }
 
     /**
      * Validate classification.
      *
-     * @param $values
+     * @param $attributes
      * @return bool
      */
-    private function validateClassification($values): bool
+    private function validateClassification($attributes): bool
     {
-        $validator = Validator::make($values, [
-            'classification_id' => Rule::unique('wedigbio_event_transactions')->where(function ($query) use ($values) {
+        $validator = Validator::make($attributes, [
+            'classification_id' => Rule::unique('wedigbio_event_transcriptions')->where(function ($query) use ($attributes) {
                 return $query
-                    ->where('classification_id', $values['classification_id'])
-                    ->where('project_id', $values['project_id'])
-                    ->where('date_id', $values['date_id']);
+                    ->where('classification_id', $attributes['classification_id'])
+                    ->where('project_id', $attributes['project_id'])
+                    ->where('date_id', $attributes['date_id']);
             }),
         ]);
         // returns true if records exists
@@ -120,15 +120,25 @@ class CreateWeDigBioTranscriptionService
     }
 
     /**
+     * Set date for creating event transcriptions.
+     *
+     * @param \MongoDB\BSON\UTCDateTime|null $date
+     * @return \Illuminate\Support\Carbon
+     */
+    private function setDate(UTCDateTime $date = null): Carbon
+    {
+        return ! isset($date) ? Carbon::now('UTC') : Carbon::createFromTimestampMsUTC($date);
+    }
+
+    /**
      * Check date is between active WeDigbio Event Date.
      *
      * @param \App\Models\WeDigBioEventDate $weDigBioEventDate
+     * @param \Illuminate\Support\Carbon $timestamp
      * @return bool
      */
-    private function checkDate(WeDigBioEventDate $weDigBioEventDate): bool
+    private function checkDate(WeDigBioEventDate $weDigBioEventDate, Carbon $timestamp): bool
     {
-        $date = Carbon::now('UTC');
-
-        return $date->between($weDigBioEventDate->start_date, $weDigBioEventDate->end_date);
+        return $timestamp->between($weDigBioEventDate->start_date, $weDigBioEventDate->end_date);
     }
 }

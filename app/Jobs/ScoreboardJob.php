@@ -39,14 +39,14 @@ class ScoreboardJob implements ShouldQueue
     /**
      * @var int
      */
-    private $projectId;
+    private int $projectId;
 
     /**
      * ScoreBoardJob constructor.
      *
-     * @param $projectId
+     * @param int $projectId
      */
-    public function __construct($projectId)
+    public function __construct(int $projectId)
     {
         $this->projectId = $projectId;
         $this->onQueue(config('config.queues.event'));

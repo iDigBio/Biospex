@@ -38,12 +38,4 @@ class PusherClassificationRepository extends BaseRepository
 
         $this->model = $pusher_classification;
     }
-
-    /**
-     * @return \App\Models\PusherClassification
-     */
-    public function getPusherClassificationModel(): PusherClassification
-    {
-        return $this->model;
-    }
 }

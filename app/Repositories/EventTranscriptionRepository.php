@@ -20,6 +20,7 @@
 namespace App\Repositories;
 
 use App\Models\EventTranscription;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
@@ -46,7 +47,7 @@ class EventTranscriptionRepository extends BaseRepository
      * @param $eventId
      * @return mixed
      */
-    public function getEventClassificationIds($eventId)
+    public function getEventClassificationIds($eventId): mixed
     {
         return $this->model->where('event_id', $eventId)->pluck('classification_id');
     }
@@ -55,17 +56,17 @@ class EventTranscriptionRepository extends BaseRepository
      * Get transcriptions for event step chart.
      *
      * @param string $eventId
-     * @param string $startLoad
-     * @param string $endLoad
+     * @param \Illuminate\Support\Carbon $startLoad
+     * @param \Illuminate\Support\Carbon $endLoad
      * @return \Illuminate\Support\Collection|null
      */
-    public function getEventStepChartTranscriptions(string $eventId, string $startLoad, string $endLoad): ?Collection
+    public function getEventRateChartTranscriptions(string $eventId, Carbon $startLoad, Carbon $endLoad): ?Collection
     {
         return $this->model->with(['team:id,title'])
             ->selectRaw('event_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, team_id, count(id) as count')
             ->where('event_id', $eventId)
-            ->where('created_at', '>=', $startLoad)
-            ->where('created_at', '<', $endLoad)
+            ->where('created_at', '>=', $startLoad->toDateTimeString())
+            ->where('created_at', '<', $endLoad->toDateTimeString())
             ->groupBy('time', 'team_id', 'event_id')->orderBy('time')->get();
     }
 }

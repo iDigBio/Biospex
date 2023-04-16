@@ -22,7 +22,6 @@ namespace App\Repositories;
 use App\Models\WeDigBioEventTranscription;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class WeDigBioEventTranscriptionRepository
@@ -38,35 +37,7 @@ class WeDigBioEventTranscriptionRepository extends BaseRepository
      */
     public function __construct(WeDigBioEventTranscription $weDigBioEventTranscription)
     {
-
         $this->model = $weDigBioEventTranscription;
-    }
-
-    /**
-     * Get transcriptions my dateId
-     *
-     * @param int $dateId
-     * @return mixed
-     */
-    public function getTranscriptionsByDateId(int $dateId): mixed
-    {
-        return $this->model->select('*', DB::raw('count(project_id) as total'))
-            ->with(['project' => function($query){
-                $query->select('id', 'title');
-            }])
-            ->dateId($dateId)
-            ->groupBy('project_id')->get();
-    }
-
-    /**
-     * Get total transcriptions by date id.
-     *
-     * @param int $dateId
-     * @return mixed
-     */
-    public function getTotal(int $dateId)
-    {
-        return $this->model->dateId($dateId)->count();
     }
 
     /**
@@ -77,8 +48,15 @@ class WeDigBioEventTranscriptionRepository extends BaseRepository
      * @param \Illuminate\Support\Carbon $endLoad
      * @return \Illuminate\Support\Collection|null
      */
-    public function getProjectStepChartTranscriptions(int $dateId, Carbon $startLoad, Carbon $endLoad): ?Collection
+    public function getWeDigBioRateChartTranscriptions(int $dateId, Carbon $startLoad, Carbon $endLoad): ?Collection
     {
-        return $this->model->with(['team:id,title'])->selectRaw('project_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, count(id) as count')->where('dateId', $dateId)->where('created_at', '>=', $startLoad->toDateTimeString())->where('created_at', '<', $endLoad->toDateTimeString())->groupBy('time', 'project_id')->orderBy('time')->get();
+        return $this->model->with(['project:id,title'])
+            ->selectRaw('project_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, count(id) as count')
+            ->where('date_id', $dateId)
+            ->where('created_at', '>=', $startLoad->toDateTimeString())
+            ->where('created_at', '<', $endLoad->toDateTimeString())
+            ->groupBy('time', 'project_id')
+            ->orderBy('time')
+            ->get();
     }
 }

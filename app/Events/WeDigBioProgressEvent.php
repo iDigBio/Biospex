@@ -20,17 +20,11 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
 
-/**
- * Class ScoreboardEvent
- *
- * @package App\Events
- */
-class ScoreboardEvent extends Event implements ShouldBroadcast
+class WeDigBioProgressEvent extends Event implements ShouldBroadcast
 {
-
     use Dispatchable;
 
     /**
@@ -39,19 +33,19 @@ class ScoreboardEvent extends Event implements ShouldBroadcast
     public array $data = [];
 
     /**
-     * @var
+     * @var int
      */
-    public $projectId;
+    public int $dateId;
 
     /**
      * ScoreboardEvent constructor.
      *
-     * @param $projectId
-     * @param $data
+     * @param int $dateId
+     * @param array $data
      */
-    public function __construct($projectId, $data)
+    public function __construct(int $dateId, array $data)
     {
-        $this->projectId = $projectId;
+        $this->dateId = $dateId;
         $this->data = $data;
     }
 
@@ -72,6 +66,6 @@ class ScoreboardEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel(config('config.poll_board_channel') . '.' . $this->projectId);
+        return new Channel(config('config.poll_wedigbio_progress_channel') . '.' . $this->dateId);
     }
 }

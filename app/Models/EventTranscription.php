@@ -41,6 +41,8 @@ class EventTranscription extends BaseEloquentModel
     protected $table = 'event_transcriptions';
 
     /**
+     * Created and Updated dates are fillable so overnight scripts can update with correct time for missing records.
+     *
      * @inheritDoc
      */
     protected $fillable = [
@@ -48,6 +50,8 @@ class EventTranscription extends BaseEloquentModel
         'event_id',
         'team_id',
         'user_id',
+        'created_at',
+        'updated_at'
     ];
 
     /**

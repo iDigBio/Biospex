@@ -72,17 +72,15 @@ class ZooniversePusherHandlerJob implements ShouldQueue
         }
 
         $title = $weDigBioProject === null ? $panoptesProject->title : $weDigBioProject->title;
-        $projectId = $weDigBioProject === null ? null : $panoptesProject->project_id;
-        $expeditionId = $weDigBioProject === null ? null : $panoptesProject->expedition_id;
 
         ZooniverseClassificationJob::dispatch($this->data, $title);
 
-        if ($expeditionId !== null) {
-            ZooniverseBiospexEventJob::dispatch($this->data, $expeditionId);
+        if (isset($panoptesProject->expedition_id)) {
+            ZooniverseBiospexEventJob::dispatch($this->data, $panoptesProject->expedition_id);
         }
 
-        if ($projectId !== null) {
-            ZooniverseWeDigBioEventJob::dispatch($this->data, $projectId);
+        if (isset($panoptesProject->project_id)) {
+            ZooniverseWeDigBioEventJob::dispatch($this->data, $panoptesProject->project_id);
         }
     }
 }

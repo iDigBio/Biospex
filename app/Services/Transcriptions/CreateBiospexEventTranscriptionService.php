@@ -89,20 +89,22 @@ class CreateBiospexEventTranscriptionService
 
         $timestamp = $this->setDate($date);
 
-        $events = $this->eventRepo->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp);
+        $events = $this->eventRepo->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp->toDateTimeString());
 
-        $events->each(function ($event) use ($classification_id, $user) {
-            $event->teams->each(function ($team) use ($event, $classification_id, $user) {
-                $values = [
+        $events->each(function ($event) use ($classification_id, $user, $timestamp) {
+            $event->teams->each(function ($team) use ($event, $classification_id, $user, $timestamp) {
+                $attributes = [
                     'classification_id' => $classification_id,
                     'event_id'          => $event->id,
                     'team_id'           => $team->id,
                     'user_id'           => $user->id,
                 ];
 
-                if ($this->validateClassification($values)) {
+                if ($this->validateClassification($attributes)) {
                     return;
                 }
+
+                $values = array_merge($attributes, ['created_at' => $timestamp->toDateTimeString(), 'updated_at' => $timestamp->toDateTimeString()]);
 
                 $this->eventTranscriptionRepo->create($values);
             });
@@ -116,16 +118,17 @@ class CreateBiospexEventTranscriptionService
     /**
      * Validate classification.
      *
-     * @param $values
+     * @param array $attributes
      * @return bool
      */
-    private function validateClassification($values)
+    private function validateClassification(array $attributes): bool
     {
-        $validator = Validator::make($values, [
-            'classification_id' => Rule::unique('event_transcriptions')->where(function ($query) use ($values) {
-                return $query->where('classification_id', $values['classification_id'])->where('event_id', $values['event_id'])->where('team_id', $values['team_id'])->where('user_id', $values['user_id']);
+        $validator = Validator::make($attributes, [
+            'classification_id' => Rule::unique('event_transcriptions')->where(function ($query) use ($attributes) {
+                return $query->where('classification_id', $attributes['classification_id'])->where('event_id', $attributes['event_id'])->where('team_id', $attributes['team_id'])->where('user_id', $attributes['user_id']);
             }),
         ]);
+
         // returns true if records exists
         return $validator->fails();
     }
@@ -134,12 +137,10 @@ class CreateBiospexEventTranscriptionService
      * Set date for creating event transcriptions.
      *
      * @param \MongoDB\BSON\UTCDateTime|null $date
-     * @return string
+     * @return \Illuminate\Support\Carbon
      */
-    private function setDate(UTCDateTime $date = null)
+    private function setDate(UTCDateTime $date = null): Carbon
     {
-        $timestamp = ! isset($date) ? Carbon::now('UTC') : $date->toDateTime();
-
-        return $timestamp->format('Y-m-d H:i:s');
+        return ! isset($date) ? Carbon::now('UTC') : Carbon::createFromTimestampMsUTC($date);
     }
 }

@@ -5,7 +5,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="empty-icon"><i class="fa fa-fw"></i></div>
-                <div><h2 class="color-action">{{ t('RATE') }}</h2></div>
+                <div>
+                    <h2 class="color-action">{{ t('WEDIGBIO RATE') }}</h2>
+                    <span class="need-review pl-2">{{ t('updates every 5 minutes') }}</span>
+                </div>
                 <div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="far fa-times-circle"></i></span>
@@ -15,7 +18,7 @@
 
             <div class="modal-body">
                 <div class="jumbotron box-shadow m-5">
-                    <div id="chartdiv" class="d-flex" style="width:100%; height: 500px"></div>
+                    <div id="weDigBioRateChartDiv" class="d-flex" style="width:100%; height: 500px"></div>
                 </div>
             </div>
 

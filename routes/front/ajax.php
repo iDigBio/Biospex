@@ -24,7 +24,8 @@ Route::get('ajax/scoreboard/{event}', [AjaxController::class, 'scoreboard'])->na
 Route::get('ajax/step/{event}/{load?}', [AjaxController::class, 'eventStepChart'])->name('ajax.get.step');
 Route::get('poll', [AjaxController::class, 'poll'])->name('ajax.get.poll');
 Route::get('bingos/{bingo}/winner/{map}', [AjaxController::class, 'bingoWinner'])->name('ajax.get.bingoWinner');
-Route::get('ajax/wedigbio-progress', [AjaxController::class, 'weDigBioProgress'])->name('ajax.get.wedigbio-progress');
-Route::get('ajax/wedigbio-rate', [AjaxController::class, 'weDigBioRate'])->name('ajax.get.wedigbio-rate');
+Route::get('ajax/wedigbio-progress/{dateId?}', [AjaxController::class, 'weDigBioProgress'])->name('ajax.get.wedigbio-progress');
+Route::get('ajax/wedigbio-rate/{dateId}/{load?}', [AjaxController::class, 'weDigBioRate'])->name('ajax.get.wedigbio-rate');
+Route::get('ajax/wedigbio-projects', [AjaxController::class, 'getProjectsForWeDigBioRateChart'])->name('ajax.get.wedigbio-projects');
 
 

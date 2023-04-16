@@ -80,7 +80,6 @@ class CreatePusherTranscriptionService
     {
 
         if ($this->validateTranscription($pusherClassification->classification_id)) {
-            \Log::alert($pusherClassification->classification_id . ' failed validation');
             return;
         }
 

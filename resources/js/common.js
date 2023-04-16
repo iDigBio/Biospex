@@ -111,27 +111,23 @@ $(function () {
     $('#wedigbio-progress-modal').on('show.bs.modal', function (e) {
         let $modal = $(this).find('.modal-body');
         let $button = $(e.relatedTarget); // Button that triggered the modal
+
         let channel = $button.data('channel');
-        let eventId = $button.data('event');
+        let dateId = $button.data('date');
 
         $modal.html('<div class="loader mx-auto"></div>');
 
         $modal.load($button.data('href'), function () {
-            let $clock = $modal.find('.clockdiv');
-            let deadline = $modal.find('#date').html(); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
+            let deadline = $modal.find('#inProgress').html(); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
             if (deadline === null) {
                 return;
             }
-            initializeClock($clock, deadline);
 
             Echo.channel(channel)
-                .listen('ScoreboardEvent', (e) => {
+                .listen('WeDigBioProgressEvent', (e) => {
                     $.each(e.data, function (id, val) {
-                        if (Number(id) === Number(eventId)) {
+                        if (Number(id) === Number(dateId)) {
                             $modal.html(val);
-                            $clock = $modal.find('.clockdiv');
-                            deadline = $modal.find('#date').html();
-                            initializeClock($clock, deadline);
                         }
                     });
                 });

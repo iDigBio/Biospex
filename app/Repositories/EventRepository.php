@@ -57,7 +57,7 @@ class EventRepository extends BaseRepository
     {
         $results = $user->isAdmin() ?
             $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
-            $results = $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('owner_id', $user->id)->get();
+            $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('owner_id', $user->id)->get();
 
         return $this->sortResults($order, $results, $sort);
     }

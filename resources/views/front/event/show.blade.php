@@ -38,9 +38,6 @@
 
 @push('scripts')
     @if( ! GeneralHelper::eventBefore($event))
-        <script src="//www.amcharts.com/lib/4/core.js"></script>
-        <script src="//www.amcharts.com/lib/4/charts.js"></script>
-        <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
         <script src="{{ asset('js/amChartEventRate.min.js')}}"></script>
     @endif
 @endpush

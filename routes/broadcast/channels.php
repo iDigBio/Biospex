@@ -30,3 +30,7 @@ Broadcast::channel(config('config.poll_board_channel') . '.{project}', function 
 Broadcast::channel(config('config.poll_bingo_channel') . '.{bingo}', function () {
     return true;
 });
+
+Broadcast::channel(config('config.poll_wedigbio_progress_channel') . '.{date}', function () {
+    return true;
+});

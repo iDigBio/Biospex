@@ -35,11 +35,7 @@
 <script src="{{ mix('/js/manifest.js') }}"></script>
 <script src="{{ mix('/js/vendor.js') }}"></script>
 <script src="{{ mix('/js/front.js') }}"></script>
-<script src="//www.amcharts.com/lib/4/core.js"></script>
-<script src="//www.amcharts.com/lib/4/charts.js"></script>
-<script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
-<script src="//www.amcharts.com/lib/4/maps.js"></script>
-<script src="https://www.amcharts.com/lib/4/geodata/worldLow.js"></script>
+@include('common.amchart')
 <script src="{{ asset('js/amChartBingo.min.js')}}"></script>
 <script>
     let bingoConfetti = new ConfettiGenerator({target: 'bingo-conffeti'});

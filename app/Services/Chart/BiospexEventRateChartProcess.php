@@ -28,11 +28,11 @@ use Illuminate\Support\Collection;
 use function collect;
 
 /**
- * Class BiospexEventStepChartProcess
+ * Class BiospexEventRateChartProcess
  *
  * @package App\Services\Process
  */
-class BiospexEventStepChartProcess
+class BiospexEventRateChartProcess
 {
     /**
      * @var \App\Repositories\EventRepository
@@ -74,12 +74,13 @@ class BiospexEventStepChartProcess
 
         $loadTime = $this->getLoadTime($event, $timestamp);
 
-        $startLoad = $loadTime->copy()->format('Y-m-d H:i:s');
+        $startLoad = $loadTime->copy();
+
         $endLoad = $this->getEndLoad($event, $loadTime, $timestamp);
 
-        $intervals = $this->setTimeIntervals($event, $startLoad, $endLoad, $timestamp);
+        $intervals = $this->setTimeIntervals($startLoad, $endLoad, $timestamp);
 
-        $transcriptions = $this->eventTranscriptionRepo->getEventStepChartTranscriptions($eventId, $startLoad, $endLoad);
+        $transcriptions = $this->eventTranscriptionRepo->getEventRateChartTranscriptions($eventId, $startLoad, $endLoad);
 
         return $transcriptions->isEmpty() ? $this->processEmptyResult($event, $intervals) : $this->processTranscriptionResult($event, $transcriptions, $intervals);
     }
@@ -206,12 +207,12 @@ class BiospexEventStepChartProcess
      *
      * @param \App\Models\Event $event
      * @param string|null $timestamp
-     * @return \Carbon\Carbon
+     * @return \Illuminate\Support\Carbon
      */
     protected function getLoadTime(Event $event, string $timestamp = null): \Carbon\Carbon
     {
         return $timestamp === null ?
-            Carbon::parse($event->start_date) :
+            $event->start_date :
             Carbon::createFromTimestampMs($timestamp)->floorMinutes(5);
     }
 
@@ -219,38 +220,35 @@ class BiospexEventStepChartProcess
      * Get end load time. If event is over, it will display all points from beginning to end.
      *
      * @param \App\Models\Event $event
-     * @param \Carbon\Carbon $loadTime
+     * @param \Illuminate\Support\Carbon $loadTime
      * @param string|null $timestamp
-     * @return string
+     * @return \Illuminate\Support\Carbon
      */
-    protected function getEndLoad(Event $event, \Carbon\Carbon $loadTime, string $timestamp = null): string
+    protected function getEndLoad(Event $event, Carbon $loadTime, string $timestamp = null): Carbon
     {
         if (GeneralHelper::eventAfter($event)) {
-            return Carbon::parse($event->end_date)->format('Y-m-d H:i:s');
+            return $event->end_date;
         }
 
         return $timestamp === null ?
-            Carbon::now()->floorMinutes(5)->format('Y-m-d H:i:s') :
-            $loadTime->addMinutes(5)->format('Y-m-d H:i:s');
+            Carbon::now()->floorMinutes(5) : $loadTime->addMinutes(5);
     }
 
     /**
      * Get 5 minute time intervals.
      *
-     * @param \App\Models\Event $event
-     * @param string $startLoad
-     * @param string $endLoad
+     * @param \Illuminate\Support\Carbon $startLoad
+     * @param \Illuminate\Support\Carbon $endLoad
      * @param string|null $timestamp
      * @return \Illuminate\Support\Collection
      */
-    protected function setTimeIntervals(Event $event, string $startLoad, string $endLoad, string $timestamp = null): Collection
+    protected function setTimeIntervals(Carbon $startLoad, Carbon $endLoad, string $timestamp = null): Collection
     {
-        $start = Carbon::parse($startLoad)->timezone($event->timezone);
-        $end = Carbon::parse($endLoad)->timezone($event->timezone);
+        $start = $startLoad->copy();
+        $end = $endLoad->copy();
 
         do {
-            $intervals[] = $timestamp == null ?
-                $start->copy()->format('Y-m-d H:i:s') :
+            $intervals[] = $timestamp == null ? $start->copy()->format('Y-m-d H:i:s') :
                 $start->copy()->addMinutes(5)->format('Y-m-d H:i:s');
             $timestamp = false;
             $start->addMinutes(5);

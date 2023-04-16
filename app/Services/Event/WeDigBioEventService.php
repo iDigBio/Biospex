@@ -70,6 +70,6 @@ class WeDigBioEventService
             return;
         }
 
-        $this->createWeDigBioTranscriptionService->createEventTranscription((int) $data['classification_id'], $projectId,);
+        $this->createWeDigBioTranscriptionService->createEventTranscription((int) $data['classification_id'], $projectId);
     }
 }
