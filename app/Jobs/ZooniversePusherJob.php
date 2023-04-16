@@ -109,7 +109,7 @@ class ZooniversePusherJob implements ShouldQueue
             $expedition) {
             $updateOrCreatePusherTranscriptionService->processTranscripts($transcription, $expedition);
             $createBiospexEventTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
-            $createWeDigBioTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id);
+            $createWeDigBioTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->classification_finished_at);
         });
     }
 
