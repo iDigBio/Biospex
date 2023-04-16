@@ -33,6 +33,17 @@ class BaseRepository
     protected $model;
 
     /**
+     * Override __get().
+     *
+     * @param $key
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        return $this->{$key};
+    }
+
+    /**
      * Get all.
      *
      * @param array|string[] $columns
