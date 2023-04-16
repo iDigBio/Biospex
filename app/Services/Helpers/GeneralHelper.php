@@ -237,49 +237,6 @@ class GeneralHelper
     }
 
     /**
-     * Check event is before start date.
-     *
-     * @param $event
-     * @return bool
-     */
-    public function eventBefore($event)
-    {
-        $start_date = $event->start_date->setTimezone($event->timezone);
-        $now = Carbon::now($event->timezone);
-
-        return $now->isBefore($start_date);
-    }
-
-    /**
-     * Check event in progress.
-     *
-     * @param $event
-     * @return bool
-     */
-    public function eventActive($event)
-    {
-        $start_date = $event->start_date->setTimezone($event->timezone);
-        $end_date = $event->end_date->setTimezone($event->timezone);
-        $now = Carbon::now($event->timezone);
-
-        return $now->between($start_date, $end_date);
-    }
-
-    /**
-     * Check if event is over.
-     *
-     * @param $event
-     * @return bool
-     */
-    public function eventAfter($event)
-    {
-        $end_date = $event->end_date->setTimezone($event->timezone);
-        $now = Carbon::now($event->timezone);
-
-        return $now->gt($end_date);
-    }
-
-    /**
      * Convert uuid value to bin for lookup.
      *
      * @param $value
