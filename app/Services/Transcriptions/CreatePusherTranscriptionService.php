@@ -54,12 +54,17 @@ class CreatePusherTranscriptionService
         $this->pusherTranscriptionRepository = $pusherTranscriptionRepository;
     }
 
+    /**
+     * Method called to start processing pusher classifications held in the MySql database to MongoDb
+     *
+     * @see \App\Jobs\PusherTranscriptionJob
+     * @return void
+     */
     public function process()
     {
-        $this->pusherClassificationRepo->getPusherClassificationModel()->chunk(25, function ($chunk) {
+        $this->pusherClassificationRepo->model->chunkById(50, function ($chunk) {
             $chunk->each(function ($record) {
                 $this->createDashboardRecord($record);
-
                 $record->delete();
             });
         });
@@ -75,6 +80,7 @@ class CreatePusherTranscriptionService
     {
 
         if ($this->validateTranscription($pusherClassification->classification_id)) {
+            \Log::alert($pusherClassification->classification_id . ' failed validation');
             return;
         }
 
