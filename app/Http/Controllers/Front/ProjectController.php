@@ -114,7 +114,7 @@ class ProjectController extends Controller
         $eventsCompleted = null;
         if (isset($project->events)) {
             [$events, $eventsCompleted] = $project->events->partition(function ($event) {
-                return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
+                return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
             });
         }
 

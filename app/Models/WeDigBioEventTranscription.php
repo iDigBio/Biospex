@@ -31,11 +31,6 @@ class WeDigBioEventTranscription extends BaseEloquentModel
     /**
      * @inheritDoc
      */
-    protected $connection = 'mysql';
-
-    /**
-     * @inheritDoc
-     */
     protected $table = 'wedigbio_event_transcriptions';
 
     /**

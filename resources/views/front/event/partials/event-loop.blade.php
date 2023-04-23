@@ -1,9 +1,9 @@
 <div class="col-md-4 mb-4">
     <div class="card px-4 box-shadow h-100">
         <div class="card-body text-center">
-            @if(GeneralHelper::eventBefore($event))
+            @if(DateHelper::eventBefore($event))
                 <h3 class="card-text">{{ t('Starting') }} {{ $event->present()->start_date_to_string }}</h3>
-            @elseif(GeneralHelper::eventAfter($event))
+            @elseif(DateHelper::eventAfter($event))
                 <h3 class="card-text">{{ t('Completed') }}</h3>
             @else
                 <h2 class="card-text">{{ t('Time Remaining') }}</h2>
@@ -34,7 +34,7 @@
                 {{ $event->project->title }}
             </h5>
         </div>
-        @if( ! GeneralHelper::eventBefore($event))
+        @if( ! DateHelper::eventBefore($event))
             <div class="text-center">
                 <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
                         data-remote="false"
@@ -60,7 +60,7 @@
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 {!! $event->project->present()->project_page_icon !!}
                 {!! $event->present()->event_show_icon !!}
-                @if(GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event))
+                @if(DateHelper::eventBefore($event) || DateHelper::eventActive($event))
                     {!! $event->project->lastPanoptesProject->present()->project_icon !!}
                 @endif
                 {!! $event->present()->twitter_icon !!}

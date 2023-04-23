@@ -105,29 +105,62 @@ class DateHelper
     }
 
     /**
-     * Check event date to see if it's started.
-     *
-     * @param $startDate
-     * @param $endDate
-     * @return bool
-     */
-    public function eventDateCheck($startDate, $endDate)
-    {
-        $now = \Carbon\Carbon::now(new DateTimeZone('UTC'));
-        $start_date = $startDate->setTimezone('UTC');
-        $end_date = $endDate->setTimeZone('UTC');
-
-        return $now->between($start_date, $end_date);
-    }
-
-    /**
      * Return timezone title for event rate chart.
      *
      * @param $timezone
      * @return string
      */
-    public function eventRateChartTimezone($timezone)
+    public function eventRateChartTimezone($timezone): string
     {
         return str_replace('_', ' ', $timezone) . ' Timezone';
+    }
+
+    /**
+     * Check event is before start date.
+     *
+     * @param $event
+     * @param string|null $tz
+     * @return bool
+     */
+    public function eventBefore($event, string $tz = null): bool
+    {
+        $timezone = $tz === null ? $event->timzone : 'UTC';
+        $start_date = $event->start_date->setTimezone($timezone);
+        $now = \Carbon\Carbon::now($timezone);
+
+        return $now->isBefore($start_date);
+    }
+
+    /**
+     * Check event in progress.
+     *
+     * @param $event
+     * @param string|null $tz
+     * @return bool
+     */
+    public function eventActive($event, string $tz = null): bool
+    {
+        $timezone = $tz === null ? $event->timzone : 'UTC';
+        $start_date = $event->start_date->setTimezone($timezone);
+        $end_date = $event->end_date->setTimezone($timezone);
+        $now = Carbon::now($timezone);
+
+        return $now->between($start_date, $end_date);
+    }
+
+    /**
+     * Check if event is over.
+     *
+     * @param $event
+     * @param string|null $tz
+     * @return bool
+     */
+    public function eventAfter($event, string $tz = null): bool
+    {
+        $timezone = $tz === null ? $event->timzone : 'UTC';
+        $end_date = $event->end_date->setTimezone($timezone);
+        $now = Carbon::now($timezone);
+
+        return $now->gt($end_date);
     }
 }

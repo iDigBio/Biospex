@@ -41,23 +41,27 @@ class WeDigBioEventDateRepository extends BaseRepository
     }
 
     /**
-     * Get transcriptions using date or active.
-     *
-     * @param int|null $dateId
-     * @return mixed
+     * @param int $dateId
+     * @return mixed|null
      */
-    public function getWeDigBioEventTranscriptions(int $dateId = null): mixed
+    public function getWeDigBioEventTranscriptions(int $dateId): mixed
     {
-        return Cache::remember('wedigbio-event-transcription', 86400, function () use($dateId) {
+        $activeEvent = $this->getByActiveOrDateId($dateId);
+
+        if ($activeEvent === null) {
+            return null;
+        }
+
+        return Cache::remember('wedigbio-event-transcription'.$activeEvent->id, 86400, function () use ($activeEvent) {
             return $this->model->withCount('transcriptions')->with([
-                'transcriptions' => function ($q) use ($dateId) {
+                'transcriptions' => function ($q) {
                     $q->select('*', DB::raw('count(project_id) as total'))
                         ->with(['project' => function($query){
                             $query->select('id', 'title');
                         }])->groupBy('project_id')
                         ->orderBy('total', 'desc');
                 },
-            ])->dateOrActive($dateId);
+            ])->find($activeEvent->id);
         });
     }
 
@@ -65,15 +69,21 @@ class WeDigBioEventDateRepository extends BaseRepository
      * Return project titles for WeDigBio Rate chart.
      *
      * @param int|null $dateId
-     * @return array
+     * @return null
      */
-    public function getProjectsForWeDigBioRateChart(int $dateId = null): array
+    public function getProjectsForWeDigBioRateChart(int $dateId = null)
     {
+        $activeEvent = $this->getByActiveOrDateId($dateId);
+
+        if ($activeEvent === null) {
+            return null;
+        }
+
         $result = $this->model->with(['transcriptions' => function($q){
             $q->with(['project' => function($q2){
                 $q2->select('id', 'title');
             }])->groupBy('project_id');
-        }])->dateOrActive($dateId);
+        }])->find($activeEvent->id);
 
         return $result->transcriptions->map(function($transcription) {
             return $transcription->project->title;
@@ -88,8 +98,6 @@ class WeDigBioEventDateRepository extends BaseRepository
      */
     public function getByActiveOrDateId(int $dateId): mixed
     {
-        $date = empty($date) ? null : $dateId;
-
-        return $this->model->dateOrActive($date);
+        return $dateId === 0 ? $this->model->active()->first() : $this->model->find($dateId);
     }
 }

@@ -3,35 +3,33 @@ let interval = null;
 am4core.ready(function () {
 
     $('#wedigbio-rate-modal').on('show.bs.modal', function (e) {
-        let $body = $(this).find('.modal-body');
+        let $div = $(this).find('#weDigBioRateChartDiv');
         let url = $(e.relatedTarget).data('href');
+        let dateId = $(e.relatedTarget).data('date');
 
-        getProjects().fail(function (error) {
-            $body.html('Failed to load projects.');
-        }).done(function (projects) {
-            buildChart(url, projects)
-        });
-
-        interval = setInterval(function () {
-            weDigBioRateChart.dispose();
-            getProjects().fail(function (error) {
-                $body.html('Failed to load projects.');
+        let createChart = function () {
+            am4core.disposeAllCharts();
+            $.get('/ajax/wedigbio-projects/' + dateId).fail(function () {
+                $div.html('<p class="d-flex justify-content-center">Failed to load projects</p>');
             }).done(function (projects) {
+                if (!projects) {
+                    $div.html('<p class="d-flex justify-content-center">No current WeDigBio Event</p>');
+                    return;
+                }
                 buildChart(url, projects)
             });
-        }, 300000); //300000
-
+        }
+        createChart();
+        setInterval(createChart, 300000);
     }).on('hidden.bs.modal', function () {
-        weDigBioRateChart.dispose();
+        am4core.disposeAllCharts();
         clearInterval(interval);
     });
 
-
-
 }); // end am4core.ready()
 
-function getProjects() {
-    return $.get('ajax/wedigbio-projects');
+function getProjects(dateId) {
+    return $.get('/ajax/wedigbio-projects/' + dateId);
 }
 
 function buildChart(url, projects) {

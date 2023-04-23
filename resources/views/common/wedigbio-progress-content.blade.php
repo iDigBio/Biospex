@@ -1,3 +1,8 @@
+@if($weDigBioDate === null)
+    <div class="text-center" style="background-color:#e83f29;">
+        <span class="scoreboard-title">{{ t('No current WeDigBio Event') }}</span>
+    </div>
+@else
 <div class="text-center" style="background-color:#e83f29;">
     <span class="scoreboard-title">{{ $weDigBioDate->present()->progress_title }}</span>
     <h2 class="text-white text modal-number mt-3">{{ $weDigBioDate->transcriptions_count }}</h2>
@@ -9,7 +14,7 @@
     <tr>
         <th>#</th>
         <th scope="col">{{ t('Project') }}</th>
-        <th scope="col">{{ t('transcriptions') }}</th>
+        <th scope="col">{{ t('Transcriptions') }}</th>
     </tr>
     </thead>
     <tbody id="table-rows">
@@ -24,10 +29,4 @@
     @endforeach
     </tbody>
 </table>
-
-@php($now = \Illuminate\Support\Carbon::now('UTC'))
-@if($now->gt($weDigBioDate->end_date))
-    <h2 class="text-center pt-4">{{ t('Completed') }}</h2>
-@elseif($now->between($weDigBioDate->start_date, $weDigBioDate->end_date))
-    <h2 id="inProgress" class="text-center pt-4">{{ t('In Progress') }}</h2>
 @endif

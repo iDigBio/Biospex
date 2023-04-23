@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="empty-icon"><i class="fa fa-fw"></i></div>
-                <div><h2 class="color-action">{{ t('WEDIGBIO') }}</h2></div>
+                <div><h2 class="color-action">{{ t('SCOREBOARD') }}</h2></div>
                 <div><button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="far fa-times-circle"></i></span>
                     </button>

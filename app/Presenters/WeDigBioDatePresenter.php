@@ -31,7 +31,7 @@ class WeDigBioDatePresenter extends Presenter
 {
     public function progressTitle()
     {
-        return $this->model->start_date->isoFormat('MMMM Do') . ' to ' . $this->model->end_date->isoFormat('MMMM Do YYYY');
+        return t('WEDIGBIO') . ' ' . $this->model->start_date->isoFormat('MMMM YYYY');
     }
 
     /**
@@ -45,7 +45,7 @@ class WeDigBioDatePresenter extends Presenter
      */
     public function progressDate()
     {
-        $now = Carbon::now(new DateTimeZone('UTC'));
+        $now = Carbon::now('UTC');
         $start_date = $this->model->start_date->setTimezone('UTC');
         $end_date = $this->model->end_date->setTimeZone('UTC');
 
@@ -54,5 +54,25 @@ class WeDigBioDatePresenter extends Presenter
         }
 
         return $end_date->gt($start_date) ? $end_date->toIso8601ZuluString() : $start_date->toIso8601ZuluString();
+    }
+
+    /**
+     * Returns start date in day string format.
+     *
+     * @return mixed
+     */
+    public function startDateToString()
+    {
+        return $this->model->start_date->toDayDateTimeString();
+    }
+
+    /**
+     * Returns start date in day string format.
+     *
+     * @return mixed
+     */
+    public function endDateToString()
+    {
+        return $this->model->end_date->toDayDateTimeString();
     }
 }

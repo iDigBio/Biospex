@@ -113,16 +113,16 @@ class AjaxController extends Controller
      * Show progress for wedigbio events.
      *
      * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
-     * @param int|null $dateId
+     * @param string $dateId
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
-    public function weDigBioProgress(WeDigBioEventDateRepository $weDigBioEventDateRepository, int $dateId = null)
+    public function weDigBioProgress(WeDigBioEventDateRepository $weDigBioEventDateRepository, string $dateId)
     {
         if (! request()->ajax()) {
             return response()->json(['html' => 'Error retrieving the WeDigBio Event']);
         }
 
-        $weDigBioDate = $weDigBioEventDateRepository->getWeDigBioEventTranscriptions($dateId);
+        $weDigBioDate = $weDigBioEventDateRepository->getWeDigBioEventTranscriptions((int) $dateId);
 
         return view('common.wedigbio-progress-content', compact('weDigBioDate'));
     }
@@ -131,27 +131,26 @@ class AjaxController extends Controller
      * Returns titles of projects that have transcriptions from WeDigBio.
      *
      * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
-     * @param int|null $dateId
-     * @return array|\Illuminate\Http\JsonResponse
+     * @param string $dateId
+     * @return \Illuminate\Http\JsonResponse|null
      */
-    public function getProjectsForWeDigBioRateChart(WeDigBioEventDateRepository $weDigBioEventDateRepository, int $dateId = null)
+    public function getProjectsForWeDigBioRateChart(WeDigBioEventDateRepository $weDigBioEventDateRepository, string $dateId)
     {
         if (! request()->ajax()) {
             return response()->json(['html' => 'Request must be ajax.']);
         }
 
-        return $weDigBioEventDateRepository->getProjectsForWeDigBioRateChart($dateId);
+        return $weDigBioEventDateRepository->getProjectsForWeDigBioRateChart((int) $dateId);
     }
 
     /**
      * @param \App\Services\Chart\WeDigBioEventRateChartProcess $weDigBioEventRateChartProcess
      * @param string $dateId
-     * @param string|null $timestamp
      * @return \Illuminate\Http\JsonResponse
      */
-    public function weDigBioRate(WeDigBioEventRateChartProcess $weDigBioEventRateChartProcess, string $dateId, string $timestamp = null)
+    public function weDigBioRate(WeDigBioEventRateChartProcess $weDigBioEventRateChartProcess, string $dateId)
     {
-        $result = $weDigBioEventRateChartProcess->getWeDigBioEventRateChart((int) $dateId, $timestamp);
+        $result = $weDigBioEventRateChartProcess->getWeDigBioEventRateChart((int) $dateId);
 
         if (is_null($result)) {
             return response()->json(['html' => 'Error retrieving the WeDigBio Event']);

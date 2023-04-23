@@ -28,7 +28,7 @@
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.events.index') }}">{{ t('Events') }}</a>
         </li>
-
+        @if(Auth::check())
         <li class="nav-item mr-2 dropdown">
             <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
                aria-expanded="false">{{ t('WeDigBio') }}</a>
@@ -36,18 +36,19 @@
                 <a class="dropdown-item text-uppercase" href="#"
                    data-toggle="modal"
                    data-target="#wedigbio-progress-modal"
-                   data-href="{{ route('ajax.get.wedigbio-progress') }}"
-                   data-channel="{{ config('config.poll_wedigbio_progress_channel') . '.' . 0 }}" data-date="0">{{ t('Progress') }}</a>
+                   data-href="{{ route('ajax.get.wedigbio-progress', ['dateId' => 0]) }}"
+                   data-channel="{{ config('config.poll_wedigbio_progress_channel') . '.' . 0 }}"
+                   data-date="0">{{ t('Progress') }}</a>
                 <a class="dropdown-item text-uppercase" href="#"
                    data-toggle="modal"
                    data-target="#wedigbio-rate-modal"
-                   data-dateId="0"
+                   data-date="0"
                    data-href="{{ route('ajax.get.wedigbio-rate', ['dateId' => 0]) }}">{{ t('Rates') }}</a>
                 <a class="dropdown-item text-uppercase" href="{{ route('front.wedigbio.index') }}">{{ t('Past Results') }}</a>
                 <a class="dropdown-item text-uppercase" href="https://wedigbio.org" target="_blank">{{ t('WeDigBio Website') }}</a>
             </div>
         </li>
-
+        @endif
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.bingos.index') }}">{{ t('Games') }}</a>
         </li>

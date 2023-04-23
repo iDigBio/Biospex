@@ -62,7 +62,7 @@ class EventController extends Controller
         $results = $this->eventRepo->getEventAdminIndex(Auth::user());
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
-            return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
+            return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
         });
 
         return view('admin.event.index', compact('events', 'eventsCompleted'));
@@ -82,7 +82,7 @@ class EventController extends Controller
         $results = $this->eventRepo->getEventPublicIndex(request()->get('sort'), request()->get('order'));
 
         [$active, $completed] = $results->partition(function ($event) {
-            return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
+            return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
         });
 
         $events = request()->get('type') === 'active' ? $active : $completed;

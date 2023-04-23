@@ -94,7 +94,7 @@ class BiospexEventRateChartProcess
      */
     public function processEmptyResult(Event $event, Collection $intervals): array
     {
-        if (GeneralHelper::eventAfter($event)) {
+        if (DateHelper::eventAfter($event)) {
             return [];
         }
 
@@ -226,7 +226,7 @@ class BiospexEventRateChartProcess
      */
     protected function getEndLoad(Event $event, Carbon $loadTime, string $timestamp = null): Carbon
     {
-        if (GeneralHelper::eventAfter($event)) {
+        if (DateHelper::eventAfter($event)) {
             return $event->end_date;
         }
 

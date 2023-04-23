@@ -21,9 +21,12 @@ namespace App\Console\Commands;
 
 use App\Models\EventTranscription;
 use App\Models\PanoptesTranscription;
+use App\Models\WeDigBioEventDate;
 use App\Repositories\PanoptesTranscriptionRepository;
+use App\Repositories\WeDigBioEventDateRepository;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class AppCommand
@@ -43,11 +46,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Repositories\WeDigBioEventDateRepository
+     */
+    private WeDigBioEventDateRepository $repository;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct()
+    public function __construct(WeDigBioEventDateRepository $repository)
     {
         parent::__construct();
+        $this->repository = $repository;
     }
 
     /**
@@ -56,10 +65,9 @@ class AppCommand extends Command
     public function handle(
     )
     {
-
-
-        $date = Carbon::createFromTimestampMsUTC($record->classification_finished_at)->toDateTimeString();
-        dd($date);
+        $dateId = 1;
+        $results = $this->repository->getByActiveOrDateId($dateId);
+        dd($results);
     }
 
 

@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ t('WeDigBio') }}
+    {{ t('WeDigBio Events') }}
 @stop
 
 @section('header')
@@ -20,16 +20,31 @@
     <h2 class="text-center pt-4 text-uppercase">{{ t('WeDigBio Events') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
+        <div class="text-center my-4 mx-auto">
+            <button class="toggle-view-btn btn btn-primary text-uppercase"
+                    data-toggle="collapse"
+                    data-target="#active-events-main,#completed-events-main"
+                    data-value="{{ t('view active events') }}"
+            >{{ t('view completed events') }}</button>
+        </div>
+    </div>
+
+    <div class="row">
         <div id="active-events-main" class="col-sm-12 show">
             <div id="active-events" class="row col-sm-12 mx-auto justify-content-center">
-                @include('front.wedigbio.partials.event', ['events' => $events])
+                @each('front.wedigbio.partials.event', $events, 'event')
+            </div>
+        </div>
+        <div id="completed-events-main" class="col-sm-12 collapse">
+            <canvas id="event-conffeti" style="z-index: -1; position:fixed; top:0;left:0"></canvas>
+            <div id="completed-events" class="row col-sm-12 mx-auto justify-content-center">
+                @each('front.wedigbio.partials.event', $eventsCompleted, 'event')
             </div>
         </div>
     </div>
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/amChartEventRate.min.js')}}"></script>
     <script>
         let eventConfetti = new ConfettiGenerator({target: 'event-conffeti'});
         eventConfetti.render();

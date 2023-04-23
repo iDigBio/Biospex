@@ -30,11 +30,6 @@ class WeDigBioEventDate extends BaseEloquentModel
     /**
      * @inheritDoc
      */
-    protected $connection = 'mysql';
-
-    /**
-     * @inheritDoc
-     */
     protected $table = 'wedigbio_event_dates';
 
     /**
@@ -43,7 +38,7 @@ class WeDigBioEventDate extends BaseEloquentModel
     protected $fillable = [
         'start_date',
         'end_date',
-        'current'
+        'active'
     ];
 
     /**
@@ -52,7 +47,7 @@ class WeDigBioEventDate extends BaseEloquentModel
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'current' => 'int'
+        'active' => 'int'
     ];
 
     /**
@@ -79,17 +74,5 @@ class WeDigBioEventDate extends BaseEloquentModel
     public function scopeActive($query): mixed
     {
         return $query->where('active', 1);
-    }
-
-    /**
-     * Scope for date or active depending on if date id is empty.
-     *
-     * @param $query
-     * @param $dateId
-     * @return mixed
-     */
-    public function scopeDateOrActive($query, $dateId = null): mixed
-    {
-        return $dateId === null ? $query->active()->first() : $query->find($dateId);
     }
 }

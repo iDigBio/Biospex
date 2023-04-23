@@ -18,7 +18,7 @@
 
             <div class="modal-body">
                 <div class="jumbotron box-shadow m-5">
-                    <div id="weDigBioRateChartDiv" class="d-flex" style="width:100%; height: 500px"></div>
+                    <div id="weDigBioRateChartDiv" class="d-flex justify-content-center" style="width:100%; height: 500px"></div>
                 </div>
             </div>
 
