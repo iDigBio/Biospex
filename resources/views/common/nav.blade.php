@@ -44,7 +44,7 @@
                    data-target="#wedigbio-rate-modal"
                    data-date="0"
                    data-href="{{ route('ajax.get.wedigbio-rate', ['dateId' => 0]) }}">{{ t('Rates') }}</a>
-                <a class="dropdown-item text-uppercase" href="{{ route('front.wedigbio.index') }}">{{ t('Past Results') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.wedigbio.index') }}">{{ t('Past Events') }}</a>
                 <a class="dropdown-item text-uppercase" href="https://wedigbio.org" target="_blank">{{ t('WeDigBio Website') }}</a>
             </div>
         </li>
