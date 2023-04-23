@@ -12,6 +12,9 @@
 <table class="table table-striped">
     <thead>
     <tr>
+        <td colspan="3" class="color-action">Stats are example only. Will be real data later.</td>
+    </tr>
+    <tr>
         <th>#</th>
         <th scope="col">{{ t('Project') }}</th>
         <th scope="col">{{ t('Transcriptions') }}</th>
