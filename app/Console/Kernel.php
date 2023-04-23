@@ -36,14 +36,14 @@ class Kernel extends ConsoleKernel
         $schedule->command('ocrprocess:records')->everyFiveMinutes();
 
         // Failed jobs report used to check ocr
-        $schedule->command('report:failed')->timezone('America/New_York')->dailyAt('05:30');
+        $schedule->command('report:failed')->dailyAt('09:30');
 
         // Clean bingo maps
-        $schedule->command('bingo:clean')->timezone('America/New_York')->dailyAt('06:05');
+        $schedule->command('bingo:clean')->dailyAt('10:05');
 
         if ($this->app->environment('production')) {
             // Trigger workflow manager to handle csv creation and updating expedition/project
-            $schedule->command('workflow:manage')->timezone('America/New_York')->at('01:00')->before(function () {
+            $schedule->command('workflow:manage')->at('05:00')->before(function () {
                 Cache::flush();
                 Artisan::call('lada-cache:flush');
             });
