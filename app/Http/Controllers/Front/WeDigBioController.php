@@ -41,7 +41,7 @@ class WeDigBioController extends Controller
         $results = $weDigBioEventDateRepository->all()->sortBy('created_at');
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
-            return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
+            return $event->active;
         });
 
         return view('front.wedigbio.index', compact('events', 'eventsCompleted'));

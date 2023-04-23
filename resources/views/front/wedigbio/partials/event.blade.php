@@ -3,8 +3,6 @@
         <div class="card-body text-center">
             @if(DateHelper::eventBefore($event, 'UTC'))
                 <h3 class="card-text">{{ t('Starting') }} {{ $event->present()->start_date_to_string }}</h3>
-            @elseif(DateHelper::eventAfter($event, 'UTC'))
-                <h3 class="card-text">{{ t('Completed') }}</h3>
             @endif
             <h4 class="text-center pt-4">{{ t('WeDigBio') }}</h4>
             <h5 class="text-center color-action">

@@ -86,8 +86,8 @@ class WeDigBioEventDate extends Resource
     {
         return [
             ID::make(t('Id'), 'id')->sortable(),
-            DateTime::make('Start Date')->help('Date Time is UTC 0'),
-            DateTime::make('End Date')->help('Date Time is UTC 0'),
+            DateTime::make('Start Date')->help('Event begins Tonga timezone at 00:00:00 = 11:00:00 UTC day before'),
+            DateTime::make('End Date')->help('Event ends Hawaii timezone at 11:59:59 = 09:59:59 UTC day before'),
             Boolean::make('Active'),
         ];
     }
