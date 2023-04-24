@@ -20,7 +20,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Facades\DateHelper;
-use App\Facades\GeneralHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;

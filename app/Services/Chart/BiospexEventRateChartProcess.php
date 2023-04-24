@@ -19,7 +19,7 @@
 
 namespace App\Services\Chart;
 
-use App\Facades\GeneralHelper;
+use App\Facades\DateHelper;
 use App\Models\Event;
 use App\Repositories\EventRepository;
 use App\Repositories\EventTranscriptionRepository;

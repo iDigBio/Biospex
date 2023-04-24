@@ -19,13 +19,13 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Repositories\ProjectRepository;
 use App\Repositories\StateCountyRepository;
 use App\Services\Chart\TranscriptionChartService;
 use CountHelper;
 use Flash;
-use GeneralHelper;
 use JavaScript;
 
 /**
