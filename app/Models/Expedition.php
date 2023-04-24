@@ -154,6 +154,14 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function export(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Download::class)->where('type', 'export');
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function ocrQueue()

@@ -19,14 +19,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\EventTranscription;
-use App\Models\PanoptesTranscription;
-use App\Models\WeDigBioEventDate;
-use App\Repositories\PanoptesTranscriptionRepository;
-use App\Repositories\WeDigBioEventDateRepository;
+use App\Repositories\ProjectRepository;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class AppCommand
@@ -46,28 +40,27 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\WeDigBioEventDateRepository
-     */
-    private WeDigBioEventDateRepository $repository;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(WeDigBioEventDateRepository $repository)
+    public function __construct(ProjectRepository $projectRepository)
     {
         parent::__construct();
-        $this->repository = $repository;
+        $this->projectRepository = $projectRepository;
     }
 
     /**
      * @return void
      */
-    public function handle(
-    )
+    public function handle()
     {
-        $dateId = 1;
-        $results = $this->repository->getByActiveOrDateId($dateId);
-        dd($results);
+        $project = $this->projectRepository->getProjectShow(85);
+        $project->expeditions->each(function($expedition){
+            if ($expedition->id !== 432) {
+                return;
+            }
+            dd($expedition->export);
+
+        });
     }
 
 

@@ -165,8 +165,8 @@ class ProjectRepository extends BaseRepository
             'group',
             'ocrQueue',
             'expeditions' => function($q) {
-                $q->with(['stat', 'nfnActor']);
-            },
+                $q->with(['stat', 'nfnActor', 'export']);
+            }
         ])->find($projectId);
     }
 
