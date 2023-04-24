@@ -77,7 +77,7 @@ class CreateWeDigBioTranscriptionService
 
         $timestamp = $this->setDate($date);
 
-        if (! $this->checkDate($wedigbioDate, $timestamp)) {
+        if ($wedigbioDate === null || ! $this->checkDate($wedigbioDate, $timestamp)) {
             return;
         }
 
