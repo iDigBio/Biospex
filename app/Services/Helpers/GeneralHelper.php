@@ -419,7 +419,7 @@ class GeneralHelper
      */
     public function exportFileCheck(Expedition $expedition): bool
     {
-        return isset($expedition->downloads->first()->file) && GeneralHelper::downloadFileExists('export', $expedition->downloads->first()->file);
+        return isset($expedition->export->file) && GeneralHelper::downloadFileExists('export', $expedition->export->file);
     }
 
     /**

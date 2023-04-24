@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\ProjectRepository;
 use Illuminate\Console\Command;
 
 /**
@@ -41,9 +42,10 @@ class AppCommand extends Command
     /**
      * AppCommand constructor.
      */
-    public function __construct()
+    public function __construct(ProjectRepository $projectRepository)
     {
         parent::__construct();
+        $this->projectRepository = $projectRepository;
     }
 
     /**
@@ -51,7 +53,14 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $project = $this->projectRepository->getProjectShow(85);
+        $project->expeditions->each(function($expedition){
+            if ($expedition->id !== 432) {
+                return;
+            }
+            dd($expedition->export);
 
+        });
     }
 
 
