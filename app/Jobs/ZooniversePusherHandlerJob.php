@@ -50,7 +50,7 @@ class ZooniversePusherHandlerJob implements ShouldQueue
     public function __construct(array $data)
     {
         $this->data = $data;
-        $this->onQueue(config('config.queues.zooniverse_pusher_handler'));
+        $this->onQueue(config('config.queues.pusher_handler'));
     }
 
     /**

@@ -57,7 +57,7 @@ class ZooniverseClassificationJob implements ShouldQueue
     {
         $this->data = $data;
         $this->title = $title;
-        $this->onQueue(config('config.queues.zooniverse_classification'));
+        $this->onQueue(config('config.queues.pusher_classification'));
     }
 
     /**
