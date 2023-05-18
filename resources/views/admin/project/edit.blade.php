@@ -227,17 +227,14 @@
                         <div class="form-group">
                             <label for="workflow_id" class="col-form-label col-12 required">{{ t('Workflows') }}
                                 :</label>
-                            <select name="workflow_id" id="workflow_id"
+                            <select name="workflow_id" id="workflow_id" multiple
                                     class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
-                                    {{ $disableWorkflow }}
                                     required>
-                                @foreach($workflowOptions as $key => $name)
-                                    <option value="{{ $key }}" {{ $key == old('workflow_id', $project->workflow_id) ? ' selected=selected' : '' }}>{{ $name }}</option>
+                                @foreach($actors as $actor)
+                                    <option value="{{ $actor->id }}" {{ $actor->id == old('workflow_id', null) ? ' selected=selected' : '' }}>{{ $actor->title }}</option>
                                 @endforeach
                             </select>
-                            @if( ! empty($disableWorkflow))
-                                <input type="hidden" name="workflow_id" value="{{ old('workflow_id', $project->workflow_id) }}">
-                            @endif
+
                             <span class="invalid-feedback">{{ $errors->first('workflow_id') }}</span>
                         </div>
 

@@ -207,13 +207,14 @@ class ProjectController extends Controller
         $disableWorkflow = $project->panoptesProjects()->exists() ? 'disabled' : '';
 
         $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectProcess->workflowSelectOptions();
+        $actors = $this->projectProcess->actorSelectOptions();
+        //$workflowOptions = $this->projectProcess->workflowSelectOptions();
         $statusOptions = $this->projectProcess->statusSelectOptions();
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', $project->resources->count() ?: 1);
         $resources = $project->resources;
 
-        $vars = compact('project', 'resources', 'disableWorkflow', 'groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('project', 'resources', 'disableWorkflow', 'groupOptions', 'actors', 'statusOptions', 'resourceOptions', 'resourceCount');
 
         return view('admin.project.edit', $vars);
     }

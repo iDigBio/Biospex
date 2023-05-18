@@ -38,4 +38,14 @@ class ActorRepository extends BaseRepository
 
         $this->model = $actor;
     }
+
+    /**
+     * Get active actors.
+     *
+     * @return mixed
+     */
+    public function getActiveActors(): mixed
+    {
+        return $this->model->active()->get()->sort('order');
+    }
 }
