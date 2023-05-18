@@ -16,6 +16,13 @@
     <script src="https://kit.fontawesome.com/c840411e54.js" crossorigin="anonymous" SameSite="none Secure"></script>
     <link href="{{ mix('/css/front.css') }}" rel="stylesheet" type="text/css"/>
     @stack('styles')
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-3LSY3RRBT5');
+    </script>
 </head>
 <body>
 @yield('header')
