@@ -88,11 +88,10 @@ class ProjectController extends Controller
     {
         $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
         $workflowOptions = $this->projectProcess->workflowSelectOptions();
-        $statusOptions = $this->projectProcess->statusSelectOptions();
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
-        $vars = compact('groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('groupOptions', 'workflowOptions', 'resourceOptions', 'resourceCount');
 
         return view('admin.project.create', $vars);
     }
@@ -177,11 +176,10 @@ class ProjectController extends Controller
 
         $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
         $workflowOptions = $this->projectProcess->workflowSelectOptions();
-        $statusOptions = $this->projectProcess->statusSelectOptions();
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
-        $vars = compact('project', 'groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('project', 'groupOptions', 'workflowOptions', 'resourceOptions', 'resourceCount');
 
         return view('admin.project.clone', $vars);
     }
@@ -204,17 +202,15 @@ class ProjectController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $disableWorkflow = $project->panoptesProjects()->exists() ? 'disabled' : '';
+        $disableWorkflow = '';// $project->panoptesProjects()->exists() ? 'disabled' : '';
 
         $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
-        $actors = $this->projectProcess->actorSelectOptions();
-        //$workflowOptions = $this->projectProcess->workflowSelectOptions();
-        $statusOptions = $this->projectProcess->statusSelectOptions();
+        $workflowOptions = $this->projectProcess->workflowSelectOptions();
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', $project->resources->count() ?: 1);
         $resources = $project->resources;
 
-        $vars = compact('project', 'resources', 'disableWorkflow', 'groupOptions', 'actors', 'statusOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('project', 'resources', 'disableWorkflow', 'groupOptions', 'workflowOptions', 'resourceOptions', 'resourceCount');
 
         return view('admin.project.edit', $vars);
     }

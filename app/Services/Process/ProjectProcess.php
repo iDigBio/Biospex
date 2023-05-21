@@ -19,7 +19,6 @@
 
 namespace App\Services\Process;
 
-use App\Repositories\ActorRepository;
 use App\Repositories\GroupRepository;
 use App\Repositories\WorkflowRepository;
 use Illuminate\Support\Facades\Notification;
@@ -42,11 +41,6 @@ class ProjectProcess
     private $groupRepo;
 
     /**
-     * @var \App\Repositories\ActorRepository
-     */
-    private ActorRepository $actorRepository;
-
-    /**
      * CommonVariables constructor.
      *
      * @param \App\Repositories\WorkflowRepository $workflowRepo
@@ -54,31 +48,20 @@ class ProjectProcess
      */
     public function __construct(
         WorkflowRepository $workflowRepo,
-        GroupRepository $groupRepo,
-        ActorRepository $actorRepository)
+        GroupRepository $groupRepo
+    )
     {
 
         $this->workflowRepo = $workflowRepo;
         $this->groupRepo = $groupRepo;
-        $this->actorRepository = $actorRepository;
     }
 
     /**
      * Return workflow select options.
      */
-    public function workflowSelectOptions(): array
+    public function workflowSelectOptions()
     {
         return $this->workflowRepo->getWorkflowSelect();
-    }
-
-    /**
-     * Return active actors for select.
-     *
-     * @return mixed
-     */
-    public function actorSelectOptions()
-    {
-        return $this->actorRepository->getActiveActors();
     }
 
     /**
@@ -114,16 +97,6 @@ class ProjectProcess
         $groups = $this->groupRepo->getUsersGroupsSelect($user);
 
         return ['' => '--Select--'] + $groups;
-    }
-
-    /**
-     * Project status select options.
-     *
-     * @return \Illuminate\Config\Repository|mixed
-     */
-    public function statusSelectOptions()
-    {
-        return config('config.status_select');
     }
 
     /**

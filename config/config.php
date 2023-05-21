@@ -270,13 +270,6 @@ return [
         'projectImage'            => ['url' => 'logo'],
     ],
 
-    'status_select' => [
-        'starting' => 'Starting',
-        'active'   => 'Active',
-        'complete' => 'Complete',
-        'hiatus'   => 'Hiatus',
-    ],
-
     'reserved_encoded' => [
         '_id',
         'classification_id',
