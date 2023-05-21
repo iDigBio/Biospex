@@ -166,7 +166,7 @@ class ProjectController extends Controller
      */
     public function clone($projectId)
     {
-        $project = $this->projectRepo->findWith($projectId, ['group', 'expeditions.workflowManager']);
+        $project = $this->projectRepo->findWith($projectId, ['group']);
 
         if (! $project) {
             Flash::error(t('Error retrieving record from database'));
