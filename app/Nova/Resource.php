@@ -7,10 +7,7 @@ use Laravel\Nova\Resource as NovaResource;
 
 abstract class Resource extends NovaResource
 {
-    /**
-     * @var string
-     */
-    public static $defaultSortField = 'order';
+    public static $defaultSort = 'id'; // Update to your default column
 
     /**
      * Build an "index" query for the given resource.
@@ -21,6 +18,10 @@ abstract class Resource extends NovaResource
      */
     public static function indexQuery(NovaRequest $request, $query)
     {
+        if (static::$defaultSort && empty($request->get('orderBy'))) {
+            $query->getQuery()->orders = [];
+            return $query->orderBy(static::$defaultSort);
+        }
         return $query;
     }
 

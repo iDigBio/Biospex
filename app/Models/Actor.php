@@ -21,31 +21,20 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\ActorPresenter;
-use Spatie\EloquentSortable\Sortable;
-use Spatie\EloquentSortable\SortableTrait;
 
 /**
  * Class Actor
  *
  * @package App\Models
  */
-class Actor extends BaseEloquentModel implements Sortable
+class Actor extends BaseEloquentModel
 {
-    use Presentable, SortableTrait;
+    use Presentable;
 
     /**
      * @inheritDoc
      */
     protected $table = 'actors';
-
-    /**
-     * Used for sorting on Nova index.
-     * @var array
-     */
-    public $sortable = [
-        'order_column_name' => 'order',
-        'sort_when_creating' => true,
-    ];
 
     /**
      * @inheritDoc
@@ -56,7 +45,6 @@ class Actor extends BaseEloquentModel implements Sortable
         'class',
         'private',
         'active',
-        'order'
     ];
 
     /**
@@ -82,7 +70,7 @@ class Actor extends BaseEloquentModel implements Sortable
      */
     public function workflows()
     {
-        return $this->belongsToMany(Workflow::class)->withPivot('order');
+        return $this->belongsToMany(Workflow::class)->using(ActorWorkflow::class);
     }
 
     /**

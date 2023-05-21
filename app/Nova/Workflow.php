@@ -18,11 +18,11 @@
  */
 namespace App\Nova;
 
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use function t;
 
 /**
  * Class Workflow
@@ -87,6 +87,7 @@ class Workflow extends Resource
             ID::make(t('Id'), 'id')->sortable(),
             Text::make(t('Title'), 'title')->rules('required')->sortable(),
             Boolean::make(t('Enabled'), 'enabled')->sortable(),
+            BelongsToMany::make('Actors')
         ];
     }
 

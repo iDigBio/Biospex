@@ -22,8 +22,7 @@ use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use PixelCreation\NovaFieldSortable\Concerns\SortsIndexEntries;
-use PixelCreation\NovaFieldSortable\Sortable;
+use Outl1ne\NovaSortable\Traits\HasSortableManyToManyRows;
 
 /**
  * Class Actor
@@ -32,8 +31,7 @@ use PixelCreation\NovaFieldSortable\Sortable;
  */
 class Actor extends Resource
 {
-    use SortsIndexEntries;
-
+    use HasSortableManyToManyRows;
     /**
      * The model the resource corresponds to.
      *
@@ -57,6 +55,7 @@ class Actor extends Resource
         'id',
         'title',
     ];
+
 
     /**
      * Get the displayable label of the resource.
@@ -91,7 +90,6 @@ class Actor extends Resource
             Text::make(t('Title'), 'title')->rules('required')->sortable(),
             Text::make(t('Url'), 'url')->rules('required')->sortable(),
             Text::make(t('Class'), 'class')->rules('required')->sortable(),
-            Sortable::make('Order', 'order')->onlyOnIndex(),
             Boolean::make(t('Private'), 'private'),
             Boolean::make(t('Active'), 'active')
         ];
