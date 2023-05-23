@@ -1,3 +1,6 @@
+/**
+ * Processes image for subject grid thumbnail
+ */
 const axios = require("axios"); //* importing the axios package
 const sharp = require("sharp"); //* importing the sharp package
 const imageType = require('image-type');
