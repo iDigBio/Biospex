@@ -14,6 +14,8 @@
     <script src="https://kit.fontawesome.com/c840411e54.js" crossorigin="anonymous"></script>
     <link href="{{ mix('/css/admin.css') }}" rel="stylesheet" type="text/css"/>
     @stack('styles')
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3LSY3RRBT5"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
