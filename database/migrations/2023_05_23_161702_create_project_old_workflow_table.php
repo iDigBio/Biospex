@@ -13,10 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('actors', function (Blueprint $table) {
-            $table->dropColumn('order');
-            $table->dropColumn('private');
+        Schema::create('project_old_workflow', function (Blueprint $table) {
+            $table->id();
+            $table->tinyInteger('project_id');
+            $table->tinyInteger('workflow_id');
         });
+
+        Artisan::call('update:queries moveProjectWorkflow');
     }
 
     /**
@@ -26,9 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('actors', function (Blueprint $table) {
-            $table->tinyInteger('private')->default(0)->index()->after('class');
-            $table->tinyInteger('order')->default(0)->index()->after('active');
-        });
+        Schema::dropIfExists('project_old_workflow');
     }
 };

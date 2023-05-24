@@ -197,7 +197,7 @@ return [
     ],
 
     'nfnActors'                 => env('NFN_ACTORS'),
-    'nfnNotify'                 => [1 => 'NewNfnLegacyProject', 2 => 'NewNfnPanoptesProject'],
+    'nfnNotify'                 => [2 => 'NewNfnPanoptesProject'],
     'nfnSkipApi'                => env('NFN_SKIP_API'),
     // Skip csv creation for expedition ids that cause issues
     'nfnSkipReconcile'          => env('NFN_SKIP_RECONCILE'),

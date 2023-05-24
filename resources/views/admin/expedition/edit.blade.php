@@ -43,6 +43,7 @@
                                    value="{{ old('keywords', $expedition->keywords) }}" required>
                             <span class="invalid-feedback">{{ $errors->first('keywords') }}</span>
                         </div>
+
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
                                 <div class="custom-file">
@@ -59,6 +60,24 @@
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
                                      src="{{ $expedition->present()->show_medium_logo }}"/>
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="workflow_id" class="col-form-label col-12 required">{{ t('Workflows') }}
+                                :</label>
+                            <select name="workflow_id" id="workflow_id"
+                                    class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
+                                    {{ $expedition->locked === 1 ? 'disabled' : '' }}
+                                    required>
+                                @foreach($workflowOptions as $key => $name)
+                                    <option value="{{ $key }}" {{ $key == old('workflow_id', $expedition->workflow_id) ? ' selected=selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            @if($expedition->locked === 1)
+                                <input type="hidden" name="workflow_id" value="{{ old('workflow_id', $expedition->workflow_id) }}">
+                            @endif
+                            <input type="hidden" name="locked" value="1">
+                            <span class="invalid-feedback">{{ $errors->first('workflow_id') }}</span>
                         </div>
                     </div>
                 </div>

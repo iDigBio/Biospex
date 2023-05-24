@@ -212,19 +212,6 @@
                             <span class="invalid-feedback">{{ $errors->first('language_skills') }}</span>
                         </div>
 
-                        <div class="form-group">
-                            <label for="workflow_id" class="col-form-label col-12 required">{{ t('Workflows') }}
-                                :</label>
-                            <select name="workflow_id" id="workflow_id"
-                                    class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
-                                    required>
-                                @foreach($workflowOptions as $key => $name)
-                                    <option value="{{ $key }}" {{ $key == old('workflow_id') ? ' selected=selected' : '' }}>{{ $name }}</option>
-                                @endforeach
-                            </select>
-                            <span class="invalid-feedback">{{ $errors->first('workflow_id') }}</span>
-                        </div>
-
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
                                 <div class="custom-file">

@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\WorkflowRepository;
 use Illuminate\Console\Command;
 
 /**
@@ -40,17 +39,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\WorkflowRepository
-     */
-    private WorkflowRepository $repo;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(WorkflowRepository $repo)
+    public function __construct()
     {
         parent::__construct();
-        $this->repo = $repo;
     }
 
     /**
@@ -58,10 +51,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $result = $this->repo->model->with('actors')->find(5);
-        $result->actors->each(function ($actor) {
-            echo $actor->title . PHP_EOL;
-        });
+
     }
 
 

@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('actors', function (Blueprint $table) {
-            $table->dropColumn('order');
-            $table->dropColumn('private');
+        Schema::table('expeditions', function (Blueprint $table) {
+            $table->foreign('workflow_id')->references('id')->on('workflows')->onUpdate('RESTRICT')->onDelete('CASCADE');
+
         });
     }
 
@@ -26,9 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('actors', function (Blueprint $table) {
-            $table->tinyInteger('private')->default(0)->index()->after('class');
-            $table->tinyInteger('order')->default(0)->index()->after('active');
+        Schema::table('expeditions', function (Blueprint $table) {
+            $table->dropForeign('expeditions_workflow_id_foreign');
         });
     }
 };

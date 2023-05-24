@@ -90,7 +90,6 @@ class Actor extends Resource
             Text::make(t('Title'), 'title')->rules('required')->sortable(),
             Text::make(t('Url'), 'url')->rules('required')->sortable(),
             Text::make(t('Class'), 'class')->rules('required')->sortable(),
-            Boolean::make(t('Private'), 'private'),
             Boolean::make(t('Active'), 'active')
         ];
     }

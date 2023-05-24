@@ -43,8 +43,7 @@ class Actor extends BaseEloquentModel
         'title',
         'url',
         'class',
-        'private',
-        'active',
+        'active'
     ];
 
     /**

@@ -86,7 +86,6 @@ class ExpeditionRepository extends BaseRepository
         $query = $this->model->with([
             'project.group',
             'stat',
-            'nfnActor',
             'panoptesProject',
             'workflowManager',
             'export'

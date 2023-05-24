@@ -54,7 +54,10 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
         'title',
         'description',
         'keywords',
-        'logo'
+        'logo',
+        'workflow_id',
+        'completed',
+        'locked'
     ];
 
     /**
@@ -130,9 +133,19 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function subjects()
+    public function subjects(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Subject::class);
+    }
+
+    /**
+     * Workflow relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+     */
+    public function workflow(): \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+    {
+        return $this->belongsTo(Workflow::class);
     }
 
     /**

@@ -154,18 +154,16 @@ class ProjectRepository extends BaseRepository
     }
 
     /**
-     * Get project for show page.
-     *
      * @param $projectId
-     * @return \App\Models\Project|\App\Models\Project[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     * @return \App\Models\Project|null
      */
-    public function getProjectShow($projectId)
+    public function getProjectShow($projectId): ?Project
     {
         return $this->model->withCount('expeditions')->with([
             'group',
             'ocrQueue',
             'expeditions' => function($q) {
-                $q->with(['stat', 'nfnActor', 'export']);
+                $q->with(['stat', 'export']);
             }
         ])->find($projectId);
     }
@@ -195,9 +193,9 @@ class ProjectRepository extends BaseRepository
      * Get project for deletion.
      *
      * @param $projectId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     * @return \App\Models\Project
      */
-    public function getProjectForDelete($projectId)
+    public function getProjectForDelete($projectId): Project
     {
         return $this->model->with([
             'group',

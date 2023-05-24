@@ -59,6 +59,19 @@
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;" src="{{ GeneralHelper::expeditionDefaultLogo() }}"/>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="workflow_id" class="col-form-label col-12 required">{{ t('Workflows') }}
+                                :</label>
+                            <select name="workflow_id" id="workflow_id"
+                                    class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
+                                    required>
+                                @foreach($workflowOptions as $key => $name)
+                                    <option value="{{ $key }}" {{ $key == old('workflow_id') ? ' selected=selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            <span class="invalid-feedback">{{ $errors->first('workflow_id') }}</span>
+                        </div>
+                        <input type="hidden" name="locked" value="1">
                         <!--
                         <div class="form-group">
                             <input type="checkbox" id="assign_all" name="assign_all" value="true">
@@ -66,6 +79,7 @@
                             <span class="invalid-feedback">{{ $errors->first('assign_all') }}</span>
                         </div>
                         -->
+
 
                     </div>
                 </div>

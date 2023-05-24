@@ -89,7 +89,7 @@ class GroupRepository extends BaseRepository
      * @param $user
      * @return array
      */
-    public function getUsersGroupsSelect($user)
+    public function getUsersGroupsSelect($user): array
     {
         return $this->model->whereHas('users', function ($query) use ($user) {
             $query->where('user_id', $user->id);

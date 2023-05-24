@@ -19,8 +19,11 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Project;
+use App\Models\Expedition;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class UpdateQueries
@@ -34,7 +37,7 @@ class UpdateQueries extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'update:queries {step}';
+    protected $signature = 'update:queries {method?}';
 
     /**
      * The console command description.
@@ -44,7 +47,8 @@ class UpdateQueries extends Command
     /**
      * UpdateQueries constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -53,7 +57,49 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
+        if (! is_null($this->argument('method'))) {
+            $method = $this->argument('method');
+            $this->{$method}();
+        }
+    }
+
+    private function moveProjectWorkflow()
+    {
+        Project::all()->each(function ($project) {
+            DB::table('project_old_workflow')->insert(['project_id'  => $project->id,
+                                                       'workflow_id' => $project->workflow_id,
+            ]);
+        });
+    }
+
+    private function expeditionWorkflowId()
+    {
+        Project::all()->each(function ($project) {
+            Expedition::where('project_id', $project->id)->get()->each(function($expedition) use($project){
+                $expedition->workflow_id = $project->workflow_id;
+                $expedition->save();
+            });
+        });
+    }
+
+    private function updateWorkflowIds()
+    {
+        // Ids not used: 1, 2, 4
+        // Ids used: 3, 5 (3 & 5 will be the same = Zooniverse)
+        Expedition::all()->each(function($expedition){
+            $expedition->workflow_id = 3;
+            $expedition->save();
+        });
 
     }
 
+    private function updateExpeditionCompleted()
+    {
+        Expedition::with('actors')->get()->each(function($expedition){
+            $expedition->actors->each(function($actor) use($expedition) {
+                $expedition->completed = $actor->pivot->completed;
+                $expedition->save();
+            });
+        });
+    }
 }

@@ -75,7 +75,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
         'twitter',
         'activities',
         'language_skills',
-        'workflow_id',
         'logo',
         'banner_file',
         'target_fields',
@@ -142,16 +141,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
     public function group()
     {
         return $this->belongsTo(Group::class, 'group_id');
-    }
-
-    /**
-     * Workflow relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function workflow()
-    {
-        return $this->belongsTo(Workflow::class);
     }
 
     /**

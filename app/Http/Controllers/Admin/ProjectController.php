@@ -24,9 +24,9 @@ use App\Http\Requests\ProjectFormRequest;
 use App\Jobs\DeleteProject;
 use App\Jobs\DeleteUnassignedSubjectsJob;
 use App\Jobs\OcrCreateJob;
+use App\Repositories\GroupRepository;
 use App\Repositories\ProjectRepository;
 use App\Services\Grid\JqGridEncoder;
-use App\Services\Process\ProjectProcess;
 use Auth;
 use CountHelper;
 use Exception;
@@ -43,25 +43,25 @@ class ProjectController extends Controller
     /**
      * @var \App\Repositories\ProjectRepository
      */
-    private $projectRepo;
+    private ProjectRepository $projectRepo;
 
     /**
-     * @var \App\Services\Process\ProjectProcess
+     * @var \App\Repositories\GroupRepository
      */
-    private $projectProcess;
+    private GroupRepository $groupRepo;
 
     /**
      * ProjectController constructor.
      *
      * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param \App\Services\Process\ProjectProcess $projectProcess
+     * @param \App\Repositories\GroupRepository $groupRepo
      */
     public function __construct(
         ProjectRepository $projectRepo,
-        ProjectProcess $projectProcess
+        GroupRepository $groupRepo,
     ) {
-        $this->projectProcess = $projectProcess;
         $this->projectRepo = $projectRepo;
+        $this->groupRepo = $groupRepo;
     }
 
     /**
@@ -73,7 +73,7 @@ class ProjectController extends Controller
     {
         $user = Auth::user();
 
-        $groups = $this->projectProcess->getUserGroupCount($user->id);
+        $groups = $this->groupRepo->getUserGroupCount($user->id);
         $projects = $this->projectRepo->getAdminProjectIndex($user->id);
 
         return $groups === 0 ? view('admin.welcome') : view('admin.project.index', compact('projects'));
@@ -86,12 +86,11 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectProcess->workflowSelectOptions();
+        $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(request()->user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
-        $vars = compact('groupOptions', 'workflowOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('groupOptions', 'resourceOptions', 'resourceCount');
 
         return view('admin.project.create', $vars);
     }
@@ -111,7 +110,7 @@ class ProjectController extends Controller
         }
 
         [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
-            return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
+            return $expedition->completed === 0;
         });
 
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
@@ -136,7 +135,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectFormRequest $request)
     {
-        $group = $this->projectProcess->findGroup($request->get('group_id'));
+        $group = $this->groupRepo->find($request->get('group_id'));
 
         if (! $this->checkPermissions('createProject', $group)) {
             return redirect()->route('admin.projects.index');
@@ -145,12 +144,9 @@ class ProjectController extends Controller
         $model = $this->projectRepo->create($request->all());
 
         if ($model) {
-            $project = $this->projectRepo->findWith($model->id, ['workflow.actors.contacts']);
-            $this->projectProcess->notifyActorContacts($project);
-
             Flash::success(t('Record was created successfully.'));
 
-            return redirect()->route('admin.projects.show', [$project->id]);
+            return redirect()->route('admin.projects.show', [$model->id]);
         }
 
         Flash::error(t('An error occurred when saving record.'));
@@ -174,12 +170,11 @@ class ProjectController extends Controller
             return redirect()->route('admin.projects.show', [$projectId]);
         }
 
-        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectProcess->workflowSelectOptions();
+        $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(request()->user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
-        $vars = compact('project', 'groupOptions', 'workflowOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('project', 'groupOptions', 'resourceOptions', 'resourceCount');
 
         return view('admin.project.clone', $vars);
     }
@@ -202,15 +197,12 @@ class ProjectController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $disableWorkflow = '';// $project->panoptesProjects()->exists() ? 'disabled' : '';
-
-        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectProcess->workflowSelectOptions();
+        $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(request()->user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', $project->resources->count() ?: 1);
         $resources = $project->resources;
 
-        $vars = compact('project', 'resources', 'disableWorkflow', 'groupOptions', 'workflowOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('project', 'resources', 'groupOptions', 'resourceOptions', 'resourceCount');
 
         return view('admin.project.edit', $vars);
     }
@@ -220,11 +212,11 @@ class ProjectController extends Controller
      *
      * @param ProjectFormRequest $request
      * @param $projectId
-     * @return $this|\Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(ProjectFormRequest $request, $projectId)
     {
-        $group = $this->projectProcess->findGroup($request->get('group_id'));
+        $group = $this->groupRepo->find($request->get('group_id'));
 
         if (! $this->checkPermissions('updateProject', $group)) {
             return redirect()->route('admin.projects.index');
@@ -240,7 +232,9 @@ class ProjectController extends Controller
     /**
      * Admin Projects page sort and order.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|null
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|null
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function sort()
     {

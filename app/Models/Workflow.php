@@ -47,8 +47,8 @@ class Workflow extends BaseEloquentModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function project()
+    public function expedition()
     {
-        return $this->hasMany(Project::class);
+        return $this->hasMany(Expedition::class);
     }
 }
