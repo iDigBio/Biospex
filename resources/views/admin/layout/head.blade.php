@@ -14,8 +14,7 @@
     <script src="https://kit.fontawesome.com/c840411e54.js" crossorigin="anonymous"></script>
     <link href="{{ mix('/css/admin.css') }}" rel="stylesheet" type="text/css"/>
     @stack('styles')
-    <!-- Google tag (gtag.js) -->
-    @if()
-
-    @endif
+    @production
+        @include('common.google-analytics')
+    @endproduction
 </head>
