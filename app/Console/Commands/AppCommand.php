@@ -19,7 +19,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Expedition;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class AppCommand
@@ -51,7 +53,19 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $expeditions = DB::table('expeditions')->select('expeditions.id', 'actor_expedition.actor_id', 'actor_expedition.completed')
+            ->join('actor_expedition', 'actor_expedition.expedition_id', '=', 'expeditions.id')
+            ->get();
+        dd($expeditions);
+        /*
+        $expedition = Expedition::with('nfnActor')->find(18);
+        $attributes = [
+            'state'     => 1,
+            'completed' => 1,
+        ];
 
+        $expedition->nfnActor()->updateExistingPivot($expedition->nfnActor->id, $attributes);
+        */
     }
 
 

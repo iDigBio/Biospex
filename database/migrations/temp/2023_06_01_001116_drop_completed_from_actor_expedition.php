@@ -13,9 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('actors', function (Blueprint $table) {
-            $table->tinyInteger('order')->default(0)->index()->after('private');
-            $table->tinyInteger('active')->default(0)->index()->after('private');
+        Schema::table('actor_expedition', function (Blueprint $table) {
+            $table->dropColumn('completed');
         });
     }
 
@@ -26,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('actors', function (Blueprint $table) {
-            $table->dropColumn('active');
+        Schema::table('actor_expedition', function (Blueprint $table) {
+            $table->boolean('completed')->default(0)->after('error');
         });
     }
 };

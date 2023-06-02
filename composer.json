@@ -13,6 +13,7 @@
     "ext-mongodb": "*",
     "anhskohbo/no-captcha": "^3.0",
     "aws/aws-sdk-php": "~3.0",
+    "axn/laravel-pk-int-to-bigint": "^2.1",
     "cviebrock/eloquent-sluggable": "^9.0",
     "czim/laravel-paperclip": "^5.0",
     "graham-campbell/markdown": "14.0.x-dev",

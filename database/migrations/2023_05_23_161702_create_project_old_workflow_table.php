@@ -18,8 +18,6 @@ return new class extends Migration
             $table->tinyInteger('project_id');
             $table->tinyInteger('workflow_id');
         });
-
-        Artisan::call('update:queries moveProjectWorkflow');
     }
 
     /**

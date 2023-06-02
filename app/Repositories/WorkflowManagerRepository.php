@@ -49,7 +49,7 @@ class WorkflowManagerRepository extends BaseRepository
     public function getWorkflowManagersForProcessing($expeditionId = null, array $attributes = ['*'])
     {
         $model =$this->model->with(['expedition.stat', 'expedition.actors' => function($query){
-            $query->where('state', 1)->where('error', 0)->where('completed', 0);
+            $query->where('state', 1)->where('error', 0);
         }])->where('stopped', '=', 0);
 
         return $expeditionId === null ?

@@ -35,8 +35,6 @@ return new class extends Migration
             $table->boolean('completed')->default(0)->after('keywords');
             $table->unsignedInteger('workflow_id')->after('keywords');
         });
-
-        Artisan::call('update:queries expeditionWorkflowId');
     }
 
     /**

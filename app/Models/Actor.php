@@ -42,8 +42,7 @@ class Actor extends BaseEloquentModel
     protected $fillable = [
         'title',
         'url',
-        'class',
-        'active'
+        'class'
     ];
 
     /**
@@ -98,7 +97,7 @@ class Actor extends BaseEloquentModel
     public function expeditions()
     {
         return $this->belongsToMany(Expedition::class, 'actor_expedition')
-            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'error', 'completed', 'order', 'expert')
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'error', 'order', 'expert')
             ->orderBy('order')
             ->withTimestamps();
     }

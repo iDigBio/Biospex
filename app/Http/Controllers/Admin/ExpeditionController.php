@@ -221,14 +221,14 @@ class ExpeditionController extends Controller
         ];
 
         $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
-        $expedition->load('workflow.actors.contacts');
+        $expedition->load('actors', 'workflow.actors.contacts');
 
-        $expedition->workflow->actors->each(function ($actor) use ($expedition, $count) {
-            $sync = [
-                $actor->id => ['order' => $actor->pivot->order, 'state' => 0, 'total' => $count],
-            ];
-            $expedition->actors()->sync($sync, false);
+        $sync = $expedition->workflow->actors->mapWithKeys(function ($actor) use ($expedition, $count) {
+            return $expedition->actors->contains('id', $actor->id) ?
+                [$actor->id => ['order' => $actor->pivot->order]] :
+                [$actor->id => ['order' => $actor->pivot->order, 'state' => 0, 'total' => $count]];
         });
+        $expedition->actors()->sync($sync->toArray());
 
         $this->notifyActorContacts($expedition, $project);
 
@@ -366,22 +366,28 @@ class ExpeditionController extends Controller
      */
     public function update(ExpeditionFormRequest $request, $projectId, $expeditionId)
     {
-        $project = $this->projectRepo->findWith($projectId, ['group', 'workflow.actors']);
+        $project = $this->projectRepo->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
         try {
-            $expedition = $this->expeditionRepo->update($request->all(), $expeditionId);
+            $expedition = $this->expeditionRepo->update($request->all(), $expeditionId)->load(['actors', 'workflow.actors']);
+
+            $subjectIds = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
+            $count = count($subjectIds);
+
+            $sync = $expedition->workflow->actors->mapWithKeys(function ($actor) use ($expedition, $count) {
+                return $expedition->actors->contains('id', $actor->id) ?
+                    [$actor->id => ['order' => $actor->pivot->order]] :
+                    [$actor->id => ['order' => $actor->pivot->order, 'state' => 0, 'total' => $count]];
+            });
+            $expedition->actors()->sync($sync->toArray());
 
             // If process already in place, do not update subjects.
             $workflowManager = $this->workflowManagerRepo->findBy('expedition_id', $expeditionId);
             if ($workflowManager === null) {
-                $subjectIds = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
-
-                $count = count($subjectIds);
-
                 $oldIds = collect($this->subjectRepo->findByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id'));
                 $newIds = collect($subjectIds);
 
@@ -397,14 +403,6 @@ class ExpeditionController extends Controller
 
                 $this->expeditionStatRepo->updateOrCreate(['expedition_id' => $expeditionId], $values);
             }
-
-            $expedition->load('workflow.actors');
-            $expedition->workflow->actors->each(function ($actor) use ($expedition, $count) {
-                $sync = [
-                    $actor->id => ['order' => $actor->pivot->order, 'state' => 0, 'total' => $count],
-                ];
-                $expedition->actors()->sync($sync, false);
-            });
 
             // Success!
             Flash::success(t('Record was updated successfully.'));

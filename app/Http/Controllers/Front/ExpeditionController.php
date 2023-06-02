@@ -40,7 +40,7 @@ class ExpeditionController extends Controller
         $results = $expeditionRepo->getExpeditionPublicIndex();
 
         [$expeditions, $expeditionsCompleted] = $results->partition(function($expedition) {
-            return $expedition->nfnActor->pivot->completed === 0;
+            return $expedition->completed;
         });
 
         return view('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
@@ -65,7 +65,7 @@ class ExpeditionController extends Controller
 
         [$active, $completed] = $expeditionRepo->getExpeditionPublicIndex($sort, $order, $projectId)
             ->partition(function($expedition) {
-                return $expedition->nfnActor->pivot->completed === 0;
+                return $expedition->completed;
         });
 
         $expeditions = $type === 'active' ? $active : $completed;

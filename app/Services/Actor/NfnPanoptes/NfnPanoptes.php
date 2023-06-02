@@ -42,6 +42,8 @@ class NfnPanoptes
             ZooniverseExportBuildQueueJob::dispatch($actor);
         } elseif ($actor->pivot->state === 1) {
             ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);
+        } elseif ($actor->pivot->state === 2) {
+            return;
         }
     }
 }

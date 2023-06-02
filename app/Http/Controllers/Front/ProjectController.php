@@ -106,7 +106,7 @@ class ProjectController extends Controller
         $expeditionsCompleted = null;
         if (isset($project->expeditions)) {
             [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
-                return $expedition->nfnActor->pivot->completed === 0;
+                return $expedition->completed;
             });
         }
 

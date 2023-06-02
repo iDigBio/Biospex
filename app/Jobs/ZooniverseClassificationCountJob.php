@@ -122,20 +122,20 @@ class ZooniverseClassificationCountJob implements ShouldQueue
      * Check if finished_at date and set percentage.
      *
      * @param \App\Models\Expedition $expedition
-     * @param string/null $finishedAt
+     * @param string|null $finishedAt
+     * @return void
      */
-    protected function checkFinishedAt(Expedition $expedition, $finishedAt = null)
+    protected function checkFinishedAt(Expedition $expedition, string $finishedAt = null): void
     {
         if ($finishedAt === null) {
             return;
         }
 
         $attributes = [
-            'state'     => $expedition->nfnActor->pivot->state++,
-            'completed' => 1,
+            'state' => $expedition->nfnActor->pivot->state+1,
         ];
 
-        $expedition->nfnActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+        $expedition->nfnActor()->updateExistingPivot($expedition->nfnActor->pivot->actor_id, $attributes);
 
         $expedition->project->group->owner->notify(new NfnTranscriptionsComplete($expedition->title));
     }

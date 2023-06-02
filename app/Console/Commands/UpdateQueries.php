@@ -19,11 +19,15 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Actor;
 use App\Models\Project;
 use App\Models\Expedition;
+use App\Models\Workflow;
 use Illuminate\Console\Command;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class UpdateQueries
@@ -57,33 +61,89 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        if (! is_null($this->argument('method'))) {
-            $method = $this->argument('method');
-            $this->{$method}();
-        }
+        $this->saveProjectWorkflowOrigAndMoveToExpedition();
+        $this->addWorkflowForeignIdToExpedition();
+        $this->dropWorkflowIdFromProjects();
+        $this->updateExpeditionCompleted();
+        $this->dropCompletedFromActorExpedition();
+        $this->updateWorkflowIds();
+        $this->deleteActors();
+        $this->addActorGeoLocate();
+        $this->deleteWorkflows();
+        $this->addWorkflowGeoLocate();
+
     }
 
-    private function moveProjectWorkflow()
+
+
+    private function saveProjectWorkflowOrigAndMoveToExpedition(): void
     {
-        Project::all()->each(function ($project) {
-            DB::table('project_old_workflow')->insert(['project_id'  => $project->id,
-                                                       'workflow_id' => $project->workflow_id,
+        echo 'Running ' . __METHOD__ . PHP_EOL;
+
+        $projects = DB::table('projects')->select('id', 'workflow_id')->get();
+        $projects->each(function($project){
+            DB::table('project_old_workflow')->insert([
+                'project_id'  => $project->id,
+                'workflow_id' => $project->workflow_id,
             ]);
-        });
-    }
 
-    private function expeditionWorkflowId()
-    {
-        Project::all()->each(function ($project) {
-            Expedition::where('project_id', $project->id)->get()->each(function($expedition) use($project){
+            Expedition::where('project_id', $project->id)->get()->each(function($expedition) use ($project){
                 $expedition->workflow_id = $project->workflow_id;
                 $expedition->save();
             });
         });
     }
 
+    public function addWorkflowForeignIdToExpedition(): void
+    {
+        echo 'Running ' . __METHOD__ . PHP_EOL;
+
+        Schema::table('expeditions', function (Blueprint $table) {
+            $table->foreign('workflow_id')->references('id')->on('workflows')->onUpdate('RESTRICT')->onDelete('CASCADE');
+        });
+    }
+
+    public function dropWorkflowIdFromProjects(): void
+    {
+        echo 'Running ' . __METHOD__ . PHP_EOL;
+
+        Schema::table('projects', function (Blueprint $table) {
+            $table->dropForeign('projects_workflow_id_foreign');
+            $table->dropColumn('workflow_id');
+        });
+    }
+
+    private function updateExpeditionCompleted()
+    {
+        echo 'Running ' . __METHOD__ . PHP_EOL;
+
+        $results = DB::table('expeditions')->select('expeditions.id', 'actor_expedition.actor_id', 'actor_expedition.completed')
+            ->join('actor_expedition', 'actor_expedition.expedition_id', '=', 'expeditions.id')
+            ->get();
+
+        $results->each(function($result){
+            if ($result->completed === 1) {
+                $expedition = Expedition::find($result->id);
+                $expedition->completed = 1;
+                $expedition->save();
+
+                $expedition->actors()->updateExistingPivot($result->actor_id, ['state' => 2]);
+            }
+        });
+    }
+
+    public function dropCompletedFromActorExpedition(): void
+    {
+        echo 'Running ' . __METHOD__ . PHP_EOL;
+
+        Schema::table('actor_expedition', function (Blueprint $table) {
+            $table->dropColumn('completed');
+        });
+    }
+
     private function updateWorkflowIds()
     {
+        echo 'Running ' . __METHOD__ . PHP_EOL;
         // Ids not used: 1, 2, 4
         // Ids used: 3, 5 (3 & 5 will be the same = Zooniverse)
         Expedition::all()->each(function($expedition){
@@ -93,13 +153,48 @@ class UpdateQueries extends Command
 
     }
 
-    private function updateExpeditionCompleted()
+    private function deleteActors()
     {
-        Expedition::with('actors')->get()->each(function($expedition){
-            $expedition->actors->each(function($actor) use($expedition) {
-                $expedition->completed = $actor->pivot->completed;
-                $expedition->save();
-            });
+        echo 'Running ' . __METHOD__ . PHP_EOL;
+
+        Actor::all()->each(function($actor){
+            if ($actor->id === 2) {
+                return;
+            }
+
+            $actor->delete();
         });
+    }
+
+    private function addActorGeoLocate()
+    {
+        echo 'Running ' . __METHOD__ . PHP_EOL;
+
+        Actor::create(['title' => 'GeoLocate', 'url' => 'https://www.geo-locate.org/', 'class' => 'GeoLocate']);
+    }
+
+    private function deleteWorkflows()
+    {
+        echo 'Running ' . __METHOD__ . PHP_EOL;
+
+        Workflow::all()->each(function($workflow){
+            if ($workflow->id === 3) {
+                return;
+            }
+
+            $workflow->delete();
+        });
+    }
+
+    private function addWorkflowGeoLocate()
+    {
+        echo 'Running ' . __METHOD__ . PHP_EOL;
+
+        $workflow = Workflow::create(['title' => 'Zooniverse -> GeoLocate', 'enabled' => 1]);
+        $sync = [
+            2 => ['order' => 1],
+            4 => ['order' => 2]
+        ];
+        $workflow->actors()->sync($sync, false);
     }
 }
