@@ -124,7 +124,7 @@ class DateHelper
      */
     public function eventBefore($event, string $tz = null): bool
     {
-        $timezone = $tz === null ? $event->timzone : 'UTC';
+        $timezone = $tz === null ? $event->timezone : 'UTC';
         $start_date = $event->start_date->setTimezone($timezone);
         $now = \Carbon\Carbon::now($timezone);
 
@@ -140,7 +140,7 @@ class DateHelper
      */
     public function eventActive($event, string $tz = null): bool
     {
-        $timezone = $tz === null ? $event->timzone : 'UTC';
+        $timezone = $tz === null ? $event->timezone : 'UTC';
         $start_date = $event->start_date->setTimezone($timezone);
         $end_date = $event->end_date->setTimezone($timezone);
         $now = Carbon::now($timezone);
@@ -157,7 +157,7 @@ class DateHelper
      */
     public function eventAfter($event, string $tz = null): bool
     {
-        $timezone = $tz === null ? $event->timzone : 'UTC';
+        $timezone = $tz === null ? $event->timezone : 'UTC';
         $end_date = $event->end_date->setTimezone($timezone);
         $now = Carbon::now($timezone);
 
