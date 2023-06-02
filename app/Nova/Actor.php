@@ -22,6 +22,7 @@ use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Outl1ne\NovaSortable\Traits\HasSortableManyToManyRows;
 
 /**
  * Class Actor
@@ -30,6 +31,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
  */
 class Actor extends Resource
 {
+    use HasSortableManyToManyRows;
     /**
      * The model the resource corresponds to.
      *
@@ -53,6 +55,7 @@ class Actor extends Resource
         'id',
         'title',
     ];
+
 
     /**
      * Get the displayable label of the resource.
