@@ -75,7 +75,7 @@ class BingoProcess
      */
     public function getAllBingos(): Collection
     {
-        return $this->bingoRepo->allWith(['user']);
+        return $this->bingoRepo->allWith(['user', 'project']);
     }
 
     /**
