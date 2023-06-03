@@ -163,7 +163,7 @@ class ProjectRepository extends BaseRepository
             'group',
             'ocrQueue',
             'expeditions' => function($q) {
-                $q->with(['stat', 'export']);
+                $q->with(['stat', 'export', 'panoptesProject', 'workflowManager']);
             }
         ])->find($projectId);
     }
