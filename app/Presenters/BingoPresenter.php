@@ -136,8 +136,7 @@ class BingoPresenter extends Presenter
     {
         $id = $this->model->id;
         $title = $this->model->title;
-        $hashtag = $this->model->hashtag;
-        $url = config('app.url') . '/bingos/' . $id . '&text=' . $title . '&hashtags=' . $hashtag;
+        $url = config('app.url') . '/bingos/' . $id . '&text=' . $title;
 
         return '<a href="https://twitter.com/intent/tweet?url='.$url.'" 
             target="_blank" 
