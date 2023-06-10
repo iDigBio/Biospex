@@ -19,9 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Expedition;
-use App\Services\Process\ExpeditionService;
-use App\Services\Process\GeoLocateProcessService;
+use App\Repositories\ProjectRepository;
 use Illuminate\Console\Command;
 
 /**
@@ -44,17 +42,18 @@ class AppCommand extends Command
     /**
      * AppCommand constructor.
      */
-    public function __construct()
+    public function __construct(ProjectRepository $projectRepository)
     {
         parent::__construct();
+        $this->projectRepository = $projectRepository;
     }
 
     /**
      * @return void
      */
-    public function handle(GeoLocateProcessService $geoLocateProcessService)
+    public function handle()
     {
-        $geoLocateProcessService->getForm(13);
+        dd(config('config.current_path'));
     }
 
 
