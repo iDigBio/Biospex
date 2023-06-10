@@ -1,4 +1,4 @@
-<div class="col-sm-2 m-auto">
+<div class="col-sm-3 offset-1">
     <select class="export-field" name="exportFields[{{$i}}][field]"
             data-live-search="true"
             data-actions-box="true"

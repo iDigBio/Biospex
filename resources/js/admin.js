@@ -237,6 +237,71 @@ $(function() {
 
     });
 
+    let $exportResults = $('#exportResults');
+    $exportResults.find("div.entry").each(function () {
+        makeSortable($(this));
+    });
+    $exportResults.on('click', '.btn-add', function () {
+        let $entry = $('.default').clone();
+        $entry.appendTo($('#controls')).removeClass('default')
+            .addClass('entry').show()
+            .find('.export-field-default').removeClass('export-field-default').addClass('export-field');
+
+        makeSortable($entry);
+        number_prefix();
+    }).on('click', '.btn-remove', function () {
+        if ($('#controls').children('div.entry').length === 1) {
+            return;
+        }
+        $('#controls div.entry:last').remove();
+        number_prefix();
+    }).on('submit', '.exportFrm', function (e) {
+        if (checkDuplicates()) {
+            $('#duplicateWarning').show();
+            return false;
+        }
+
+        $('div.entry').each(function () {
+            let idsInOrder = $(this).sortable('toArray', {
+                attribute: 'data-id'
+            });
+            let $order = $(this).children(":first-child");
+            $order.val(idsInOrder);
+        });
+    }).on('change', 'select.export-field', function () {
+        $('#duplicateWarning').hide();
+    }).on('click', '#downloadExport', function () {
+        window.open($(this).data('url'));
+    }).on('click', '[data-confirm=confirmation]', function () {
+        let url = $(this).is("[data-href]") ? $(this).data("href") : $(this).attr('href');
+        let method = $(this).data('method');
+        bootbox.confirm({
+            title: $(this).data('title'),
+            message: $(this).data('content'),
+            buttons: {
+                cancel: {
+                    label: '<i class="fas fa-times-circle"></i> Cancel',
+                    className: 'btn btn-primary'
+                },
+                confirm: {
+                    label: '<i class="fas fa-check-circle"></i> Confirm',
+                    className: 'btn btn-primary'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    $(this).append(function () {
+                        let methodForm = "\n";
+                        methodForm += "<form action='" + url + "' method='POST' style='display:none'>\n";
+                        methodForm += "<input type='hidden' name='_method' value='" + method + "'>\n";
+                        methodForm += "<input type='hidden' name='_token' value='" + $('meta[name=csrf-token]').attr('content') + "'>\n";
+                        methodForm += "</form>\n";
+                        return methodForm;
+                    }).find('form').submit();
+                }
+            }
+        });
+    });
 });
 
 function renumber_prefix() {
@@ -274,4 +339,46 @@ function copyToClipboard(el) {
         // Fallback if browser doesn't support .execCommand('copy')
         window.prompt('Copy to clipboard: Ctrl+C or Command+C, Enter', text);
     }
+}
+
+// Make select box rows sortable and bootstrap-select
+function makeSortable($entry, options) {
+    $entry.sortable({
+        items: '> div.sort',
+        placeholder: "sort-highlight",
+        tolerance: 'pointer'
+    }).find('select').each(function () {
+        $(this).selectpicker();
+    }).disableSelection();
+}
+
+// Renumber prefixes when rows add and removed.
+function number_prefix() {
+    let controls = $('#controls');
+    controls.children('div.entry').each(function (index) {
+        $(this).children(":first-child")
+            .attr('id', 'order' + index)
+            .attr('data-id', index)
+            .attr('name', 'exportFields[' + index + '][order]');
+
+        $(this).find('select').each(function () {
+            $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
+        });
+    });
+    $('[name="entries"]').val(controls.children('div.entry').length);
+}
+
+// Check duplicate export field selection before submitting form.
+function checkDuplicates() {
+    let dup = false;
+    let fieldOptions = [];
+    $('select.export-field').each(function () {
+        if ($.inArray($(this).val(), fieldOptions) > -1) {
+            dup = true;
+        }
+
+        fieldOptions.push($(this).val());
+    });
+
+    return dup;
 }

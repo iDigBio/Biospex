@@ -1,15 +1,15 @@
-<div class="row mt-5">
-    <div class="col-sm-2 mx-auto font-weight-bold text-center">
-        {{ t('Field') }}
+<div class="row mt-5 justify-content-between">
+    <div class="col-sm-3 offset-sm-2 font-weight-bold">
+        {{ t('GeoLocate Fields') }}
     </div>
-    <div class="col-sm-10 text-left font-weight-bold">
+    <div class="col-sm-7 font-weight-bold text-left">
         {{ t('Grab edge of drop downs and drag in order to sort order preference for selecting data.') }}
     </div>
 </div>
-<div class="row">
+<div class="row mt-3 justify-content-between">
     <div id="controls" class="col-sm-12">
         @for($i=0; $i < $data['count']; $i++)
-            <div class="row entry mt-2">
+            <div class="row entry">
                 <input type="hidden" class="hidden" id="order{{ $i }}" name="exportFields[{{$i}}][order]" value="">
                 @include('admin.geolocate.partials.export-field-select')
                 @include('admin.geolocate.partials.header-select-fields')

@@ -1,9 +1,8 @@
-<hr class="header mx-auto" style="width:500px;">
 <form action=""
       method="post" role="form" class="exportFrm">
     @csrf
     <input type="hidden" name="entries" value="{{ old('entries', isset($data['count'])) ? $data['count'] : 0 }}">
-    <input type="hidden" name="exportDestination" value="">
+    <input type="hidden" name="sourceType" value="">
     @isset($data['frmName'])
         @include('admin.geolocate.partials.export-delete')
     @endisset
