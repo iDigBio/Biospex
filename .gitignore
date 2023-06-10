@@ -38,5 +38,5 @@ yarn-error.log
 /.phpunit.result.cache
 /laravel-echo-server.lock
 lang/.translation_io
-imageProcess.js
+image-process.js
 panoptes-pusher.js
