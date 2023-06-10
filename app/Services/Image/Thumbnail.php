@@ -102,8 +102,8 @@ class Thumbnail
     protected function processImage(string $url, string $fileName)
     {
         $output = null;
-        $command = "node {$this->imageProcessFile} $fileName $url {$this->thumbDirectory} {$this->tnWidth} {$this->tnHeight}";
-        \Log::alert($command);
+        $command = "node {$this->imageProcessFile} $fileName $url";
+
         exec($command, $output);
 
         if (!$output[0]) {
