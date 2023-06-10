@@ -173,8 +173,6 @@ h2.modal-number>small {
     color: white;
 }
 
-
-
 @media only screen and (max-width:768px) {
     .btn.btn-danger, .btn-outline-primary, .btn-group {
         margin: 8px auto;
@@ -1000,4 +998,8 @@ li.nav-btn.show {
 
 .need-review {
     color: red;
+}
+
+#downloadsTbl .table td, .table th {
+    border: none;
 }

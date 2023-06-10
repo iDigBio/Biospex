@@ -146,22 +146,22 @@ return [
     /* Beanstalk Queues */
     'num_procs'             => env('NUM_PROCS'),
     'queues'                => [
-        'chart'                     => env('QUEUE_CHART'),
-        'classification'            => env('QUEUE_CLASSIFICATION'),
-        'default'                   => env('QUEUE_DEFAULT'),
-        'event'                     => env('QUEUE_EVENT'),
-        'export'                    => env('QUEUE_EXPORT'),
-        'import'                    => env('QUEUE_IMPORT'),
-        'lambda'                    => env('QUEUE_LAMBDA'),
-        'ocr'                       => env('QUEUE_OCR'),
-        'biospex_event'  => env('QUEUE_BIOSPEX_EVENT'),
+        'chart'                 => env('QUEUE_CHART'),
+        'classification'        => env('QUEUE_CLASSIFICATION'),
+        'default'               => env('QUEUE_DEFAULT'),
+        'event'                 => env('QUEUE_EVENT'),
+        'export'                => env('QUEUE_EXPORT'),
+        'import'                => env('QUEUE_IMPORT'),
+        'lambda'                => env('QUEUE_LAMBDA'),
+        'ocr'                   => env('QUEUE_OCR'),
+        'biospex_event'         => env('QUEUE_BIOSPEX_EVENT'),
         'pusher_classification' => env('QUEUE_PUSHER_CLASSIFICATION'),
-        'pusher_handler' => env('QUEUE_PUSHER_HANDLER'),
-        'wedigbio_event' => env('QUEUE_WEDIGBIO_EVENT'),
-        'pusher_process'            => env('QUEUE_PUSHER_PROCESS'),
-        'reconcile'                 => env('QUEUE_RECONCILE'),
-        'sns_image'                 => env('QUEUE_SNS_IMAGE'),
-        'workflow'                  => env('QUEUE_WORKFLOW'),
+        'pusher_handler'        => env('QUEUE_PUSHER_HANDLER'),
+        'wedigbio_event'        => env('QUEUE_WEDIGBIO_EVENT'),
+        'pusher_process'        => env('QUEUE_PUSHER_PROCESS'),
+        'reconcile'             => env('QUEUE_RECONCILE'),
+        'sns_image'             => env('QUEUE_SNS_IMAGE'),
+        'workflow'              => env('QUEUE_WORKFLOW'),
     ],
 
     /* Images */
@@ -191,12 +191,12 @@ return [
         'recordId',
     ],
 
-    'nfnWorkflows' => [
-        env('NFN_WORKFLOWS_1'),
-        env('NFN_WORKFLOWS_2'),
-    ],
+    'nfnActorId'       => env('NFN_ACTOR_ID'),
+    'geoLocateActorId' => env('GEOLOCATE_ACTOR_ID'),
 
-    'nfnActors'                 => env('NFN_ACTORS'),
+    'nfnWorkflowId'       => env('NFN_WORKFLOW_ID'),
+    'geoLocateWorkflowId' => env('GEOLOCATE_WORKFLOW_ID'),
+
     'nfnNotify'                 => [2 => 'NewNfnPanoptesProject'],
     'nfnSkipApi'                => env('NFN_SKIP_API'),
     // Skip csv creation for expedition ids that cause issues
@@ -342,4 +342,6 @@ return [
         'QUEUE_PUSHER_HANDLER',
         'QUEUE_WEDIGBIO_EVENT',
     ],
+
+    'geolocate_fields_file' => resource_path('json/geolocate-fields.json'),
 ];

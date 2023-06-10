@@ -22,6 +22,7 @@ namespace App\Models;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
 use App\Models\Traits\Presentable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
@@ -169,7 +170,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function export(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function export(): HasOne
     {
         return $this->hasOne(Download::class)->where('type', 'export');
     }
@@ -257,6 +258,16 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public function exportQueue()
     {
         return $this->hasOne(ExportQueue::class);
+    }
+
+    /**
+     * GeoLocateForm relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function geoLocateForms(): HasOne
+    {
+        return $this->hasOne(GeoLocateForm::class);
     }
 
     /**

@@ -17,38 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+use App\Http\Controllers\Admin\GeoLocateController;
 
-use App\Models\Workflow;
-
-/**
- * Class WorkflowRepository
- *
- * @package App\Repositories
- */
-class WorkflowRepository extends BaseRepository
-{
-    /**
-     * WorkflowRepository constructor.
-     *
-     * @param \App\Models\Workflow $workflow
-     */
-    public function __construct(Workflow $workflow)
-    {
-
-        $this->model = $workflow;
-    }
-
-    /**
-     * Get workflow select.
-     *
-     * @return array
-     */
-    public function getWorkflowSelect(): array
-    {
-        return $this->model->where('enabled', '=',1)
-            ->orderBy('title', 'asc')
-            ->pluck('title', 'id')
-            ->toArray();
-    }
-}
+Route::get('projects/{projects}/expeditions/{expeditions}/geolocates', [GeoLocateController::class, 'index'])->name('admin.geolocates.create');

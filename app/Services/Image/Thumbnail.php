@@ -103,6 +103,7 @@ class Thumbnail
     {
         $output = null;
         $command = "node {$this->imageProcessFile} $fileName $url {$this->thumbDirectory} {$this->tnWidth} {$this->tnHeight}";
+        \Log::alert($command);
         exec($command, $output);
 
         if (!$output[0]) {

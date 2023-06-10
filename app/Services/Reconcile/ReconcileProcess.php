@@ -185,7 +185,7 @@ class ReconcileProcess
 
         Storage::disk('efs')->put($this->csvPath, Storage::disk('s3')->get($this->csvPath));
 
-        if (! File::exists($this->csvFullPath) || $expedition->nfnActor->pivot->completed === 0) {
+        if (! File::exists($this->csvFullPath) || $expedition->nfnActor->pivot->state !== 2) {
             throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
                 ':method' => __METHOD__,
                 ':path'   => $this->csvFullPath

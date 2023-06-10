@@ -46,10 +46,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->setupBlade();
 
-        // This will do all 3 below
-        // Model::shouldBeStrict(! $this->app->isProduction());
         Model::preventLazyLoading(! $this->app->isProduction());
-        Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
         Model::preventAccessingMissingAttributes(! $this->app->isProduction());
     }
 

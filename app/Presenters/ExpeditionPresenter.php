@@ -200,7 +200,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.ocr', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" class="prevent-default btn btn-primary rounded-0 mb-1"
+            ]).'" class="prevent-default btn btn-primary rounded-0 mb-1 mt-1"
             data-method="post"
             data-confirm="confirmation"
             data-title="'. t('Reprocess Subject OCR').'?" 
@@ -276,5 +276,21 @@ class ExpeditionPresenter extends Presenter
             data-toggle="modal"
             data-target="#expedition-workflow-form-modal"
             data-title="'. t('Edit Workflow Id').'">'.t('Edit Workflow Id').'</a>';
+    }
+
+    /**
+     * Return button and path for generating export file.
+     *
+     * @return string
+     */
+    public function geoLocateBtn()
+    {
+        return '<a href="'.route('admin.geolocates.create', [$this->model->project_id, $this->model->id])
+        .'" class="prevent-default btn btn-primary rounded-0 mb-1 mt-1"
+            data-method="get"
+            data-confirm="confirmation"
+            data-title="'. t('Generate GeoLocate File').'?" 
+            data-content="'. t('Some message').'">
+            '. t('Generate GeoLocate File').'</a>';
     }
 }

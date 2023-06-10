@@ -20,8 +20,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Expedition;
+use App\Services\Process\ExpeditionService;
+use App\Services\Process\GeoLocateProcessService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class AppCommand
@@ -51,21 +52,9 @@ class AppCommand extends Command
     /**
      * @return void
      */
-    public function handle()
+    public function handle(GeoLocateProcessService $geoLocateProcessService)
     {
-        $expeditions = DB::table('expeditions')->select('expeditions.id', 'actor_expedition.actor_id', 'actor_expedition.completed')
-            ->join('actor_expedition', 'actor_expedition.expedition_id', '=', 'expeditions.id')
-            ->get();
-        dd($expeditions);
-        /*
-        $expedition = Expedition::with('nfnActor')->find(18);
-        $attributes = [
-            'state'     => 1,
-            'completed' => 1,
-        ];
-
-        $expedition->nfnActor()->updateExistingPivot($expedition->nfnActor->id, $attributes);
-        */
+        $geoLocateProcessService->getForm(13);
     }
 
 

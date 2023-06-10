@@ -13,35 +13,23 @@
                 </div>
             </div>
             <div class="modal-body">
-                @foreach ($expedition->actors as $actor)
-                    <div class="col-md-12 text-center">
-                        <h4>{{ $actor->title }}</h4>
-                        <div class="btn-group-lg btn-group-vertical mb-2">
-                            @if($expedition->project->ocrQueue->isEmpty())
-                                {!! $expedition->present()->expedition_ocr_btn !!}
-                            @endif
-                            @if($expedition->stat->local_subject_count > 0)
-                                {!! $expedition->present()->expedition_export_btn !!}
-                            @endif
-                            @if(\App\Facades\GeneralHelper::exportFileCheck($expedition))
-                                {!! $expedition->present()->expedition_workflow_btn  !!}
-                                @if(\App\Facades\GeneralHelper::checkPanoptesWorkflow($expedition))
-                                    @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
-                                        {!!
-                                        $expedition->stat->local_subject_count === 0 ? '' :
-                                            $expedition->present()->expedition_process_start_btn
-                                        !!}
-                                    @else
-                                        {!! $expedition->present()->expedition_process_stop_btn !!}
-                                    @endif
-                                @endif
-                            @endif
-                            @if($actor->pivot->completed  && $actor->id === 2)
-                                {!! $actor->present()->reconcile_expert_review_btn !!}
-                            @endif
-                        </div>
+                <div class="col-md-12 text-center">
+                    <div class="btn-group-lg btn-group-vertical mb-2">
+                        @if($expedition->project->ocrQueue->isEmpty())
+                            {!! $expedition->present()->expedition_ocr_btn !!}
+                        @endif
                     </div>
-                @endforeach
+                    @php($nfnComplete = false)
+                    @foreach ($expedition->actors as $actor)
+                        @if($actor->id == config('config.nfnActorId'))
+                            @php($nfnComplete = $actor->pivot->state === 2)
+                            @include('admin.expedition.partials.nfn-btns')
+                        @endif
+                        @if($actor->id == config('config.geoLocateActorId') && $nfnComplete)
+                            @include('admin.expedition.partials.geolocate-btns')
+                        @endif
+                    @endforeach
+                </div>
             </div>
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-outline-primary color-action align-self-center"

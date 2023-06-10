@@ -19,36 +19,33 @@
 
 namespace App\Repositories;
 
-use App\Models\Workflow;
+use App\Models\GeoLocateForm;
 
 /**
- * Class WorkflowRepository
+ * Class ActorRepository
  *
  * @package App\Repositories
  */
-class WorkflowRepository extends BaseRepository
+class GeoLocateFormRepository extends BaseRepository
 {
     /**
-     * WorkflowRepository constructor.
+     * GeoLocateForm construct.
      *
-     * @param \App\Models\Workflow $workflow
+     * @param \App\Models\GeoLocateForm $geoLocateForm
      */
-    public function __construct(Workflow $workflow)
+    public function __construct(GeoLocateForm $geoLocateForm)
     {
-
-        $this->model = $workflow;
+        $this->model = $geoLocateForm;
     }
 
     /**
-     * Get workflow select.
+     * Get form by Expedition Id.
      *
-     * @return array
+     * @param int $expeditionId
+     * @return mixed
      */
-    public function getWorkflowSelect(): array
+    public function getFormByExpeditionId(int $expeditionId)
     {
-        return $this->model->where('enabled', '=',1)
-            ->orderBy('title', 'asc')
-            ->pluck('title', 'id')
-            ->toArray();
+        return $this->findBy('expedition_id', $expeditionId);
     }
 }
