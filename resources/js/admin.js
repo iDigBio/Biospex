@@ -187,7 +187,7 @@ $(function() {
     $('#jqgrid-modal').on('show.bs.modal', function (e) {
         let $button = $(e.relatedTarget);
         let $modal = $(this).find('.modal-body');
-        $modal.html('<div class="loader mx-auto"></div>');
+        $modal.html('<div class="loader mx-auto"></div><div>Retrieving Image</div>');
         if ($button.attr('class') === 'url-view') {
             $modal.html($button.data("remote"));
         } else {

@@ -53,14 +53,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $project = $this->projectRepository->getProjectShow(85);
-        $project->expeditions->each(function($expedition){
-            if ($expedition->id !== 432) {
-                return;
-            }
-            dd($expedition->export);
-
-        });
+        dd(config('config.current_path'));
     }
 
 
