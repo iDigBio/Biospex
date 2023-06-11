@@ -8,16 +8,20 @@
 {{-- Content --}}
 @section('content')
     @include('admin.project.partials.project-panel')
+        @foreach ($errors->all() as $error)
+            <div>{{ $error }}</div>
+        @endforeach
+
     <div class="row">
         <div class="col-sm-10 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Edit Project') }}</h2>
-                    <form method="post" action="{{ route('admin.projects.update', $project->id) }}" role="form"
+                    <form method="post" id="projectFrm" action="{{ route('admin.projects.update', $project->id) }}" role="form"
                           enctype="multipart/form-data">
                         {!! method_field('put') !!}
                         @csrf
-                        <input type="hidden" name="entries" value="{{ old('entries', $resourceCount) }}">
+                        <input type="hidden" id="entries" name="entries" value="{{ old('entries', $resourceCount) }}">
                         <input type="hidden" name="id" value="{{ $project->id }}">
                         <div class="form-row">
                             <div class="form-group col-sm-6">
