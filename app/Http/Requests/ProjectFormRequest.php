@@ -52,7 +52,6 @@ class ProjectFormRequest extends Request
             'description_short'       => 'required|between:6,140',
             'description_long'        => 'required',
             'keywords'                => 'required',
-            'workflow_id'             => 'required',
             'organization_website'    => 'nullable|url',
             'blog_url'                => 'nullable|url',
             'facebook'                => 'nullable|url',
