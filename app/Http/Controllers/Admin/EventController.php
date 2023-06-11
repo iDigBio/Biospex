@@ -154,7 +154,7 @@ class EventController extends Controller
      */
     public function edit(ProjectRepository $projectRepo, $eventId)
     {
-        $event = $this->eventRepo->findWith($eventId, ['teams']);
+        $event = $this->eventRepo->getEventShow($eventId);
 
         if ( ! $this->checkPermissions('update', $event))
         {
