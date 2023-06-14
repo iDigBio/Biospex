@@ -285,12 +285,7 @@ class ExpeditionPresenter extends Presenter
      */
     public function geoLocateBtn()
     {
-        return '<a href="'.route('admin.geolocates.create', [$this->model->project_id, $this->model->id])
-        .'" class="prevent-default btn btn-primary rounded-0 mb-1 mt-1"
-            data-method="get"
-            data-confirm="confirmation"
-            data-title="'. t('Generate GeoLocate File').'?" 
-            data-content="'. t('Some message').'">
-            '. t('Generate GeoLocate File').'</a>';
+        return '<a href="'.route('admin.geolocate.create', [$this->model->project_id, $this->model->id])
+        .'" class="btn btn-primary rounded-0 mb-1 mt-1">'. t('Generate GeoLocate File').'</a>';
     }
 }

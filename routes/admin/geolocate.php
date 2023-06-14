@@ -19,4 +19,6 @@
 
 use App\Http\Controllers\Admin\GeoLocateController;
 
-Route::get('projects/{projects}/expeditions/{expeditions}/geolocates', [GeoLocateController::class, 'index'])->name('admin.geolocates.create');
+//Route::get('projects/{projects}/expeditions/{expeditions}/geolocates', [GeoLocateController::class, 'index'])->name('admin.geolocate.index');
+Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/create', [GeoLocateController::class, 'create'])->name('admin.geolocate.create');
+Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/store', [GeoLocateController::class, 'store'])->name('admin.geolocate.store');

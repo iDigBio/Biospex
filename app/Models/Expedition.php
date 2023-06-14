@@ -195,7 +195,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return mixed
      */
     public function nfnActor()
     {
@@ -265,7 +265,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function geoLocateForms(): HasOne
+    public function geoLocateForm(): HasOne
     {
         return $this->hasOne(GeoLocateForm::class);
     }

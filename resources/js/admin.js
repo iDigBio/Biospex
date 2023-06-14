@@ -107,12 +107,14 @@ $(function() {
         controls.find('.entry:last span.btn-add')
             .removeClass('btn-add').addClass('btn-remove')
             .html('<i class="fas fa-minus"></i>');
-        renumber_prefix()
+        renumber_resource()
     }).on('click', '.btn-remove', function (e) {
         $(this).parents('.entry:first').remove();
-        renumber_prefix();
+        renumber_resource();
         e.preventDefault();
         return false;
+    }).on('submit', '.projectFrm', function (e){
+        $("#entries").val($('.controls').children().length);
     });
 
     $(document).on('click', '[data-confirm=confirmation]', function (e) {
@@ -245,17 +247,17 @@ $(function() {
         let $entry = $('.default').clone();
         $entry.appendTo($('#controls')).removeClass('default')
             .addClass('entry').show()
-            .find('.export-field-default').removeClass('export-field-default').addClass('export-field');
+            .find('.geolocate-field-default').removeClass('geolocate-field-default').addClass('geolocate-field');
 
         makeSortable($entry);
-        number_prefix();
+        renumber_geolocate();
     }).on('click', '.btn-remove', function () {
         if ($('#controls').children('div.entry').length === 1) {
             return;
         }
         $('#controls div.entry:last').remove();
-        number_prefix();
-    }).on('submit', '.exportFrm', function (e) {
+        renumber_geolocate();
+    }).on('submit', '.geolocateFrm', function (e) {
         if (checkDuplicates()) {
             $('#duplicateWarning').show();
             return false;
@@ -268,52 +270,22 @@ $(function() {
             let $order = $(this).children(":first-child");
             $order.val(idsInOrder);
         });
-    }).on('change', 'select.export-field', function () {
+
+        $("#entries").val($('#controls').children().length);
+
+    }).on('change', 'select.geolocate-field', function () {
         $('#duplicateWarning').hide();
-    }).on('click', '#downloadExport', function () {
-        window.open($(this).data('url'));
-    }).on('click', '[data-confirm=confirmation]', function () {
-        let url = $(this).is("[data-href]") ? $(this).data("href") : $(this).attr('href');
-        let method = $(this).data('method');
-        bootbox.confirm({
-            title: $(this).data('title'),
-            message: $(this).data('content'),
-            buttons: {
-                cancel: {
-                    label: '<i class="fas fa-times-circle"></i> Cancel',
-                    className: 'btn btn-primary'
-                },
-                confirm: {
-                    label: '<i class="fas fa-check-circle"></i> Confirm',
-                    className: 'btn btn-primary'
-                }
-            },
-            callback: function (result) {
-                if (result) {
-                    $(this).append(function () {
-                        let methodForm = "\n";
-                        methodForm += "<form action='" + url + "' method='POST' style='display:none'>\n";
-                        methodForm += "<input type='hidden' name='_method' value='" + method + "'>\n";
-                        methodForm += "<input type='hidden' name='_token' value='" + $('meta[name=csrf-token]').attr('content') + "'>\n";
-                        methodForm += "</form>\n";
-                        return methodForm;
-                    }).find('form').submit();
-                }
-            }
-        });
     });
 });
 
-function renumber_prefix() {
-    let controls = $('.controls');
-    controls.children('.entry').each(function (index) {
+function renumber_resource() {
+    $('.controls').children('.entry').each(function (index) {
         $(this).find('legend').html('Resource ' + (index+1));
         $(this).find(':input').each(function () {
             $(this).attr('id', $(this).attr('id').replace(/\[[0-9]+\]/g, '[' + index + ']'));
             $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
         });
     });
-    $('[name="entries"]').val(controls.children().length);
 }
 
 function copyToClipboard(el) {
@@ -353,19 +325,16 @@ function makeSortable($entry, options) {
 }
 
 // Renumber prefixes when rows add and removed.
-function number_prefix() {
-    let controls = $('#controls');
-    controls.children('div.entry').each(function (index) {
+function renumber_geolocate() {
+    $('#controls').children('div.entry').each(function (index) {
+        console.log('index' + index);
         $(this).children(":first-child")
             .attr('id', 'order' + index)
-            .attr('data-id', index)
             .attr('name', 'exportFields[' + index + '][order]');
-
         $(this).find('select').each(function () {
             $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
         });
     });
-    $('[name="entries"]').val(controls.children('div.entry').length);
 }
 
 // Check duplicate export field selection before submitting form.

@@ -38,6 +38,7 @@ return [
     'import_dir'     => env('IMPORT_DIR', 'import'),
     'report_dir'     => env('REPORT_DIR', 'report'),
     'scratch_dir'    => env('SCRATCH_DIR', 'scratch'),
+    'geolocate_dir'  => env('GEOLOCATE_DIR', 'geolocate'),
     'zooniverse_dir' => [
         'dir'            => env('ZOONIVERSE_DIR', 'zooniverse'),
         'classification' => env('ZOONIVERSE_DIR', 'zooniverse').'/classification',
@@ -344,4 +345,11 @@ return [
     ],
 
     'geolocate_fields_file' => resource_path('json/geolocate-fields.json'),
+
+    /**
+     * Columns reserved for _id field.
+     */
+    'reserved_columns'      => [
+        'geolocate' => ['CatalogNumber' => '_id'],
+    ],
 ];

@@ -19,7 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ProjectRepository;
+use App\Models\Expedition;
 use Illuminate\Console\Command;
 
 /**
@@ -42,10 +42,9 @@ class AppCommand extends Command
     /**
      * AppCommand constructor.
      */
-    public function __construct(ProjectRepository $projectRepository)
+    public function __construct()
     {
         parent::__construct();
-        $this->projectRepository = $projectRepository;
     }
 
     /**
@@ -53,7 +52,8 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        dd(config('config.current_path'));
+        $expedition = Expedition::find(439);
+        dd($expedition->nfnActor);
     }
 
 

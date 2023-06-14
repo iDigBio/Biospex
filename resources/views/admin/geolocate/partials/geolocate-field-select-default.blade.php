@@ -1,5 +1,5 @@
 <div class="col-sm-3 offset-1">
-    <select class="export-field" name="exportFields[{{$i}}][field]"
+    <select class="geolocate-field-default" name="exportFields[999][field]"
             data-live-search="true"
             data-actions-box="true"
             title="{{ t('Field') }}"
@@ -9,10 +9,7 @@
             required>
         <option value="">{{ t('None') }}</option>
         @foreach($data['fields'] as $key => $value)
-            <option value="{{ is_numeric($key) ? str_replace('*', '', $value) : $key }}"
-                    {{ isset($data['frmData']) && $data['frmData'][$i]['field'] === (is_numeric($key) ?
-                        str_replace('*', '', $value) : $key) ? ' selected': '' }}>
-                {{ $value }}</option>
+            <option value="{{ is_numeric($key) ? str_replace('*', '', $value) : $key }}">{{ $value }}</option>
         @endforeach
     </select>
 </div>

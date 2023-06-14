@@ -19,21 +19,23 @@
 
 namespace App\Services\Process;
 
+use App\Models\Expedition;
 use App\Models\GeoLocateForm;
 use App\Models\Header;
 use App\Models\Project;
+use App\Repositories\ExpeditionRepository;
 use App\Repositories\GeoLocateFormRepository;
 use App\Repositories\HeaderRepository;
-use App\Repositories\ProjectRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 
 class GeoLocateProcessService
 {
+
     /**
-     * @var \App\Repositories\ProjectRepository
+     * @var \App\Repositories\ExpeditionRepository
      */
-    private ProjectRepository $projectRepository;
+    private ExpeditionRepository $expeditionRepository;
 
     /**
      * @var \App\Repositories\GeoLocateFormRepository
@@ -46,16 +48,19 @@ class GeoLocateProcessService
     private HeaderRepository $headerRepository;
 
     /**
-     * @param \App\Repositories\ProjectRepository $projectRepository
+     * Construct.
+     *
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
      * @param \App\Repositories\GeoLocateFormRepository $geoLocateFormRepository
      * @param \App\Repositories\HeaderRepository $headerRepository
      */
     public function __construct(
-        ProjectRepository $projectRepository,
+        ExpeditionRepository $expeditionRepository,
         GeoLocateFormRepository $geoLocateFormRepository,
         HeaderRepository $headerRepository
     ) {
-        $this->projectRepository = $projectRepository;
+
+        $this->expeditionRepository = $expeditionRepository;
         $this->geoLocateFormRepository = $geoLocateFormRepository;
         $this->headerRepository = $headerRepository;
     }
@@ -63,13 +68,24 @@ class GeoLocateProcessService
     /**
      * Find project with relations.
      *
-     * @param int $projectId
+     * @param int $expeditionId
      * @param array $relations
-     * @return \App\Models\Project
+     * @return \App\Models\Expedition
      */
-    public function findProjectWith(int $projectId, array $relations = []): Project
+    public function findExpeditionWithRelations(int $expeditionId, array $relations = []): Expedition
     {
-        return $this->projectRepository->findWith($projectId, $relations);
+        return $this->expeditionRepository->findWith($expeditionId, $relations);
+    }
+
+    /**
+     * Get form by expedition id.
+     *
+     * @param int $expeditionId
+     * @return \App\Models\GeoLocateForm|null
+     */
+    public function getFormByExpeditionId(int $expeditionId): ?GeoLocateForm
+    {
+        return $this->geoLocateFormRepository->findBy('expedition_id', $expeditionId);
     }
 
     /**
@@ -82,7 +98,7 @@ class GeoLocateProcessService
      */
     public function getForm(int $projectId, int $expeditionId = null): array
     {
-        $form = $this->geoLocateFormRepository->findBy('expedition_id', $expeditionId);
+        $form = $this->getFormByExpeditionId($expeditionId);
 
         return $form === null ? $this->newForm($projectId) : $this->existingForm($form, $projectId, $expeditionId);
     }
@@ -149,6 +165,24 @@ class GeoLocateProcessService
     }
 
     /**
+     * Save the export form data.
+     *
+     * @param array $fields
+     * @param int $expeditionId
+     * @return \App\Models\GeoLocateForm
+     */
+    public function saveForm(array $fields, int $expeditionId): GeoLocateForm
+    {
+        $data = [
+            'expedition_id' => $expeditionId,
+            'file'          => md5($expeditionId).'.csv',
+            'properties'    => $fields,
+        ];
+
+        return $this->geoLocateFormRepository->create($data);
+    }
+
+    /**
      * Map header columns to tags.
      *
      * @param array $header
@@ -179,5 +213,28 @@ class GeoLocateProcessService
     private function getGeoLocateFields(): array
     {
         return json_decode(File::get(config('config.geolocate_fields_file')), true);
+    }
+
+    /**
+     * Map the posted geolocate form order data.
+     *
+     * @param array $data
+     * @return array
+     */
+    public function mapExportFields(array $data): array
+    {
+        $data['exportFields'] = collect($data['exportFields'])->map(function ($array) {
+            return collect($array)->map(function ($item, $key) {
+                if ($key === 'order') {
+                    return $item === null ? null : explode(',', $item);
+                }
+
+                return $item;
+            });
+        })->toArray();
+
+        unset($data['_token']);
+
+        return $data;
     }
 }
