@@ -21,7 +21,7 @@ class GeoLocateForm extends BaseEloquentModel
      */
     protected $fillable = [
         'expedition_id',
-        'file',
+        'file_path',
         'properties'
     ];
 

@@ -19,21 +19,21 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
+use App\Facades\GeneralHelper;
 use App\Models\Header;
+use App\Models\User;
 use App\Notifications\GridCsvExport;
 use App\Notifications\GridCsvExportError;
-use App\Services\Process\AwsS3CsvService;
+use App\Services\Csv\AwsS3CsvService;
 use App\Services\Grid\JqGridEncoder;
-use App\Facades\GeneralHelper;
 use Exception;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * Class GridExportCsvJob
@@ -96,7 +96,7 @@ class GridExportCsvJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Grid\JqGridEncoder $jqGridEncoder
-     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
+     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      * @return void
      */
     public function handle(JqGridEncoder $jqGridEncoder, AwsS3CsvService $awsS3CsvService)

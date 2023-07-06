@@ -24,7 +24,7 @@ use App\Notifications\ExpertReviewPublished;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\ReconcileRepository;
-use App\Services\Process\AwsS3CsvService;
+use App\Services\Csv\AwsS3CsvService;
 
 /**
  * Class ExpertReconcilePublishProcess
@@ -49,7 +49,7 @@ class ExpertReconcilePublishProcess
     private ExpeditionRepository $expeditionRepo;
 
     /**
-     * @var \App\Services\Process\AwsS3CsvService
+     * @var \App\Services\Csv\AwsS3CsvService
      */
     private AwsS3CsvService $awsS3CsvService;
 
@@ -59,7 +59,7 @@ class ExpertReconcilePublishProcess
      * @param \App\Repositories\ReconcileRepository $reconcileRepo
      * @param \App\Repositories\DownloadRepository $downloadRepo
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
+     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         ReconcileRepository $reconcileRepo,

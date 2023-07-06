@@ -22,7 +22,7 @@ namespace App\Services\Reconcile;
 use App\Facades\TranscriptionMapHelper;
 use App\Repositories\ReconcileRepository;
 use App\Repositories\SubjectRepository;
-use App\Services\Process\AwsS3CsvService;
+use App\Services\Csv\AwsS3CsvService;
 use Exception;
 use File;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -49,7 +49,7 @@ class ExpertReconcileProcess
     private SubjectRepository $subjectRepo;
 
     /**
-     * @var \App\Services\Process\AwsS3CsvService
+     * @var \App\Services\Csv\AwsS3CsvService
      */
     private AwsS3CsvService $awsS3CsvService;
 
@@ -63,7 +63,7 @@ class ExpertReconcileProcess
      *
      * @param \App\Repositories\ReconcileRepository $reconcileRepo
      * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
+     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         ReconcileRepository $reconcileRepo,

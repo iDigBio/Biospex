@@ -1,5 +1,23 @@
 <?php
 /*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
  * Copyright (c) 2022. Biospex
  * biospex@gmail.com
  *
@@ -17,10 +35,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Process;
+namespace App\Services\Csv;
 
 use App\Services\Api\AwsS3ApiService;
-use App\Services\Csv\Csv;
 
 class AwsS3CsvService
 {
@@ -58,7 +75,7 @@ class AwsS3CsvService
      * @param string $mode
      * @return void
      */
-    public function createBucketStream(string $bucket, string $path, string $mode)
+    public function createBucketStream(string $bucket, string $path, string $mode): void
     {
         $this->stream = $this->awsS3ApiService->createS3BucketStream($bucket, $path, $mode);
     }

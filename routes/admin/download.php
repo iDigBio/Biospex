@@ -23,3 +23,4 @@ Route::get('projects/{projects}/expeditions/{expeditions}/downloads', [DownloadC
 Route::get('reports/{file}', [DownloadController::class, 'report'])->name('admin.downloads.report');
 Route::get('projects/{projects}/expeditions/{expeditions}/export', [DownloadController::class, 'export'])->name('admin.downloads.export');
 Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/batch', [DownloadController::class, 'batch'])->name('admin.downloads.batch');
+Route::get('geolocates/{file}', [DownloadController::class, 'geoLocate'])->name('admin.downloads.geolocate');

@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('geolocate_forms', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('expedition_id');
+            $table->unsignedInteger('expedition_id')->unique();
             $table->foreign('expedition_id')->references('id')->on('expeditions')->onUpdate('RESTRICT')->onDelete('CASCADE');
-            $table->string('file');
+            $table->string('file_path');
             $table->json('properties');
             $table->timestamps();
         });

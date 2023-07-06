@@ -19,7 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Expedition;
+use App\Services\Csv\GeoLocateExportService;
 use Illuminate\Console\Command;
 
 /**
@@ -40,11 +40,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Services\Csv\GeoLocateExportService
+     */
+    private GeoLocateExportService $service;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct()
+    public function __construct(GeoLocateExportService $service)
     {
         parent::__construct();
+        $this->service = $service;
     }
 
     /**
@@ -52,8 +58,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $expedition = Expedition::find(439);
-        dd($expedition->nfnActor);
+
     }
 
 

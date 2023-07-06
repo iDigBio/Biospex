@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\GeoLocateFormRepository;
-use App\Repositories\ProjectRepository;
+use App\Jobs\GeoLocateExportJob;
 use App\Services\Csv\GeoLocateExportService;
 use App\Services\Process\GeoLocateProcessService;
-use DB;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Exception;
+use Flash;
 
 class GeoLocateController extends Controller
 {
@@ -26,7 +24,16 @@ class GeoLocateController extends Controller
         $this->geoLocateProcessService = $geoLocateProcessService;
     }
 
-    public function create(int $projectId, int $expeditionId)
+    /**
+     * Index page and also used for ajax post to retrieve fields.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function index(int $projectId, int $expeditionId)
     {
         try {
             $relations = ['project.group', 'stat'];
@@ -34,58 +41,117 @@ class GeoLocateController extends Controller
             $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('readProject', $expedition->project->group)) {
-                return redirect()->route('admin.projects.index');
+                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            $data = $this->geoLocateProcessService->getForm($projectId, $expeditionId);
+            $frmData = $this->geoLocateProcessService->getForm($expedition, request()->get('frm'));
 
-            return view('admin.geolocate.create', compact('expedition', 'data'));
+            [$disableReviewed, $sourceType] = $this->geoLocateProcessService->getSourceType();
+
+            return request()->ajax() ?
+                view('admin.geolocate.partials.form-fields', compact('expedition', 'frmData', 'sourceType')) :
+                view('admin.geolocate.index', compact('expedition', 'frmData', 'disableReviewed', 'sourceType'));
         } catch (\Exception $e)
         {
-            \Flash::error(t('Error %s.', $e->getMessage()));
+            Flash::error(t('Error %s.', $e->getMessage()));
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
     }
 
+    /**
+     * Store form data.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @param \App\Services\Csv\GeoLocateExportService $service
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
     public function store(int $projectId, int $expeditionId, GeoLocateExportService $service)
     {
-        DB::beginTransaction();
 
         try {
+            $relations = ['project.group'];
 
-            $fields = $this->geoLocateProcessService->mapExportFields(request()->all());
+            $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
 
-            $form = $this->geoLocateProcessService->saveForm($fields, $expeditionId);
+            if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
+                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            }
 
-            //$this->filePath = $this->geoLocateProcessService->getExportFilePath($fileName);
+            $fields = $this->geoLocateProcessService->cleanArray(request()->all());
 
-            $reservedColumns =config('config.reserved_columns.geolocate');
+            $this->geoLocateProcessService->saveForm($fields, $expeditionId);
 
-            $service->build($this->filePath, $fields, $reservedColumns);
+            Flash::success(t('Form has been saved.'));
 
-            $downloadUrl = route('admin.download.export', ['file' => base64_encode($fileName)]);
-
-            DB::commit();
-
-            $this->user->notify(new ExportNotification($downloadUrl));
-
-            return;
+            return redirect()->route('admin.geolocate.index', [$projectId, $expeditionId]);
 
         } catch (Exception $exception) {
-            $attributes = [
-                'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'trace' => $exception->getTraceAsString()
-            ];
-
-            $this->user->notify(new JobErrorNotification($attributes));
-
-            DB::rollback();
-
-            if (Storage::exists($this->filePath)) {
-                Storage::delete($this->filePath);
-            }
+            Flash::error(t('Error %s.', $exception->getMessage()));
+            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
+    }
+
+    /**
+     * Export form selections to csv.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
+    public function process(int $projectId, int $expeditionId)
+    {
+        try {
+            $relations = ['project.group', 'geoLocateForm'];
+
+            $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
+
+            if (! $this->checkPermissions('readProject', $expedition->project->group)) {
+                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            }
+
+            $form = $this->geoLocateProcessService->getFormByExpeditionId($expeditionId);
+
+            GeoLocateExportJob::dispatch($form, \Auth::user());
+
+            Flash::success(t('Geo Locate export job scheduled for processing. You will receive an email when file has been created.'));
+
+            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        } catch (Exception $exception) {
+            Flash::error(t('Error %s.', $exception->getMessage()));
+            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        }
+    }
+
+    /**
+     * Delete GeoLocateForm and associated data and file.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete(int $projectId, int $expeditionId)
+    {
+        try {
+            $relations = ['project.group', 'geoLocateForm'];
+
+            $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
+
+            if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
+                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            }
+
+            $this->geoLocateProcessService->deleteGeoLocateFile($expedition->geoLocateForm->file_path);
+            $this->geoLocateProcessService->deleteGeoLocate($expeditionId);
+            $expedition->geoLocateForm->delete();
+
+            Flash::success(t('GeoLocate form data and file deleted.'));
+            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+
+        }catch (Exception $exception) {
+            Flash::error(t('Error %s.', $exception->getMessage()));
+            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        }
+
     }
 }

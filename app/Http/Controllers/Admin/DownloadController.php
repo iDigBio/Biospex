@@ -130,4 +130,17 @@ class DownloadController extends Controller
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
+
+    /**
+     * Download geolocate file.
+     *
+     * @param string $file
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function geoLocate(string $file)
+    {
+        $url = Storage::disk('s3')->temporaryUrl(base64_decode($file), now()->addMinutes(5), ['ResponseContentDisposition' => 'attachment;']);
+
+        return redirect($url);
+    }
 }

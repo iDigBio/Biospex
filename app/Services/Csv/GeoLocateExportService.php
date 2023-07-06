@@ -19,10 +19,11 @@
 
 namespace App\Services\Csv;
 
-use App\Models\RapidRecord;
-use App\Services\CsvService;
-use App\Services\Export\RapidExportDbService;
+use App\Models\GeoLocate;
+use App\Models\GeoLocateForm;
+use App\Repositories\GeoLocateRepository;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class CsvExportType
@@ -31,113 +32,143 @@ use Exception;
  */
 class GeoLocateExportService
 {
-    /**
-     * @var array
-     */
-    private $productHeaders;
 
     /**
-     * @var \App\Services\Csv\Csv
+     * @var \App\Services\Csv\AwsS3CsvService
      */
-    private Csv $csv;
+    private AwsS3CsvService $awsS3CsvService;
 
     /**
-     * CsvExportType constructor.
+     * @var \App\Repositories\GeoLocateRepository
+     */
+    private GeoLocateRepository $geoLocateRepository;
+
+    /**
+     * @var string
+     */
+    private string $sourceType;
+
+    /**
+     * Construct
      *
-     * @param \App\Services\Csv\Csv $csv
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
+     * @param \App\Repositories\GeoLocateRepository $geoLocateRepository
      */
-    public function __construct(Csv $csv)
+    public function __construct(AwsS3CsvService $awsS3CsvService, GeoLocateRepository $geoLocateRepository)
     {
-        $this->productHeaders = json_decode(\File::get(config('config.product_fields_file')), true);
-        $this->csv = $csv;
+        $this->awsS3CsvService = $awsS3CsvService;
+        $this->geoLocateRepository = $geoLocateRepository;
     }
 
     /**
-     * Build Csv File for export.
+     * Migrate records to MongoDb.
      *
-     * @param string $filePath
-     * @param array $fields
-     * @param array $reservedColumns
-     * @throws \League\Csv\CannotInsertRecord|\Exception
+     * @param \App\Models\GeoLocateForm $form
+     * @return void
+     * @throws \League\Csv\Exception
      */
-    public function build(string $filePath, array $fields, array $reservedColumns)
+    public function migrateRecords(GeoLocateForm $form): void
     {
-        $this->csvService->writerCreateFromTempFileObj();
-        $this->csvService->writer->addFormatter($this->csvService->setEncoding());
 
-        $cursor = $this->rapidExportDbService->getCursorForRapidRecords();
+        $sourceFile = $this->setSourceFile($form);
+
+        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $sourceFile, 'r');
+        $this->awsS3CsvService->createCsvReaderFromStream();
+        $this->awsS3CsvService->csv->setHeaderOffset();
+        $header = $this->awsS3CsvService->csv->getHeader();
+        $records = $this->awsS3CsvService->csv->getRecords($header);
+
+        foreach ($records as $record) {
+            $this->geoLocateRepository->updateOrCreate(['subject_id' => $record['subject_id']], $record);
+        }
+
+        $this->awsS3CsvService->closeBucketStream();
+    }
+
+    /**
+     * Set the source type.
+     * Reconciled Expert Review or Reconcile Results
+     *
+     * @param \App\Models\GeoLocateForm $form
+     * @return void
+     */
+    public function setSourceType(GeoLocateForm $form): void
+    {
+        $this->sourceType = $form->properties['sourceType'];
+    }
+
+    /**
+     * Set file source path according to source type.
+     *
+     * @param \App\Models\GeoLocateForm $form
+     * @return string
+     */
+    private function setSourceFile(GeoLocateForm $form): string
+    {
+        return $this->sourceType === "Reconciled Expert Review" ?
+            config('config.zooniverse_dir.reconciled') . '/' . $form->expedition_id . '.csv':
+            config('config.zooniverse_dir.reconcile') . '/' . $form->expedition_id . '.csv';
+    }
+
+    /**
+     * Build Csv File for export inside efs directory.
+     *
+     * @param \App\Models\GeoLocateForm $form
+     * @return void
+     * @throws \League\Csv\CannotInsertRecord
+     */
+    public function build(GeoLocateForm $form): void
+    {
+        $efsCsvFilePath = Storage::disk('efs')->path($form->file_path);
+        $this->awsS3CsvService->csv->writerCreateFromPath($efsCsvFilePath);
+
+        $cursor = $this->geoLocateRepository->getByExpeditionId($form->expedition_id);
 
         $first = true;
         foreach ($cursor as $record) {
-            $data = $this->setReservedColumns($record, $reservedColumns);
+            $data = ['CatalogNumber' => $record->_id];
 
-            $csvData = $this->setColumns($record, $fields, $data);
+            $csvData = $this->setDataArray($record, $form, $data);
 
             if (! isset($csvData)) {
                 throw new Exception(t('Csv data returned empty while exporting.'));
             }
 
             if ($first) {
-                $this->csvService->insertOne(array_keys($csvData));
+                $this->awsS3CsvService->csv->insertOne(array_keys($csvData));
                 $first = false;
             }
 
-            $this->csvService->insertOne($csvData);
+            $this->awsS3CsvService->csv->insertOne($csvData);
         }
 
-        \File::put($filePath, $this->csvService->writer->toString());
-    }
-
-    /**
-     * Set reserved columns for adding to doc.
-     *
-     * @param \App\Models\RapidRecord $record
-     * @param array $reservedColumns
-     * @return array
-     */
-    private function setReservedColumns(RapidRecord $record, array $reservedColumns): array
-    {
-        $data = [];
-        foreach ($reservedColumns as $column => $item) {
-            $data[$column] = (string) $record->{$item};
-        }
-
-        return $data;
-    }
-
-    /**
-     * Set columns according to export destination.
-     *
-     * @param \App\Models\RapidRecord $record
-     * @param array $fields
-     * @param array $data
-     * @return array
-     */
-    public function setColumns(RapidRecord $record, array $fields, array $data): array
-    {
-        if ($fields['exportDestination'] === 'taxonomic') {
-            return $this->setDirectColumns($record, $fields, $data);
-        } elseif ($fields['exportDestination'] === 'generic') {
-            return $this->setGenericColumns($record, $fields, $data);
-        } else {
-            return $this->setFormColumns($record, $fields, $data);
+        if (!Storage::disk('efs')->exists($form->file_path)) {
+            throw new Exception(t('Csv export file is missing: %s', $form->file_path));
         }
     }
 
     /**
      * Set array for export fields.
      *
-     * @param \App\Models\RapidRecord $record
-     * @param array $fields
+     * @param \App\Models\GeoLocate $record
+     * @param \App\Models\GeoLocateForm $form
      * @param array $data
      * @return array
      */
-    public function setDirectColumns(RapidRecord $record, array $fields, array $data): array
+    public function setDataArray(GeoLocate $record, GeoLocateForm $form, array $data): array
     {
-        foreach ($fields['exportFields'] as $field) {
-            if (isset($record->{$field})) {
-                $data[$field] = $record->{$field};
+        foreach ($form->properties['exportFields'] as $fieldArray) {
+
+            $field = $fieldArray['field'];
+            $data[$field] = '';
+
+            // unset to make foreach easier to deal with
+            unset($fieldArray['field']);
+
+            // indexes are the tags. isset skips index values that are null
+            foreach ($fieldArray as $value) {
+                $data[$field] = $record->{$value};
+                break;
             }
         }
 
@@ -145,64 +176,22 @@ class GeoLocateExportService
     }
 
     /**
-     * Set Generic columns.
+     * Move csv file to s3
      *
-     * @param \App\Models\RapidRecord $record
-     * @param array $fields
-     * @param array $data
-     * @return array
+     * @param \App\Models\GeoLocateForm $form
+     * @return void
+     * @throws \Exception
      */
-    public function setGenericColumns(RapidRecord $record, array $fields, array $data): array
+    public function moveCsvFile(GeoLocateForm $form): void
     {
-        $flattened = collect($fields['exportFields'][0])->forget('order')->flatten();
-        $filled = array_fill_keys($flattened->toArray(), '');
-        $attributes = $record->getAttributes();
-        unset($attributes['_id'], $attributes['updated_at'], $attributes['created_at']);
+        if (Storage::disk('efs')->exists($form->file_path)) {
+            Storage::disk('s3')->writeStream($form->file_path, Storage::disk('efs')->readStream($form->file_path));
 
-        return array_merge($data, $filled, $attributes);
-    }
-
-    /**
-     * Set columns for forms with export fields
-     *
-     * @param \App\Models\RapidRecord $record
-     * @param array $fields
-     * @param array $data
-     * @return mixed
-     */
-    public function setFormColumns(RapidRecord $record, array $fields, array $data): array
-    {
-        foreach ($fields['exportFields'] as $fieldArray) {
-
-            $field = $fieldArray['field'];
-            $data[$field] = '';
-
-            // unset to make foreach easier to deal with
-            unset($fieldArray['field'], $fieldArray['order']);
-
-            // indexes are the tags. isset skips index values that are null
-            foreach ($fieldArray as $index => $value) {
-                if (isset($fieldArray[$index]) && (! empty($record->{$value}) || $record->{$value} === "0")) {
-                    $data[$field] = $record->{$value};
-                    break;
-                }
+            if (!Storage::disk('s3')->exists($form->file_path)) {
+                throw new Exception(t('Could not move csv to AWS storage: %s', $form->file_path));
             }
+
+            Storage::disk('efs')->delete($form->file_path);
         }
-
-        return $fields['exportDestination'] === 'product' ? $this->setProductHeaders($data) : $data;
-    }
-
-    /**
-     * Set product headers to proper field names.
-     *
-     * @param array $data
-     * @return array
-     */
-    private function setProductHeaders(array $data): array
-    {
-        return collect($data)->mapWithKeys(function($value, $index){
-            $key = $index === 'BIOSPEXid' ? 'BIOSPEXid' : $this->productHeaders[$index];
-            return [$key => $value];
-        })->toArray();
     }
 }

@@ -261,7 +261,17 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * GeoLocateForm relation.
+     * GeoLocate relation with mongodb
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
+     */
+    public function geoLocate(): \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
+    {
+        return $this->hasMany(GeoLocate::class, 'subject_expeditionId');
+    }
+
+    /**
+     * GeoLocateForm relation in mysql.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */

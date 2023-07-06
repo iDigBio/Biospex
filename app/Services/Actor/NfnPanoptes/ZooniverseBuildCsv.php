@@ -21,13 +21,13 @@ namespace App\Services\Actor\NfnPanoptes;
 
 use App\Jobs\ZooniverseExportBuildZipJob;
 use App\Models\ExportQueue;
+use App\Repositories\ExportQueueFileRepository;
+use App\Repositories\ExportQueueRepository;
 use App\Services\Actor\QueueInterface;
 use App\Services\Actor\Traits\ActorDirectory;
 use App\Services\Api\AwsS3ApiService;
+use App\Services\Csv\AwsS3CsvService;
 use App\Services\Csv\Csv;
-use App\Repositories\ExportQueueFileRepository;
-use App\Repositories\ExportQueueRepository;
-use App\Services\Process\AwsS3CsvService;
 use App\Services\Process\MapNfnCsvColumnsService;
 use Exception;
 use Illuminate\Support\Collection;
@@ -60,7 +60,7 @@ class ZooniverseBuildCsv implements QueueInterface
     private Csv $csv;
 
     /**
-     * @var \App\Services\Process\AwsS3CsvService
+     * @var \App\Services\Csv\AwsS3CsvService
      */
     private AwsS3CsvService $awsS3CsvService;
 
@@ -81,7 +81,7 @@ class ZooniverseBuildCsv implements QueueInterface
      *
      * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
      * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
-     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
+     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      * @param \App\Services\Process\MapNfnCsvColumnsService $mapNfnCsvColumnsService
      */
     public function __construct(

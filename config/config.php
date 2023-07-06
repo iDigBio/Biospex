@@ -42,8 +42,8 @@ return [
     'zooniverse_dir' => [
         'dir'            => env('ZOONIVERSE_DIR', 'zooniverse'),
         'classification' => env('ZOONIVERSE_DIR', 'zooniverse').'/classification',
-        'reconcile'      => env('ZOONIVERSE_DIR', 'zooniverse').'/reconcile',
-        'reconciled'     => env('ZOONIVERSE_DIR', 'zooniverse').'/reconciled',
+        'reconcile'      => env('ZOONIVERSE_DIR', 'zooniverse').'/reconcile', // normal reconcile
+        'reconciled'     => env('ZOONIVERSE_DIR', 'zooniverse').'/reconciled', // expert review
         'summary'        => env('ZOONIVERSE_DIR', 'zooniverse').'/summary',
         'transcript'     => env('ZOONIVERSE_DIR', 'zooniverse').'/transcript',
         'explained'      => env('ZOONIVERSE_DIR', 'zooniverse').'/explained',
@@ -152,6 +152,7 @@ return [
         'default'               => env('QUEUE_DEFAULT'),
         'event'                 => env('QUEUE_EVENT'),
         'export'                => env('QUEUE_EXPORT'),
+        'geolocate'             => env('QUEUE_GEOLOCATE'),
         'import'                => env('QUEUE_IMPORT'),
         'lambda'                => env('QUEUE_LAMBDA'),
         'ocr'                   => env('QUEUE_OCR'),
@@ -330,6 +331,7 @@ return [
         'QUEUE_CLASSIFICATION',
         'QUEUE_DEFAULT',
         'QUEUE_EVENT',
+        'QUEUE_GEOLOCATE',
         'QUEUE_IMPORT',
         'QUEUE_EXPORT',
         'QUEUE_RECONCILE',
@@ -345,11 +347,4 @@ return [
     ],
 
     'geolocate_fields_file' => resource_path('json/geolocate-fields.json'),
-
-    /**
-     * Columns reserved for _id field.
-     */
-    'reserved_columns'      => [
-        'geolocate' => ['CatalogNumber' => '_id'],
-    ],
 ];

@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
 
     $('#add_target').on('click', function () {
         let first = $('div.target:first');
@@ -113,7 +113,7 @@ $(function() {
         renumber_resource();
         e.preventDefault();
         return false;
-    }).on('submit', '.projectFrm', function (e){
+    }).on('submit', '.projectFrm', function (e) {
         $("#entries").val($('.controls').children().length);
     });
 
@@ -182,7 +182,7 @@ $(function() {
         let img = $(this).data('name');
         $('#banner_file').val(img);
         $('#banner_file').attr('value', img);
-        $('#banner-img').attr('src','/images/habitat-banners/'+img);
+        $('#banner-img').attr('src', '/images/habitat-banners/' + img);
         $("#project-banner-modal .close").click();
     });
 
@@ -205,7 +205,7 @@ $(function() {
         $(this).prev('.custom-file-label').addClass("selected").html(fileName);
     });
 
-    setInterval(function() {
+    setInterval(function () {
         let $footer = $('#footer');
         let docHeight = $(window).height();
         let footerHeight = $footer.height();
@@ -219,7 +219,7 @@ $(function() {
     }, 250);
 
     // this is the id of the form
-    $("#workflowIdFrm").submit(function(e) {
+    $("#workflowIdFrm").submit(function (e) {
 
         e.preventDefault(); // avoid to execute the actual submit of the form.
 
@@ -230,8 +230,7 @@ $(function() {
             type: "POST",
             url: actionUrl,
             data: form.serialize(), // serializes the form's elements.
-            success: function(data)
-            {
+            success: function (data) {
                 let text = data['code'] === 200 ? 'text-success' : 'text-danger';
                 $('.feedback').addClass(text).html(data['message']); // show response from the php script.
             }
@@ -240,16 +239,30 @@ $(function() {
     });
 
     let $exportResults = $('#exportResults');
-    $exportResults.find("div.entry").each(function () {
-        makeSortable($(this));
-    });
+    let $sourceType = $('.sourceType');
+    if ($sourceType.length > 0) {
+        let $input = $("input:radio.sourceType:checked");
+        let value = $input.val();
+        if (value !== '') {
+            form($input, $exportResults)
+        }
+        $sourceType.on('change', function () {
+            if($("#frmDataExists").val()) {
+                notify("exclamation-circle", "Cannot change source after form data is saved. Delete form to change source.", "warning");
+                $input.prop('checked', true);
+                return;
+            }
+            form($(this), $exportResults)
+        });
+    }
+
     $exportResults.on('click', '.btn-add', function () {
         let $entry = $('.default').clone();
-        $entry.appendTo($('#controls')).removeClass('default')
-            .addClass('entry').show()
-            .find('.geolocate-field-default').removeClass('geolocate-field-default').addClass('geolocate-field');
+        $entry.appendTo($('#controls')).removeClass('default').addClass('entry').show();
+        $entry.find('.geolocate-field-default').removeClass('geolocate-field-default').addClass('geolocate-field').prop('required',true);
+        $entry.find('.header-select-default').removeClass('header-select-default').addClass('header-select').prop('required',true);
 
-        makeSortable($entry);
+        makeSelect($entry);
         renumber_geolocate();
     }).on('click', '.btn-remove', function () {
         if ($('#controls').children('div.entry').length === 1) {
@@ -257,30 +270,42 @@ $(function() {
         }
         $('#controls div.entry:last').remove();
         renumber_geolocate();
-    }).on('submit', '.geolocateFrm', function (e) {
+    }).on('click', '#process', function (){
+        $('form#geolocateFrm').attr('action', $(this).data('url')).trigger('submit');
+    });
+
+    $('form#geolocateFrm').on('submit', function (e) {
         if (checkDuplicates()) {
-            $('#duplicateWarning').show();
+            notify("exclamation-circle", "GeoLocate field cannot contain duplicate values.", "warning");
+
             return false;
         }
 
-        $('div.entry').each(function () {
-            let idsInOrder = $(this).sortable('toArray', {
-                attribute: 'data-id'
-            });
-            let $order = $(this).children(":first-child");
-            $order.val(idsInOrder);
-        });
+        let fields = checkRequiredValues();
+        if (fields.length > 0) {
+            notify("exclamation-circle", fields.toString() + ' GeoLocate fields are required.', "warning");
+
+            return false;
+        }
 
         $("#entries").val($('#controls').children().length);
-
-    }).on('change', 'select.geolocate-field', function () {
-        $('#duplicateWarning').hide();
     });
+
 });
+
+form = function($input, $exportResults) {
+    $exportResults.html('<div class="mt-5 loader mx-auto"></div>');
+    $.post($input.data('url'), {frm: $input.val()})
+        .done(function (data) {
+            $exportResults.html(data).find("div.entry").each(function () {
+                makeSelect($(this));
+            });
+        });
+}
 
 function renumber_resource() {
     $('.controls').children('.entry').each(function (index) {
-        $(this).find('legend').html('Resource ' + (index+1));
+        $(this).find('legend').html('Resource ' + (index + 1));
         $(this).find(':input').each(function () {
             $(this).attr('id', $(this).attr('id').replace(/\[[0-9]+\]/g, '[' + index + ']'));
             $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
@@ -314,20 +339,15 @@ function copyToClipboard(el) {
 }
 
 // Make select box rows sortable and bootstrap-select
-function makeSortable($entry, options) {
-    $entry.sortable({
-        items: '> div.sort',
-        placeholder: "sort-highlight",
-        tolerance: 'pointer'
-    }).find('select').each(function () {
+makeSelect = function($entry, options) {
+    $entry.find('select').each(function () {
         $(this).selectpicker();
     }).disableSelection();
 }
 
 // Renumber prefixes when rows add and removed.
-function renumber_geolocate() {
+renumber_geolocate = function() {
     $('#controls').children('div.entry').each(function (index) {
-        console.log('index' + index);
         $(this).children(":first-child")
             .attr('id', 'order' + index)
             .attr('name', 'exportFields[' + index + '][order]');
@@ -338,10 +358,10 @@ function renumber_geolocate() {
 }
 
 // Check duplicate export field selection before submitting form.
-function checkDuplicates() {
+checkDuplicates = function() {
     let dup = false;
     let fieldOptions = [];
-    $('select.export-field').each(function () {
+    $('select.geolocate-field').each(function () {
         if ($.inArray($(this).val(), fieldOptions) > -1) {
             dup = true;
         }
@@ -350,4 +370,15 @@ function checkDuplicates() {
     });
 
     return dup;
+}
+
+checkRequiredValues = function() {
+    let list = ["County", "Country", "Locality", "ScientificName", "StateProvince"];
+    $('select.geolocate-field').each(function () {
+        if ($.inArray($(this).val(), list) > -1) {
+            list.splice($.inArray($(this).val(), list), 1);
+        }
+    });
+
+    return list;
 }

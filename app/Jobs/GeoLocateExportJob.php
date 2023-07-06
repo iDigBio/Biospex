@@ -19,9 +19,13 @@
 
 namespace App\Jobs;
 
+use App\Models\GeoLocateForm;
 use App\Models\User;
 use App\Notifications\ExportNotification;
+use App\Notifications\GeoLocateNotification;
+use App\Notifications\JobError;
 use App\Notifications\JobErrorNotification;
+use App\Services\Csv\GeoLocateExportService;
 use App\Services\Export\RapidExportFactoryType;
 use App\Services\Export\RapidExportService;
 use DB;
@@ -43,19 +47,14 @@ class GeoLocateExportJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * @var \App\Models\GeoLocateForm
+     */
+    private GeoLocateForm $form;
+
+    /**
      * @var \App\Models\User
      */
     private $user;
-
-    /**
-     * @var array
-     */
-    private $data;
-
-    /**
-     * @var string
-     */
-    private $filePath;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -64,64 +63,54 @@ class GeoLocateExportJob implements ShouldQueue
      */
     public $timeout = 1800;
 
+
     /**
      * Create a new job instance.
      *
+     * @param \App\Models\GeoLocateForm $form
      * @param \App\Models\User $user
-     * @param array $data
      */
-    public function __construct(User $user, array $data)
+    public function __construct(GeoLocateForm $form, User $user)
     {
-        $this->onQueue(config('config.rapid_tube'));
+        $this->onQueue(config('config.queues.default'));
+        $this->form = $form;
         $this->user = $user;
-        $this->data = $data;
     }
 
     /**
      * Execute job.
      *
-     * @param \App\Services\Export\RapidExportService $rapidExportService
+     * @param \App\Services\Csv\GeoLocateExportService $geoLocateExportService
      * @throws \Throwable
      */
-    public function handle(RapidExportService $rapidExportService)
+    public function handle(GeoLocateExportService $geoLocateExportService): void
     {
-        DB::beginTransaction();
-
         try {
+            $geoLocateExportService->setSourceType($this->form);
+            $geoLocateExportService->migrateRecords($this->form);
+            $geoLocateExportService->moveCsvFile($this->form);
 
-            $fields = $rapidExportService->getMappedFields($this->data);
+            $file = route('admin.downloads.geolocate', ['file' => base64_encode($this->form->filePath)]);
 
-            $form = $rapidExportService->saveForm($fields, $this->user->id);
-            $fileName = $rapidExportService->createFileName($form, $this->user, $fields);
-            $this->filePath = $rapidExportService->getExportFilePath($fileName);
-
-            $reservedColumns =$rapidExportService->getReservedColumns();
-
-            $exportTypeClass = RapidExportFactoryType::create($fields['exportType']);
-            $exportTypeClass->build($this->filePath, $fields, $reservedColumns);
-
-            $downloadUrl = route('admin.download.export', ['file' => base64_encode($fileName)]);
-
-            DB::commit();
-
-            $this->user->notify(new ExportNotification($downloadUrl));
+            $this->user->notify(new GeoLocateNotification($file));
 
             return;
 
         } catch (Exception $exception) {
-            $attributes = [
-                'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'trace' => $exception->getTraceAsString()
+            $messages = [
+                t('Error: %s', $exception->getMessage()),
+                t('File: %s', $exception->getFile()),
+                t('Line: %s', $exception->getLine()),
             ];
 
-            $this->user->notify(new JobErrorNotification($attributes));
+            $this->user->notify(new JobError(__FILE__, $messages));
 
-            DB::rollback();
+            if (Storage::disk('s3')->exists($this->form->filePath)) {
+                Storage::disk('s3')->delete($this->form->filePath);
+            }
 
-            if (Storage::exists($this->filePath)) {
-                Storage::delete($this->filePath);
+            if (Storage::disk('efs')->exists($this->form->filePath)) {
+                Storage::disk('efs')->delete($this->form->filePath);
             }
         }
     }

@@ -1,4 +1,4 @@
-<div class="col-sm-3 offset-1">
+<div class="col-sm-6 mt-3">
     <select class="geolocate-field" name="exportFields[{{$i}}][field]"
             data-live-search="true"
             data-actions-box="true"
@@ -8,9 +8,9 @@
             data-style="btn-primary"
             required>
         <option value="">{{ t('None') }}</option>
-        @foreach($data['fields'] as $key => $value)
+        @foreach($frmData['fields'] as $key => $value)
             <option value="{{ is_numeric($key) ? str_replace('*', '', $value) : $key }}"
-                    {{ isset($data['frmData']) && $data['frmData'][$i]['field'] === (is_numeric($key) ?
+                    {{ isset($frmData['data']) && $frmData['data'][$i]['field'] === (is_numeric($key) ?
                         str_replace('*', '', $value) : $key) ? ' selected': '' }}>
                 {{ $value }}</option>
         @endforeach
