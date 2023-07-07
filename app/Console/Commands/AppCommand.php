@@ -20,6 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Repositories\ProjectRepository;
+use App\Repositories\SubjectRepository;
 use Illuminate\Console\Command;
 
 /**
@@ -51,9 +52,11 @@ class AppCommand extends Command
     /**
      * @return void
      */
-    public function handle()
+    public function handle(SubjectRepository $subjectRepository)
     {
-        dd(config('config.current_path'));
+
+        $ids = $subjectRepository->findByExpeditionId(451, ['_id'])->pluck('_id');
+        $subjectRepository->detachSubjects($ids, 451);
     }
 
 
