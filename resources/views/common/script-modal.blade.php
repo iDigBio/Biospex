@@ -7,11 +7,7 @@
                 <h2>{{ t('Loading stats for visualizations. This will take a moment.') }}</h2>
                 <div class="loader mx-auto"></div>
             </div>
-            <div class="modal-footer text-center">
-                <button type="button"
-                        class="btn btn-outline-primary color-action align-self-center"
-                        data-dismiss="modal">{{ t('Exit') }}</button>
-            </div>
+            <x-buttons.modal-dismiss />
         </div>
     </div>
 </div>
