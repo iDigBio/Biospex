@@ -40,3 +40,5 @@ yarn-error.log
 lang/.translation_io
 image-process.js
 panoptes-pusher.js
+/.env.dev
+/.env.prod
