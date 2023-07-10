@@ -94,6 +94,9 @@ class GeoLocateExportJob implements ShouldQueue
 
             $this->user->notify(new GeoLocateNotification($file));
 
+            $this->form->export = 1;
+            $this->form->save();
+
             return;
 
         } catch (Exception $exception) {

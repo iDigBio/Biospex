@@ -25,6 +25,7 @@ use App\Repositories\ExpeditionRepository;
 use App\Repositories\GeoLocateFormRepository;
 use App\Repositories\GeoLocateRepository;
 use App\Services\Csv\AwsS3CsvService;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
@@ -55,7 +56,12 @@ class GeoLocateProcessService
     /**
      * @var bool
      */
-    private bool $disableReviewed;
+    private bool $expertFileExists;
+
+    /**
+     * @var bool
+     */
+    private bool $expertReviewExists;
 
     /**
      * @var \App\Repositories\GeoLocateRepository
@@ -111,36 +117,33 @@ class GeoLocateProcessService
      * Get the form based on new or existing.
      *
      * @param \App\Models\Expedition $expedition
-     * @param string|null $sourceType
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getForm(Expedition $expedition, string $sourceType = null): array
+    public function getForm(Expedition $expedition): array
     {
         $record = $this->getFormByExpeditionId($expedition->id);
 
-        return $record === null ? $this->newForm($expedition, $sourceType) : $this->existingForm($record, $expedition, $sourceType);
+        return $record === null ? $this->newForm($expedition) : $this->existingForm($record, $expedition);
     }
 
     /**
      * Return form for selected destination.
      *
      * @param \App\Models\Expedition $expedition
-     * @param string|null $sourceType
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function newForm(Expedition $expedition, string $sourceType = null): array
+    public function newForm(Expedition $expedition): array
     {
-        $this->setSourceType($expedition, $sourceType);
         $header = $this->getHeader($expedition);
 
         return [
-            'entries'      => old('entries', 1),
-            'sourceType' => null,
+            'entries'    => old('entries', 1),
+            'sourceType' => $this->sourceType,
             'fields'     => $this->getGeoLocateFields(),
             'header'     => $header,
-            'data'    => null,
+            'data'       => null,
         ];
     }
 
@@ -149,13 +152,11 @@ class GeoLocateProcessService
      *
      * @param \App\Models\GeoLocateForm $record
      * @param \App\Models\Expedition $expedition
-     * @param string|null $sourceType
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function existingForm(GeoLocateForm $record, Expedition $expedition, string $sourceType = null): array
+    public function existingForm(GeoLocateForm $record, Expedition $expedition): array
     {
-        $this->setSourceType($expedition, $sourceType);
         $header = $this->getHeader($expedition);
 
         $frmData = null;
@@ -164,11 +165,11 @@ class GeoLocateProcessService
         }
 
         return [
-            'entries'      => $record->properties['entries'],
+            'entries'    => $record->properties['entries'],
             'sourceType' => $record->properties['sourceType'],
             'fields'     => $this->getGeoLocateFields(),
             'header'     => $header,
-            'data'    => $frmData
+            'data'       => $frmData,
         ];
     }
 
@@ -184,33 +185,11 @@ class GeoLocateProcessService
         $attributes = ['expedition_id' => $expeditionId];
         $values = [
             'expedition_id' => $expeditionId,
-            'file_path'     => config('config.geolocate_dir').'/'.md5($expeditionId).'.csv',
+            'file_path'     => config('config.geolocate_dir').'/export-'.Carbon::now()->format('Y-m-d-H-i-s').'.csv',
             'properties'    => $fields,
         ];
 
         $this->geoLocateFormRepository->updateOrCreate($attributes, $values);
-    }
-
-    /**
-     * Map header columns to tags.
-     *
-     * @param array $header
-     * @param array $tags
-     * @return \Illuminate\Support\Collection
-     */
-    public function mapColumns(array $header, array $tags): Collection
-    {
-        return collect($header)->mapToGroups(function ($value) use ($tags) {
-            foreach ($tags as $tag) {
-                if (preg_match('/'.$tag.'/', $value, $matches)) {
-                    return [$matches[0] => $value];
-                }
-            }
-
-            return ['unused' => $value];
-        })->forget('unused')->map(function ($value, $key) {
-            return $value->sort()->values();
-        });
     }
 
     /**
@@ -243,10 +222,11 @@ class GeoLocateProcessService
      * @param \App\Models\Expedition $expedition
      * @param string|null $sourceType
      */
-    private function setSourceType(Expedition $expedition, string $sourceType = null): void
+    public function setSourceType(Expedition $expedition, string $sourceType = null): void
     {
-        $this->disableReviewed = !$expedition->nfnActor->pivot->expert;
-        $this->sourceType = $sourceType ?? ($this->disableReviewed ? 'Reconcile Results' : 'Reconciled Expert Review');
+        $this->expertFileExists = Storage::disk('s3')->exists(config('config.zooniverse_dir.reconciled').'/'.$expedition->id.'.csv');
+        $this->expertReviewExists = $expedition->nfnActor->pivot->expert;
+        $this->sourceType = $sourceType ?? ($this->expertFileExists && $this->expertReviewExists ? "Reconciled Expert Review" : "Reconcile Results");
     }
 
     /**
@@ -256,7 +236,7 @@ class GeoLocateProcessService
      */
     public function getSourceType(): array
     {
-        return [$this->disableReviewed, $this->sourceType];
+        return [$this->expertFileExists, $this->expertReviewExists, $this->sourceType];
     }
 
     /**
@@ -268,16 +248,16 @@ class GeoLocateProcessService
     private function getHeader(Expedition $expedition): array
     {
         $csvFilePath = $this->sourceType === 'Reconcile Results' ?
-            config('config.zooniverse_dir.reconcile') . '/' . $expedition->id .'.csv' :
-            config('config.zooniverse_dir.reconciled') . '/' . $expedition->id .'.csv';
+            config('config.zooniverse_dir.reconcile').'/'.$expedition->id.'.csv' :
+            config('config.zooniverse_dir.reconciled').'/'.$expedition->id.'.csv';
 
-        return Cache::remember(md5($this->sourceType), 14440, function () use($csvFilePath) {
+        return Cache::remember(md5($this->sourceType), 14440, function () use ($csvFilePath) {
             $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'r');
             $this->awsS3CsvService->createCsvReaderFromStream();
             $this->awsS3CsvService->csv->setHeaderOffset();
 
             $array = $this->awsS3CsvService->csv->getHeader();
-            $header[$this->sourceType] = array_filter($array, function($e) {
+            $header[$this->sourceType] = array_filter($array, function ($e) {
                 return ($e !== 'subject_id');
             });
 
@@ -293,7 +273,7 @@ class GeoLocateProcessService
      */
     public function deleteGeoLocate(int $expeditionId)
     {
-        $this->geoLocateRepository->getBy('subject_expeditionId', '=', $expeditionId)->each(function($geoLocate){
+        $this->geoLocateRepository->getBy('subject_expeditionId', '=', $expeditionId)->each(function ($geoLocate) {
             $geoLocate->delete();
         });
     }
@@ -306,9 +286,8 @@ class GeoLocateProcessService
      */
     public function deleteGeoLocateFile(string $filePath)
     {
-        if (Storage::disk('s3')->exists(config('filesystems.disks.s3.bucket') . '/' . $filePath)) {
-            Storage::disk('s3')->delete(config('filesystems.disks.s3.bucket') . '/' . $filePath);
+        if (Storage::disk('s3')->exists(config('filesystems.disks.s3.bucket').'/'.$filePath)) {
+            Storage::disk('s3')->delete(config('filesystems.disks.s3.bucket').'/'.$filePath);
         }
     }
-
 }

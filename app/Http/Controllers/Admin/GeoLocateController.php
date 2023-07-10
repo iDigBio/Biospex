@@ -44,13 +44,13 @@ class GeoLocateController extends Controller
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            $frmData = $this->geoLocateProcessService->getForm($expedition, request()->get('frm'));
-
-            [$disableReviewed, $sourceType] = $this->geoLocateProcessService->getSourceType();
+            $this->geoLocateProcessService->setSourceType($expedition, request()->get('frm'));
+            $frmData = $this->geoLocateProcessService->getForm($expedition);
+            [$expertFileExists, $expertReviewExists, $sourceType] = $this->geoLocateProcessService->getSourceType();
 
             return request()->ajax() ?
                 view('admin.geolocate.partials.form-fields', compact('expedition', 'frmData', 'sourceType')) :
-                view('admin.geolocate.index', compact('expedition', 'frmData', 'disableReviewed', 'sourceType'));
+                view('admin.geolocate.index', compact('expedition', 'frmData', 'expertFileExists', 'expertReviewExists', 'sourceType'));
         } catch (\Exception $e)
         {
             Flash::error(t('Error %s.', $e->getMessage()));
@@ -64,7 +64,7 @@ class GeoLocateController extends Controller
      * @param int $projectId
      * @param int $expeditionId
      * @param \App\Services\Csv\GeoLocateExportService $service
-     * @return \Illuminate\Http\RedirectResponse|void
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(int $projectId, int $expeditionId, GeoLocateExportService $service)
     {
@@ -97,7 +97,7 @@ class GeoLocateController extends Controller
      *
      * @param int $projectId
      * @param int $expeditionId
-     * @return \Illuminate\Http\RedirectResponse|void
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function process(int $projectId, int $expeditionId)
     {

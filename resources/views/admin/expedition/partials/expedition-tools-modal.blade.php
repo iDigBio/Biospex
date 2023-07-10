@@ -14,11 +14,11 @@
             </div>
             <div class="modal-body">
                 <div class="col-md-12 text-center">
-                    <div class="btn-group-lg btn-group-vertical mb-2">
-                        @if($expedition->project->ocrQueue->isEmpty())
+                    <div class="btn-group-lg btn-group-vertical mb-2 align-items-center">
+                    @if($expedition->project->ocrQueue->isEmpty())
                             {!! $expedition->present()->expedition_ocr_btn !!}
-                        @endif
-                    </div>
+                            <hr class="header mx-auto" style="width:300px;">
+                    @endif
                     @php($nfnComplete = false)
                     @foreach ($expedition->actors as $actor)
                         @if($actor->id == config('config.nfnActorId'))
@@ -29,6 +29,7 @@
                             @include('admin.expedition.partials.geolocate-btns')
                         @endif
                     @endforeach
+                    </div>
                 </div>
             </div>
             <div class="modal-footer text-center">

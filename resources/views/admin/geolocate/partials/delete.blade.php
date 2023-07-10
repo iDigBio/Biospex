@@ -5,9 +5,9 @@
                 data-hover="tooltip"
                 data-method="delete"
                 data-confirm="confirmation"
-                title="{{ t('Delete GeoLocate form, data, and file') }}"
+                title="{{ t('Delete GeoLocate Form') }}"
                 data-title="{{ t('Delete GeoLocate Form') }}?"
-                data-content="{{t('This will permanently delete the export file and data.') }}">
+                data-content="{{t('This will permanently delete the GeoLocate form and export file.') }}">
             {{ t('Delete Export') }}</button>
     </div>
 </div>

@@ -3,6 +3,6 @@
     @isset($frmData['data'])
         <button type="button" id="process"
                 data-url="{{ route('admin.geolocate.process', [$expedition->project_id, $expedition->id]) }}"
-                class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto">{{ t('Process') }}</button>
+                class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto">{{ t('Export') }}</button>
     @endisset
 </div>
