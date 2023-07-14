@@ -8,9 +8,9 @@
             data-style="btn-primary"
             required>
         <option value="">{{ t('None') }}</option>
-        @foreach($frmData['fields'] as $key => $value)
+        @foreach($form['fields'] as $key => $value)
             <option value="{{ is_numeric($key) ? str_replace('*', '', $value) : $key }}"
-                    {{ isset($frmData['data']) && $frmData['data'][$i]['field'] === (is_numeric($key) ?
+                    {{ isset($form['data']) && $form['data'][$i]['field'] === (is_numeric($key) ?
                         str_replace('*', '', $value) : $key) ? ' selected': '' }}>
                 {{ $value }}</option>
         @endforeach

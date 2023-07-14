@@ -8,6 +8,7 @@ use App\Services\Csv\GeoLocateExportService;
 use App\Services\Process\GeoLocateProcessService;
 use Exception;
 use Flash;
+use Illuminate\Support\Facades\Auth;
 
 class GeoLocateController extends Controller
 {
@@ -35,6 +36,29 @@ class GeoLocateController extends Controller
      */
     public function index(int $projectId, int $expeditionId)
     {
+        $relations = ['stat', 'geoLocateForm'];
+
+        $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
+
+        $route = isset($expedition->geoLocateForm) ?
+            route('admin.geolocate.show', [$projectId, $expeditionId, $expedition->geoLocateForm->id]) :
+            route('admin.geolocate.show', [$projectId, $expeditionId]);
+        $isForm = isset($expedition->geoLocateForm);
+
+        return view('admin.geolocate.index',  compact('expedition', 'route', 'isForm'));
+    }
+
+    /**
+     * Show form if it exists or create new one.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function show(int $projectId, int $expeditionId)
+    {
         try {
             $relations = ['project.group', 'stat'];
 
@@ -45,16 +69,16 @@ class GeoLocateController extends Controller
             }
 
             $this->geoLocateProcessService->setSourceType($expedition, request()->get('frm'));
-            $frmData = $this->geoLocateProcessService->getForm($expedition);
+            $form = $this->geoLocateProcessService->getForm($expedition);
             [$expertFileExists, $expertReviewExists, $sourceType] = $this->geoLocateProcessService->getSourceType();
 
             return request()->ajax() ?
-                view('admin.geolocate.partials.form-fields', compact('expedition', 'frmData', 'sourceType')) :
-                view('admin.geolocate.index', compact('expedition', 'frmData', 'expertFileExists', 'expertReviewExists', 'sourceType'));
+                view('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'sourceType')) :
+                view('admin.geolocate.show', compact('expedition', 'form', 'expertFileExists', 'expertReviewExists', 'sourceType'));
         } catch (\Exception $e)
         {
             Flash::error(t('Error %s.', $e->getMessage()));
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            return redirect()->route('admin.expeditions.index', [$projectId, $expeditionId]);
         }
     }
 
@@ -99,20 +123,18 @@ class GeoLocateController extends Controller
      * @param int $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function process(int $projectId, int $expeditionId)
+    public function export(int $projectId, int $expeditionId)
     {
         try {
             $relations = ['project.group', 'geoLocateForm'];
 
             $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
 
-            if (! $this->checkPermissions('readProject', $expedition->project->group)) {
+            if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            $form = $this->geoLocateProcessService->getFormByExpeditionId($expeditionId);
-
-            GeoLocateExportJob::dispatch($form, \Auth::user());
+            GeoLocateExportJob::dispatch($expedition->geoLocateForm, Auth::user());
 
             Flash::success(t('Geo Locate export job scheduled for processing. You will receive an email when file has been created.'));
 

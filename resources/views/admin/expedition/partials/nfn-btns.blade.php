@@ -2,7 +2,7 @@
 @if($expedition->stat->local_subject_count > 0)
     {!! $expedition->present()->expedition_export_btn !!}
 @endif
-@if(\App\Facades\GeneralHelper::exportFileCheck($expedition))
+@if(\App\Facades\GeneralHelper::exportFileCheck($actor->id, $expedition))
     {!! $expedition->present()->expedition_workflow_btn  !!}
     @if(\App\Facades\GeneralHelper::checkPanoptesWorkflow($expedition))
         @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)

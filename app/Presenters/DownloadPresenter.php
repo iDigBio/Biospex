@@ -53,7 +53,9 @@ class DownloadPresenter extends Presenter
      */
     public function exportDownload(): string
     {
-        return Storage::disk('s3')->temporaryUrl(config('config.export_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
+        return $this->model->actor_id == config('config.nfnActorId') ?
+            Storage::disk('s3')->temporaryUrl(config('config.export_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']) :
+            Storage::disk('s3')->temporaryUrl(config('config.geolocate_dir.export').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
     }
 
     /**

@@ -1,4 +1,4 @@
-@foreach($frmData['header'] as $source => $column)
+@foreach($form['header'] as $source => $column)
     <div data-id="{{ $source }}" class="col-sm-6 mt-3 justify-content-center input-group">
         <select class="header-select" name="exportFields[{{$i}}][{{ $source }}]"
                 data-live-search="true"
@@ -9,7 +9,7 @@
                 required>
             <option value="">{{ t('None') }}</option>
             @foreach($column as $item)
-                <option value="{{ $item }}"{{ isset($frmData['data']) && $frmData['data'][$i][$source] === $item ? ' selected': '' }}>
+                <option value="{{ $item }}"{{ isset($form['data']) && $form['data'][$i][$source] === $item ? ' selected': '' }}>
                     {{ $item }}</option>
             @endforeach
         </select>

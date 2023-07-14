@@ -144,6 +144,7 @@ class GeoLocateProcessService
             'fields'     => $this->getGeoLocateFields(),
             'header'     => $header,
             'data'       => null,
+            'exported'   => !empty($expedition->geoLocateActor->pivot->state)
         ];
     }
 
@@ -170,6 +171,7 @@ class GeoLocateProcessService
             'fields'     => $this->getGeoLocateFields(),
             'header'     => $header,
             'data'       => $frmData,
+            'exported'   => !empty($expedition->geoLocateActor->pivot->state)
         ];
     }
 
@@ -185,7 +187,6 @@ class GeoLocateProcessService
         $attributes = ['expedition_id' => $expeditionId];
         $values = [
             'expedition_id' => $expeditionId,
-            'file_path'     => config('config.geolocate_dir').'/export-'.Carbon::now()->format('Y-m-d-H-i-s').'.csv',
             'properties'    => $fields,
         ];
 

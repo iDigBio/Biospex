@@ -8,7 +8,7 @@
 </div>
 <div class="row mt-3">
     <div id="controls" class="col-sm-12">
-        @for($i=0; $i < $frmData['entries']; $i++)
+        @for($i=0; $i < $form['entries']; $i++)
             <div class="row entry">
                 @include('admin.geolocate.partials.geolocate-field-select')
                 @include('admin.geolocate.partials.header-field-select')

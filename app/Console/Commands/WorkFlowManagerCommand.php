@@ -78,6 +78,7 @@ class WorkFlowManagerCommand extends Command
     {
         $expeditionId = $this->argument('expeditionId');
 
+        // TODO query selects state = 1. Need to remove this and get all records and determine action by state in actor class.
         $managers = $this->workflowManagerRepo->getWorkflowManagersForProcessing($expeditionId);
 
         if ($managers->isEmpty())

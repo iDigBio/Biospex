@@ -21,7 +21,9 @@ use App\Http\Controllers\Admin\GeoLocateController;
 
 //Route::get('projects/{projects}/expeditions/{expeditions}/geolocates', [GeoLocateController::class, 'index'])->name('admin.geolocate.index');
 Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/', [GeoLocateController::class, 'index'])->name('admin.geolocate.index');
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/', [GeoLocateController::class, 'index'])->name('admin.geolocate.form');
+Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/form', [GeoLocateController::class, 'show'])->name('admin.geolocate.show');
+Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/', [GeoLocateController::class, 'show'])->name('admin.geolocate.form');
+
 Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/store', [GeoLocateController::class, 'store'])->name('admin.geolocate.store');
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/process', [GeoLocateController::class, 'process'])->name('admin.geolocate.process');
+Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/export', [GeoLocateController::class, 'export'])->name('admin.geolocate.export');
 Route::delete('projects/{projects}/expeditions/{expeditions}/geolocates/delete', [GeoLocateController::class, 'delete'])->name('admin.geolocate.delete');

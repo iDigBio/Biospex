@@ -19,8 +19,8 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Csv\GeoLocateExportService;
-use Carbon\Carbon;
+use App\Models\Expedition;
+use App\Repositories\ExpeditionRepository;
 use Illuminate\Console\Command;
 
 /**
@@ -41,17 +41,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\Csv\GeoLocateExportService
+     * @var \App\Repositories\ExpeditionRepository
      */
-    private GeoLocateExportService $service;
+    private ExpeditionRepository $expeditionRepository;
 
     /**
      * AppCommand constructor.
      */
-    public function __construct(GeoLocateExportService $service)
+    public function __construct(ExpeditionRepository $expeditionRepository)
     {
         parent::__construct();
-        $this->service = $service;
+        $this->expeditionRepository = $expeditionRepository;
     }
 
     /**
@@ -59,6 +59,8 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $expedition = $this->expeditionRepository->find(428);
+        dd(empty($expedition->geoLocateActor->pivot->state));
 
     }
 

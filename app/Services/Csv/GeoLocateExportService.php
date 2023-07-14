@@ -21,6 +21,8 @@ namespace App\Services\Csv;
 
 use App\Models\GeoLocate;
 use App\Models\GeoLocateForm;
+use App\Repositories\DownloadRepository;
+use App\Repositories\ExpeditionRepository;
 use App\Repositories\GeoLocateRepository;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -49,40 +51,37 @@ class GeoLocateExportService
     private string $sourceType;
 
     /**
+     * @var string
+     */
+    private string $csvFilePath;
+
+    /**
+     * @var \App\Repositories\ExpeditionRepository
+     */
+    private ExpeditionRepository $expeditionRepository;
+
+    /**
+     * @var \App\Repositories\DownloadRepository
+     */
+    private DownloadRepository $downloadRepository;
+
+    /**
      * Construct
      *
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      * @param \App\Repositories\GeoLocateRepository $geoLocateRepository
      */
-    public function __construct(AwsS3CsvService $awsS3CsvService, GeoLocateRepository $geoLocateRepository)
+    public function __construct(
+        AwsS3CsvService $awsS3CsvService,
+        GeoLocateRepository $geoLocateRepository,
+        ExpeditionRepository $expeditionRepository,
+        DownloadRepository $downloadRepository
+    )
     {
         $this->awsS3CsvService = $awsS3CsvService;
         $this->geoLocateRepository = $geoLocateRepository;
-    }
-
-    /**
-     * Migrate records to MongoDb.
-     *
-     * @param \App\Models\GeoLocateForm $form
-     * @return void
-     * @throws \League\Csv\Exception
-     */
-    public function migrateRecords(GeoLocateForm $form): void
-    {
-
-        $sourceFile = $this->setSourceFile($form);
-
-        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $sourceFile, 'r');
-        $this->awsS3CsvService->createCsvReaderFromStream();
-        $this->awsS3CsvService->csv->setHeaderOffset();
-        $header = $this->awsS3CsvService->csv->getHeader();
-        $records = $this->awsS3CsvService->csv->getRecords($header);
-
-        foreach ($records as $record) {
-            $this->geoLocateRepository->updateOrCreate(['subject_id' => $record['subject_id']], $record);
-        }
-
-        $this->awsS3CsvService->closeBucketStream();
+        $this->expeditionRepository = $expeditionRepository;
+        $this->downloadRepository = $downloadRepository;
     }
 
     /**
@@ -111,6 +110,42 @@ class GeoLocateExportService
     }
 
     /**
+     * Set csv file paths.
+     *
+     * @param int $expeditionId
+     * @return void
+     */
+    public function setCsvFilePath(int $expeditionId): void
+    {
+        $this->csvFilePath = config('config.geolocate_dir.export').'/'.$expeditionId.'.csv';
+    }
+
+    /**
+     * Migrate records to MongoDb.
+     *
+     * @param \App\Models\GeoLocateForm $form
+     * @return void
+     * @throws \League\Csv\Exception
+     */
+    public function migrateRecords(GeoLocateForm $form): void
+    {
+
+        $sourceFile = $this->setSourceFile($form);
+
+        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $sourceFile, 'r');
+        $this->awsS3CsvService->createCsvReaderFromStream();
+        $this->awsS3CsvService->csv->setHeaderOffset();
+        $header = $this->awsS3CsvService->csv->getHeader();
+        $records = $this->awsS3CsvService->csv->getRecords($header);
+
+        foreach ($records as $record) {
+            $this->geoLocateRepository->updateOrCreate(['subject_id' => (int)$record['subject_id']], $record);
+        }
+
+        $this->awsS3CsvService->closeBucketStream();
+    }
+
+    /**
      * Build Csv File for export inside efs directory.
      *
      * @param \App\Models\GeoLocateForm $form
@@ -119,8 +154,7 @@ class GeoLocateExportService
      */
     public function build(GeoLocateForm $form): void
     {
-        $efsCsvFilePath = Storage::disk('efs')->path($form->file_path);
-        $this->awsS3CsvService->csv->writerCreateFromPath($efsCsvFilePath);
+        $this->awsS3CsvService->csv->writerCreateFromPath(Storage::disk('efs')->path($this->csvFilePath));
 
         $cursor = $this->geoLocateRepository->getByExpeditionId($form->expedition_id);
 
@@ -140,10 +174,6 @@ class GeoLocateExportService
             }
 
             $this->awsS3CsvService->csv->insertOne($csvData);
-        }
-
-        if (!Storage::disk('efs')->exists($form->file_path)) {
-            throw new Exception(t('Csv export file is missing: %s', $form->file_path));
         }
     }
 
@@ -178,20 +208,60 @@ class GeoLocateExportService
     /**
      * Move csv file to s3
      *
-     * @param \App\Models\GeoLocateForm $form
-     * @return void
+     * @return string
      * @throws \Exception
      */
-    public function moveCsvFile(GeoLocateForm $form): void
+    public function moveCsvFile(): string
     {
-        if (Storage::disk('efs')->exists($form->file_path)) {
-            Storage::disk('s3')->writeStream($form->file_path, Storage::disk('efs')->readStream($form->file_path));
+        if (Storage::disk('efs')->exists($this->csvFilePath)) {
+            Storage::disk('s3')->writeStream($this->csvFilePath, Storage::disk('efs')->readStream($this->csvFilePath));
 
-            if (!Storage::disk('s3')->exists($form->file_path)) {
-                throw new Exception(t('Could not move csv to AWS storage: %s', $form->file_path));
+            if (!Storage::disk('s3')->exists($this->csvFilePath)) {
+                throw new Exception(t('Could not move csv to AWS storage: %s', $this->csvFilePath));
             }
 
-            Storage::disk('efs')->delete($form->file_path);
+            Storage::disk('efs')->delete($this->csvFilePath);
         }
+
+        return $this->csvFilePath;
+    }
+
+    /**
+     * Create or update download file.
+     *
+     * @param \App\Models\GeoLocateForm $form
+     * @return void
+     */
+    public function createDownload(GeoLocateForm $form): void
+    {
+        $values = [
+            'expedition_id' => $form->expedition_id,
+            'actor_id'      => config('config.geoLocateActorId'),
+            'file'          => $form->expedition_id . '.csv',
+            'type'          => 'export',
+        ];
+        $attributes = [
+            'expedition_id' => $form->expedition_id,
+            'actor_id'      => config('config.geoLocateActorId'),
+            'file'          => $form->expedition_id . '.csv',
+            'type'          => 'export',
+        ];
+
+        $this->downloadRepository->updateOrCreate($attributes, $values);
+    }
+
+    /**
+     * Update actor_expedition pivot state.
+     *
+     * @param \App\Models\GeoLocateForm $form
+     * @return void
+     */
+    public function updateState(GeoLocateForm $form): void
+    {
+        $expedition = $this->expeditionRepository->find($form->expedition_id);
+        $expedition->actors()->updateExistingPivot(config('config.geoLocateActorId'), [
+            'state' => 1,
+        ]);
+
     }
 }

@@ -37,15 +37,4 @@ class GeoLocateFormRepository extends BaseRepository
     {
         $this->model = $geoLocateForm;
     }
-
-    /**
-     * Get form by Expedition Id.
-     *
-     * @param int $expeditionId
-     * @return mixed
-     */
-    public function getFormByExpeditionId(int $expeditionId)
-    {
-        return $this->findBy('expedition_id', $expeditionId);
-    }
 }

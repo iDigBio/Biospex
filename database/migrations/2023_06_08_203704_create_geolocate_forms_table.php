@@ -17,9 +17,7 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('expedition_id')->unique();
             $table->foreign('expedition_id')->references('id')->on('expeditions')->onUpdate('RESTRICT')->onDelete('CASCADE');
-            $table->string('file_path');
             $table->json('properties');
-            $table->boolean('exported')->default(0);
             $table->timestamps();
         });
     }

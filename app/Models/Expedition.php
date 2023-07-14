@@ -212,7 +212,25 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
         return $this->belongsToMany(Actor::class, 'actor_expedition')
             ->withPivot($pivot)
-            ->wherePivot('actor_id', 2);
+            ->wherePivot('actor_id', config('config.nfnActorId'));
+    }
+
+    public function geoLocateActor()
+    {
+        $pivot = [
+            'id',
+            'expedition_id',
+            'actor_id',
+            'state',
+            'total',
+            'error',
+            'order',
+            'expert'
+        ];
+
+        return $this->belongsToMany(Actor::class, 'actor_expedition')
+            ->withPivot($pivot)
+            ->wherePivot('actor_id', config('config.geoLocateActorId'));
     }
 
     /**
@@ -224,6 +242,17 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public function getNfnActorAttribute()
     {
         return $this->getRelationValue('nfnActor')->first();
+    }
+
+    /**
+     * Return geoLocateActor attribute.
+     * $expedition->geoLocateActor
+     *
+     * @return int
+     */
+    public function getGeoLocateActorAttribute()
+    {
+        return $this->getRelationValue('geoLocateActor')->first();
     }
 
     /**

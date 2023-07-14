@@ -38,9 +38,14 @@ return [
     'import_dir'     => env('IMPORT_DIR', 'import'),
     'report_dir'     => env('REPORT_DIR', 'report'),
     'scratch_dir'    => env('SCRATCH_DIR', 'scratch'),
-    'geolocate_dir'  => env('GEOLOCATE_DIR', 'geolocate'),
+    'geolocate_dir'  => [
+        'parent'   => env('GEOLOCATE_DIR', 'geolocate'),
+        'export'   => env('GEOLOCATE_DIR', 'geolocate').'/export',
+        'location' => env('GEOLOCATE_DIR', 'geolocate').'/location',
+        'result'   => env('GEOLOCATE_DIR', 'geolocate').'/result',
+    ],
     'zooniverse_dir' => [
-        'dir'            => env('ZOONIVERSE_DIR', 'zooniverse'),
+        'parent'         => env('ZOONIVERSE_DIR', 'zooniverse'),
         'classification' => env('ZOONIVERSE_DIR', 'zooniverse').'/classification',
         'reconcile'      => env('ZOONIVERSE_DIR', 'zooniverse').'/reconcile', // normal reconcile
         'reconciled'     => env('ZOONIVERSE_DIR', 'zooniverse').'/reconciled', // expert review

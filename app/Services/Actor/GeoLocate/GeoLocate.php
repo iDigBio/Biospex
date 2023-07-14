@@ -17,18 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor\NfnPanoptes;
+namespace App\Services\Actor\GeoLocate;
 
-use App\Jobs\ZooniverseCsvJob;
-use App\Jobs\ZooniverseExportBuildQueueJob;
 use App\Models\Actor;
 
-/**
- * Class NfnPanoptes
- *
- * @package App\Services\Actor
- */
-class NfnPanoptes
+class GeoLocate
 {
     /**
      * Process export job.
@@ -39,9 +32,9 @@ class NfnPanoptes
     public function actor(Actor $actor): void
     {
         if ($actor->pivot->state === 0) {
-            ZooniverseExportBuildQueueJob::dispatch($actor);
+            return;
         } elseif ($actor->pivot->state === 1) {
-            ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);
+            \Log::alert('ready to interact with geolocate. do check on whether community info it entered');
         } elseif ($actor->pivot->state === 2) {
             return;
         }

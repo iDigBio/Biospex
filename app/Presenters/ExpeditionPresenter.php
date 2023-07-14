@@ -277,17 +277,4 @@ class ExpeditionPresenter extends Presenter
             data-target="#expedition-workflow-form-modal"
             data-title="'. t('Edit Workflow Id').'">'.t('Edit Workflow Id').'</a>';
     }
-
-    /**
-     * Return button and path for generating export file.
-     *
-     * @return string
-     */
-    public function geoLocateBtn()
-    {
-        $url = route('admin.geolocate.index', [$this->model->project_id, $this->model->id]);
-
-        return '<a href="'.$url.'" class="btn btn-primary rounded-0 mb-1">'. t('Generate GeoLocate File').'</a>';
-
-    }
 }

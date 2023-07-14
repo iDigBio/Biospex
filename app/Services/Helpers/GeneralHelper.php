@@ -331,52 +331,65 @@ class GeneralHelper
     /**
      * Check if download file exists.
      *
-     * @param $type
-     * @param $file
+     * @param int $actorId
+     * @param string $type
+     * @param string $file
      * @return bool
      */
-    public function downloadFileExists($type, $file): bool
+    public function downloadFileExists(int $actorId, string $type, string $file): bool
     {
-        if ($type === 'export') {
+        $nfnActorId = (int) config('config.nfnActorId');
+        $geoLocateActorId = (int) config('config.geoLocateActorId');
+
+        if ($type === 'export' && $actorId === $nfnActorId) {
             return Storage::disk('s3')->exists(config('config.export_dir').'/'.$file);
-        }
-
-        if ($type === 'report') {
+        }elseif ($type === 'report' && $actorId === $nfnActorId) {
             return Storage::disk('s3')->exists(config('config.report_dir').'/'.$file);
+        }elseif($actorId === $nfnActorId) {
+            return Storage::disk('s3')->exists(config('config.zooniverse_dir.parent').'/'.$type.'/'.$file);
+        }elseif($actorId === $geoLocateActorId){
+            return Storage::disk('s3')->exists(config('config.geolocate_dir.parent').'/'.$type.'/'.$file);
         }
 
-        return Storage::disk('s3')->exists(config('config.zooniverse_dir.dir').'/'.$type.'/'.$file);
+        return false;
     }
 
     /**
      * Get file size of download file.
      *
-     * @param $type
-     * @param $file
+     * @param int $actorId
+     * @param string $type
+     * @param string $file
      * @return int
      */
-    public function downloadFileSize($type, $file): int
+    public function downloadFileSize(int $actorId, string $type, string $file): int
     {
-        if ($type === 'export') {
+        $nfnActorId = (int) config('config.nfnActorId');
+        $geoLocateActorId = (int) config('config.geoLocateActorId');
+
+        if ($type === 'export' && $actorId === $nfnActorId) {
             return Storage::disk('s3')->size(config('config.export_dir').'/'.$file);
-        }
-
-        if ($type === 'report') {
+        }elseif ($type === 'report' && $actorId === $nfnActorId) {
             return Storage::disk('s3')->size(config('config.report_dir').'/'.$file);
+        }elseif($actorId === $nfnActorId) {
+            return Storage::disk('s3')->size(config('config.zooniverse_dir.parent').'/'.$type.'/'.$file);
+        }elseif($actorId === $geoLocateActorId) {
+            return Storage::disk('s3')->size(config('config.geolocate_dir.parent').'/'.$type.'/'.$file);
         }
 
-        return Storage::disk('s3')->size(config('config.zooniverse_dir.dir').'/'.$type.'/'.$file);
+        return 0;
     }
 
     /**
      * Check subjects and export file existence.
      *
+     * @param int $actorId
      * @param \App\Models\Expedition $expedition
      * @return bool
      */
-    public function exportFileCheck(Expedition $expedition): bool
+    public function exportFileCheck(int $actorId, Expedition $expedition): bool
     {
-        return isset($expedition->export->file) && GeneralHelper::downloadFileExists('export', $expedition->export->file);
+        return isset($expedition->export->file) && GeneralHelper::downloadFileExists($actorId,'export', $expedition->export->file);
     }
 
     /**

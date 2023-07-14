@@ -7,7 +7,7 @@
             data-width="200"
             data-style="btn-primary">
         <option value="">{{ t('None') }}</option>
-        @foreach($frmData['fields'] as $key => $value)
+        @foreach($form['fields'] as $key => $value)
             <option value="{{ is_numeric($key) ? str_replace('*', '', $value) : $key }}">{{ $value }}</option>
         @endforeach
     </select>
