@@ -383,13 +383,12 @@ class GeneralHelper
     /**
      * Check subjects and export file existence.
      *
-     * @param int $actorId
      * @param \App\Models\Expedition $expedition
      * @return bool
      */
-    public function exportFileCheck(int $actorId, Expedition $expedition): bool
+    public function exportFileCheck(Expedition $expedition): bool
     {
-        return isset($expedition->export->file) && GeneralHelper::downloadFileExists($actorId,'export', $expedition->export->file);
+        return isset($expedition->export->file) && Storage::disk('s3')->exists(config('config.export_dir').'/'.$expedition->export->file);
     }
 
     /**
