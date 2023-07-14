@@ -20,7 +20,7 @@
                 {!! $expedition->present()->expedition_show_icon !!}
                 {!! $expedition->present()->expedition_edit_icon !!}
                 {!! $expedition->present()->expedition_clone_icon !!}
-                @can('isOwner', $group)
+                @can('isOwner', $expedition->project->group)
                     {!! $expedition->present()->expedition_delete_icon !!}
                 @endcan
             </div>
