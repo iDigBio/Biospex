@@ -118,6 +118,7 @@ class ProjectController extends Controller
 
         $viewParams = [
             'project'              => $project,
+            'group'                => $project->group,
             'expeditions'          => $expeditions,
             'expeditionsCompleted' => $expeditionsCompleted,
             'transcriptionsCount'  => $transcriptionsCount,
