@@ -46,15 +46,5 @@
   "TimeOfDay",
   "TypeStatus",
   "YearCollected",
-  "YearIdentified",
-  "Generic_1",
-  "Generic_2",
-  "Generic_3",
-  "Generic_4",
-  "Generic_5",
-  "Generic_6",
-  "Generic_7",
-  "Generic_8",
-  "Generic_9",
-  "Generic_10"
+  "YearIdentified"
 ]
