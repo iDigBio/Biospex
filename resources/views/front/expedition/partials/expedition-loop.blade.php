@@ -22,6 +22,7 @@
             <div class="d-flex align-items-start justify-content-between mt-4 mx-auto">
                 {!! $expedition->project->present()->project_page_icon !!}
                 @isset($expedition->panoptesProject)
+                    <!-- TODO state for NFN should be complete -->
                     @if ($expedition->nfnActor->pivot->state !== 2)
                         {!! $expedition->panoptesProject->present()->url !!}
                     @endif

@@ -131,6 +131,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
             return;
         }
 
+        // TODO this should set state to vaule that no longer does anything. Expedition Nfn completed.
         $attributes = [
             'state' => $expedition->nfnActor->pivot->state+1,
         ];

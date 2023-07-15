@@ -185,6 +185,7 @@ class ReconcileProcess
 
         Storage::disk('efs')->put($this->csvPath, Storage::disk('s3')->get($this->csvPath));
 
+        // TODO This starts the expert reconciliation. The Nfn actor should be in a completed state
         if (! File::exists($this->csvFullPath) || $expedition->nfnActor->pivot->state !== 2) {
             throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
                 ':method' => __METHOD__,

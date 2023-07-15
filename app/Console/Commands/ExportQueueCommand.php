@@ -129,6 +129,7 @@ class ExportQueueCommand extends Command
     {
         $this->deleteExportFiles($expedition->id);
 
+        // TODO set to 1 for exports and move up all other states.
         $attributes = [
             'state' => 0,
             'total' => $expedition->stat->local_subject_count,

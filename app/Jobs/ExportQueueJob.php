@@ -75,6 +75,7 @@ class ExportQueueJob implements ShouldQueue
                 ZooniverseExportBuildImageRequestsJob::dispatch($this->exportQueue); //set stage 2
                 break;
             case 2:
+                // TODO Will throw error if it's ever called due to missing values from Constructor.
                 ZooniverseExportLambdaJob::dispatch($this->exportQueue); // set stage 3
                 break;
             case 3:
