@@ -14,11 +14,11 @@
             <hr class="header mx-auto" style="width:300px;">
             <div class="col-sm-3 mx-auto text-center my-4">
                 <a href="{{ $route }}" type="submit"
-                   class="btn btn-primary text-uppercase">{{ $isForm ? '' : '<i class="fas fa-plus-circle"></i>' }} {{ $isForm ? t('View Export Form') : t('New Export Form') }}</a>
+                   class="btn btn-primary text-uppercase">{!! $isForm ? '' : '<i class="fas fa-plus-circle"></i>' !!} {{ $isForm ? t('View Export Form') : t('New Export Form') }}</a>
             </div>
             <div class="row">
                 <div class="col-sm-10 mx-auto">
-                    Eventually this will hold information or states from Geo
+                    Will use this space for any information or stats from GeoLocate
                 </div>
             </div>
         </div>
