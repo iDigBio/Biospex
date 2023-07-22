@@ -99,7 +99,7 @@ class ExpeditionProcessController extends Controller
 
         try {
             $expedition = $this->expeditionRepository->findWith($expeditionId, [
-                'workflow.actors',
+                'actors',
                 'panoptesProject',
                 'workflowManager',
                 'stat',
@@ -114,8 +114,8 @@ class ExpeditionProcessController extends Controller
                 $expedition->workflowManager->save();
                 $message = t('The expedition has been removed from the process queue.');
             } else {
-                // TODO process starts the overnight scripts. can't have geolocate start yet.
-                $expedition->workflow->actors->reject(function($actor){
+                // Dont't start GeoLocate Actor.
+                $expedition->actors->reject(function($actor){
                     return $actor->id == config('config.geoLocateActorId');
                 })->each(function ($actor) use ($expedition) {
                     $sync = [
