@@ -22,7 +22,6 @@
                     @php($nfnComplete = false)
                     @foreach ($expedition->actors as $actor)
                         @if($actor->id == config('config.nfnActorId'))
-                            <!-- TODO state for NFN should be complete -->
                             @php($nfnComplete = $actor->pivot->state === 3)
                             @include('admin.expedition.partials.nfn-btns')
                         @endif
