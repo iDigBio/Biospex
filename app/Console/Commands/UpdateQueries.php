@@ -61,6 +61,7 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
+        /*
         $this->saveProjectWorkflowOrigAndMoveToExpedition();
         $this->addWorkflowForeignIdToExpedition();
         $this->dropWorkflowIdFromProjects();
@@ -71,23 +72,22 @@ class UpdateQueries extends Command
         $this->addActorGeoLocate();
         $this->deleteWorkflows();
         $this->addWorkflowGeoLocate();
-
+        */
+        $this->updateActorExpeditionState();
     }
-
-
 
     private function saveProjectWorkflowOrigAndMoveToExpedition(): void
     {
-        echo 'Running ' . __METHOD__ . PHP_EOL;
+        echo 'Running '.__METHOD__.PHP_EOL;
 
         $projects = DB::table('projects')->select('id', 'workflow_id')->get();
-        $projects->each(function($project){
+        $projects->each(function ($project) {
             DB::table('project_old_workflow')->insert([
                 'project_id'  => $project->id,
                 'workflow_id' => $project->workflow_id,
             ]);
 
-            Expedition::where('project_id', $project->id)->get()->each(function($expedition) use ($project){
+            Expedition::where('project_id', $project->id)->get()->each(function ($expedition) use ($project) {
                 $expedition->workflow_id = $project->workflow_id;
                 $expedition->save();
             });
@@ -96,7 +96,7 @@ class UpdateQueries extends Command
 
     public function addWorkflowForeignIdToExpedition(): void
     {
-        echo 'Running ' . __METHOD__ . PHP_EOL;
+        echo 'Running '.__METHOD__.PHP_EOL;
 
         Schema::table('expeditions', function (Blueprint $table) {
             $table->foreign('workflow_id')->references('id')->on('workflows')->onUpdate('RESTRICT')->onDelete('CASCADE');
@@ -105,7 +105,7 @@ class UpdateQueries extends Command
 
     public function dropWorkflowIdFromProjects(): void
     {
-        echo 'Running ' . __METHOD__ . PHP_EOL;
+        echo 'Running '.__METHOD__.PHP_EOL;
 
         Schema::table('projects', function (Blueprint $table) {
             $table->dropForeign('projects_workflow_id_foreign');
@@ -115,13 +115,11 @@ class UpdateQueries extends Command
 
     private function updateExpeditionCompleted()
     {
-        echo 'Running ' . __METHOD__ . PHP_EOL;
+        echo 'Running '.__METHOD__.PHP_EOL;
 
-        $results = DB::table('expeditions')->select('expeditions.id', 'actor_expedition.actor_id', 'actor_expedition.completed')
-            ->join('actor_expedition', 'actor_expedition.expedition_id', '=', 'expeditions.id')
-            ->get();
+        $results = DB::table('expeditions')->select('expeditions.id', 'actor_expedition.actor_id', 'actor_expedition.completed')->join('actor_expedition', 'actor_expedition.expedition_id', '=', 'expeditions.id')->get();
 
-        $results->each(function($result){
+        $results->each(function ($result) {
             if ($result->completed === 1) {
                 $expedition = Expedition::find($result->id);
                 $expedition->completed = 1;
@@ -134,7 +132,7 @@ class UpdateQueries extends Command
 
     public function dropCompletedFromActorExpedition(): void
     {
-        echo 'Running ' . __METHOD__ . PHP_EOL;
+        echo 'Running '.__METHOD__.PHP_EOL;
 
         Schema::table('actor_expedition', function (Blueprint $table) {
             $table->dropColumn('completed');
@@ -143,21 +141,20 @@ class UpdateQueries extends Command
 
     private function updateWorkflowIds()
     {
-        echo 'Running ' . __METHOD__ . PHP_EOL;
+        echo 'Running '.__METHOD__.PHP_EOL;
         // Ids not used: 1, 2, 4
         // Ids used: 3, 5 (3 & 5 will be the same = Zooniverse)
-        Expedition::all()->each(function($expedition){
+        Expedition::all()->each(function ($expedition) {
             $expedition->workflow_id = 3;
             $expedition->save();
         });
-
     }
 
     private function deleteActors()
     {
-        echo 'Running ' . __METHOD__ . PHP_EOL;
+        echo 'Running '.__METHOD__.PHP_EOL;
 
-        Actor::all()->each(function($actor){
+        Actor::all()->each(function ($actor) {
             if ($actor->id === 2) {
                 return;
             }
@@ -168,16 +165,16 @@ class UpdateQueries extends Command
 
     private function addActorGeoLocate()
     {
-        echo 'Running ' . __METHOD__ . PHP_EOL;
+        echo 'Running '.__METHOD__.PHP_EOL;
 
         Actor::create(['title' => 'GeoLocate', 'url' => 'https://www.geo-locate.org/', 'class' => 'GeoLocate']);
     }
 
     private function deleteWorkflows()
     {
-        echo 'Running ' . __METHOD__ . PHP_EOL;
+        echo 'Running '.__METHOD__.PHP_EOL;
 
-        Workflow::all()->each(function($workflow){
+        Workflow::all()->each(function ($workflow) {
             if ($workflow->id === 3) {
                 return;
             }
@@ -188,13 +185,33 @@ class UpdateQueries extends Command
 
     private function addWorkflowGeoLocate()
     {
-        echo 'Running ' . __METHOD__ . PHP_EOL;
+        echo 'Running '.__METHOD__.PHP_EOL;
 
         $workflow = Workflow::create(['title' => 'Zooniverse -> GeoLocate', 'enabled' => 1]);
         $sync = [
             2 => ['order' => 1],
-            4 => ['order' => 2]
+            4 => ['order' => 2],
         ];
         $workflow->actors()->sync($sync, false);
+    }
+
+    public function updateActorExpeditionState()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        $expeditions = Expedition::with(['actors', 'export'])->get();
+        $expeditions->each(function ($expedition) {
+            $expedition->actors->each(function ($actor) use ($expedition) {
+                if ($actor->pivot->state === 2) {
+                    $expedition->nfnActor()->updateExistingPivot($actor->id, ['state' => 3]);
+                }
+                if ($actor->pivot->state === 1) {
+                    $expedition->nfnActor()->updateExistingPivot($actor->id, ['state' => 2]);
+                }
+                if ($actor->pivot->state === 0 && $expedition->export !== null) {
+                    $expedition->nfnActor()->updateExistingPivot($actor->id, ['state' => 1]);
+                }
+            });
+        });
     }
 }

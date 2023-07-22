@@ -114,12 +114,12 @@ class ExpeditionProcessController extends Controller
                 $expedition->workflowManager->save();
                 $message = t('The expedition has been removed from the process queue.');
             } else {
-                // TODO process starts the overnight scripts with state = 1. can't have geolocate start yet.
+                // TODO process starts the overnight scripts. can't have geolocate start yet.
                 $expedition->workflow->actors->reject(function($actor){
                     return $actor->id == config('config.geoLocateActorId');
                 })->each(function ($actor) use ($expedition) {
                     $sync = [
-                        $actor->id => ['order' => $actor->pivot->order, 'state' => $actor->pivot->state === 0 ? 1 : $actor->pivot->state],
+                        $actor->id => ['order' => $actor->pivot->order, 'state' => $actor->pivot->state === 1 ? 2 : $actor->pivot->state],
                     ];
                     $expedition->actors()->sync($sync, false);
                 });

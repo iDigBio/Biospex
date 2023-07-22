@@ -57,11 +57,6 @@ class ExportQueueCommand extends Command
     private ExpeditionRepository $expeditionRepository;
 
     /**
-     * @var \App\Repositories\ExportQueueRepository
-     */
-    private ExportQueueRepository $exportQueueRepository;
-
-    /**
      * @var \App\Repositories\DownloadRepository
      */
     private DownloadRepository $downloadRepository;
@@ -70,28 +65,25 @@ class ExportQueueCommand extends Command
      * ExportQueueCommand constructor.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepository
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
      * @param \App\Repositories\DownloadRepository $downloadRepository
      */
     public function __construct(
         ExpeditionRepository $expeditionRepository,
-        ExportQueueRepository $exportQueueRepository,
         DownloadRepository $downloadRepository
     ) {
         parent::__construct();
         $this->expeditionRepository = $expeditionRepository;
-        $this->exportQueueRepository = $exportQueueRepository;
         $this->downloadRepository = $downloadRepository;
     }
 
     /**
      * Handle job.
      */
-    public function handle()
+    public function handle(): void
     {
         is_null($this->argument('expeditionId')) ?
             $this->handleExportQueue() :
-            $this->handleExpeditionReset();
+            $this->handleExpeditionExport();
     }
 
     /**
@@ -99,7 +91,7 @@ class ExportQueueCommand extends Command
      *
      * @return void
      */
-    private function handleExportQueue()
+    private function handleExportQueue(): void
     {
         $this->option('retry') ? event('exportQueue.retry') : event('exportQueue.check');
     }
@@ -109,13 +101,13 @@ class ExportQueueCommand extends Command
      *
      * @return void
      */
-    private function handleExpeditionReset()
+    private function handleExpeditionExport(): void
     {
         $expeditionId = $this->argument('expeditionId');
-        $expedition = $this->expeditionRepository->findWith($expeditionId, ['nfnActor', 'stat']);
 
-        $exportQueue = $this->exportQueueRepository->findBy('expedition_id', $expeditionId);
-        if (!is_null($exportQueue)) $exportQueue->delete();
+        $expedition = $this->getExpedition($expeditionId);
+
+        if (!is_null($expedition->exportQueue)) $expedition->exportQueue->delete();
 
         $this->resetExpeditionData($expedition);
     }
@@ -125,17 +117,21 @@ class ExportQueueCommand extends Command
      *
      * @param \App\Models\Expedition $expedition
      */
-    public function resetExpeditionData(Expedition $expedition)
+    public function resetExpeditionData(Expedition $expedition): void
     {
         $this->deleteExportFiles($expedition->id);
 
-        // TODO set to 1 for exports and move up all other states.
+        // Set actor_expedition pivot state to 1 if currently 0.
+        // Otherwise, it's a regeneration export and state stays the same
         $attributes = [
-            'state' => 0,
+            'state' => $expedition->nfnActor->pivot->state === 0 ? 1 : $expedition->nfnActor->pivot->state,
             'total' => $expedition->stat->local_subject_count,
         ];
 
         $expedition->nfnActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+
+        // Set state to 1 to handle regenerating exports without effecting database value.
+        $expedition->nfnActor->pivot->state = 1;
 
         ActorFactory::create($expedition->nfnActor->class)->actor($expedition->nfnActor);
     }
@@ -145,7 +141,7 @@ class ExportQueueCommand extends Command
      *
      * @param string $expeditionId
      */
-    public function deleteExportFiles(string $expeditionId)
+    public function deleteExportFiles(string $expeditionId): void
     {
         $downloads = $this->downloadRepository->getExportFiles($expeditionId);
 
@@ -155,5 +151,16 @@ class ExportQueueCommand extends Command
             }
             $download->delete();
         });
+    }
+
+    /**
+     * Get expedition with nfnActor and stat.
+     *
+     * @param int $expeditionId
+     * @return \App\Models\Expedition
+     */
+    private function getExpedition(int $expeditionId): Expedition
+    {
+        return $this->expeditionRepository->findWith($expeditionId, ['nfnActor', 'stat', 'exportQueue']);
     }
 }

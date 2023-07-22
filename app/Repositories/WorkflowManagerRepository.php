@@ -42,15 +42,16 @@ class WorkflowManagerRepository extends BaseRepository
     /**
      * Get workflow managers for overnight process.
      *
-     * @param null $expeditionId
-     * @param array|string[] $attributes
+     * @param $expeditionId
+     * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getWorkflowManagersForProcessing($expeditionId = null, array $attributes = ['*'])
+    public function getWorkflowManagersForProcessing($expeditionId = null, array $attributes = ['*']): \Illuminate\Database\Eloquent\Collection|array
     {
+        // TODO query selects state = 1. Need to remove this and get all records and determine action by state in actor class.
         $model =$this->model->with(['expedition.stat', 'expedition.actors' => function($query){
-            $query->where('state', 1)->where('error', 0);
-        }])->where('stopped', '=', 0);
+            $query->where('state', '>', 0)->where('error', 0);
+        }])->where('stopped',0);
 
         return $expeditionId === null ?
             $model->get($attributes) :

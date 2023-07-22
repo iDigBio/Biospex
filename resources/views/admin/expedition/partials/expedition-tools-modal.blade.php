@@ -16,14 +16,14 @@
                 <div class="col-md-12 text-center">
                     <div class="btn-group-lg btn-group-vertical mb-2 align-items-center">
                     @if($expedition->project->ocrQueue->isEmpty())
-                            {!! $expedition->present()->expedition_ocr_btn !!}
-                            <hr class="header mx-auto" style="width:300px;">
+                        <h4>{{ t('OCR') }}</h4>
+                        {!! $expedition->present()->expedition_ocr_btn !!}
                     @endif
                     @php($nfnComplete = false)
                     @foreach ($expedition->actors as $actor)
                         @if($actor->id == config('config.nfnActorId'))
                             <!-- TODO state for NFN should be complete -->
-                            @php($nfnComplete = $actor->pivot->state === 2)
+                            @php($nfnComplete = $actor->pivot->state === 3)
                             @include('admin.expedition.partials.nfn-btns')
                         @endif
                         @if($actor->id == config('config.geoLocateActorId') && $nfnComplete)

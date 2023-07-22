@@ -33,17 +33,20 @@ class NfnPanoptes
     /**
      * Process export job.
      *
+     * State = 0: Expedition created.
+     * State = 1: Export for Expedition. Set to 1 when export called and performed. @see \App\Console\Commands\ExportQueueCommand
+     * State = 2: Will not run until process started and set to 2, added to WorkflowManager. @see \App\Http\Controllers\Admin\ExpeditionProcessController
+     * State = 3: Nfn classifications completed. @see \App\Console\Commands\ZooniverseClassificationCount
+     *
      * @param \App\Models\Actor $actor
      * @throws \Throwable
      */
     public function actor(Actor $actor): void
     {
-        if ($actor->pivot->state === 0) {
+        if ($actor->pivot->state === 1) {
             ZooniverseExportBuildQueueJob::dispatch($actor);
-        } elseif ($actor->pivot->state === 1) {
-            ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);
         } elseif ($actor->pivot->state === 2) {
-            return;
+            ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);
         }
     }
 }

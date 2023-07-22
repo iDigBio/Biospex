@@ -1,3 +1,4 @@
+<hr class="header mx-auto" style="width:300px;">
 <h4>{{ $actor->title }}</h4>
 @if($expedition->stat->local_subject_count > 0)
     {!! $expedition->present()->expedition_export_btn !!}
@@ -15,7 +16,6 @@
         @endif
     @endif
 @endif
-@if($actor->pivot->state === 2  && $actor->id === 2)
+@if($actor->pivot->state === 3  && $actor->id === 2)
     {!! $actor->present()->reconcile_expert_review_btn !!}
 @endif
-<hr class="header mx-auto" style="width:300px;">

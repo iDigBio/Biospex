@@ -96,6 +96,7 @@ class DownloadController extends Controller
     /**
      * Generate export download.
      *
+     * @see \App\Console\Commands\ExportQueueCommand
      * @param string $projectId
      * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse

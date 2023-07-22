@@ -31,12 +31,8 @@ class GeoLocate
      */
     public function actor(Actor $actor): void
     {
-        if ($actor->pivot->state === 0) {
-            return;
-        } elseif ($actor->pivot->state === 1) {
-            \Log::alert('ready to interact with geolocate. do check on whether community info it entered');
-        } elseif ($actor->pivot->state === 2) {
-            return;
+        if ($actor->pivot->state === 1) {
+            \Log::alert(__CLASS__ . ' state 1 ' . $actor->pivot->expedition_id);
         }
     }
 }

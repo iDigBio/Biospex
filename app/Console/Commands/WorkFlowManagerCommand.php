@@ -30,7 +30,6 @@ use Illuminate\Console\Command;
  */
 class WorkFlowManagerCommand extends Command
 {
-
     /**
      * The console command name.
      *
@@ -67,27 +66,23 @@ class WorkFlowManagerCommand extends Command
         $this->workflowManagerRepo = $workflowManagerRepo;
     }
 
-
     /**
      * Execute the console command.
      *
-     * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
      * @return void
+     * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
      */
     public function handle()
     {
         $expeditionId = $this->argument('expeditionId');
 
-        // TODO query selects state = 1. Need to remove this and get all records and determine action by state in actor class.
         $managers = $this->workflowManagerRepo->getWorkflowManagersForProcessing($expeditionId);
 
-        if ($managers->isEmpty())
-        {
+        if ($managers->isEmpty()) {
             return;
         }
 
-        $managers->each(function ($manager)
-        {
+        $managers->each(function ($manager) {
             $this->processActors($manager->expedition);
         });
     }
@@ -97,15 +92,16 @@ class WorkFlowManagerCommand extends Command
      *
      * @param $expedition
      */
-    protected function processActors($expedition)
+    protected function processActors($expedition): void
     {
-        $expedition->actors->each(function ($actor) use ($expedition)
-        {
-            $attributes = [
-                'total' => $expedition->stat->local_subject_count
-            ];
+        $expedition->actors->each(function ($actor) use ($expedition) {
+            if ($actor->id == config('config.nfnActorId')) {
+                $attributes = [
+                    'total' => $expedition->stat->local_subject_count,
+                ];
 
-            $actor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+                $actor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+            }
 
             ActorFactory::create($actor->class)->actor($actor);
         });

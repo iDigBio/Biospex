@@ -40,7 +40,7 @@ class ExpeditionController extends Controller
         $results = $expeditionRepo->getExpeditionPublicIndex();
 
         [$expeditions, $expeditionsCompleted] = $results->partition(function($expedition) {
-            return $expedition->completed;
+            return $expedition->completed === 0;
         });
 
         return view('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));

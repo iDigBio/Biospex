@@ -223,13 +223,10 @@ $(function () {
 
         e.preventDefault(); // avoid to execute the actual submit of the form.
 
-        let form = $(this);
-        let actionUrl = form.attr('action');
-
         $.ajax({
             type: "POST",
-            url: actionUrl,
-            data: form.serialize(), // serializes the form's elements.
+            url: $(this).attr('action'),
+            data: $(this).serialize(), // serializes the form's elements.
             success: function (data) {
                 let text = data['code'] === 200 ? 'text-success' : 'text-danger';
                 $('.feedback').addClass(text).html(data['message']); // show response from the php script.
