@@ -72,8 +72,8 @@ class UpdateQueries extends Command
         $this->addActorGeoLocate();
         $this->deleteWorkflows();
         $this->addWorkflowGeoLocate();
-        */
         $this->updateActorExpeditionState();
+        */
     }
 
     private function saveProjectWorkflowOrigAndMoveToExpedition(): void
