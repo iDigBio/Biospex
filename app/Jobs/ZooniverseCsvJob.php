@@ -45,14 +45,20 @@ class ZooniverseCsvJob implements ShouldQueue
     private int $expeditionId;
 
     /**
+     * @var bool
+     */
+    private bool $noDelay;
+
+    /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(int $expeditionId)
+    public function __construct(int $expeditionId, bool $noDelay = false)
     {
         $this->onQueue(config('config.queues.classification'));
         $this->expeditionId = $expeditionId;
+        $this->noDelay = $noDelay;
     }
 
     /**
@@ -74,6 +80,10 @@ class ZooniverseCsvJob implements ShouldQueue
 
         if (!$result || $service->checkDateTime($result)) {
             $service->createCsvRequest($this->expeditionId);
+        }
+
+        if ($this->noDelay) {
+            return;
         }
 
         ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addMinutes(30));
