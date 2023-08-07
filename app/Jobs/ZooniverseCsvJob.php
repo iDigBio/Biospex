@@ -52,7 +52,8 @@ class ZooniverseCsvJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param int $expeditionId
+     * @param bool $noDelay
      */
     public function __construct(int $expeditionId, bool $noDelay = false)
     {
@@ -74,6 +75,7 @@ class ZooniverseCsvJob implements ShouldQueue
     {
         if ($this->skipApi($this->expeditionId)) {
             $this->delete();
+            return;
         }
 
         $result = $service->checkCsvRequest($this->expeditionId);
@@ -83,6 +85,7 @@ class ZooniverseCsvJob implements ShouldQueue
         }
 
         if ($this->noDelay) {
+            $this->delete();
             return;
         }
 

@@ -67,9 +67,10 @@ class ZooniverseCsvCommand extends Command
     public function handle()
     {
         $expeditionIds = $this->argument('expeditionIds');
+        $noDelay = $this->option('no-delay');
 
         foreach ($expeditionIds as $expeditionId) {
-            ZooniverseCsvJob::dispatch((int) $expeditionId, $this->argument('no-delay'));
+            ZooniverseCsvJob::dispatch((int) $expeditionId, $noDelay);
         }
     }
 
