@@ -240,16 +240,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.278.0",
+            "version": "3.278.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "494c3bcd0e1f99aed7ef8b90e3a413d82f6c7e4d"
+                "reference": "ed7cba5c8888421b89cdb3561dcd5e40e4bd4395"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/494c3bcd0e1f99aed7ef8b90e3a413d82f6c7e4d",
-                "reference": "494c3bcd0e1f99aed7ef8b90e3a413d82f6c7e4d",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ed7cba5c8888421b89cdb3561dcd5e40e4bd4395",
+                "reference": "ed7cba5c8888421b89cdb3561dcd5e40e4bd4395",
                 "shasum": ""
             },
             "require": {
@@ -329,9 +329,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.278.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.278.1"
             },
-            "time": "2023-08-10T18:15:03+00:00"
+            "time": "2023-08-11T18:07:09+00:00"
         },
         {
             "name": "brick/math",
@@ -595,16 +595,16 @@
         },
         {
             "name": "czim/file-handling",
-            "version": "2.1.3",
+            "version": "2.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/czim/file-handling.git",
-                "reference": "4f30d25bc832e907d36127772a8d8a250659611f"
+                "reference": "de2717b6a376a0a5dfc634e7d2429842098a6d94"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/czim/file-handling/zipball/4f30d25bc832e907d36127772a8d8a250659611f",
-                "reference": "4f30d25bc832e907d36127772a8d8a250659611f",
+                "url": "https://api.github.com/repos/czim/file-handling/zipball/de2717b6a376a0a5dfc634e7d2429842098a6d94",
+                "reference": "de2717b6a376a0a5dfc634e7d2429842098a6d94",
                 "shasum": ""
             },
             "require": {
@@ -645,9 +645,9 @@
             ],
             "support": {
                 "issues": "https://github.com/czim/file-handling/issues",
-                "source": "https://github.com/czim/file-handling/tree/2.1.3"
+                "source": "https://github.com/czim/file-handling/tree/2.1.4"
             },
-            "time": "2022-07-08T15:35:44+00:00"
+            "time": "2023-08-11T19:53:16+00:00"
         },
         {
             "name": "czim/laravel-paperclip",
@@ -1571,16 +1571,16 @@
         },
         {
             "name": "gettext/gettext",
-            "version": "v4.8.10",
+            "version": "v4.8.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-gettext/Gettext.git",
-                "reference": "9fd2cf8230e36fbed87d36b7da9a47441fc27270"
+                "reference": "b632aaf5e4579d0b2ae8bc61785e238bff4c5156"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-gettext/Gettext/zipball/9fd2cf8230e36fbed87d36b7da9a47441fc27270",
-                "reference": "9fd2cf8230e36fbed87d36b7da9a47441fc27270",
+                "url": "https://api.github.com/repos/php-gettext/Gettext/zipball/b632aaf5e4579d0b2ae8bc61785e238bff4c5156",
+                "reference": "b632aaf5e4579d0b2ae8bc61785e238bff4c5156",
                 "shasum": ""
             },
             "require": {
@@ -1632,7 +1632,7 @@
             "support": {
                 "email": "oom@oscarotero.com",
                 "issues": "https://github.com/oscarotero/Gettext/issues",
-                "source": "https://github.com/php-gettext/Gettext/tree/v4.8.10"
+                "source": "https://github.com/php-gettext/Gettext/tree/v4.8.11"
             },
             "funding": [
                 {
@@ -1648,7 +1648,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-08-10T14:26:38+00:00"
+            "time": "2023-08-14T15:15:05+00:00"
         },
         {
             "name": "gettext/languages",
@@ -2799,17 +2799,17 @@
         },
         {
             "name": "laravel/nova",
-            "version": "4.27.7",
+            "version": "4.27.12",
             "source": {
                 "type": "git",
                 "url": "git@github.com:laravel/nova.git",
-                "reference": "a1ae2195dcd156eb642038c34c7c147ff4cee6f3"
+                "reference": "6303d03443ed006a97df02b3e0e5cd35d388c27a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-a1ae2195dcd156eb642038c34c7c147ff4cee6f3-zip-0d4ec7.zip",
-                "reference": "a1ae2195dcd156eb642038c34c7c147ff4cee6f3",
-                "shasum": "2e63da323082ddb8cc0fedc80dc9c653378b04cc"
+                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-6303d03443ed006a97df02b3e0e5cd35d388c27a-zip-1ea826.zip",
+                "reference": "6303d03443ed006a97df02b3e0e5cd35d388c27a",
+                "shasum": "871cb7680ed8a0ef4dc89c2316740570b659d6a9"
             },
             "require": {
                 "brick/money": "^0.5.0|^0.6.0|^0.7.0|^0.8.0",
@@ -2907,9 +2907,9 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/laravel/nova/tree/v4.27.7"
+                "source": "https://github.com/laravel/nova/tree/v4.27.12"
             },
-            "time": "2023-08-10T02:51:47+00:00"
+            "time": "2023-08-13T04:33:30+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -4441,16 +4441,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.16.0",
+            "version": "v4.17.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "19526a33fb561ef417e822e85f08a00db4059c17"
+                "reference": "a6303e50c90c355c7eeee2c4a8b27fe8dc8fef1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/19526a33fb561ef417e822e85f08a00db4059c17",
-                "reference": "19526a33fb561ef417e822e85f08a00db4059c17",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/a6303e50c90c355c7eeee2c4a8b27fe8dc8fef1d",
+                "reference": "a6303e50c90c355c7eeee2c4a8b27fe8dc8fef1d",
                 "shasum": ""
             },
             "require": {
@@ -4491,9 +4491,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.16.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.17.1"
             },
-            "time": "2023-06-25T14:52:30+00:00"
+            "time": "2023-08-13T19:53:39+00:00"
         },
         {
             "name": "nunomaduro/termwind",
@@ -4583,16 +4583,16 @@
         },
         {
             "name": "openspout/openspout",
-            "version": "v4.15.0",
+            "version": "v4.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/openspout/openspout.git",
-                "reference": "907a2ff042741b1f25b6e636d18ce9d7fc4c8333"
+                "reference": "ef5396bfd44b3dfa092e78458966d25c7a2c931a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/openspout/openspout/zipball/907a2ff042741b1f25b6e636d18ce9d7fc4c8333",
-                "reference": "907a2ff042741b1f25b6e636d18ce9d7fc4c8333",
+                "url": "https://api.github.com/repos/openspout/openspout/zipball/ef5396bfd44b3dfa092e78458966d25c7a2c931a",
+                "reference": "ef5396bfd44b3dfa092e78458966d25c7a2c931a",
                 "shasum": ""
             },
             "require": {
@@ -4660,7 +4660,7 @@
             ],
             "support": {
                 "issues": "https://github.com/openspout/openspout/issues",
-                "source": "https://github.com/openspout/openspout/tree/v4.15.0"
+                "source": "https://github.com/openspout/openspout/tree/v4.15.1"
             },
             "funding": [
                 {
@@ -4672,7 +4672,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-06-19T07:48:22+00:00"
+            "time": "2023-08-11T08:32:26+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -9948,16 +9948,16 @@
         },
         {
             "name": "phpdocumentor/type-resolver",
-            "version": "1.7.2",
+            "version": "1.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/TypeResolver.git",
-                "reference": "b2fe4d22a5426f38e014855322200b97b5362c0d"
+                "reference": "3219c6ee25c9ea71e3d9bbaf39c67c9ebd499419"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/b2fe4d22a5426f38e014855322200b97b5362c0d",
-                "reference": "b2fe4d22a5426f38e014855322200b97b5362c0d",
+                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/3219c6ee25c9ea71e3d9bbaf39c67c9ebd499419",
+                "reference": "3219c6ee25c9ea71e3d9bbaf39c67c9ebd499419",
                 "shasum": ""
             },
             "require": {
@@ -10000,9 +10000,9 @@
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "support": {
                 "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
-                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.7.2"
+                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.7.3"
             },
-            "time": "2023-05-30T18:13:47+00:00"
+            "time": "2023-08-12T11:01:26+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",

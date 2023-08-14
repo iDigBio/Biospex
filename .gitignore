@@ -38,3 +38,5 @@ yarn-error.log
 /laravel-echo-server.lock
 lang/.translation_io
 imageProcess.js
+/.env.dev
+/.env.prod
