@@ -50,8 +50,8 @@
 
                     @if($project->organization !== null)
                         <h3>{{ t('Organization') }}</h3>
-                        @if($project->organization_webiste !== null)
-                            <p><a href="{{ $project->organization_webiste }}"
+                        @if($project->organization_website !== null)
+                            <p><a href="{{ $project->organization_website }}"
                                   target="_blank">{{ $project->organization }}</a></p>
                         @else
                             <p>{{ $project->organization }}</p>
