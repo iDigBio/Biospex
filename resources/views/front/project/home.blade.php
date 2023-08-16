@@ -50,8 +50,8 @@
 
                     @if($project->organization !== null)
                         <h3>{{ t('Organization') }}</h3>
-                        @if($project->organization_webiste !== null)
-                            <p><a href="{{ $project->organization_webiste }}"
+                        @if($project->organization_website !== null)
+                            <p><a href="{{ $project->organization_website }}"
                                   target="_blank">{{ $project->organization }}</a></p>
                         @else
                             <p>{{ $project->organization }}</p>
@@ -138,7 +138,7 @@
         <div id="active-expeditions-main" class="col-sm-12 show">
             @include('common.expedition-sort', ['type' => 'active', 'route' => route('front.expeditions.sort'), 'id' => $project->id])
             <div id="active-expeditions" class="row col-sm-12 mx-auto justify-content-center">
-                @include('front.expedition.partials.expedition', ['expeditions' => $expeditions])
+                @include('front.expedition.partials.expedition')
             </div>
         </div>
         <div id="completed-expeditions-main" class="col-sm-12 collapse">
@@ -165,7 +165,7 @@
         <div id="active-events-main" class="col-sm-12 show">
             @include('common.event-sort', ['type' => 'active', 'route' => route('front.events.sort'), 'id' => $project->id])
             <div id="active-events" class="row col-sm-12 mx-auto justify-content-center">
-                @include('front.event.partials.event', ['events' => $events])
+                @include('front.event.partials.event')
             </div>
         </div>
         <div id="completed-events-main" class="col-sm-12 collapse">
@@ -187,7 +187,9 @@
             </div>
             <div id="bingos-main" class="col-sm-12 show">
                 <div id="active-events" class="row col-sm-12 mx-auto justify-content-center">
-                    @each('front.bingo.partials.bingo-loop', $project->bingos, 'bingo')
+                    @foreach($project->bingos as $bingo)
+                        @include('front.bingo.partials.bingo-loop')
+                    @endforeach
                 </div>
             </div>
         </div>

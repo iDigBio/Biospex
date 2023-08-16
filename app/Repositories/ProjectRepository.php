@@ -185,6 +185,7 @@ class ProjectRepository extends BaseRepository
                 $query->has('panoptesProject')->has('nfnActor')->with('panoptesProject', 'stat', 'nfnActor');
             },
             'events' => function ($q) {
+                $q->with('teams');
                 $q->orderBy('start_date', 'desc');
             }])->where('slug', '=', $slug)->first();
     }

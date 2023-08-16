@@ -31,7 +31,7 @@
                 {{ $event->present()->start_date_to_string }} {{ t('To') }}
                 {{ $event->present()->end_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}<br>
                 {{ t('for') }}<br>
-                {{ $event->project->title }}
+                {{ $project->title }}
             </h5>
         </div>
         @if( ! DateHelper::eventBefore($event))
@@ -58,10 +58,10 @@
         @endif
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                {!! $event->project->present()->project_page_icon !!}
+                {!! $project->present()->project_page_icon !!}
                 {!! $event->present()->event_show_icon !!}
                 @if(DateHelper::eventBefore($event) || DateHelper::eventActive($event))
-                    {!! $event->project->lastPanoptesProject->present()->project_icon !!}
+                    {!! $project->lastPanoptesProject->present()->project_icon !!}
                 @endif
                 {!! $event->present()->twitter_icon !!}
                 {!! $event->present()->facebook_icon !!}
