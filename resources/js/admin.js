@@ -113,8 +113,6 @@ $(function () {
         renumber_resource();
         e.preventDefault();
         return false;
-    }).on('submit', '.projectFrm', function (e) {
-        $("#entries").val($('.controls').children().length);
     });
 
     $(document).on('click', '[data-confirm=confirmation]', function (e) {
@@ -235,29 +233,20 @@ $(function () {
 
     });
 
-    let $exportResults = $('#exportResults');
-    let $sourceType = $('.sourceType');
-    if ($sourceType.length > 0) {
-        let $input = $("input:radio.sourceType:checked");
-        let value = $input.val();
-        if (value !== '') {
-            form($input, $exportResults)
-        }
-        $sourceType.on('change', function () {
-            if($("#frmDataExists").val()) {
-                notify("exclamation-circle", "Cannot change source after form data is saved. Delete form to change source.", "warning");
-                $input.prop('checked', true);
-                return;
-            }
-            form($(this), $exportResults)
-        });
+    let $ajaxResults = $('#ajax_results');
+    let $formSelect = $('#form_select');
+    if ($formSelect.val()) {
+        form($formSelect.data('url'), $ajaxResults);
     }
+    $formSelect.on('change', function () {
+        form($(this).data('url'), $ajaxResults);
+    });
 
-    $exportResults.on('click', '.btn-add', function () {
-        let $entry = $('.default').clone();
-        $entry.appendTo($('#controls')).removeClass('default').addClass('entry').show();
-        $entry.find('.geolocate-field-default').removeClass('geolocate-field-default').addClass('geolocate-field').prop('required',true);
-        $entry.find('.header-select-default').removeClass('header-select-default').addClass('header-select').prop('required',true);
+    $ajaxResults.on('click', '.btn-add', function () {
+        let $entry = $('.default').clone().appendTo($('#controls'));
+        $entry.find('.geolocate-field-default').removeClass('geolocate-field-default').addClass('geolocate-field').prop('required', true);
+        $entry.find('.header-select-default').removeClass('header-select-default').addClass('header-select').prop('required', true);
+        $entry.removeClass('default').addClass('entry').show();
 
         makeSelect($entry);
         renumber_geolocate();
@@ -267,11 +256,11 @@ $(function () {
         }
         $('#controls div.entry:last').remove();
         renumber_geolocate();
-    }).on('click', '#process', function (){
-        $('form#geolocateFrm').attr('action', $(this).data('url')).trigger('submit');
+    }).on('click', '#process', function () {
+        $('form#geolocate_form').attr('action', $(this).data('url')).trigger('submit');
     });
 
-    $('form#geolocateFrm').on('submit', function (e) {
+    $('form#geolocate_form').on('submit', function (e) {
         if (checkDuplicates()) {
             notify("exclamation-circle", "GeoLocate field cannot contain duplicate values.", "warning");
 
@@ -284,19 +273,21 @@ $(function () {
 
             return false;
         }
-
-        $("#entries").val($('#controls').children().length);
     });
 
 });
 
-form = function($input, $exportResults) {
-    $exportResults.html('<div class="mt-5 loader mx-auto"></div>');
-    $.post($input.data('url'), {frm: $input.val()})
+form = function (url, $ajaxResults) {
+    let formSelect = $('#form_select').val();
+    let srcType = $("input:radio.source:checked").val();
+
+    $ajaxResults.html('<div class="mt-5 loader mx-auto"></div>');
+    $.post(url, {formId: formSelect, source: srcType })
         .done(function (data) {
-            $exportResults.html(data).find("div.entry").each(function () {
+            $ajaxResults.html(data).find("div.entry").each(function () {
                 makeSelect($(this));
             });
+            renumber_geolocate();
         });
 }
 
@@ -336,26 +327,25 @@ function copyToClipboard(el) {
 }
 
 // Make select box rows sortable and bootstrap-select
-makeSelect = function($entry, options) {
+makeSelect = function ($entry, options) {
     $entry.find('select').each(function () {
         $(this).selectpicker();
     }).disableSelection();
 }
 
 // Renumber prefixes when rows add and removed.
-renumber_geolocate = function() {
-    $('#controls').children('div.entry').each(function (index) {
-        $(this).children(":first-child")
-            .attr('id', 'order' + index)
-            .attr('name', 'exportFields[' + index + '][order]');
-        $(this).find('select').each(function () {
+renumber_geolocate = function () {
+    let $entries = $('#controls > div.entry');
+    $entries.each(function(index) {
+        $(this).find('select').each(function (){
             $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
         });
-    });
+    })
+    $("#entries").val($entries.length);
 }
 
 // Check duplicate export field selection before submitting form.
-checkDuplicates = function() {
+checkDuplicates = function () {
     let dup = false;
     let fieldOptions = [];
     $('select.geolocate-field').each(function () {
@@ -369,7 +359,7 @@ checkDuplicates = function() {
     return dup;
 }
 
-checkRequiredValues = function() {
+checkRequiredValues = function () {
     let list = ["County", "Country", "Locality", "ScientificName", "StateProvince"];
     $('select.geolocate-field').each(function () {
         if ($.inArray($(this).val(), list) > -1) {

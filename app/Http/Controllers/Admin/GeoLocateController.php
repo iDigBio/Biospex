@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\GeoLocateExportJob;
-use App\Services\Csv\GeoLocateExportService;
 use App\Services\Process\GeoLocateProcessService;
 use Exception;
 use Flash;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 class GeoLocateController extends Controller
@@ -30,22 +31,16 @@ class GeoLocateController extends Controller
      *
      * @param int $projectId
      * @param int $expeditionId
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @return \Illuminate\Contracts\View\View
      */
-    public function index(int $projectId, int $expeditionId)
+    public function index(int $projectId, int $expeditionId): \Illuminate\Contracts\View\View
     {
-        $relations = ['stat', 'geoLocateForm'];
+        $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId);
 
-        $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
+        $route = route('admin.geolocate.show', [$projectId, $expeditionId]);
+        $isForm = isset($expedition->geo_locate_form_id);
 
-        $route = isset($expedition->geoLocateForm) ?
-            route('admin.geolocate.show', [$projectId, $expeditionId, $expedition->geoLocateForm->id]) :
-            route('admin.geolocate.show', [$projectId, $expeditionId]);
-        $isForm = isset($expedition->geoLocateForm);
-
-        return view('admin.geolocate.index',  compact('expedition', 'route', 'isForm'));
+        return view('admin.geolocate.index', compact('expedition', 'route', 'isForm'));
     }
 
     /**
@@ -53,14 +48,13 @@ class GeoLocateController extends Controller
      *
      * @param int $projectId
      * @param int $expeditionId
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function show(int $projectId, int $expeditionId)
+    public function show(int $projectId, int $expeditionId): View|RedirectResponse
     {
         try {
-            $relations = ['project.group', 'stat'];
+            $relations = ['project.group.geoLocateForms'];
 
             $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
 
@@ -68,16 +62,46 @@ class GeoLocateController extends Controller
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            $this->geoLocateProcessService->setSourceType($expedition, request()->get('frm'));
-            $form = $this->geoLocateProcessService->getForm($expedition);
-            [$expertFileExists, $expertReviewExists, $sourceType] = $this->geoLocateProcessService->getSourceType();
+            $route = route('admin.geolocate.form', [$expedition->project->id, $expedition->id]);
 
-            return request()->ajax() ?
-                view('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'sourceType')) :
-                view('admin.geolocate.show', compact('expedition', 'form', 'expertFileExists', 'expertReviewExists', 'sourceType'));
-        } catch (\Exception $e)
-        {
+            return view('admin.geolocate.show', compact('expedition', 'route'));
+
+        } catch (\Exception $e) {
             Flash::error(t('Error %s.', $e->getMessage()));
+
+            return redirect()->route('admin.expeditions.index', [$projectId, $expeditionId]);
+        }
+    }
+
+    /**
+     * Display form.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse|string[]
+     */
+    public function form(int $projectId, int $expeditionId)
+    {
+        if (! request()->ajax()) {
+            return ['Error: Ajax requests only'];
+        }
+
+        try {
+            $relations = ['project.group.geoLocateForms'];
+
+            $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
+
+            if (! $this->checkPermissions('readProject', $expedition->project->group)) {
+                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            }
+
+            $form = $this->geoLocateProcessService->getForm($expedition, request()->all());
+
+            return view('admin.geolocate.partials.form-fields', compact('expedition', 'form'));
+
+        } catch (\Exception $e) {
+            Flash::error(t('Error %s.', $e->getMessage()));
+
             return redirect()->route('admin.expeditions.index', [$projectId, $expeditionId]);
         }
     }
@@ -87,10 +111,9 @@ class GeoLocateController extends Controller
      *
      * @param int $projectId
      * @param int $expeditionId
-     * @param \App\Services\Csv\GeoLocateExportService $service
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(int $projectId, int $expeditionId, GeoLocateExportService $service)
+    public function store(int $projectId, int $expeditionId)
     {
 
         try {
@@ -102,16 +125,14 @@ class GeoLocateController extends Controller
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            $fields = $this->geoLocateProcessService->cleanArray(request()->all());
-
-            $this->geoLocateProcessService->saveForm($fields, $expeditionId);
+            $this->geoLocateProcessService->saveForm(request()->all(), $expedition);
 
             Flash::success(t('Form has been saved.'));
 
             return redirect()->route('admin.geolocate.index', [$projectId, $expeditionId]);
-
         } catch (Exception $exception) {
             Flash::error(t('Error %s.', $exception->getMessage()));
+
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
     }
@@ -123,10 +144,10 @@ class GeoLocateController extends Controller
      * @param int $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function export(int $projectId, int $expeditionId)
+    public function export(int $projectId, int $expeditionId): RedirectResponse
     {
         try {
-            $relations = ['project.group', 'geoLocateForm'];
+            $relations = ['project.group'];
 
             $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
 
@@ -134,13 +155,14 @@ class GeoLocateController extends Controller
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            GeoLocateExportJob::dispatch($expedition->geoLocateForm, Auth::user());
+            GeoLocateExportJob::dispatch($expedition, Auth::user());
 
             Flash::success(t('Geo Locate export job scheduled for processing. You will receive an email when file has been created.'));
 
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            return redirect()->route('admin.geolocate.index', [$projectId, $expeditionId]);
         } catch (Exception $exception) {
             Flash::error(t('Error %s.', $exception->getMessage()));
+
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
     }
@@ -152,10 +174,10 @@ class GeoLocateController extends Controller
      * @param int $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(int $projectId, int $expeditionId)
+    public function delete(int $projectId, int $expeditionId): RedirectResponse
     {
         try {
-            $relations = ['project.group', 'geoLocateForm'];
+            $relations = ['project.group'];
 
             $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
 
@@ -163,17 +185,18 @@ class GeoLocateController extends Controller
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            $this->geoLocateProcessService->deleteGeoLocateFile($expedition->geoLocateForm->file_path);
+            $this->geoLocateProcessService->deleteGeoLocateFile($expeditionId);
             $this->geoLocateProcessService->deleteGeoLocate($expeditionId);
-            $expedition->geoLocateForm->delete();
+
+            $expedition->geoLocateForm()->dissociate()->save();
 
             Flash::success(t('GeoLocate form data and file deleted.'));
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
 
-        }catch (Exception $exception) {
+            return redirect()->route('admin.geolocate.index', [$projectId, $expeditionId]);
+        } catch (Exception $exception) {
             Flash::error(t('Error %s.', $exception->getMessage()));
+
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
-
     }
 }

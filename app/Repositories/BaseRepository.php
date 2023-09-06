@@ -100,7 +100,7 @@ class BaseRepository
      * @param array|string[] $columns
      * @return mixed
      */
-    public function getBy($attribute, $value, $op = '=', array $columns = ['*'])
+    public function getBy($attribute, $value, string $op = '=', array $columns = ['*'])
     {
         return $this->model->where($attribute, $op, $value)->get($columns);
     }
@@ -230,6 +230,18 @@ class BaseRepository
     public function count(array $attributes = [])
     {
         return $this->model->where($attributes)->count();
+    }
+
+    /**
+     * Find by id with relation count.
+     *
+     * @param int $id
+     * @param string $relation
+     * @return mixed
+     */
+    public function findByIdWithRelationCount(int $id, string $relation): mixed
+    {
+        return $this->model->withCount($relation)->find($id);
     }
 
     /**

@@ -61,7 +61,7 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        /*
+
         $this->saveProjectWorkflowOrigAndMoveToExpedition();
         $this->addWorkflowForeignIdToExpedition();
         $this->dropWorkflowIdFromProjects();
@@ -72,7 +72,7 @@ class UpdateQueries extends Command
         $this->addActorGeoLocate();
         $this->deleteWorkflows();
         $this->addWorkflowGeoLocate();
-        */
+
         $this->updateActorExpeditionState();
     }
 

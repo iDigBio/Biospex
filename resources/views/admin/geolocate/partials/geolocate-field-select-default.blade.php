@@ -1,13 +1,12 @@
 <div class="col-sm-6 mt-3">
-    <select class="geolocate-field-default" name="exportFields[999][field]"
+    <select class="geolocate-field-default" name="fields[999][geo]"
             data-live-search="true"
             data-actions-box="true"
-            title="{{ t('Field') }}"
-            data-header="{{ t('Select Export Field') }}"
-            data-width="200"
+            data-header="{{ t('Select Geo Locate Field ( * required)') }}"
+            data-width="80%"
             data-style="btn-primary">
         <option value="">{{ t('None') }}</option>
-        @foreach($form['fields'] as $key => $value)
+        @foreach($form['geo'] as $key => $value)
             <option value="{{ is_numeric($key) ? str_replace('*', '', $value) : $key }}">{{ $value }}</option>
         @endforeach
     </select>

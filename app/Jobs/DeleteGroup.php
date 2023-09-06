@@ -63,7 +63,7 @@ class DeleteGroup implements ShouldQueue
      */
     public function handle(GroupRepository $groupRepo, MongoDbService $mongoDbService)
     {
-        $group = $groupRepo->findWith($this->group->id, ['projects.expeditions.downloads']);
+        $group = $groupRepo->findWith($this->group->id, ['projects.expeditions.downloads', 'geoLocateForms']);
 
         $group->projects->each(function ($project) use ($mongoDbService) {
             $project->expeditions->each(function ($expedition) use ($mongoDbService) {

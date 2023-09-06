@@ -19,9 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\ExportQueue;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 
 /**
  * Class AppCommand
@@ -41,11 +39,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Services\Csv\AwsS3CsvService
+     */
+    private AwsS3CsvService $awsS3CsvService;
+
+    /**
      * AppCommand constructor.
      */
     public function __construct()
     {
         parent::__construct();
+
     }
 
     /**
@@ -53,11 +57,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $queue = ExportQueue::find(21);
-        $queue->load('expedition.nfnActor');
-        dd($queue->expedition->nfnActor);
     }
-
 
     public function clean()
     {

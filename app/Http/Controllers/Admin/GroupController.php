@@ -24,6 +24,7 @@ use App\Http\Requests\GroupFormRequest;
 use App\Jobs\DeleteGroup;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserRepository;
+use App\Services\Process\GeoLocateProcessService;
 use Auth;
 use Exception;
 use Flash;
@@ -228,6 +229,42 @@ class GroupController extends Controller
             return redirect()->route('admin.groups.show', [$groupId]);
         } catch (Exception $e) {
             Flash::error(t('There was an error removing user from the group'));
+
+            return redirect()->route('admin.groups.show', [$groupId]);
+        }
+    }
+
+    /**
+     * Delete geolocate form.
+     *
+     * @param \App\Services\Process\GeoLocateProcessService $geoLocateProcessService
+     * @param int $groupId
+     * @param int $formId
+     */
+    public function deleteForm(GeoLocateProcessService $geoLocateProcessService, int $groupId, int $formId)
+    {
+        try {
+            $group = $this->groupRepo->findWith($groupId);
+
+            if (! $this->checkPermissions('isOwner', $group)) {
+                return redirect()->back();
+            }
+
+            $geoLocateForm = $geoLocateProcessService->findGeoLocateFormByIdWithExpeditionCount($formId);
+
+            if ($geoLocateForm->expeditions_count > 0) {
+                Flash::error(t('GeoLocate Form cannot be deleted while still being used by Expeditions.'));
+
+                return redirect()->route('admin.groups.show', [$groupId]);
+            }
+
+            $geoLocateForm->delete();
+
+            Flash::success(t('GeoLocate Form was deleted.'));
+
+            return redirect()->route('admin.groups.show', [$groupId]);
+        } catch (Exception $e) {
+            Flash::error(t('There was an error deleteing the GeoLocate Form.'));
 
             return redirect()->route('admin.groups.show', [$groupId]);
         }

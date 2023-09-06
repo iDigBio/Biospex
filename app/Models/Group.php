@@ -109,4 +109,14 @@ class Group extends BaseEloquentModel
     {
         return $this->hasMany(Invite::class);
     }
+
+    /**
+     * GeoLocateForm relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function geoLocateForms()
+    {
+        return $this->hasMany(GeoLocateForm::class);
+    }
 }

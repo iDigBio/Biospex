@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Expedition;
 use App\Models\GeoLocateForm;
 use App\Models\User;
 use App\Notifications\GeoLocateNotification;
@@ -43,9 +44,9 @@ class GeoLocateExportJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Models\GeoLocateForm
+     * @var \App\Models\Expedition
      */
-    private GeoLocateForm $form;
+    private Expedition $expedition;
 
     /**
      * @var \App\Models\User
@@ -59,17 +60,16 @@ class GeoLocateExportJob implements ShouldQueue
      */
     public int $timeout = 1800;
 
-
     /**
      * Create a new job instance.
      *
-     * @param \App\Models\GeoLocateForm $form
+     * @param \App\Models\Expedition $expedition
      * @param \App\Models\User $user
      */
-    public function __construct(GeoLocateForm $form, User $user)
+    public function __construct(Expedition $expedition, User $user)
     {
         $this->onQueue(config('config.queues.default'));
-        $this->form = $form;
+        $this->expedition = $expedition;
         $this->user = $user;
     }
 
@@ -82,15 +82,16 @@ class GeoLocateExportJob implements ShouldQueue
     public function handle(GeoLocateExportService $geoLocateExportService): void
     {
         try {
-            $geoLocateExportService->setSourceType($this->form);
-            $geoLocateExportService->migrateRecords($this->form);
+            $this->expedition->load('geoLocateForm');
 
-            $geoLocateExportService->setCsvFilePath($this->form->expedition_id);
+            $geoLocateExportService->migrateRecords($this->expedition);
 
-            $geoLocateExportService->build($this->form);
+            $geoLocateExportService->setCsvFilePath($this->expedition->id);
+
+            $geoLocateExportService->build($this->expedition);
             $csvFilePath = $geoLocateExportService->moveCsvFile();
-            $geoLocateExportService->createDownload($this->form);
-            $geoLocateExportService->updateState($this->form);
+            $geoLocateExportService->createDownload($this->expedition);
+            $geoLocateExportService->updateState($this->expedition);
 
             $file = route('admin.downloads.geolocate', ['file' => base64_encode($csvFilePath)]);
 
@@ -107,12 +108,14 @@ class GeoLocateExportJob implements ShouldQueue
 
             $this->user->notify(new JobError(__FILE__, $messages));
 
-            if (Storage::disk('s3')->exists($this->form->filePath)) {
-                Storage::disk('s3')->delete($this->form->filePath);
+            $csvFilePath = $geoLocateExportService->getCsvFilePath();
+
+            if (Storage::disk('s3')->exists($csvFilePath)) {
+                Storage::disk('s3')->delete($csvFilePath);
             }
 
-            if (Storage::disk('efs')->exists($this->form->filePath)) {
-                Storage::disk('efs')->delete($this->form->filePath);
+            if (Storage::disk('efs')->exists($csvFilePath)) {
+                Storage::disk('efs')->delete($csvFilePath);
             }
         }
     }

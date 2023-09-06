@@ -20,6 +20,7 @@
 namespace App\Repositories;
 
 use App\Models\Group;
+use PhpParser\Builder;
 
 /**
  * Class GroupRepository
@@ -63,6 +64,10 @@ class GroupRepository extends BaseRepository
     {
         return $this->model->with([
             'projects',
+            'expeditions',
+            'geoLocateForms' => function($q){
+                $q->withCount('expeditions');
+            },
             'owner.profile',
             'users.profile',
         ])->withCount('expeditions')->find($groupId);

@@ -22,6 +22,7 @@ namespace App\Models;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
 use App\Models\Traits\Presentable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Czim\Paperclip\Contracts\AttachableInterface;
@@ -57,6 +58,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
         'keywords',
         'logo',
         'workflow_id',
+        'geo_locate_form_id',
         'completed',
         'locked'
     ];
@@ -144,7 +146,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
      */
-    public function workflow(): \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+    public function workflow(): BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
     {
         return $this->belongsTo(Workflow::class);
     }
@@ -302,11 +304,11 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * GeoLocateForm relation in mysql.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
      */
-    public function geoLocateForm(): HasOne
+    public function geoLocateForm(): BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
     {
-        return $this->hasOne(GeoLocateForm::class);
+        return $this->belongsTo(GeoLocateForm::class);
     }
 
     /**
@@ -318,5 +320,4 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     {
         return $this->subjects()->count();
     }
-
 }

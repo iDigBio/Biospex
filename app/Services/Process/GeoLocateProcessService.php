@@ -51,7 +51,7 @@ class GeoLocateProcessService
     /**
      * @var string
      */
-    private string $sourceType;
+    private string $source;
 
     /**
      * @var bool
@@ -103,26 +103,20 @@ class GeoLocateProcessService
     }
 
     /**
-     * Get form by expedition id.
-     *
-     * @param int $expeditionId
-     * @return \App\Models\GeoLocateForm|null
-     */
-    public function getFormByExpeditionId(int $expeditionId): ?GeoLocateForm
-    {
-        return $this->geoLocateFormRepository->findBy('expedition_id', $expeditionId);
-    }
-
-    /**
      * Get the form based on new or existing.
      *
      * @param \App\Models\Expedition $expedition
+     * @param array $request
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getForm(Expedition $expedition): array
+    public function getForm(Expedition $expedition, array $request): array
     {
-        $record = $this->getFormByExpeditionId($expedition->id);
+        $record = isset($request['formId']) ? $this->findGeoLocateFormById($request['formId']) : null;
+
+        $this->setExpertExistVars($expedition);
+
+        $this->setSource($request, $record);
 
         return $record === null ? $this->newForm($expedition) : $this->existingForm($record, $expedition);
     }
@@ -136,15 +130,17 @@ class GeoLocateProcessService
      */
     public function newForm(Expedition $expedition): array
     {
-        $header = $this->getHeader($expedition);
-
         return [
-            'entries'    => old('entries', 1),
-            'sourceType' => $this->sourceType,
-            'fields'     => $this->getGeoLocateFields(),
-            'header'     => $header,
-            'data'       => null,
-            'exported'   => !empty($expedition->geoLocateActor->pivot->state)
+            'group_id'      => $expedition->project->group->id,
+            'name'          => '',
+            'source'        => $this->source,
+            'entries'       => old('entries', 1),
+            'fields'        => null,
+            'expert_file'   => $this->expertFileExists,
+            'expert_review' => $this->expertReviewExists,
+            'exported'      => ! empty($expedition->geoLocateActor->pivot->state),
+            'geo'           => $this->getGeoLocateFields(),
+            'csv'           => $this->getCsvHeader($expedition),
         ];
     }
 
@@ -158,39 +154,50 @@ class GeoLocateProcessService
      */
     public function existingForm(GeoLocateForm $record, Expedition $expedition): array
     {
-        $header = $this->getHeader($expedition);
 
-        $frmData = null;
-        for ($i = 0; $i < $record->properties['entries']; $i++) {
-            $frmData[$i] = $record->properties['exportFields'][$i];
-        }
+        $entries = count($record->fields);
 
         return [
-            'entries'    => $record->properties['entries'],
-            'sourceType' => $record->properties['sourceType'],
-            'fields'     => $this->getGeoLocateFields(),
-            'header'     => $header,
-            'data'       => $frmData,
-            'exported'   => !empty($expedition->geoLocateActor->pivot->state)
+            'group_id'      => $record->group_id,
+            'name'          => $record->name,
+            'source'        => $this->source,
+            'entries'       => $entries,
+            'fields'        => $record->fields,
+            'expert_file'   => $this->expertFileExists,
+            'expert_review' => $this->expertReviewExists,
+            'exported'      => ! empty($expedition->geoLocateActor->pivot->state),
+            'geo'           => $this->getGeoLocateFields(),
+            'csv'           => $this->getCsvHeader($expedition),
         ];
     }
 
     /**
      * Save the export form data.
      *
-     * @param array $fields
-     * @param int $expeditionId
+     * @param array $request
+     * @param \App\Models\Expedition $expedition
      * @return void
      */
-    public function saveForm(array $fields, int $expeditionId): void
+    public function saveForm(array $request, Expedition $expedition): void
     {
-        $attributes = ['expedition_id' => $expeditionId];
+        $hash = md5(json_encode($request['fields']));
+
+        $attributes = [
+            'group_id' => $request['group_id'],
+            'name'     => $request['name'],
+            'source'   => $request['source'],
+            'hash'     => $hash,
+        ];
         $values = [
-            'expedition_id' => $expeditionId,
-            'properties'    => $fields,
+            'group_id' => $request['group_id'],
+            'name'     => $request['name'],
+            'source'   => $request['source'],
+            'hash'     => $hash,
+            'fields'   => $request['fields'],
         ];
 
-        $this->geoLocateFormRepository->updateOrCreate($attributes, $values);
+        $geoLocateForm = $this->geoLocateFormRepository->updateOrCreate($attributes, $values);
+        $expedition->geoLocateForm()->associate($geoLocateForm)->save();
     }
 
     /**
@@ -205,39 +212,32 @@ class GeoLocateProcessService
     }
 
     /**
-     * Map the posted geolocate form order data.
+     * Set source by using formData.
      *
-     * @param array $data
-     * @return array
+     * @param array $request
+     * @param \App\Models\GeoLocateForm|null $record
      */
-    public function cleanArray(array $data): array
+    public function setSource(array $request = [], GeoLocateForm $record = null): void
     {
-        unset($data['_token']);
+        if (isset($record->source)) {
+            $this->source = $record->source;
 
-        return $data;
+            return;
+        }
+
+        $this->source = $request['source'] ?? (($this->expertFileExists && $this->expertReviewExists) ? "reconciled" : "reconcile");
     }
 
     /**
-     * Set sourceType by using formData.
+     * Set vars for if expert review exists.
      *
      * @param \App\Models\Expedition $expedition
-     * @param string|null $sourceType
+     * @return void
      */
-    public function setSourceType(Expedition $expedition, string $sourceType = null): void
+    public function setExpertExistVars(Expedition $expedition): void
     {
         $this->expertFileExists = Storage::disk('s3')->exists(config('config.zooniverse_dir.reconciled').'/'.$expedition->id.'.csv');
         $this->expertReviewExists = $expedition->nfnActor->pivot->expert;
-        $this->sourceType = $sourceType ?? ($this->expertFileExists && $this->expertReviewExists ? "Reconciled Expert Review" : "Reconcile Results");
-    }
-
-    /**
-     * Return sourceType.
-     *
-     * @return array
-     */
-    public function getSourceType(): array
-    {
-        return [$this->expertFileExists, $this->expertReviewExists, $this->sourceType];
     }
 
     /**
@@ -246,24 +246,43 @@ class GeoLocateProcessService
      * @param \App\Models\Expedition $expedition
      * @return array
      */
-    private function getHeader(Expedition $expedition): array
+    private function getCsvHeader(Expedition $expedition): array
     {
-        $csvFilePath = $this->sourceType === 'Reconcile Results' ?
-            config('config.zooniverse_dir.reconcile').'/'.$expedition->id.'.csv' :
-            config('config.zooniverse_dir.reconciled').'/'.$expedition->id.'.csv';
+        $csvFilePath = $this->source === 'reconcile' ? config('config.zooniverse_dir.reconcile').'/'.$expedition->id.'.csv' : config('config.zooniverse_dir.reconciled').'/'.$expedition->id.'.csv';
 
-        return Cache::remember(md5($this->sourceType), 14440, function () use ($csvFilePath) {
+        return Cache::remember(md5($this->source), 14440, function () use ($csvFilePath) {
             $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'r');
             $this->awsS3CsvService->createCsvReaderFromStream();
             $this->awsS3CsvService->csv->setHeaderOffset();
 
             $array = $this->awsS3CsvService->csv->getHeader();
-            $header[$this->sourceType] = array_filter($array, function ($e) {
-                return ($e !== 'subject_id');
-            });
 
-            return $header;
+            return array_values(array_filter($array, function ($e) {
+                return ($e !== 'subject_id');
+            }));
         });
+    }
+
+    /**
+     * Find GeoLocateForm by id.
+     *
+     * @param int $id
+     * @return GeoLocateForm
+     */
+    public function findGeoLocateFormById(int $id): GeoLocateForm
+    {
+        return $this->geoLocateFormRepository->find($id);
+    }
+
+    /**
+     * Find form with expedition count. Used in Groups for deleting.
+     *
+     * @param int $formId
+     * @return mixed
+     */
+    public function findGeoLocateFormByIdWithExpeditionCount(int $formId): mixed
+    {
+        return $this->geoLocateFormRepository->findByIdWithRelationCount($formId, 'expeditions');
     }
 
     /**
@@ -272,7 +291,7 @@ class GeoLocateProcessService
      * @param int $expeditionId
      * @return void
      */
-    public function deleteGeoLocate(int $expeditionId)
+    public function deleteGeoLocate(int $expeditionId): void
     {
         $this->geoLocateRepository->getBy('subject_expeditionId', '=', $expeditionId)->each(function ($geoLocate) {
             $geoLocate->delete();
@@ -282,13 +301,14 @@ class GeoLocateProcessService
     /**
      * Delete GeoLocate csv file.
      *
-     * @param string $filePath
+     * @param int $expeditionId
      * @return void
      */
-    public function deleteGeoLocateFile(string $filePath)
+    public function deleteGeoLocateFile(int $expeditionId): void
     {
-        if (Storage::disk('s3')->exists(config('filesystems.disks.s3.bucket').'/'.$filePath)) {
-            Storage::disk('s3')->delete(config('filesystems.disks.s3.bucket').'/'.$filePath);
+        $filePath = config('config.geolocate_dir.export').'/'.$expeditionId.'.csv';
+        if (Storage::disk('s3')->exists($filePath)) {
+            Storage::disk('s3')->delete($filePath);
         }
     }
 }

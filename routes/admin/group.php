@@ -27,3 +27,4 @@ Route::get('groups/{groups}/edit', [GroupController::class, 'edit'])->name('admi
 Route::put('groups/{groups}', [GroupController::class, 'update'])->name('admin.groups.update');
 Route::delete('groups/{groups}', [GroupController::class, 'delete'])->name('admin.groups.delete');
 Route::delete('groups/{groups}/{user}', [GroupController::class, 'deleteUser'])->name('admin.groups.deleteUser');
+Route::delete('groups/{groups}/geolocate/{form}', [GroupController::class, 'deleteForm'])->name('admin.groups.deleteForm');

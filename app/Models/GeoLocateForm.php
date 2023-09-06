@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GeoLocateForm extends BaseEloquentModel
 {
@@ -14,30 +15,41 @@ class GeoLocateForm extends BaseEloquentModel
     /**
      * @inheritDoc
      */
-    protected $table = 'geolocate_forms';
+    protected $table = 'geo_locate_forms';
 
     /**
      * @inheritDoc
      */
     protected $fillable = [
-        'expedition_id',
-        'properties'
+        'group_id',
+        'name',
+        'source',
+        'hash',
+        'fields'
     ];
 
     /**
      * @var string[]
      */
     protected $casts = [
-        'properties' => 'array'
+        'fields' => 'array'
     ];
 
     /**
-     * Expedition relation.
+     * Group relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function expedition(): BelongsTo
+    public function group(): BelongsTo
     {
-        return $this->belongsTo(Expedition::class);
+        return $this->belongsTo(Group::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function expeditions(): HasMany
+    {
+        return $this->hasMany(Expedition::class);
     }
 }

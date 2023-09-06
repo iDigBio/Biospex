@@ -1,16 +1,13 @@
-@foreach($form['header'] as $index => $column)
-    <div data-id="{{ $index }}" class="col-sm-6 mt-3 justify-content-center input-group">
-        <select class="header-select-default" name="exportFields[999][{{ $index }}]"
-                data-live-search="true"
-                data-actions-box="true"
-                title="{{ $index }}"
-                data-header="{{ t('Select...') }}"
-                data-width="80%"
-                data-style="btn-primary">
-            <option value="">{{ t('None') }}</option>
-            @foreach($column as $item)
-                <option value="{{ $item }}">{{ $item }}</option>
-            @endforeach
-        </select>
-    </div>
-@endforeach
+<div class="col-sm-6 mt-3">
+    <select class="header-select-default" name="fields[999][csv]"
+            data-live-search="true"
+            data-actions-box="true"
+            data-header="{{ t('Select CSV Column') }}"
+            data-width="80%"
+            data-style="btn-primary">
+        <option value="">{{ t('None') }}</option>
+        @foreach($form['csv'] as $column)
+            <option value="{{ $column }}">{{ $column }}</option>
+        @endforeach
+    </select>
+</div>
