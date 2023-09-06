@@ -69,6 +69,11 @@ class GeoLocateProcessService
     private GeoLocateRepository $geoLocateRepository;
 
     /**
+     * @var true
+     */
+    private bool $mismatchSource = false;
+
+    /**
      * Construct.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepository
@@ -131,16 +136,17 @@ class GeoLocateProcessService
     public function newForm(Expedition $expedition): array
     {
         return [
-            'group_id'      => $expedition->project->group->id,
-            'name'          => '',
-            'source'        => $this->source,
-            'entries'       => old('entries', 1),
-            'fields'        => null,
-            'expert_file'   => $this->expertFileExists,
-            'expert_review' => $this->expertReviewExists,
-            'exported'      => ! empty($expedition->geoLocateActor->pivot->state),
-            'geo'           => $this->getGeoLocateFields(),
-            'csv'           => $this->getCsvHeader($expedition),
+            'group_id'        => $expedition->project->group->id,
+            'name'            => '',
+            'source'          => $this->source,
+            'entries'         => old('entries', 1),
+            'fields'          => null,
+            'expert_file'     => $this->expertFileExists,
+            'expert_review'   => $this->expertReviewExists,
+            'exported'        => ! empty($expedition->geoLocateActor->pivot->state),
+            'geo'             => $this->getGeoLocateFields(),
+            'csv'             => $this->getCsvHeader($expedition),
+            'mismatch_source' => $this->mismatchSource,
         ];
     }
 
@@ -154,6 +160,11 @@ class GeoLocateProcessService
      */
     public function existingForm(GeoLocateForm $record, Expedition $expedition): array
     {
+        if ($record->source !== $this->source) {
+            $this->mismatchSource = true;
+
+            return $this->newForm($expedition);
+        }
 
         $entries = count($record->fields);
 
@@ -220,7 +231,7 @@ class GeoLocateProcessService
     public function setSource(array $request = [], GeoLocateForm $record = null): void
     {
         if (isset($record->source)) {
-            $this->source = $record->source;
+            $this->source = ($this->expertFileExists && $this->expertReviewExists) ? "reconciled" : "reconcile";
 
             return;
         }

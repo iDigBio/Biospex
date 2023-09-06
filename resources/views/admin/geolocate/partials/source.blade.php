@@ -1,7 +1,11 @@
 <h3 class="ml-auto mr-auto mb-3">{{ t('Select CSV Source') }}:</h3>
 @if(!$form['expert_file'] && $form['expert_review'])
-    <div class="col-sm-6 mb-3 ml-auto mr-auto text-center text-danger">{{ t('Reconciled Expert Review exists but csv file is not published.') }}</div>
+    <div class="col-sm-8 mb-3 ml-auto mr-auto text-center text-danger">{{ t('Reconciled Expert Review exists but csv file is not published.') }}</div>
 @endif
+@if($form['mismatch_source'])
+    <div class="col-sm-8 mb-3 ml-auto mr-auto text-center text-danger">{{ t('The form selected requires Reconciled Expert Review but it does not exist for this Expedition. Saving this form will create a new form.') }}</div>
+@endif
+
 <div class="form-check-inline mb-3">
     <label class="form-check-label">
         <input type="radio"
