@@ -3,7 +3,7 @@
     <div class="col-sm-8 mb-3 ml-auto mr-auto text-center text-danger">{{ t('Reconciled Expert Review exists but csv file is not published.') }}</div>
 @endif
 @if($form['mismatch_source'])
-    <div class="col-sm-8 mb-3 ml-auto mr-auto text-center text-danger">{{ t('The form selected requires Reconciled Expert Review but it does not exist for this Expedition. Saving this form will create a new form.') }}</div>
+    <div class="col-sm-8 mb-3 ml-auto mr-auto text-center text-danger">{{ t('The form selected requires Reconciled Expert Review as source but it does not exist for this Expedition. Saving this form will create a new form.') }}</div>
 @endif
 
 <div class="form-check-inline mb-3">
