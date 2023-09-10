@@ -19,11 +19,10 @@
 
 namespace App\Console\Commands;
 
-use App;
-use File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AppFileDeployment
