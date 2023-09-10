@@ -1,6 +1,6 @@
 [program:soketi]
 process_name=%(program_name)s_%(process_num)02d
-command=soketi start --config=/home/vagrant/sites/server/soketi-config.json
+command=soketi start --config=/path/to/soketi-config.json
 autostart=true
 autorestart=true
 stopasgroup=true

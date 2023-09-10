@@ -19,6 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\ProjectRepository;
+use App\Repositories\SubjectRepository;
 use Illuminate\Console\Command;
 
 /**
@@ -39,25 +41,24 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvService;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct()
+    public function __construct(ProjectRepository $projectRepository)
     {
         parent::__construct();
-
+        $this->projectRepository = $projectRepository;
     }
 
     /**
      * @return void
      */
-    public function handle()
+    public function handle(SubjectRepository $subjectRepository)
     {
+
+        $ids = $subjectRepository->findByExpeditionId(451, ['_id'])->pluck('_id');
+        $subjectRepository->detachSubjects($ids, 451);
     }
+
 
     public function clean()
     {

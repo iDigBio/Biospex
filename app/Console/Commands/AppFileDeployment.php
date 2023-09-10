@@ -47,21 +47,6 @@ class AppFileDeployment extends Command
     protected $description = 'Handles moving, renaming, and replacing files needed per environment settings';
 
     /**
-     * @var string
-     */
-    private $resPath;
-
-    /**
-     * @var string
-     */
-    private $appPath;
-
-    /**
-     * @var string
-     */
-    private $supPath;
-
-    /**
      * @var Collection
      */
     private Collection $config;
@@ -75,9 +60,6 @@ class AppFileDeployment extends Command
     {
         parent::__construct();
 
-        $this->resPath = base_path('resources');
-        $this->appPath = base_path();
-        $this->supPath = Storage::path('supervisord');
         $this->setConfig();
     }
 
@@ -86,12 +68,16 @@ class AppFileDeployment extends Command
      */
     public function handle()
     {
+        if (!Storage::exists('supervisor')) {
+            Storage::createDirectory('supervisor');
+        }
+
         // copy needed files to locations
-        $appFiles = File::files($this->resPath.'/apps');
+        $appFiles = File::files(base_path('resources').'/apps');
         $appTargets = collect($appFiles)->reject(function ($file) {
             return $this->rejectFiles($file);
         })->map(function ($file) {
-            $target = $this->appPath.'/'.$file->getBaseName();
+            $target = base_path().'/'.$file->getBaseName();
             if (File::exists($target)) {
                 File::delete($target);
             }
@@ -101,11 +87,11 @@ class AppFileDeployment extends Command
             return $target;
         });
 
-        $supFiles = File::files($this->resPath.'/supervisord');
+        $supFiles = File::files(base_path('resources').'/supervisor');
         $subTargets = collect($supFiles)->reject(function ($file) {
             return $this->rejectFiles($file);
         })->map(function ($file) {
-            $target = $this->supPath.'/'.$file->getBaseName();
+            $target = Storage::path('supervisor').'/'.$file->getBaseName();
             if (File::exists($target)) {
                 File::delete($target);
             }
