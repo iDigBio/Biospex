@@ -1,7 +1,7 @@
 const axios = require('axios');
 const Pusher = require('pusher-js');
 const https = require('https');
-const pusher = new Pusher('79e8e05ea522377ba6db');
+const pusher = new Pusher('79e8e05ea522377ba6db', { cluster: 'mt1' });
 const channel = pusher.subscribe('panoptes');
 
 const config = {
