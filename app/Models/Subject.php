@@ -61,17 +61,6 @@ class Subject extends BaseMongoModel
     }
 
     /**
-     * Set project id attribute.
-     *
-     * @param $value
-     * @return int
-     */
-    public function setProjectId($value)
-    {
-        return $this->attributes['project_id'] = (int) $value;
-    }
-
-    /**
      * @param $query
      * @param $projectId
      * @return mixed

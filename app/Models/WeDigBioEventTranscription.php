@@ -22,7 +22,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Jenssegers\Mongodb\Eloquent\HybridRelations;
+use MongoDB\Laravel\Eloquent\HybridRelations;
 
 class WeDigBioEventTranscription extends BaseEloquentModel
 {
@@ -50,9 +50,9 @@ class WeDigBioEventTranscription extends BaseEloquentModel
      * @var array
      */
     protected $casts = [
-        'classification_id' => 'int',
-        'project_id' => 'int',
-        'date_id' => 'int'
+        'classification_id' => 'integer',
+        'project_id' => 'integer',
+        'date_id' => 'integer'
     ];
 
     /**

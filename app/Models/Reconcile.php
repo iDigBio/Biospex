@@ -37,11 +37,6 @@ class Reconcile extends BaseMongoModel
     protected $collection = 'reconciles';
 
     /**
-     * @inheritDoc
-     */
-    protected $dates = ['created_at', 'updated_at', 'timestamp'];
-
-    /**
      * The attributes that should be cast.
      *
      * @var array
@@ -50,7 +45,10 @@ class Reconcile extends BaseMongoModel
         'subject_id' => 'integer',
         'subject_projectId' => 'integer',
         'subject_expeditionId' => 'integer',
-        'problem' => 'integer'
+        'problem' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'timestamp' => 'datetime'
     ];
 
     /**

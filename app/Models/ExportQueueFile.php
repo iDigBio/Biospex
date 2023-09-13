@@ -19,7 +19,7 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\HybridRelations;
+use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
  * Class ExportQueueFile

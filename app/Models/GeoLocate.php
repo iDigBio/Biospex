@@ -13,18 +13,15 @@ class GeoLocate extends BaseMongoModel
     protected $collection = 'geolocates';
 
     /**
-     * @inheritDoc
-     */
-    protected $dates = ['created_at', 'updated_at'];
-
-    /**
      * The attributes that should be cast.
      *
      * @var array
      */
     protected $casts = [
-        'subject_id' => 'integer',
-        'subject_expeditionId' => 'integer'
+        'subject_id'           => 'integer',
+        'subject_expeditionId' => 'integer',
+        'created_at'           => 'datetime',
+        'updated_at'           => 'datetime',
     ];
 
     /**

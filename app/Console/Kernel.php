@@ -30,6 +30,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('cache:prune-stale-tags')->hourly();
+
         $schedule->command('queue:prune-batches --hours=48 --unfinished=72')->daily();
 
         // Run ocr every 15 minutes.

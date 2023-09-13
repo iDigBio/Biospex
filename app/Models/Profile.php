@@ -38,11 +38,15 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     protected $table = 'profiles';
 
     /**
-     * @inheritDoc
+     * Casts
+     * @var string[]
      */
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'avatar_updated_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
 
-    protected $casts = ['avatar_updated_at' => 'datetime'];
+    ];
 
     /**
      * @inheritDoc

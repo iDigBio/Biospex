@@ -73,7 +73,7 @@ class OcrProcessJob implements ShouldQueue
 
             $query->chunk(5, function ($chunk) use (&$queue) {
                 $chunk->each(function ($subject) {
-                    OcrTesseractJob::dispatchNow($this->ocrQueue->id, $subject);
+                    OcrTesseractJob::dispatchSync($this->ocrQueue->id, $subject);
                 });
 
                 $queue->processed = $queue->processed + $chunk->count();

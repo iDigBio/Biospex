@@ -47,7 +47,7 @@ class WeDigBioEventDate extends BaseEloquentModel
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'active' => 'int'
+        'active' => 'integer'
     ];
 
     /**

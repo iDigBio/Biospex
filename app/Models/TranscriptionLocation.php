@@ -46,10 +46,10 @@ class TranscriptionLocation extends BaseEloquentModel
      * @var string[]
      */
     protected $casts = [
-        'classification_id' => 'int',
-        'project_id' => 'int',
-        'expedition_id' => 'int',
-        'state_county_id' => 'int'
+        'classification_id' => 'integer',
+        'project_id' => 'integer',
+        'expedition_id' => 'integer',
+        'state_county_id' => 'integer'
     ];
 
     /**

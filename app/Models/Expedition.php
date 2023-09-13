@@ -24,7 +24,7 @@ use App\Presenters\ExpeditionPresenter;
 use App\Models\Traits\Presentable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Jenssegers\Mongodb\Eloquent\HybridRelations;
+use MongoDB\Laravel\Eloquent\HybridRelations;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 

@@ -32,17 +32,15 @@ class PusherTranscription extends BaseMongoModel
     protected $collection = 'pusher_transcriptions';
 
     /**
-     * @inheritDoc
-     */
-    protected $dates = ['created_at', 'updated_at', 'timestamp'];
-
-    /**
      * @var string[]
      */
     protected $casts = [
-        'classification_id' => 'int',
-        'transcription_id' => 'string',
-        'expedition_id' => 'int'
+        'classification_id' => 'integer',
+        'transcription_id'  => 'string',
+        'expedition_id'     => 'integer',
+        'created_at'        => 'datetime',
+        'updated_at'        => 'datetime',
+        'timestamp'         => 'datetime',
     ];
 
     /**
@@ -60,6 +58,4 @@ class PusherTranscription extends BaseMongoModel
     {
         return $this->belongsTo(PanoptesTranscription::class, 'classification_id', 'classification_id');
     }
-
-
 }
