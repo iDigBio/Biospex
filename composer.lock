@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6032a8154553f106b8b5bd6dc7ccbd5",
+    "content-hash": "1322f2e702713afcce42801f2b4c0f70",
     "packages": [
         {
             "name": "anhskohbo/no-captcha",
@@ -2454,6 +2454,68 @@
             ],
             "abandoned": "mongodb/laravel-mongodb",
             "time": "2023-02-16T12:20:36+00:00"
+        },
+        {
+            "name": "joggapp/laravel-aws-sns",
+            "version": "v5.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/JoggApp/laravel-aws-sns.git",
+                "reference": "73149508e6ead1cc10a5f07f0ad3e02d929c3570"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/JoggApp/laravel-aws-sns/zipball/73149508e6ead1cc10a5f07f0ad3e02d929c3570",
+                "reference": "73149508e6ead1cc10a5f07f0ad3e02d929c3570",
+                "shasum": ""
+            },
+            "require": {
+                "aws/aws-php-sns-message-validator": "^1.6",
+                "illuminate/http": "^9.0",
+                "illuminate/queue": "^9.0",
+                "illuminate/support": "^9.0",
+                "php": "^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "JoggApp\\AwsSns\\AwsSnsServiceProvider"
+                    ],
+                    "aliases": {
+                        "AwsSns": "JoggApp\\AwsSns\\AwsSnsFacade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "JoggApp\\AwsSns\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Harish Toshniwal",
+                    "email": "harish@jogg.co"
+                }
+            ],
+            "description": "Laravel package for the SNS events by AWS",
+            "keywords": [
+                "SNS",
+                "aws",
+                "aws sns",
+                "aws sns events",
+                "laravel",
+                "package"
+            ],
+            "support": {
+                "issues": "https://github.com/JoggApp/laravel-aws-sns/issues",
+                "source": "https://github.com/JoggApp/laravel-aws-sns/tree/v5.1.0"
+            },
+            "time": "2023-02-14T07:57:48+00:00"
         },
         {
             "name": "laracasts/utilities",

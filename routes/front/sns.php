@@ -19,4 +19,4 @@
 
 use Rennokki\LaravelSnsEvents\Http\Controllers\SnsController;
 
-Route::any('/aws-sns-webhook', [SnsController::class, 'handle']);
+Route::post('/aws-sns-webhook', [SnsController::class, 'handle']);
