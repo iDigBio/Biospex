@@ -22,7 +22,7 @@ namespace App\Console\Commands;
 use App\Jobs\PusherTranscriptionJob;
 use Illuminate\Console\Command;
 
-class MySqlPusherTranscriptionJob extends Command
+class MySqlPusherTranscriptionCommand extends Command
 {
     /**
      * The name and signature of the console command.
