@@ -42,7 +42,7 @@ class PusherTranscriptionJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 7200;
+    public $timeout = 300;
 
     /**
      * @var \App\Repositories\PusherTranscriptionRepository
@@ -56,7 +56,7 @@ class PusherTranscriptionJob implements ShouldQueue
      */
     public function __construct()
     {
-        $this->onQueue(config('config.queus.pusher_process'));
+        $this->onQueue(config('config.queues.pusher_process'));
     }
 
     /**
