@@ -19,7 +19,7 @@
 
 namespace App\Listeners;
 
-use App\Jobs\ExportQueueJob;
+use App\Jobs\ZooniverseExportBuildFilesQueueJob;
 use App\Repositories\ExportQueueRepository;
 
 /**
@@ -52,7 +52,6 @@ class ExportQueueEventSubscriber
     public function subscribe($events)
     {
         $events->listen('exportQueue.check', 'App\Listeners\ExportQueueEventSubscriber@check');
-        $events->listen('exportQueue.retry', 'App\Listeners\ExportQueueEventSubscriber@retry');
     }
 
     /**
@@ -69,27 +68,7 @@ class ExportQueueEventSubscriber
         $exportQueue->queued = 1;
         $exportQueue->save();
 
-        ExportQueueJob::dispatch($exportQueue);
-    }
-
-    /**
-     * Retry currently queued expedition.
-     *
-     * @return void
-     */
-    public function retry()
-    {
-        $exportQueue = $this->exportQueueRepo->getQueueForRetry();
-
-        if ($exportQueue === null) {
-            return;
-        }
-
-        $exportQueue->error = 0;
-        $exportQueue->processed = 0;
-        $exportQueue->save();
-
-        ExportQueueJob::dispatch($exportQueue);
+        ZooniverseExportBuildFilesQueueJob::dispatch($exportQueue); // set stage 1
     }
 }
 

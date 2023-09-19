@@ -19,8 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ProjectRepository;
-use App\Repositories\SubjectRepository;
 use Illuminate\Console\Command;
 
 /**
@@ -43,20 +41,17 @@ class AppCommand extends Command
     /**
      * AppCommand constructor.
      */
-    public function __construct(ProjectRepository $projectRepository)
+    public function __construct()
     {
         parent::__construct();
-        $this->projectRepository = $projectRepository;
     }
 
     /**
      * @return void
      */
-    public function handle(SubjectRepository $subjectRepository)
+    public function handle()
     {
 
-        $ids = $subjectRepository->findByExpeditionId(451, ['_id'])->pluck('_id');
-        $subjectRepository->detachSubjects($ids, 451);
     }
 
 

@@ -42,7 +42,7 @@ class ExportQueueCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'export:queue {expeditionId?} {--R|retry}';
+    protected $signature = 'export:queue {expeditionId?}';
 
     /**
      * The console command description.
@@ -82,18 +82,8 @@ class ExportQueueCommand extends Command
     public function handle(): void
     {
         is_null($this->argument('expeditionId')) ?
-            $this->handleExportQueue() :
+            event('exportQueue.check') :
             $this->handleExpeditionExport();
-    }
-
-    /**
-     * Handles starting the export queue.
-     *
-     * @return void
-     */
-    private function handleExportQueue(): void
-    {
-        $this->option('retry') ? event('exportQueue.retry') : event('exportQueue.check');
     }
 
     /**

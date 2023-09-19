@@ -35,7 +35,7 @@
     "pda/pheanstalk": "^4.0",
     "pusher/pusher-php-server": "^7.0",
     "ramsey/uuid": "^4.1",
-    "rennokki/laravel-sns-events": "^7.1",
+    "rennokki/laravel-sns-events": "^7.2",
     "spatie/eloquent-sortable": "^4.0",
     "spiritix/lada-cache": "^5.1",
     "thiagoalessio/tesseract_ocr": "^2.9",
