@@ -68,10 +68,6 @@ class AppFileDeployment extends Command
      */
     public function handle()
     {
-        if (!Storage::exists('supervisor')) {
-            Storage::createDirectory('supervisor');
-        }
-
         // copy needed files to locations
         $appFiles = File::files(base_path('resources').'/apps');
         $appTargets = collect($appFiles)->reject(function ($file) {
