@@ -179,6 +179,7 @@ class GeoLocateProcessService
             'exported'      => ! empty($expedition->geoLocateActor->pivot->state),
             'geo'           => $this->getGeoLocateFields(),
             'csv'           => $this->getCsvHeader($expedition),
+            'mismatch_source' => $this->mismatchSource,
         ];
     }
 
