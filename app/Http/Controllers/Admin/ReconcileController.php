@@ -85,7 +85,7 @@ class ReconcileController extends Controller
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, 69205117);
+        $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, $reconciles->first()->subject_id);
 
         $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
         $imgUrl = $this->expertreconcileRepo->getImageUrl($reconciles->first()->subject_imageName, $location);
