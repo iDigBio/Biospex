@@ -23,11 +23,11 @@ use App\Services\Requests\HttpRequest;
 use GuzzleHttp\Exception\GuzzleException;
 
 /**
- * Class GeoLocation
+ * Class GeoPlugin
  *
  * @package App\Services\Api
  */
-class GeoLocation
+class GeoPlugin
 {
     /**
      * @var \App\Services\Requests\HttpRequest

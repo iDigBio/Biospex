@@ -22,7 +22,7 @@ namespace App\Services\Games;
 use App\Models\Bingo;
 use App\Repositories\BingoMapRepository;
 use App\Repositories\BingoRepository;
-use App\Services\Api\GeoLocation;
+use App\Services\Api\GeoPlugin;
 use GeneralHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -50,7 +50,7 @@ class BingoProcess
     private BingoMapRepository $bingoMapRepo;
 
     /**
-     * @var \App\Services\Api\GeoLocation
+     * @var \App\Services\Api\GeoPlugin
      */
     private $location;
 
@@ -59,9 +59,9 @@ class BingoProcess
      *
      * @param \App\Repositories\BingoRepository $bingoRepo
      * @param \App\Repositories\BingoMapRepository $bingoMapRepo
-     * @param \App\Services\Api\GeoLocation $location
+     * @param \App\Services\Api\GeoPlugin $location
      */
-    public function __construct(BingoRepository $bingoRepo, BingoMapRepository $bingoMapRepo, GeoLocation $location)
+    public function __construct(BingoRepository $bingoRepo, BingoMapRepository $bingoMapRepo, GeoPlugin $location)
     {
         $this->bingoRepo = $bingoRepo;
         $this->bingoMapRepo = $bingoMapRepo;
