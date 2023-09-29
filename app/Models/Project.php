@@ -79,7 +79,8 @@ class Project extends BaseEloquentModel implements AttachableInterface
         'banner_file',
         'target_fields',
         'status',
-        'advertise'
+        'advertise',
+        'geolocate_community'
     ];
 
     /**
