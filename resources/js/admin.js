@@ -86,7 +86,7 @@ $(function () {
         return false
     })
 
-    $(document).on('click', '[data-confirm=confirmation]', function (e) {
+    $(document).on('click', '[data-confirm=confirmation]', function () {
         let url = $(this).is("[data-href]") ? $(this).data("href") : $(this).attr('href')
         let method = $(this).data('method')
         bootbox.confirm({
@@ -117,7 +117,7 @@ $(function () {
         })
     })
     
-    $('.project-banner').on('click', function (e) {
+    $('.project-banner').on('click', function () {
         let img = $(this).data('name')
         let $bannerFile = $('#banner-file')
         $bannerFile.val(img)
