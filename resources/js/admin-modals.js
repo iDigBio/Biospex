@@ -18,7 +18,7 @@
 
 $(function () {
     let $body = $('body')
-    $(document).on('shown.bs.modal', function (event) {
+    $(document).on('shown.bs.modal', function () {
         if ($body.hasClass('modal-open') === false) {
             $body.addClass('modal-open')
         }
@@ -38,7 +38,7 @@ $(function () {
             makeSelect($('.controls'));
             toggleGeoLocateCommunityForm()
         });
-    }).on('hidden.bs.modal', function (e) {
+    }).on('hidden.bs.modal', function () {
         let size = $(this).data('size');
         $(this).find('div.modal-dialog').removeClass(size).data('size', '')
         $(this).find('.modal-body').html('')
@@ -46,7 +46,7 @@ $(function () {
     })
 
     // GeoLocate Community and datasource form.
-    $('.modal-body').on('change', '#community-form-select', function (e){
+    $('.modal-body').on('change', '#community-form-select', function (){
         toggleGeoLocateCommunityForm()
     }).on('submit', '.modal-form', function (e) { // used in workflow id and geolocate community modal forms.
         e.preventDefault() // avoid to execute the actual submit of the form.

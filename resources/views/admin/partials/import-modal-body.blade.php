@@ -126,7 +126,7 @@
                                         </span>
                     </div>
                     <div class="form-group">
-                        <label for="data-url" class="mb-0">{{ t('URL') }} <span
+                        <label for="dwc-url" class="mb-0">{{ t('URL') }} <span
                                     class="color-action">*</span></label>
                         <input type="url" name="dwc-url" id="dwc-url" class="form-control" required>
                     </div>

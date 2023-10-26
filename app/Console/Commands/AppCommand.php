@@ -20,6 +20,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class AppCommand

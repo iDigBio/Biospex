@@ -20,7 +20,6 @@
 namespace App\Console\Commands;
 
 use App\Events\PollExportEvent;
-use App\Events\TestPoll;
 use App\Models\ExportQueue;
 use App\Repositories\ExportQueueRepository;
 use Illuminate\Console\Command;
@@ -49,12 +48,12 @@ class ExportPollCommand extends Command
     /**
      * @var \App\Repositories\ExportQueueRepository
      */
-    private $exportQueueRepo;
+    private ExportQueueRepository $exportQueueRepo;
 
     /**
      * @var array
      */
-    private $exportStages;
+    private mixed $exportStages;
 
     /**
      * ExportPollCommand constructor.

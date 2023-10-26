@@ -58,11 +58,11 @@ class Reconcile extends BaseMongoModel
     protected $presenter = ReconcilePresenter::class;
 
     /**
-     * Project relation.
+     * Subject relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function project()
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
@@ -78,11 +78,11 @@ class Reconcile extends BaseMongoModel
     }
 
     /**
-     * Panoptes Transcripition relation.
+     * Subject relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
+     * @return \MongoDB\Laravel\Relations\HasMany
      */
-    public function transcriptions()
+    public function transcriptions(): \MongoDB\Laravel\Relations\HasMany
     {
         return $this->hasMany(PanoptesTranscription::class, 'subject_id', 'subject_id');
     }

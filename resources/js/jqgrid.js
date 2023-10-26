@@ -120,13 +120,13 @@ $(function () {
                 removeObjectFromLocalStorage(myColumnStateName);
                 window.location.reload();
             },
-            exportSettings = function (event) {
+            exportSettings = function () {
                 let filters = $grid.jqGrid('getGridParam', "postData").filters;
                 $.ajax({
                     type: 'post',
                     url: exportUrl,
                     data: {'filters': filters, 'route': route}
-                }).done(function (data) {
+                }).done(function () {
                     bootboxMsg("Export Submitted", "You will receive an email when the export is complete.");
                 }).fail(function () {
                     bootboxMsg("Export Error", "Export submission failed. Please contact Admin.");
@@ -273,7 +273,7 @@ $(function () {
  */
 function mapFormatter(column) {
     let functionsMapping = {
-        "imagePreview": function (cellValue, opts, rowObjects) {
+        "imagePreview": function (cellValue) {
             let url = encodeURIComponent(cellValue);
             return '<a href="' + cellValue + '" target="_new">View Image</a>&nbsp;&nbsp;'
                 + '<a href="#" class="thumb-view" data-url="/admin/images/preview?url=' + url + '" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="Preview Thumbnail" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'

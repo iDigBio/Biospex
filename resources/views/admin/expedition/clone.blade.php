@@ -57,7 +57,7 @@
                             </div>
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
-                                     src="{{ GeneralHelper::expeditionDefaultLogo() }}"/>
+                                     src="{{ GeneralHelper::expeditionDefaultLogo() }}" alt="Expedition Logo"/>
                             </div>
                         </div>
 

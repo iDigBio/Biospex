@@ -230,13 +230,13 @@
                             </div>
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
-                                     src="{{ $project->present()->show_logo }}"/>
+                                     src="{{ $project->present()->show_logo }}" alt="Project Logo"/>
                             </div>
                         </div>
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6">
-                                <label for="banner_file" class="col-form-label">{{ t('Banner File') }}:</label>
+                                <label for="banner-file" class="col-form-label">{{ t('Banner File') }}:</label>
                                 <input type="text" class="form-control" id="banner-file" name="banner_file"
                                        value="{{ $project->present()->banner_file_name ?? 'banner-trees.jpg' }}"
                                        readonly>
@@ -246,7 +246,7 @@
                                    data-hover="tooltip" title="{{ t('Click to select banner.') }}">
                                     {{ t('Click to select banner.') }}
                                     <img class="img-fluid" id="banner-img"
-                                         src="{{ $project->present()->banner_file_url }}"/>
+                                         src="{{ $project->present()->banner_file_url }}" alt="Project Banner"/>
                                 </a>
                             </div>
                         </div>

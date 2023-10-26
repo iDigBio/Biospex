@@ -23,7 +23,6 @@ use App\Models\Expedition;
 use App\Models\GeoLocateExport;
 use App\Models\GeoLocateForm;
 use App\Repositories\DownloadRepository;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\GeoLocateRepository;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -52,11 +51,6 @@ class GeoLocateExportService
     private string $csvFilePath;
 
     /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepository;
-
-    /**
      * @var \App\Repositories\DownloadRepository
      */
     private DownloadRepository $downloadRepository;
@@ -66,17 +60,16 @@ class GeoLocateExportService
      *
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      * @param \App\Repositories\GeoLocateRepository $geoLocateRepository
+     * @param \App\Repositories\DownloadRepository $downloadRepository
      */
     public function __construct(
         AwsS3CsvService $awsS3CsvService,
         GeoLocateRepository $geoLocateRepository,
-        ExpeditionRepository $expeditionRepository,
         DownloadRepository $downloadRepository
     )
     {
         $this->awsS3CsvService = $awsS3CsvService;
         $this->geoLocateRepository = $geoLocateRepository;
-        $this->expeditionRepository = $expeditionRepository;
         $this->downloadRepository = $downloadRepository;
     }
 
