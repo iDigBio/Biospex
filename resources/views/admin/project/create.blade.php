@@ -231,7 +231,7 @@
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6">
                                 <label for="banner_file" class="col-form-label">{{ t('Banner File') }}:</label>
-                                <input type="text" class="form-control" id="banner_file" name="banner_file"
+                                <input type="text" class="form-control" id="banner-file" name="banner_file"
                                        value="{{ old('banner_file', GeneralHelper::projectBannerFileName()) }}"
                                        readonly>
                             </div>

@@ -85,7 +85,7 @@ class OcrPollCommand extends Command
 
             $title = $record->expedition !== null ? $record->expedition->title : $record->project->title;
 
-            $notice = view('common.ocr-process', compact('title', 'ocr', 'batches'))->render();
+            $notice = \View::make('common.ocr-process', compact('title', 'ocr', 'batches'))->render();
 
             $count++;
 

@@ -19,10 +19,13 @@
 
 use App\Http\Controllers\Admin\GeoLocateController;
 
-Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/', [GeoLocateController::class, 'index'])->name('admin.geolocate.index');
-Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/show', [GeoLocateController::class, 'show'])->name('admin.geolocate.show');
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/form', [GeoLocateController::class, 'form'])->name('admin.geolocate.form');
+Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/', [GeoLocateController::class, 'index'])->name('admin.geolocates.stats');
+Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/show', [GeoLocateController::class, 'show'])->name('admin.geolocates.show');
+Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/form', [GeoLocateController::class, 'form'])->name('admin.geolocates.form');
 
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/store', [GeoLocateController::class, 'store'])->name('admin.geolocate.store');
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/export', [GeoLocateController::class, 'export'])->name('admin.geolocate.export');
-Route::delete('projects/{projects}/expeditions/{expeditions}/geolocates/delete', [GeoLocateController::class, 'delete'])->name('admin.geolocate.delete');
+Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/community', [GeoLocateController::class, 'communityForm'])->name('admin.geolocates.communityForm');
+Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/community', [GeoLocateController::class, 'community'])->name('admin.geolocates.community');
+
+Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/store', [GeoLocateController::class, 'store'])->name('admin.geolocates.store');
+Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/export', [GeoLocateController::class, 'export'])->name('admin.geolocates.export');
+Route::delete('projects/{projects}/expeditions/{expeditions}/geolocates/delete', [GeoLocateController::class, 'delete'])->name('admin.geolocates.delete');

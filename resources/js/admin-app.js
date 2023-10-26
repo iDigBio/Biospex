@@ -31,6 +31,7 @@ try {
     require("./common");
     require("./jqgrid");
     require("./admin");
+    require("./admin-modals");
 
 } catch (e) {
     console.log(e);

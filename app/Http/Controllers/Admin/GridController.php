@@ -94,7 +94,7 @@ class GridController extends Controller
     public function explore(string $projectId)
     {
         try {
-            return $this->grid->encodeGridRequestedData(request()->all(), 'explore', (int) $projectId);
+            return $this->grid->encodeGridRequestedData(\Request::all(), 'explore', (int) $projectId);
         } catch (Exception $e) {
             return response($e->getMessage(), 404);
         }
@@ -110,7 +110,7 @@ class GridController extends Controller
     public function expeditionsShow(string $projectId, string $expeditionId)
     {
         try {
-            return $this->grid->encodeGridRequestedData(request()->all(), 'show', (int) $projectId, (int) $expeditionId);
+            return $this->grid->encodeGridRequestedData(\Request::all(), 'show', (int) $projectId, (int) $expeditionId);
         } catch (Exception $e) {
             return response($e->getMessage(), 404);
         }
@@ -126,7 +126,7 @@ class GridController extends Controller
     public function expeditionsEdit(string $projectId, string $expeditionId)
     {
         try {
-            return $this->grid->encodeGridRequestedData(request()->all(), 'edit', (int) $projectId, (int) $expeditionId);
+            return $this->grid->encodeGridRequestedData(\Request::all(), 'edit', (int) $projectId, (int) $expeditionId);
         } catch (Exception $e) {
             return response($e->getMessage(), 404);
         }
@@ -141,7 +141,7 @@ class GridController extends Controller
     public function expeditionsCreate(string $projectId)
     {
         try {
-            return $this->grid->encodeGridRequestedData(request()->all(), 'create', (int) $projectId);
+            return $this->grid->encodeGridRequestedData(\Request::all(), 'create', (int) $projectId);
         } catch (Exception $e) {
             return response($e->getMessage(), 404);
         }
@@ -159,8 +159,8 @@ class GridController extends Controller
         $attributes = [
             'projectId' => (int) $projectId,
             'expeditionId' => (int) $expeditionId,
-            'postData' => ['filters' => request()->exists('filters') ? request()->get('filters') : null],
-            'route' => request()->get('route')
+            'postData' => ['filters' => \Request::exists('filters') ? \Request::get('filters') : null],
+            'route' => \Request::get('route')
         ];
 
         GridExportCsvJob::dispatch(Auth::user(), $attributes);
@@ -178,15 +178,15 @@ class GridController extends Controller
      */
     public function delete(SubjectRepository $subjectRepo, ExpeditionRepository $expeditionRepo)
     {
-        if (! request()->ajax()) {
+        if (! \Request::ajax()) {
             return response()->json(['error' => 'Delete must be performed via ajax.'], 404);
         }
 
-        if (! request()->get('ids')) {
+        if (! \Request::get('ids')) {
             return response()->json(['error' => 'Only delete operation allowed.'], 404);
         }
 
-        $subjectIds = explode(',', request()->get('ids'));
+        $subjectIds = explode(',', \Request::get('ids'));
 
         $subjects = $subjectRepo->whereIn('_id', $subjectIds);
 

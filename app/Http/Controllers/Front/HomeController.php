@@ -43,7 +43,7 @@ class HomeController extends Controller
         $contributorCount = $panoptesTranscriptionRepo->getContributorCount();
         $transcriptionCount = $panoptesTranscriptionRepo->getTotalTranscriptions();
 
-        return view('front.home', compact('expedition', 'contributorCount', 'transcriptionCount'));
+        return \View::make('front.home', compact('expedition', 'contributorCount', 'transcriptionCount'));
     }
 
     /**

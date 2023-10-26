@@ -87,9 +87,9 @@ class User extends Authenticatable implements MustVerifyEmail
         static::created(function ($model) {
             $profile = new Profile;
             $profile->user_id = $model->id;
-            $profile->first_name = request()->input('first_name');
-            $profile->last_name = request()->input('last_name');
-            $profile->timezone = request()->input('timezone');
+            $profile->first_name = \Request::input('first_name');
+            $profile->last_name = \Request::input('last_name');
+            $profile->timezone = \Request::input('timezone');
             $model->profile()->save($profile);
         });
     }

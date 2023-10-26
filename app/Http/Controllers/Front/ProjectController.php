@@ -60,7 +60,7 @@ class ProjectController extends Controller
     {
         $projects = $this->projectRepo->getPublicProjectIndex();
 
-        return view('front.project.index', compact('projects'));
+        return \View::make('front.project.index', compact('projects'));
     }
 
     /**
@@ -70,15 +70,15 @@ class ProjectController extends Controller
      */
     public function sort()
     {
-        if (! request()->ajax()) {
+        if (! \Request::ajax()) {
             return null;
         }
 
-        $sort = request()->get('sort');
-        $order = request()->get('order');
+        $sort = \Request::get('sort');
+        $order = \Request::get('order');
         $projects = $this->projectRepo->getPublicProjectIndex($sort, $order);
 
-        return view('front.project.partials.project', compact('projects'));
+        return \View::make('front.project.partials.project', compact('projects'));
     }
 
     /**
@@ -97,9 +97,9 @@ class ProjectController extends Controller
         $project = $this->projectRepo->getProjectPageBySlug($slug);
 
         if ($project === null) {
-            Flash::error(t('Unable to locate project. Please alert the Admin.'));
+            \Flash::error(t('Unable to locate project. Please alert the Admin.'));
 
-            return redirect()->route('front.projects.index');
+            return \Redirect::route('front.projects.index');
         }
 
         $expeditions = null;
@@ -134,6 +134,6 @@ class ProjectController extends Controller
             'project' => $project->id,
         ]);
 
-        return view('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
+        return \View::make('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
     }
 }

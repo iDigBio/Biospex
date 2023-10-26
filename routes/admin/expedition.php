@@ -20,6 +20,7 @@
 use App\Http\Controllers\Admin\ExpeditionController;
 
 Route::get('expeditions', [ExpeditionController::class, 'index'])->name('admin.expeditions.index');
+Route::post('expeditions/sort', [ExpeditionController::class, 'sort'])->name('admin.expeditions.sort');
 Route::get('projects/{projects}/expeditions/create', [ExpeditionController::class, 'create'])->name('admin.expeditions.create');
 Route::post('projects/{projects}/expeditions', [ExpeditionController::class, 'store'])->name('admin.expeditions.store');
 Route::get('projects/{projects}/expeditions/{expeditions}', [ExpeditionController::class, 'show'])->name('admin.expeditions.show');

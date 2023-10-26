@@ -72,10 +72,11 @@ class PanoptesTranscriptionRepository extends BaseRepository
      * Get project transcription count.
      *
      * TODO Change to sum expedition stat table
-     * @param $projectId
+     *
+     * @param int $projectId
      * @return int
      */
-    public function getProjectTranscriptionCount($projectId)
+    public function getProjectTranscriptionCount(int $projectId)
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -112,10 +113,10 @@ class PanoptesTranscriptionRepository extends BaseRepository
     /**
      * Get transcriber count for project.
      *
-     * @param $projectId
+     * @param int $projectId
      * @return int
      */
-    public function getProjectTranscriberCount($projectId)
+    public function getProjectTranscriberCount(int $projectId)
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -137,10 +138,10 @@ class PanoptesTranscriptionRepository extends BaseRepository
     /**
      * Get transcribers transcription count.
      *
-     * @param $projectId
+     * @param int $projectId
      * @return mixed
      */
-    public function getTranscribersTranscriptionCount($projectId)
+    public function getTranscribersTranscriptionCount(int $projectId)
     {
         return Cache::rememberForever(md5(__METHOD__.$projectId), function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -188,11 +189,11 @@ class PanoptesTranscriptionRepository extends BaseRepository
     /**
      * Get transcription for dashboard.
      *
-     * @param $expeditionId
+     * @param int $expeditionId
      * @param null $timestamp
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getTranscriptionForDashboardJob($expeditionId, $timestamp = null)
+    public function getTranscriptionForDashboardJob(int $expeditionId, $timestamp = null)
     {
         $model = $this->model->with([
             'subject' => function ($query) {
@@ -210,10 +211,10 @@ class PanoptesTranscriptionRepository extends BaseRepository
     /**
      * Get minimum finish date of transcriptions for project.
      *
-     * @param $projectId
+     * @param int $projectId
      * @return mixed|null
      */
-    public function getMinFinishedAtDateByProjectId($projectId)
+    public function getMinFinishedAtDateByProjectId(int $projectId)
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -234,7 +235,7 @@ class PanoptesTranscriptionRepository extends BaseRepository
      * @param $projectId
      * @return mixed|null
      */
-    public function getMaxFinishedAtDateByProjectId($projectId)
+    public function getMaxFinishedAtDateByProjectId(int $projectId)
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -252,12 +253,12 @@ class PanoptesTranscriptionRepository extends BaseRepository
     /**
      * Get transcription count and group by date.
      *
-     * @param $workflowId
+     * @param int $workflowId
      * @param $begin
      * @param $end
      * @return mixed
      */
-    public function getTranscriptionCountPerDate($workflowId, $begin, $end)
+    public function getTranscriptionCountPerDate(int $workflowId, $begin, $end)
     {
         $key = $workflowId . $begin->__toString() . $end->__toString();
 

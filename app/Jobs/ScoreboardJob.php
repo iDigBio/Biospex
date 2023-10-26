@@ -62,7 +62,7 @@ class ScoreboardJob implements ShouldQueue
     {
         $events = $eventRepo->getEventsByProjectId($this->projectId);
         $data = $events->mapWithKeys(function($event) {
-            return [$event->id => view('common.scoreboard-content', ['event' => $event])->render()];
+            return [$event->id => \View::make('common.scoreboard-content', ['event' => $event])->render()];
         });
 
         ScoreboardEvent::dispatch($this->projectId, $data->toArray());

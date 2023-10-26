@@ -275,9 +275,9 @@ function mapFormatter(column) {
     let functionsMapping = {
         "imagePreview": function (cellValue, opts, rowObjects) {
             let url = encodeURIComponent(cellValue);
-            return '<a href="' + cellValue + '" target="_new" data-hover="tooltip" title="View Image">View Image</a>&nbsp;&nbsp;'
-                + '<a href="#" class="thumb-view" data-remote="/admin/images/preview?url=' + url + '" data-toggle="modal" data-target="#jqgrid-modal" data-hover="tooltip" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'
-                + '<a href="#" class="url-view" data-remote="' + cellValue + '" data-toggle="modal" data-target="#jqgrid-modal" data-hover="tooltip" title="Preview URL">View URL</a>'
+            return '<a href="' + cellValue + '" target="_new">View Image</a>&nbsp;&nbsp;'
+                + '<a href="#" class="thumb-view" data-url="/admin/images/preview?url=' + url + '" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="Preview Thumbnail" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'
+                + '<a href="#" class="url-view" data-url="/admin/images/preview?url=' + cellValue + '&url-view=true" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="View URL" title="Preview URL">View URL</a>'
         }
     };
 

@@ -26,7 +26,5 @@
             </div>
         </div>
     </div>
-    @include('admin.expedition.partials.expedition-tools-modal')
-    @include('admin.expedition.partials.expedition-download-modal')
-    @include('admin.expedition.partials.expedition-workflow-form-modal')
+    @include('admin.expedition.partials.tools-modal')
 </div>

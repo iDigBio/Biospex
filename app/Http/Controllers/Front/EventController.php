@@ -48,7 +48,7 @@ class EventController extends Controller
             return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
         });
 
-        return view('front.event.index', compact('events', 'eventsCompleted'));
+        return \View::make('front.event.index', compact('events', 'eventsCompleted'));
     }
 
     /**
@@ -59,13 +59,13 @@ class EventController extends Controller
      */
     public function sort(EventRepository $eventRepo)
     {
-        if (! request()->ajax()) {
+        if (! \Request::ajax()) {
             return null;
         }
 
-        $sort = request()->get('sort');
-        $order = request()->get('order');
-        $projectId = request()->get('id');
+        $sort = \Request::get('sort');
+        $order = \Request::get('order');
+        $projectId = \Request::get('id');
 
         $results = $eventRepo->getEventPublicIndex($sort, $order, $projectId);
 
@@ -73,9 +73,9 @@ class EventController extends Controller
             return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
         });
 
-        $events = request()->get('type') === 'active' ? $active : $completed;
+        $events = \Request::get('type') === 'active' ? $active : $completed;
 
-        return view('front.event.partials.event', compact('events'));
+        return \View::make('front.event.partials.event', compact('events'));
     }
 
     /**
@@ -90,12 +90,12 @@ class EventController extends Controller
         $event = $eventRepo->findWith($eventId, ['project.lastPanoptesProject', 'teams:id,title,event_id']);
 
         if ($event === null) {
-            Flash::error(t('Error retrieving record from database'));
+            \Flash::error(t('Error retrieving record from database'));
 
-            return redirect()->route('front.events.index');
+            return \Redirect::route('front.events.index');
         }
 
-        return view('front.event.show', compact('event'));
+        return \View::make('front.event.show', compact('event'));
     }
 
     /**
@@ -113,10 +113,10 @@ class EventController extends Controller
         $active = DateHelper::eventBefore($team->event) || DateHelper::eventActive($team->event);
 
         if ($team === null) {
-            Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
+            \Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
         }
 
-        return view('front.event.signup', compact('team', 'active'));
+        return \View::make('front.event.signup', compact('team', 'active'));
     }
 
     /**
@@ -141,13 +141,13 @@ class EventController extends Controller
             $team = $eventTeamRepo->findWith($request->get('team_id'), ['event']);
             $team->users()->syncWithoutDetaching([$user->id]);
 
-            Flash::success(t('Thank you for your registration.'));
+            \Flash::success(t('Thank you for your registration.'));
 
-            return redirect()->route('front.events.read', [$team->event->id]);
+            return \Redirect::route('front.events.read', [$team->event->id]);
         }
 
-        Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
+        \Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
 
-        return redirect()->route('front.events.signup', [$uuid]);
+        return \Redirect::route('front.events.signup', [$uuid]);
     }
 }

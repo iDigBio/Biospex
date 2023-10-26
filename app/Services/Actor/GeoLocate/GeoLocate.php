@@ -19,6 +19,7 @@
 
 namespace App\Services\Actor\GeoLocate;
 
+use App\Jobs\GeoLocateStatsJob;
 use App\Models\Actor;
 
 class GeoLocate
@@ -31,8 +32,8 @@ class GeoLocate
      */
     public function actor(Actor $actor): void
     {
-        if ($actor->pivot->state === 1) {
-            \Log::alert(__CLASS__ . ' state 1 ' . $actor->pivot->expedition_id);
+        if ($actor->pivot->state === 1) { // Export has been created
+            GeoLocateStatsJob::dispatch($actor);
         }
     }
 }

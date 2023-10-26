@@ -91,7 +91,7 @@ class ExpertReconcileProcess
         if (! Storage::disk('s3')->exists($file)) {
             $message = t('File does not exist.');
             $method = __METHOD__;
-            throw new Exception(view('common.exception', compact('message', 'method', 'file')));
+            throw new Exception(\View::make('common.exception', compact('message', 'method', 'file')));
         }
 
         $rows = $this->getCsvRows($file);
@@ -131,7 +131,7 @@ class ExpertReconcileProcess
      */
     public function setData()
     {
-        $data = collect(json_decode(request()->get('data'), true))->mapWithKeys(function ($items) {
+        $data = collect(json_decode(\Request::get('data'), true))->mapWithKeys(function ($items) {
             return [$items['id'] => explode(',', $items['columns'])];
         });
 
@@ -223,7 +223,7 @@ class ExpertReconcileProcess
         if (! Storage::disk('s3')->exists($file)) {
             $message = t('File does not exist.');
             $method = __METHOD__;
-            throw new Exception(view('common.exception', compact('message', 'method', 'file')));
+            throw new Exception(\View::make('common.exception', compact('message', 'method', 'file')));
         }
 
         $rows = $this->getCsvRows($file);

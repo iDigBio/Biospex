@@ -65,9 +65,7 @@ class GroupRepository extends BaseRepository
         return $this->model->with([
             'projects',
             'expeditions',
-            'geoLocateForms' => function($q){
-                $q->withCount('expeditions');
-            },
+            'geoLocateForms.expeditions:id,project_id,geo_locate_form_id',
             'owner.profile',
             'users.profile',
         ])->withCount('expeditions')->find($groupId);

@@ -16,11 +16,6 @@ return [
     'server_user'     => env('SERVER_USER'),
     'registration'    => env('REGISTRATION'),
     'expedition_size' => env('EXPEDITION_SIZE'),
-    'echo_id'         => env('ECHO_ID'),
-    'echo_key'        => env('ECHO_KEY'),
-    'echo_port'       => env('ECHO_PORT'),
-    'echo_ssl_crt'    => env('ECHO_SSL_CRT'),
-    'echo_ssl_key'    => env('ECHO_SSL_KEY'),
 
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
@@ -38,12 +33,7 @@ return [
     'import_dir'     => env('IMPORT_DIR', 'import'),
     'report_dir'     => env('REPORT_DIR', 'report'),
     'scratch_dir'    => env('SCRATCH_DIR', 'scratch'),
-    'geolocate_dir'  => [
-        'parent'   => env('GEOLOCATE_DIR', 'geolocate'),
-        'export'   => env('GEOLOCATE_DIR', 'geolocate').'/export',
-        'location' => env('GEOLOCATE_DIR', 'geolocate').'/location',
-        'result'   => env('GEOLOCATE_DIR', 'geolocate').'/result',
-    ],
+
     'zooniverse_dir' => [
         'parent'         => env('ZOONIVERSE_DIR', 'zooniverse'),
         'classification' => env('ZOONIVERSE_DIR', 'zooniverse').'/classification',
@@ -199,10 +189,7 @@ return [
     ],
 
     'nfnActorId'       => env('NFN_ACTOR_ID'),
-    'geoLocateActorId' => env('GEOLOCATE_ACTOR_ID'),
-
     'nfnWorkflowId'       => env('NFN_WORKFLOW_ID'),
-    'geoLocateWorkflowId' => env('GEOLOCATE_WORKFLOW_ID'),
 
     'nfnNotify'                 => [2 => 'NewNfnPanoptesProject'],
     'nfnSkipApi'                => env('NFN_SKIP_API'),
@@ -241,6 +228,24 @@ return [
         'tokenUri'     => env('PANOPTES_TOKEN_URI'),
         'redirectUri'  => env('PANOPTES_REDIRECT_URI'),
         'scopes'       => env('PANOPTES_SCOPES'),
+    ],
+
+    'geolocate' => [
+        'actor_id'    => env('GEOLOCATE_ACTOR_ID'),
+        'workflow_id' => env('GEOLOCATE_WORKFLOW_ID'),
+        'fields_file' => resource_path('json/geolocate-fields.json'),
+        'api'         => [
+            'geolocate_uname'        => env('GEOLOCATE_UNAME'),
+            'geolocate_token'        => env('GEOLOCATE_TOKEN'),
+            'geolocate_stats_uri'    => env('GEOLOCATE_STATS_URI'),
+            'geolocate_download_uri' => env('GEOLOCATE_DOWNLOAD_URI'),
+        ],
+        'dir'         => [
+            'parent'   => env('GEOLOCATE_DIR', 'geolocate'),
+            'export'   => env('GEOLOCATE_DIR', 'geolocate').'/export',
+            'location' => env('GEOLOCATE_DIR', 'geolocate').'/location',
+            'result'   => env('GEOLOCATE_DIR', 'geolocate').'/result',
+        ]
     ],
 
     'talk_api_uri' => env('ZOONIVERSE_TALK_API'),
@@ -349,7 +354,5 @@ return [
         'QUEUE_PUSHER_CLASSIFICATION',
         'QUEUE_PUSHER_HANDLER',
         'QUEUE_WEDIGBIO_EVENT',
-    ],
-
-    'geolocate_fields_file' => resource_path('json/geolocate-fields.json'),
+    ]
 ];

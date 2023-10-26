@@ -55,13 +55,13 @@ class BiospexServiceProvider extends ServiceProvider
     /**
      * Set up view composers
      */
-    public function setViewComposers()
+    public function setViewComposers(): void
     {
-        view()->composer(
+        \View::composer(
             'common.notices', 'App\Http\ViewComposers\NoticesComposer'
         );
 
-        view()->composer(
+        \View::composer(
             'common.process-modal', 'App\Http\ViewComposers\PollComposer'
         );
     }
@@ -69,7 +69,7 @@ class BiospexServiceProvider extends ServiceProvider
     /**
      * Registers custom facades
      */
-    public function registerFacades()
+    public function registerFacades(): void
     {
         $this->app->singleton('flash', function ()
         {

@@ -43,7 +43,7 @@ class ExpeditionController extends Controller
             return $expedition->completed === 0;
         });
 
-        return view('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
+        return \View::make('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
     }
 
     /**
@@ -54,14 +54,14 @@ class ExpeditionController extends Controller
      */
     public function sort(ExpeditionRepository $expeditionRepo)
     {
-        if ( ! request()->ajax()) {
+        if ( ! \Request::ajax()) {
             return null;
         }
 
-        $type = request()->get('type');
-        $sort = request()->get('sort');
-        $order = request()->get('order');
-        $projectId = request()->get('id');
+        $type = \Request::get('type');
+        $sort = \Request::get('sort');
+        $order = \Request::get('order');
+        $projectId = \Request::get('id');
 
         [$active, $completed] = $expeditionRepo->getExpeditionPublicIndex($sort, $order, $projectId)
             ->partition(function($expedition) {
@@ -70,6 +70,6 @@ class ExpeditionController extends Controller
 
         $expeditions = $type === 'active' ? $active : $completed;
 
-        return view('front.expedition.partials.expedition', compact('expeditions'));
+        return \View::make('front.expedition.partials.expedition', compact('expeditions'));
     }
 }

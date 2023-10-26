@@ -119,7 +119,7 @@ class ExportPollCommand extends Command
             ':total'     => $queue->count,
         ]) : null;
 
-        return view('common.export-process', compact('stage', 'title', 'processedRecords'))->render();
+        return \View::make('common.export-process', compact('stage', 'title', 'processedRecords'))->render();
     }
 
     /**
@@ -135,6 +135,6 @@ class ExportPollCommand extends Command
         $title =$queue->expedition->title;
         $remainingCount = t(n(':count export remains in queue before processing begins.', ':count exports remain in queue before processing begins.', $count), [':count' => $count]);
 
-        return view('common.export-process-queued', compact('title', 'remainingCount'))->render();
+        return \View::make('common.export-process-queued', compact('title', 'remainingCount'))->render();
     }
 }

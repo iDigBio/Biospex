@@ -19,6 +19,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 /**
  * Class Subject
  *
@@ -80,4 +82,11 @@ class Subject extends BaseMongoModel
         return $query->where('_id', $subjectId);
     }
 
+    /**
+     * Set subjectId to int.
+     */
+    protected function projectId(): Attribute
+    {
+        return Attribute::make(set: fn(string $value) => (int) $value,);
+    }
 }

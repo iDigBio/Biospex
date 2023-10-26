@@ -39,7 +39,7 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * AppCommand constructor.
+     * Create a new command instance.
      */
     public function __construct()
     {
@@ -54,7 +54,9 @@ class AppCommand extends Command
 
     }
 
-
+    /**
+     * @return void
+     */
     public function clean()
     {
         /*
@@ -88,5 +90,15 @@ class AppCommand extends Command
         }
         catch(\Exception $e){}
         */
+    }
+
+    /**
+     * New method for getting and setting attributes.
+     * TODO Change attribute setters and mutators.
+     */
+    protected function firstName(): Attribute
+    {
+        return Attribute::make(get: fn(string $value) => ucfirst($value), set: fn(string $value
+            ) => strtolower($value),);
     }
 }

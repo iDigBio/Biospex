@@ -1,12 +1,31 @@
 <?php
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GeoLocateCommunityRequest;
 use App\Jobs\GeoLocateExportJob;
-use App\Services\Process\GeoLocateProcessService;
+use App\Services\Csv\GeoLocateExportService;
+use App\Services\Process\GeoLocateExportFormService;
+use App\Services\Process\GeoLocateCommunityService;
 use Exception;
-use Flash;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -14,95 +33,120 @@ use Illuminate\Support\Facades\Auth;
 class GeoLocateController extends Controller
 {
     /**
-     * @var \App\Services\Process\GeoLocateProcessService
+     * @var \App\Services\Process\GeoLocateExportFormService
      */
-    private GeoLocateProcessService $geoLocateProcessService;
+    private GeoLocateExportFormService $geoLocateExportFormService;
 
     /**
-     * @param \App\Services\Process\GeoLocateProcessService $geoLocateProcessService
+     * @var \App\Services\Process\GeoLocateCommunityService
      */
-    public function __construct(GeoLocateProcessService $geoLocateProcessService)
+    private GeoLocateCommunityService $geoLocateCommunityService;
+
+    /**
+     * @var \App\Services\Csv\GeoLocateExportService
+     */
+    private GeoLocateExportService $geoLocateExportService;
+
+    /**
+     * GeoLocateController constructor.
+     *
+     * @param \App\Services\Process\GeoLocateExportFormService $geoLocateExportFormService
+     */
+    public function __construct(
+        GeoLocateExportFormService $geoLocateExportFormService,
+        GeoLocateCommunityService $geoLocateCommunityService,
+        GeoLocateExportService $geoLocateExportService
+
+    )
     {
-        $this->geoLocateProcessService = $geoLocateProcessService;
+        $this->geoLocateExportFormService = $geoLocateExportFormService;
+        $this->geoLocateCommunityService = $geoLocateCommunityService;
+        $this->geoLocateExportService = $geoLocateExportService;
     }
 
     /**
-     * Index page and also used for ajax post to retrieve fields.
+     * Display stats in modal.
      *
      * @param int $projectId
      * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
-    public function index(int $projectId, int $expeditionId): \Illuminate\Contracts\View\View
+    public function index(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {
-        $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId);
+        if (! \Request::ajax()) {
+            return \Response::json(['message' => t('Request must be ajax.')], 400);
+        }
 
-        $route = route('admin.geolocate.show', [$projectId, $expeditionId]);
-        $isForm = isset($expedition->geo_locate_form_id);
-
-        return view('admin.geolocate.index', compact('expedition', 'route', 'isForm'));
-    }
-
-    /**
-     * Show form if it exists or create new one.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     *
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
-     */
-    public function show(int $projectId, int $expeditionId): View|RedirectResponse
-    {
         try {
-            $relations = ['project.group.geoLocateForms'];
-
-            $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
+            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
 
             if (! $this->checkPermissions('readProject', $expedition->project->group)) {
-                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+                return \Response::json(['message' => t('You do not have permission.')], 401);
             }
 
-            $route = route('admin.geolocate.form', [$expedition->project->id, $expedition->id]);
-
-            return view('admin.geolocate.show', compact('expedition', 'route'));
-
+            return \View::make('admin.geolocate.partials.stats', compact('expedition'));
         } catch (\Exception $e) {
-            Flash::error(t('Error %s.', $e->getMessage()));
-
-            return redirect()->route('admin.expeditions.index', [$projectId, $expeditionId]);
+            return \Response::json(['message' => $e->getMessage()], 500);
         }
     }
 
     /**
-     * Display form.
+     * Show export form in modal.
      *
      * @param int $projectId
      * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse|string[]
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
-    public function form(int $projectId, int $expeditionId)
+    public function show(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {
-        if (! request()->ajax()) {
-            return ['Error: Ajax requests only'];
+        if (! \Request::ajax()) {
+            return \Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
         try {
-            $relations = ['project.group.geoLocateForms'];
-
-            $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
+            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
 
             if (! $this->checkPermissions('readProject', $expedition->project->group)) {
-                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+                return \Response::json(['message' => t('You do not have permission.')], 401);
             }
 
-            $form = $this->geoLocateProcessService->getForm($expedition, request()->all());
+            $form = $this->geoLocateExportFormService->getForm($expedition, ['formId' => $expedition->geo_locate_form_id]);
 
-            return view('admin.geolocate.partials.form-fields', compact('expedition', 'form'));
+            $formFields = \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form'))->render();
 
+            $route = route('admin.geolocates.form', [$expedition->project->id, $expedition->id]);
+
+            return \View::make('admin.geolocate.partials.form-show', compact('expedition', 'route', 'formFields'));
         } catch (\Exception $e) {
-            Flash::error(t('Error %s.', $e->getMessage()));
+            return \Response::json(['message' => $e->getMessage()], 500);
+        }
+    }
 
-            return redirect()->route('admin.expeditions.index', [$projectId, $expeditionId]);
+    /**
+     * Display export form when select is changed.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
+     */
+    public function form(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
+    {
+        if (! \Request::ajax()) {
+            return \Response::json(['message' => t('Request must be ajax.')], 400);
+        }
+
+        try {
+            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+
+            if (! $this->checkPermissions('readProject', $expedition->project->group)) {
+                return \Response::json(['message' => t('You do not have permissions for this action.')], 401);
+            }
+
+            $form = $this->geoLocateExportFormService->getForm($expedition, \Request::all());
+
+            return \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form'));
+        } catch (\Exception $e) {
+            return \Response::json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -111,29 +155,30 @@ class GeoLocateController extends Controller
      *
      * @param int $projectId
      * @param int $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(int $projectId, int $expeditionId)
+    public function store(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse
     {
+        if (! \Request::ajax()) {
+            return \Response::json(['message' => t('Request must be ajax.')], 400);
+        }
 
         try {
-            $relations = ['project.group'];
+            $data = [];
+            parse_str(\Request::input('data'), $data);
 
-            $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
+            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
 
             if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
-                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+                return \Response::json(['message' => t('You do not have permissions for this action.')], 401);
             }
 
-            $this->geoLocateProcessService->saveForm(request()->all(), $expedition);
+            $this->geoLocateExportFormService->saveForm($data, $expedition);
 
-            Flash::success(t('Form has been saved.'));
+            return \Response::json(['message' => t('GeoLocate export form saved.')]);
 
-            return redirect()->route('admin.geolocate.index', [$projectId, $expeditionId]);
-        } catch (Exception $exception) {
-            Flash::error(t('Error %s.', $exception->getMessage()));
-
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        } catch (Exception $e) {
+            return \Response::json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -142,28 +187,28 @@ class GeoLocateController extends Controller
      *
      * @param int $projectId
      * @param int $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function export(int $projectId, int $expeditionId): RedirectResponse
+    public function export(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|RedirectResponse
     {
-        try {
-            $relations = ['project.group'];
+        if (! \Request::ajax()) {
+            return \Response::json(['message' => t('Request must be ajax.')], 400);
+        }
 
-            $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
+        try {
+
+            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
 
             if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
-                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+                return \Response::json(['message' => t('You do not have permissions for this action.')], 401);
             }
 
             GeoLocateExportJob::dispatch($expedition, Auth::user());
 
-            Flash::success(t('Geo Locate export job scheduled for processing. You will receive an email when file has been created.'));
+            return \Response::json(['message' => t('Geo Locate export job scheduled for processing. You will receive an email when file has been created.')]);
 
-            return redirect()->route('admin.geolocate.index', [$projectId, $expeditionId]);
-        } catch (Exception $exception) {
-            Flash::error(t('Error %s.', $exception->getMessage()));
-
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        } catch (Exception $e) {
+            return \Response::json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -172,31 +217,94 @@ class GeoLocateController extends Controller
      *
      * @param int $projectId
      * @param int $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function delete(int $projectId, int $expeditionId): RedirectResponse
+    public function delete(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|RedirectResponse
     {
-        try {
-            $relations = ['project.group'];
+        if (! \Request::ajax()) {
+            return \Response::json(['message' => t('Request must be ajax.')], 400);
+        }
 
-            $expedition = $this->geoLocateProcessService->findExpeditionWithRelations($expeditionId, $relations);
+        try {
+            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
 
             if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
-                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+                return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            $this->geoLocateProcessService->deleteGeoLocateFile($expeditionId);
-            $this->geoLocateProcessService->deleteGeoLocate($expeditionId);
+            $this->geoLocateExportFormService->deleteGeoLocateFile($expeditionId);
+            $this->geoLocateExportFormService->deleteGeoLocate($expeditionId);
 
             $expedition->geoLocateForm()->dissociate()->save();
+            $this->geoLocateExportService->updateState($expedition, 0);
 
-            Flash::success(t('GeoLocate form data and file deleted.'));
+            \Flash::success(t('GeoLocateExport form data and file deleted.'));
 
-            return redirect()->route('admin.geolocate.index', [$projectId, $expeditionId]);
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
         } catch (Exception $exception) {
-            Flash::error(t('Error %s.', $exception->getMessage()));
+            \Flash::error(t('Error %s.', $exception->getMessage()));
 
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+        }
+    }
+
+    /**
+     * Show community and datasource form in modal.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function communityForm(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse|RedirectResponse
+    {
+        if (!\Request::ajax()) {
+            return \Response::json(['message' => t('You do not have permission.')], 400);
+        }
+
+        $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+
+        if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+        }
+
+        return \View::make('admin.geolocate.partials.community-form-body', compact('expedition'));
+    }
+
+    /**
+     * Store community and datasource form.
+     *
+     * @param \App\Http\Requests\GeoLocateCommunityRequest $request
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function community(
+        GeoLocateCommunityRequest $request,
+        int $projectId,
+        int $expeditionId
+    ): \Illuminate\Http\JsonResponse {
+        try {
+            $data = [];
+            parse_str(\Request::input('data'), $data);
+
+            if (! \Request::ajax()) {
+                return \Response::json(['message' => t('Request must be ajax.')], 400);
+            }
+
+            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+
+            if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
+                return \Response::json(['message' => t('You are not authorized for this action.')], 401);
+            }
+
+            $this->geoLocateCommunityService->saveCommunityDataSource($data, $projectId, $expeditionId);
+
+            $this->geoLocateExportService->updateState($expedition, 2);
+
+            return \Response::json(['message' => t('Community and data source added.')]);
+
+        } catch (\Throwable $throwable) {
+            return \Response::json(['message' => t($throwable->getMessage())],400 );
         }
     }
 }

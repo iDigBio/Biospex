@@ -339,7 +339,7 @@ class GeneralHelper
     public function downloadFileExists(int $actorId, string $type, string $file): bool
     {
         $nfnActorId = (int) config('config.nfnActorId');
-        $geoLocateActorId = (int) config('config.geoLocateActorId');
+        $geoLocateActorId = (int) config('config.geolocate.actor_id');
 
         if ($type === 'export' && $actorId === $nfnActorId) {
             return Storage::disk('s3')->exists(config('config.export_dir').'/'.$file);
@@ -348,7 +348,7 @@ class GeneralHelper
         }elseif($actorId === $nfnActorId) {
             return Storage::disk('s3')->exists(config('config.zooniverse_dir.parent').'/'.$type.'/'.$file);
         }elseif($actorId === $geoLocateActorId){
-            return Storage::disk('s3')->exists(config('config.geolocate_dir.parent').'/'.$type.'/'.$file);
+            return Storage::disk('s3')->exists(config('config.geolocate.dir.parent').'/'.$type.'/'.$file);
         }
 
         return false;
@@ -365,7 +365,7 @@ class GeneralHelper
     public function downloadFileSize(int $actorId, string $type, string $file): int
     {
         $nfnActorId = (int) config('config.nfnActorId');
-        $geoLocateActorId = (int) config('config.geoLocateActorId');
+        $geoLocateActorId = (int) config('config.geolocate.actor_id');
 
         if ($type === 'export' && $actorId === $nfnActorId) {
             return Storage::disk('s3')->size(config('config.export_dir').'/'.$file);
@@ -374,7 +374,7 @@ class GeneralHelper
         }elseif($actorId === $nfnActorId) {
             return Storage::disk('s3')->size(config('config.zooniverse_dir.parent').'/'.$type.'/'.$file);
         }elseif($actorId === $geoLocateActorId) {
-            return Storage::disk('s3')->size(config('config.geolocate_dir.parent').'/'.$type.'/'.$file);
+            return Storage::disk('s3')->size(config('config.geolocate.dir.parent').'/'.$type.'/'.$file);
         }
 
         return 0;

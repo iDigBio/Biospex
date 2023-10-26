@@ -135,23 +135,33 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Group relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function group()
-    {
-        return $this->belongsTo(Group::class, 'group_id');
-    }
-
-    /**
-     * Header relation.
+     * AmChart relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function header()
+    public function amChart()
     {
-        return $this->hasOne(Header::class);
+        return $this->hasOne(AmChart::class);
+    }
+
+    /**
+     * Bingos relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function bingos()
+    {
+        return $this->hasMany(Bingo::class);
+    }
+
+    /**
+     * Events relations.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function events()
+    {
+        return $this->hasMany(Event::class);
     }
 
     /**
@@ -175,23 +185,33 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Subject relation.
+     * GeoLocateCommunity relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function subjects()
+    public function geoLocateCommunity(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Subject::class);
+        return $this->hasMany(GeoLocateCommunity::class);
     }
 
     /**
-     * Meta relation.
+     * Group relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function metas()
+    public function group()
     {
-        return $this->hasMany(Meta::class);
+        return $this->belongsTo(Group::class, 'group_id');
+    }
+
+    /**
+     * Header relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function header()
+    {
+        return $this->hasOne(Header::class);
     }
 
     /**
@@ -205,6 +225,16 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * Meta relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function metas()
+    {
+        return $this->hasMany(Meta::class);
+    }
+
+    /**
      * OcrQueue relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -212,16 +242,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
     public function ocrQueue()
     {
         return $this->hasMany(OcrQueue::class);
-    }
-
-    /**
-     * AmChart relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function amChart()
-    {
-        return $this->hasOne(AmChart::class);
     }
 
     /**
@@ -245,23 +265,34 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Events relations.
+     * Panoptes transcription relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \MongoDB\Laravel\Relations\HasMany
      */
-    public function events()
+    public function panoptesTranscriptions(): \MongoDB\Laravel\Relations\HasMany
     {
-        return $this->hasMany(Event::class);
+        return $this->hasMany(PanoptesTranscription::class, 'subject_projectId');
     }
 
     /**
-     * Panoptes transcription relation.
+     * Resources relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function panoptesTranscriptions()
+    public function resources()
     {
-        return $this->hasMany(PanoptesTranscription::class, 'subject_projectId');
+        return $this->hasMany(ProjectResource::class);
+    }
+
+
+    /**
+     * Subject relation.
+     *
+     * @return \MongoDB\Laravel\Relations\HasMany
+     */
+    public function subjects(): \MongoDB\Laravel\Relations\HasMany
+    {
+        return $this->hasMany(Subject::class);
     }
 
     /**
@@ -275,16 +306,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Resources relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function resources()
-    {
-        return $this->hasMany(ProjectResource::class);
-    }
-
-    /**
      * Workflow Manager relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
@@ -294,15 +315,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
         return $this->hasManyThrough(WorkflowManager::class, Expedition::class);
     }
 
-    /**
-     * Bingos relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
-     */
-    public function bingos()
-    {
-        return $this->hasMany(Bingo::class);
-    }
 
     /**
      * NfnClassificationsEarliestFinishedAtDate attribute.
@@ -451,13 +463,5 @@ class Project extends BaseEloquentModel implements AttachableInterface
     public function getAdvertiseAttribute($value)
     {
         return unserialize($value);
-    }
-
-    /**
-     * @return int
-     */
-    public function subjectsCount()
-    {
-        return $this->subjects()->count();
     }
 }

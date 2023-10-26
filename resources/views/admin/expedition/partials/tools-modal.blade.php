@@ -25,7 +25,7 @@
                             @php($nfnComplete = $actor->pivot->state === 3)
                             @include('admin.expedition.partials.nfn-btns')
                         @endif
-                        @if($actor->id == config('config.geoLocateActorId') && $nfnComplete)
+                        @if($actor->id == config('config.geolocate.actor_id') && $nfnComplete)
                             @include('admin.expedition.partials.geolocate-btns')
                         @endif
                     @endforeach

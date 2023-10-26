@@ -48,11 +48,11 @@ class PanoptesPusherController extends ApiController
      */
     public function store(): Response
     {
-        if (! request()->isJson()) {
+        if (! \Request::isJson()) {
             return $this->errorWrongArgs(t('JSON request required'));
         }
 
-        $data = json_decode(request()->getContent(), true);
+        $data = json_decode(\Request::getContent(), true);
 
         if ( ! isset($data['workflow_id'])) {
             return $this->errorWrongArgs(t('Missing workflow_id'));

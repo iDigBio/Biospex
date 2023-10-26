@@ -54,7 +54,7 @@ class BingoController extends Controller
     {
         $bingos = $this->bingoProcess->getAllBingos();
 
-        return view('front.bingo.index', compact('bingos'));
+        return \View::make('front.bingo.index', compact('bingos'));
     }
 
     /**
@@ -67,7 +67,7 @@ class BingoController extends Controller
     {
         [$bingo, $words] = $this->bingoProcess->showBingo($bingoId);
 
-        return view('front.bingo.show', compact('bingo', 'words'));
+        return \View::make('front.bingo.show', compact('bingo', 'words'));
     }
 
     /**
@@ -87,6 +87,6 @@ class BingoController extends Controller
 
         BingoJob::dispatch($bingoId);
 
-        return view('front.bingo.card', compact('bingo', 'rows'));
+        return \View::make('front.bingo.card', compact('bingo', 'rows'));
     }
 }

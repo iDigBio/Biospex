@@ -93,12 +93,12 @@
         </div>
         <div class="col-md-6 mb-4">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4">{{ t('GeoLocate Forms') }}</h3>
+                <h3 id="geolocate-forms" class="text-center pt-4">{{ t('GeoLocateExport Forms') }}</h3>
                 <hr>
                 <div class="color-action text-center">{{ t('Use shift + click to multi-sort') }}</div>
                 <div class="row card-body">
                     @if($group->geoLocateForms->isEmpty())
-                        <p class="text-center">{{ t('No GeoLocate Forms Exist') }}</p>
+                        <p class="text-center">{{ t('No GeoLocateExport Forms Exist') }}</p>
                     @else
                         <table id="geolocate-tbl" class="table table-striped table-bordered dt-responsive nowrap"
                                style="width:100%; font-size: .8rem">
@@ -120,7 +120,6 @@
             </div>
         </div>
     </div>
-    @include('admin.partials.invite-modal')
 @endsection
 @push('scripts')
     <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>

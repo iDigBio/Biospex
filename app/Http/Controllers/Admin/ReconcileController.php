@@ -74,15 +74,15 @@ class ReconcileController extends Controller
         $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner', 'panoptesProject']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
-            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
+            return \Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
         $reconciles = $this->expertreconcileRepo->getPagination((int) $expedition->id);
 
         if ($reconciles->isEmpty()) {
-            Flash::error(t('Reconcile data for processing is missing.'));
+            \Flash::error(t('Reconcile data for processing is missing.'));
 
-            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
+            return \Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
         $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, $reconciles->first()->subject_id);
@@ -91,7 +91,7 @@ class ReconcileController extends Controller
         $imgUrl = $this->expertreconcileRepo->getImageUrl($reconciles->first()->subject_imageName, $location);
         $columns = explode('|', $reconciles->first()->subject_columns);
 
-        return view('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
+        return \View::make('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
     }
 
     /**
@@ -105,7 +105,7 @@ class ReconcileController extends Controller
         $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
-            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
+            return \Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
         Bus::batch([
@@ -114,9 +114,9 @@ class ReconcileController extends Controller
             new ExpertReviewSetProblemsJob($expeditionId)
         ])->name('Expert Reconcile ' . $expedition->id)->onQueue(config('config.queues.reconcile'))->dispatch();
 
-        Flash::success(t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
+        \Flash::success(t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
 
-        return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
+        return \Redirect::route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
     }
 
     /**
@@ -129,15 +129,15 @@ class ReconcileController extends Controller
      */
     public function update(string $expeditionId): RedirectResponse
     {
-        if (! $this->expertreconcileRepo->updateRecord(request()->all())) {
-            Flash::warning(t('Error while updating record.'));
+        if (! $this->expertreconcileRepo->updateRecord(\Request::all())) {
+            \Flash::warning(t('Error while updating record.'));
 
-            return redirect()->back();
+            return \Response::back();
         }
 
-        Flash::success(t('Record was updated successfully.'));
+        \Flash::success(t('Record was updated successfully.'));
 
-        return redirect()->to(request()->get('page'));
+        return \Response::to(\Request::get('page'));
     }
 
     /**
@@ -150,8 +150,8 @@ class ReconcileController extends Controller
     public function publish(string $projectId, string $expeditionId): RedirectResponse
     {
         ExpertReconcileReviewPublishJob::dispatch($expeditionId);
-        Flash::success(t('The Expert Review Publish job has been submitted. You will receive and email when it has completed.'));
+        \Flash::success(t('The Expert Review Publish job has been submitted. You will receive and email when it has completed.'));
 
-        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
 }

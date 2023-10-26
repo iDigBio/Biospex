@@ -80,7 +80,7 @@
                                    class="col-form-label required">{{ t('Start Date') }}
                                 :</label>
                             <input type="text"
-                                   class="form-control datetimepicker {{ ($errors->has('start_date')) ? 'is-invalid' : '' }}"
+                                   class="form-control date-time-picker {{ ($errors->has('start_date')) ? 'is-invalid' : '' }}"
                                    id="start_date" name="start_date"
                                    value="{{ old('start_date', $event->start_date->setTimezone($event->timezone)->format('Y-m-d H:i')) }}"
                                    required>
@@ -90,7 +90,7 @@
                             <label for="end_date"
                                    class="col-form-label required">{{ t('End Date') }}:</label>
                             <input type="text"
-                                   class="form-control datetimepicker {{ ($errors->has('end_date')) ? 'is-invalid' : '' }}"
+                                   class="form-control date-time-picker {{ ($errors->has('end_date')) ? 'is-invalid' : '' }}"
                                    id="end_date" name="end_date"
                                    value="{{ old('end_date', $event->end_date->setTimezone($event->timezone)->format('Y-m-d H:i')) }}"
                                    required>

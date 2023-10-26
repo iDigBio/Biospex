@@ -72,12 +72,12 @@ class DownloadController extends Controller
      */
     public function index(string $projectId, string $expeditionId): Factory|View
     {
-        $user = $this->userRepo->findWith(request()->user()->id, ['profile']);
+        $user = $this->userRepo->findWith(\Request::user()->id, ['profile']);
         $expedition = $this->expeditionRepo->expeditionDownloadsByActor($expeditionId);
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group);
 
-        return view('admin.expedition.partials.expedition-download-modal-body', compact('expedition', 'user', 'error'));
+        return \View::make('admin.expedition.partials.download-modal-body', compact('expedition', 'user', 'error'));
     }
 
     /**
@@ -106,13 +106,13 @@ class DownloadController extends Controller
         try {
             \Artisan::call('export:queue', ['expeditionId' => $expeditionId]);
 
-            Flash::success(t('Export generation has been added to the job queue. You will be notified when completed.'));
+            \Flash::success(t('Export generation has been added to the job queue. You will be notified when completed.'));
         } catch (Exception $e) {
             ;
-            Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
+            \Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
         }
 
-        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -127,9 +127,9 @@ class DownloadController extends Controller
     {
         ExportDownloadBatchJob::dispatch($downloadId);
 
-        Flash::success(t('Your batch request has been submitted. You will receive an email with download links when the process is complete.'));
+        \Flash::success(t('Your batch request has been submitted. You will receive an email with download links when the process is complete.'));
 
-        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**

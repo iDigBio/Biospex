@@ -61,7 +61,7 @@ class TranscriptionController extends Controller
      */
     public function state($projectId, $stateId, StateCountyRepository $stateCountyRepo)
     {
-        if (! request()->ajax()) {
+        if (! \Request::ajax()) {
             return response()->json(['html' => 'Error retrieving the counties.']);
         }
 

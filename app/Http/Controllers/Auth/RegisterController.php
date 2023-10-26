@@ -87,7 +87,7 @@ class RegisterController extends Controller
     public function showRegistrationForm()
     {
         if ( ! config('config.registration')) {
-            return redirect()->route('home')->with('error', t('Registration is not available at this time.'));
+            return \Redirect::route('home')->with('error', t('Registration is not available at this time.'));
         }
 
         $code = request('code');
@@ -96,14 +96,14 @@ class RegisterController extends Controller
 
         if ( ! empty($code) && ! $invite)
         {
-            Flash::warning( t('Your invite was unable to be found. Please contact the administration.'));
+            \Flash::warning( t('Your invite was unable to be found. Please contact the administration.'));
         }
 
         $code = $invite->code ?? null;
         $email = $invite->email ?? null;
         $timezones = ['' => null] + DateHelper::timeZoneSelect();
 
-        return view('auth.register', compact('code', 'email', 'timezones'));
+        return \View::make('auth.register', compact('code', 'email', 'timezones'));
     }
 
     /**

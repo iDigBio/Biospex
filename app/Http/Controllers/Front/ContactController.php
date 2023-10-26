@@ -39,7 +39,7 @@ class ContactController extends Controller
      */
     public function index()
     {
-        return view('front.contact');
+        return \View::make('front.contact');
     }
 
     /**
@@ -54,8 +54,8 @@ class ContactController extends Controller
 
         Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
 
-        Flash::success(t('Your message has been sent. Thank you.'));
+        \Flash::success(t('Your message has been sent. Thank you.'));
 
-        return redirect()->route('home');
+        return \Redirect::route('home');
     }
 }

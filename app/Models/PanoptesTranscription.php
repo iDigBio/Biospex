@@ -20,8 +20,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Support\Carbon;
-use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class PanoptesTranscription
@@ -30,7 +28,6 @@ use MongoDB\BSON\UTCDateTime;
  */
 class PanoptesTranscription extends BaseMongoModel
 {
-
     /**
      * Set Collection
      */
@@ -40,14 +37,14 @@ class PanoptesTranscription extends BaseMongoModel
      * @var string[]
      */
     protected $casts = [
-        'subject_id' => 'integer',
-        'classification_id' => 'integer',
-        'workflow_id' => 'integer',
-        'subject_expeditionId' => 'integer',
-        'subject_projectId' => 'integer',
-        'transcription_id' => 'string',
-        //'classification_finished_at' => 'datetime',
-        //'classification_started_at' => 'datetime' TODO check datetime casts work with mongodb
+        'subject_id'                 => 'integer',
+        'classification_id'          => 'integer',
+        'workflow_id'                => 'integer',
+        'subject_expeditionId'       => 'integer',
+        'subject_projectId'          => 'integer',
+        'transcription_id'           => 'string',
+        'classification_started_at'  => 'datetime',
+        'classification_finished_at' => 'datetime',
     ];
 
     /**
@@ -90,35 +87,50 @@ class PanoptesTranscription extends BaseMongoModel
     }
 
     /**
-     * Mutate finished_at date for MongoDb
-     *
-     * @param  string  $value
+     * Set subjectId to int.
      */
-    public function setClassificationFinishedAtAttribute($value)
+    protected function subjectId(): Attribute
     {
-        $this->attributes['classification_finished_at'] = new UTCDateTime(Carbon::parse($value)->timestamp * 1000);
-    }
-
-
-    /**
-     * Mutate started_at for MongoDb
-     *
-     * @param  string  $value
-     */
-    public function setClassificationStartedAtAttribute($value)
-    {
-        $this->attributes['classification_started_at'] = new UTCDateTime(Carbon::parse($value)->timestamp * 1000);
+        return Attribute::make(set: fn(string $value) => (int) $value,);
     }
 
     /**
-     * New method for getting and setting attributes.
-     * TODO Change attribute setters and mutators.
+     * Set classificationId to int.
      */
-    protected function firstName(): Attribute
+    protected function classificationId(): Attribute
     {
-        return Attribute::make(
-            get: fn (string $value) => ucfirst($value),
-            set: fn (string $value) => strtolower($value),
-        );
+        return Attribute::make(set: fn(string $value) => (int) $value,);
+    }
+
+    /**
+     * Set workflowId to int.
+     */
+    protected function workflowId(): Attribute
+    {
+        return Attribute::make(set: fn(string $value) => (int) $value,);
+    }
+
+    /**
+     * Set subjectExpeditionId to int.
+     */
+    protected function subjectExpeditionId(): Attribute
+    {
+        return Attribute::make(set: fn(string $value) => (int) $value,);
+    }
+
+    /**
+     * Set subjectProjectId to int.
+     */
+    protected function subjectProjectId(): Attribute
+    {
+        return Attribute::make(set: fn(string $value) => (int) $value,);
+    }
+
+    /**
+     * Set transcriptionId to int.
+     */
+    protected function transcriptionId(): Attribute
+    {
+        return Attribute::make(set: fn(string $value) => (int) $value,);
     }
 }

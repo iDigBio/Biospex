@@ -11,10 +11,11 @@
 
         <div class="card-body card-body-img-top white text-center">
             <div class="d-flex justify-content-between">
-                <p class="mr-3"><small>{{ $expedition->stat->local_transcriptions_completed }} {{ t('Digitizations') }}</small></p>
+                <p class="mr-3">
+                    <small>{{ $expedition->stat->local_transcriptions_completed }} {{ t('Digitizations') }}</small></p>
                 <p><small>{{ $expedition->stat->percent_completed }}% {{ t('Completed') }}</small></p>
             </div>
-            @include('admin.expedition.partials.expedition-tile-warning')
+            @include('admin.expedition.partials.tile-warning')
             <hr class="mt-0">
             <div class="d-flex align-items-start justify-content-between mt-4 mx-auto">
                 {!! $expedition->present()->expedition_show_icon !!}

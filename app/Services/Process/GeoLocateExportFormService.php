@@ -21,22 +21,19 @@ namespace App\Services\Process;
 
 use App\Models\Expedition;
 use App\Models\GeoLocateForm;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\GeoLocateFormRepository;
 use App\Repositories\GeoLocateRepository;
 use App\Services\Csv\AwsS3CsvService;
-use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Storage;
 
-class GeoLocateProcessService
+class GeoLocateExportFormService
 {
     /**
-     * @var \App\Repositories\ExpeditionRepository
+     * @var \App\Services\Process\ExpeditionService
      */
-    private ExpeditionRepository $expeditionRepository;
+    private ExpeditionService $expeditionService;
 
     /**
      * @var \App\Repositories\GeoLocateFormRepository
@@ -76,20 +73,19 @@ class GeoLocateProcessService
     /**
      * Construct.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
+     * @param \App\Services\Process\ExpeditionService $expeditionService
      * @param \App\Repositories\GeoLocateFormRepository $geoLocateFormRepository
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      * @param \App\Repositories\GeoLocateRepository $geoLocateRepository
      */
     public function __construct(
-        ExpeditionRepository $expeditionRepository,
+        ExpeditionService $expeditionService,
         GeoLocateFormRepository $geoLocateFormRepository,
         AwsS3CsvService $awsS3CsvService,
         GeoLocateRepository $geoLocateRepository
-
     ) {
 
-        $this->expeditionRepository = $expeditionRepository;
+        $this->expeditionService = $expeditionService;
         $this->geoLocateFormRepository = $geoLocateFormRepository;
         $this->awsS3CsvService = $awsS3CsvService;
         $this->geoLocateRepository = $geoLocateRepository;
@@ -99,12 +95,11 @@ class GeoLocateProcessService
      * Find project with relations.
      *
      * @param int $expeditionId
-     * @param array $relations
      * @return \App\Models\Expedition
      */
-    public function findExpeditionWithRelations(int $expeditionId, array $relations = []): Expedition
+    public function findExpeditionWithRelations(int $expeditionId): Expedition
     {
-        return $this->expeditionRepository->findWith($expeditionId, $relations);
+        return $this->expeditionService->findExpeditionWithRelations($expeditionId);
     }
 
     /**
@@ -213,14 +208,14 @@ class GeoLocateProcessService
     }
 
     /**
-     * Get GeoLocate fields from file.
+     * Get GeoLocateExport fields from file.
      *
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     private function getGeoLocateFields(): array
     {
-        return json_decode(File::get(config('config.geolocate_fields_file')), true);
+        return json_decode(File::get(config('config.geolocate.fields_file')), true);
     }
 
     /**
@@ -311,14 +306,14 @@ class GeoLocateProcessService
     }
 
     /**
-     * Delete GeoLocate csv file.
+     * Delete GeoLocateExport csv file.
      *
      * @param int $expeditionId
      * @return void
      */
     public function deleteGeoLocateFile(int $expeditionId): void
     {
-        $filePath = config('config.geolocate_dir.export').'/'.$expeditionId.'.csv';
+        $filePath = config('config.geolocate.dir.export').'/'.$expeditionId.'.csv';
         if (Storage::disk('s3')->exists($filePath)) {
             Storage::disk('s3')->delete($filePath);
         }

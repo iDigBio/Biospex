@@ -19,7 +19,7 @@
 
 namespace App\Repositories;
 
-use App\Models\GeoLocate;
+use App\Models\GeoLocateExport;
 use Illuminate\Support\LazyCollection;
 
 /**
@@ -32,9 +32,9 @@ class GeoLocateRepository extends BaseRepository
     /**
      * GeoLocateForm construct.
      *
-     * @param \App\Models\GeoLocate $geoLocate
+     * @param \App\Models\GeoLocateExport $geoLocate
      */
-    public function __construct(GeoLocate $geoLocate)
+    public function __construct(GeoLocateExport $geoLocate)
     {
         $this->model = $geoLocate;
     }

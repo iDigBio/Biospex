@@ -70,7 +70,7 @@
                        type="button">{{ t('Events') }}</a>
                     <a href="{{ route('admin.bingos.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Games') }}</a>
-                    <a href="#" class="preventDefault dropdown-item text-uppercase"
+                    <a href="#" class="prevent-default dropdown-item text-uppercase"
                        type="button"
                        data-toggle="modal"
                        data-target="#process-modal">{{ t('Processes') }}</a>

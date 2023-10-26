@@ -28,4 +28,16 @@ class WorkflowIdFormRequest extends FormRequest
             'panoptes_workflow_id' => 'required|integer'
         ];
     }
+
+    /**
+     * Prepare data for validation.
+     *
+     * @return void
+     */
+    public function prepareForValidation(): void
+    {
+        $data = [];
+        parse_str($this->input('data'),$data);
+        $this->merge(['panoptes_workflow_id' => $data['panoptes_workflow_id']]);
+    }
 }

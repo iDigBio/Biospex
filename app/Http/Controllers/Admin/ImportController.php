@@ -49,7 +49,7 @@ class ImportController extends Controller
     {
         $project = $projectRepo->find($projectId);
 
-        return view('admin.partials.import-modal-body', compact('project'));
+        return \View::make('admin.partials.import-modal-body', compact('project'));
     }
 
     /**
@@ -61,8 +61,8 @@ class ImportController extends Controller
     public function dwcFile(ImportRepository $importRepo)
     {
         try {
-            $projectId = request()->input('project_id');
-            $path = request()->file('dwc-file')->store(config('config.import_dir'), 'efs');
+            $projectId = \Request::input('project_id');
+            $path = \Request::file('dwc-file')->store(config('config.import_dir'), 'efs');
 
             $import = $importRepo->create([
                 'user_id'    => Auth::user()->id,
@@ -72,15 +72,15 @@ class ImportController extends Controller
 
             DwcFileImportJob::dispatch($import);
 
-            Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
+            \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
 
-            return redirect()->back();
+            return \Response::back();
         }
         catch(\Throwable $t)
         {
-            Flash::error(t('Error uploading file. %', $t->getMessage()));
+            \Flash::error(t('Error uploading file. %', $t->getMessage()));
 
-            return redirect()->back();
+            return \Response::back();
         }
     }
 
@@ -93,25 +93,25 @@ class ImportController extends Controller
     {
         try
         {
-            $projectId = request()->input('project_id');
+            $projectId = \Request::input('project_id');
 
             $data = [
-                'id'         => request()->input('recordset'),
+                'id'         => \Request::input('recordset'),
                 'user_id'    => Auth::user()->id,
                 'project_id' => $projectId
             ];
 
             RecordsetImportJob::dispatch($data);
 
-            Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
+            \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
 
-            return redirect()->back();
+            return \Response::back();
         }
         catch(Exception $e)
         {
-            Flash::error(t('Error uploading file'));
+            \Flash::error(t('Error uploading file'));
 
-            return redirect()->back();
+            return \Response::back();
         }
     }
 
@@ -124,25 +124,25 @@ class ImportController extends Controller
     {
         try
         {
-            $projectId = request()->input('project_id');
+            $projectId = \Request::input('project_id');
 
             $data = [
                 'id'      => $projectId,
                 'user_id' => Auth::user()->id,
-                'url'     => request()->input('dwc-url')
+                'url'     => \Request::input('dwc-url')
             ];
 
             DwcUriImportJob::dispatch($data);
 
-            Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
+            \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
 
-            return redirect()->back();
+            return \Response::back();
         }
         catch(Exception $e)
         {
-            Flash::error(t('Error uploading file'));
+            \Flash::error(t('Error uploading file'));
 
-            return redirect()->back();
+            return \Response::back();
         }
     }
 }

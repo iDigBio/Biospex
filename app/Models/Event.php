@@ -21,7 +21,9 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\EventPresenter;
+use Carbon\Carbon;
 use DateTimeZone;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class Event
@@ -91,7 +93,7 @@ class Event extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function owner()
+    public function owner(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -117,22 +119,22 @@ class Event extends BaseEloquentModel
     }
 
     /**
-     * Set start date attribute.
-     *
-     * @param $value
+     * Set dates to UTC. User selected timezone is set for converting later.
      */
-    public function setStartDateAttribute($value)
+    protected function startDate(): Attribute
     {
-        $this->attributes['start_date'] = $value->setTimezone(new DateTimeZone('UTC'));
+        return Attribute::make(
+            set: fn (Carbon $value) => $value->setTimezone(new DateTimeZone('UTC')),
+        );
     }
 
     /**
-     * Set end date attribute.
-     *
-     * @param $value
+     * Set dates to UTC. User selected timezone is set for converting later.
      */
-    public function setEndDateAttribute($value)
+    protected function endDate(): Attribute
     {
-        $this->attributes['end_date'] = $value->setTimezone(new DateTimeZone('UTC'));
+        return Attribute::make(
+            set: fn (Carbon $value) => $value->setTimezone(new DateTimeZone('UTC')),
+        );
     }
 }

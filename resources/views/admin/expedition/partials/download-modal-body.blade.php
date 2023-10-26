@@ -19,11 +19,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                        @forelse ($actor->downloads as $download)
-                            @include('admin.expedition.partials.expedition-download-loop')
-                        @empty
-                            <tr><td>{{ t('No downloads exist.') }}</td></tr>
-                        @endforelse
+                    @forelse ($actor->downloads as $download)
+                        @include('admin.expedition.partials.download-loop')
+                    @empty
+                        <tr>
+                            <td>{{ t('No downloads exist.') }}</td>
+                        </tr>
+                    @endforelse
                     </tbody>
                 </table>
             </div>

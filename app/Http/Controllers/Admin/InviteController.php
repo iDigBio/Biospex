@@ -77,7 +77,7 @@ class InviteController extends Controller
         $error = ! $this->checkPermissions('isOwner', $group);
         $inviteCount = old('entries', $group->invites->count() ?: 1);
 
-        return view('admin.partials.invite-modal-body', compact('group', 'inviteCount', 'error'));
+        return \View::make('admin.partials.invite-modal-body', compact('group', 'inviteCount', 'error'));
     }
 
     /**
@@ -93,6 +93,6 @@ class InviteController extends Controller
 
         $this->inviteProcess->storeInvites($group->id, $request);
 
-        return redirect()->back();
+        return \Response::back();
     }
 }

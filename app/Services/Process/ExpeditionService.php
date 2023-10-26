@@ -79,13 +79,27 @@ class ExpeditionService
 
     /**
      * Find Expedition with relations.
+     * Used for Expedition panel on multiple pages. Keeping it cached prevents overloading.
      *
      * @param int $expeditionId
-     * @param array $with
      * @return mixed
      */
-    public function findExpeditionWithRelations(int $expeditionId, array $with = []): mixed
+    public function findExpeditionWithRelations(int $expeditionId): mixed
     {
+
+        $with = [
+            'actors',
+            'project.group.geoLocateForms',
+            'project.geoLocateCommunity',
+            'project.ocrQueue',
+            'downloads',
+            'export',
+            'geoLocateStat',
+            'workflowManager',
+            'stat',
+            'panoptesProject',
+        ];
+
         return $this->expeditionRepository->findWith($expeditionId, $with);
     }
 
@@ -101,7 +115,7 @@ class ExpeditionService
     }
 
     /**
-     * Update for new GeoLocate actor.
+     * Update for new GeoLocateExport actor.
      *
      * @param int $expeditionId
      * @param \App\Http\Requests\ExpeditionFormRequest $request
@@ -129,7 +143,7 @@ class ExpeditionService
      */
     private function setExpeditionCompleted(Expedition $expedition, int $workflow_id): int
     {
-        return ($expedition->completed && ! $expedition->locked && $workflow_id == config('config.geoLocateWorkflowId')) ? 0 : $expedition->completed;
+        return ($expedition->completed && ! $expedition->locked && $workflow_id == config('config.geolocate.workflow_id')) ? 0 : $expedition->completed;
     }
 
     /**

@@ -45,7 +45,7 @@ class AdvertiseController extends Controller
 
         if ( ! $this->checkPermissions('readProject', $project->group))
         {
-            return redirect()->route('webauth.projects.index');
+            return \Redirect::route('webauth.projects.index');
         }
 
         return $response->make(json_encode($project->advertise, JSON_UNESCAPED_SLASHES), '200', [

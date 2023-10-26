@@ -72,8 +72,9 @@ class UpdateQueries extends Command
         $this->addActorGeoLocate();
         $this->deleteWorkflows();
         $this->addWorkflowGeoLocate();
-
         $this->updateActorExpeditionState();
+        $this->alterBingoMapIp();
+        $this->alterEventTransactionIds();
     }
 
     private function saveProjectWorkflowOrigAndMoveToExpedition(): void
@@ -167,7 +168,7 @@ class UpdateQueries extends Command
     {
         echo 'Running '.__METHOD__.PHP_EOL;
 
-        Actor::create(['title' => 'GeoLocate', 'url' => 'https://www.geo-locate.org/', 'class' => 'GeoLocate']);
+        Actor::create(['title' => 'GeoLocateExport', 'url' => 'https://www.geo-locate.org/', 'class' => 'GeoLocateExport']);
     }
 
     private function deleteWorkflows()
@@ -187,7 +188,7 @@ class UpdateQueries extends Command
     {
         echo 'Running '.__METHOD__.PHP_EOL;
 
-        $workflow = Workflow::create(['title' => 'Zooniverse -> GeoLocate', 'enabled' => 1]);
+        $workflow = Workflow::create(['title' => 'Zooniverse -> GeoLocateExport', 'enabled' => 1]);
         $sync = [
             2 => ['order' => 1],
             4 => ['order' => 2],
@@ -213,5 +214,18 @@ class UpdateQueries extends Command
                 }
             });
         });
+    }
+
+    public function alterBingoMapIp()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+        DB::raw("ALTER TABLE `bingo_maps` CHANGE `ip` `ip` VARCHAR(30) NOT NULL;");
+    }
+
+    public function alterEventTransactionIds()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        DB::raw("ALTER TABLE `event_transcriptions` CHANGE `team_id` `team_id` INT UNSIGNED NOT NULL, CHANGE `user_id` `event_user_id` INT UNSIGNED NOT NULL; ");
     }
 }

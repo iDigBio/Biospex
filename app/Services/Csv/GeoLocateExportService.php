@@ -20,7 +20,7 @@
 namespace App\Services\Csv;
 
 use App\Models\Expedition;
-use App\Models\GeoLocate;
+use App\Models\GeoLocateExport;
 use App\Models\GeoLocateForm;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
@@ -124,7 +124,7 @@ class GeoLocateExportService
      */
     public function setCsvFilePath(int $expeditionId): void
     {
-        $this->csvFilePath = config('config.geolocate_dir.export').'/'.$expeditionId.'.csv';
+        $this->csvFilePath = config('config.geolocate.dir.export').'/'.$expeditionId.'.csv';
     }
 
     /**
@@ -171,11 +171,11 @@ class GeoLocateExportService
     /**
      * Set array for export fields.
      *
-     * @param \App\Models\GeoLocate $record
+     * @param \App\Models\GeoLocateExport $record
      * @param \App\Models\GeoLocateForm $form
      * @return array
      */
-    public function setDataArray(GeoLocate $record, GeoLocateForm $form): array
+    public function setDataArray(GeoLocateExport $record, GeoLocateForm $form): array
     {
         $data = collect($form->fields)->mapWithKeys(function (array $field) use($record) {
             return [$field['geo'] => $record->{$field['csv']}];
@@ -217,13 +217,13 @@ class GeoLocateExportService
     {
         $values = [
             'expedition_id' => $expedition->id,
-            'actor_id'      => config('config.geoLocateActorId'),
+            'actor_id'      => config('config.geolocate.actor_id'),
             'file'          => $expedition->id . '.csv',
             'type'          => 'export',
         ];
         $attributes = [
             'expedition_id' => $expedition->id,
-            'actor_id'      => config('config.geoLocateActorId'),
+            'actor_id'      => config('config.geolocate.actor_id'),
             'file'          => $expedition->id . '.csv',
             'type'          => 'export',
         ];
@@ -235,12 +235,13 @@ class GeoLocateExportService
      * Update actor_expedition pivot state.
      *
      * @param \App\Models\Expedition $expedition
+     * @param int $state
      * @return void
      */
-    public function updateState(Expedition $expedition): void
+    public function updateState(Expedition $expedition, int $state): void
     {
-        $expedition->actors()->updateExistingPivot(config('config.geoLocateActorId'), [
-            'state' => 1,
+        $expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+            'state' => $state,
         ]);
     }
 }

@@ -22,8 +22,6 @@ namespace App\Models;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
 use App\Models\Traits\Presentable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
@@ -36,11 +34,6 @@ use Czim\Paperclip\Model\PaperclipTrait;
 class Expedition extends BaseEloquentModel implements AttachableInterface
 {
     use UuidTrait, HybridRelations, Presentable, PaperclipTrait;
-
-    /**
-     * @var string
-     */
-    protected $connection = 'mysql';
 
     /**
      * @inheritDoc
@@ -105,7 +98,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function project()
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
@@ -115,7 +108,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function stat()
+    public function stat(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(ExpeditionStat::class);
     }
@@ -123,20 +116,20 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * Return expedition stat transcriptions have started.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function statWithTranscriptions()
+    public function statWithTranscriptions(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(ExpeditionStat::class)->where('transcriptions_completed', '>', 0);
     }
 
     /**
      * Subject relationship.
-     * $expedition->subjects()->attach($subject) adds expedition ids in subjects
+     *  $expedition->subjects()->attach($subject) adds expedition ids in subjects
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \MongoDB\Laravel\Relations\BelongsToMany
      */
-    public function subjects(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function subjects(): \MongoDB\Laravel\Relations\BelongsToMany
     {
         return $this->belongsToMany(Subject::class);
     }
@@ -144,9 +137,9 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * Workflow relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function workflow(): BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+    public function workflow(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Workflow::class);
     }
@@ -156,7 +149,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function workflowManager()
+    public function workflowManager(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(WorkflowManager::class);
     }
@@ -164,31 +157,37 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function downloads()
+    public function downloads(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Download::class);
     }
 
     /**
+     * Download Export relation
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function export(): HasOne
+    public function export(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Download::class)->where('type', 'export');
     }
 
     /**
+     * Ocr Queue relation.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function ocrQueue()
+    public function ocrQueue(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(OcrQueue::class);
     }
 
     /**
-     * @return mixed
+     * Actors relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function actors()
+    public function actors(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Actor::class, 'actor_expedition')
             ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'error', 'order', 'expert')
@@ -197,9 +196,11 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * @return mixed
+     * Return nfn actor relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function nfnActor()
+    public function nfnActor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         $pivot = [
             'id',
@@ -217,7 +218,11 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
             ->wherePivot('actor_id', config('config.nfnActorId'));
     }
 
-    public function geoLocateActor()
+    /**
+     * GeoLocate actor relation.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function geoLocateActor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         $pivot = [
             'id',
@@ -232,7 +237,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
         return $this->belongsToMany(Actor::class, 'actor_expedition')
             ->withPivot($pivot)
-            ->wherePivot('actor_id', config('config.geoLocateActorId'));
+            ->wherePivot('actor_id', config('config.geolocate.actor_id'));
     }
 
     /**
@@ -262,62 +267,68 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function panoptesProject()
+    public function panoptesProject(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(PanoptesProject::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * PanoptesTranscription relation.
+     *
+     * @return \MongoDB\Laravel\Relations\HasMany
      */
-    public function panoptesTranscriptions()
+    public function panoptesTranscriptions(): \MongoDB\Laravel\Relations\HasMany
     {
         return $this->hasMany(PanoptesTranscription::class, 'subject_expeditionId');
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Relation used for wedigbio dashboard.
+     *
+     * @return \MongoDB\Laravel\Relations\HasMany
      */
-    public function dashboard()
+    public function dashboard(): \MongoDB\Laravel\Relations\HasMany
     {
         return $this->hasMany(PusherTranscription::class, 'expedition_id');
     }
 
     /**
+     * ExportQueue relation.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function exportQueue()
+    public function exportQueue(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(ExportQueue::class);
     }
 
     /**
-     * GeoLocate relation with mongodb
+     * GeoLocateExport relation with mongodb
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
+     * @return \MongoDB\Laravel\Relations\HasMany
      */
-    public function geoLocate(): \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
+    public function geoLocateExports(): \MongoDB\Laravel\Relations\HasMany
     {
-        return $this->hasMany(GeoLocate::class, 'subject_expeditionId');
+        return $this->hasMany(GeoLocateExport::class, 'subject_expeditionId');
     }
 
     /**
      * GeoLocateForm relation in mysql.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function geoLocateForm(): BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+    public function geoLocateForm(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(GeoLocateForm::class);
     }
 
     /**
-     * Get counts attribute.
+     * GeoLocateStat relation.
      *
-     * @return int
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function getSubjectsCountAttribute()
+    public function geoLocateStat(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->subjects()->count();
+        return $this->hasOne(GeoLocateStat::class);
     }
 }

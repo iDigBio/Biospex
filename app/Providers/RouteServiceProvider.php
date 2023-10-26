@@ -104,7 +104,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
                 $this->require_files('routes/admin');
                 Route::get('/', function () {
-                    return redirect()->route('admin.projects.index');
+                    return \Redirect::route('admin.projects.index');
                 });
             });
         });

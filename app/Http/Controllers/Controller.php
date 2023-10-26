@@ -26,7 +26,7 @@ abstract class Controller extends BaseController
         }
         catch (\Exception $e)
         {
-            Flash::warning(t('You do not have sufficient permissions.'));
+            \Flash::warning(t('You do not have sufficient permissions.'));
 
             return false;
         }

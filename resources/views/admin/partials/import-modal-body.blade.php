@@ -18,7 +18,7 @@
                     @csrf
                     <input type="hidden" name="project_id" value="{{ $project->id }}">
                     <div class="mt-2 mb-4">
-                        <a href="#" class="btn btn-outline-primary collapsed preventDefault"
+                        <a href="#" class="btn btn-outline-primary collapsed prevent-default"
                            data-toggle="collapse" data-target="#dwc-file-instruction"
                            aria-expanded="true"
                            aria-controls="dwc-file-instruction">{{ t('Instructions') }}</a>
@@ -60,7 +60,7 @@
                     @csrf
                     <input type="hidden" name="project_id" value="{{ $project->id }}">
                     <div class="mt-2 mb-4">
-                        <a href="#" class="btn btn-outline-primary collapsed preventDefault"
+                        <a href="#" class="btn btn-outline-primary collapsed prevent-default"
                            data-toggle="collapse" data-target="#recordset-instruction"
                            aria-expanded="true"
                            aria-controls="recordset-instruction">{{ t('Instructions') }}</a>
@@ -115,7 +115,7 @@
                     @csrf
                     <input type="hidden" name="project_id" value="{{ $project->id }}">
                     <div class="mt-2 mb-4">
-                        <a href="#" class="btn btn-outline-primary collapsed preventDefault"
+                        <a href="#" class="btn btn-outline-primary collapsed prevent-default"
                            data-toggle="collapse" data-target="#dwc-uri-instruction"
                            aria-expanded="true"
                            aria-controls="dwc-uri-instruction">{{ t('Instructions') }}</a>

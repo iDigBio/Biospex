@@ -58,7 +58,7 @@ class WeDigBioEventProgressJob implements ShouldQueue
         $weDigBioDate = $weDigBioEventDateRepository->getWeDigBioEventTranscriptions($this->dateId);
         $id = $weDigBioDate->active ? 0 : $weDigBioDate->id;
 
-        $data = [$id => view('common.wedigbio-progress-content', compact('weDigBioDate'))->render()];
+        $data = [$id => \View::make('common.wedigbio-progress-content', compact('weDigBioDate'))->render()];
 
         WeDigBioProgressEvent::dispatch($id, $data);
     }

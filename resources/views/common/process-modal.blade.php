@@ -23,7 +23,11 @@
                     <div id="export-html">{{ t('Checking poll...') }}</div>
                 </div>
             </div>
-            <x-buttons.modal-dismiss />
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-outline-primary color-action align-self-center"
+                        data-dismiss="modal">{{ t('Exit') }}
+                </button>
+            </div>
         </div>
     </div>
 </div>

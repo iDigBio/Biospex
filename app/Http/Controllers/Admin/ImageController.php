@@ -20,6 +20,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Request;
 use App\Services\Image\Thumbnail;
 
 /**
@@ -54,7 +55,11 @@ class ImageController extends Controller
      */
     public function preview()
     {
-        $url = request()->input('url');
+        if (\Request::has('url-view')) {
+            return \Request::input('url');
+        }
+
+        $url = \Request::input('url');
         $thumb = $this->thumbnail->getThumbnail(urldecode($url));
 
         return '<img src="data:image/jpeg;base64,' . base64_encode($thumb) . '" />';

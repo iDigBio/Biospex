@@ -7,7 +7,7 @@
 
 {{-- Content --}}
 @section('content')
-    @include('admin.expedition.partials.expedition-panel')
+    @include('admin.expedition.partials.panel')
     <form id="gridForm" method="post"
           action="{{ route('admin.expeditions.update', [$expedition->project->id, $expedition->id]) }}"
           role="form" enctype="multipart/form-data">
@@ -65,7 +65,8 @@
                         <div class="form-group">
                             <label for="workflow_id" class="col-form-label col-12 required">{{ t('Workflows') }}:
                                 <i class="fa fa-question-circle-o"
-                                   data-hover="tooltip" title="{{ t("Workflow can only be set once. If a mistake is made, please contact administration via email.") }}"
+                                   data-hover="tooltip"
+                                   title="{{ t("Workflow can only be set once. If a mistake is made, please contact administration via email.") }}"
                                    aria-hidden="true"></i></label>
                             <select name="workflow_id" id="workflow_id"
                                     class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
@@ -76,7 +77,8 @@
                                 @endforeach
                             </select>
                             @if($expedition->locked === 1)
-                                <input type="hidden" name="workflow_id" value="{{ old('workflow_id', $expedition->workflow_id) }}">
+                                <input type="hidden" name="workflow_id"
+                                       value="{{ old('workflow_id', $expedition->workflow_id) }}">
                             @endif
                             <input type="hidden" name="locked" value="1">
                             <span class="invalid-feedback">{{ $errors->first('workflow_id') }}</span>
@@ -95,5 +97,4 @@
             <table class="table table-bordered" id="jqGridTable"></table>
         </div>
     </div>
-    @include('admin.partials.jqgrid-modal')
 @endsection

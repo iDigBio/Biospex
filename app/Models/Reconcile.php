@@ -21,6 +21,7 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\ReconcilePresenter;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class Reconcile
@@ -86,4 +87,35 @@ class Reconcile extends BaseMongoModel
         return $this->hasMany(PanoptesTranscription::class, 'subject_id', 'subject_id');
     }
 
+    /**
+     * Set subjectId to int.
+     */
+    protected function subjectId(): Attribute
+    {
+        return Attribute::make(set: fn(string $value) => (int) $value,);
+    }
+
+    /**
+     * Set subjectId to int.
+     */
+    protected function problem(): Attribute
+    {
+        return Attribute::make(set: fn(string $value) => (int) $value,);
+    }
+
+    /**
+     * Set subjectExpeditionId to int.
+     */
+    protected function subjectExpeditionId(): Attribute
+    {
+        return Attribute::make(set: fn(string $value) => (int) $value,);
+    }
+
+    /**
+     * Set subjectProjectId to int.
+     */
+    protected function subjectProjectId(): Attribute
+    {
+        return Attribute::make(set: fn(string $value) => (int) $value,);
+    }
 }

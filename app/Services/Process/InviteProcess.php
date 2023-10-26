@@ -94,13 +94,13 @@ class InviteProcess
             Notification::send($newInvites, new GroupInvite($group));
             Notification::send($group->invites, new GroupInvite($group));
 
-            Flash::success(t('Invites to :group sent successfully.', $group->title));
+            \Flash::success(t('Invites to :group sent successfully.', $group->title));
 
             return true;
         }
         catch (Exception $e)
         {
-            Flash::error(t('Unable to sent invites for :group. Please contact the administration.', $group->title));
+            \Flash::error(t('Unable to sent invites for :group. Please contact the administration.', $group->title));
 
             return false;
         }

@@ -91,7 +91,7 @@ class GeoLocateExportJob implements ShouldQueue
             $geoLocateExportService->build($this->expedition);
             $csvFilePath = $geoLocateExportService->moveCsvFile();
             $geoLocateExportService->createDownload($this->expedition);
-            $geoLocateExportService->updateState($this->expedition);
+            $geoLocateExportService->updateState($this->expedition, 1);
 
             $file = route('admin.downloads.geolocate', ['file' => base64_encode($csvFilePath)]);
 
@@ -107,6 +107,8 @@ class GeoLocateExportJob implements ShouldQueue
             ];
 
             $this->user->notify(new JobError(__FILE__, $messages));
+
+            $geoLocateExportService->updateState($this->expedition, 0);
 
             $csvFilePath = $geoLocateExportService->getCsvFilePath();
 

@@ -87,5 +87,4 @@
             <table class="table table-bordered" id="jqGridTable"></table>
         </div>
     </div>
-    @include('admin.partials.jqgrid-modal')
 @endsection

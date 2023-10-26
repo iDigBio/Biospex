@@ -54,9 +54,9 @@ class EventController extends Controller
     /**
      * Displays Events on public page.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         $results = $this->eventRepo->getEventAdminIndex(Auth::user());
 
@@ -64,29 +64,31 @@ class EventController extends Controller
             return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
         });
 
-        return view('admin.event.index', compact('events', 'eventsCompleted'));
+        return \View::make('admin.event.index', compact('events', 'eventsCompleted'));
     }
 
     /**
      * Displays Completed Events on public page.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|null
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function sort()
+    public function sort(): ?\Illuminate\Contracts\View\View
     {
-        if ( ! request()->ajax()) {
+        if ( ! \Request::ajax()) {
             return null;
         }
 
-        $results = $this->eventRepo->getEventPublicIndex(request()->get('sort'), request()->get('order'));
+        $results = $this->eventRepo->getEventPublicIndex(\Request::get('sort'), \Request::get('order'));
 
         [$active, $completed] = $results->partition(function ($event) {
             return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
         });
 
-        $events = request()->get('type') === 'active' ? $active : $completed;
+        $events = \Request::get('type') === 'active' ? $active : $completed;
 
-        return view('front.event.partials.event', compact('events'));
+        return \View::make('front.event.partials.event', compact('events'));
     }
 
     /**
@@ -101,10 +103,10 @@ class EventController extends Controller
 
         if ( ! $this->checkPermissions('read', $event))
         {
-            return redirect()->route('admin.events.index');
+            return \Redirect::route('admin.events.index');
         }
 
-        return view('admin.event.show', compact('event'));
+        return \View::make('admin.event.show', compact('event'));
     }
 
     /**
@@ -120,7 +122,7 @@ class EventController extends Controller
         $timezones = DateHelper::timeZoneSelect();
         $teamsCount = old('entries', 1);
 
-        return view('admin.event.create', compact('projects', 'timezones', 'teamsCount'));
+        return \View::make('admin.event.create', compact('projects', 'timezones', 'teamsCount'));
     }
 
     /**
@@ -134,14 +136,14 @@ class EventController extends Controller
         $event = $this->eventRepo->createEvent($request->all());
 
         if ($event) {
-            Flash::success(t('Record was created successfully.'));
+            \Flash::success(t('Record was created successfully.'));
 
-            return redirect()->route('admin.events.show', [$event->id]);
+            return \Redirect::route('admin.events.show', [$event->id]);
         }
 
-        Flash::error(t('An error occurred when saving record.'));
+        \Flash::error(t('An error occurred when saving record.'));
 
-        return redirect()->route('admin.events.index');
+        return \Redirect::route('admin.events.index');
     }
 
     /**
@@ -158,14 +160,14 @@ class EventController extends Controller
 
         if ( ! $this->checkPermissions('update', $event))
         {
-            return redirect()->back();
+            return \Response::back();
         }
 
         $projects = $projectRepo->getProjectEventSelect();
         $timezones = DateHelper::timeZoneSelect();
         $teamsCount = old('entries', $event->teams->count() ?: 1);
 
-        return view('admin.event.edit', compact('event', 'projects', 'timezones', 'teamsCount'));
+        return \View::make('admin.event.edit', compact('event', 'projects', 'timezones', 'teamsCount'));
     }
 
     /**
@@ -181,20 +183,20 @@ class EventController extends Controller
 
         if ( ! $this->checkPermissions('update', $event))
         {
-            return redirect()->route('admin.events.index');
+            return \Redirect::route('admin.events.index');
         }
 
         $result = $this->eventRepo->updateEvent($request->all(), $eventId);
 
         if ($result) {
-            Flash::success(t('Record was updated successfully.'));
+            \Flash::success(t('Record was updated successfully.'));
 
-            return redirect()->route('admin.events.show', [$eventId]);
+            return \Redirect::route('admin.events.show', [$eventId]);
         }
 
-        Flash::error(t('Error while updating record.'));
+        \Flash::error(t('Error while updating record.'));
 
-        return redirect()->route('admin.events.edit', [$eventId]);
+        return \Redirect::route('admin.events.edit', [$eventId]);
     }
 
     /**
@@ -209,21 +211,21 @@ class EventController extends Controller
 
         if ( ! $this->checkPermissions('delete', $event))
         {
-            return redirect()->route('admin.events.index');
+            return \Redirect::route('admin.events.index');
         }
 
         $result = $event->delete();
 
         if ($result)
         {
-            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
+            \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
-            return redirect()->route('admin.events.index');
+            return \Redirect::route('admin.events.index');
         }
 
-        Flash::error(t('An error occurred when deleting record.'));
+        \Flash::error(t('An error occurred when deleting record.'));
 
-        return redirect()->route('admin.events.edit', [$eventId]);
+        return \Redirect::route('admin.events.edit', [$eventId]);
     }
 
     /**
@@ -234,7 +236,7 @@ class EventController extends Controller
      */
     public function exportTranscriptions($eventId)
     {
-        if ( ! request()->ajax()) {
+        if ( ! \Request::ajax()) {
             return response()->json(false);
         }
 
@@ -251,7 +253,7 @@ class EventController extends Controller
      */
     public function exportUsers($eventId)
     {
-        if ( ! request()->ajax()) {
+        if ( ! \Request::ajax()) {
             return response()->json(false);
         }
 

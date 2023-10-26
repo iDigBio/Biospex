@@ -14,10 +14,29 @@ class ActorWorkflow extends BaseEloquentModel implements Sortable
 {
     use AsPivot, SortableTrait;
 
+    /**
+     * @var string
+     */
     protected $table = 'actor_workflow';
+
+    /**
+     * @var string
+     */
     public $primaryKey = 'id';
+
+    /**
+     * @var bool
+     */
     public $incrementing = true;
+
+    /**
+     * @var array
+     */
     protected $guarded = [];
+
+    /**
+     * @var bool
+     */
     public $timestamps = false;
 
     /**
@@ -33,8 +52,6 @@ class ActorWorkflow extends BaseEloquentModel implements Sortable
      */
     public function buildSortQuery()
     {
-        // As we're sorting Artists belonging to a Track, we're setting this to filter using track_id
-        return static::query()
-            ->where('workflow_id', $this->workflow_id);
+        return static::query()->where('workflow_id', $this->workflow_id);
     }
 }
