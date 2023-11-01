@@ -25,7 +25,7 @@
                         name="community_id">
                     <option value="" class="text-uppercase">{{ t('New') }}</option>
                     @foreach($expedition->project->geoLocateCommunity as $community)
-                        @php($selected = isset($expedition->geoLocateStat->geo_locate_community_id) && $expedition->geoLocateStat->geo_locate_community_id === $community->id ? 'selected' : '')
+                        @php($selected = isset($expedition->geoLocateDataSource->geo_locate_community_id) && $expedition->geoLocateDataSource->geo_locate_community_id === $community->id ? 'selected' : '')
                         <option value="{{ $community->id }}" {{ $selected }}>{{ $community->name }}</option>
                     @endforeach
                 </select>
@@ -50,7 +50,7 @@
                     <input type="text"
                            class="w-100 form-control"
                            id="data-source" name="data_source"
-                           value="{{ isset($expedition->geoLocateStat->data_source) ? $expedition->geoLocateStat->data_source : '' }}"
+                           value="{{ isset($expedition->geoLocateDataSource->data_source) ? $expedition->geoLocateDataSource->data_source : '' }}"
                            placeholder="Enter data source" required>
                 </div>
             </div>
