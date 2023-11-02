@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
+use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
 use App\Services\Api\AwsLambdaApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

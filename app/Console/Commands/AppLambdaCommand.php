@@ -20,7 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Repositories\ExportQueueRepository;
-use App\Services\Actor\Traits\ActorDirectory;
+use App\Services\Actors\Traits\ActorDirectory;
 use Aws\Lambda\LambdaClient;
 use Illuminate\Console\Command;
 use \Illuminate\Foundation\Bus\DispatchesJobs;

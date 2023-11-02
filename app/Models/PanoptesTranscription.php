@@ -19,7 +19,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Casts\IntegerCast;
 
 /**
  * Class PanoptesTranscription
@@ -37,11 +37,11 @@ class PanoptesTranscription extends BaseMongoModel
      * @var string[]
      */
     protected $casts = [
-        'subject_id'                 => 'integer',
-        'classification_id'          => 'integer',
-        'workflow_id'                => 'integer',
-        'subject_expeditionId'       => 'integer',
-        'subject_projectId'          => 'integer',
+        'subject_id'                 => IntegerCast::class,
+        'classification_id'          => IntegerCast::class,
+        'workflow_id'                => IntegerCast::class,
+        'subject_expeditionId'       => IntegerCast::class,
+        'subject_projectId'          => IntegerCast::class,
         'transcription_id'           => 'string',
         'classification_started_at'  => 'datetime',
         'classification_finished_at' => 'datetime',
@@ -84,53 +84,5 @@ class PanoptesTranscription extends BaseMongoModel
     public function dashboard()
     {
         return $this->hasOne(PusherTranscription::class, 'classification_id', 'classification_id');
-    }
-
-    /**
-     * Set subjectId to int.
-     */
-    protected function subjectId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
-    }
-
-    /**
-     * Set classificationId to int.
-     */
-    protected function classificationId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
-    }
-
-    /**
-     * Set workflowId to int.
-     */
-    protected function workflowId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
-    }
-
-    /**
-     * Set subjectExpeditionId to int.
-     */
-    protected function subjectExpeditionId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
-    }
-
-    /**
-     * Set subjectProjectId to int.
-     */
-    protected function subjectProjectId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
-    }
-
-    /**
-     * Set transcriptionId to int.
-     */
-    protected function transcriptionId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
     }
 }

@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\Expedition;
 use App\Models\GeoLocateForm;
 use App\Models\User;
-use App\Notifications\GeoLocateNotification;
+use App\Notifications\GeoLocateExportNotification;
 use App\Notifications\JobError;
 use App\Repositories\DownloadRepository;
 use App\Services\Csv\GeoLocateExportService;
@@ -95,7 +95,7 @@ class GeoLocateExportJob implements ShouldQueue
 
             $file = route('admin.downloads.geolocate', ['file' => base64_encode($csvFilePath)]);
 
-            $this->user->notify(new GeoLocateNotification($file));
+            $this->user->notify(new GeoLocateExportNotification($file));
 
             return;
 

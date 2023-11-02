@@ -92,6 +92,20 @@ class BaseRepository
     }
 
     /**
+     * Find by field with relations.
+     *
+     * @param $attribute
+     * @param $value
+     * @param array $with
+     * @param array $columns
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function findByWith($attribute, $value, array $with = [], array $columns = ['*']): \Illuminate\Database\Eloquent\Collection|array
+    {
+        return $this->model->with($with)->where($attribute, '=', $value)->get($columns);
+    }
+
+    /**
      * Get all by attribute value.
      *
      * @param $attribute

@@ -35,9 +35,9 @@ class HomeController extends Controller
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View
      */
-    public function index(ExpeditionRepository $expeditionRepo, PanoptesTranscriptionRepository $panoptesTranscriptionRepo)
+    public function index(ExpeditionRepository $expeditionRepo, PanoptesTranscriptionRepository $panoptesTranscriptionRepo): \Illuminate\Contracts\View\View
     {
         $expedition = $expeditionRepo->getHomePageProjectExpedition();
         $contributorCount = $panoptesTranscriptionRepo->getContributorCount();

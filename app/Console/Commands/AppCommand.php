@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\GeoLocateExport;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 

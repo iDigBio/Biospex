@@ -323,12 +323,12 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * GeoLocateStat relation.
+     * GeoLocateDataSource relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function geoLocateStat(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function geoLocateDataSource(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(GeoLocateStat::class);
+        return $this->hasOne(GeoLocateDataSource::class);
     }
 }

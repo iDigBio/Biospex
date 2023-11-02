@@ -18,7 +18,7 @@
  */
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Casts\IntegerCast;
 
 class GeoLocateExport extends BaseMongoModel
 {
@@ -36,29 +36,9 @@ class GeoLocateExport extends BaseMongoModel
      * @var array
      */
     protected $casts = [
-        'subject_id'           => 'int',
-        'subject_expeditionId' => 'int'
+        'subject_id'           => IntegerCast::class,
+        'subject_expeditionId' => IntegerCast::class
     ];
-
-    /**
-     * Set subjectId to int.
-     */
-    protected function subjectId(): Attribute
-    {
-        return Attribute::make(
-            set: fn (string $value) => (int)$value,
-        );
-    }
-
-    /**
-     * Set subjectExpeditionId to int.
-     */
-    protected function subjectExpeditionId(): Attribute
-    {
-        return Attribute::make(
-            set: fn (string $value) => (int)$value,
-        );
-    }
 
     /**
      * Expedition relation.

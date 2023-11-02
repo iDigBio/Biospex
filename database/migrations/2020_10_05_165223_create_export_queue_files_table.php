@@ -15,7 +15,7 @@ class CreateExportQueueFilesTable extends Migration
     {
         Schema::create('export_queue_files', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('queue_id')->index('queues.export_files_queue_id_foreign');
+            $table->unsignedInteger('queue_id')->index('export_files_queue_id_foreign');
             $table->string('subject_id', 30)->nullable()->unique();
             $table->string('url')->nullable();
             $table->tinyInteger('error')->default(0);

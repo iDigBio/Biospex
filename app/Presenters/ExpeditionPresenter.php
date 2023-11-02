@@ -77,9 +77,14 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionToolsIconLrg()
     {
-        return '<a href="#" class="prevent-default" data-toggle="modal"
-                    data-target="#expedition-tools-modal" data-hover="tooltip" title="'. t('Expedition Tools').'">
-                    <i class="fas fa-tools fa-2x"></i></a>';
+        return '<a href="" class="prevent-default"
+                       data-dismiss="modal"
+                       data-toggle="modal"
+                       data-target="#global-modal"
+                       data-size="modal-lg"
+                       data-url="'.route('admin.expeditions.tools', [$this->model->project_id, $this->model->id]).'"
+                       data-hover="tooltip"
+                       data-title="'.t('Expedition Tools').'"><i class="fas fa-tools fa-2x"></i></a>';
     }
 
     /**

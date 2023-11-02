@@ -28,3 +28,5 @@ Route::get('projects/{projects}/expeditions/{expeditions}/edit', [ExpeditionCont
 Route::put('projects/{projects}/expeditions/{expeditions}', [ExpeditionController::class, 'update'])->name('admin.expeditions.update');
 Route::delete('projects/{projects}/expeditions/{expeditions}', [ExpeditionController::class, 'delete'])->name('admin.expeditions.delete');
 Route::get('projects/{projects}/expeditions/{expeditions}/clone', [ExpeditionController::class, 'clone'])->name('admin.expeditions.clone');
+
+Route::get('projects/{projects}/expeditions/{expeditions}/tools', [ExpeditionController::class, 'tools'])->name('admin.expeditions.tools');

@@ -3,8 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actor\NfnPanoptes\ZooniverseBuildQueue;
+use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
+use App\Services\Actors\NfnPanoptes\ZooniverseBuildQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

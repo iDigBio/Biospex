@@ -19,7 +19,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Casts\IntegerCast;
 
 /**
  * Class Subject
@@ -34,7 +34,7 @@ class Subject extends BaseMongoModel
      * @var array
      */
     protected $casts = [
-        'project_id' => 'integer',
+        'project_id' => IntegerCast::class,
         'exported' => 'boolean'
     ];
 
@@ -80,13 +80,5 @@ class Subject extends BaseMongoModel
     public function scopeSubjectId($query, $subjectId)
     {
         return $query->where('_id', $subjectId);
-    }
-
-    /**
-     * Set subjectId to int.
-     */
-    protected function projectId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
     }
 }

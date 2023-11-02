@@ -23,7 +23,7 @@ use App\Models\Expedition;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\ExportQueueRepository;
-use App\Services\Actor\ActorFactory;
+use App\Services\Actors\ActorFactory;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Storage;

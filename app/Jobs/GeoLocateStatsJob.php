@@ -16,12 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 namespace App\Jobs;
 
 use App\Models\Actor;
-use App\Services\Actor\GeoLocate\GeoLocateStats;
-use App\Services\Actor\GeoLocate\Traits\GeoLocateError;
+use App\Services\Actors\GeoLocate\Traits\GeoLocateError;
+use App\Services\GeoLocate\StatService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -49,14 +48,40 @@ class GeoLocateStatsJob implements ShouldQueue
     }
 
     /**
-     * Execute the job.
-     *
-     * @param \App\Services\Actor\GeoLocate\GeoLocateStats $geoLocateStats
-     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(GeoLocateStats $geoLocateStats): void
+    public function handle(StatService $statService): void
     {
-        $geoLocateStats->process($this->actor);
+        $geoLocateDataSource = $statService->getCommunityAndDataSourceByExpeditionId($this->actor->pivot->expedition_id);
+
+        if ($geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
+            return;
+        }
+
+        // get community stats first
+        $communityStats = $statService->getCommunityDataSource($geoLocateDataSource->geoLocateCommunity->name);
+
+        // get dataSource stats
+        $dataSourceStats = $statService->getCommunityDataSource($geoLocateDataSource->geoLocateCommunity->name, $geoLocateDataSource->data_source);
+
+        // update geo_locate_communities data
+        $statService->updateGeoLocateCommunityStat($geoLocateDataSource->geoLocateCommunity->id, $communityStats);
+
+        // update geo_locate_data_sources data
+        $statService->updateGeoLocateDataSourceStat($geoLocateDataSource->id, $dataSourceStats);
+
+        // download data source file if completed and notify user
+        if ($this->completed($dataSourceStats)) {
+            $uri = $statService->buildDataSourceDownload($geoLocateDataSource->geoLocateCommunity->name, $geoLocateDataSource->data_source);
+            $statService->getDataSourceDownload($uri, $this->actor->pivot->expedition_id);
+
+            $this->sendSuccessNotification();
+        }
+    }
+
+    private function completed($dataSourceStats): bool
+    {
+        return $dataSourceStats['stats']['localityRecords'] === $dataSourceStats['stats']['correctedLocalityRecords'];
     }
 
     /**

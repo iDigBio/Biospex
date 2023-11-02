@@ -20,7 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Repositories\WorkflowManagerRepository;
-use App\Services\Actor\ActorFactory;
+use App\Services\Actors\ActorFactory;
 use Illuminate\Console\Command;
 
 /**

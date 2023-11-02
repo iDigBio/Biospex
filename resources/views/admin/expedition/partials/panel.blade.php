@@ -26,5 +26,4 @@
             </div>
         </div>
     </div>
-    @include('admin.expedition.partials.tools-modal')
 </div>

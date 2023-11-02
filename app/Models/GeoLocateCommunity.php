@@ -52,12 +52,12 @@ class GeoLocateCommunity extends BaseEloquentModel
     }
 
     /**
-     * GeoLocateStat relation.
+     * GeoLocateDataSource relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function geoLocateStats()
+    public function geoLocateDataSources()
     {
-        return $this->hasMany(GeoLocateStat::class);
+        return $this->hasMany(GeoLocateDataSource::class);
     }
 }

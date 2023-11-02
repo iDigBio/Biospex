@@ -48,7 +48,7 @@ class WorkflowManagerRepository extends BaseRepository
      */
     public function getWorkflowManagersForProcessing($expeditionId = null, array $attributes = ['*']): \Illuminate\Database\Eloquent\Collection|array
     {
-        // TODO query selects state = 1. Need to remove this and get all records and determine action by state in actor class.
+        // TODO query selects state => 1. Need to remove this and get all records and determine action by state in actor class.
         $model =$this->model->with(['expedition.stat', 'expedition.actors' => function($query){
             $query->where('state', '>', 0)->where('error', 0);
         }])->where('stopped',0);

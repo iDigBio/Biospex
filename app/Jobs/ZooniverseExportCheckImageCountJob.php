@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
-use App\Services\Actor\ZooniverseCheckImageCount;
+use App\Services\Actors\ZooniverseCheckImageCount;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -56,7 +56,7 @@ class ZooniverseExportCheckImageCountJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\ZooniverseCheckImageCount $zooniverseCheckImageCount
+     * @param \App\Services\Actors\ZooniverseCheckImageCount $zooniverseCheckImageCount
      * @throws \Exception
      */
     public function handle(ZooniverseCheckImageCount $zooniverseCheckImageCount)

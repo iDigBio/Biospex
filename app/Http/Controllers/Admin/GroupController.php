@@ -24,10 +24,9 @@ use App\Http\Requests\GroupFormRequest;
 use App\Jobs\DeleteGroup;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserRepository;
-use App\Services\Process\GeoLocateExportFormService;
+use App\Services\GeoLocate\ExportFormService;
 use Auth;
 use Exception;
-use Flash;
 
 /**
  * Class GroupController
@@ -237,12 +236,12 @@ class GroupController extends Controller
     /**
      * Delete geolocate form.
      *
-     * @param \App\Services\Process\GeoLocateExportFormService $geoLocateProcessService
+     * @param \App\Services\GeoLocate\ExportFormService $geoLocateProcessService
      * @param int $groupId
      * @param int $formId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteForm(GeoLocateExportFormService $geoLocateProcessService, int $groupId, int $formId): \Illuminate\Http\RedirectResponse
+    public function deleteForm(ExportFormService $geoLocateProcessService, int $groupId, int $formId): \Illuminate\Http\RedirectResponse
     {
         try {
             $group = $this->groupRepo->findWith($groupId);

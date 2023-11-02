@@ -21,8 +21,8 @@ namespace App\Jobs;
 
 use App\Models\Actor;
 use App\Models\ExportQueue;
-use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actor\NfnPanoptes\ZooniverseBuildZip;
+use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
+use App\Services\Actors\NfnPanoptes\ZooniverseBuildZip;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -70,7 +70,7 @@ class ZooniverseExportBuildZipJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\NfnPanoptes\ZooniverseBuildZip $zooniverseBuildZip
+     * @param \App\Services\Actors\NfnPanoptes\ZooniverseBuildZip $zooniverseBuildZip
      * @throws \Exception
      */
     public function handle(ZooniverseBuildZip $zooniverseBuildZip)

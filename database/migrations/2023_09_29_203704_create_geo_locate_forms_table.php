@@ -34,6 +34,8 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('geo_locate_forms');
+        Schema::enableForeignKeyConstraints();
     }
 };

@@ -19,9 +19,9 @@
 
 namespace App\Models;
 
+use App\Models\Casts\IntegerCast;
 use App\Models\Traits\Presentable;
 use App\Presenters\ReconcilePresenter;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class Reconcile
@@ -43,13 +43,13 @@ class Reconcile extends BaseMongoModel
      * @var array
      */
     protected $casts = [
-        'subject_id' => 'integer',
-        'subject_projectId' => 'integer',
-        'subject_expeditionId' => 'integer',
-        'problem' => 'integer',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'timestamp' => 'datetime'
+        'subject_id'           => IntegerCast::class,
+        'subject_projectId'    => IntegerCast::class,
+        'subject_expeditionId' => IntegerCast::class,
+        'problem'              => IntegerCast::class,
+        'created_at'           => 'datetime',
+        'updated_at'           => 'datetime',
+        'timestamp'            => 'datetime',
     ];
 
     /**
@@ -85,37 +85,5 @@ class Reconcile extends BaseMongoModel
     public function transcriptions(): \MongoDB\Laravel\Relations\HasMany
     {
         return $this->hasMany(PanoptesTranscription::class, 'subject_id', 'subject_id');
-    }
-
-    /**
-     * Set subjectId to int.
-     */
-    protected function subjectId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
-    }
-
-    /**
-     * Set subjectId to int.
-     */
-    protected function problem(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
-    }
-
-    /**
-     * Set subjectExpeditionId to int.
-     */
-    protected function subjectExpeditionId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
-    }
-
-    /**
-     * Set subjectProjectId to int.
-     */
-    protected function subjectProjectId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
     }
 }

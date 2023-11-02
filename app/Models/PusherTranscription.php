@@ -19,7 +19,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Casts\IntegerCast;
 
 /**
  * Class PusherTranscription
@@ -37,8 +37,8 @@ class PusherTranscription extends BaseMongoModel
      * @var string[]
      */
     protected $casts = [
-        'classification_id' => 'integer',
-        'expedition_id'     => 'integer',
+        'classification_id' => IntegerCast::class,
+        'expedition_id'     => IntegerCast::class,
         'created_at'        => 'datetime',
         'updated_at'        => 'datetime',
         'timestamp'         => 'datetime',
@@ -58,21 +58,5 @@ class PusherTranscription extends BaseMongoModel
     public function transcription()
     {
         return $this->belongsTo(PanoptesTranscription::class, 'classification_id', 'classification_id');
-    }
-
-    /**
-     * Set classificationId to int.
-     */
-    protected function classificationId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
-    }
-
-    /**
-     * Set subjectExpeditionId to int.
-     */
-    protected function expeditionId(): Attribute
-    {
-        return Attribute::make(set: fn(string $value) => (int) $value,);
     }
 }

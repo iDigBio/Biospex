@@ -24,10 +24,9 @@ use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpedition;
 use App\Repositories\ProjectRepository;
 use App\Services\Grid\JqGridEncoder;
-use App\Services\Process\ExpeditionService;
+use App\Services\Models\ExpeditionService;
 use Auth;
 use Exception;
-use Flash;
 use JavaScript;
 
 /**
@@ -43,7 +42,7 @@ class ExpeditionController extends Controller
     private ProjectRepository $projectRepository;
 
     /**
-     * @var \App\Services\Process\ExpeditionService
+     * @var \App\Services\Models\ExpeditionService
      */
     private ExpeditionService $expeditionService;
 
@@ -51,7 +50,7 @@ class ExpeditionController extends Controller
      * ExpeditionController constructor.
      *
      * @param \App\Repositories\ProjectRepository $projectRepository
-     * @param \App\Services\Process\ExpeditionService $expeditionService
+     * @param \App\Services\Models\ExpeditionService $expeditionService
      */
     public function __construct(ProjectRepository $projectRepository, ExpeditionService $expeditionService)
     {
@@ -152,7 +151,8 @@ class ExpeditionController extends Controller
      */
     public function show($projectId, $expeditionId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId);
+        $relations = ['project.group', 'downloads', 'stat'];
+        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
 
         if (! $this->checkPermissions('readProject', $expedition->project->group)) {
             return \Redirect::route('admin.projects.index');
@@ -183,7 +183,8 @@ class ExpeditionController extends Controller
      */
     public function clone($projectId, $expeditionId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId);
+        $relations = ['project.group', 'downloads', 'stat'];
+        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
 
         if (! $this->checkPermissions('create', $expedition->project->group)) {
             return \Redirect::route('admin.projects.index');
@@ -214,7 +215,8 @@ class ExpeditionController extends Controller
      */
     public function edit($projectId, $expeditionId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId);
+        $relations = ['project.group', 'downloads', 'stat'];
+        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return \Redirect::route('admin.projects.index');
@@ -337,5 +339,33 @@ class ExpeditionController extends Controller
         $expeditions = $type === 'active' ? $active : $completed;
 
         return \View::make('admin.expedition.partials.expedition', compact('expeditions'));
+    }
+
+    /**
+     * Display expedition tools.
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
+     */
+    public function tools(int $projectId, int $expeditionId): \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
+    {
+        if (!\Request::ajax()) {
+            return \Response::json(['message' => t('You do not have permission.')], 400);
+        }
+
+        $relations = [
+            'project.group',
+            'project.ocrQueue',
+            'project.group.geoLocateForms',
+            'actors',
+            'stat',
+            'export',
+            'panoptesProject',
+            'workflowManager'
+        ];
+
+        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
+
+        return \View::make('admin.expedition.partials.tools', compact('expedition'));
     }
 }

@@ -30,11 +30,6 @@ class GeoLocateApi extends HttpRequest
     /**
      * @var string
      */
-    private string $geolocateToken;
-
-    /**
-     * @var string
-     */
     private string $geolocateStatsUri;
 
     /**
@@ -53,7 +48,6 @@ class GeoLocateApi extends HttpRequest
     public function __construct(AwsS3ApiService $awsS3ApiService)
     {
         // Get the geolocate api config values from the config file.
-        $this->geolocateToken = config('config.geolocate.api.geolocate_token');
         $this->geolocateStatsUri = config('config.geolocate.api.geolocate_stats_uri');
         $this->geolocateDownloadUri = config('config.geolocate.api.geolocate_download_uri');
         $this->awsS3ApiService = $awsS3ApiService;
@@ -74,23 +68,19 @@ class GeoLocateApi extends HttpRequest
     /**
      * Get download file and save to aws.
      *
+     * @param string $uri
      * @param int $expeditionId
-     * @param string $cname
-     * @param string $fmt
-     * @param string|null $dname
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getGeoLocateDownload(int $expeditionId, string $cname, string $fmt = 'csv', string $dname = null): void
+    public function getDataSourceDownload(string $uri, int $expeditionId): void
     {
-       $filePath = config('config.geolocate.dir.result') . '/' . $expeditionId . '.csv';
+       $filePath = config('config.geolocate.dir.result') . '/' . $expeditionId . '.kml';
        $stream = $this->awsS3ApiService->createS3BucketStream(config('filesystems.disks.s3.bucket'), $filePath, 'w', false);
        $opts = [
            'sink' => $stream
        ];
-       $downloadUri = $this->buildDownloadsUri($cname, $fmt, $dname);
-       $this->setHttpProvider();
-       $this->getHttpClient()->request('GET', $downloadUri, $opts);
+       $this->getHttpClient()->request('GET', $uri, $opts);
     }
 
     /**
@@ -102,7 +92,7 @@ class GeoLocateApi extends HttpRequest
      */
     public function buildStatsUri(string $cname, string $dname = null): string
     {
-        $uri = $this->geolocateStatsUri.'?token='.$this->geolocateToken.'&cname='.$cname;
+        $uri = $this->geolocateStatsUri.'&cname='.$cname;
         $uri .= $dname === null ? '' : '&dname='.$dname;
 
         return $uri;
@@ -112,16 +102,12 @@ class GeoLocateApi extends HttpRequest
      * Build Downloads uri.
      *
      * @param string $cname
-     * @param string $fmt
-     * @param string|null $dname
+     * @param string $dname
      * @return string
      */
-    private function buildDownloadsUri(string $cname, string $fmt = 'csv', string $dname = null): string
+    public function buildDownloadUri(string $cname, string $dname): string
     {
-        $uri = $this->geolocateDownloadUri.'?token='.$this->geolocateToken.'&cname='.$cname.'&fmt='.$fmt;
-        $uri .= $dname === null ? '' : '&dname='.$dname;
-
-        return $uri;
+        return $this->geolocateDownloadUri.'&cname='.$cname.'&dname='.$dname;
     }
 
 }

@@ -47,11 +47,11 @@ class PanoptesTranscriptionRepository extends BaseRepository
      */
     public function getContributorCount()
     {
+        // TODO: Eventually resolve Laravel issue with count.
         return Cache::remember(md5(__METHOD__), 14440, function () {
-            return $this->model->where('user_name', 'not regexp', '/^not-logged-in.*/i')
-                ->groupBy('user_name')
-                ->get()
-                ->count();
+            return $this->model->select('user_name')
+                ->where('user_name', 'not regexp', '/^not-logged-in.*/i')
+                ->groupBy('user_name')->get()->count();
         });
     }
 

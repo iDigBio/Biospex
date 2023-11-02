@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Repositories\DownloadRepository;
-use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actor\NfnPanoptes\ZooniverseExportBatch;
+use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
+use App\Services\Actors\NfnPanoptes\ZooniverseExportBatch;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -64,7 +64,7 @@ class ExportDownloadBatchJob implements ShouldQueue
      * Handle download batch job.
      *
      * @param \App\Repositories\DownloadRepository $downloadRepository
-     * @param \App\Services\Actor\NfnPanoptes\ZooniverseExportBatch $nfnPanoptesExportBatch
+     * @param \App\Services\Actors\NfnPanoptes\ZooniverseExportBatch $nfnPanoptesExportBatch
      */
     public function handle(
         DownloadRepository $downloadRepository,

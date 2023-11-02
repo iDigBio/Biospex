@@ -9,7 +9,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($expedition->geoLocateStat->data['stats'] as $label => $count)
+            @foreach($expedition->geoLocateDataSource->data['stats'] as $label => $count)
                 <tr>
                     <td class="text-left">{{ $label }}</td>
                     <td>{{ $count }}</td>

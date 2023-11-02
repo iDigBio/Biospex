@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Models\ExportQueue;
 use App\Repositories\ExportQueueFileRepository;
-use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
+use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

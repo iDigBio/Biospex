@@ -23,8 +23,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GeoLocateCommunityRequest;
 use App\Jobs\GeoLocateExportJob;
 use App\Services\Csv\GeoLocateExportService;
-use App\Services\Process\GeoLocateExportFormService;
-use App\Services\Process\GeoLocateCommunityService;
+use App\Services\GeoLocate\ExportFormService;
+use App\Services\GeoLocate\StatService;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -33,14 +33,14 @@ use Illuminate\Support\Facades\Auth;
 class GeoLocateController extends Controller
 {
     /**
-     * @var \App\Services\Process\GeoLocateExportFormService
+     * @var \App\Services\GeoLocate\ExportFormService
      */
-    private GeoLocateExportFormService $geoLocateExportFormService;
+    private ExportFormService $exportFormService;
 
     /**
-     * @var \App\Services\Process\GeoLocateCommunityService
+     * @var \App\Services\GeoLocate\StatService
      */
-    private GeoLocateCommunityService $geoLocateCommunityService;
+    private StatService $statService;
 
     /**
      * @var \App\Services\Csv\GeoLocateExportService
@@ -50,17 +50,17 @@ class GeoLocateController extends Controller
     /**
      * GeoLocateController constructor.
      *
-     * @param \App\Services\Process\GeoLocateExportFormService $geoLocateExportFormService
+     * @param \App\Services\GeoLocate\ExportFormService $exportFormService
      */
     public function __construct(
-        GeoLocateExportFormService $geoLocateExportFormService,
-        GeoLocateCommunityService $geoLocateCommunityService,
+        ExportFormService $exportFormService,
+        StatService $statService,
         GeoLocateExportService $geoLocateExportService
 
     )
     {
-        $this->geoLocateExportFormService = $geoLocateExportFormService;
-        $this->geoLocateCommunityService = $geoLocateCommunityService;
+        $this->exportFormService = $exportFormService;
+        $this->statService = $statService;
         $this->geoLocateExportService = $geoLocateExportService;
     }
 
@@ -78,7 +78,8 @@ class GeoLocateController extends Controller
         }
 
         try {
-            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+            $relations = ['project.group', 'geoLocateDataSource'];
+            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('readProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You do not have permission.')], 401);
@@ -104,13 +105,14 @@ class GeoLocateController extends Controller
         }
 
         try {
-            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+            $relations = ['project.group.geoLocateForms'];
+            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('readProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You do not have permission.')], 401);
             }
 
-            $form = $this->geoLocateExportFormService->getForm($expedition, ['formId' => $expedition->geo_locate_form_id]);
+            $form = $this->exportFormService->getForm($expedition, ['formId' => $expedition->geo_locate_form_id]);
 
             $formFields = \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form'))->render();
 
@@ -136,13 +138,14 @@ class GeoLocateController extends Controller
         }
 
         try {
-            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+            $relations = ['project.group'];
+            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('readProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You do not have permissions for this action.')], 401);
             }
 
-            $form = $this->geoLocateExportFormService->getForm($expedition, \Request::all());
+            $form = $this->exportFormService->getForm($expedition, \Request::all());
 
             return \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form'));
         } catch (\Exception $e) {
@@ -167,13 +170,14 @@ class GeoLocateController extends Controller
             $data = [];
             parse_str(\Request::input('data'), $data);
 
-            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+            $relations = ['project.group'];
+            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You do not have permissions for this action.')], 401);
             }
 
-            $this->geoLocateExportFormService->saveForm($data, $expedition);
+            $this->exportFormService->saveForm($data, $expedition);
 
             return \Response::json(['message' => t('GeoLocate export form saved.')]);
 
@@ -197,7 +201,8 @@ class GeoLocateController extends Controller
 
         try {
 
-            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+            $relations = ['project.group'];
+            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You do not have permissions for this action.')], 401);
@@ -226,14 +231,15 @@ class GeoLocateController extends Controller
         }
 
         try {
-            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+            $relations = ['project.group'];
+            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
                 return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            $this->geoLocateExportFormService->deleteGeoLocateFile($expeditionId);
-            $this->geoLocateExportFormService->deleteGeoLocate($expeditionId);
+            $this->exportFormService->deleteGeoLocateFile($expeditionId);
+            $this->exportFormService->deleteGeoLocate($expeditionId);
 
             $expedition->geoLocateForm()->dissociate()->save();
             $this->geoLocateExportService->updateState($expedition, 0);
@@ -261,7 +267,8 @@ class GeoLocateController extends Controller
             return \Response::json(['message' => t('You do not have permission.')], 400);
         }
 
-        $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+        $relations = ['project.group', 'project.geoLocateCommunity', 'geoLocateDataSource'];
+        $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
@@ -291,13 +298,14 @@ class GeoLocateController extends Controller
                 return \Response::json(['message' => t('Request must be ajax.')], 400);
             }
 
-            $expedition = $this->geoLocateExportFormService->findExpeditionWithRelations($expeditionId);
+            $relations = ['project.group'];
+            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You are not authorized for this action.')], 401);
             }
 
-            $this->geoLocateCommunityService->saveCommunityDataSource($data, $projectId, $expeditionId);
+            $this->statService->saveCommunityDataSource($data, $projectId, $expeditionId);
 
             $this->geoLocateExportService->updateState($expedition, 2);
 

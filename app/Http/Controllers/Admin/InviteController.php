@@ -23,7 +23,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InviteFormRequest;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserRepository;
-use App\Services\Process\InviteProcess;
+use App\Services\Models\InviteProcess;
 
 /**
  * Class InviteController
@@ -43,14 +43,14 @@ class InviteController extends Controller
     public $userRepo;
 
     /**
-     * @var \App\Services\Process\InviteProcess
+     * @var \App\Services\Models\InviteProcess
      */
     private $inviteProcess;
 
     /**
      * InviteController constructor.
      *
-     * @param \App\Services\Process\InviteProcess $inviteProcess
+     * @param \App\Services\Models\InviteProcess $inviteProcess
      * @param \App\Repositories\GroupRepository $groupRepo
      * @param \App\Repositories\UserRepository $userRepo
      */
