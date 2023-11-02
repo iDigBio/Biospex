@@ -19,6 +19,8 @@
 
 namespace App\Repositories;
 
+use MongoDB\Laravel\Eloquent\Model as MongoModel;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 /**
  * Class BaseRepository
  *
@@ -28,9 +30,9 @@ namespace App\Repositories;
 class BaseRepository
 {
     /**
-     * @var \Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
+     * @var \MongoDB\Laravel\Eloquent\Model|\Illuminate\Database\Eloquent\Model $model
      */
-    protected $model;
+    protected MongoModel|EloquentModel $model;
 
     /**
      * Override __get().
@@ -259,12 +261,17 @@ class BaseRepository
     }
 
     /**
-     * Truncate data in model.
+     * Truncate database table.
      *
-     * @return mixed
+     * @return void
+     * @throws \Exception
      */
-    public function truncate()
+    public function truncate(): void
     {
-        return $this->model->truncate();
+        if (\App::isProduction()) {
+            throw new \Exception('Cannot truncate database table in production.');
+        }
+
+        $this->model->truncate();
     }
 }

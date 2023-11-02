@@ -24,8 +24,6 @@ use App\Models\Download;
 use App\Models\Expedition;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
-use mysql_xdevapi\SqlStatementResult;
-use const Grpc\STATUS_OUT_OF_RANGE;
 
 trait ActorBatchDirectory
 {
@@ -145,7 +143,7 @@ trait ActorBatchDirectory
      *
      * @return void
      */
-    private function setEfsBatchDirectory()
+    private function setEfsBatchDirectory(): void
     {
         $this->efsBatchDir = config('config.batch_dir');
         $this->fullEfsBatchDir = Storage::disk('efs')->path($this->efsBatchDir);
@@ -156,7 +154,7 @@ trait ActorBatchDirectory
      *
      * @return void
      */
-    private function setBatchWorkingDirectory()
+    private function setBatchWorkingDirectory(): void
     {
         $this->batchWorkingDir = $this->efsBatchDir.'/'.$this->folderName;
         Storage::disk('efs')->makeDirectory($this->batchWorkingDir);
@@ -166,7 +164,7 @@ trait ActorBatchDirectory
     /**
      * Set nfn export directory.
      */
-    private function setExportDirectory()
+    private function setExportDirectory(): void
     {
         $this->exportDir = config('config.export_dir');
     }
@@ -176,7 +174,7 @@ trait ActorBatchDirectory
      *
      * @return void
      */
-    public function setExportBatchDirectory()
+    public function setExportBatchDirectory(): void
     {
         $this->bucketBatchDir = $this->bucketPath.'/'.config('config.batch_dir');
     }
@@ -184,7 +182,7 @@ trait ActorBatchDirectory
     /**
      * Set archive tar gz file and path.
      */
-    protected function setExistingExportFileAndPath()
+    protected function setExistingExportFileAndPath(): void
     {
         $this->existingExportFile = $this->folderName.$this->fileExtension;
         $this->existingBucketExportFile = $this->bucketPath.'/'.$this->exportDir.'/'.$this->existingExportFile;
@@ -196,7 +194,7 @@ trait ActorBatchDirectory
      * @param string $dir
      * @return void
      */
-    private function setBatchTmpDirectory(string $dir)
+    private function setBatchTmpDirectory(string $dir): void
     {
         $this->batchTmpDir = $this->batchWorkingDir.'/'.$dir;
         Storage::disk('efs')->makeDirectory($this->batchTmpDir);
