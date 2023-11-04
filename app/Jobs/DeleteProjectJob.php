@@ -21,7 +21,6 @@ namespace App\Jobs;
 
 use App\Models\Project;
 use App\Notifications\JobError;
-use App\Repositories\ProjectRepository;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
