@@ -51,6 +51,8 @@ class GeoLocateController extends Controller
      * GeoLocateController constructor.
      *
      * @param \App\Services\GeoLocate\ExportFormService $exportFormService
+     * @param \App\Services\GeoLocate\StatService $statService
+     * @param \App\Services\Csv\GeoLocateExportService $geoLocateExportService
      */
     public function __construct(
         ExportFormService $exportFormService,
@@ -242,7 +244,9 @@ class GeoLocateController extends Controller
             $this->exportFormService->deleteGeoLocate($expeditionId);
 
             $expedition->geoLocateForm()->dissociate()->save();
-            $this->geoLocateExportService->updateState($expedition, 0);
+            $expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+                'state' => 0,
+            ]);
 
             \Flash::success(t('GeoLocateExport form data and file deleted.'));
 
@@ -307,7 +311,9 @@ class GeoLocateController extends Controller
 
             $this->statService->saveCommunityDataSource($data, $projectId, $expeditionId);
 
-            $this->geoLocateExportService->updateState($expedition, 2);
+            $expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+                'state' => 2,
+            ]);
 
             return \Response::json(['message' => t('Community and data source added.')]);
 

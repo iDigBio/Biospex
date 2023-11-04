@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectFormRequest;
-use App\Jobs\DeleteProject;
+use App\Jobs\DeleteProjectJob;
 use App\Jobs\DeleteUnassignedSubjectsJob;
 use App\Jobs\OcrCreateJob;
 use App\Repositories\GroupRepository;
@@ -304,7 +304,7 @@ class ProjectController extends Controller
                 \Redirect::route('admin.projects.index');
             }
 
-            DeleteProject::dispatch($project);
+            DeleteProjectJob::dispatch($project);
 
             \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 

@@ -19,7 +19,12 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\DeleteExpeditionJob;
+use App\Models\Expedition;
 use App\Models\GeoLocateExport;
+use App\Models\Project;
+use App\Models\User;
+use App\Notifications\JobNotification;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
@@ -53,7 +58,13 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
+        $expedition = Expedition::with('project.group.owner')->find(397);
+        $subject = t('GeoLocate stats for %s are complete.', $expedition->title);
+        $message = [
+            t('The GeoLocate Stat process is complete and the KML file is ready for download.'),
+            t('You can download the file from the Downloads button of the Expedition.')
+        ];
+        $expedition->project->group->owner->notify(new JobNotification($subject, $message));
     }
 
     /**

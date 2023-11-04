@@ -20,6 +20,8 @@
 namespace App\Jobs;
 
 use App\Events\BingoEvent;
+use App\Models\User;
+use App\Notifications\JobError;
 use App\Repositories\BingoMapRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,12 +41,12 @@ class BingoJob implements ShouldQueue
     /**
      * @var string
      */
-    private $bingoId;
+    private string $bingoId;
 
     /**
      * @var string|null
      */
-    private $mapId;
+    private ?string $mapId;
 
     /**
      * BingoJob constructor.
@@ -64,7 +66,7 @@ class BingoJob implements ShouldQueue
      *
      * @param \App\Repositories\BingoMapRepository $bingoMapRepo
      */
-    public function handle(BingoMapRepository $bingoMapRepo)
+    public function handle(BingoMapRepository $bingoMapRepo): void
     {
         $locations = $bingoMapRepo->getBy('bingo_id', $this->bingoId);
         $data['markers'] = $locations->map(function($location) {
@@ -84,5 +86,22 @@ class BingoJob implements ShouldQueue
 
 
         BingoEvent::dispatch($this->bingoId, $data);
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param \Throwable $throwable
+     * @return void
+     */
+    public function failed(\Throwable $throwable): void
+    {
+        $user = User::find((int) config('config.admin_user_id'));
+        $messages = [
+            t('Error: %s', $throwable->getMessage()),
+            t('File: %s', $throwable->getFile()),
+            t('Line: %s', $throwable->getLine()),
+        ];
+        $user->notify(new JobError(__FILE__, $messages));
     }
 }

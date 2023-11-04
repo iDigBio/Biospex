@@ -20,6 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\Project;
+use App\Notifications\JobError;
 use App\Repositories\ProjectRepository;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
@@ -30,18 +31,18 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Class DeleteProject
+ * Class DeleteProjectJob
  *
  * @package App\Jobs
  */
-class DeleteProject implements ShouldQueue
+class DeleteProjectJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var \App\Models\Project
      */
-    public $project;
+    public Project $project;
 
     /**
      * Create a new job instance.
@@ -57,15 +58,14 @@ class DeleteProject implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\ProjectRepository $projectRepo
      * @param \App\Services\MongoDbService $mongoDbService
      * @return void
      */
-    public function handle(ProjectRepository $projectRepo, MongoDbService $mongoDbService)
+    public function handle(MongoDbService $mongoDbService)
     {
-        $project = $projectRepo->findWith($this->project->id, ['expeditions.downloads']);
+        $this->project->load(['expeditions.downloads', 'group.owner']);
 
-        $project->expeditions->each(function ($expedition) use ($mongoDbService) {
+        $this->project->expeditions->each(function ($expedition) use ($mongoDbService) {
             $expedition->downloads->each(function ($download){
                 Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
             });
@@ -77,11 +77,29 @@ class DeleteProject implements ShouldQueue
         });
 
         $mongoDbService->setCollection('panoptes_transcriptions');
-        $mongoDbService->deleteMany(['subject_projectId' => $project->id]);
+        $mongoDbService->deleteMany(['subject_projectId' => $this->project->id]);
 
         $mongoDbService->setCollection('subjects');
-        $mongoDbService->deleteMany(['project_id' => $project->id]);
+        $mongoDbService->deleteMany(['project_id' => $this->project->id]);
 
-        $project->delete();
+        $this->project->delete();
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param \Throwable $throwable
+     * @return void
+     */
+    public function failed(\Throwable $throwable): void
+    {
+        $messages = [
+            'Error: '.t('Could not delete Project %s', $this->project->title),
+            t('Error: %s', $throwable->getMessage()),
+            t('File: %s', $throwable->getFile()),
+            t('Line: %s', $throwable->getLine()),
+        ];
+
+        $this->project->group->owner->notify(new JobError(__FILE__, $messages));
     }
 }

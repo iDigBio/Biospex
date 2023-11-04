@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
-use App\Jobs\DeleteGroup;
+use App\Jobs\DeleteGroupJob;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserRepository;
 use App\Services\GeoLocate\ExportFormService;
@@ -183,7 +183,7 @@ class GroupController extends Controller
                 }
             }
 
-            DeleteGroup::dispatch($group);
+            DeleteGroupJob::dispatch($group);
 
             event('group.deleted', $group->id);
 

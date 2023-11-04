@@ -19,6 +19,7 @@ return [
 
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
+    'admin_user_id' => env('ADMIN_USER_ID', 1),
 
     'aws_access_key'             => env('AWS_ACCESS_KEY'),
     'aws_secret_key'             => env('AWS_SECRET_ACCESS_KEY'),

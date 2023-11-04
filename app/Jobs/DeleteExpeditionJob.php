@@ -23,7 +23,6 @@ use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Notifications\RecordDeleteComplete;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\SubjectRepository;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
@@ -34,23 +33,23 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Class DeleteExpedition
+ * Class DeleteExpeditionJob
  *
  * @package App\Jobs
  */
-class DeleteExpedition implements ShouldQueue
+class DeleteExpeditionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var \App\Models\User
      */
-    private $user;
+    private User $user;
 
     /**
      * @var \App\Models\Expedition
      */
-    private $expedition;
+    private Expedition $expedition;
 
     /**
      * Create a new job instance.
@@ -68,51 +67,57 @@ class DeleteExpedition implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Repositories\SubjectRepository $subjectRepo
      * @param \App\Services\MongoDbService $mongoDbService
      * @return void
      */
     public function handle(
-        ExpeditionRepository $expeditionRepo,
         SubjectRepository $subjectRepo,
         MongoDbService $mongoDbService
-    ) {
+    ): void {
 
-        $expedition = $expeditionRepo->findWith($this->expedition->id, ['downloads']);
+        $this->expedition->load('downloads');
 
-        try {
+        $this->expedition->downloads->each(function ($download) {
+            Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
+        });
 
-            $expedition->downloads->each(function ($download) {
-                Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
-            });
+        $mongoDbService->setCollection('pusher_transcriptions');
+        $mongoDbService->deleteMany(['expedition_uuid' => $this->expedition->uuid]);
 
-            $mongoDbService->setCollection('pusher_transcriptions');
-            $mongoDbService->deleteMany(['expedition_uuid' => $expedition->uuid]);
+        $mongoDbService->setCollection('panoptes_transcriptions');
+        $mongoDbService->deleteMany(['subject_expeditionId' => $this->expedition->id]);
 
-            $mongoDbService->setCollection('panoptes_transcriptions');
-            $mongoDbService->deleteMany(['subject_expeditionId' => $expedition->id]);
+        $subjectIds = $subjectRepo->findByExpeditionId((int) $this->expedition->id, ['_id'])->pluck('_id');
 
-            $subjectIds = $subjectRepo->findByExpeditionId((int) $this->expedition->id, ['_id'])->pluck('_id');
-
-            if ($subjectIds->isNotEmpty()) {
-                $subjectRepo->detachSubjects($subjectIds, $expedition->id);
-            }
-
-            $expedition->delete();
-
-            $message = [
-                t('Expedition `%s` and all corresponding records have been deleted.', $expedition->title),
-            ];
-            $this->user->notify(new RecordDeleteComplete($message));
-        } catch (\Exception $e) {
-            $message = [
-                'Error: '.t('Could not delete Expedition %s', $expedition->title),
-                'Message:'.$e->getFile().': '.$e->getLine().' - '.$e->getMessage().' - '. $e->getTraceAsString(),
-            ];
-            $this->user->notify(new JobError(__FILE__, $message));
-
-            $this->delete();
+        if ($subjectIds->isNotEmpty()) {
+            $subjectRepo->detachSubjects($subjectIds, $this->expedition->id);
         }
+
+        $this->expedition->delete();
+
+        $message = [
+            t('Expedition `%s` and all corresponding records have been deleted.', $this->expedition->title),
+        ];
+
+        $this->user->notify(new RecordDeleteComplete($message));
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param \Throwable $throwable
+     * @return void
+     */
+    public function failed(\Throwable $throwable): void
+    {
+        $messages = [
+            'Error: '.t('Could not delete Expedition %s', $this->expedition->title),
+            t('Error: %s', $throwable->getMessage()),
+            t('File: %s', $throwable->getFile()),
+            t('Line: %s', $throwable->getLine()),
+        ];
+
+        $this->user->notify(new JobError(__FILE__, $messages));
     }
 }

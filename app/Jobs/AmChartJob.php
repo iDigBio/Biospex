@@ -27,7 +27,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Throwable;
 
 /**
  * Class AmChartJob
@@ -67,7 +66,7 @@ class AmChartJob implements ShouldQueue
      * @param \App\Repositories\ProjectRepository $projectRepo
      * @param \App\Services\Chart\TranscriptionChartService $service
      */
-    public function handle(ProjectRepository $projectRepo, TranscriptionChartService $service)
+    public function handle(ProjectRepository $projectRepo, TranscriptionChartService $service): void
     {
         $project = $projectRepo->getProjectForAmChartJob($this->projectId);
 
@@ -79,16 +78,16 @@ class AmChartJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(\Throwable $throwable): void
     {
-        $user = User::find(1);
+        $user = User::find((int) config('config.admin_user_id'));
         $messages = [
-            t('Error: %s', $exception->getMessage()),
-            t('File: %s', $exception->getFile()),
-            t('Line: %s', $exception->getLine()),
+            t('Error: %s', $throwable->getMessage()),
+            t('File: %s', $throwable->getFile()),
+            t('Line: %s', $throwable->getLine()),
         ];
         $user->notify(new JobError(__FILE__, $messages));
     }

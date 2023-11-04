@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\Group;
-use App\Repositories\GroupRepository;
+use App\Notifications\JobError;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -30,23 +30,23 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Class DeleteGroup
+ * Class DeleteGroupJob
  *
  * @package App\Jobs
  */
-class DeleteGroup implements ShouldQueue
+class DeleteGroupJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var \App\Models\Group
      */
-    public $group;
+    public Group $group;
 
     /**
      * Create a new job instance.
      *
-     * @param $group
+     * @param \App\Models\Group $group
      */
     public function __construct(Group $group)
     {
@@ -57,15 +57,14 @@ class DeleteGroup implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\GroupRepository $groupRepo
      * @param \App\Services\MongoDbService $mongoDbService
      * @return void
      */
-    public function handle(GroupRepository $groupRepo, MongoDbService $mongoDbService)
+    public function handle(MongoDbService $mongoDbService): void
     {
-        $group = $groupRepo->findWith($this->group->id, ['projects.expeditions.downloads', 'geoLocateForms']);
+        $this->group->load(['projects.expeditions.downloads', 'geoLocateForms', 'owner']);
 
-        $group->projects->each(function ($project) use ($mongoDbService) {
+        $this->group->projects->each(function ($project) use ($mongoDbService) {
             $project->expeditions->each(function ($expedition) use ($mongoDbService) {
                 $expedition->downloads->each(function ($download) {
                     Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
@@ -84,6 +83,24 @@ class DeleteGroup implements ShouldQueue
             $mongoDbService->deleteMany(['project_id' => $project->id]);
         });
 
-        $group->delete();
+        $this->group->delete();
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param \Throwable $throwable
+     * @return void
+     */
+    public function failed(\Throwable $throwable): void
+    {
+        $messages = [
+            'Error: '.t('Could not delete Group %s', $this->group->title),
+            t('Error: %s', $throwable->getMessage()),
+            t('File: %s', $throwable->getFile()),
+            t('Line: %s', $throwable->getLine()),
+        ];
+
+        $this->group->owner->notify(new JobError(__FILE__, $messages));
     }
 }

@@ -223,18 +223,4 @@ class GeoLocateExportService
 
         $this->downloadRepository->updateOrCreate($attributes, $values);
     }
-
-    /**
-     * Update actor_expedition pivot state.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @param int $state
-     * @return void
-     */
-    public function updateState(Expedition $expedition, int $state): void
-    {
-        $expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
-            'state' => $state,
-        ]);
-    }
 }

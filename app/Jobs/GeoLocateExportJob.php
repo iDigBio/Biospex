@@ -20,13 +20,10 @@
 namespace App\Jobs;
 
 use App\Models\Expedition;
-use App\Models\GeoLocateForm;
 use App\Models\User;
 use App\Notifications\GeoLocateExportNotification;
 use App\Notifications\JobError;
-use App\Repositories\DownloadRepository;
 use App\Services\Csv\GeoLocateExportService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -52,6 +49,11 @@ class GeoLocateExportJob implements ShouldQueue
      * @var \App\Models\User
      */
     private User $user;
+
+    /**
+     * @var \App\Services\Csv\GeoLocateExportService
+     */
+    private GeoLocateExportService $geoLocateExportService;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -81,44 +83,56 @@ class GeoLocateExportJob implements ShouldQueue
      */
     public function handle(GeoLocateExportService $geoLocateExportService): void
     {
-        try {
-            $this->expedition->load('geoLocateForm');
+        $this->geoLocateExportService = $geoLocateExportService;
 
-            $geoLocateExportService->migrateRecords($this->expedition);
+        $this->expedition->load('geoLocateForm');
 
-            $geoLocateExportService->setCsvFilePath($this->expedition->id);
+        $geoLocateExportService->migrateRecords($this->expedition);
 
-            $geoLocateExportService->build($this->expedition);
-            $csvFilePath = $geoLocateExportService->moveCsvFile();
-            $geoLocateExportService->createDownload($this->expedition);
-            $geoLocateExportService->updateState($this->expedition, 1);
+        $geoLocateExportService->setCsvFilePath($this->expedition->id);
 
-            $file = route('admin.downloads.geolocate', ['file' => base64_encode($csvFilePath)]);
+        $geoLocateExportService->build($this->expedition);
+        $csvFilePath = $geoLocateExportService->moveCsvFile();
+        $geoLocateExportService->createDownload($this->expedition);
 
-            $this->user->notify(new GeoLocateExportNotification($file));
+        $this->expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+            'state' => 1,
+        ]);
 
-            return;
+        $file = route('admin.downloads.geolocate', ['file' => base64_encode($csvFilePath)]);
 
-        } catch (Exception $exception) {
-            $messages = [
-                t('Error: %s', $exception->getMessage()),
-                t('File: %s', $exception->getFile()),
-                t('Line: %s', $exception->getLine()),
-            ];
+        $this->user->notify(new GeoLocateExportNotification($file));
+    }
 
-            $this->user->notify(new JobError(__FILE__, $messages));
+    /**
+     * Handle a job failure.
+     *
+     * @param \Throwable $throwable
+     * @return void
+     */
+    public function failed(\Throwable $throwable): void
+    {
+        $this->expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+            'state' => 0,
+        ]);
 
-            $geoLocateExportService->updateState($this->expedition, 0);
+        $csvFilePath = $this->geoLocateExportService->getCsvFilePath();
 
-            $csvFilePath = $geoLocateExportService->getCsvFilePath();
-
-            if (Storage::disk('s3')->exists($csvFilePath)) {
-                Storage::disk('s3')->delete($csvFilePath);
-            }
-
-            if (Storage::disk('efs')->exists($csvFilePath)) {
-                Storage::disk('efs')->delete($csvFilePath);
-            }
+        if (Storage::disk('s3')->exists($csvFilePath)) {
+            Storage::disk('s3')->delete($csvFilePath);
         }
+
+        if (Storage::disk('efs')->exists($csvFilePath)) {
+            Storage::disk('efs')->delete($csvFilePath);
+        }
+
+        $messages = [
+            'Error: '.t('Could not export GeoLocate data for Expedition %s', $this->expedition->title),
+            t('Error: %s', $throwable->getMessage()),
+            t('File: %s', $throwable->getFile()),
+            t('Line: %s', $throwable->getLine()),
+        ];
+
+        $this->user->notify(new JobError(__FILE__, $messages));
     }
 }

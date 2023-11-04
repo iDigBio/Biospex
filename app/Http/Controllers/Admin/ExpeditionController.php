@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
-use App\Jobs\DeleteExpedition;
+use App\Jobs\DeleteExpeditionJob;
 use App\Repositories\ProjectRepository;
 use App\Services\Grid\JqGridEncoder;
 use App\Services\Models\ExpeditionService;
@@ -300,7 +300,7 @@ class ExpeditionController extends Controller
                 return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            DeleteExpedition::dispatch(Auth::user(), $expedition);
+            DeleteExpeditionJob::dispatch(Auth::user(), $expedition);
 
             \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete.'));
 

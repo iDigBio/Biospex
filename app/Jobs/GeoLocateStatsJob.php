@@ -19,7 +19,9 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
-use App\Services\Actors\GeoLocate\Traits\GeoLocateError;
+use App\Models\Expedition;
+use App\Notifications\JobNotification;
+use App\Repositories\ExpeditionRepository;
 use App\Services\GeoLocate\StatService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -30,12 +32,17 @@ use Throwable;
 
 class GeoLocateStatsJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, GeoLocateError;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Models\Actor
+     * @var \App\Models\Actor $actor
      */
     private Actor $actor;
+
+    /**
+     * @var \App\Models\Expedition $expedition
+     */
+    private Expedition $expedition;
 
     /**
      * Create a new job instance.
@@ -50,8 +57,9 @@ class GeoLocateStatsJob implements ShouldQueue
     /**
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(StatService $statService): void
+    public function handle(StatService $statService, ExpeditionRepository $expeditionRepository): void
     {
+        $this->expedition = $expeditionRepository->findWith($this->actor->pivot->expedition_id, ['project.group.owner']);
         $geoLocateDataSource = $statService->getCommunityAndDataSourceByExpeditionId($this->actor->pivot->expedition_id);
 
         if ($geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
@@ -71,27 +79,39 @@ class GeoLocateStatsJob implements ShouldQueue
         $statService->updateGeoLocateDataSourceStat($geoLocateDataSource->id, $dataSourceStats);
 
         // download data source file if completed and notify user
-        if ($this->completed($dataSourceStats)) {
+        if ($dataSourceStats['stats']['localityRecords'] === $dataSourceStats['stats']['correctedLocalityRecords']) {
             $uri = $statService->buildDataSourceDownload($geoLocateDataSource->geoLocateCommunity->name, $geoLocateDataSource->data_source);
             $statService->getDataSourceDownload($uri, $this->actor->pivot->expedition_id);
 
-            $this->sendSuccessNotification();
-        }
-    }
+            $this->actor->pivot->expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+                'state' => 3,
+            ]);
 
-    private function completed($dataSourceStats): bool
-    {
-        return $dataSourceStats['stats']['localityRecords'] === $dataSourceStats['stats']['correctedLocalityRecords'];
+            $subject = t('GeoLocate stats for %s is complete.', $this->expedition->title);
+            $message = [
+                t('The GeoLocate Stat process is complete and the KML file is ready for download.'),
+                t('You can download the file from the Downloads button of the Expedition.')
+            ];
+            $this->expedition->project->group->owner->notify(new JobNotification($subject, $message));
+        }
     }
 
     /**
      * Handle a job failure.
      *
-     * @param  \Throwable  $exception
+     * @param  \Throwable  $throwable
      * @return void
      */
-    public function failed(Throwable $exception): void
+    public function failed(Throwable $throwable): void
     {
-        $this->sendErrorNotification($exception);
+        $subject = t('GeoLocate stats for %s failed.', $this->expedition->title);
+        $messages = [
+            'Error: ' . $subject,
+            t('Error: %s', $throwable->getMessage()),
+            t('File: %s', $throwable->getFile()),
+            t('Line: %s', $throwable->getLine()),
+        ];
+
+        $this->expedition->project->group->owner->notify(new JobNotification($subject, $messages));
     }
 }
