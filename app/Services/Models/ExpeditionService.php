@@ -80,26 +80,11 @@ class ExpeditionService
      * Used for Expedition panel on multiple pages. Keeping it cached prevents overloading.
      *
      * @param int $expeditionId
+     * @param array $relations
      * @return mixed
      */
     public function findExpeditionWithRelations(int $expeditionId, array $relations = []): mixed
     {
-
-
-        $with = [
-            'actors',
-            'project.group.geoLocateForms',
-            'project.geoLocateCommunity',
-            'project.ocrQueue',
-            'downloads',
-            'export',
-            'geoLocateDataSource',
-            'workflowManager',
-            'stat',
-            'panoptesProject',
-        ];
-
-
         return $this->expeditionRepository->findWith($expeditionId, $relations);
     }
 

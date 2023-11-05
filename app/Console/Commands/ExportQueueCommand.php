@@ -133,7 +133,7 @@ class ExportQueueCommand extends Command
      */
     public function deleteExportFiles(string $expeditionId): void
     {
-        $downloads = $this->downloadRepository->getExportFiles($expeditionId);
+        $downloads = $this->downloadRepository->getZooniverseExportFiles($expeditionId);
 
         $downloads->each(function ($download) {
             if (Storage::disk('s3')->exists(config('config.export_dir').'/'.$download->file)) {

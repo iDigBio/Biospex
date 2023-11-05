@@ -88,7 +88,7 @@ class ExpeditionRepository extends BaseRepository
             'stat',
             'panoptesProject',
             'workflowManager',
-            'export'
+            'zooniverseExport'
         ])->whereHas('project.group.users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         });

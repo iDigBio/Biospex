@@ -42,18 +42,18 @@ class ProjectRepository extends BaseRepository
     }
 
     /**
-     * @param array $attributes
-     * @return \App\Repositories\Eloquent\EloquentRepository|bool|\Illuminate\Database\Eloquent\Model
+     * @param array $data
+     * @return \App\Models\Project|\Illuminate\Database\Eloquent\Model|true
      */
-    public function create(array $attributes)
+    public function create(array $data): \Illuminate\Database\Eloquent\Model|bool|Project
     {
-        $project = $this->model->create($attributes);
+        $project = $this->model->create($data);
 
-        if (! isset($attributes['resources'])) {
+        if (! isset($data['resources'])) {
             return true;
         }
 
-        $resources = collect($attributes['resources'])->reject(function ($resource) {
+        $resources = collect($data['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
         })->map(function ($resource) {
             return new ProjectResource($resource);
@@ -68,25 +68,25 @@ class ProjectRepository extends BaseRepository
      * Override project update.
      *
      * TODO move resource code
-     * @param array $attributes
+     * @param array $data
      * @param $resourceId
      * @return bool|iterable
      */
-    public function update(array $attributes, $resourceId)
+    public function update(array $data, $resourceId)
     {
         $model = $this->model->find($resourceId);
 
-        $attributes['slug'] = null;
-        $model->fill($attributes)->save();
+        $data['slug'] = null;
+        $model->fill($data)->save();
 
-        if (! isset($attributes['resources'])) {
+        if (! isset($data['resources'])) {
             return true;
         }
 
-        $resources = collect($attributes['resources'])->reject(function ($resource) {
+        $resources = collect($data['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
         })->reject(function ($resource) {
-            return empty($resource['id']) ? false : $this->updateProjectResource($resource);
+            return ! empty($resource['id']) && $this->updateProjectResource($resource);
         })->map(function ($resource) {
             return new ProjectResource($resource);
         });
@@ -163,7 +163,7 @@ class ProjectRepository extends BaseRepository
             'group',
             'ocrQueue',
             'expeditions' => function($q) {
-                $q->with(['stat', 'export', 'panoptesProject', 'workflowManager']);
+                $q->with(['stat', 'zooniverseExport', 'panoptesProject', 'workflowManager']);
             }
         ])->find($projectId);
     }
@@ -194,9 +194,9 @@ class ProjectRepository extends BaseRepository
      * Get project for deletion.
      *
      * @param $projectId
-     * @return \App\Models\Project
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder[]
      */
-    public function getProjectForDelete($projectId): Project
+    public function getProjectForDelete($projectId): \Illuminate\Database\Eloquent\Builder|array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
     {
         return $this->model->with([
             'group',

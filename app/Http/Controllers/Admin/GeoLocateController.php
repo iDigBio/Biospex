@@ -22,7 +22,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GeoLocateCommunityRequest;
 use App\Jobs\GeoLocateExportJob;
-use App\Services\Csv\GeoLocateExportService;
 use App\Services\GeoLocate\ExportFormService;
 use App\Services\GeoLocate\StatService;
 use Exception;
@@ -43,27 +42,19 @@ class GeoLocateController extends Controller
     private StatService $statService;
 
     /**
-     * @var \App\Services\Csv\GeoLocateExportService
-     */
-    private GeoLocateExportService $geoLocateExportService;
-
-    /**
      * GeoLocateController constructor.
      *
      * @param \App\Services\GeoLocate\ExportFormService $exportFormService
      * @param \App\Services\GeoLocate\StatService $statService
-     * @param \App\Services\Csv\GeoLocateExportService $geoLocateExportService
      */
     public function __construct(
         ExportFormService $exportFormService,
-        StatService $statService,
-        GeoLocateExportService $geoLocateExportService
+        StatService $statService
 
     )
     {
         $this->exportFormService = $exportFormService;
         $this->statService = $statService;
-        $this->geoLocateExportService = $geoLocateExportService;
     }
 
     /**
@@ -107,7 +98,7 @@ class GeoLocateController extends Controller
         }
 
         try {
-            $relations = ['project.group.geoLocateForms'];
+            $relations = ['project.group.geoLocateForms', 'geoLocateExport'];
             $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('readProject', $expedition->project->group)) {

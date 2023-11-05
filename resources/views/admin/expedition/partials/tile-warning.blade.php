@@ -1,5 +1,5 @@
 @if(($expedition->completed === 0) && $expedition->stat->local_subject_count > 0)
-    @if(! \App\Facades\GeneralHelper::exportFileCheck($expedition))
+    @if(! \App\Facades\GeneralHelper::zooniverseExportFileCheck($expedition))
         <div class="d-flex align-items-start mb-0" data-hover="tooltip" data-html="true"
              title="<div class='text-left'>{{ t('The Export file has not been generated. Select the tools icon for the Expedition and select Generate Export File.') }}</div>">
         <span role="button" class="small text-danger">

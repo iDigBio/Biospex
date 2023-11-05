@@ -15,8 +15,7 @@
    data-size="modal-lg"
    data-url="{{ route('admin.zooniverse.workflowShowForm', [$expedition->project->id, $expedition->id]) }}"
    data-title="{{ t('Edit Workflow Id') }}"> {{ t('Edit Workflow Id') }}</a>
-@if(\App\Facades\GeneralHelper::exportFileCheck($expedition))
-
+@if(\App\Facades\GeneralHelper::zooniverseExportFileCheck($expedition))
     @if(\App\Facades\GeneralHelper::checkPanoptesWorkflow($expedition))
         @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
             @unless($expedition->stat->local_subject_count === 0)

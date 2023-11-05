@@ -163,13 +163,23 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Download Export relation
+     * Download Zooniverse Export relation
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function export(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function zooniverseExport(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(Download::class)->where('type', 'export');
+        return $this->hasOne(Download::class)->where('actor_id', config('config.zooniverse.actor_id'))->where('type', 'export');
+    }
+
+    /**
+     * Download GeoLocate Export relation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function geoLocateExport()
+    {
+        return $this->hasOne(Download::class)->where('actor_id', config('config.geolocate.actor_id'))->where('type', 'export');
     }
 
     /**
@@ -215,7 +225,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
         return $this->belongsToMany(Actor::class, 'actor_expedition')
             ->withPivot($pivot)
-            ->wherePivot('actor_id', config('config.nfnActorId'));
+            ->wherePivot('actor_id', config('config.zooniverse.actor_id'));
     }
 
     /**

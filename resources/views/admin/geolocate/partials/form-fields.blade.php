@@ -122,7 +122,7 @@
         @if($form['fields'])
             <button type="button" id="process"
                     data-url="{{ route('admin.geolocates.export', [$expedition->project_id, $expedition->id]) }}"
-                    class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto" {{ $form['exported'] ? 'disabled' : '' }}>{{ t('Export') }}</button>
+                    class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto" {{ $form['exported'] && GeneralHelper::downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id) ? 'disabled' : '' }}>{{ t('Export') }}</button>
         @endif
     </div>
 </form>

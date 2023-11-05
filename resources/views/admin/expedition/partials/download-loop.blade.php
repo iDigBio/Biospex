@@ -1,10 +1,10 @@
-@if (GeneralHelper::downloadFileExists($actor->id, $download->type, $download->file))
+@if (GeneralHelper::downloadFileExists($download->file, $download->type, $download->actor_id))
     <tr>
         <td>{{ $download->present()->file_type }}</td>
         <td>{{ $download->file }}</td>
         <td>
-            @if (GeneralHelper::downloadFileExists($actor->id, $download->type, $download->file))
-                {{ GeneralHelper::humanFileSize(GeneralHelper::downloadFileSize($actor->id, $download->type, $download->file)) }}
+            @if (GeneralHelper::downloadFileExists($download->file, $download->type, $download->actor_id))
+                {{ GeneralHelper::humanFileSize(GeneralHelper::downloadFileSize($download->file, $download->type, $download->actor_id)) }}
             @else
                 {{ GeneralHelper::humanFileSize(mb_strlen($download->data, '8bit')) }}
             @endif
@@ -44,7 +44,7 @@
                    data-original-title="{{ t('Download %s file', $download->type) }} ">
                     <i class="fas fa-file-download fa-2x"></i></a>
 
-                @if($actor->id === config('config.nfnActorId'))
+                @if($actor->id == config('config.zooniverse.actor_id'))
                     <a href="{{ route('admin.downloads.batch', [$expedition->project->id, $expedition->id, $download->id]) }}"
                        class="prevent-default"
                        data-method="get"

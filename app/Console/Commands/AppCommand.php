@@ -25,6 +25,7 @@ use App\Models\GeoLocateExport;
 use App\Models\Project;
 use App\Models\User;
 use App\Notifications\JobNotification;
+use App\Repositories\ExpeditionRepository;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
@@ -56,8 +57,9 @@ class AppCommand extends Command
     /**
      * @return void
      */
-    public function handle()
+    public function handle(ExpeditionRepository $expeditionRepo)
     {
+
     }
 
     /**

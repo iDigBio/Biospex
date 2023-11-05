@@ -53,7 +53,7 @@ class DownloadPresenter extends Presenter
      */
     public function exportDownload(): string
     {
-        return $this->model->actor_id == config('config.nfnActorId') ?
+        return $this->model->actor_id == config('config.zooniverse.actor_id') ?
             Storage::disk('s3')->temporaryUrl(config('config.export_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']) :
             Storage::disk('s3')->temporaryUrl(config('config.geolocate.dir.export').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
     }

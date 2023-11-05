@@ -6,7 +6,7 @@
         @endif
         @php($nfnComplete = false)
         @foreach ($expedition->actors as $actor)
-            @if($actor->id == config('config.nfnActorId'))
+            @if($actor->id == config('config.zooniverse.actor_id'))
                 @php($nfnComplete = $actor->pivot->state === 3)
                 @include('admin.expedition.partials.nfn-btns')
             @endif

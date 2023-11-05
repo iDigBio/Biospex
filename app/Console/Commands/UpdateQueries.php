@@ -200,7 +200,7 @@ class UpdateQueries extends Command
     {
         echo 'Running '.__METHOD__.PHP_EOL;
 
-        $expeditions = Expedition::with(['actors', 'export'])->get();
+        $expeditions = Expedition::with(['actors', 'zooniverseExport'])->get();
         $expeditions->each(function ($expedition) {
             $expedition->actors->each(function ($actor) use ($expedition) {
                 if ($actor->pivot->state === 2) {
@@ -209,7 +209,7 @@ class UpdateQueries extends Command
                 if ($actor->pivot->state === 1) {
                     $expedition->nfnActor()->updateExistingPivot($actor->id, ['state' => 2]);
                 }
-                if ($actor->pivot->state === 0 && $expedition->export !== null) {
+                if ($actor->pivot->state === 0 && $expedition->zooniverseExport !== null) {
                     $expedition->nfnActor()->updateExistingPivot($actor->id, ['state' => 1]);
                 }
             });

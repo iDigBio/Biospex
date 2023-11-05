@@ -359,7 +359,7 @@ class ExpeditionController extends Controller
             'project.group.geoLocateForms',
             'actors',
             'stat',
-            'export',
+            'zooniverseExport',
             'panoptesProject',
             'workflowManager'
         ];

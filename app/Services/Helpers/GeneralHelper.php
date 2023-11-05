@@ -222,7 +222,7 @@ class GeneralHelper
     }
 
     /**
-     * Give file size in human readable form.
+     * Give file size in human-readable form.
      *
      * @param $bytes
      * @param int $decimals
@@ -330,54 +330,105 @@ class GeneralHelper
 
     /**
      * Check if download file exists.
-     *
-     * @param int $actorId
-     * @param string $type
+     * TODO: Refactor this after changing and moving download file storage.
      * @param string $file
+     * @param string $type
+     * @param int|null $actorId
      * @return bool
      */
-    public function downloadFileExists(int $actorId, string $type, string $file): bool
+    public function downloadFileExists(string $file, string $type, int $actorId = null): bool
     {
-        $nfnActorId = (int) config('config.nfnActorId');
-        $geoLocateActorId = (int) config('config.geolocate.actor_id');
+        if ($actorId == config('config.zooniverse.actor_id')) {
+            return $this->checkZooniverseFile($type, $file);
+        }
 
-        if ($type === 'export' && $actorId === $nfnActorId) {
-            return Storage::disk('s3')->exists(config('config.export_dir').'/'.$file);
-        }elseif ($type === 'report' && $actorId === $nfnActorId) {
-            return Storage::disk('s3')->exists(config('config.report_dir').'/'.$file);
-        }elseif($actorId === $nfnActorId) {
-            return Storage::disk('s3')->exists(config('config.zooniverse_dir.parent').'/'.$type.'/'.$file);
-        }elseif($actorId === $geoLocateActorId){
-            return Storage::disk('s3')->exists(config('config.geolocate.dir.parent').'/'.$type.'/'.$file);
+        if ($actorId == config('config.geolocate.actor_id')) {
+            return $this->checkGeoLocateFile($type, $file);
         }
 
         return false;
     }
 
     /**
-     * Get file size of download file.
+     * Check if download file exists.
      *
-     * @param int $actorId
      * @param string $type
      * @param string $file
+     * @return bool
+     */
+    private function checkZooniverseFile(string $type, string $file): bool
+    {
+        if ($type === 'export') {
+            return Storage::disk('s3')->exists(config('config.export_dir').'/'.$file);
+        }elseif ($type === 'report') {
+            return Storage::disk('s3')->exists(config('config.report_dir').'/'.$file);
+        }else{
+            return Storage::disk('s3')->exists(config('config.zooniverse_dir.parent').'/'.$type.'/'.$file);
+        }
+    }
+
+    /**
+     * Check if download file exists.
+     *
+     * @param string $type
+     * @param string $file
+     * @return bool
+     */
+    private function checkGeoLocateFile(string $type, string $file): bool
+    {
+        return Storage::disk('s3')->exists(config('config.geolocate.dir.parent').'/'.$type.'/'.$file);
+    }
+
+    /**
+     * Get file size of download file.
+     *
+     * @param string $file
+     * @param string $type
+     * @param int|null $actorId
      * @return int
      */
-    public function downloadFileSize(int $actorId, string $type, string $file): int
+    public function downloadFileSize(string $file, string $type, int  $actorId = null): int
     {
-        $nfnActorId = (int) config('config.nfnActorId');
-        $geoLocateActorId = (int) config('config.geolocate.actor_id');
 
-        if ($type === 'export' && $actorId === $nfnActorId) {
-            return Storage::disk('s3')->size(config('config.export_dir').'/'.$file);
-        }elseif ($type === 'report' && $actorId === $nfnActorId) {
-            return Storage::disk('s3')->size(config('config.report_dir').'/'.$file);
-        }elseif($actorId === $nfnActorId) {
-            return Storage::disk('s3')->size(config('config.zooniverse_dir.parent').'/'.$type.'/'.$file);
-        }elseif($actorId === $geoLocateActorId) {
-            return Storage::disk('s3')->size(config('config.geolocate.dir.parent').'/'.$type.'/'.$file);
+        if ($actorId == config('config.zooniverse.actor_id')) {
+            return $this->checkZooniverseFileSize($file, $type);
+        }
+
+        if ($actorId == config('config.geolocate.actor_id')) {
+            return $this->checkGeoLocateFileSize($file, $type);
         }
 
         return 0;
+    }
+
+    /**
+     * Get file size of download file.
+     *
+     * @param string $file
+     * @param string $type
+     * @return int
+     */
+    private function checkZooniverseFileSize(string $file, string $type): int
+    {
+        if ($type === 'export') {
+            return Storage::disk('s3')->size(config('config.export_dir').'/'.$file);
+        }elseif ($type === 'report') {
+            return Storage::disk('s3')->size(config('config.report_dir').'/'.$file);
+        }else{
+            return Storage::disk('s3')->size(config('config.zooniverse_dir.parent').'/'.$type.'/'.$file);
+        }
+    }
+
+    /**
+     * Get file size of download file.
+     *
+     * @param string $file
+     * @param string $type
+     * @return int
+     */
+    private function checkGeoLocateFileSize(string $file, string $type): int
+    {
+        return Storage::disk('s3')->size(config('config.geolocate.dir.parent').'/'.$type.'/'.$file);
     }
 
     /**
@@ -386,9 +437,9 @@ class GeneralHelper
      * @param \App\Models\Expedition $expedition
      * @return bool
      */
-    public function exportFileCheck(Expedition $expedition): bool
+    public function zooniverseExportFileCheck(Expedition $expedition): bool
     {
-        return isset($expedition->export->file) && Storage::disk('s3')->exists(config('config.export_dir').'/'.$expedition->export->file);
+        return isset($expedition->zooniverseExport->file) && Storage::disk('s3')->exists(config('config.export_dir').'/'.$expedition->zooniverseExport->file);
     }
 
     /**
