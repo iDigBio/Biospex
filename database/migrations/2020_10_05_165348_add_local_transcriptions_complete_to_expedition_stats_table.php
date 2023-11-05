@@ -14,8 +14,8 @@ class AddLocalTranscriptionsCompleteToExpeditionStatsTable extends Migration
     public function up()
     {
         Schema::table('expedition_stats', function (Blueprint $table) {
-            $table->integer('local_transcriptions_completed')->default(0)->after('transcriptions_total');
-            $table->renameColumn('transcriptions_total', 'transcriptions_goal');
+            //$table->integer('local_transcriptions_completed')->default(0)->after('transcriptions_total');
+            //$table->renameColumn('transcriptions_total', 'transcriptions_goal');
         });
     }
 
@@ -27,8 +27,8 @@ class AddLocalTranscriptionsCompleteToExpeditionStatsTable extends Migration
     public function down()
     {
         Schema::table('expedition_stats', function (Blueprint $table) {
-            $table->dropColumn('local_transcriptions_completed');
-            $table->renameColumn('transcriptions_goal', 'transcriptions_total');
+            //$table->dropColumn('local_transcriptions_completed');
+            //$table->renameColumn('transcriptions_goal', 'transcriptions_total');
         });
     }
 }
