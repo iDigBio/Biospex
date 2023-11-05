@@ -100,7 +100,7 @@ class UpdateQueries extends Command
         echo 'Running '.__METHOD__.PHP_EOL;
 
         Schema::table('expeditions', function (Blueprint $table) {
-            $table->foreign('workflow_id')->references('id')->on('workflows')->onUpdate('RESTRICT')->onDelete('CASCADE');
+            $table->foreign('workflow_id')->references('id')->on('workflows')->nullable()->constrained()->onUpdate('CASCADE')->onDelete('SET NULL');
         });
     }
 
