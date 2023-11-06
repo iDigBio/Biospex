@@ -17,18 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\GeoLocate;
+namespace App\Services\Actors\GeoLocate;
 
 use App\Repositories\GeoLocateCommunityRepository;
 use App\Repositories\GeoLocateDataSourceRepository;
 use App\Services\Api\GeoLocateApi;
 
 /**
- * Class StatService
+ * Class GeoLocateStat
  *
  * @package App\Services\Process
  */
-class StatService
+class GeoLocateStat
 {
     /**
      * @var \App\Repositories\GeoLocateCommunityRepository
@@ -46,7 +46,7 @@ class StatService
     private GeoLocateApi $geoLocateApi;
 
     /**
-     * StatService constructor.
+     * GeoLocateStat constructor.
      *
      * @param \App\Repositories\GeoLocateCommunityRepository $geoLocateCommunityRepository
      * @param \App\Repositories\GeoLocateDataSourceRepository $geoLocateDataSourceRepository

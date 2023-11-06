@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\GeoLocate;
+namespace App\Services\Actors\GeoLocate;
 
 use App\Models\Expedition;
 use App\Models\GeoLocateForm;
@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Storage;
 
-class ExportFormService
+class GeoLocateExportForm
 {
     /**
      * @var \App\Services\Models\ExpeditionService

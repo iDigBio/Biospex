@@ -24,7 +24,7 @@ use App\Http\Requests\GroupFormRequest;
 use App\Jobs\DeleteGroupJob;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserRepository;
-use App\Services\GeoLocate\ExportFormService;
+use App\Services\Actors\GeoLocate\GeoLocateExportForm;
 use Auth;
 use Exception;
 
@@ -236,12 +236,12 @@ class GroupController extends Controller
     /**
      * Delete geolocate form.
      *
-     * @param \App\Services\GeoLocate\ExportFormService $geoLocateProcessService
+     * @param \App\Services\Actors\GeoLocate\GeoLocateExportForm $geoLocateExportForm
      * @param int $groupId
      * @param int $formId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteForm(ExportFormService $geoLocateProcessService, int $groupId, int $formId): \Illuminate\Http\RedirectResponse
+    public function deleteForm(GeoLocateExportForm $geoLocateExportForm, int $groupId, int $formId): \Illuminate\Http\RedirectResponse
     {
         try {
             $group = $this->groupRepo->findWith($groupId);
@@ -250,7 +250,7 @@ class GroupController extends Controller
                 return \Redirect::back();
             }
 
-            $geoLocateForm = $geoLocateProcessService->findGeoLocateFormByIdWithExpeditionCount($formId);
+            $geoLocateForm = $geoLocateExportForm->findGeoLocateFormByIdWithExpeditionCount($formId);
 
             if ($geoLocateForm->expeditions_count > 0) {
                 \Flash::error(t('GeoLocateExport Form cannot be deleted while still being used by Expeditions.'));

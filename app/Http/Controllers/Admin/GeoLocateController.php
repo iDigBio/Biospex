@@ -22,8 +22,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GeoLocateCommunityRequest;
 use App\Jobs\GeoLocateExportJob;
-use App\Services\GeoLocate\ExportFormService;
-use App\Services\GeoLocate\StatService;
+use App\Services\Actors\GeoLocate\GeoLocateExportForm;
+use App\Services\Actors\GeoLocate\GeoLocateStat;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -32,29 +32,29 @@ use Illuminate\Support\Facades\Auth;
 class GeoLocateController extends Controller
 {
     /**
-     * @var \App\Services\GeoLocate\ExportFormService
+     * @var \App\Services\Actors\GeoLocate\GeoLocateExportForm
      */
-    private ExportFormService $exportFormService;
+    private GeoLocateExportForm $geoLocateExportForm;
 
     /**
-     * @var \App\Services\GeoLocate\StatService
+     * @var \App\Services\Actors\GeoLocate\GeoLocateStat
      */
-    private StatService $statService;
+    private GeoLocateStat $geoLocateStat;
 
     /**
      * GeoLocateController constructor.
      *
-     * @param \App\Services\GeoLocate\ExportFormService $exportFormService
-     * @param \App\Services\GeoLocate\StatService $statService
+     * @param \App\Services\Actors\GeoLocate\GeoLocateExportForm $geoLocateExportForm
+     * @param \App\Services\Actors\GeoLocate\GeoLocateStat $geoLocateStat
      */
     public function __construct(
-        ExportFormService $exportFormService,
-        StatService $statService
+        GeoLocateExportForm $geoLocateExportForm,
+        GeoLocateStat $geoLocateStat
 
     )
     {
-        $this->exportFormService = $exportFormService;
-        $this->statService = $statService;
+        $this->geoLocateExportForm = $geoLocateExportForm;
+        $this->geoLocateStat = $geoLocateStat;
     }
 
     /**
@@ -72,7 +72,7 @@ class GeoLocateController extends Controller
 
         try {
             $relations = ['project.group', 'geoLocateDataSource'];
-            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
+            $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('readProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You do not have permission.')], 401);
@@ -99,13 +99,13 @@ class GeoLocateController extends Controller
 
         try {
             $relations = ['project.group.geoLocateForms', 'geoLocateExport'];
-            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
+            $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('readProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You do not have permission.')], 401);
             }
 
-            $form = $this->exportFormService->getForm($expedition, ['formId' => $expedition->geo_locate_form_id]);
+            $form = $this->geoLocateExportForm->getForm($expedition, ['formId' => $expedition->geo_locate_form_id]);
 
             $formFields = \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form'))->render();
 
@@ -132,13 +132,13 @@ class GeoLocateController extends Controller
 
         try {
             $relations = ['project.group'];
-            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
+            $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('readProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You do not have permissions for this action.')], 401);
             }
 
-            $form = $this->exportFormService->getForm($expedition, \Request::all());
+            $form = $this->geoLocateExportForm->getForm($expedition, \Request::all());
 
             return \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form'));
         } catch (\Exception $e) {
@@ -164,13 +164,13 @@ class GeoLocateController extends Controller
             parse_str(\Request::input('data'), $data);
 
             $relations = ['project.group'];
-            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
+            $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You do not have permissions for this action.')], 401);
             }
 
-            $this->exportFormService->saveForm($data, $expedition);
+            $this->geoLocateExportForm->saveForm($data, $expedition);
 
             return \Response::json(['message' => t('GeoLocate export form saved.')]);
 
@@ -195,7 +195,7 @@ class GeoLocateController extends Controller
         try {
 
             $relations = ['project.group'];
-            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
+            $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You do not have permissions for this action.')], 401);
@@ -225,14 +225,14 @@ class GeoLocateController extends Controller
 
         try {
             $relations = ['project.group'];
-            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
+            $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
                 return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            $this->exportFormService->deleteGeoLocateFile($expeditionId);
-            $this->exportFormService->deleteGeoLocate($expeditionId);
+            $this->geoLocateExportForm->deleteGeoLocateFile($expeditionId);
+            $this->geoLocateExportForm->deleteGeoLocate($expeditionId);
 
             $expedition->geoLocateForm()->dissociate()->save();
             $expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
@@ -263,7 +263,7 @@ class GeoLocateController extends Controller
         }
 
         $relations = ['project.group', 'project.geoLocateCommunity', 'geoLocateDataSource'];
-        $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
+        $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
@@ -294,13 +294,13 @@ class GeoLocateController extends Controller
             }
 
             $relations = ['project.group'];
-            $expedition = $this->exportFormService->findExpeditionWithRelations($expeditionId, $relations);
+            $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
 
             if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
                 return \Response::json(['message' => t('You are not authorized for this action.')], 401);
             }
 
-            $this->statService->saveCommunityDataSource($data, $projectId, $expeditionId);
+            $this->geoLocateStat->saveCommunityDataSource($data, $projectId, $expeditionId);
 
             $expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
                 'state' => 2,

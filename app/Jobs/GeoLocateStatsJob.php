@@ -22,7 +22,7 @@ use App\Models\Actor;
 use App\Models\Expedition;
 use App\Notifications\JobNotification;
 use App\Repositories\ExpeditionRepository;
-use App\Services\GeoLocate\StatService;
+use App\Services\Actors\GeoLocate\GeoLocateStat;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -57,31 +57,31 @@ class GeoLocateStatsJob implements ShouldQueue
     /**
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(StatService $statService, ExpeditionRepository $expeditionRepository): void
+    public function handle(GeoLocateStat $geoLocateStat, ExpeditionRepository $expeditionRepository): void
     {
         $this->expedition = $expeditionRepository->findWith($this->actor->pivot->expedition_id, ['project.group.owner']);
-        $geoLocateDataSource = $statService->getCommunityAndDataSourceByExpeditionId($this->actor->pivot->expedition_id);
+        $geoLocateDataSource = $geoLocateStat->getCommunityAndDataSourceByExpeditionId($this->actor->pivot->expedition_id);
 
         if ($geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
             return;
         }
 
         // get community stats first
-        $communityStats = $statService->getCommunityDataSource($geoLocateDataSource->geoLocateCommunity->name);
+        $communityStats = $geoLocateStat->getCommunityDataSource($geoLocateDataSource->geoLocateCommunity->name);
 
         // get dataSource stats
-        $dataSourceStats = $statService->getCommunityDataSource($geoLocateDataSource->geoLocateCommunity->name, $geoLocateDataSource->data_source);
+        $dataSourceStats = $geoLocateStat->getCommunityDataSource($geoLocateDataSource->geoLocateCommunity->name, $geoLocateDataSource->data_source);
 
         // update geo_locate_communities data
-        $statService->updateGeoLocateCommunityStat($geoLocateDataSource->geoLocateCommunity->id, $communityStats);
+        $geoLocateStat->updateGeoLocateCommunityStat($geoLocateDataSource->geoLocateCommunity->id, $communityStats);
 
         // update geo_locate_data_sources data
-        $statService->updateGeoLocateDataSourceStat($geoLocateDataSource->id, $dataSourceStats);
+        $geoLocateStat->updateGeoLocateDataSourceStat($geoLocateDataSource->id, $dataSourceStats);
 
         // download data source file if completed and notify user
         if ($dataSourceStats['stats']['localityRecords'] === $dataSourceStats['stats']['correctedLocalityRecords']) {
-            $uri = $statService->buildDataSourceDownload($geoLocateDataSource->geoLocateCommunity->name, $geoLocateDataSource->data_source);
-            $statService->getDataSourceDownload($uri, $this->actor->pivot->expedition_id);
+            $uri = $geoLocateStat->buildDataSourceDownload($geoLocateDataSource->geoLocateCommunity->name, $geoLocateDataSource->data_source);
+            $geoLocateStat->getDataSourceDownload($uri, $this->actor->pivot->expedition_id);
 
             $this->actor->pivot->expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
                 'state' => 3,
