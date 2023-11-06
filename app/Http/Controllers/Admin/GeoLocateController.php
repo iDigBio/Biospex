@@ -22,6 +22,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GeoLocateCommunityRequest;
 use App\Jobs\GeoLocateExportJob;
+use App\Jobs\GeoLocateStatsJob;
 use App\Services\Actors\GeoLocate\GeoLocateExportForm;
 use App\Services\Actors\GeoLocate\GeoLocateStat;
 use Exception;
@@ -207,6 +208,34 @@ class GeoLocateController extends Controller
 
         } catch (Exception $e) {
             return \Response::json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Refresh Geo Locate stats at user request.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function refresh(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|RedirectResponse
+    {
+        try {
+            $relations = ['project.group', 'geoLocateActor'];
+            $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
+
+            if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
+                return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+            }
+
+            GeoLocateStatsJob::dispatch($expedition->geoLocateActor, true);
+
+            \Flash::success(t('Geo Locate stats job is scheduled for processing. You will receive an email when the process is complete.'));
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+
+        } catch (Exception $e) {
+            \Flash::error(t('An error occurred while processing job.'));
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
     }
 
