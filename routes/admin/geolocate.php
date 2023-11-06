@@ -29,3 +29,5 @@ Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/community'
 Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/store', [GeoLocateController::class, 'store'])->name('admin.geolocates.store');
 Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/export', [GeoLocateController::class, 'export'])->name('admin.geolocates.export');
 Route::delete('projects/{projects}/expeditions/{expeditions}/geolocates/delete', [GeoLocateController::class, 'delete'])->name('admin.geolocates.delete');
+
+Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/refresh', [GeoLocateController::class, 'refresh'])->name('admin.geolocates.refresh');

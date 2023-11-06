@@ -59,7 +59,8 @@ class AppCommand extends Command
      */
     public function handle(ExpeditionRepository $expeditionRepo)
     {
-
+        $expedition = Expedition::with(['geoLocateActor'])->find(397);
+        dd($expedition);
     }
 
     /**
