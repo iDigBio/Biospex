@@ -45,13 +45,20 @@ class GeoLocateStatsJob implements ShouldQueue
     private Expedition $expedition;
 
     /**
+     * @var bool $refresh
+     */
+    private bool $refresh;
+
+    /**
      * Create a new job instance.
      *
      * @param \App\Models\Actor $actor
+     * @param bool $refresh
      */
-    public function __construct(Actor $actor)
+    public function __construct(Actor $actor, bool $refresh = false)
     {
         $this->actor = $actor;
+        $this->refresh = $refresh;
     }
 
     /**
@@ -62,7 +69,7 @@ class GeoLocateStatsJob implements ShouldQueue
         $this->expedition = $expeditionRepository->findWith($this->actor->pivot->expedition_id, ['project.group.owner']);
         $geoLocateDataSource = $geoLocateStat->getCommunityAndDataSourceByExpeditionId($this->actor->pivot->expedition_id);
 
-        if ($geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
+        if (!$this->refresh && $geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
             return;
         }
 
