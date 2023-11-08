@@ -138,14 +138,14 @@
         <div id="active-expeditions-main" class="col-sm-12 show">
             @include('common.expedition-sort', ['type' => 'active', 'route' => route('front.expeditions.sort'), 'id' => $project->id])
             <div id="active-expeditions" class="row col-sm-12 mx-auto justify-content-center">
-                @include('front.expedition.partials.expedition')
+                @include('front.expedition.partials.expedition',['expeditions', 'project' => $project])
             </div>
         </div>
         <div id="completed-expeditions-main" class="col-sm-12 collapse">
             @include('common.expedition-sort', ['type' => 'completed', 'route' => route('front.expeditions.sort'), 'id' => $project->id])
             <canvas id="expedition-conffeti" style="z-index: -1; position:fixed; top:0;left:0;"></canvas>
             <div id="completed-expeditions" class="row col-sm-12 mx-auto justify-content-center">
-                @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
+                @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted, 'project' => $project])
             </div>
         </div>
     </div>
@@ -188,7 +188,7 @@
             <div id="bingos-main" class="col-sm-12 show">
                 <div id="active-events" class="row col-sm-12 mx-auto justify-content-center">
                     @foreach($project->bingos as $bingo)
-                        @include('front.bingo.partials.bingo-loop')
+                        @include('front.bingo.partials.bingo-loop', ['project' => $project])
                     @endforeach
                 </div>
             </div>

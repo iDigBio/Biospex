@@ -5,7 +5,7 @@
             <h5 class="text-center color-action">
                 {{ $bingo->present()->create_date_to_string }}
                 {{ t('for') }}<br>
-                {{ $bingo->project->title }}
+                {{ $project->title }}
             </h5>
             <a href="{{ route('front.bingos.generate', [$bingo->id]) }}"
                onclick="return !window.open(this.href, 'com_Biospex_Bingo_Card', 'width=700,height=800')"
@@ -14,7 +14,7 @@
         </div>
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                {!! $bingo->project->present()->project_page_icon !!}
+                {!! $project->present()->project_page_icon !!}
                 {!! $bingo->present()->show_icon !!}
                 {!! $bingo->present()->twitter_icon !!}
                 {!! $bingo->present()->facebook_icon !!}

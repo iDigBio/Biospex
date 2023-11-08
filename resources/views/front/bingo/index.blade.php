@@ -21,7 +21,9 @@
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         @if($bingos->isNotEmpty())
-            @each('front.bingo.partials.bingo-loop', $bingos, 'bingo')
+            @foreach($bingos as $bingo)
+                @include('front.bingo.partials.bingo-loop', ['project' => $bingo->project])
+            @endforeach
         @else
             <h2 class="mx-auto pt-4">{{ t('No Bingo Games exist.') }}</h2>
         @endif

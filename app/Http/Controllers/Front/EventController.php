@@ -43,12 +43,13 @@ class EventController extends Controller
     public function index(EventRepository $eventRepo)
     {
         $results = $eventRepo->getEventPublicIndex();
+        $project = $results->first()->project;
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
             return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
         });
 
-        return \View::make('front.event.index', compact('events', 'eventsCompleted'));
+        return \View::make('front.event.index', compact('events', 'project', 'eventsCompleted'));
     }
 
     /**
