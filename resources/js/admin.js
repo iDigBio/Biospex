@@ -103,7 +103,7 @@ $(function () {
             }
         })
     })
-    // TODO: replace image url with variable
+
     $('.project-banner').on('click', function () {
         let img = $(this).data('name')
         let $bannerFile = $('#banner-file')

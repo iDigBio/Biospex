@@ -269,7 +269,6 @@ $(function () {
 
 /**
  * Map formatter
- * TODO: Replace image url reference with variable.
  *
  * @param column
  */
