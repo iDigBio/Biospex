@@ -1,7 +1,7 @@
 const axios = require('axios');
 const Pusher = require('pusher-js');
 const https = require('https');
-const pusher = new Pusher('79e8e05ea522377ba6db', { cluster: 'mt1' });
+const pusher = new Pusher('ZOONIVERSE_PUSHER_ID', { cluster: 'PUSHER_APP_CLUSTER' });
 const channel = pusher.subscribe('panoptes');
 
 const config = {

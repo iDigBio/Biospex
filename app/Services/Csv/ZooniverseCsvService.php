@@ -130,7 +130,7 @@ class ZooniverseCsvService
      */
     public function downloadCsv(int $expeditionId, string $uri)
     {
-        $filePath = config('config.zooniverse_dir.classification') . '/' . $expeditionId . '.csv';
+        $filePath = config('config.zooniverse.directory.classification') . '/' . $expeditionId . '.csv';
         $stream = $this->awsS3ApiService->createS3BucketStream(config('filesystems.disks.s3.bucket'), $filePath, 'w', false);
         $opts = [
             'sink' => $stream

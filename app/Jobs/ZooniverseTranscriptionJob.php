@@ -78,7 +78,7 @@ class ZooniverseTranscriptionJob implements ShouldQueue
             return;
         }
 
-        $csvFilePath = config('config.zooniverse_dir.transcript') . "/{$this->expeditionId}.csv";
+        $csvFilePath = config('config.zooniverse.directory.transcript') . "/{$this->expeditionId}.csv";
         if (! Storage::disk('s3')->exists($csvFilePath)) {
             $this->delete();
 

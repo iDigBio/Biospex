@@ -86,7 +86,7 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        if ( ! config('config.registration')) {
+        if ( ! config('config.app_registration')) {
             return \Redirect::route('home')->with('error', t('Registration is not available at this time.'));
         }
 

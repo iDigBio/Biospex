@@ -5,17 +5,20 @@ return [
     /**
      * Site variables
      */
-    'app_env'         => env('APP_ENV'),
-    'app_domain'      => env('APP_DOMAIN'),
-    'app_url'         => env('APP_URL'),
-    'api_domain'      => env('API_DOMAIN'),
-    'api_url'         => env('API_URL'),
-    'api_version'     => env('API_VERSION'),
-    'api_token'       => env('API_TOKEN'),
-    'current_path'    => env('CURRENT_PATH'),
-    'server_user'     => env('SERVER_USER'),
-    'registration'    => env('REGISTRATION'),
-    'expedition_size' => env('EXPEDITION_SIZE'),
+    'app_domain'         => env('APP_DOMAIN'),
+    'app_current_path'   => env('APP_CURRENT_PATH'),
+    'app_server_user'    => env('APP_SERVER_USER'),
+    'app_registration'   => env('APP_REGISTRATION'),
+
+    'expedition_size'    => env('EXPEDITION_SIZE'),
+    'pusher_app_cluster' => env('PUSHER_APP_CLUSTER'),
+
+    'api' => [
+        'domain'  => env('API_DOMAIN'),
+        'url'     => env('API_URL'),
+        'version' => env('API_VERSION'),
+        'token'   => env('API_TOKEN'),
+    ],
 
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
@@ -36,31 +39,35 @@ return [
     'scratch_dir' => env('SCRATCH_DIR', 'scratch'),
 
     // Zooniverse related
-    'zooniverse' => [
+    'zooniverse'  => [
         'actor_title' => env('ZOONIVERSE_ACTOR_TITLE'),
-        'actor_id'      => env('ZOONIVERSE_ACTOR_ID'),
+        'actor_id'    => env('ZOONIVERSE_ACTOR_ID'),
+        'pusher_id'   => env('ZOONIVERSE_PUSHER_ID'),
+
+        'directory' => [
+            'parent'         => env('ZOONIVERSE_DIRECTORY', 'zooniverse'),
+            'classification' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/classification',
+            'reconcile'      => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconcile', // normal reconcile
+            'reconciled'     => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled', // expert review
+            'summary'        => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/summary',
+            'transcript'     => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/transcript',
+            'explained'      => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/explained',
+        ],
+
+        'file_types' => [
+            'classification',
+            'transcript',
+            'reconcile',
+            'summary',
+            'reconciled_with_expert_opinion',
+        ],
+
+        'reconcile_problem_regex' => env('ZOONIVERSE_RECONCILE_PROBLEM_REGEX'),
+
     ],
 
-    'zooniverse_dir' => [
-        'parent'         => env('ZOONIVERSE_DIR', 'zooniverse'),
-        'classification' => env('ZOONIVERSE_DIR', 'zooniverse').'/classification',
-        'reconcile'      => env('ZOONIVERSE_DIR', 'zooniverse').'/reconcile', // normal reconcile
-        'reconciled'     => env('ZOONIVERSE_DIR', 'zooniverse').'/reconciled', // expert review
-        'summary'        => env('ZOONIVERSE_DIR', 'zooniverse').'/summary',
-        'transcript'     => env('ZOONIVERSE_DIR', 'zooniverse').'/transcript',
-        'explained'      => env('ZOONIVERSE_DIR', 'zooniverse').'/explained',
-    ],
 
-    'nfn_file_types'              => [
-        'classification',
-        'transcript',
-        'reconcile',
-        'summary',
-        'reconciled_with_expert_opinion',
-    ],
-    'nfn_reconcile_problem_regex' => env('NFN_RECONCILE_PROBLEM_REGEX'),
-
-    'export_stages'       => [
+    'export_stages' => [
         'Building File Queue', // 0
         'Building Image Requests', // 1
         'Processing Image Requests', // 2
@@ -161,7 +168,7 @@ return [
     // End Zooniverse related
 
     // GeoLocate related
-    'geolocate' => [
+    'geolocate'                   => [
         'actor_title' => env('GEOLOCATE_ACTOR_TITLE'),
         'actor_id'    => env('GEOLOCATE_ACTOR_ID'),
         'workflow_id' => env('GEOLOCATE_WORKFLOW_ID'),
@@ -175,7 +182,7 @@ return [
         'dir'         => [
             'parent' => env('GEOLOCATE_DIR', 'geolocate'),
             'export' => env('GEOLOCATE_DIR', 'geolocate').'/export',
-            'kml' => env('GEOLOCATE_DIR', 'geolocate').'/kml',
+            'kml'    => env('GEOLOCATE_DIR', 'geolocate').'/kml',
         ],
     ],
     // End GeoLocate related
@@ -201,7 +208,7 @@ return [
     'poll_bingo_channel'             => env('POLL_BINGO_CHANNEL'),
     'poll_wedigbio_progress_channel' => env('POLL_WEDIGBIO_PROGRESS_CHANNEL'),
 
-    'project_resources' => [
+    'project_resources'   => [
         'Website URL',
         'Video URL',
         'File Download',
@@ -256,8 +263,8 @@ return [
     ],
 
     /* Beanstalk Queues */
-    'num_procs'             => env('NUM_PROCS'),
-    'queues'                => [
+    'queue'                 => [
+        'num_procs'             => env('QUEUE_NUM_PROCS'),
         'chart'                 => env('QUEUE_CHART'),
         'classification'        => env('QUEUE_CLASSIFICATION'),
         'default'               => env('QUEUE_DEFAULT'),
@@ -307,7 +314,7 @@ return [
     /**
      * Default advertise fields for PPSR_CORE
      */
-    'ppsr'      => [
+    'ppsr'                  => [
         'ProjectGUID'             => ['private' => 'uuid'],
         'ProjectName'             => ['column' => 'title'],
         'ProjectDataProvider'     => ['value' => env('APP_NAME')],
@@ -334,16 +341,16 @@ return [
     'wedigbio_end_date'   => env('WEDIGBIO_END_DATE'),
 
     'deployment_fields' => [
-        'APP_URL',
-        'APP_ENV',
-        'APP_DOMAIN',
-        'SERVER_USER',
-        'CURRENT_PATH',
-        'REDIS_HOST',
         'API_URL',
         'API_VERSION',
         'API_TOKEN',
-        'NUM_PROCS',
+        'APP_URL',
+        'APP_ENV',
+        'APP_DOMAIN',
+        'APP_SERVER_USER',
+        'APP_CURRENT_PATH',
+        'PUSHER_APP_CLUSTER',
+        'QUEUE_NUM_PROCS',
         'QUEUE_CHART',
         'QUEUE_CLASSIFICATION',
         'QUEUE_DEFAULT',
@@ -361,5 +368,7 @@ return [
         'QUEUE_PUSHER_CLASSIFICATION',
         'QUEUE_PUSHER_HANDLER',
         'QUEUE_WEDIGBIO_EVENT',
+        'REDIS_HOST',
+        'ZOONIVERSE_PUSHER_ID',
     ],
 ];

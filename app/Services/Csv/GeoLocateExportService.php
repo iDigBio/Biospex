@@ -106,7 +106,7 @@ class GeoLocateExportService
      */
     private function setSourceFile(Expedition $expedition): string
     {
-        return config('config.zooniverse_dir.' . $expedition->geoLocateForm->source) . '/' . $expedition->id . '.csv';
+        return config('config.zooniverse.directory.' . $expedition->geoLocateForm->source) . '/' . $expedition->id . '.csv';
     }
 
     /**

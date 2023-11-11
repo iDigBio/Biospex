@@ -81,7 +81,7 @@
     </form>
     <div class="row">
         <h3 class="mx-auto">{{ t('Subjects currently assigned') }}
-            <span id="max">{{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}</span>:
+            <span id="max">{{ t('(%s max. per Expedition)', Config::get('config.app_expedition_size')) }}</span>:
             <span id="subject-count-html">0</span></h3>
         <div class="col-md-12">
             <table class="table table-bordered" id="jqGridTable"></table>

@@ -51,22 +51,12 @@ class AppFileDeployment extends Command
     private Collection $config;
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->setConfig();
-    }
-
-    /**
      * Execute the console command.
      */
     public function handle()
     {
+        $this->setConfig();
+
         // copy needed files to locations
         $appFiles = File::files(base_path('resources').'/apps');
         $appTargets = collect($appFiles)->reject(function ($file) {
@@ -115,21 +105,19 @@ class AppFileDeployment extends Command
             return config('config.' . strtolower($search));
         }
 
-        if ($search === 'REDIS_HOST') {
-            return config('database.redis.default.host');
+        if ($search === 'PUSHER_APP_CLUSTER') {
+            return config('config.' . strtolower($search));
         }
 
-        if (str_starts_with($search, 'QUEUE_')) {
-            $replace = strtolower(str_replace('QUEUE_', '', $search));
-
-            return config('config.queues.'.$replace);
+        if ($search === 'REDIS_HOST') {
+            return config('database.redis.default.host');
         }
 
         if ($search === 'MAP_PRIVATE_KEY') {
             return json_encode(base64_decode(config('config.'.strtolower($search))));
         }
 
-        return config('config.'.strtolower($search));
+        return config('config.' . strtolower(\Str::replaceFirst('_', '.', $search)));
     }
 
     /**
@@ -149,8 +137,8 @@ class AppFileDeployment extends Command
     private function rejectFiles($file): bool
     {
         $files = [
-            'panoptes-pusher.conf',
-            'panoptes-pusher.js',
+            //'panoptes-pusher.conf',
+            //'panoptes-pusher.js',
         ];
 
         return config('app.env') === 'dev' && in_array($file->getBaseName(), $files);

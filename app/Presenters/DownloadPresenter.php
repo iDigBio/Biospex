@@ -76,7 +76,7 @@ class DownloadPresenter extends Presenter
     public function otherDownload(): string
     {
         $filename = "{$this->model->type}-{$this->model->file}";
-        return Storage::disk('s3')->temporaryUrl(config('config.zooniverse_dir.'.$this->model->type).'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename='.$filename]);
+        return Storage::disk('s3')->temporaryUrl(config('config.zooniverse.directory.'.$this->model->type).'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename='.$filename]);
     }
 
 
@@ -87,6 +87,6 @@ class DownloadPresenter extends Presenter
      */
     public function summaryHtml(): string
     {
-        return Storage::disk('s3')->temporaryUrl(config('config.zooniverse_dir.summary').'/'.$this->model->file, now()->addMinutes(30));
+        return Storage::disk('s3')->temporaryUrl(config('config.zooniverse.directory.summary').'/'.$this->model->file, now()->addMinutes(30));
     }
 }

@@ -75,7 +75,7 @@ class ExpertReconcileProcess
         $this->subjectRepo = $subjectRepo;
         $this->awsS3CsvService = $awsS3CsvService;
 
-        $this->problemRegex = config('config.nfn_reconcile_problem_regex');
+        $this->problemRegex = config('config.zooniverse.reconcile_problem_regex');
     }
 
     /**
@@ -86,7 +86,7 @@ class ExpertReconcileProcess
      */
     public function migrateReconcileCsv(string $expeditionId)
     {
-        $file = config('config.zooniverse_dir.reconcile').'/'.$expeditionId.'.csv';
+        $file = config('config.zooniverse.directory.reconcile').'/'.$expeditionId.'.csv';
 
         if (! Storage::disk('s3')->exists($file)) {
             $message = t('File does not exist.');
@@ -218,7 +218,7 @@ class ExpertReconcileProcess
      */
     public function setReconcileProblems(int $expeditionId)
     {
-        $file = config('config.zooniverse_dir.explained').'/'.$expeditionId.'.csv';
+        $file = config('config.zooniverse.directory.explained').'/'.$expeditionId.'.csv';
 
         if (! Storage::disk('s3')->exists($file)) {
             $message = t('File does not exist.');

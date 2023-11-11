@@ -363,7 +363,7 @@ class GeneralHelper
         }elseif ($type === 'report') {
             return Storage::disk('s3')->exists(config('config.report_dir').'/'.$file);
         }else{
-            return Storage::disk('s3')->exists(config('config.zooniverse_dir.parent').'/'.$type.'/'.$file);
+            return Storage::disk('s3')->exists(config('config.zooniverse.directory.parent').'/'.$type.'/'.$file);
         }
     }
 
@@ -415,7 +415,7 @@ class GeneralHelper
         }elseif ($type === 'report') {
             return Storage::disk('s3')->size(config('config.report_dir').'/'.$file);
         }else{
-            return Storage::disk('s3')->size(config('config.zooniverse_dir.parent').'/'.$type.'/'.$file);
+            return Storage::disk('s3')->size(config('config.zooniverse.directory.parent').'/'.$type.'/'.$file);
         }
     }
 

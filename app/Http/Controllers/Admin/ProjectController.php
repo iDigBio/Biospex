@@ -271,7 +271,7 @@ class ProjectController extends Controller
         JavaScript::put([
             'model'      => $model,
             'subjectIds' => [],
-            'maxCount'   => config('config.expedition_size'),
+            'maxCount'   => config('config.app_expedition_size'),
             'dataUrl'    => route('admin.grids.explore', [$projectId]),
             'exportUrl'  => route('admin.grids.export', [$projectId]),
             'checkbox'   => false,
