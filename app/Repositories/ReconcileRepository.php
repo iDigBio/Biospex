@@ -46,7 +46,7 @@ class ReconcileRepository extends BaseRepository
      * @param int $expeditionId
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paging(int $expeditionId)
+    public function paging(int $expeditionId): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return $this->model->with(['transcriptions'])
             ->where('subject_expeditionId', $expeditionId)
