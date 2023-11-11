@@ -9,19 +9,6 @@ $(function () {
         userGroup.val() === 'new' ? groupInput.show() : groupInput.hide()
     }
 
-    $('#select-all').click(function () {  //on click
-        let checkboxAll = $('.checkbox-all')
-        if (this.checked) { // check select status
-            checkboxAll.each(function () { //loop through each checkbox
-                this.checked = true  //select all checkboxes with class 'checkbox1'
-            })
-        } else {
-            checkboxAll.each(function () { //loop through each checkbox
-                this.checked = false //deselect all checkboxes with class 'checkbox1'
-            })
-        }
-    })
-
     let homeProjectList = $('a.home-project-list')
     homeProjectList.click(function (e) {
         let count = $(this).data('count')
