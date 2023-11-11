@@ -112,7 +112,7 @@ class ReconcileController extends Controller
             new ExpertReviewProcessExplainedJob($expeditionId),
             new ExpertReviewMigrateReconcilesJob($expeditionId),
             new ExpertReviewSetProblemsJob($expeditionId)
-        ])->name('Expert Reconcile ' . $expedition->id)->onQueue(config('config.queues.reconcile'))->dispatch();
+        ])->name('Expert Reconcile ' . $expedition->id)->onQueue(config('config.queue.reconcile'))->dispatch();
 
         \Flash::success(t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
 

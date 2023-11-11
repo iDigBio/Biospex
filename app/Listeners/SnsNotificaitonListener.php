@@ -29,7 +29,7 @@ class SnsNotificaitonListener implements ShouldQueue
      */
     public function viaQueue()
     {
-        return config('config.queues.sns_image');
+        return config('config.queue.sns_image');
     }
 
     /**

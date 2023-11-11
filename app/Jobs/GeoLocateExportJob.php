@@ -70,7 +70,7 @@ class GeoLocateExportJob implements ShouldQueue
      */
     public function __construct(Expedition $expedition, User $user)
     {
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
         $this->expedition = $expedition;
         $this->user = $user;
     }

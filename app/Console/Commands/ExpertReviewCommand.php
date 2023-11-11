@@ -38,6 +38,6 @@ class ExpertReviewCommand extends Command
             new ExpertReviewProcessExplainedJob($expeditionId),
             new ExpertReviewMigrateReconcilesJob($expeditionId),
             new ExpertReviewSetProblemsJob($expeditionId)
-        ])->name('Expert Reconcile ' . $expeditionId)->onQueue(config('config.queues.reconcile'))->dispatch();
+        ])->name('Expert Reconcile ' . $expeditionId)->onQueue(config('config.queue.reconcile'))->dispatch();
     }
 }

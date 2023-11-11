@@ -40,7 +40,7 @@ class JobNotification extends Notification
         $this->message = $message;
         $this->fileUrl = $fileUrl;
         $this->adminEmail = config('mail.from.address');
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

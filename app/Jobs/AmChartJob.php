@@ -57,7 +57,7 @@ class AmChartJob implements ShouldQueue
     public function __construct(int $projectId)
     {
         $this->projectId = $projectId;
-        $this->onQueue(config('config.queues.chart'));
+        $this->onQueue(config('config.queue.chart'));
     }
 
     /**

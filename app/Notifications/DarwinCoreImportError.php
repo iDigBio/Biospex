@@ -66,7 +66,7 @@ class DarwinCoreImportError extends Notification implements ShouldQueue
         $this->identifier = $identifier;
         $this->message = $message;
         $this->adminEmail = config('mail.from.address');
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

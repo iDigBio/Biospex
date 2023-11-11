@@ -57,7 +57,7 @@ class ZooniverseCsvJob implements ShouldQueue
      */
     public function __construct(int $expeditionId, bool $noDelay = false)
     {
-        $this->onQueue(config('config.queues.classification'));
+        $this->onQueue(config('config.queue.classification'));
         $this->expeditionId = $expeditionId;
         $this->noDelay = $noDelay;
     }

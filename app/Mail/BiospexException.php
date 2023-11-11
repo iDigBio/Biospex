@@ -46,7 +46,7 @@ class BiospexException extends Mailable implements ShouldQueue
     public function __construct($content)
     {
         $this->content = $content;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

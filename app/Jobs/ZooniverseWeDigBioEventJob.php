@@ -57,7 +57,7 @@ class ZooniverseWeDigBioEventJob implements ShouldQueue
     {
         $this->data = $data;
         $this->projectId = $projectId;
-        $this->onQueue(config('config.queues.wedigbio_event'));
+        $this->onQueue(config('config.queue.wedigbio_event'));
     }
 
     /**

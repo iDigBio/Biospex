@@ -44,7 +44,7 @@ class ContactForm extends Mailable implements ShouldQueue
     {
         $this->contact = $contact;
 
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

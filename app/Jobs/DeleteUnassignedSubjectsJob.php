@@ -58,7 +58,7 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
     {
         $this->user = $user;
         $this->projectId = $projectId;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

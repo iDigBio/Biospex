@@ -47,7 +47,7 @@ class ExpertReviewPublished extends Notification implements ShouldQueue
     public function __construct(string $title)
     {
         $this->title = $title;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

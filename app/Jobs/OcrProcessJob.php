@@ -41,7 +41,7 @@ class OcrProcessJob implements ShouldQueue
     public function __construct(OcrQueue $ocrQueue)
     {
         $this->ocrQueue = $ocrQueue;
-        $this->onQueue(config('config.queues.ocr'));
+        $this->onQueue(config('config.queue.ocr'));
     }
 
     /**

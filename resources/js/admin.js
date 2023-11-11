@@ -116,13 +116,13 @@ $(function () {
             }
         })
     })
-    
+    // TODO: replace image url with variable
     $('.project-banner').on('click', function () {
         let img = $(this).data('name')
         let $bannerFile = $('#banner-file')
         $bannerFile.val(img)
         $bannerFile.attr('value', img)
-        $('#banner-img').attr('src', '/images/habitat-banners/' + img)
+        $('#banner-img').attr('src', Laravel.habitatBannersPath + img)
         $("#project-banner-modal .close").click()
     })
 

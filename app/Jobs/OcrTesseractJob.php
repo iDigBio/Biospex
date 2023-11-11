@@ -62,7 +62,7 @@ class OcrTesseractJob implements ShouldQueue
     {
         $this->queueId = $queueId;
         $this->subject = $subject;
-        $this->onQueue(config('config.queues.import'));
+        $this->onQueue(config('config.queue.import'));
     }
 
     /**

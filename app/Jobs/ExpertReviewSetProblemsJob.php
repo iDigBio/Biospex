@@ -60,7 +60,7 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
     public function __construct(int $expeditionId)
     {
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.queues.reconcile'));
+        $this->onQueue(config('config.queue.reconcile'));
     }
 
     /**

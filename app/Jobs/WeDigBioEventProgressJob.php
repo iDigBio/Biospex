@@ -44,7 +44,7 @@ class WeDigBioEventProgressJob implements ShouldQueue
     public function __construct(int $dateId)
     {
         $this->dateId = $dateId;
-        $this->onQueue(config('config.queues.event'));
+        $this->onQueue(config('config.queue.event'));
     }
 
     /**

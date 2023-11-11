@@ -54,7 +54,7 @@ class NfnExportComplete extends Notification implements ShouldQueue
     {
         $this->title = $title;
         $this->fileName = $fileName;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

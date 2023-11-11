@@ -68,7 +68,7 @@ class EventUserExportCsvJob implements ShouldQueue
     {
         $this->user = $user;
         $this->eventId = $eventId;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

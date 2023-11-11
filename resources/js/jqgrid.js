@@ -269,6 +269,8 @@ $(function () {
 
 /**
  * Map formatter
+ * TODO: Replace image url reference with variable.
+ *
  * @param column
  */
 function mapFormatter(column) {
@@ -276,8 +278,8 @@ function mapFormatter(column) {
         "imagePreview": function (cellValue) {
             let url = encodeURIComponent(cellValue);
             return '<a href="' + cellValue + '" target="_new">View Image</a>&nbsp;&nbsp;'
-                + '<a href="#" class="thumb-view" data-url="/admin/images/preview?url=' + url + '" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="Preview Thumbnail" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'
-                + '<a href="#" class="url-view" data-url="/admin/images/preview?url=' + cellValue + '&url-view=true" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="View URL" title="Preview URL">View URL</a>'
+                + '<a href="#" class="thumb-view" data-url="'+ Laravel.imagePreviewPath + url + '" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="Preview Thumbnail" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'
+                + '<a href="#" class="url-view" data-url="'+ Laravel.imagePreviewPath  + cellValue + '&url-view=true" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="View URL" title="Preview URL">View URL</a>'
         }
     };
 

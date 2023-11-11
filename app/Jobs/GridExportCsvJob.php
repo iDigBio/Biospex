@@ -89,7 +89,7 @@ class GridExportCsvJob implements ShouldQueue
         $this->expeditionId = $data['expeditionId'];
         $this->postData = $data['postData'];
         $this->route = $data['route'];
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

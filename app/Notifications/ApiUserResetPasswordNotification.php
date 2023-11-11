@@ -44,7 +44,7 @@ class ApiUserResetPasswordNotification extends Notification implements ShouldQue
     public function __construct($token)
     {
         $this->token = $token;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

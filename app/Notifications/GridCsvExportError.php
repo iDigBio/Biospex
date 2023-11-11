@@ -52,7 +52,7 @@ class GridCsvExportError extends Notification implements ShouldQueue
     {
         $this->message = $message;
         $this->adminEmail = config('mail.from.address');
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

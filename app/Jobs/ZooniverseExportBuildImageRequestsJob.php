@@ -62,7 +62,7 @@ class ZooniverseExportBuildImageRequestsJob implements ShouldQueue, ShouldBeUniq
     public function __construct(ExportQueue $exportQueue)
     {
         $this->exportQueue = $exportQueue;
-        $this->onQueue(config('config.queues.export'));
+        $this->onQueue(config('config.queue.export'));
     }
 
     /**

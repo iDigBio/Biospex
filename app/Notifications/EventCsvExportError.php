@@ -52,7 +52,7 @@ class EventCsvExportError extends Notification implements ShouldQueue
     {
         $this->error = $error;
         $this->adminEmail = config('mail.from.address');
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

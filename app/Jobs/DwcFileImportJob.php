@@ -64,7 +64,7 @@ class DwcFileImportJob implements ShouldQueue
     public function __construct(Import $import)
     {
         $this->import = $import;
-        $this->onQueue(config('config.queues.import'));
+        $this->onQueue(config('config.queue.import'));
     }
 
     /**

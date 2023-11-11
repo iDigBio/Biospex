@@ -61,7 +61,7 @@ class DeleteExpeditionJob implements ShouldQueue
     {
         $this->user = $user;
         $this->expedition = $expedition;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

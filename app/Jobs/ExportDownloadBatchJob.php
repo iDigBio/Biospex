@@ -57,7 +57,7 @@ class ExportDownloadBatchJob implements ShouldQueue
     public function __construct(int $downloadId)
     {
         $this->downloadId = $downloadId;
-        $this->onQueue(config('config.queues.export'));
+        $this->onQueue(config('config.queue.export'));
     }
 
     /**

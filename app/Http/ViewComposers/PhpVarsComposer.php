@@ -24,11 +24,11 @@ use Illuminate\Support\Facades\Session;
 use JavaScript;
 
 /**
- * Class PollComposer
+ * Class PhpVarsComposer
  *
  * @package App\Http\ViewComposers
  */
-class PollComposer
+class PhpVarsComposer
 {
 
     /**
@@ -42,9 +42,11 @@ class PollComposer
         JavaScript::put([
             'groupIds'      => json_encode(Session::get('groupIds')),
             'ocrChannel'    => config('config.poll_ocr_channel'),
-            'exportChannel' => config('config.poll_export_channel')
+            'exportChannel' => config('config.poll_export_channel'),
+            'imagePreviewPath' => '/admin/images/preview?url=',
+            'habitatBannersPath' => '/images/habitat-banners/'
         ]);
 
-        $view->with('process-modal');
+        $view->with(['common.process-modal', 'common.modal', 'common.project-modal']);
     }
 }

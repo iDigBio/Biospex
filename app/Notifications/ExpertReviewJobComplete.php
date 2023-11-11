@@ -51,7 +51,7 @@ class ExpertReviewJobComplete extends Notification implements ShouldQueue
      */
     public function __construct(string $title, int $expeditionId)
     {
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
         $this->title = $title;
         $this->expeditionId = $expeditionId;
     }

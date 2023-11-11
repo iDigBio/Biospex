@@ -58,7 +58,7 @@ class BingoJob implements ShouldQueue
     {
         $this->bingoId = $bingoId;
         $this->mapId = $mapId;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

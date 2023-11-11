@@ -63,7 +63,7 @@ class NfnTranscriptionsError extends Notification implements ShouldQueue
     public function __construct(string $title, int $identifier, string $message)
     {
         $this->adminEmail = config('mail.from.address');
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
         $this->title = $title;
         $this->identifier = $identifier;
         $this->message = $message;

@@ -54,7 +54,7 @@ class NfnBatchExportComplete extends Notification implements ShouldQueue
     {
         $this->title = $title;
         $this->links = $links;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**
