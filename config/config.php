@@ -20,17 +20,20 @@ return [
         'token'   => env('API_TOKEN'),
     ],
 
-    'admin_group'    => env('ADMIN_GROUP', 'Admin'),
-    'admin_group_id' => env('ADMIN_GROUP_ID', 1),
-    'admin_user_id'  => env('ADMIN_USER_ID', 1),
+    'admin' => [
+        'group'    => env('ADMIN_GROUP', 'Admin'),
+        'group_id' => env('ADMIN_GROUP_ID', 1),
+        'user_id'  => env('ADMIN_USER_ID', 1),
+    ],
 
-    'aws_access_key'             => env('AWS_ACCESS_KEY'),
-    'aws_secret_key'             => env('AWS_SECRET_ACCESS_KEY'),
-    'aws_default_region'         => env('AWS_DEFAULT_REGION'),
-    'aws_lambda_export_img_url'  => env('AWS_LAMBDA_EXPORT_IMG_URL'),
-    'aws_lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION'),
-    'aws_lambda_count'           => env('AWS_LAMBDA_COUNT'),
-    'aws_lambda_delay'           => env('AWS_LAMBDA_DELAY'),
+    'aws' => [
+        'access_key'             => env('AWS_ACCESS_KEY'),
+        'secret_key'             => env('AWS_SECRET_ACCESS_KEY'),
+        'default_region'         => env('AWS_DEFAULT_REGION'),
+        'lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION'),
+        'lambda_count'           => env('AWS_LAMBDA_COUNT'),
+        'lambda_delay'           => env('AWS_LAMBDA_DELAY'),
+    ],
 
     'batch_dir'   => env('BATCH_DIR', 'batch'),
     'export_dir'  => env('EXPORT_DIR', 'export'),
@@ -62,6 +65,7 @@ return [
         ],
 
         'reconcile_problem_regex' => env('ZOONIVERSE_RECONCILE_PROBLEM_REGEX'),
+        'talk_api_uri' => env('ZOONIVERSE_TALK_API'),
 
     ],
 
@@ -76,8 +80,6 @@ return [
         'Creating Report', // 6
         'Deleting Working Files', // 7
     ],
-
-    'talk_api_uri' => env('ZOONIVERSE_TALK_API'),
 
     'nfnSearch' => [
         'eol'     => env('NFN_EOL_SEARCH'),
