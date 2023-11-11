@@ -127,13 +127,13 @@ class ExpertReconcilePublishProcess
     {
         $values = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => 2,
+            'actor_id'      => config('config.zooniverse.actor_id'),
             'file'          => $expeditionId.'.csv',
             'type'          => 'reconciled',
         ];
         $attributes = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => 2,
+            'actor_id'      => config('config.zooniverse.actor_id'),
             'file'          => $expeditionId.'.csv',
             'type'          => 'reconciled',
         ];

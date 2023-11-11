@@ -58,8 +58,7 @@ return [
             'classification',
             'transcript',
             'reconcile',
-            'summary',
-            'reconciled_with_expert_opinion',
+            'summary'
         ],
 
         'reconcile_problem_regex' => env('ZOONIVERSE_RECONCILE_PROBLEM_REGEX'),

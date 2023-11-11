@@ -121,7 +121,7 @@ class ReconcileProcess
      *
      * @param $expeditionId
      */
-    public function process($expeditionId)
+    public function process($expeditionId): void
     {
         try {
 
@@ -301,23 +301,20 @@ class ReconcileProcess
      * Update or create downloads.
      *
      * @param $expeditionId
-     * @param bool $explained
      */
-    protected function updateOrCreateDownloads($expeditionId, $explained = false)
+    protected function updateOrCreateDownloads($expeditionId): void
     {
-        collect(config('config.zooniverse.file_types'))->filter(function ($type) use ($explained) {
-            return $explained ? $type === 'reconciled_with_expert_opinion' : $type !== 'reconciled_with_expert_opinion';
-        })->each(function ($type) use ($expeditionId) {
+        collect(config('config.zooniverse.file_types'))->each(function ($type) use ($expeditionId) {
             $values = [
                 'expedition_id' => $expeditionId,
-                'actor_id'      => 2,
+                'actor_id'      => config('config.zooniverse.actor_id'),
                 'file'          => $type !== 'summary' ? $expeditionId.'.csv' : $expeditionId.'.html',
                 'type'          => $type,
                 'updated_at'    => Carbon::now()->format('Y-m-d H:i:s'),
             ];
             $attributes = [
                 'expedition_id' => $expeditionId,
-                'actor_id'      => 2,
+                'actor_id'      => config('config.zooniverse.actor_id'),
                 'file'          => $type !== 'summary' ? $expeditionId.'.csv' : $expeditionId.'.html',
                 'type'          => $type,
             ];
