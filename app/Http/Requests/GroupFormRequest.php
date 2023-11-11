@@ -47,7 +47,7 @@ class GroupFormRequest extends Request
     public function rules()
     {
         return [
-            'title' => 'required|min:4|max:32|not_in:'. config('config.admin_group') . '|unique:groups,title,' . $this->route('groups'),
+            'title' => 'required|min:4|max:32|not_in:'. config('config.admin.group') . '|unique:groups,title,' . $this->route('groups'),
             'user_id' => 'required'
         ];
     }
@@ -60,7 +60,7 @@ class GroupFormRequest extends Request
     public function alterInput()
     {
         $input = $this->all();
-        $input['title'] = $this->route('groups') === config('config.admin_group_id') ? config('config.admin_group_id') : trim($input['title']);
+        $input['title'] = $this->route('groups') === config('config.admin.group_id') ? config('config.admin.group_id') : trim($input['title']);
         $this->replace($input);
 
         return $this->all();

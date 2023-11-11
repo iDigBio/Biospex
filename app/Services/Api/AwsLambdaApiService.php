@@ -35,11 +35,11 @@ class AwsLambdaApiService
     {
         $this->lambdaClient = new LambdaClient([
             'credentials' => [
-                'key'    => config('config.aws_access_key'),
-                'secret' => config('config.aws_secret_key'),
+                'key'    => config('config.aws.access_key'),
+                'secret' => config('config.aws.secret_key'),
             ],
             'version'     => '2015-03-31',
-            'region'      => config('config.aws_default_region'),
+            'region'      => config('config.aws.default_region'),
         ]);
     }
 

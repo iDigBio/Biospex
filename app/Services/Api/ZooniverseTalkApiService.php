@@ -46,7 +46,7 @@ class ZooniverseTalkApiService
      */
     public function __construct()
     {
-        $this->talk_api_uri = config('config.talk_api_uri');
+        $this->talk_api_uri = config('config.zooniverse.talk_api_uri');
     }
 
     /**

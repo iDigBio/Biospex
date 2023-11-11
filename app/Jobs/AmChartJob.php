@@ -83,7 +83,7 @@ class AmChartJob implements ShouldQueue
      */
     public function failed(\Throwable $throwable): void
     {
-        $user = User::find((int) config('config.admin_user_id'));
+        $user = User::find((int) config('config.admin.user_id'));
         $messages = [
             t('Error: %s', $throwable->getMessage()),
             t('File: %s', $throwable->getFile()),

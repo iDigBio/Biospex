@@ -69,7 +69,7 @@ class ZooniverseExportBuildImageRequests implements QueueInterface
         $this->setFolder($exportQueue->id, $exportQueue->actor->id, $exportQueue->expedition->uuid);
         $this->setDirectories();
 
-        $lambdaCount = config('config.aws_lambda_count');
+        $lambdaCount = config('config.aws.lambda_count');
         $total = $this->exportQueueFileRepository->getExportFilesCount($exportQueue->id);
 
         $multiplier = 0;
@@ -87,7 +87,7 @@ class ZooniverseExportBuildImageRequests implements QueueInterface
                 $exportQueue->processed = $exportQueue->processed + $data->count();
                 $exportQueue->save();
 
-                $delay = $multiplier * config('config.aws_lambda_delay');
+                $delay = $multiplier * config('config.aws.lambda_delay');
                 $multiplier++;
 
                 ZooniverseExportLambdaJob::dispatch($exportQueue, $data, $total === 0)->delay($delay);

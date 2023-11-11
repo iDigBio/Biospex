@@ -90,13 +90,13 @@ class ZooniverseExportLambdaJob implements ShouldQueue
         AwsLambdaApiService $awsLambdaApiService,
     ) {
         $this->data->each(function ($attributes) use ($awsLambdaApiService) {
-            $awsLambdaApiService->lambdaInvokeAsync(config('config.aws_lambda_export_function'), $attributes);
+            $awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_export_function'), $attributes);
         });
 
         if ($this->complete) {
             $this->exportQueue->stage = 3;
             $this->exportQueue->save();
-            ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue)->delay(config('config.aws_lambda_delay'));
+            ZooniverseExportCheckImageProcessJob::dispatch($this->exportQueue)->delay(config('config.awsambda_delay'));
         }
     }
 
