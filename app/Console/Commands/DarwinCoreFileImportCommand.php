@@ -37,11 +37,6 @@ class DarwinCoreFileImportCommand extends Command
     private $importRepo;
 
     /**
-     * @var mixed
-     */
-    private $tube;
-
-    /**
      * The console command name.
      *
      * @var string
@@ -65,7 +60,6 @@ class DarwinCoreFileImportCommand extends Command
         parent::__construct();
 
         $this->importRepo = $importRepo;
-        $this->tube = config('config.queue.import');
     }
 
     /**
