@@ -17,18 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actors\NfnPanoptes;
+namespace App\Services\Actors\Zooniverse;
 
 use App\Jobs\ZooniverseCsvJob;
 use App\Jobs\ZooniverseExportBuildQueueJob;
 use App\Models\Actor;
 
 /**
- * Class NfnPanoptes
+ * Class Zooniverse
  *
  * @package App\Services\Actor
  */
-class NfnPanoptes
+class Zooniverse
 {
     /**
      * Process export job.
@@ -36,7 +36,7 @@ class NfnPanoptes
      * State = 0: Expedition created.
      * State = 1: Export for Expedition. Set to 1 when export called and performed. @see \App\Console\Commands\ExportQueueCommand
      * State = 2: Will not run until process started and set to 2, added to WorkflowManager. @see \App\Http\Controllers\Admin\ZooniverseController
-     * State = 3: Nfn classifications completed. @see \App\Console\Commands\ZooniverseClassificationCount
+     * State = 3: Zooniverse classifications completed. @see \App\Console\Commands\ZooniverseClassificationCount
      *
      * @param \App\Models\Actor $actor
      * @throws \Throwable

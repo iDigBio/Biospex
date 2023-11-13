@@ -51,7 +51,7 @@ class DownloadRepository extends BaseRepository
     public function getZooniverseExportFiles(string $expeditionId): Collection
     {
         return $this->model
-            ->where('actor_id', config('config.zooniverse_actor_id'))
+            ->where('actor_id', config('zooniverse.actor_id'))
             ->where('expedition_id', $expeditionId)
             ->where('type', 'export')
             ->get();

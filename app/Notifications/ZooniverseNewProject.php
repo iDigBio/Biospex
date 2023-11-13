@@ -25,48 +25,28 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * Class NfnTranscriptionsError
+ * Class ZooniverseNewProject
  *
  * @package App\Notifications
  */
-class NfnTranscriptionsError extends Notification implements ShouldQueue
+class ZooniverseNewProject extends Notification implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * @var \Illuminate\Config\Repository|mixed
+     * @var
      */
-    private $adminEmail;
+    private $project;
 
     /**
-     * @var string
-     */
-    private $title;
-
-    /**
-     * @var int
-     */
-    private $identifier;
-
-    /**
-     * @var string
-     */
-    private $message;
-
-    /**
-     * NfnTranscriptionsError constructor.
+     * Create a new notification instance.
      *
-     * @param string $title
-     * @param int $id
-     * @param string $message
+     * @param $project
      */
-    public function __construct(string $title, int $identifier, string $message)
+    public function __construct($project)
     {
-        $this->adminEmail = config('mail.from.address');
+        $this->project = $project;
         $this->onQueue(config('config.queue.default'));
-        $this->title = $title;
-        $this->identifier = $identifier;
-        $this->message = $message;
     }
 
     /**
@@ -86,13 +66,16 @@ class NfnTranscriptionsError extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        $attributes = [
-            'title' => $this->title,
-            'id' => $this->identifier,
-            'message' => $this->message
+        $vars = [
+            'contact'     => $this->project->contact,
+            'email'       => $this->project->contact_email,
+            'title'       => $this->project->title,
+            'description' => $this->project->description_long
         ];
 
-        return (new MailMessage)->bcc($this->adminEmail)->markdown('mail.nfntranscriptsionerror', $attributes);
+        return (new MailMessage)
+            ->subject(t('Biospex - New Zooniverse Project Submitted'))
+            ->markdown('mail.newzooniverse', $vars);
     }
 
     /**
@@ -102,7 +85,8 @@ class NfnTranscriptionsError extends Notification implements ShouldQueue
      */
     public function toArray()
     {
-        return [//
+        return [
+            //
         ];
     }
 }

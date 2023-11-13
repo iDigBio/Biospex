@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
+use App\Jobs\Traits\SkipZooniverse;
 use App\Notifications\JobError;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Reconcile\ExpertReconcileProcess;
@@ -32,7 +32,7 @@ use Illuminate\Queue\SerializesModels;
 
 class ExpertReviewMigrateReconcilesJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
     /**
      * @var int

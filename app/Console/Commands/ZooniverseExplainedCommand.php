@@ -37,7 +37,7 @@ class ZooniverseExplainedCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Generate NfnPanoptes explained files';
+    protected $description = 'Generate Zooniverse explained files';
 
     /**
      * Create a new command instance.

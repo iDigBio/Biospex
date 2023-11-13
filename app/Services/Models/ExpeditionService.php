@@ -128,7 +128,7 @@ class ExpeditionService
      */
     private function setExpeditionCompleted(Expedition $expedition, int $workflow_id): int
     {
-        return ($expedition->completed && ! $expedition->locked && $workflow_id == config('config.geolocate.workflow_id')) ? 0 : $expedition->completed;
+        return ($expedition->completed && ! $expedition->locked && $workflow_id == config('geolocate.workflow_id')) ? 0 : $expedition->completed;
     }
 
     /**
@@ -242,14 +242,14 @@ class ExpeditionService
      */
     public function notifyActorContacts($expedition, $project): void
     {
-        $nfnNotify = config('config.nfnNotify');
+        $newNotification = config('zooniverse.new_project_notification');
 
         $expedition->workflow->actors->reject(function ($actor) {
             return $actor->contacts->isEmpty();
-        })->filter(function ($actor) use ($nfnNotify) {
-            return isset($nfnNotify[$actor->id]);
-        })->each(function ($actor) use ($project, $nfnNotify) {
-            $class = '\App\Notifications\\'.$nfnNotify[$actor->id];
+        })->filter(function ($actor) use ($newNotification) {
+            return isset($newNotification[$actor->id]);
+        })->each(function ($actor) use ($project, $newNotification) {
+            $class = '\App\Notifications\\'.$newNotification[$actor->id];
             if (class_exists($class)) {
                 Notification::send($actor->contacts, new $class($project));
             }

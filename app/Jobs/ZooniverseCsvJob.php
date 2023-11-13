@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
+use App\Jobs\Traits\SkipZooniverse;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Csv\ZooniverseCsvService;
@@ -37,7 +37,7 @@ use Throwable;
  */
 class ZooniverseCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SkipNfn;
+    use Dispatchable, InteractsWithQueue, Queueable, SkipZooniverse;
 
     /**
      * @var int

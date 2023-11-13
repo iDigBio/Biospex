@@ -48,8 +48,8 @@ class GeoLocateApi extends HttpRequest
     public function __construct(AwsS3ApiService $awsS3ApiService)
     {
         // Get the geolocate api config values from the config file.
-        $this->geolocateStatsUri = config('config.geolocate.api.geolocate_stats_uri');
-        $this->geolocateDownloadUri = config('config.geolocate.api.geolocate_download_uri');
+        $this->geolocateStatsUri = config('geolocate.api.geolocate_stats_uri');
+        $this->geolocateDownloadUri = config('geolocate.api.geolocate_download_uri');
         $this->awsS3ApiService = $awsS3ApiService;
     }
 
@@ -75,7 +75,7 @@ class GeoLocateApi extends HttpRequest
      */
     public function getDataSourceDownload(string $uri, int $expeditionId): void
     {
-       $filePath = config('config.geolocate.dir.result') . '/' . $expeditionId . '.kml';
+       $filePath = config('geolocate.dir.result') . '/' . $expeditionId . '.kml';
        $stream = $this->awsS3ApiService->createS3BucketStream(config('filesystems.disks.s3.bucket'), $filePath, 'w', false);
        $opts = [
            'sink' => $stream

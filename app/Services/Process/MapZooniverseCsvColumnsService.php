@@ -24,7 +24,7 @@ use App\Models\ExportQueueFile;
 use App\Models\Subject;
 use App\Repositories\SubjectRepository;
 
-class MapNfnCsvColumnsService
+class MapZooniverseCsvColumnsService
 {
     /**
      * @var \App\Repositories\SubjectRepository
@@ -34,7 +34,7 @@ class MapNfnCsvColumnsService
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
-    private mixed $nfnCsvMap;
+    private mixed $zooniverseCsvMap;
 
     /**
      * @param \App\Repositories\SubjectRepository $subjectRepository
@@ -45,11 +45,11 @@ class MapNfnCsvColumnsService
     {
 
         $this->subjectRepository = $subjectRepository;
-        $this->nfnCsvMap = config('config.nfnCsvMap');
+        $this->zooniverseCsvMap = config('zooniverse.csv_map');
     }
 
     /**
-     * Map nfn csvExport values.
+     * Map zooniverse csvExport values.
      *
      * @param \App\Models\ExportQueueFile $file
      * @param \App\Models\ExportQueue $queue
@@ -63,7 +63,7 @@ class MapNfnCsvColumnsService
         $presetValues = ['#expeditionId', '#expeditionTitle', 'imageName'];
 
 
-        foreach ($this->nfnCsvMap as $key => $item) {
+        foreach ($this->zooniverseCsvMap as $key => $item) {
             if (in_array($key, $presetValues)) {
                 $this->setPresetValues($csvArray, $key, $file, $queue);
                 continue;
@@ -155,7 +155,7 @@ class MapNfnCsvColumnsService
         $links = ['eol', 'mol', 'idigbio'];
         if (isset($subject->{$doc}[$value])) {
             if (in_array($key, $links)) {
-                $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}[$value]), config('config.nfnSearch.'.$key));
+                $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}[$value]), config('zooniverse.search_urls.'.$key));
 
                 return;
             }

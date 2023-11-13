@@ -81,7 +81,7 @@ class ZooniverseController extends Controller
             ]);
 
             if (null === $expedition->panoptesProject) {
-                throw new Exception(t('NfnPanoptes Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
+                throw new Exception(t('Zooniverse Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
             }
 
             if (null !== $expedition->workflowManager) {
@@ -91,7 +91,7 @@ class ZooniverseController extends Controller
             } else {
                 // Dont't start GeoLocateExport Actor.
                 $expedition->actors->reject(function ($actor) {
-                    return $actor->id == config('config.geolocate.actor_id');
+                    return $actor->id == config('geolocate.actor_id');
                 })->each(function ($actor) use ($expedition) {
                     $sync = [
                         $actor->id => [

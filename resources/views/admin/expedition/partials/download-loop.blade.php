@@ -44,7 +44,7 @@
                    data-original-title="{{ t('Download %s file', $download->type) }} ">
                     <i class="fas fa-file-download fa-2x"></i></a>
 
-                @if($actor->id == config('config.zooniverse.actor_id'))
+                @if($actor->id == config('zooniverse.actor_id'))
                     <a href="{{ route('admin.downloads.batch', [$expedition->project->id, $expedition->id, $download->id]) }}"
                        class="prevent-default"
                        data-method="get"

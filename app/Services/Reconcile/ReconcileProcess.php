@@ -132,7 +132,6 @@ class ReconcileProcess
             Storage::disk('efs')->put($this->csvPath, Storage::disk('s3')->get($this->csvPath));
 
             if (! File::exists($this->csvFullPath) || ! isset($expedition->panoptesProject)) {
-                echo 'file does not exist' . PHP_EOL;
                 throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
                     ':method' => __METHOD__,
                     ':path'   => $this->csvFullPath
@@ -162,7 +161,7 @@ class ReconcileProcess
 
             $this->updateOrCreateDownloads($expeditionId);
 
-            $this->cleanDirs();
+            //$this->cleanDirs();
 
         } catch (Exception $e) {
             $user = User::find(1);
@@ -185,8 +184,8 @@ class ReconcileProcess
 
         Storage::disk('efs')->put($this->csvPath, Storage::disk('s3')->get($this->csvPath));
 
-        // TODO This starts the expert reconciliation. The Nfn actor should be in a completed state
-        if (! File::exists($this->csvFullPath) || $expedition->nfnActor->pivot->state !== 3) {
+        // TODO This starts the expert reconciliation. The Zooniverse actor should be in a completed state
+        if (! File::exists($this->csvFullPath) || $expedition->zooniverseActor->pivot->state !== 3) {
             throw new Exception(t('File does not exist.<br><br>:method<br>:path', [
                 ':method' => __METHOD__,
                 ':path'   => $this->csvFullPath
@@ -216,18 +215,18 @@ class ReconcileProcess
      */
     protected function setPaths($expeditionId)
     {
-        $this->csvPath = config('config.zooniverse.directory.classification').'/'.$expeditionId.'.csv';
+        $this->csvPath = config('zooniverse.directory.classification').'/'.$expeditionId.'.csv';
         $this->csvFullPath = Storage::disk('efs')->path($this->csvPath);
 
-        $this->recFullPath = Storage::disk('efs')->path(config('config.zooniverse.directory.reconcile').'/'.$expeditionId.'.csv');
-        $this->tranFullPath = Storage::disk('efs')->path(config('config.zooniverse.directory.transcript').'/'.$expeditionId.'.csv');
-        $this->sumFullPath = Storage::disk('efs')->path(config('config.zooniverse.directory.summary').'/'.$expeditionId.'.html');
+        $this->recFullPath = Storage::disk('efs')->path(config('zooniverse.directory.reconcile').'/'.$expeditionId.'.csv');
+        $this->tranFullPath = Storage::disk('efs')->path(config('zooniverse.directory.transcript').'/'.$expeditionId.'.csv');
+        $this->sumFullPath = Storage::disk('efs')->path(config('zooniverse.directory.summary').'/'.$expeditionId.'.html');
 
-        $this->expPath = config('config.zooniverse.directory.explained').'/'.$expeditionId.'.csv';
+        $this->expPath = config('zooniverse.directory.explained').'/'.$expeditionId.'.csv';
         $this->expFullPath = Storage::disk('efs')->path($this->expPath);
 
-        $this->pythonPath = config('config.python_path');
-        $this->reconcilePath = config('config.reconcile_path');
+        $this->pythonPath = config('zooniverse.reconcile.python_path');
+        $this->reconcilePath = config('zooniverse.reconcile.file_path');
     }
 
     /**
@@ -304,17 +303,17 @@ class ReconcileProcess
      */
     protected function updateOrCreateDownloads($expeditionId): void
     {
-        collect(config('config.zooniverse.file_types'))->each(function ($type) use ($expeditionId) {
+        collect(config('zooniverse.file_types'))->each(function ($type) use ($expeditionId) {
             $values = [
                 'expedition_id' => $expeditionId,
-                'actor_id'      => config('config.zooniverse.actor_id'),
+                'actor_id'      => config('zooniverse.actor_id'),
                 'file'          => $type !== 'summary' ? $expeditionId.'.csv' : $expeditionId.'.html',
                 'type'          => $type,
                 'updated_at'    => Carbon::now()->format('Y-m-d H:i:s'),
             ];
             $attributes = [
                 'expedition_id' => $expeditionId,
-                'actor_id'      => config('config.zooniverse.actor_id'),
+                'actor_id'      => config('zooniverse.actor_id'),
                 'file'          => $type !== 'summary' ? $expeditionId.'.csv' : $expeditionId.'.html',
                 'type'          => $type,
             ];
@@ -333,7 +332,7 @@ class ReconcileProcess
      */
     protected function uploadFileToS3(string $dir, string $efsFullPath, string $fileName)
     {
-        $s3Dir = config('config.zooniverse.directory.' . $dir);
+        $s3Dir = config('zooniverse.directory.' . $dir);
         $ext = $dir !== 'summary' ? '.csv' : '.html';
         Storage::disk('s3')->putFileAs($s3Dir, $efsFullPath, $fileName.$ext);
     }
@@ -346,11 +345,11 @@ class ReconcileProcess
     protected function cleanDirs()
     {
 
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse.directory.classification')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse.directory.reconcile')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse.directory.reconciled')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse.directory.transcript')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse.directory.summary')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse.directory.explained')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.classification')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.reconcile')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.reconciled')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.transcript')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.summary')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.explained')));
     }
 }

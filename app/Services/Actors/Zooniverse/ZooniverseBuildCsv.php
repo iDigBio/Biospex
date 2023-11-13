@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actors\NfnPanoptes;
+namespace App\Services\Actors\Zooniverse;
 
 use App\Jobs\ZooniverseExportBuildZipJob;
 use App\Models\ExportQueue;
@@ -28,7 +28,7 @@ use App\Services\Actors\Traits\ActorDirectory;
 use App\Services\Api\AwsS3ApiService;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Csv\Csv;
-use App\Services\Process\MapNfnCsvColumnsService;
+use App\Services\Process\MapZooniverseCsvColumnsService;
 use Exception;
 use Illuminate\Support\Collection;
 
@@ -65,14 +65,9 @@ class ZooniverseBuildCsv implements QueueInterface
     private AwsS3CsvService $awsS3CsvService;
 
     /**
-     * @var \App\Services\Process\MapNfnCsvColumnsService
+     * @var \App\Services\Process\MapZooniverseCsvColumnsService
      */
-    private MapNfnCsvColumnsService $mapNfnCsvColumnsService;
-
-    /**
-     * @var mixed|\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application
-     */
-    private mixed $nfnCsvMap;
+    private MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService;
 
     /**
      * Construct.
@@ -82,19 +77,19 @@ class ZooniverseBuildCsv implements QueueInterface
      * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
      * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
-     * @param \App\Services\Process\MapNfnCsvColumnsService $mapNfnCsvColumnsService
+     * @param \App\Services\Process\MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService
      */
     public function __construct(
         ExportQueueRepository $exportQueueRepository,
         ExportQueueFileRepository $exportQueueFileRepository,
         AwsS3CsvService $awsS3CsvService,
-        MapNfnCsvColumnsService $mapNfnCsvColumnsService
+        MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService
     )
     {
         $this->exportQueueRepository = $exportQueueRepository;
         $this->exportQueueFileRepository = $exportQueueFileRepository;
         $this->awsS3CsvService = $awsS3CsvService;
-        $this->mapNfnCsvColumnsService = $mapNfnCsvColumnsService;
+        $this->mapZooniverseCsvColumnsService = $mapZooniverseCsvColumnsService;
     }
 
     /**
@@ -122,7 +117,7 @@ class ZooniverseBuildCsv implements QueueInterface
             $csvData = $chunk->filter(function ($file) {
                 return $this->checkFileExists($this->workingDir.'/'.$file->subject_id.'.jpg', $file->subject_id);
             })->map(function ($file) use ($exportQueue) {
-                return $this->mapNfnCsvColumnsService->mapColumns($file, $exportQueue);
+                return $this->mapZooniverseCsvColumnsService->mapColumns($file, $exportQueue);
             });
 
             if (empty($csvData)) {

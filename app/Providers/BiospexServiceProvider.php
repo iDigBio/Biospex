@@ -88,8 +88,8 @@ class BiospexServiceProvider extends ServiceProvider
 
         $this->app->singleton('transcriptionmaphelper', function() {
             return new TranscriptionMapHelper(
-                $this->app['config']->get('config.reserved_encoded'),
-                $this->app['config']->get('config.mapped_transcription_fields')
+                $this->app['config']->get('zooniverse.reserved_encoded'),
+                $this->app['config']->get('zooniverse.mapped_transcription_fields')
             );
         });
     }

@@ -90,7 +90,7 @@ class GeoLocateStatsJob implements ShouldQueue
             $uri = $geoLocateStat->buildDataSourceDownload($geoLocateDataSource->geoLocateCommunity->name, $geoLocateDataSource->data_source);
             $geoLocateStat->getDataSourceDownload($uri, $this->actor->pivot->expedition_id);
 
-            $this->actor->pivot->expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+            $this->actor->pivot->expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
                 'state' => 3,
             ]);
 

@@ -169,7 +169,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      */
     public function zooniverseExport(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(Download::class)->where('actor_id', config('config.zooniverse.actor_id'))->where('type', 'export');
+        return $this->hasOne(Download::class)->where('actor_id', config('zooniverse.actor_id'))->where('type', 'export');
     }
 
     /**
@@ -179,7 +179,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      */
     public function geoLocateExport()
     {
-        return $this->hasOne(Download::class)->where('actor_id', config('config.geolocate.actor_id'))->where('type', 'export');
+        return $this->hasOne(Download::class)->where('actor_id', config('geolocate.actor_id'))->where('type', 'export');
     }
 
     /**
@@ -206,11 +206,11 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Return nfn actor relation.
+     * Return zooniverse actor relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function nfnActor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function zooniverseActor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         $pivot = [
             'id',
@@ -225,7 +225,18 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
         return $this->belongsToMany(Actor::class, 'actor_expedition')
             ->withPivot($pivot)
-            ->wherePivot('actor_id', config('config.zooniverse.actor_id'));
+            ->wherePivot('actor_id', config('zooniverse.actor_id'));
+    }
+
+    /**
+     * Return zooniverseActor attribute.
+     * $expedition->zooniverseActor
+     *
+     * @return int
+     */
+    public function getZooniverseActorAttribute()
+    {
+        return $this->getRelationValue('zooniverseActor')->first();
     }
 
     /**
@@ -247,18 +258,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
         return $this->belongsToMany(Actor::class, 'actor_expedition')
             ->withPivot($pivot)
-            ->wherePivot('actor_id', config('config.geolocate.actor_id'));
-    }
-
-    /**
-     * Return nfnActor attribute.
-     * $expedition->nfnActor
-     *
-     * @return int
-     */
-    public function getNfnActorAttribute()
-    {
-        return $this->getRelationValue('nfnActor')->first();
+            ->wherePivot('actor_id', config('geolocate.actor_id'));
     }
 
     /**

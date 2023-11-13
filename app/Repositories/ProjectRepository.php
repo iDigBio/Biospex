@@ -182,7 +182,7 @@ class ProjectRepository extends BaseRepository
             'lastPanoptesProject',
             'bingos',
             'expeditions' => function($query){
-                $query->has('panoptesProject')->has('nfnActor')->with('panoptesProject', 'stat', 'nfnActor');
+                $query->has('panoptesProject')->has('zooniverseActor')->with('panoptesProject', 'stat', 'zooniverseActor');
             },
             'events' => function ($q) {
                 $q->with('teams');

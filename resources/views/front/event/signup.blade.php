@@ -46,7 +46,7 @@
                     @csrf
                     <input type="hidden" name="team_id" value="{{ $team->id }}">
                     <div class="form-group {{ ($errors->has('nfn_user')) ? 'has-error' : '' }}">
-                        <label for="name" class="col-form-label required">{{ t('NfnPanoptes Username') }}:</label>
+                        <label for="name" class="col-form-label required">{{ t('Zooniverse Username') }}:</label>
                         @if($active)
                             <input type="text" class="form-control {{ ($errors->has('nfn_user')) ? 'is-invalid' : '' }}"
                                    id="nfn_user" name="nfn_user" value="{{ old('nfn_user') }}" required>

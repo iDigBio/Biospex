@@ -21,8 +21,8 @@ namespace App\Jobs;
 
 use App\Models\Actor;
 use App\Models\ExportQueue;
-use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actors\NfnPanoptes\ZooniverseBuildCsv;
+use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actors\Zooniverse\ZooniverseBuildCsv;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -37,7 +37,7 @@ use Throwable;
  */
 class ZooniverseExportBuildCsvJob implements ShouldQueue, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NfnErrorNotification;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
 
     /**
      * @var \App\Models\ExportQueue
@@ -70,7 +70,7 @@ class ZooniverseExportBuildCsvJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actors\NfnPanoptes\ZooniverseBuildCsv $zooniverseBuildCsv
+     * @param \App\Services\Actors\Zooniverse\ZooniverseBuildCsv $zooniverseBuildCsv
      * @throws \Exception
      */
     public function handle(ZooniverseBuildCsv $zooniverseBuildCsv)

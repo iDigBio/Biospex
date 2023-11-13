@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
+use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
 use App\Services\Api\AwsLambdaApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,7 +35,7 @@ use Throwable;
  */
 class ZooniverseExportLambdaJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NfnErrorNotification;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
 
     /**
      * @var \App\Models\ExportQueue

@@ -95,7 +95,7 @@ class GeoLocateExportJob implements ShouldQueue
         $csvFilePath = $geoLocateExportService->moveCsvFile();
         $geoLocateExportService->createDownload($this->expedition);
 
-        $this->expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+        $this->expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
             'state' => 1,
         ]);
 
@@ -112,7 +112,7 @@ class GeoLocateExportJob implements ShouldQueue
      */
     public function failed(\Throwable $throwable): void
     {
-        $this->expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+        $this->expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
             'state' => 0,
         ]);
 

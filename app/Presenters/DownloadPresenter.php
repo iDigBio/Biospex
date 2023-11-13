@@ -53,9 +53,9 @@ class DownloadPresenter extends Presenter
      */
     public function exportDownload(): string
     {
-        return $this->model->actor_id == config('config.zooniverse.actor_id') ?
+        return $this->model->actor_id == config('zooniverse.actor_id') ?
             Storage::disk('s3')->temporaryUrl(config('config.export_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']) :
-            Storage::disk('s3')->temporaryUrl(config('config.geolocate.dir.export').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
+            Storage::disk('s3')->temporaryUrl(config('geolocate.dir.export').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
     }
 
     /**
@@ -76,7 +76,7 @@ class DownloadPresenter extends Presenter
     public function otherDownload(): string
     {
         $filename = "{$this->model->type}-{$this->model->file}";
-        return Storage::disk('s3')->temporaryUrl(config('config.zooniverse.directory.'.$this->model->type).'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename='.$filename]);
+        return Storage::disk('s3')->temporaryUrl(config('zooniverse.directory.'.$this->model->type).'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename='.$filename]);
     }
 
 
@@ -87,6 +87,6 @@ class DownloadPresenter extends Presenter
      */
     public function summaryHtml(): string
     {
-        return Storage::disk('s3')->temporaryUrl(config('config.zooniverse.directory.summary').'/'.$this->model->file, now()->addMinutes(30));
+        return Storage::disk('s3')->temporaryUrl(config('zooniverse.directory.summary').'/'.$this->model->file, now()->addMinutes(30));
     }
 }

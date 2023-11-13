@@ -25,14 +25,18 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * Class NfnExportComplete
+ * Class ZooniverseTranscriptionsError
  *
  * @package App\Notifications
  */
-class NfnExportComplete extends Notification implements ShouldQueue
+class ZooniverseTranscriptionsError extends Notification implements ShouldQueue
 {
-
     use Queueable;
+
+    /**
+     * @var \Illuminate\Config\Repository|mixed
+     */
+    private $adminEmail;
 
     /**
      * @var string
@@ -40,21 +44,29 @@ class NfnExportComplete extends Notification implements ShouldQueue
     private $title;
 
     /**
-     * @var null
+     * @var int
      */
-    private $fileName;
+    private $identifier;
 
     /**
-     * Create a new notification instance.
+     * @var string
+     */
+    private $message;
+
+    /**
+     * ZooniverseTranscriptionsError constructor.
      *
      * @param string $title
-     * @param null $fileName
+     * @param int $id
+     * @param string $message
      */
-    public function __construct(string $title, $fileName = null)
+    public function __construct(string $title, int $identifier, string $message)
     {
-        $this->title = $title;
-        $this->fileName = $fileName;
+        $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.queue.default'));
+        $this->title = $title;
+        $this->identifier = $identifier;
+        $this->message = $message;
     }
 
     /**
@@ -74,14 +86,13 @@ class NfnExportComplete extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        $mailMessage = new MailMessage;
-
         $attributes = [
             'title' => $this->title,
-            'url' => !$this->fileName ? null : route('admin.downloads.report', ['file' => $this->fileName]),
+            'id' => $this->identifier,
+            'message' => $this->message
         ];
 
-        return $mailMessage->subject(t('BIOSPEX Export Completed'))->markdown('mail.nfnexportcomplete', $attributes);
+        return (new MailMessage)->bcc($this->adminEmail)->markdown('mail.zooniversetranscriptsionerror', $attributes);
     }
 
     /**
@@ -91,8 +102,7 @@ class NfnExportComplete extends Notification implements ShouldQueue
      */
     public function toArray()
     {
-        return [
-            //
+        return [//
         ];
     }
 }

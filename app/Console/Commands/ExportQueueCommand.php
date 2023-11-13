@@ -114,16 +114,16 @@ class ExportQueueCommand extends Command
         // Set actor_expedition pivot state to 1 if currently 0.
         // Otherwise, it's a regeneration export and state stays the same
         $attributes = [
-            'state' => $expedition->nfnActor->pivot->state === 0 ? 1 : $expedition->nfnActor->pivot->state,
+            'state' => $expedition->zooniverseActor->pivot->state === 0 ? 1 : $expedition->zooniverseActor->pivot->state,
             'total' => $expedition->stat->local_subject_count,
         ];
 
-        $expedition->nfnActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+        $expedition->zooniverseActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
 
         // Set state to 1 to handle regenerating exports without effecting database value.
-        $expedition->nfnActor->pivot->state = 1;
+        $expedition->zooniverseActor->pivot->state = 1;
 
-        ActorFactory::create($expedition->nfnActor->class)->actor($expedition->nfnActor);
+        ActorFactory::create($expedition->zooniverseActor->class)->actor($expedition->zooniverseActor);
     }
 
     /**
@@ -144,13 +144,13 @@ class ExportQueueCommand extends Command
     }
 
     /**
-     * Get expedition with nfnActor and stat.
+     * Get expedition with zooniverseActor and stat.
      *
      * @param int $expeditionId
      * @return \App\Models\Expedition
      */
     private function getExpedition(int $expeditionId): Expedition
     {
-        return $this->expeditionRepository->findWith($expeditionId, ['nfnActor', 'stat', 'exportQueue']);
+        return $this->expeditionRepository->findWith($expeditionId, ['zooniverseActor', 'stat', 'exportQueue']);
     }
 }

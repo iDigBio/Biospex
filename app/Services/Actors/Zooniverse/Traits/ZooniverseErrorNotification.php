@@ -17,17 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actors\NfnPanoptes\Traits;
+namespace App\Services\Actors\Zooniverse\Traits;
 
 use App\Models\Actor;
 use App\Models\ExportQueue;
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Notifications\NfnExportError;
+use App\Notifications\ZooniverseExportError;
 use Illuminate\Support\Facades\Notification;
 use Throwable;
 
-trait NfnErrorNotification
+trait ZooniverseErrorNotification
 {
     /**
      * Send error notification.
@@ -60,7 +60,7 @@ trait NfnErrorNotification
 
         $users = $exportQueue->expedition->project->group->users->push($exportQueue->expedition->project->group->owner);
 
-        Notification::send($users, new NfnExportError($exportQueue->expedition->title, $exportQueue->expedition->id, $message));
+        Notification::send($users, new ZooniverseExportError($exportQueue->expedition->title, $exportQueue->expedition->id, $message));
 
     }
 

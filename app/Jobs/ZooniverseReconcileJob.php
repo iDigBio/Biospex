@@ -18,7 +18,7 @@
  */
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
+use App\Jobs\Traits\SkipZooniverse;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Reconcile\ReconcileProcess;
@@ -37,7 +37,7 @@ use Throwable;
  */
 class ZooniverseReconcileJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
     /**
      * The number of seconds the job can run before timing out.

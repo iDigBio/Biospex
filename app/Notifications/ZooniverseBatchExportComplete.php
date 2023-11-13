@@ -25,11 +25,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * Class NfnBatchExportComplete
+ * Class ZooniverseBatchExportComplete
  *
  * @package App\Notifications
  */
-class NfnBatchExportComplete extends Notification implements ShouldQueue
+class ZooniverseBatchExportComplete extends Notification implements ShouldQueue
 {
 
     use Queueable;
@@ -45,7 +45,7 @@ class NfnBatchExportComplete extends Notification implements ShouldQueue
     private $links;
 
     /**
-     * NfnBatchExportComplete constructor.
+     * ZooniverseBatchExportComplete constructor.
      *
      * @param string $title
      * @param array $links
@@ -83,7 +83,7 @@ class NfnBatchExportComplete extends Notification implements ShouldQueue
             'links' => implode("<br>", $this->links)
         ];
 
-        return $mailMessage->markdown('mail.nfnbatchexportcomplete', $attributes);
+        return $mailMessage->markdown('mail.zooniversebatchexportcomplete', $attributes);
     }
 
     /**

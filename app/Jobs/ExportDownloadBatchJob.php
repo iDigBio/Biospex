@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Repositories\DownloadRepository;
-use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actors\NfnPanoptes\ZooniverseExportBatch;
+use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actors\Zooniverse\ZooniverseExportBatch;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,7 +35,7 @@ use Throwable;
  */
 class ExportDownloadBatchJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, NfnErrorNotification;
+    use Dispatchable, InteractsWithQueue, Queueable, ZooniverseErrorNotification;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -64,16 +64,16 @@ class ExportDownloadBatchJob implements ShouldQueue
      * Handle download batch job.
      *
      * @param \App\Repositories\DownloadRepository $downloadRepository
-     * @param \App\Services\Actors\NfnPanoptes\ZooniverseExportBatch $nfnPanoptesExportBatch
+     * @param \App\Services\Actors\Zooniverse\ZooniverseExportBatch $zooniverseExportBatch
      */
     public function handle(
         DownloadRepository $downloadRepository,
-        ZooniverseExportBatch $nfnPanoptesExportBatch)
+        ZooniverseExportBatch $zooniverseExportBatch)
     {
         $download = $downloadRepository->findWith($this->downloadId, ['expedition.project.group.owner', 'actor']);
 
         try {
-            $nfnPanoptesExportBatch->process($download);
+            $zooniverseExportBatch->process($download);
         }
         catch (Throwable $e) {
             $this->sendAdminError($e);

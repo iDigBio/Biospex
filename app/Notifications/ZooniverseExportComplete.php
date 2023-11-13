@@ -25,18 +25,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * Class NfnExportError
+ * Class ZooniverseExportComplete
  *
  * @package App\Notifications
  */
-class NfnExportError extends Notification implements ShouldQueue
+class ZooniverseExportComplete extends Notification implements ShouldQueue
 {
-    use Queueable;
 
-    /**
-     * @var \Illuminate\Config\Repository|mixed
-     */
-    private $adminEmail;
+    use Queueable;
 
     /**
      * @var string
@@ -44,29 +40,21 @@ class NfnExportError extends Notification implements ShouldQueue
     private $title;
 
     /**
-     * @var int
+     * @var null
      */
-    private $identifier;
-
-    /**
-     * @var string
-     */
-    private $message;
+    private $fileName;
 
     /**
      * Create a new notification instance.
      *
      * @param string $title
-     * @param int $identifier
-     * @param array $message
+     * @param null $fileName
      */
-    public function __construct(string $title, int $identifier, array $message)
+    public function __construct(string $title, $fileName = null)
     {
-        $this->adminEmail = config('mail.from.address');
-        $this->onQueue(config('config.queue.default'));
         $this->title = $title;
-        $this->identifier = $identifier;
-        $this->message = $message;
+        $this->fileName = $fileName;
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**
@@ -86,15 +74,14 @@ class NfnExportError extends Notification implements ShouldQueue
      */
     public function toMail()
     {
+        $mailMessage = new MailMessage;
+
         $attributes = [
             'title' => $this->title,
-            'id' => $this->identifier,
-            'message' => implode('<br>', $this->message)
+            'url' => !$this->fileName ? null : route('admin.downloads.report', ['file' => $this->fileName]),
         ];
 
-        return (new MailMessage)
-            ->bcc($this->adminEmail)
-            ->markdown('mail.nfnexporterror', $attributes);
+        return $mailMessage->subject(t('BIOSPEX Export Completed'))->markdown('mail.zooniverseexportcomplete', $attributes);
     }
 
     /**

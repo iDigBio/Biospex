@@ -62,6 +62,7 @@ class UpdateQueries extends Command
     public function handle()
     {
 
+        /*
         $this->saveProjectWorkflowOrigAndMoveToExpedition();
         $this->addWorkflowForeignIdToExpedition();
         $this->dropWorkflowIdFromProjects();
@@ -75,6 +76,8 @@ class UpdateQueries extends Command
         $this->updateActorExpeditionState();
         $this->alterBingoMapIp();
         $this->alterEventTransactionIds();
+        */
+        $this->changeNfnPanoptesActor();
     }
 
     private function saveProjectWorkflowOrigAndMoveToExpedition(): void
@@ -204,13 +207,13 @@ class UpdateQueries extends Command
         $expeditions->each(function ($expedition) {
             $expedition->actors->each(function ($actor) use ($expedition) {
                 if ($actor->pivot->state === 2) {
-                    $expedition->nfnActor()->updateExistingPivot($actor->id, ['state' => 3]);
+                    $expedition->zooniverseActor()->updateExistingPivot($actor->id, ['state' => 3]);
                 }
                 if ($actor->pivot->state === 1) {
-                    $expedition->nfnActor()->updateExistingPivot($actor->id, ['state' => 2]);
+                    $expedition->zooniverseActor()->updateExistingPivot($actor->id, ['state' => 2]);
                 }
                 if ($actor->pivot->state === 0 && $expedition->zooniverseExport !== null) {
-                    $expedition->nfnActor()->updateExistingPivot($actor->id, ['state' => 1]);
+                    $expedition->zooniverseActor()->updateExistingPivot($actor->id, ['state' => 1]);
                 }
             });
         });
@@ -227,5 +230,10 @@ class UpdateQueries extends Command
         echo 'Running '.__METHOD__.PHP_EOL;
 
         DB::raw("ALTER TABLE `event_transcriptions` CHANGE `team_id` `team_id` INT UNSIGNED NOT NULL, CHANGE `user_id` `event_user_id` INT UNSIGNED NOT NULL; ");
+    }
+
+    public function changeNfnPanoptesActor()
+    {
+        DB::raw("UPDATE `actors` SET `class` = 'Zooniverse' WHERE `actors`.`id` = 2;");
     }
 }

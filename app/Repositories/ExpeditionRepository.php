@@ -41,7 +41,7 @@ class ExpeditionRepository extends BaseRepository
     }
 
     /**
-     * Get expeditions for NfnPanoptes processing.
+     * Get expeditions for Zooniverse processing.
      *
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
@@ -50,8 +50,8 @@ class ExpeditionRepository extends BaseRepository
         return $this->model->with([
             'panoptesProject',
             'stat',
-            'nfnActor',
-        ])->has('panoptesProject')->whereHas('nfnActor', function ($query) {
+            'zooniverseActor',
+        ])->has('panoptesProject')->whereHas('zooniverseActor', function ($query) {
             $query->where('completed', 0);
         })->get();
     }
@@ -138,7 +138,7 @@ class ExpeditionRepository extends BaseRepository
      */
     public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null)
     {
-        $query = $this->model->with('project')->has('panoptesProject')->has('nfnActor')->with('panoptesProject', 'stat', 'nfnActor');
+        $query = $this->model->with('project')->has('panoptesProject')->has('zooniverseActor')->with('panoptesProject', 'stat', 'zooniverseActor');
 
         return $this->sortResults($projectId, $query, $order, $sort);
     }
@@ -159,7 +159,7 @@ class ExpeditionRepository extends BaseRepository
                     },
                 ]);
             },
-            'nfnActor',
+            'zooniverseActor',
         ])->has('panoptesProject')->find($expeditionId);
     }
 
@@ -169,8 +169,8 @@ class ExpeditionRepository extends BaseRepository
      */
     public function getExpeditionForZooniverseProcess(int $expeditionId)
     {
-        return $this->model->with(['panoptesProject', 'stat', 'nfnActor'])
-            ->has('panoptesProject')->whereHas('nfnActor', function ($query) {
+        return $this->model->with(['panoptesProject', 'stat', 'zooniverseActor'])
+            ->has('panoptesProject')->whereHas('zooniverseActor', function ($query) {
                 $query->where('completed', 0);
             })->find($expeditionId);
     }

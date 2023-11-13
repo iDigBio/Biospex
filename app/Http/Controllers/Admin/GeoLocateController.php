@@ -264,7 +264,7 @@ class GeoLocateController extends Controller
             $this->geoLocateExportForm->deleteGeoLocate($expeditionId);
 
             $expedition->geoLocateForm()->dissociate()->save();
-            $expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+            $expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
                 'state' => 0,
             ]);
 
@@ -331,7 +331,7 @@ class GeoLocateController extends Controller
 
             $this->geoLocateStat->saveCommunityDataSource($data, $projectId, $expeditionId);
 
-            $expedition->actors()->updateExistingPivot(config('config.geolocate.actor_id'), [
+            $expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
                 'state' => 2,
             ]);
 

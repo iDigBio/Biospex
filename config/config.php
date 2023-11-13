@@ -2,13 +2,10 @@
 
 return [
 
-    /**
-     * Site variables
-     */
-    'app_domain'         => env('APP_DOMAIN'),
-    'app_current_path'   => env('APP_CURRENT_PATH'),
-    'app_server_user'    => env('APP_SERVER_USER'),
-    'app_registration'   => env('APP_REGISTRATION'),
+    'app_domain'       => env('APP_DOMAIN'),
+    'app_current_path' => env('APP_CURRENT_PATH'),
+    'app_server_user'  => env('APP_SERVER_USER'),
+    'app_registration' => env('APP_REGISTRATION'),
 
     'expedition_size'    => env('EXPEDITION_SIZE'),
     'pusher_app_cluster' => env('PUSHER_APP_CLUSTER'),
@@ -41,162 +38,12 @@ return [
     'report_dir'  => env('REPORT_DIR', 'report'),
     'scratch_dir' => env('SCRATCH_DIR', 'scratch'),
 
-    // Zooniverse related
-    'zooniverse'  => [
-        'actor_title' => env('ZOONIVERSE_ACTOR_TITLE'),
-        'actor_id'    => env('ZOONIVERSE_ACTOR_ID'),
-        'pusher_id'   => env('ZOONIVERSE_PUSHER_ID'),
-
-        'directory' => [
-            'parent'         => env('ZOONIVERSE_DIRECTORY', 'zooniverse'),
-            'classification' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/classification',
-            'reconcile'      => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconcile', // normal reconcile
-            'reconciled'     => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled', // expert review
-            'summary'        => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/summary',
-            'transcript'     => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/transcript',
-            'explained'      => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/explained',
-        ],
-
-        'file_types' => [
-            'classification',
-            'transcript',
-            'reconcile',
-            'summary'
-        ],
-
-        'reconcile_problem_regex' => env('ZOONIVERSE_RECONCILE_PROBLEM_REGEX'),
-        'talk_api_uri' => env('ZOONIVERSE_TALK_API'),
-
-    ],
-
-
-    'export_stages' => [
-        'Building File Queue', // 0
-        'Building Image Requests', // 1
-        'Processing Image Requests', // 2
-        'Checking Image Process', // 3
-        'Building CSV', // 4
-        'Compressing Export File', // 5
-        'Creating Report', // 6
-        'Deleting Working Files', // 7
-    ],
-
-    'nfnSearch' => [
-        'eol'     => env('NFN_EOL_SEARCH'),
-        'mol'     => env('NFN_MOL_SEARCH'),
-        'idigbio' => env('NFN_IDIGBIO_SEARCH'),
-    ],
-
-    'nfnNotify'                 => [2 => 'NewNfnPanoptesProject'],
-    'nfnSkipApi'                => env('NFN_SKIP_API'),
-    // Skip csv creation for expedition ids that cause issues
-    'nfnSkipReconcile'          => env('NFN_SKIP_RECONCILE'),
-    // Skip csv reconciliation for expedition ids that cause issues
-    'nfnTranscriptionsComplete' => env('NFN_TRANSCRIPTIONS_COMPLETE', 3),
-    'nfn_participate_url'       => env('NFN_PARTICIPATE_URL'),
-    'nfn_project_url'           => env('NFN_PROJECT_URL'),
-
-    'nfnCsvMap' => [
-        'subjectId'           => '_id',
-        'imageName'           => '_id',
-        'references'          => ['occurrence' => 'references'],
-        'scientificName'      => ['occurrence' => 'scientificName'],
-        'country'             => ['occurrence' => 'country'],
-        'stateProvince'       => ['occurrence' => 'stateProvince'],
-        'county'              => ['occurrence' => 'county'],
-        'eol'                 => ['occurrence' => 'scientificName'],
-        'mol'                 => ['occurrence' => 'scientificName'],
-        'idigbio'             => ['occurrence' => 'scientificName'],
-        '#institutionCode'    => ['occurrence' => 'institutionCode'],
-        '#collectionCode'     => ['occurrence' => 'collectionCode'],
-        '#catalogNumber'      => ['occurrence' => 'catalogNumber'],
-        '#occurrenceRecordId' => ['occurrence' => ['recordID', 'recordId']],
-        '#occurrernceId'      => ['occurrence' => 'id'],
-        '#imageId'            => 'id',
-        '#expeditionId'       => '',
-        '#expeditionTitle'    => '',
-    ],
-
-    'panoptes' => [
-        'clientId'     => env('PANOPTES_CLIENT_ID'),
-        'clientSecret' => env('PANOPTES_CLIENT_SECRET'),
-        'apiUri'       => env('PANOPTES_URI'),
-        'tokenUri'     => env('PANOPTES_TOKEN_URI'),
-        'redirectUri'  => env('PANOPTES_REDIRECT_URI'),
-        'scopes'       => env('PANOPTES_SCOPES'),
-    ],
-
-    'reserved_encoded' => [
-        '_id',
-        'classification_id',
-        'workflow_id',
-        'user_name',
-        'create_date',
-        'classification_started_at',
-        'classification_finished_at',
-        'updated_at',
-        'created_at',
-        'problem',
-        'columns',
-        'reviewed',
-        'Country',
-        'County',
-        'Location',
-    ],
-
-    'mapped_transcription_fields' => [
-        'province'  => [
-            'StateProvince',
-            'State_Province',
-            'State Province',
-            'State/Province',
-            'subject_stateProvince',
-        ],
-        'collector' => [
-            'Collected By',
-            'Collected_By',
-            'CollectedBy',
-            'Collected By (first collector only)',
-            'subject_collectedBy',
-        ],
-        'taxon'     => [
-            'Scientific Name',
-            'Scientific_Name',
-            'ScientificName',
-            'subject_scientificName',
-        ],
-    ],
-    // End Zooniverse related
-
-    // GeoLocate related
-    'geolocate'                   => [
-        'actor_title' => env('GEOLOCATE_ACTOR_TITLE'),
-        'actor_id'    => env('GEOLOCATE_ACTOR_ID'),
-        'workflow_id' => env('GEOLOCATE_WORKFLOW_ID'),
-        'fields_file' => resource_path('json/geolocate-fields.json'),
-        'api'         => [
-            'geolocate_uname'        => env('GEOLOCATE_UNAME'),
-            'geolocate_token'        => env('GEOLOCATE_TOKEN'),
-            'geolocate_stats_uri'    => env('GEOLOCATE_STATS_URI'),
-            'geolocate_download_uri' => env('GEOLOCATE_DOWNLOAD_URI'),
-        ],
-        'dir'         => [
-            'parent' => env('GEOLOCATE_DIR', 'geolocate'),
-            'export' => env('GEOLOCATE_DIR', 'geolocate').'/export',
-            'kml'    => env('GEOLOCATE_DIR', 'geolocate').'/kml',
-        ],
-    ],
-    // End GeoLocate related
-
     'missing_project_logo'    => env('APP_URL').'/images/placeholders/project.png',
     'missing_expedition_logo' => env('APP_URL').'/images/placeholders/card-image-place-holder02.jpg',
     'missing_avatar_small'    => env('APP_URL').'/images/avatars/small/missing.png',
     'missing_avatar_medium'   => env('APP_URL').'/images/avatars/medium/missing.png',
 
     'image_process_file' => base_path(env('IMAGE_PROCESS_FILE')),
-
-    'python_path'    => env('RECONCILIATIONS_PATH').'/venv/bin/python',
-    'reconcile_path' => env('RECONCILIATIONS_PATH').'/reconcile.py',
 
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
     'project_chart_config' => resource_path('json/projectChartConfig.json'),
@@ -293,8 +140,6 @@ return [
     'thumb_height'          => 300,
     'logo'                  => '300x200',
     'banner'                => '1200x250',
-    'nfn_image_width'       => 1500,
-    'nfn_image_height'      => 1500,
 
     /**
      * Columns used in select statement for grid.

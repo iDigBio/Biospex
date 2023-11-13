@@ -20,11 +20,11 @@
 namespace App\Jobs\Traits;
 
 /**
- * Trait SkipNfn
+ * Trait SkipZooniverse
  *
  * @package App\Jobs\Traits
  */
-trait SkipNfn
+trait SkipZooniverse
 {
     /**
      * Used to skip reconcile process.
@@ -34,9 +34,9 @@ trait SkipNfn
      */
     protected function skipReconcile($expeditionId)
     {
-        $nfnSkipReconcile = explode(',', config('config.nfnSkipReconcile'));
+        $skipReconcile = explode(',', config('zooniverse.skip_reconcile'));
 
-        if (in_array($expeditionId, $nfnSkipReconcile, false)) {
+        if (in_array($expeditionId, $skipReconcile, false)) {
             return true;
         }
 
@@ -51,9 +51,9 @@ trait SkipNfn
      */
     protected function skipApi($expeditionId)
     {
-        $nfnSkipApi = explode(',', config('config.nfnSkipApi'));
+        $skipApi = explode(',', config('zooniverse.skip_api'));
 
-        if (in_array($expeditionId, $nfnSkipApi, false)) {
+        if (in_array($expeditionId, $skipApi, false)) {
             return true;
         }
 

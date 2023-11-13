@@ -25,11 +25,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * Class NfnTranscriptionsComplete
+ * Class ZooniverseTranscriptionsComplete
  *
  * @package App\Notifications
  */
-class NfnTranscriptionsComplete extends Notification implements ShouldQueue
+class ZooniverseTranscriptionsComplete extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -66,7 +66,7 @@ class NfnTranscriptionsComplete extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        return (new MailMessage)->markdown('mail.nfntranscriptionscomplete', ['title' => $this->title]);
+        return (new MailMessage)->markdown('mail.zooniversetranscriptionscomplete', ['title' => $this->title]);
     }
 
     /**

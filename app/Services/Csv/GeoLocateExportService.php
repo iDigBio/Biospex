@@ -106,7 +106,7 @@ class GeoLocateExportService
      */
     private function setSourceFile(Expedition $expedition): string
     {
-        return config('config.zooniverse.directory.' . $expedition->geoLocateForm->source) . '/' . $expedition->id . '.csv';
+        return config('zooniverse.directory.' . $expedition->geoLocateForm->source) . '/' . $expedition->id . '.csv';
     }
 
     /**
@@ -117,7 +117,7 @@ class GeoLocateExportService
      */
     public function setCsvFilePath(int $expeditionId): void
     {
-        $this->csvFilePath = config('config.geolocate.dir.export').'/'.$expeditionId.'.csv';
+        $this->csvFilePath = config('geolocate.dir.export').'/'.$expeditionId.'.csv';
     }
 
     /**
@@ -210,13 +210,13 @@ class GeoLocateExportService
     {
         $values = [
             'expedition_id' => $expedition->id,
-            'actor_id'      => config('config.geolocate.actor_id'),
+            'actor_id'      => config('geolocate.actor_id'),
             'file'          => $expedition->id . '.csv',
             'type'          => 'export',
         ];
         $attributes = [
             'expedition_id' => $expedition->id,
-            'actor_id'      => config('config.geolocate.actor_id'),
+            'actor_id'      => config('geolocate.actor_id'),
             'file'          => $expedition->id . '.csv',
             'type'          => 'export',
         ];

@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Models\ExportQueue;
 use App\Repositories\ExportQueueFileRepository;
-use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
+use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,7 +34,7 @@ use Throwable;
  */
 class ZooniverseExportCheckImageProcessJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NfnErrorNotification;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
 
     /**
      * @var \App\Models\ExportQueue

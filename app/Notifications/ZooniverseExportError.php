@@ -25,28 +25,48 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * Class NewNfnPanoptesProject
+ * Class ZooniverseExportError
  *
  * @package App\Notifications
  */
-class NewNfnPanoptesProject extends Notification implements ShouldQueue
+class ZooniverseExportError extends Notification implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * @var
+     * @var \Illuminate\Config\Repository|mixed
      */
-    private $project;
+    private $adminEmail;
+
+    /**
+     * @var string
+     */
+    private $title;
+
+    /**
+     * @var int
+     */
+    private $identifier;
+
+    /**
+     * @var string
+     */
+    private $message;
 
     /**
      * Create a new notification instance.
      *
-     * @param $project
+     * @param string $title
+     * @param int $identifier
+     * @param array $message
      */
-    public function __construct($project)
+    public function __construct(string $title, int $identifier, array $message)
     {
-        $this->project = $project;
+        $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.queue.default'));
+        $this->title = $title;
+        $this->identifier = $identifier;
+        $this->message = $message;
     }
 
     /**
@@ -66,16 +86,15 @@ class NewNfnPanoptesProject extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        $vars = [
-            'contact'     => $this->project->contact,
-            'email'       => $this->project->contact_email,
-            'title'       => $this->project->title,
-            'description' => $this->project->description_long
+        $attributes = [
+            'title' => $this->title,
+            'id' => $this->identifier,
+            'message' => implode('<br>', $this->message)
         ];
 
         return (new MailMessage)
-            ->subject(t('Biospex - New NfnPanoptes Project Submitted'))
-            ->markdown('mail.newnfnpanoptes', $vars);
+            ->bcc($this->adminEmail)
+            ->markdown('mail.zooniverseexporterror', $attributes);
     }
 
     /**

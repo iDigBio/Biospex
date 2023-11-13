@@ -338,11 +338,11 @@ class GeneralHelper
      */
     public function downloadFileExists(string $file, string $type, int $actorId = null): bool
     {
-        if ($actorId == config('config.zooniverse.actor_id')) {
+        if ($actorId == config('zooniverse.actor_id')) {
             return $this->checkZooniverseFile($type, $file);
         }
 
-        if ($actorId == config('config.geolocate.actor_id')) {
+        if ($actorId == config('geolocate.actor_id')) {
             return $this->checkGeoLocateFile($type, $file);
         }
 
@@ -363,7 +363,7 @@ class GeneralHelper
         }elseif ($type === 'report') {
             return Storage::disk('s3')->exists(config('config.report_dir').'/'.$file);
         }else{
-            return Storage::disk('s3')->exists(config('config.zooniverse.directory.parent').'/'.$type.'/'.$file);
+            return Storage::disk('s3')->exists(config('zooniverse.directory.parent').'/'.$type.'/'.$file);
         }
     }
 
@@ -376,7 +376,7 @@ class GeneralHelper
      */
     private function checkGeoLocateFile(string $type, string $file): bool
     {
-        return Storage::disk('s3')->exists(config('config.geolocate.dir.parent').'/'.$type.'/'.$file);
+        return Storage::disk('s3')->exists(config('geolocate.dir.parent').'/'.$type.'/'.$file);
     }
 
     /**
@@ -390,11 +390,11 @@ class GeneralHelper
     public function downloadFileSize(string $file, string $type, int  $actorId = null): int
     {
 
-        if ($actorId == config('config.zooniverse.actor_id')) {
+        if ($actorId == config('zooniverse.actor_id')) {
             return $this->checkZooniverseFileSize($file, $type);
         }
 
-        if ($actorId == config('config.geolocate.actor_id')) {
+        if ($actorId == config('geolocate.actor_id')) {
             return $this->checkGeoLocateFileSize($file, $type);
         }
 
@@ -415,7 +415,7 @@ class GeneralHelper
         }elseif ($type === 'report') {
             return Storage::disk('s3')->size(config('config.report_dir').'/'.$file);
         }else{
-            return Storage::disk('s3')->size(config('config.zooniverse.directory.parent').'/'.$type.'/'.$file);
+            return Storage::disk('s3')->size(config('zooniverse.directory.parent').'/'.$type.'/'.$file);
         }
     }
 
@@ -428,7 +428,7 @@ class GeneralHelper
      */
     private function checkGeoLocateFileSize(string $file, string $type): int
     {
-        return Storage::disk('s3')->size(config('config.geolocate.dir.parent').'/'.$type.'/'.$file);
+        return Storage::disk('s3')->size(config('geolocate.dir.parent').'/'.$type.'/'.$file);
     }
 
     /**

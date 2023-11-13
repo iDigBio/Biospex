@@ -315,29 +315,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
         return $this->hasManyThrough(WorkflowManager::class, Expedition::class);
     }
 
-
-    /**
-     * NfnClassificationsEarliestFinishedAtDate attribute.
-     *
-     * @return int
-     */
-    public function getEarliestFinishedAtDateAttribute()
-    {
-        $related = $this->getRelationValue('classificationsEarliestFinishedAtDate')->first();
-
-        return $related ? $related->earliest_finished_at_date : null;
-    }
-
-    /**
-     * Get earliest last finished_at date
-     *
-     * @return mixed
-     */
-    public function getTranscriptionsEarliestFinishedAtDate()
-    {
-        return $this->hasMany(PanoptesTranscription::class)->min('classification_finished_at');
-    }
-
     /**
      * Set tag uri for rfc 4151 specs.
      *

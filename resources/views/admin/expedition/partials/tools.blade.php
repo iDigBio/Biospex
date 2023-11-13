@@ -4,13 +4,13 @@
             <h4>{{ t('OCR') }}</h4>
             {!! $expedition->present()->expedition_ocr_btn !!}
         @endif
-        @php($nfnComplete = false)
+        @php($complete = false)
         @foreach ($expedition->actors as $actor)
-            @if($actor->id == config('config.zooniverse.actor_id'))
-                @php($nfnComplete = $actor->pivot->state === 3)
-                @include('admin.expedition.partials.nfn-btns')
+            @if($actor->id == config('zooniverse.actor_id'))
+                @php($complete = $actor->pivot->state === 3)
+                @include('admin.expedition.partials.zooniverse-btns')
             @endif
-            @if($actor->id == config('config.geolocate.actor_id') && $nfnComplete)
+            @if($actor->id == config('geolocate.actor_id') && $complete)
                 @include('admin.expedition.partials.geolocate-btns')
             @endif
         @endforeach

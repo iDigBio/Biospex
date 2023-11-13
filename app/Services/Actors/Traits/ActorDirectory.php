@@ -134,7 +134,7 @@ trait ActorDirectory
     }
 
     /**
-     * Set nfn export directory.
+     * Set zooniverse export directory.
      */
     private function setExportDirectory()
     {

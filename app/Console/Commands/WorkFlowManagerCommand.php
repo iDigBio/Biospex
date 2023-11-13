@@ -95,7 +95,7 @@ class WorkFlowManagerCommand extends Command
     protected function processActors($expedition): void
     {
         $expedition->actors->each(function ($actor) use ($expedition) {
-            if ($actor->id == config('config.zooniverse.actor_id')) {
+            if ($actor->id == config('zooniverse.actor_id')) {
                 $attributes = [
                     'total' => $expedition->stat->local_subject_count,
                 ];

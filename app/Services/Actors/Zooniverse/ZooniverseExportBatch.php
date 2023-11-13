@@ -17,10 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actors\NfnPanoptes;
+namespace App\Services\Actors\Zooniverse;
 
 use App\Models\Download;
-use App\Notifications\NfnBatchExportComplete;
+use App\Notifications\ZooniverseBatchExportComplete;
 use App\Services\Actors\Traits\ActorBatchDirectory;
 use App\Services\Csv\Csv;
 use Exception;
@@ -79,7 +79,7 @@ class ZooniverseExportBatch
 
         $links = $this->buildLinks();
 
-        $this->owner->notify(new NfnBatchExportComplete($this->expedition->title, $links));
+        $this->owner->notify(new ZooniverseBatchExportComplete($this->expedition->title, $links));
     }
 
     /**

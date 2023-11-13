@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
+use App\Jobs\Traits\SkipZooniverse;
 use App\Notifications\ExpertReviewJobComplete;
 use App\Notifications\JobError;
 use App\Repositories\ExpeditionRepository;
@@ -33,7 +33,7 @@ use Illuminate\Queue\SerializesModels;
 
 class ExpertReviewSetProblemsJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
     /**
      * @var int
@@ -83,8 +83,8 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
 
             $expertReconcileProcess->setReconcileProblems($expedition->id);
 
-            $expedition->nfnActor->pivot->expert = 1;
-            $expedition->nfnActor->pivot->save();
+            $expedition->zooniverseActor->pivot->expert = 1;
+            $expedition->zooniverseActor->pivot->save();
 
             $user->notify(new ExpertReviewJobComplete($expedition->title, $expedition->id));
 

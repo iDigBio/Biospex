@@ -111,7 +111,7 @@ class ExpertReconcilePublishProcess
             $decodedHeader[] = TranscriptionMapHelper::decodeTranscriptionField($value);
         }
 
-        $file = config('config.zooniverse.directory.reconciled') . '/' . $expeditionId.'.csv';
+        $file = config('zooniverse.directory.reconciled') . '/' . $expeditionId.'.csv';
         $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $file, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();
         $this->awsS3CsvService->csv->insertOne($decodedHeader);
@@ -127,13 +127,13 @@ class ExpertReconcilePublishProcess
     {
         $values = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => config('config.zooniverse.actor_id'),
+            'actor_id'      => config('zooniverse.actor_id'),
             'file'          => $expeditionId.'.csv',
             'type'          => 'reconciled',
         ];
         $attributes = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => config('config.zooniverse.actor_id'),
+            'actor_id'      => config('zooniverse.actor_id'),
             'file'          => $expeditionId.'.csv',
             'type'          => 'reconciled',
         ];

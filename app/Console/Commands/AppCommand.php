@@ -51,6 +51,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
+        dd(config('zooniverse.search_urls'));
     }
 }

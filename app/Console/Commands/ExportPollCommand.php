@@ -65,7 +65,7 @@ class ExportPollCommand extends Command
         parent::__construct();
 
         $this->exportQueueRepo = $exportQueueRepo;
-        $this->exportStages = config('config.export_stages');
+        $this->exportStages = config('zooniverse.export_stages');
     }
 
     /**

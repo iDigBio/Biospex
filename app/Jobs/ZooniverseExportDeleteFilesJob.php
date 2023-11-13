@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actors\NfnPanoptes\ZooniverseExportDeleteFiles;
+use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actors\Zooniverse\ZooniverseExportDeleteFiles;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -36,7 +36,7 @@ use Throwable;
  */
 class ZooniverseExportDeleteFilesJob implements ShouldQueue, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NfnErrorNotification;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
 
     /**
      * @var \App\Models\ExportQueue
@@ -69,7 +69,7 @@ class ZooniverseExportDeleteFilesJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actors\NfnPanoptes\ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles
+     * @param \App\Services\Actors\Zooniverse\ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles
      * @throws \Exception
      */
     public function handle(ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles)

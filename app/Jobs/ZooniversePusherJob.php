@@ -18,7 +18,7 @@
  */
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
+use App\Jobs\Traits\SkipZooniverse;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Transcriptions\CreateBiospexEventTranscriptionService;
@@ -41,7 +41,7 @@ use Throwable;
  */
 class ZooniversePusherJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
     /**
      * @var int

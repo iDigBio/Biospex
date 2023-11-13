@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
+use App\Jobs\Traits\SkipZooniverse;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Transcriptions\CreatePanoptesTranscriptionService;
@@ -39,7 +39,7 @@ use Throwable;
  */
 class ZooniverseTranscriptionJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -78,7 +78,7 @@ class ZooniverseTranscriptionJob implements ShouldQueue
             return;
         }
 
-        $csvFilePath = config('config.zooniverse.directory.transcript') . "/{$this->expeditionId}.csv";
+        $csvFilePath = config('zooniverse.directory.transcript') . "/{$this->expeditionId}.csv";
         if (! Storage::disk('s3')->exists($csvFilePath)) {
             $this->delete();
 
@@ -92,7 +92,7 @@ class ZooniverseTranscriptionJob implements ShouldQueue
             $user = User::find(1);
             $messages = [
                 t('Expedition Id: %s', $this->expeditionId),
-                t('Error: ', 'NfnPanoptes Transcription'),
+                t('Error: ', 'Zooniverse Transcription'),
                 t('File: %s', __FILE__),
                 t('Line: %s', 89),
             ];

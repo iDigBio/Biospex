@@ -23,7 +23,7 @@ use App\Models\Actor;
 use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Notifications\NfnTranscriptionsComplete;
+use App\Notifications\ZooniverseTranscriptionsComplete;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use Illuminate\Bus\Queueable;
@@ -77,7 +77,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
         $expedition = $expeditionRepo->findWith($this->expeditionId, [
             'project.group.owner',
             'stat',
-            'nfnActor',
+            'zooniverseActor',
             'panoptesProject',
         ]);
 
@@ -131,14 +131,17 @@ class ZooniverseClassificationCountJob implements ShouldQueue
             return;
         }
 
-        // TODO this should set state to value that no longer does anything. Expedition Nfn completed.
+        /**
+         * State === 3 means Zooniverse actor completed.
+         * @see \App\Services\Actors\Zooniverse\Zooniverse::actor()
+         */
         $attributes = [
-            'state' => $expedition->nfnActor->pivot->state+1,
+            'state' => 3,
         ];
 
-        $expedition->nfnActor()->updateExistingPivot($expedition->nfnActor->pivot->actor_id, $attributes);
+        $expedition->zooniverseActor()->updateExistingPivot($expedition->zooniverseActor->pivot->actor_id, $attributes);
 
-        $expedition->project->group->owner->notify(new NfnTranscriptionsComplete($expedition->title));
+        $expedition->project->group->owner->notify(new ZooniverseTranscriptionsComplete($expedition->title));
     }
 
     /**

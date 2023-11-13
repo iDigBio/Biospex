@@ -17,11 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actors\NfnPanoptes;
+namespace App\Services\Actors\Zooniverse;
 
 use App\Jobs\ZooniverseExportDeleteFilesJob;
 use App\Models\ExportQueue;
-use App\Notifications\NfnExportComplete;
+use App\Notifications\ZooniverseExportComplete;
 use App\Repositories\ExportQueueFileRepository;
 use App\Services\Actors\QueueInterface;
 use App\Services\Process\CreateReportService;
@@ -87,7 +87,7 @@ class ZooniverseExportCreateReport implements QueueInterface
 
         $users = $exportQueue->expedition->project->group->users->push($exportQueue->expedition->project->group->owner);
 
-        Notification::send($users, new NfnExportComplete($exportQueue->expedition->title, $fileName));
+        Notification::send($users, new ZooniverseExportComplete($exportQueue->expedition->title, $fileName));
 
         $exportQueue->processed = 0;
         $exportQueue->stage = 7;

@@ -102,7 +102,7 @@ class PanoptesProjectPresenter extends Presenter
      */
     private function classifyReplace()
     {
-        $urlString = str_replace('PROJECT_SLUG', $this->model->slug, config('config.nfn_participate_url'));
+        $urlString = str_replace('PROJECT_SLUG', $this->model->slug, config('zooniverse.participate_url'));
 
         return str_replace('WORKFLOW_ID', $this->model->panoptes_workflow_id, $urlString);
     }
@@ -114,6 +114,6 @@ class PanoptesProjectPresenter extends Presenter
      */
     private function projectReplace()
     {
-        return str_replace('PROJECT_SLUG', $this->model->slug, config('config.nfn_project_url'));
+        return str_replace('PROJECT_SLUG', $this->model->slug, config('zooniverse.project_url'));
     }
 }

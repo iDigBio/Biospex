@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
-use App\Services\Actors\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actors\NfnPanoptes\ZooniverseBuildQueue;
+use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actors\Zooniverse\ZooniverseBuildQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -36,7 +36,7 @@ use Throwable;
  */
 class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, NfnErrorNotification;
+    use Dispatchable, InteractsWithQueue, Queueable, ZooniverseErrorNotification;
 
     /**
      * @var \App\Models\Actor
@@ -57,7 +57,7 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actors\NfnPanoptes\ZooniverseBuildQueue $zooniverseBuildQueue
+     * @param \App\Services\Actors\Zooniverse\ZooniverseBuildQueue $zooniverseBuildQueue
      * @throws \Exception
      */
     public function handle(ZooniverseBuildQueue $zooniverseBuildQueue)
