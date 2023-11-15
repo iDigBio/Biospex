@@ -19,6 +19,8 @@
 
 namespace App\Services\Models;
 
+use App\Http\Requests\InviteFormRequest;
+use App\Models\Group;
 use App\Notifications\GroupInvite;
 use App\Repositories\GroupRepository;
 use App\Repositories\InviteRepository;
@@ -71,15 +73,15 @@ class InviteProcess
     /**
      * Create and send invites to group.
      *
-     * @param $groupId
-     * @param $request
+     * @param int $groupId
+     * @param \App\Http\Requests\InviteFormRequest $request
      * @return bool
      */
-    public function storeInvites($groupId, $request)
+    public function storeInvites(int $groupId, InviteFormRequest $request): bool
     {
-        try {
-            $group = $this->groupRepo->find($groupId);
+        $group = $this->groupRepo->findWith($groupId, ['invites']);
 
+        try {
             $requestInvites = collect($request->get('invites'))->reject(function($invite){
                 return empty($invite['email']);
             })->pluck('email')->diff($group->invites->pluck('email'));
@@ -93,13 +95,13 @@ class InviteProcess
             Notification::send($newInvites, new GroupInvite($group));
             Notification::send($group->invites, new GroupInvite($group));
 
-            \Flash::success(t('Invites to :group sent successfully.', $group->title));
+            \Flash::success(t('Invites to %s sent successfully.', $group->title));
 
             return true;
         }
         catch (Exception $e)
         {
-            \Flash::error(t('Unable to sent invites for :group. Please contact the administration.', $group->title));
+            \Flash::error(t('Unable to sent invites for %s. Please contact the administration.', $group->title));
 
             return false;
         }
@@ -108,11 +110,11 @@ class InviteProcess
     /**
      * Check for existing users, if in group or need to be assigned.
      *
-     * @param $email
-     * @param $group
+     * @param string $email
+     * @param \App\Models\Group $group
      * @return bool
      */
-    private function checkExistingUser($email, $group)
+    private function checkExistingUser(string $email, Group $group): bool
     {
         $user = $this->userRepo->findBy('email',$email);
 
@@ -134,11 +136,11 @@ class InviteProcess
     /**
      * Create new invite.
      *
-     * @param $email
-     * @param $group
-     * @return mixed
+     * @param string $email
+     * @param \App\Models\Group $group
+     * @return \App\Models\Invite
      */
-    private function createNewInvite($email, $group)
+    private function createNewInvite(string $email, Group $group): \App\Models\Invite
     {
         $inviteData = [
             'group_id' => $group->id,

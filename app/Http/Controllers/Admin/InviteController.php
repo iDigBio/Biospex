@@ -67,10 +67,10 @@ class InviteController extends Controller
     /**
      * Show invite form
      *
-     * @param $groupId
+     * @param int $groupId
      * @return \Illuminate\View\View
      */
-    public function index($groupId)
+    public function index(int $groupId): \Illuminate\View\View
     {
         $group = $this->groupRepo->findWith($groupId, ['invites']);
 
@@ -84,15 +84,13 @@ class InviteController extends Controller
      * Send invites to emails
      *
      * @param InviteFormRequest $request
-     * @param $groupId
+     * @param int $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(InviteFormRequest $request, $groupId)
+    public function store(InviteFormRequest $request, int $groupId): \Illuminate\Http\RedirectResponse
     {
-        $group = $this->groupRepo->findWith($groupId, ['invites']);
+        $this->inviteProcess->storeInvites($groupId, $request);
 
-        $this->inviteProcess->storeInvites($group->id, $request);
-
-        return \Response::back();
+        return back();
     }
 }
