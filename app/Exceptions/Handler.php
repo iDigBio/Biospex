@@ -51,25 +51,26 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param Throwable $throwable
-     * @return mixed|void
-     * @throws Throwable
+     * @param \Throwable $e
+     * @return void
+     * @throws \Throwable
      */
-    public function report(Throwable $throwable)
+    public function report(Throwable $e): void
     {
-        parent::report($throwable);
+        parent::report($e);
     }
 
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $throwable
+     * @param \Illuminate\Http\Request $request
+     * @param \Throwable $e
      * @return \Illuminate\Http\Response
+     * @throws \Throwable
      */
-    public function render($request, Throwable $throwable)
+    public function render($request, Throwable $e): \Illuminate\Http\Response
     {
-        return parent::render($request, $throwable);
+        return parent::render($request, $e);
     }
 
     /**
