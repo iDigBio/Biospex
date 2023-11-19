@@ -137,8 +137,8 @@ class AppFileDeployment extends Command
     private function rejectFiles($file): bool
     {
         $files = [
-            //'panoptes-pusher.conf',
-            //'panoptes-pusher.js',
+            'panoptes-pusher.conf',
+            'panoptes-pusher.js',
         ];
 
         return config('app.env') === 'dev' && in_array($file->getBaseName(), $files);
