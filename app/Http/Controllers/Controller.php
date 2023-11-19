@@ -19,12 +19,12 @@ abstract class Controller extends BaseController
      * @param $object
      * @return bool
      */
-    public function checkPermissions($ability, $object = null)
+    public function checkPermissions($ability, $object = null): bool
     {
         try{
             $this->authorize($ability, $object);
         }
-        catch (\\ $e)
+        catch (\Throwable $throwable)
         {
             \Flash::warning(t('You do not have sufficient permissions.'));
 
