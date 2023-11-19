@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\OcrQueue;
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Services\Process\OcrService;
 use Artisan;
 use Illuminate\Bus\Queueable;
@@ -55,8 +55,10 @@ class OcrProcessJob implements ShouldQueue
 
         try {
             if ($queue->processed === $queue->total) {
-                $ocrService->complete($queue);
+                $ocrService->sendNotify($queue);
+
                 $queue->delete();
+
                 Artisan::call('ocr:poll');
 
                 $this->delete();
@@ -88,18 +90,21 @@ class OcrProcessJob implements ShouldQueue
             $this->delete();
 
             return;
-        } catch (\Exception $e) {
+        } catch (\Throwable $throwable) {
             $queue->error = 1;
             $queue->save();
 
-            $user = User::find(1);
-            $messages = [
-                'Queue Id:'.$queue->id,
-                'Project Id: '.$queue->project_id,
-                'Expedition Id: '.$queue->expedition_id,
-                'Message:'.$e->getFile().': '.$e->getLine().' - '.$e->getMessage(),
+            $attributes = [
+                'subject' => t('Ocr Process Error'),
+                'html'    => [
+                    t('Queue Id: %s', $queue->id),
+                    t('Project Id: %s'.$queue->project->id),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage())
+                ],
             ];
-            $user->notify(new JobError(__FILE__, $messages));
+            User::find(config('config.admin.user_id'))->notify(new Generic($attributes));
 
             $this->delete();
 

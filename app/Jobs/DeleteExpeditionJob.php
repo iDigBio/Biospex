@@ -21,8 +21,7 @@ namespace App\Jobs;
 
 use App\Models\Expedition;
 use App\Models\User;
-use App\Notifications\JobError;
-use App\Notifications\RecordDeleteComplete;
+use App\Notifications\Generic;
 use App\Repositories\SubjectRepository;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
@@ -96,11 +95,14 @@ class DeleteExpeditionJob implements ShouldQueue
 
         $this->expedition->delete();
 
-        $message = [
-            t('Expedition `%s` and all corresponding records have been deleted.', $this->expedition->title),
+        $attributes = [
+            'subject' => t('Records Deleted'),
+            'html'    => [
+                t('Expedition `%s` and all corresponding records have been deleted.', $this->expedition->title)
+            ]
         ];
 
-        $this->user->notify(new RecordDeleteComplete($message));
+        $this->user->notify(new Generic($attributes));
     }
 
     /**
@@ -111,13 +113,16 @@ class DeleteExpeditionJob implements ShouldQueue
      */
     public function failed(\Throwable $throwable): void
     {
-        $messages = [
-            'Error: '.t('Could not delete Expedition %s', $this->expedition->title),
-            t('Error: %s', $throwable->getMessage()),
-            t('File: %s', $throwable->getFile()),
-            t('Line: %s', $throwable->getLine()),
+        $attributes = [
+            'subject' => t('Delete Expedition Job Failed'),
+            'html'    => [
+                t('Error: Could not delete Expedition %s', $this->expedition->title),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
         ];
-
-        $this->user->notify(new JobError(__FILE__, $messages));
+        $this->user->notify(new Generic($attributes, true));
     }
 }

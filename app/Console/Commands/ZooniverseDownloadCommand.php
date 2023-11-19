@@ -78,9 +78,9 @@ class ZooniverseDownloadCommand extends Command
 
             ZooniverseCsvDownloadJob::dispatch($expeditionId, $result['media'][0]['src']);
         }
-        catch (\Exception $e)
+        catch (\Throwable $throwable)
         {
-            echo $e->getMessage() . PHP_EOL;
+            echo $throwable->getMessage() . PHP_EOL;
         }
     }
 }

@@ -21,7 +21,8 @@ namespace App\Services\Actors\Zooniverse;
 
 use App\Jobs\ZooniverseExportDeleteFilesJob;
 use App\Models\ExportQueue;
-use App\Notifications\ZooniverseExportComplete;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
 use App\Repositories\ExportQueueFileRepository;
 use App\Services\Actors\QueueInterface;
 use App\Services\Process\CreateReportService;
@@ -34,6 +35,8 @@ use Notification;
  */
 class ZooniverseExportCreateReport implements QueueInterface
 {
+    use ButtonTrait;
+
     /**
      * @var \App\Repositories\ExportQueueFileRepository
      */
@@ -85,9 +88,21 @@ class ZooniverseExportCreateReport implements QueueInterface
             $this->createReportService->saveReport($exportQueue, $csvName);
         }
 
+        $route = route('admin.downloads.report', ['file' => $fileName]);
+        $button = $this->createButton($route, t('Download Export Errors'), 'error');
+
+        $attributes = [
+            'subject' => t('Zooniverse Export Completed'),
+            'html'    => [
+                t('The export process for "%s" has been completed successfully.', $exportQueue->expedition->title),
+                t('If a download file was created during this process, you may access the link on the Expedition view page.')
+            ],
+            'buttons' => [$button]
+        ];
+
         $users = $exportQueue->expedition->project->group->users->push($exportQueue->expedition->project->group->owner);
 
-        Notification::send($users, new ZooniverseExportComplete($exportQueue->expedition->title, $fileName));
+        Notification::send($users, new Generic($attributes));
 
         $exportQueue->processed = 0;
         $exportQueue->stage = 7;

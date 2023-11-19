@@ -21,8 +21,8 @@ namespace App\Jobs;
 
 use App\Models\Expedition;
 use App\Models\User;
-use App\Notifications\GeoLocateExportNotification;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
 use App\Services\Csv\GeoLocateExportService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class GeoLocateExportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
 
     /**
      * @var \App\Models\Expedition
@@ -99,9 +99,18 @@ class GeoLocateExportJob implements ShouldQueue
             'state' => 1,
         ]);
 
-        $file = route('admin.downloads.geolocate', ['file' => base64_encode($csvFilePath)]);
+        $route = route('admin.downloads.geolocate', ['file' => base64_encode($csvFilePath)]);
+        $btn = $this->createButton($route, t('Download GeoLocateExport CSV'));
 
-        $this->user->notify(new GeoLocateExportNotification($file));
+        $attributes = [
+            'subject' => t('GeoLocateExport Csv Export'),
+            'html'    => [
+                t('Your GeoLocateExport csv export is completed. You may click the download button to download the file or visit the Expedition and use the download section.')
+            ],
+            'buttons' => [$btn]
+        ];
+
+        $this->user->notify(new Generic($attributes));
     }
 
     /**
@@ -126,13 +135,17 @@ class GeoLocateExportJob implements ShouldQueue
             Storage::disk('efs')->delete($csvFilePath);
         }
 
-        $messages = [
-            'Error: '.t('Could not export GeoLocate data for Expedition %s', $this->expedition->title),
-            t('Error: %s', $throwable->getMessage()),
-            t('File: %s', $throwable->getFile()),
-            t('Line: %s', $throwable->getLine()),
+        $attributes = [
+            'subject' => t('DWC File Import Error'),
+            'html'    => [
+                'Error: '.t('Could not export GeoLocate data for Expedition %s', $this->expedition->title),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
         ];
 
-        $this->user->notify(new JobError(__FILE__, $messages));
+        $this->user->notify(new Generic($attributes, true));
     }
 }

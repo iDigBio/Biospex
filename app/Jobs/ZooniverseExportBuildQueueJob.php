@@ -20,6 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
+use App\Models\User;
+use App\Notifications\Generic;
 use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
 use App\Services\Actors\Zooniverse\ZooniverseBuildQueue;
 use Illuminate\Bus\Queueable;
@@ -70,11 +72,23 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     /**
      * Handle a job failure.
      *
-     * @param  \Throwable  $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable): void
     {
-        $this->sendAdminError($exception);
+        $attributes = [
+            'subject' => t('Zooniverse Export Build Queue Job Failed'),
+            'html'    => [
+                t('An error occurred building the export queue.'),
+                t('Actor Id: %s', $this->actor->id),
+                t('Expedition Id: %s', $this->actor->pivot->id),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage())
+            ],
+        ];
+
+        User::find(config('config.admin_id'))->notify(new Generic($attributes));
     }
 }

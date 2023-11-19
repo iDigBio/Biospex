@@ -103,12 +103,12 @@ class ZooniverseExportLambdaJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param  \Throwable  $exception
+     * @param  \Throwable  $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable)
     {
         exec("sudo systemctl restart beanstalkd");
-        $this->sendErrorNotification($this->exportQueue, $exception);
+        $this->sendErrorNotification($this->exportQueue, $throwable);
     }
 }

@@ -19,8 +19,8 @@
 
 namespace App\Jobs;
 
+use App\Notifications\Generic;
 use App\Repositories\DownloadRepository;
-use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
 use App\Services\Actors\Zooniverse\ZooniverseExportBatch;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,7 +35,7 @@ use Throwable;
  */
 class ExportDownloadBatchJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, ZooniverseErrorNotification;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -66,17 +66,26 @@ class ExportDownloadBatchJob implements ShouldQueue
      * @param \App\Repositories\DownloadRepository $downloadRepository
      * @param \App\Services\Actors\Zooniverse\ZooniverseExportBatch $zooniverseExportBatch
      */
-    public function handle(
-        DownloadRepository $downloadRepository,
-        ZooniverseExportBatch $zooniverseExportBatch)
+    public function handle(DownloadRepository $downloadRepository, ZooniverseExportBatch $zooniverseExportBatch): void
     {
         $download = $downloadRepository->findWith($this->downloadId, ['expedition.project.group.owner', 'actor']);
 
         try {
             $zooniverseExportBatch->process($download);
         }
-        catch (Throwable $e) {
-            $this->sendAdminError($e);
+        catch (Throwable $throwable) {
+            $attributes = [
+                'subject' => t('Export Download Batch Error'),
+                'html'    => [
+                    t('The batch export for Expedition %s has failed.', $download->expedition->title),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ]
+            ];
+
+            $download->expedition->project->group->owner->notify(new Generic($attributes, true));
             $this->delete();
         }
     }

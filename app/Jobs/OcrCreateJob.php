@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Services\Process\OcrService;
 use Artisan;
 use Exception;
@@ -100,13 +100,18 @@ class OcrCreateJob implements ShouldQueue
             Artisan::call('ocrprocess:records');
 
         } catch (Exception $e) {
-            $user = User::find(1);
-            $messages = [
-                'Project Id: '.$this->projectId,
-                'Expedition Id: '.$this->expeditionId,
-                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
+            $attributes = [
+                'subject' => t('Error creating OCR job.'),
+                'html'    => [
+                    t('Project Id: %s', $this->projectId),
+                    t('Expedition Id: %s', $this->expeditionId),
+                    t('File: %s', $e->getFile()),
+                    t('Line: %s', $e->getLine()),
+                    t('Message: %s', $e->getMessage())
+                ],
             ];
-            $user->notify(new JobError(__FILE__, $messages));
+
+            User::find(config('config.admin.user_id'))->notify(new Generic($attributes));
         }
 
         $this->delete();

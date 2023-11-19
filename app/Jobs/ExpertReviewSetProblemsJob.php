@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Jobs\Traits\SkipZooniverse;
-use App\Notifications\ExpertReviewJobComplete;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Reconcile\ExpertReconcileProcess;
 use Illuminate\Bus\Batchable;
@@ -33,7 +33,7 @@ use Illuminate\Queue\SerializesModels;
 
 class ExpertReviewSetProblemsJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse, ButtonTrait;
 
     /**
      * @var int
@@ -86,16 +86,35 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
             $expedition->zooniverseActor->pivot->expert = 1;
             $expedition->zooniverseActor->pivot->save();
 
-            $user->notify(new ExpertReviewJobComplete($expedition->title, $expedition->id));
+            $route = route('admin.reconciles.index', ['expeditions' => $this->expeditionId]);
+            $btn = $this->createButton($route, t('Expert Review Start'));
+
+            $attributes = [
+                'subject' => t('Expert Review Job Complete'),
+                'html'    => [
+                    t('The Expert Review job for %s is complete and you may start reviewing the reconciled records.', $expedition->title),
+                    t('You may access the page by going to the Expedition Download modal and clicking the green button or click the button below and be taken to the page directly.')
+                ],
+                'buttons' => [$btn]
+            ];
+
+            $user->notify(new Generic($attributes));
 
             $this->delete();
 
-        } catch (\Exception $e) {
-            $messages = [
-                'Message: ' .  $e->getMessage(),
-                'File : ' . $e->getFile() . ': ' . $e->getLine()
+        } catch (\Throwable $throwable) {
+            $attributes = [
+                'subject' => t('Expert Review Job Error'),
+                'html'    => [
+                    t('An error occurred while setting the problems for Expedition %s.', $expedition->title),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ],
             ];
-            $user->notify(new JobError(__FILE__, $messages));
+
+            $user->notify(new Generic($attributes));
 
             $this->delete();
         }

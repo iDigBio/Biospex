@@ -236,6 +236,7 @@ class ExpeditionService
     /**
      * Send notifications for new projects and actors.
      *
+     * @see \App\Notifications\ZooniverseNewProject
      * @param $expedition
      * @param $project
      * @return void

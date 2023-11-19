@@ -65,8 +65,8 @@ class ZooniverseExplainedCommand extends Command
                 $reconcileProcessService->processExplained($expedition);
             }
 
-        } catch (\Exception $e) {
-            echo $e->getMessage() . PHP_EOL;
+        } catch (\Throwable $throwable) {
+            echo $throwable->getMessage() . PHP_EOL;
         }
     }
 }

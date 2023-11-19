@@ -22,8 +22,7 @@ namespace App\Jobs;
 use App\Models\Actor;
 use App\Models\Expedition;
 use App\Models\User;
-use App\Notifications\JobError;
-use App\Notifications\ZooniverseTranscriptionsComplete;
+use App\Notifications\Generic;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use Illuminate\Bus\Queueable;
@@ -141,7 +140,14 @@ class ZooniverseClassificationCountJob implements ShouldQueue
 
         $expedition->zooniverseActor()->updateExistingPivot($expedition->zooniverseActor->pivot->actor_id, $attributes);
 
-        $expedition->project->group->owner->notify(new ZooniverseTranscriptionsComplete($expedition->title));
+        $attributes = [
+            'subject' => t('Zooniverse Transcriptions Completed'),
+            'html'    => [
+                t('The Zooniverse digitization process for "%s" has been completed.', $expedition->title)
+            ]
+        ];
+
+        $expedition->project->group->owner->notify(new Generic($attributes));
     }
 
     /**
@@ -157,17 +163,20 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable)
     {
-        $user = User::find(1);
-        $messages = [
-            t('Error: %s', $exception->getMessage()),
-            t('File: %s', $exception->getFile()),
-            t('Line: %s', $exception->getLine()),
+        $attributes = [
+            'subject' => t('Zooniverse Classification Count Job Failed'),
+            'html'    => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage())
+            ],
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        User::find(config('config.admin.user_id'))->notify(new Generic($attributes));
     }
 }

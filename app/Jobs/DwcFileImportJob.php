@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\Import;
-use App\Notifications\DarwinCoreImportError;
-use App\Notifications\ImportComplete;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
 use App\Repositories\ProjectRepository;
 use App\Services\Process\CreateReportService;
 use App\Services\Process\DarwinCore;
@@ -42,7 +42,7 @@ use Notification;
  */
 class DwcFileImportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -96,7 +96,22 @@ class DwcFileImportJob implements ShouldQueue
             $rejCsvName = md5($this->import->id).'rej.csv';
             $rejName = $createReportService->createCsvReport($rejCsvName, $dwcProcess->getRejectedMedia());
 
-            Notification::send($users, new ImportComplete($project->title, $dupName, $rejName));
+            $dupRoute = route('admin.downloads.report', ['file' => $dupName]);
+            $dupButton = $this->createButton($dupRoute, t('View Rejected Duplicates'));
+
+            $rejRoute = route('admin.downloads.report', ['file' => $rejName]);
+            $rejButton = $this->createButton($rejRoute, t('View Rejected Records'), 'error');
+
+            $attributes = [
+                'subject' => t('DWC File Import Complete'),
+                'html'    => [
+                    t('The subject import for %s has been completed.', $project->title),
+                    t('OCR processing may take longer and you will receive an email when it is complete.')
+                ],
+                'buttons' => [$dupButton, $rejButton]
+            ];
+
+            Notification::send($users, new Generic($attributes));
 
             if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0) {
                 OcrCreateJob::dispatch($project->id);
@@ -114,12 +129,19 @@ class DwcFileImportJob implements ShouldQueue
             //File::cleanDirectory($scratchFileDir);
             //File::deleteDirectory($scratchFileDir);
 
-            $message = [
-                'File: ' . $e->getFile(),
-                'Line: ' . $e->getLine(),
-                'Message: ' . $e->getMessage()
+            $attributes = [
+                'subject' => t('DWC File Import Error'),
+                'html'    => [
+                    t('An error occurred while importing the Darwin Core Archive.'),
+                    t('Project: %s', $project->title),
+                    t('ID: %s'.$project->id),
+                    t('File: %s', $e->getFile()),
+                    t('Line: %s', $e->getLine()),
+                    t('Message: %s', $e->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ],
             ];
-            Notification::send($users, new DarwinCoreImportError($project->title, $project->id, $message));
+            Notification::send($users, new Generic($attributes, true));
 
             $this->delete();
         }
@@ -131,13 +153,11 @@ class DwcFileImportJob implements ShouldQueue
      */
     private function makeDirectory($dir)
     {
-        if ( ! File::isDirectory($dir) && ! File::makeDirectory($dir, 0775, true))
-        {
+        if (! File::isDirectory($dir) && ! File::makeDirectory($dir, 0775, true)) {
             throw new Exception(t('Unable to create directory: :directory', [':directory' => $dir]));
         }
 
-        if ( ! File::isWritable($dir) && ! chmod($dir, 0775))
-        {
+        if (! File::isWritable($dir) && ! chmod($dir, 0775)) {
             throw new Exception(t('Unable to make directory writable: %s', $dir));
         }
     }

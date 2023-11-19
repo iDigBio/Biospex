@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\Group;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -94,13 +94,17 @@ class DeleteGroupJob implements ShouldQueue
      */
     public function failed(\Throwable $throwable): void
     {
-        $messages = [
-            'Error: '.t('Could not delete Group %s', $this->group->title),
-            t('Error: %s', $throwable->getMessage()),
-            t('File: %s', $throwable->getFile()),
-            t('Line: %s', $throwable->getLine()),
+        $attributes = [
+            'subject' => t('Delete Group Job Failed'),
+            'html'    => [
+                t('Error: Could not delete Group %s', $this->group->title),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.')
+            ],
         ];
 
-        $this->group->owner->notify(new JobError(__FILE__, $messages));
+        $this->group->owner->notify(new Generic($attributes, true));
     }
 }

@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Services\Csv\ZooniverseCsvService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -108,17 +108,20 @@ class ZooniverseProcessCsvJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable)
     {
-        $user = User::find(1);
-        $messages = [
-            t('Error: %s', $exception->getMessage()),
-            t('File: %s', $exception->getFile()),
-            t('Line: %s', $exception->getLine()),
+        $attributes = [
+            'subject' => t('Expert Review Migration Failed'),
+            'html'    => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        User::find(config('config.admin.user_id'))->notify(new Generic($attributes));
     }
 }

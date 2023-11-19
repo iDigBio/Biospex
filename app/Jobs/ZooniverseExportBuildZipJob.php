@@ -81,11 +81,11 @@ class ZooniverseExportBuildZipJob implements ShouldQueue, ShouldBeUnique
     /**
      * Handle a job failure.
      *
-     * @param  \Throwable  $exception
+     * @param  \Throwable  $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable)
     {
-        $this->sendErrorNotification($this->exportQueue, $exception);
+        $this->sendErrorNotification($this->exportQueue, $throwable);
     }
 }

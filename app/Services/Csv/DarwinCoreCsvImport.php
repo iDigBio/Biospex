@@ -153,7 +153,7 @@ class DarwinCoreCsvImport
     }
 
     /**
-     * Set meta properties ascertained in DarwinCoreImport and needed for processing csv file
+     * Set meta properties ascertained in dwc and needed for processing csv file
      *
      * @param $mediaIsCore
      * @param $metaFields

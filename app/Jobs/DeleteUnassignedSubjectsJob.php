@@ -19,8 +19,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Notifications\JobError;
-use App\Notifications\RecordDeleteComplete;
+use App\Notifications\Generic;
 use App\Repositories\SubjectRepository;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -41,12 +40,12 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
     /**
      * @var int
      */
-    private $projectId;
+    private int $projectId;
 
     /**
      * @var \App\Models\User
      */
-    private $user;
+    private User $user;
 
     /**
      * Create a new job instance.
@@ -67,7 +66,7 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
      * @param \App\Repositories\SubjectRepository $subjectRepo
      * @return void
      */
-    public function handle(SubjectRepository $subjectRepo)
+    public function handle(SubjectRepository $subjectRepo): void
     {
         try {
             $cursor = $subjectRepo->deleteUnassignedByProject($this->projectId);
@@ -75,20 +74,30 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
                 $subject->delete();
             });
 
-            $message = [
-                t('All unassigned subjects for project id %s have been deleted.', $this->projectId)
+            $attributes = [
+                'subject' => t('Delete Unassigned Subjects Complete'),
+                'html'    => [
+                    t('All unassigned subjects for Project Id %s have been deleted.', $this->projectId)
+                ]
             ];
 
-            $this->user->notify(new RecordDeleteComplete($message));
+            $this->user->notify(new Generic($attributes));
 
             $this->delete();
         }
         catch (Exception $e) {
-            $message = [
-                'Error: ' . t('Could not delete unassigned subjects for project %s', $this->projectId),
-                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
+            $attributes = [
+                'subject' => t('Delete Unassigned Subjects Error'),
+                'html'    => [
+                    t('Error: Could not delete unassigned subjects for Project Id %s.', $this->projectId),
+                    t('An error occurred while importing the Darwin Core Archive.'),
+                    t('File: %s', $e->getFile()),
+                    t('Line: %s', $e->getLine()),
+                    t('Message: %s', $e->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ],
             ];
-            $this->user->notify(new JobError(__FILE__, $message));
+            $this->user->notify(new Generic($attributes, true));
 
             $this->delete();
         }

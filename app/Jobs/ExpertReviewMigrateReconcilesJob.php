@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Jobs\Traits\SkipZooniverse;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Reconcile\ExpertReconcileProcess;
 use Illuminate\Bus\Batchable;
@@ -73,7 +73,6 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
     )
     {
         $expedition = $expeditionRepo->findExpeditionForExpertReview($this->expeditionId);
-        $user = $expedition->project->group->owner;
 
         try {
             if ($this->skipReconcile($this->expeditionId)) {
@@ -82,12 +81,19 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
 
             $expertReconcileProcess->migrateReconcileCsv($expedition->id);
 
-        } catch (\Throwable $e) {
-            $messages = [
-                'Message: ' .  $e->getMessage(),
-                'File : ' . $e->getFile() . ': ' . $e->getLine()
+        } catch (\Throwable $throwable) {
+            $attributes = [
+                'subject' => t('Expert Review Migration Failed'),
+                'html'    => [
+                    t('Expedition %s', $expedition->title),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.')
+                ],
             ];
-            $user->notify(new JobError(__FILE__, $messages));
+
+            $expedition->project->group->owner->notify(new Generic($attributes, true));
 
             $this->delete();
         }

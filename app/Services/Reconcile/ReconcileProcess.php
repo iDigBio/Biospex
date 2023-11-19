@@ -19,9 +19,8 @@
 
 namespace App\Services\Reconcile;
 
-use App\Models\Expedition;
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Csv\Csv;
@@ -163,22 +162,27 @@ class ReconcileProcess
 
             //$this->cleanDirs();
 
-        } catch (Exception $e) {
-            $user = User::find(1);
-            $message = [
-                'Message:'.$e->getFile().': '.$e->getLine().' - '.$e->getMessage(),
+        } catch (\Throwable $throwable) {
+            $attributes = [
+                'subject' => t('Reconcile Process Error'),
+                'html'    => [
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                ],
             ];
-            $user->notify(new JobError(__FILE__, $message));
+
+            User::find(config('config.admin.user_id')->notify(new Generic($attributes)));
         }
     }
 
     /**
      * Process reconcile explained file.
      *
-     * @param \App\Models\Expedition $expedition
+     * @param \Illuminate\Database\Eloquent\Model $expedition
      * @throws \Exception
      */
-    public function processExplained(Expedition $expedition)
+    public function processExplained(\Illuminate\Database\Eloquent\Model $expedition): void
     {
         $this->setPaths($expedition->id);
 

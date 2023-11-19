@@ -20,7 +20,6 @@
 namespace App\Services\Reconcile;
 
 use App\Facades\TranscriptionMapHelper;
-use App\Notifications\ExpertReviewPublished;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\ReconcileRepository;
@@ -44,11 +43,6 @@ class ExpertReconcilePublishProcess
     private DownloadRepository $downloadRepo;
 
     /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
      * @var \App\Services\Csv\AwsS3CsvService
      */
     private AwsS3CsvService $awsS3CsvService;
@@ -58,19 +52,16 @@ class ExpertReconcilePublishProcess
      *
      * @param \App\Repositories\ReconcileRepository $reconcileRepo
      * @param \App\Repositories\DownloadRepository $downloadRepo
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         ReconcileRepository $reconcileRepo,
         DownloadRepository $downloadRepo,
-        ExpeditionRepository $expeditionRepo,
         AwsS3CsvService $awsS3CsvService
     )
     {
         $this->reconcileRepo = $reconcileRepo;
         $this->downloadRepo = $downloadRepo;
-        $this->expeditionRepo = $expeditionRepo;
         $this->awsS3CsvService = $awsS3CsvService;
     }
 
@@ -80,11 +71,10 @@ class ExpertReconcilePublishProcess
      * @param string $expeditionId
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function publishReconciled(string $expeditionId)
+    public function publishReconciled(string $expeditionId): void
     {
         $this->createReconcileCsv($expeditionId);
         $this->createDownload($expeditionId);
-        $this->sendEmail($expeditionId);
     }
 
     /**
@@ -93,7 +83,7 @@ class ExpertReconcilePublishProcess
      * @param string $expeditionId
      * @throws \League\Csv\CannotInsertRecord|\Exception
      */
-    private function createReconcileCsv(string $expeditionId)
+    private function createReconcileCsv(string $expeditionId): void
     {
         $results = $this->reconcileRepo->getBy('subject_expeditionId', (int) $expeditionId);
         $mapped = $results->map(function ($record) {
@@ -123,7 +113,7 @@ class ExpertReconcilePublishProcess
      *
      * @param string $expeditionId
      */
-    private function createDownload(string $expeditionId)
+    private function createDownload(string $expeditionId): void
     {
         $values = [
             'expedition_id' => $expeditionId,
@@ -139,16 +129,5 @@ class ExpertReconcilePublishProcess
         ];
 
         $this->downloadRepo->updateOrCreate($attributes, $values);
-    }
-
-    /**
-     * Send email to project owner.
-     *
-     * @param string $expeditionId
-     */
-    private function sendEmail(string $expeditionId)
-    {
-        $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
-        $expedition->project->group->owner->notify(new ExpertReviewPublished($expedition->title));
     }
 }

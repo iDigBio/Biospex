@@ -74,13 +74,13 @@ class ImportController extends Controller
 
             \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
 
-            return \Response::back();
+            return back();
         }
-        catch(\Throwable $t)
+        catch(\Throwable $throwable)
         {
-            \Flash::error(t('Error uploading file. %', $t->getMessage()));
+            \Flash::error(t('Error uploading file. %', $throwable->getMessage()));
 
-            return \Response::back();
+            return back();
         }
     }
 
@@ -105,13 +105,13 @@ class ImportController extends Controller
 
             \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
 
-            return \Response::back();
+            return back();
         }
         catch(Exception $e)
         {
             \Flash::error(t('Error uploading file'));
 
-            return \Response::back();
+            return back();
         }
     }
 
@@ -136,13 +136,13 @@ class ImportController extends Controller
 
             \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
 
-            return \Response::back();
+            return back();
         }
         catch(Exception $e)
         {
             \Flash::error(t('Error uploading file'));
 
-            return \Response::back();
+            return back();
         }
     }
 }

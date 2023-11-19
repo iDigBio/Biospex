@@ -19,8 +19,8 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
+use App\Repositories\ExpeditionRepository;
 use App\Services\Reconcile\ExpertReconcilePublishProcess;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -60,18 +60,34 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
      *
      * @param \App\Services\Reconcile\ExpertReconcilePublishProcess $expertReconcilePublishProcess
      */
-    public function handle(ExpertReconcilePublishProcess $expertReconcilePublishProcess)
+    public function handle(ExpertReconcilePublishProcess $expertReconcilePublishProcess, ExpeditionRepository $expeditionRepository)
     {
+        $expedition = $expeditionRepository->findWith($this->expeditionId, ['project.group.owner']);
 
         try {
             $expertReconcilePublishProcess->publishReconciled($this->expeditionId);
-        } catch (CannotInsertRecord | Exception $e) {
-            $user = User::find(1);
-            $messages = [
-                'Expedition Id: '.$this->expeditionId,
-                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
+
+            $attributes = [
+                'subject' => t('Expert Review Reconciled Published'),
+                'html'    => [
+                    t('The Expert Reviewed Reconciled CSV file has been published for %s', $expedition->title)
+                ]
             ];
-            $user->notify(new JobError(__FILE__, $messages));
+
+            $expedition->project->group->owner->notify(new Generic($attributes));
+
+        } catch (CannotInsertRecord | Exception $e) {
+            $attributes = [
+                'subject' => t('Expert Reconcile Publish Error'),
+                'html'    => [
+                    t('An error occurred while importing the Darwin Core Archive.'),
+                    t('File: %s', $e->getFile()),
+                    t('Line: %s', $e->getLine()),
+                    t('Message: %s', $e->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ],
+            ];
+            $expedition->project->group->owner->notify(new Generic($attributes, true));
         }
 
         $this->delete();

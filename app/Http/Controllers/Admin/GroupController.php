@@ -98,7 +98,7 @@ class GroupController extends Controller
 
         \Flash::warning(t('Login field required'));
 
-        return \Response::back();
+        return back();
     }
 
     /**
@@ -113,7 +113,7 @@ class GroupController extends Controller
         $group = $this->groupRepo->getGroupShow($groupId);
 
         if (! $this->checkPermissions('read', $group)) {
-            return \Response::back();
+            return back();
         }
 
         return \View::make('admin.group.show', compact('group'));
@@ -130,7 +130,7 @@ class GroupController extends Controller
         $group = $this->groupRepo->findWith($groupId, ['owner', 'users.profile']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return \Response::back();
+            return back();
         }
 
         $users = $group->users->mapWithKeys(function ($user) {
@@ -152,7 +152,7 @@ class GroupController extends Controller
         $group = $this->groupRepo->find($groupId);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return \Response::back();
+            return back();
         }
 
         $this->groupRepo->update($request->all(), $groupId) ? \Flash::success(t('Record was updated successfully.')) : \Flash::error(t('Error while updating record.'));
@@ -171,7 +171,7 @@ class GroupController extends Controller
         $group = $this->groupRepo->findWith($groupId, ['projects.panoptesProjects', 'projects.workflowManagers']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return \Response::back();
+            return back();
         }
 
         try {

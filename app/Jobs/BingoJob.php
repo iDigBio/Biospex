@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Events\BingoEvent;
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Repositories\BingoMapRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -96,12 +96,15 @@ class BingoJob implements ShouldQueue
      */
     public function failed(\Throwable $throwable): void
     {
-        $user = User::find((int) config('config.admin.user_id'));
-        $messages = [
-            t('Error: %s', $throwable->getMessage()),
-            t('File: %s', $throwable->getFile()),
-            t('Line: %s', $throwable->getLine()),
+        $attributes = [
+            'subject' => t('Bingo Job Failed'),
+            'html'    => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage())
+            ],
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        User::find(config('config.admin.user_id'))->notify(new Generic($attributes));
     }
 }

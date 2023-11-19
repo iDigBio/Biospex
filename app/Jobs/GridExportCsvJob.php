@@ -22,8 +22,8 @@ namespace App\Jobs;
 use App\Facades\GeneralHelper;
 use App\Models\Header;
 use App\Models\User;
-use App\Notifications\GridCsvExport;
-use App\Notifications\GridCsvExportError;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Grid\JqGridEncoder;
 use Exception;
@@ -42,7 +42,7 @@ use Illuminate\Support\Str;
  */
 class GridExportCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -136,16 +136,35 @@ class GridExportCsvJob implements ShouldQueue
             }
 
             $route = route('admin.downloads.report', ['file' => base64_encode($csvName)]);
-            $this->user->notify(new GridCsvExport($route, $this->projectId, $this->expeditionId));
+            $btn = $this->createButton($route, t('Download CSV'));
+            $html = $this->expeditionId !== 0 ?
+                t('Your grid export for Expedition Id %s is complete. Click the button provided to download:', $this->expeditionId) :
+                t('Your grid export for Project Id %s is complete. Click the button provided to download:', $this->projectId);
+
+            $attributes = [
+                'subject' => t('Grid Export to CSV Complete'),
+                'html'    => [$html],
+                'buttons' => [$btn]
+            ];
+
+            $this->user->notify(new Generic($attributes));
 
         } catch (Exception $e) {
-            $message = [
-                'Project Id: ' . $this->projectId,
-                'Expedition Id: ' . $this->expeditionId,
-                'Error: ' . $e->getMessage(),
-                'Trace: ' . $e->getTraceAsString()
+
+            $attributes = [
+                'subject' => t('Grid Export to CSV Error'),
+                'html'    => [
+                    t('An error occurred during csv export from the grid.'),
+                    t('Project Id: %', $this->projectId),
+                    t('Expedition Id: %', $this->expeditionId),
+                    t('File: %s', $e->getFile()),
+                    t('Line: %s', $e->getLine()),
+                    t('Message: %s', $e->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ],
             ];
-            $this->user->notify(new GridCsvExportError($message));
+
+            $this->user->notify(new Generic($attributes, true));
             Storage::disk('s3')->delete(config('config.report_dir').'/'.$csvName);
         }
     }

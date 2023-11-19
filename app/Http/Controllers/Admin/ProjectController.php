@@ -30,7 +30,6 @@ use App\Services\Grid\JqGridEncoder;
 use Auth;
 use CountHelper;
 use Exception;
-use Flash;
 use JavaScript;
 
 /**
@@ -67,9 +66,9 @@ class ProjectController extends Controller
     /**
      * Show projects list for admin page.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(): \Illuminate\Contracts\View\View
     {
         $user = Auth::user();
 
@@ -84,7 +83,7 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function create()
+    public function create(): \Illuminate\View\View
     {
         $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(\Request::user());
         $resourceOptions = config('config.project_resources');
@@ -99,9 +98,9 @@ class ProjectController extends Controller
      * Display the specified resource.
      *
      * @param $projectId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function show($projectId)
+    public function show($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepo->getProjectShow($projectId);
 
@@ -134,7 +133,7 @@ class ProjectController extends Controller
      * @param ProjectFormRequest $request
      * @return mixed
      */
-    public function store(ProjectFormRequest $request)
+    public function store(ProjectFormRequest $request): mixed
     {
         $group = $this->groupRepo->find($request->get('group_id'));
 
@@ -159,9 +158,9 @@ class ProjectController extends Controller
      * Create duplicate project
      *
      * @param $projectId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function clone($projectId)
+    public function clone($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepo->findWith($projectId, ['group']);
 
@@ -187,9 +186,9 @@ class ProjectController extends Controller
      * $model->relation()->count(); // int: number of related rows
      *
      * @param $projectId
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function edit($projectId)
+    public function edit($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepo->findWith($projectId, ['group', 'resources']);
         if (! $project) {
@@ -215,7 +214,7 @@ class ProjectController extends Controller
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(ProjectFormRequest $request, $projectId)
+    public function update(ProjectFormRequest $request, $projectId): \Illuminate\Http\RedirectResponse
     {
         $group = $this->groupRepo->find($request->get('group_id'));
 
@@ -227,17 +226,15 @@ class ProjectController extends Controller
 
         $project ? \Flash::success(t('Record was updated successfully.')) : \Flash::error(t('Error while updating record.'));
 
-        return \Response::back();
+        return back();
     }
 
     /**
      * Admin Projects page sort and order.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|null
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @return \Illuminate\Contracts\View\View|null
      */
-    public function sort()
+    public function sort(): ?\Illuminate\Contracts\View\View
     {
         if (! \Request::ajax()) {
             return null;
@@ -256,9 +253,9 @@ class ProjectController extends Controller
      *
      * @param $projectId
      * @param \App\Services\Grid\JqGridEncoder $grid
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function explore($projectId, JqGridEncoder $grid)
+    public function explore($projectId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepo->findWith($projectId, ['group']);
 
@@ -289,7 +286,7 @@ class ProjectController extends Controller
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($projectId)
+    public function delete($projectId): \Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepo->getProjectForDelete($projectId);
 
@@ -320,9 +317,9 @@ class ProjectController extends Controller
      * Reprocess OCR.
      *
      * @param $projectId
-     * @return mixed
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function ocr($projectId)
+    public function ocr($projectId): \Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepo->findWith($projectId, ['group']);
 
@@ -341,9 +338,9 @@ class ProjectController extends Controller
      * Project Stats.
      *
      * @param $projectId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View
      */
-    public function statistics($projectId)
+    public function statistics($projectId): \Illuminate\Contracts\View\View
     {
         $project = $this->projectRepo->findWith($projectId, ['group']);
 
@@ -361,7 +358,7 @@ class ProjectController extends Controller
      * @param string $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteSubjects(string $projectId)
+    public function deleteSubjects(string $projectId): \Illuminate\Http\RedirectResponse
     {
         try {
             DeleteUnassignedSubjectsJob::dispatch(Auth::user(), (int) $projectId);

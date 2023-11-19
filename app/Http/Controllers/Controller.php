@@ -24,7 +24,7 @@ abstract class Controller extends BaseController
         try{
             $this->authorize($ability, $object);
         }
-        catch (\Exception $e)
+        catch (\\ $e)
         {
             \Flash::warning(t('You do not have sufficient permissions.'));
 

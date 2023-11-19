@@ -132,7 +132,7 @@ class ReconcileController extends Controller
         if (! $this->expertreconcileRepo->updateRecord(\Request::all())) {
             \Flash::warning(t('Error while updating record.'));
 
-            return \Response::back();
+            return back();
         }
 
         \Flash::success(t('Record was updated successfully.'));

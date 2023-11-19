@@ -19,11 +19,8 @@
 
 namespace App\Services\Actors\Zooniverse\Traits;
 
-use App\Models\Actor;
 use App\Models\ExportQueue;
-use App\Models\User;
-use App\Notifications\JobError;
-use App\Notifications\ZooniverseExportError;
+use App\Notifications\Generic;
 use Illuminate\Support\Facades\Notification;
 use Throwable;
 
@@ -33,10 +30,10 @@ trait ZooniverseErrorNotification
      * Send error notification.
      *
      * @param \App\Models\ExportQueue $exportQueue
-     * @param \Throwable $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    private function sendErrorNotification(ExportQueue $exportQueue, Throwable $exception)
+    private function sendErrorNotification(ExportQueue $exportQueue, Throwable $throwable): void
     {
         $exportQueue->load([
             'expedition.project.group' => function($q) {
@@ -51,33 +48,22 @@ trait ZooniverseErrorNotification
         $exportQueue->processed = 0;
         $exportQueue->save();
 
-        $message = [
-            'Queue Id: ' . $exportQueue->id,
-            'Expedition Id: ' . $exportQueue->expedition_id,
-            'Expedition Title: ' . $exportQueue->expedition->title,
-            'Error:' . $exception->getFile() . ': ' . $exception->getLine() . ' - ' . $exception->getMessage()
-        ];
-
         $users = $exportQueue->expedition->project->group->users->push($exportQueue->expedition->project->group->owner);
 
-        Notification::send($users, new ZooniverseExportError($exportQueue->expedition->title, $exportQueue->expedition->id, $message));
-
-    }
-
-    /**
-     * Send email to Admin.
-     *
-     * @param \Throwable $exception
-     * @return void
-     */
-    private function sendAdminError(Throwable $exception)
-    {
-        $user = User::find(1);
-        $messages = [
-            'File: ' . $exception->getFile(),
-            'Line: ' . $exception->getLine(),
-            'Error:' . $exception->getMessage()
+        $attributes = [
+            'subject' => t('Error Exporting For Zooniverse'),
+            'html'    => [
+                t('An error occurred while exporting.'),
+                t('The Biospex Administration has been notified and will investigate the issue. Please do not attempt to restart export or perform other functions on this project.'),
+                t('Expedition: %s', $exportQueue->expedition->title),
+                t('Expedition Id: %s', $exportQueue->expedition->id),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('The Administration has been notified.')
+            ]
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        Notification::send($users, new Generic($attributes, true));
     }
 }

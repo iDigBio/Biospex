@@ -20,6 +20,7 @@
 namespace App\Repositories;
 
 use App\Models\Expedition;
+use App\Models\Project;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -147,9 +148,9 @@ class ExpeditionRepository extends BaseRepository
      * Find expedition for expert review.
      *
      * @param int $expeditionId
-     * @return \App\Models\Expedition|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function findExpeditionForExpertReview(int $expeditionId)
+    public function findExpeditionForExpertReview(int $expeditionId): \Illuminate\Database\Eloquent\Model
     {
         return $this->model->with([
             'project' => function ($query) {
@@ -165,9 +166,9 @@ class ExpeditionRepository extends BaseRepository
 
     /**
      * @param int $expeditionId
-     * @return \App\Models\Expedition|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function getExpeditionForZooniverseProcess(int $expeditionId)
+    public function getExpeditionForZooniverseProcess(int $expeditionId): \Illuminate\Database\Eloquent\Model
     {
         return $this->model->with(['panoptesProject', 'stat', 'zooniverseActor'])
             ->has('panoptesProject')->whereHas('zooniverseActor', function ($query) {

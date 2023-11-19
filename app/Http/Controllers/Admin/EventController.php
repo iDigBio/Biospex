@@ -160,7 +160,7 @@ class EventController extends Controller
 
         if ( ! $this->checkPermissions('update', $event))
         {
-            return \Response::back();
+            return back();
         }
 
         $projects = $projectRepo->getProjectEventSelect();

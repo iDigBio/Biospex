@@ -79,10 +79,10 @@ class OcrTesseractJob implements ShouldQueue
     /**
      * The job failed to process.
      *
-     * @param Exception $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Exception $exception)
+    public function failed(\Throwable $throwable)
     {
         $this->subject->ocr = 'Error: processing tesseract ocr job.';
         $this->subject->save();

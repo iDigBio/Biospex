@@ -20,7 +20,7 @@
 namespace App\Services\Actors\Zooniverse;
 
 use App\Models\Download;
-use App\Notifications\ZooniverseBatchExportComplete;
+use App\Notifications\Generic;
 use App\Services\Actors\Traits\ActorBatchDirectory;
 use App\Services\Csv\Csv;
 use Exception;
@@ -62,7 +62,7 @@ class ZooniverseExportBatch
      * @param \App\Models\Download $download
      * @throws \Exception
      */
-    public function process(Download $download)
+    public function process(Download $download): void
     {
         $this->setProperties($download);
         $this->setBatchFolderName($download->file);
@@ -79,7 +79,16 @@ class ZooniverseExportBatch
 
         $links = $this->buildLinks();
 
-        $this->owner->notify(new ZooniverseBatchExportComplete($this->expedition->title, $links));
+        $attributes = [
+            'subject' => t('Zooniverse Batch Export Completed'),
+            'html'    => [
+                t('The export batches for %s are completed.', $download->expedition->title),
+                t('The links provided below will be valid for 72 hours. Click the links to download each batch file. You must be logged into your account on Biospex.'),
+                $links
+            ]
+        ];
+
+        $download->expedition->project->group->owner->notify(new Generic($attributes));
     }
 
     /**
@@ -88,7 +97,7 @@ class ZooniverseExportBatch
      * @return void
      * @throws \Exception
      */
-    private function copyExistingFile()
+    private function copyExistingFile(): void
     {
         if ($this->checkS3ExportFileExists()) {
 
@@ -108,7 +117,7 @@ class ZooniverseExportBatch
      *
      * @throws \Exception
      */
-    private function extractFile()
+    private function extractFile(): void
     {
         if ($this->checkEfsExportFileExists()) {
 
@@ -143,7 +152,7 @@ class ZooniverseExportBatch
      *
      * @throws \League\Csv\Exception
      */
-    private function setCsvReader()
+    private function setCsvReader(): void
     {
         $csvFilePath = $this->batchWorkingDir.'/'.$this->expedition->uuid.'.csv';
         $this->csv->readerCreateFromPath(Storage::disk('efs')->path($csvFilePath));
@@ -155,7 +164,7 @@ class ZooniverseExportBatch
      *
      * @throws \League\Csv\CannotInsertRecord|\Exception
      */
-    private function processCsvRows()
+    private function processCsvRows(): void
     {
         $chunks = array_chunk(iterator_to_array($this->csv->getRecords(), true), 1000);
 
@@ -183,7 +192,7 @@ class ZooniverseExportBatch
      *
      * @param string $fileName
      */
-    private function moveFile(string $fileName)
+    private function moveFile(string $fileName): void
     {
         $filePath = Storage::disk('efs')->path($this->batchWorkingDir.'/'.$fileName);
         $tmpPath = Storage::disk('efs')->path($this->batchTmpDir.'/'.$fileName);
@@ -197,7 +206,7 @@ class ZooniverseExportBatch
      * @param string $fileName
      * @throws \League\Csv\CannotInsertRecord
      */
-    private function createCsv(array $chunk, string $fileName)
+    private function createCsv(array $chunk, string $fileName): void
     {
         $csvFileName = $fileName.'.csv';
         $csvFilePath = $this->batchTmpDir.'/'.$csvFileName;
@@ -213,7 +222,7 @@ class ZooniverseExportBatch
      * @param string $fileName
      * @throws \Exception
      */
-    private function createZipFile(string $fileName)
+    private function createZipFile(string $fileName): void
     {
         $batchExportZipFile = Storage::disk('efs')->path($this->batchWorkingDir.'/'.$fileName.'.zip');
         $batchTmpDirPath = Storage::disk('efs')->path($this->batchTmpDir);
@@ -234,7 +243,7 @@ class ZooniverseExportBatch
      * @return void
      * @throws \Exception
      */
-    private function uploadZipToS3(string $fileName)
+    private function uploadZipToS3(string $fileName): void
     {
         $batchExportZipFile = Storage::disk('efs')->path($this->batchWorkingDir.'/'.$fileName.'.zip');
 

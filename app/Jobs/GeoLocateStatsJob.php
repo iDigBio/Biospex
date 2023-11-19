@@ -20,7 +20,7 @@ namespace App\Jobs;
 
 use App\Models\Actor;
 use App\Models\Expedition;
-use App\Notifications\JobNotification;
+use App\Notifications\Generic;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Actors\GeoLocate\GeoLocateStat;
 use Illuminate\Bus\Queueable;
@@ -94,12 +94,16 @@ class GeoLocateStatsJob implements ShouldQueue
                 'state' => 3,
             ]);
 
-            $subject = t('GeoLocate stats for %s is complete.', $this->expedition->title);
-            $message = [
-                t('The GeoLocate Stat process is complete and the KML file is ready for download.'),
-                t('You can download the file from the Downloads button of the Expedition.')
+            $attributes = [
+                'subject' => t('GeoLocate stats for %s is complete.', $this->expedition->title),
+                'html'    => [
+                    t('The GeoLocate Stat process is complete and the KML file is ready for download.'),
+                    t('You can download the file from the Downloads button of the Expedition.')
+                ]
             ];
-            $this->expedition->project->group->owner->notify(new JobNotification($subject, $message));
+
+
+            $this->expedition->project->group->owner->notify(new Generic($attributes));
         }
     }
 
@@ -112,13 +116,16 @@ class GeoLocateStatsJob implements ShouldQueue
     public function failed(Throwable $throwable): void
     {
         $subject = t('GeoLocate stats for %s failed.', $this->expedition->title);
-        $messages = [
-            'Error: ' . $subject,
-            t('Error: %s', $throwable->getMessage()),
-            t('File: %s', $throwable->getFile()),
-            t('Line: %s', $throwable->getLine()),
+        $attributes = [
+            'subject' => $subject,
+            'html'    => [
+                t('Error: %s', $subject),
+                t('Error: %s', $throwable->getMessage()),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+            ],
         ];
 
-        $this->expedition->project->group->owner->notify(new JobNotification($subject, $messages));
+        $this->expedition->project->group->owner->notify(new Generic($attributes, true));
     }
 }

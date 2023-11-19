@@ -21,7 +21,8 @@ namespace App\Services\Process;
 
 use App\Models\OcrQueue;
 use App\Models\Subject;
-use App\Notifications\OcrProcessComplete;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
 use App\Repositories\OcrQueueRepository;
 use App\Repositories\SubjectRepository;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,6 +37,8 @@ use Str;
  */
 class OcrService
 {
+    use ButtonTrait;
+
     /**
      * @var \App\Repositories\OcrQueueRepository
      */
@@ -157,25 +160,13 @@ class OcrService
     }
 
     /**
-     * Send complete notification.
+     * Send notification for completed ocr process.
      *
      * @param \App\Models\OcrQueue $queue
      * @return void
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function complete(OcrQueue $queue)
-    {
-        $this->sendNotify($queue);
-    }
-
-    /**
-     * Send notification for completed ocr process
-     *
-     * @param \App\Models\OcrQueue $queue
-     * @return void
-     * @throws \League\Csv\CannotInsertRecord
-     */
-    public function sendNotify(OcrQueue $queue)
+    public function sendNotify(OcrQueue $queue): void
     {
         $cursor = $this->subjectRepo->getSubjectErrorCursorForOcr($queue->project_id, $queue->expedition_id);
 
@@ -190,6 +181,16 @@ class OcrService
         $csvName = Str::random().'.csv';
         $fileName = $this->createReportService->createCsvReport($csvName, $subjects->toArray());
 
-        $queue->project->group->owner->notify(new OcrProcessComplete($queue->project->title, $fileName));
+        $route = route('admin.downloads.report', ['file' => $fileName]);
+        $button = $this->createButton($route, t('View Rejected Records'), 'error');
+        $attributes = [
+            'subject' => t('Ocr Process Complete'),
+            'html'    => [
+                t('The OCR processing of your data is complete for %s.', $queue->project->title)
+            ],
+            'buttons' => [$button]
+        ];
+
+        $queue->project->group->owner->notify(new Generic($attributes));
     }
 }
