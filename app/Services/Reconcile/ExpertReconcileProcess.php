@@ -81,6 +81,7 @@ class ExpertReconcileProcess
     /**
      * Migrate reconcile csv to mongodb using first or create.
      *
+     * Transcription fields are encoded to prevent field name errors while saving to db.
      * @param string $expeditionId
      * @throws \League\Csv\Exception|\Exception
      */

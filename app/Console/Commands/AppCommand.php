@@ -19,8 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
-use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use Illuminate\Console\Command;
 
@@ -56,44 +54,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $dupRoute = route('admin.downloads.report', ['file' => 'dupTest']);
-        $dupButton = $this->createButton($dupRoute, 'View Rejected Duplicates');
 
-        $rejRoute = route('admin.downloads.report', ['file' => 'rejTest']);
-        $rejButton = $this->createButton($rejRoute, 'View Rejected Records', 'error');
-
-        $attributes = [
-            'subject' => 'Testing Generic',
-            'html'    => [
-                'This is a test message',
-                'It might even have multiple lines',
-                'Testing whether the multiple buttons work too.'
-            ],
-            'buttons'    => [$dupButton, $rejButton]
-        ];
-
-        User::find(config('config.admin.user_id'))->notify(new Generic($attributes));
-    }
-
-    private function getButtons(string $dupName = null, string $rejName = null): array
-    {
-        $buttons = [];
-        if (isset($dupName)) {
-            $url = route('admin.downloads.report', ['file' => $dupName]);
-            $buttons[$url] = [
-                'color' => 'primary',
-                'label'  => t('View Duplicates'),
-            ];
-        }
-
-        if (isset($rejName)) {
-            $url = route('admin.downloads.report', ['file' => $rejName]);
-            $buttons[$url] = [
-                'color' => 'error',
-                'label'  => t('View Rejected Media'),
-            ];
-        }
-
-        return $buttons;
     }
 }
