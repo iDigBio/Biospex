@@ -1,6 +1,6 @@
 {
-    "/js/front.js": "/js/front.js?id=b81fbb05fcc7f0b09ca8cfb84a9c8a62",
-    "/js/admin.js": "/js/admin.js?id=6a6e0f2a2b173002b0fabd74326787f4",
+    "/js/front.js": "/js/front.js?id=c57d0385b620a7dbc28573e733cbd6c5",
+    "/js/admin.js": "/js/admin.js?id=d61017b8db28b5adb79fdc0665d130c4",
     "/js/manifest.js": "/js/manifest.js?id=5619a116962454bd019667ce84d2736c",
     "/css/admin.css": "/css/admin.css?id=dda58bb3d9216d2e523fff80898cb736",
     "/css/front.css": "/css/front.css?id=89b066ab9881d367740930272122a233",
@@ -22,6 +22,7 @@
     "/images/contributors/flmnh.png": "/images/contributors/flmnh.png?id=0337a19f7a76976866a66507230e0907",
     "/images/contributors/fsu.png": "/images/contributors/fsu.png?id=afb087a3586a2908278616f1d9fa0830",
     "/images/contributors/idigbio.png": "/images/contributors/idigbio.png?id=73feb7ee70550b85e322301471fd8b34",
+    "/images/contributors/idiginfo.png": "/images/contributors/idiginfo.png?id=de5eeab94f18398b592910aab343ef33",
     "/images/contributors/nsf.png": "/images/contributors/nsf.png?id=14cc97b5fb45fc0bb8d520be582c3947",
     "/images/contributors/uf.png": "/images/contributors/uf.png?id=b74d1531eeca203c109d9f18c12fc4c1",
     "/images/examples/coge-community-data.jpg": "/images/examples/coge-community-data.jpg?id=ee70074257be20d72aeea5ed81b1a7d6",
