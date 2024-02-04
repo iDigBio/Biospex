@@ -47,6 +47,9 @@ return [
         'transcript'     => env('ZOONIVERSE_DIR', 'zooniverse').'/transcript',
         'explained'      => env('ZOONIVERSE_DIR', 'zooniverse').'/explained',
     ],
+    'zooniverse_pusher_id' => env('ZOONIVERSE_PUSHER_ID'),
+    'pusher_app_cluster'   => env('PUSHER_APP_CLUSTER', 'mt1'),
+
 
     'nfn_file_types'              => [
         'classification',
@@ -322,15 +325,15 @@ return [
     'wedigbio_end_date'   => env('WEDIGBIO_END_DATE'),
 
     'deployment_fields' => [
+        'API_URL',
+        'API_VERSION',
+        'API_TOKEN',
         'APP_URL',
         'APP_ENV',
         'APP_DOMAIN',
         'SERVER_USER',
         'CURRENT_PATH',
         'REDIS_HOST',
-        'API_URL',
-        'API_VERSION',
-        'API_TOKEN',
         'NUM_PROCS',
         'QUEUE_CHART',
         'QUEUE_CLASSIFICATION',
@@ -348,5 +351,7 @@ return [
         'QUEUE_PUSHER_CLASSIFICATION',
         'QUEUE_PUSHER_HANDLER',
         'QUEUE_WEDIGBIO_EVENT',
+        'PUSHER_APP_CLUSTER',
+        'ZOONIVERSE_PUSHER_ID',
     ],
 ];

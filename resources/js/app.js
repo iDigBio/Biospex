@@ -10,13 +10,12 @@ window.Pusher = require('pusher-js');
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
-    forceTLS: false,
-    encrypted: true,
+    cluster:process.env.MIX_PUSHER_APP_CLUSTER,
     wsHost: window.location.hostname,
     wsPort: 80,
     wssPort: 443,
-    disableStats: true,
-    enabledTransports: ["ws", "wss"],
+    forceTLS: false,
+    enabledTransports: ["ws", "wss"]
 });
 
 /**

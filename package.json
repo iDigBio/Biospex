@@ -33,8 +33,8 @@
     "@panzoom/panzoom": "^4.5.1",
     "axios": "^0.26.1",
     "image-type": "^4.1.0",
-    "laravel-echo": "^1.14.0",
-    "pusher-js": "^7.4.0",
+    "laravel-echo": "^1.15.3",
+    "pusher-js": "^8.3.0",
     "sharp": "^0.33.2",
     "webpack": "^5.73.0"
   }
