@@ -42,3 +42,5 @@ image-process.js
 panoptes-pusher.js
 /.env.dev
 /.env.prod
+/.env.dev.current
+/.env.geolocate-directories
