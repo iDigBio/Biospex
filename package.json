@@ -35,7 +35,7 @@
     "image-type": "^4.1.0",
     "laravel-echo": "^1.14.0",
     "pusher-js": "^7.4.0",
-    "sharp": "^0.30.7",
+    "sharp": "^0.33.2",
     "webpack": "^5.73.0"
   }
 }
