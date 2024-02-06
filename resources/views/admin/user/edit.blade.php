@@ -77,7 +77,7 @@
                             </div>
                             <input type="hidden" name="current_avatar" value="{{ $user->profile->avatar_file_name }}">
                             <div class="form-group col-sm-6">
-                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
+                                <img alt="profile avatar" class="img-fluid" style="display: inline; width: 100px; height: 100px;"
                                      src="{{ $user->profile->avatar->url('medium') }}"/>
                             </div>
                         </div>
