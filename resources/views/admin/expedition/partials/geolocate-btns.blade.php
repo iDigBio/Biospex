@@ -6,7 +6,7 @@
         data-dismiss="modal"
         data-toggle="modal"
         data-target="#global-modal"
-        data-size="modal-lg"
+        data-size="modal-xl"
         data-url="{{ route('admin.geolocates.show', [$expedition->project_id, $expedition->id]) }}"
         data-title="{{ t('GeoLocate Export Form') }}">{{ t('GeoLocate Export Form') }}</button>
 
