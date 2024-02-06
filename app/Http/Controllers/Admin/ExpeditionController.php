@@ -96,7 +96,7 @@ class ExpeditionController extends Controller
         JavaScript::put([
             'model'      => $model,
             'subjectIds' => [],
-            'maxCount'   => config('config.app_expedition_size'),
+            'maxCount'   => config('config.expedition_size'),
             'dataUrl'    => route('admin.grids.create', [$project->id]),
             'exportUrl'  => route('admin.grids.export', [$projectId]),
             'checkbox'   => true,
@@ -163,7 +163,7 @@ class ExpeditionController extends Controller
         JavaScript::put([
             'model'      => $model,
             'subjectIds' => [],
-            'maxCount'   => config('config.app_expedition_size'),
+            'maxCount'   => config('config.expedition_size'),
             'dataUrl'    => route('admin.grids.show', [$expedition->project->id, $expedition->id]),
             'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'checkbox'   => false,
@@ -197,7 +197,7 @@ class ExpeditionController extends Controller
         JavaScript::put([
             'model'      => $model,
             'subjectIds' => [],
-            'maxCount'   => config('config.app_expedition_size'),
+            'maxCount'   => config('config.expedition_size'),
             'dataUrl'    => route('admin.grids.create', [$expedition->project->id]),
             'exportUrl'  => route('admin.grids.export', [$projectId]),
             'checkbox'   => true,
@@ -231,7 +231,7 @@ class ExpeditionController extends Controller
         JavaScript::put([
             'model'      => $model,
             'subjectIds' => $subjectIds,
-            'maxCount'   => config('config.app_expedition_size'),
+            'maxCount'   => config('config.expedition_size'),
             'dataUrl'    => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
             'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'checkbox'   => $expedition->workflowManager === null,
