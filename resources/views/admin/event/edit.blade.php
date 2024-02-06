@@ -14,7 +14,7 @@
                 <div class="col-12">
                     <h2 class="text-center content-header text-uppercase mb-4">{{ t('Edit Event') }}</h2>
 
-                    <form id="gridForm" method="post"
+                    <form method="post"
                           action="{{ route('admin.events.update', [$event->id]) }}"
                           role="form" enctype="multipart/form-data">
                         {!! method_field('put') !!}

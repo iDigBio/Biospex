@@ -12,7 +12,7 @@
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Edit Account') }}</h2>
-                    <form id="gridForm" method="post"
+                    <form method="post"
                           action="{{ route('admin.users.update', [$user->id]) }}"
                           role="form" enctype="multipart/form-data">
                         {!! method_field('put') !!}
@@ -92,7 +92,7 @@
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Change Password') }}</h2>
-                    <form id="gridForm" method="post"
+                    <form method="post"
                           action="{{ route('admin.users.password', [$user->id]) }}" role="form">
                         {!! method_field('put') !!}
                         @csrf

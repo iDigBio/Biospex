@@ -12,7 +12,7 @@
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header text-uppercase mb-4">{{ t('Create Bingo') }}</h2>
-                    <form id="gridForm" method="post"
+                    <form method="post"
                           action="{{ route('admin.bingos.store') }}"
                           role="form" enctype="multipart/form-data">
                         @csrf
