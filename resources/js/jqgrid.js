@@ -256,15 +256,12 @@ $(function () {
             .jqGrid("gridResize");
 
         $('#gridForm').submit(function () {
-            console.log('submitting form')
             if (selected.length > maxCount) {
                 $('#max').addClass('red');
-                console.log('returning false')
                 return false;
             }
 
             $('#subject-ids').val(selected);
-            console.log('submitting form')
         });
     }
 });
