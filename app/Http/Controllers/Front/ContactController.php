@@ -48,7 +48,7 @@ class ContactController extends Controller
      * @param ContactFormRequest $request
      * @return mixed
      */
-    public function create(ContactFormRequest $request)
+    public function create(ContactFormRequest $request): mixed
     {
         $contact = $request->only('name', 'email', 'message');
 

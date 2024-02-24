@@ -81,10 +81,10 @@ class RegisterController extends Controller
     /**
      * Show registration form. Overrides trait so Invite code can be checked.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function showRegistrationForm()
+    public function showRegistrationForm(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         if ( ! config('config.app_registration')) {
             return \Redirect::route('home')->with('error', t('Registration is not available at this time.'));
@@ -114,7 +114,7 @@ class RegisterController extends Controller
      * @param \App\Repositories\GroupRepository $groupRepo
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function register(RegisterFormRequest $request, UserRepository $userRepo, GroupRepository $groupRepo)
+    public function register(RegisterFormRequest $request, UserRepository $userRepo, GroupRepository $groupRepo): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
         $input = $request->only('email', 'password', 'first_name', 'last_name', 'invite');
         $input['password'] = Hash::make($input['password']);

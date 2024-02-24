@@ -47,7 +47,7 @@ class ResetPasswordController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/login';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
