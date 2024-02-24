@@ -15,7 +15,7 @@ class ReCaptcha implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $response = Http::asForm()->post("https://www.google.com/recaptcha/api/siteverify", [
+        $response = Http::asForm()->post(config('services.recaptcha.url'), [
             'secret'   => config('services.recaptcha.secret_key'),
             'response' => $value,
         ]);
