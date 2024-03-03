@@ -60,9 +60,8 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="workflow_id" class="col-form-label col-12 required">{{ t('Workflows') }}
-                                :</label>
-                            <select name="workflow_id" id="workflow_id"
+                            <label for="workflow-id" class="col-form-label col-12 required">{{ t('Workflows') }}:</label>
+                            <select name="workflow_id" id="workflow-id"
                                     class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
                                     required>
                                 @foreach($workflowOptions as $key => $name)
@@ -72,22 +71,13 @@
                             <span class="invalid-feedback">{{ $errors->first('workflow_id') }}</span>
                         </div>
                         <input type="hidden" name="locked" value="1">
-                        <!--
-                        <div class="form-group">
-                            <input type="checkbox" id="assign_all" name="assign_all" value="true">
-                            <label for="assign_all" class="col-form-label">{{ t('Automatically Assign All Unassigned Subjects From Project') }}</label>
-                            <span class="invalid-feedback">{{ $errors->first('assign_all') }}</span>
-                        </div>
-                        -->
-
-
                     </div>
                 </div>
             </div>
             @include('common.cancel-submit-buttons')
         </div>
     </form>
-    <div class="row">
+    <div id="jqGridDiv" class="row">
         <h3 class="mx-auto">{{ t('Subjects currently assigned') }}
             <span id="max">{{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}</span>:
             <span id="subject-count-html">0</span></h3>

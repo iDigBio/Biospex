@@ -66,11 +66,11 @@ class DownloadController extends Controller
     /**
      * Index showing downloads for Expedition.
      *
-     * @param string $projectId
-     * @param string $expeditionId
+     * @param int $projectId
+     * @param int $expeditionId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(string $projectId, string $expeditionId): Factory|View
+    public function index(int $projectId, int $expeditionId): Factory|View
     {
         $user = $this->userRepo->findWith(\Request::user()->id, ['profile']);
         $expedition = $this->expeditionRepo->expeditionDownloadsByActor($expeditionId);
@@ -97,11 +97,11 @@ class DownloadController extends Controller
      * Generate export download.
      *
      * @see \App\Console\Commands\ExportQueueCommand
-     * @param string $projectId
-     * @param string $expeditionId
+     * @param int $projectId
+     * @param int $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function export(string $projectId, string $expeditionId): RedirectResponse
+    public function export(int $projectId, int $expeditionId): RedirectResponse
     {
         try {
             \Artisan::call('export:queue', ['expeditionId' => $expeditionId]);
@@ -118,12 +118,12 @@ class DownloadController extends Controller
     /**
      * Send request to have export split into batch downloads.
      *
-     * @param string $projectId
-     * @param string $expeditionId
+     * @param int $projectId
+     * @param int $expeditionId
      * @param string $downloadId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function batch(string $projectId, string $expeditionId, string $downloadId): RedirectResponse
+    public function batch(int $projectId, int $expeditionId, string $downloadId): RedirectResponse
     {
         ExportDownloadBatchJob::dispatch($downloadId);
 

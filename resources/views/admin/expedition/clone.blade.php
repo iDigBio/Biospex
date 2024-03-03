@@ -62,9 +62,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="workflow_id" class="col-form-label col-12 required">{{ t('Workflows') }}
+                            <label for="workflow-id" class="col-form-label col-12 required">{{ t('Workflows') }}
                                 :</label>
-                            <select name="workflow_id" id="workflow_id"
+                            <select name="workflow_id" id="workflow-id"
                                     class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}" required>
                                 @foreach($workflowOptions as $key => $name)
                                     <option value="{{ $key }}" {{ $key == old('workflow_id', $expedition->workflow_id) ? ' selected=selected' : '' }}>{{ $name }}</option>
@@ -79,7 +79,7 @@
             @include('common.cancel-submit-buttons')
         </div>
     </form>
-    <div class="row">
+    <div id="jqGridDiv" class="row">
         <h3 class="mx-auto">{{ t('Subjects currently assigned') }}
             <span id="max">{{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}</span>:
             <span id="subject-count-html">0</span></h3>

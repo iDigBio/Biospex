@@ -20,17 +20,15 @@
 namespace App\Services\Reconcile;
 
 use App\Facades\TranscriptionMapHelper;
-use App\Repositories\DownloadRepository;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\ReconcileRepository;
 use App\Services\Csv\AwsS3CsvService;
 
 /**
- * Class ExpertReconcilePublishProcess
+ * Class ExpertReconcilePublishService
  *
  * @package App\Services\Process
  */
-class ExpertReconcilePublishProcess
+class ExpertReconcilePublishService
 {
     /**
      * @var \App\Repositories\ReconcileRepository
@@ -38,31 +36,31 @@ class ExpertReconcilePublishProcess
     private ReconcileRepository $reconcileRepo;
 
     /**
-     * @var \App\Repositories\DownloadRepository
-     */
-    private DownloadRepository $downloadRepo;
-
-    /**
      * @var \App\Services\Csv\AwsS3CsvService
      */
     private AwsS3CsvService $awsS3CsvService;
 
     /**
+     * @var \App\Services\Reconcile\ReconcileService
+     */
+    private ReconcileService $reconcileService;
+
+    /**
      * ExpertReconcilePublishService constructor.
      *
      * @param \App\Repositories\ReconcileRepository $reconcileRepo
-     * @param \App\Repositories\DownloadRepository $downloadRepo
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
+     * @param \App\Services\Reconcile\ReconcileService $reconcileService
      */
     public function __construct(
         ReconcileRepository $reconcileRepo,
-        DownloadRepository $downloadRepo,
-        AwsS3CsvService $awsS3CsvService
+        AwsS3CsvService $awsS3CsvService,
+        ReconcileService $reconcileService
     )
     {
         $this->reconcileRepo = $reconcileRepo;
-        $this->downloadRepo = $downloadRepo;
         $this->awsS3CsvService = $awsS3CsvService;
+        $this->reconcileService = $reconcileService;
     }
 
     /**
@@ -73,8 +71,8 @@ class ExpertReconcilePublishProcess
      */
     public function publishReconciled(string $expeditionId): void
     {
-        $this->createReconcileCsv($expeditionId);
-        $this->createDownload($expeditionId);
+        $this->createReconciledWithExpertCsv($expeditionId);
+        $this->reconcileService->updateOrCreateReviewDownload($expeditionId, config('zooniverse.directory.reconciled-with-expert'));
     }
 
     /**
@@ -83,7 +81,7 @@ class ExpertReconcilePublishProcess
      * @param string $expeditionId
      * @throws \League\Csv\CannotInsertRecord|\Exception
      */
-    private function createReconcileCsv(string $expeditionId): void
+    private function createReconciledWithExpertCsv(string $expeditionId): void
     {
         $results = $this->reconcileRepo->getBy('subject_expeditionId', (int) $expeditionId);
         $mapped = $results->map(function ($record) {
@@ -101,33 +99,10 @@ class ExpertReconcilePublishProcess
             $decodedHeader[] = TranscriptionMapHelper::decodeTranscriptionField($value);
         }
 
-        $file = config('zooniverse.directory.reconciled') . '/' . $expeditionId.'.csv';
+        $file = config('zooniverse.directory.reconciled-with-expert') . '/' . $expeditionId.'.csv';
         $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $file, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();
         $this->awsS3CsvService->csv->insertOne($decodedHeader);
         $this->awsS3CsvService->csv->insertAll($mapped->toArray());
-    }
-
-    /**
-     * Create download file.
-     *
-     * @param string $expeditionId
-     */
-    private function createDownload(string $expeditionId): void
-    {
-        $values = [
-            'expedition_id' => $expeditionId,
-            'actor_id'      => config('zooniverse.actor_id'),
-            'file'          => $expeditionId.'.csv',
-            'type'          => 'reconciled',
-        ];
-        $attributes = [
-            'expedition_id' => $expeditionId,
-            'actor_id'      => config('zooniverse.actor_id'),
-            'file'          => $expeditionId.'.csv',
-            'type'          => 'reconciled',
-        ];
-
-        $this->downloadRepo->updateOrCreate($attributes, $values);
     }
 }

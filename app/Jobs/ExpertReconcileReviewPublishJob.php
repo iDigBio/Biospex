@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Notifications\Generic;
 use App\Repositories\ExpeditionRepository;
-use App\Services\Reconcile\ExpertReconcilePublishProcess;
+use App\Services\Reconcile\ExpertReconcilePublishService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -58,14 +58,15 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param \App\Services\Reconcile\ExpertReconcilePublishProcess $expertReconcilePublishProcess
+     * @param \App\Services\Reconcile\ExpertReconcilePublishService $expertReconcilePublishService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
      */
-    public function handle(ExpertReconcilePublishProcess $expertReconcilePublishProcess, ExpeditionRepository $expeditionRepository)
+    public function handle(ExpertReconcilePublishService $expertReconcilePublishService, ExpeditionRepository $expeditionRepository): void
     {
         $expedition = $expeditionRepository->findWith($this->expeditionId, ['project.group.owner']);
 
         try {
-            $expertReconcilePublishProcess->publishReconciled($this->expeditionId);
+            $expertReconcilePublishService->publishReconciled($this->expeditionId);
 
             $attributes = [
                 'subject' => t('Expert Review Reconciled Published'),

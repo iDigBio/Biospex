@@ -181,6 +181,7 @@ class ZooniverseController extends Controller
         int $projectId,
         int $expeditionId
     ): \Illuminate\Http\JsonResponse {
+
         if (! \Request::ajax()) {
             return \Response::json(['message' => t('Request must be ajax.')], 400);
         }
@@ -191,10 +192,7 @@ class ZooniverseController extends Controller
             return \Response::json(['message' => t('You are not authorized for this action.')], 401);
         }
 
-        $data = [];
-        parse_str($request->input('data'), $data);
-
-        if (! empty($data['panoptes_workflow_id'])) {
+        if (! empty($request->input('panoptes_workflow_id'))) {
             $attributes = [
                 'project_id'    => $projectId,
                 'expedition_id' => $expeditionId,
@@ -203,7 +201,7 @@ class ZooniverseController extends Controller
             $values = [
                 'project_id'           => $project->id,
                 'expedition_id'        => $expeditionId,
-                'panoptes_workflow_id' => $data['panoptes_workflow_id'],
+                'panoptes_workflow_id' => $request->input('panoptes_workflow_id'),
             ];
 
             $panoptesProject = $panoptesProjectRepository->updateOrCreate($attributes, $values);

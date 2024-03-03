@@ -34,10 +34,11 @@ class WorkflowIdFormRequest extends FormRequest
      *
      * @return void
      */
-    public function prepareForValidation(): void
-    {
-        $data = [];
-        parse_str($this->input('data'),$data);
-        $this->merge(['panoptes_workflow_id' => $data['panoptes_workflow_id']]);
-    }
+    //public function prepareForValidation(): void
+    //{
+        //dd($this->all());
+        //$data = [];
+        //parse_str($this->input('data'),$data);
+        //$this->merge(['panoptes_workflow_id' => $data['panoptes_workflow_id']]);
+    //}
 }

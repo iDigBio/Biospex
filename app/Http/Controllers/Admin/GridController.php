@@ -88,10 +88,10 @@ class GridController extends Controller
     /**
      * Load grid data.
      *
-     * @param string $projectId
+     * @param int $projectId
      * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function explore(string $projectId)
+    public function explore(int $projectId)
     {
         try {
             return $this->grid->encodeGridRequestedData(\Request::all(), 'explore', (int) $projectId);
@@ -103,11 +103,11 @@ class GridController extends Controller
     /**
      * Show grid in expeditions.
      *
-     * @param string $projectId
-     * @param string $expeditionId
+     * @param int $projectId
+     * @param int $expeditionId
      * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function expeditionsShow(string $projectId, string $expeditionId)
+    public function expeditionsShow(int $projectId, int $expeditionId)
     {
         try {
             return $this->grid->encodeGridRequestedData(\Request::all(), 'show', (int) $projectId, (int) $expeditionId);
@@ -119,11 +119,11 @@ class GridController extends Controller
     /**
      * Show grid in expeditions edit.
      *
-     * @param string $projectId
-     * @param string $expeditionId
+     * @param int $projectId
+     * @param int $expeditionId
      * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function expeditionsEdit(string $projectId, string $expeditionId)
+    public function expeditionsEdit(int $projectId, int $expeditionId)
     {
         try {
             return $this->grid->encodeGridRequestedData(\Request::all(), 'edit', (int) $projectId, (int) $expeditionId);
@@ -135,10 +135,10 @@ class GridController extends Controller
     /**
      * Show grid in expeditions create.
      *
-     * @param string $projectId
+     * @param int $projectId
      * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function expeditionsCreate(string $projectId)
+    public function expeditionsCreate(int $projectId)
     {
         try {
             return $this->grid->encodeGridRequestedData(\Request::all(), 'create', (int) $projectId);
@@ -150,11 +150,11 @@ class GridController extends Controller
     /**
      * Export csv from grid button.
      *
-     * @param string $projectId
+     * @param int $projectId
      * @param string|null $expeditionId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function export(string $projectId, string $expeditionId = null)
+    public function export(int $projectId, int $expeditionId = null)
     {
         $attributes = [
             'projectId' => (int) $projectId,

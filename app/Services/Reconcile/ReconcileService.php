@@ -30,11 +30,11 @@ use Illuminate\Support\Carbon;
 use Storage;
 
 /**
- * Class ReconcileProcess
+ * Class ReconcileService
  *
  * @package App\Services\Process
  */
-class ReconcileProcess
+class ReconcileService
 {
     /**
      * @var \App\Repositories\ExpeditionRepository
@@ -102,7 +102,7 @@ class ReconcileProcess
     private string $command;
 
     /**
-     * ReconcileProcess constructor.
+     * ReconcileService constructor.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Repositories\DownloadRepository $downloadRepo
@@ -154,7 +154,7 @@ class ReconcileProcess
             }
 
             $this->uploadFileToS3('classification', $this->csvFullPath, $expedition->id);
-            $this->uploadFileToS3('reconcile', $this->recFullPath, $expedition->id);
+            $this->uploadFileToS3('reconciled', $this->recFullPath, $expedition->id);
             $this->uploadFileToS3('transcript', $this->tranFullPath, $expedition->id);
             $this->uploadFileToS3('summary', $this->sumFullPath, $expedition->id);
 
@@ -222,7 +222,7 @@ class ReconcileProcess
         $this->csvPath = config('zooniverse.directory.classification').'/'.$expeditionId.'.csv';
         $this->csvFullPath = Storage::disk('efs')->path($this->csvPath);
 
-        $this->recFullPath = Storage::disk('efs')->path(config('zooniverse.directory.reconcile').'/'.$expeditionId.'.csv');
+        $this->recFullPath = Storage::disk('efs')->path(config('zooniverse.directory.reconciled').'/'.$expeditionId.'.csv');
         $this->tranFullPath = Storage::disk('efs')->path(config('zooniverse.directory.transcript').'/'.$expeditionId.'.csv');
         $this->sumFullPath = Storage::disk('efs')->path(config('zooniverse.directory.summary').'/'.$expeditionId.'.html');
 
@@ -327,6 +327,32 @@ class ReconcileProcess
     }
 
     /**
+     * Update or create review download.
+     *
+     * @param string $expeditionId
+     * @param string $type
+     * @return void
+     */
+    public function updateOrCreateReviewDownload(string $expeditionId, string $type): void
+    {
+        $values = [
+            'expedition_id' => $expeditionId,
+            'actor_id'      => config('zooniverse.actor_id'),
+            'file'          => $expeditionId.'.csv',
+            'type'          => $type,
+            'updated_at'    => Carbon::now()->format('Y-m-d H:i:s'),
+        ];
+        $attributes = [
+            'expedition_id' => $expeditionId,
+            'actor_id'      => config('zooniverse.actor_id'),
+            'file'          => $expeditionId.'.csv',
+            'type'          => $type,
+        ];
+
+        $this->downloadRepo->updateOrCreate($attributes, $values);
+    }
+
+    /**
      * Upload efs file to s3.
      *
      * @param string $dir
@@ -346,12 +372,11 @@ class ReconcileProcess
      *
      * @return void
      */
-    protected function cleanDirs()
+    protected function cleanDirs(): void
     {
-
         File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.classification')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.reconcile')));
         File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.reconciled')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.reconciled-with-expert')));
         File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.transcript')));
         File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.summary')));
         File::cleanDirectory(Storage::disk('efs')->path(config('zooniverse.directory.explained')));

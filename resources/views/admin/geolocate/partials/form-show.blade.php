@@ -1,6 +1,6 @@
 <div class="row">
     <div class="controls col-sm-10 mx-auto mt-3 text-center">
-        <select id="geolocate-form-select" class="selectpicker form-select" name="geolocate-form-select"
+        <select id="geolocate-form-select" class="selectpicker" name="geolocate-form-select"
                 data-url="{{ $route }}"
                 data-live-search="true"
                 data-actions-box="true"

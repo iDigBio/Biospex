@@ -245,7 +245,7 @@ class GeoLocateExportForm
      */
     public function setExpertExistVars(Expedition $expedition): void
     {
-        $this->expertFileExists = Storage::disk('s3')->exists(config('zooniverse.directory.reconciled').'/'.$expedition->id.'.csv');
+        $this->expertFileExists = Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv');
         $this->expertReviewExists = $expedition->zooniverseActor->pivot->expert;
     }
 
@@ -257,7 +257,12 @@ class GeoLocateExportForm
      */
     private function getCsvHeader(Expedition $expedition): array
     {
-        $csvFilePath = $this->source === 'reconcile' ? config('zooniverse.directory.reconcile').'/'.$expedition->id.'.csv' : config('zooniverse.directory.reconciled').'/'.$expedition->id.'.csv';
+        // Default is reconcile
+        $csvFilePath = match ($this->source) {
+            'reconciled' => config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv',
+            'reconciledqc' => config('zooniverse.directory.reconciled-with-user').'/'.$expedition->id.'.csv',
+            default => config('zooniverse.directory.reconciled').'/'.$expedition->id.'.csv',
+        };
 
         return Cache::remember(md5($this->source), 14440, function () use ($csvFilePath) {
             $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'r');

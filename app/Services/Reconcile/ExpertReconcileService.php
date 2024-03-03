@@ -27,16 +27,15 @@ use Exception;
 use File;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Session;
 use Storage;
 use Validator;
 
 /**
- * Class ExpertReconcileProcess
+ * Class ExpertReconcileService
  *
  * @package App\Services\Process
  */
-class ExpertReconcileProcess
+class ExpertReconcileService
 {
     /**
      * @var \App\Repositories\ReconcileRepository
@@ -59,7 +58,7 @@ class ExpertReconcileProcess
     private mixed $problemRegex;
 
     /**
-     * ExpertReconcileProcess constructor.
+     * ExpertReconcileService constructor.
      *
      * @param \App\Repositories\ReconcileRepository $reconcileRepo
      * @param \App\Repositories\SubjectRepository $subjectRepo
@@ -87,7 +86,7 @@ class ExpertReconcileProcess
      */
     public function migrateReconcileCsv(string $expeditionId)
     {
-        $file = config('zooniverse.directory.reconcile').'/'.$expeditionId.'.csv';
+        $file = config('zooniverse.directory.reconciled').'/'.$expeditionId.'.csv';
 
         if (! Storage::disk('s3')->exists($file)) {
             $message = t('File does not exist.');
@@ -125,31 +124,6 @@ class ExpertReconcileProcess
         $this->awsS3CsvService->csv->setHeaderOffset();
 
         return collect($this->awsS3CsvService->csv->getRecords($this->awsS3CsvService->csv->getHeader()));
-    }
-
-    /**
-     * Get data from request.
-     */
-    public function setData()
-    {
-        $data = collect(json_decode(\Request::get('data'), true))->mapWithKeys(function ($items) {
-            return [$items['id'] => explode(',', $items['columns'])];
-        });
-
-        Session::put('reconcile', $data);
-    }
-
-    /**
-     * Get ids from data.
-     *
-     * @param \Illuminate\Support\Collection $data
-     * @return array
-     */
-    public function getIds(Collection $data): array
-    {
-        return $data->keys()->map(function ($value) {
-            return (string) $value;
-        })->toArray();
     }
 
     /**

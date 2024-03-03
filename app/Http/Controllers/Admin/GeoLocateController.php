@@ -315,8 +315,6 @@ class GeoLocateController extends Controller
         int $expeditionId
     ): \Illuminate\Http\JsonResponse {
         try {
-            $data = [];
-            parse_str(\Request::input('data'), $data);
 
             if (! \Request::ajax()) {
                 return \Response::json(['message' => t('Request must be ajax.')], 400);
@@ -329,7 +327,7 @@ class GeoLocateController extends Controller
                 return \Response::json(['message' => t('You are not authorized for this action.')], 401);
             }
 
-            $this->geoLocateStat->saveCommunityDataSource($data, $projectId, $expeditionId);
+            $this->geoLocateStat->saveCommunityDataSource(\Request::all(), $projectId, $expeditionId);
 
             $expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
                 'state' => 2,

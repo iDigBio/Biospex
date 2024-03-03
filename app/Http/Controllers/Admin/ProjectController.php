@@ -355,10 +355,10 @@ class ProjectController extends Controller
     /**
      * Delete all unassigned subjects for project.
      *
-     * @param string $projectId
+     * @param int $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteSubjects(string $projectId): \Illuminate\Http\RedirectResponse
+    public function deleteSubjects(int $projectId): \Illuminate\Http\RedirectResponse
     {
         try {
             DeleteUnassignedSubjectsJob::dispatch(Auth::user(), (int) $projectId);
