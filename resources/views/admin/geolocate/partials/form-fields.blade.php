@@ -8,11 +8,11 @@
 
     <div class="form-group col-sm-10 mx-auto text-center">
         <h3 class="ml-auto mr-auto mb-3">{{ t('Select CSV Source') }}:</h3>
-        @if(!$form['expert_file'] && $form['expert_review'])
+        @if(!$form['expert_reconciled'] && $form['expert_review'])
             <div class="col-sm-8 mb-3 ml-auto mr-auto text-center text-danger">{{ t('Reconciled Expert Review exists but csv file is not published.') }}</div>
         @endif
         @if($form['mismatch_source'])
-            <div class="col-sm-8 mb-3 ml-auto mr-auto text-center text-danger">{{ t('The form selected requires Reconciled Expert Review as source but it does not exist for this Expedition. Saving this form will create a new form.') }}</div>
+            <div class="col-sm-8 mb-3 ml-auto mr-auto text-center text-danger">{{ t('The source for the form selected does not exist for this Expedition. Saving this form will create a new form.') }}</div>
         @endif
     </div>
     <div class="form-group col-sm-10 mx-auto text-center">
@@ -23,17 +23,16 @@
                     data-width="350"
                     data-hide-disabled="true"
                     data-style="btn-primary" required>
-                <option value="reconcile"
-                        {{ $form['source'] === 'reconcile' ? 'selected' : '' }}>{{ t('Reconciled') }}</option>
-                <!-- Only allow option if both expert file and review exist -->
                 <option value="reconciled"
-                        {{ $form['source'] === 'reconciled' ? 'selected' : '' }}
-                        {{ $form['expert_file'] && $form['expert_review'] ? '' : 'disabled' }}>{{ t('Reconciled With Expert Review') }}</option>
+                        {{ $form['source'] === 'reconciled' ? 'selected' : '' }}>{{ t('Reconciled') }}</option>
+                <!-- Only allow option if both expert file and review exist -->
+                <option value="reconciled-with-expert"
+                        {{ $form['source'] === 'reconciled-with-expert' ? 'selected' : '' }}
+                        {{ $form['expert_reconciled'] && $form['expert_review'] ? '' : 'disabled' }}>{{ t('Reconciled With Expert Review') }}</option>
                 <!-- Only allow option if reviewed file exists -->
-                @if(Storage::disk('s3')->exists(config('zooniverse.directory.reviewed').'/'.$expedition->id.'.csv'))
-                    <option value="reconciledqc"
-                            {{ $form['source'] === 'reconciledqc' ? 'selected' : '' }}>{{ t('Reconciled With User Review') }}</option>
-                @endif
+                <option value="reconciled-with-user"
+                        {{ $form['source'] === 'reconciled-with-user' ? 'selected' : '' }}
+                        {{ $form['user_reconciled'] ? '' : 'disabled' }}>{{ t('Reconciled With User Review') }}</option>
                 <option value="upload"
                         data-dismiss="modal"
                         data-toggle="modal"

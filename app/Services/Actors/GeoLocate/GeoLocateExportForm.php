@@ -47,6 +47,12 @@ class GeoLocateExportForm
     private AwsS3CsvService $awsS3CsvService;
 
     /**
+     * @var \App\Repositories\GeoLocateRepository
+     */
+    private GeoLocateRepository $geoLocateRepository;
+
+
+    /**
      * @var string
      */
     private string $source;
@@ -54,17 +60,17 @@ class GeoLocateExportForm
     /**
      * @var bool
      */
-    private bool $expertFileExists;
+    private bool $userReconciledFileExists;
+
+    /**
+     * @var bool
+     */
+    private bool $expertReconciledFileExists;
 
     /**
      * @var bool
      */
     private bool $expertReviewExists;
-
-    /**
-     * @var \App\Repositories\GeoLocateRepository
-     */
-    private GeoLocateRepository $geoLocateRepository;
 
     /**
      * @var true
@@ -116,6 +122,7 @@ class GeoLocateExportForm
     {
         $record = isset($request['formId']) ? $this->findGeoLocateFormById($request['formId']) : null;
 
+        $this->setUserReconciledVar($expedition);
         $this->setExpertExistVars($expedition);
 
         $this->setSource($request, $record);
@@ -133,17 +140,18 @@ class GeoLocateExportForm
     public function newForm(Expedition $expedition): array
     {
         return [
-            'group_id'        => $expedition->project->group->id,
-            'name'            => '',
-            'source'          => $this->source,
-            'entries'         => old('entries', 1),
-            'fields'          => null,
-            'expert_file'     => $this->expertFileExists,
-            'expert_review'   => $this->expertReviewExists,
-            'exported'        => ! empty($expedition->geoLocateActor->pivot->state),
-            'geo'             => $this->getGeoLocateFields(),
-            'csv'             => $this->getCsvHeader($expedition),
-            'mismatch_source' => $this->mismatchSource,
+            'group_id'          => $expedition->project->group->id,
+            'name'              => '',
+            'source'            => $this->source,
+            'entries'           => old('entries', 1),
+            'fields'            => null,
+            'user_reconciled'   => $this->userReconciledFileExists,
+            'expert_reconciled' => $this->expertReconciledFileExists,
+            'expert_review'     => $this->expertReviewExists,
+            'exported'          => ! empty($expedition->geoLocateActor->pivot->state),
+            'geo'               => $this->getGeoLocateFields(),
+            'csv'               => $this->getCsvHeader($expedition),
+            'mismatch_source'   => $this->mismatchSource,
         ];
     }
 
@@ -166,17 +174,18 @@ class GeoLocateExportForm
         $entries = count($record->fields);
 
         return [
-            'group_id'      => $record->group_id,
-            'name'          => $record->name,
-            'source'        => $this->source,
-            'entries'       => $entries,
-            'fields'        => $record->fields,
-            'expert_file'   => $this->expertFileExists,
-            'expert_review' => $this->expertReviewExists,
-            'exported'      => ! empty($expedition->geoLocateActor->pivot->state),
-            'geo'           => $this->getGeoLocateFields(),
-            'csv'           => $this->getCsvHeader($expedition),
-            'mismatch_source' => $this->mismatchSource,
+            'group_id'          => $record->group_id,
+            'name'              => $record->name,
+            'source'            => $this->source,
+            'entries'           => $entries,
+            'fields'            => $record->fields,
+            'user_reconciled'   => $this->userReconciledFileExists,
+            'expert_reconciled' => $this->expertReconciledFileExists,
+            'expert_review'     => $this->expertReviewExists,
+            'exported'          => ! empty($expedition->geoLocateActor->pivot->state),
+            'geo'               => $this->getGeoLocateFields(),
+            'csv'               => $this->getCsvHeader($expedition),
+            'mismatch_source'   => $this->mismatchSource,
         ];
     }
 
@@ -229,12 +238,31 @@ class GeoLocateExportForm
     public function setSource(array $request = [], GeoLocateForm $record = null): void
     {
         if (isset($record->source)) {
-            $this->source = ($this->expertFileExists && $this->expertReviewExists) ? "reconciled" : "reconcile";
+            $this->source = match ($record->source) {
+                'reconciled-with-user' => $this->userReconciledFileExists ? 'reconciled-with-user' : 'reconciled',
+                'reconciled-with-expert' => ($this->expertReconciledFileExists && $this->expertReviewExists) ? "reconciled-with-expert" : "reconciled",
+                default => "reconciled",
+            };
 
             return;
         }
 
-        $this->source = $request['source'] ?? (($this->expertFileExists && $this->expertReviewExists) ? "reconciled" : "reconcile");
+        $this->source = match ($request['source']) {
+            'reconciled-with-user' => $this->userReconciledFileExists ? 'reconciled-with-user' : 'reconciled',
+            ($this->expertReconciledFileExists && $this->expertReviewExists) => "reconciled-with-expert",
+            default => "reconciled",
+        };
+    }
+
+    /**
+     * Set var for if user reconciled exists.
+     *
+     * @param \App\Models\Expedition $expedition
+     * @return void
+     */
+    public function setUserReconciledVar(Expedition $expedition): void
+    {
+        $this->userReconciledFileExists = Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-user').'/'.$expedition->id.'.csv');
     }
 
     /**
@@ -245,7 +273,7 @@ class GeoLocateExportForm
      */
     public function setExpertExistVars(Expedition $expedition): void
     {
-        $this->expertFileExists = Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv');
+        $this->expertReconciledFileExists = Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv');
         $this->expertReviewExists = $expedition->zooniverseActor->pivot->expert;
     }
 
@@ -259,8 +287,8 @@ class GeoLocateExportForm
     {
         // Default is reconcile
         $csvFilePath = match ($this->source) {
-            'reconciled' => config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv',
-            'reconciledqc' => config('zooniverse.directory.reconciled-with-user').'/'.$expedition->id.'.csv',
+            'reconciled-with-expert' => config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv',
+            'reconciled-with-user' => config('zooniverse.directory.reconciled-with-user').'/'.$expedition->id.'.csv',
             default => config('zooniverse.directory.reconciled').'/'.$expedition->id.'.csv',
         };
 
