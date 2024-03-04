@@ -14,7 +14,6 @@
     "ext-json": "*",
     "ext-mongodb": "*",
     "ext-fileinfo": "*",
-    "anhskohbo/no-captcha": "^3.0",
     "aws/aws-sdk-php": "~3.0",
     "axn/laravel-pk-int-to-bigint": "^2.2",
     "cviebrock/eloquent-sluggable": "^10.0",

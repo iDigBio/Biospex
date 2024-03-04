@@ -4,7 +4,7 @@
                 data-url="{{ $route }}"
                 data-live-search="true"
                 data-actions-box="true"
-                title="{{ t('GeoLocateExport Forms') }}"
+                title="{{ t('New') }}"
                 data-header="{{ t('Select New or Saved Form') }}"
                 data-width="350"
                 data-style="btn-primary">

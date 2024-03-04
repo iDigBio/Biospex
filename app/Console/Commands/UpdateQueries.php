@@ -20,6 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Actor;
+use App\Models\Download;
 use App\Models\Project;
 use App\Models\Expedition;
 use App\Models\Workflow;
@@ -76,8 +77,14 @@ class UpdateQueries extends Command
         $this->updateActorExpeditionState();
         $this->alterBingoMapIp();
         $this->alterEventTransactionIds();
-        */
         $this->changeNfnPanoptesActor();
+        */
+        //$this->createReconciledByExpert();
+        //$this->renameReconcileToReconciled();
+        //$this->createReconciledByUser();
+
+        $this->updateDownloadsSetReconciledToReconciledWithExpert();
+        $this->updateDownloadsSetReconcileToReconciled();
     }
 
     private function saveProjectWorkflowOrigAndMoveToExpedition(): void
@@ -171,7 +178,7 @@ class UpdateQueries extends Command
     {
         echo 'Running '.__METHOD__.PHP_EOL;
 
-        Actor::create(['title' => 'GeoLocateExport', 'url' => 'https://www.geo-locate.org/', 'class' => 'GeoLocateExport']);
+        Actor::create(['title' => 'GeoLocate', 'url' => 'https://www.geo-locate.org/', 'class' => 'GeoLocate']);
     }
 
     private function deleteWorkflows()
@@ -191,7 +198,7 @@ class UpdateQueries extends Command
     {
         echo 'Running '.__METHOD__.PHP_EOL;
 
-        $workflow = Workflow::create(['title' => 'Zooniverse -> GeoLocateExport', 'enabled' => 1]);
+        $workflow = Workflow::create(['title' => 'Zooniverse -> GeoLocate', 'enabled' => 1]);
         $sync = [
             2 => ['order' => 1],
             4 => ['order' => 2],
@@ -235,5 +242,38 @@ class UpdateQueries extends Command
     public function changeNfnPanoptesActor()
     {
         DB::raw("UPDATE `actors` SET `class` = 'Zooniverse' WHERE `actors`.`id` = 2;");
+    }
+
+    public function createReconciledByExpert()
+    {
+        if (!\Storage::disk('s3')->exists('zooniverse/reconciled-with-expert')) {
+            exec("aws s3 mv s3://biospex-dev/zooniverse/reconciled/ s3://biospex-dev/zooniverse/reconciled-with-expert/ --recursive");
+            exec("aws s3 rm s3://biospex-dev/zooniverse/reconciled --recursive");
+        }
+    }
+
+    public function renameReconcileToReconciled()
+    {
+        if (!\Storage::disk('s3')->exists('zooniverse/reconciled')) {
+            exec("aws s3 mv s3://biospex-dev/zooniverse/reconcile/ s3://biospex-dev/zooniverse/reconciled/ --recursive");
+            exec("aws s3 rm s3://biospex-dev/zooniverse/reconcile/ --recursive");
+        }
+    }
+
+    public function createReconciledByUser()
+    {
+        if (!\Storage::disk('s3')->exists('zooniverse/reconciled_by_user')) {
+            exec("aws s3api put-object --bucket biospex-dev --key zooniverse/reconciled_by_user/");
+        }
+    }
+
+    public function updateDownloadsSetReconciledToReconciledWithExpert()
+    {
+        Download::where('reconciled', 'reconciled')->update(['reconciled' => 'reconciled-with-expert']);
+    }
+
+    public function updateDownloadsSetReconcileToReconciled()
+    {
+        Download::where('reconciled', 'reconcile')->update(['reconciled' => 'reconciled']);
     }
 }

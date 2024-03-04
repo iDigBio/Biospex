@@ -44,16 +44,4 @@ class GeoLocateCommunityRequest extends FormRequest
             'data_source' => 'required',
         ];
     }
-
-    /**
-     * Prepare data for validation.
-     *
-     * @return void
-     */
-    public function prepareForValidation(): void
-    {
-        $data = [];
-        parse_str($this->input('data'),$data);
-        $this->merge($data);
-    }
 }

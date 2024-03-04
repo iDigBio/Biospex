@@ -42,7 +42,7 @@
                         @endforeach
                     @endif
                 </div>
-                <form action="{{ route('front.events.join', [$team->uuid]) }}" method="post" role="form">
+                <form action="{{ route('front.events.join', [$team->uuid]) }}" method="post" role="form" class="recaptcha">
                     @csrf
                     <input type="hidden" name="team_id" value="{{ $team->id }}">
                     <div class="form-group {{ ($errors->has('nfn_user')) ? 'has-error' : '' }}">

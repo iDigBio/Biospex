@@ -25,7 +25,6 @@ use App\Http\Requests\EventJoinRequest;
 use App\Repositories\EventRepository;
 use App\Repositories\EventTeamRepository;
 use App\Repositories\EventUserRepository;
-use Flash;
 
 /**
  * Class EventController
@@ -38,9 +37,9 @@ class EventController extends Controller
      * Displays Events on public page.
      *
      * @param \App\Repositories\EventRepository $eventRepo
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View
      */
-    public function index(EventRepository $eventRepo)
+    public function index(EventRepository $eventRepo): \Illuminate\Contracts\View\View
     {
         $results = $eventRepo->getEventPublicIndex();
         $project = $results->first()->project;
@@ -56,9 +55,9 @@ class EventController extends Controller
      * Displays Completed Events on public page.
      *
      * @param \App\Repositories\EventRepository $eventRepo
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|null
      */
-    public function sort(EventRepository $eventRepo)
+    public function sort(EventRepository $eventRepo): ?\Illuminate\Contracts\View\View
     {
         if (! \Request::ajax()) {
             return null;
@@ -84,9 +83,9 @@ class EventController extends Controller
      *
      * @param \App\Repositories\EventRepository $eventRepo
      * @param $eventId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function read(EventRepository $eventRepo, $eventId)
+    public function read(EventRepository $eventRepo, $eventId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $event = $eventRepo->findWith($eventId, ['project.lastPanoptesProject', 'teams:id,title,event_id']);
 
@@ -104,10 +103,10 @@ class EventController extends Controller
      *
      * @param \App\Repositories\EventTeamRepository $eventTeamRepo
      * @param $uuid
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View
      * @throws \Exception
      */
-    public function signup(EventTeamRepository $eventTeamRepo, $uuid)
+    public function signup(EventTeamRepository $eventTeamRepo, $uuid): \Illuminate\Contracts\View\View
     {
         $team = $eventTeamRepo->getTeamByUuid($uuid);
 

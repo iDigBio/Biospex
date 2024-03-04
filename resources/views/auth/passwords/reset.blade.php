@@ -22,7 +22,7 @@
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
-                <form action="{{ route('app.password.request') }}" method="post" role="form" class="form-horizontal">
+                <form action="{{ route('password.update') }}" method="post" role="form" class="form-horizontal recaptcha">
                     @csrf
                     <input type="hidden" name="token" value="{{ $token }}">
                     <div class="form-group">
@@ -58,7 +58,6 @@
                             </span>
                         @enderror
                     </div>
-                    @include('common.recaptcha')
                     @include('common.submit-button')
                 </form>
                 @include('common.back-login', ['route' => route('app.get.login')])

@@ -27,7 +27,8 @@ use App\Jobs\ExpertReviewSetProblemsJob;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Api\ZooniverseTalkApiService;
-use App\Services\Reconcile\ExpertReconcileProcess;
+use App\Services\Reconcile\ExpertReconcileService;
+use App\Services\Reconcile\ReconcileService;
 use Flash;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -43,9 +44,9 @@ use Request;
 class ReconcileController extends Controller
 {
     /**
-     * @var \App\Services\Reconcile\ExpertReconcileProcess
+     * @var \App\Services\Reconcile\ExpertReconcileService
      */
-    private ExpertReconcileProcess $expertreconcileRepo;
+    private ExpertReconcileService $expertReconcileService;
 
     /**
      * @var \App\Repositories\ExpeditionRepository
@@ -55,12 +56,12 @@ class ReconcileController extends Controller
     /**
      * ReconcileController constructor.
      *
-     * @param \App\Services\Reconcile\ExpertReconcileProcess $expertreconcileRepo
+     * @param \App\Services\Reconcile\ExpertReconcileService $expertReconcileService
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      */
-    public function __construct(ExpertReconcileProcess $expertreconcileRepo, ExpeditionRepository $expeditionRepo)
+    public function __construct(ExpertReconcileService $expertReconcileService, ExpeditionRepository $expeditionRepo)
     {
-        $this->expertreconcileRepo = $expertreconcileRepo;
+        $this->expertReconcileService = $expertReconcileService;
         $this->expeditionRepo = $expeditionRepo;
     }
 
@@ -80,7 +81,7 @@ class ReconcileController extends Controller
             return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        $reconciles = $this->expertreconcileRepo->getPagination((int) $expedition->id);
+        $reconciles = $this->expertReconcileService->getPagination((int) $expedition->id);
 
         if ($reconciles->isEmpty()) {
             Flash::error(t('Reconcile data for processing is missing.'));
@@ -91,7 +92,7 @@ class ReconcileController extends Controller
         $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, $reconciles->first()->subject_id);
 
         $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
-        $imgUrl = $this->expertreconcileRepo->getImageUrl($reconciles->first()->subject_imageName, $location);
+        $imgUrl = $this->expertReconcileService->getImageUrl($reconciles->first()->subject_imageName, $location);
         $columns = explode('|', $reconciles->first()->subject_columns);
 
         return \View::make('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
@@ -131,7 +132,7 @@ class ReconcileController extends Controller
      */
     public function update(int $expeditionId): RedirectResponse
     {
-        if (! $this->expertreconcileRepo->updateRecord(Request::all())) {
+        if (! $this->expertReconcileService->updateRecord(Request::all())) {
             Flash::warning(t('Error while updating record.'));
 
             return back();
@@ -160,29 +161,30 @@ class ReconcileController extends Controller
     /**
      * Upload reconciled qc file.
      *
+     * @param \App\Services\Reconcile\ReconcileService $reconcileService
      * @param int $projectId
      * @param int $expeditionId
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
-    public function reconciledQcFile(int $projectId, int $expeditionId)
+    public function reconciledWithUser(ReconcileService $reconcileService, int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {
         if (Request::isMethod('get')) {
-            return \View::make('admin.reconcile.partials.qc-file-upload', compact('projectId', 'expeditionId'));
+            return \View::make('admin.reconcile.partials.upload', compact('projectId', 'expeditionId'));
         }
 
         if (! request()->hasFile('file') || request()->file('file')->getClientOriginalExtension() !== 'csv') {
-            return response()->json(['message' => t('File must be a csv file.')]);
+            return \Response::json(['message' => t('File must be a CSV.')]);
         }
 
-        if (\Storage::disk('s3')->exists(config('zooniverse.directory.reconciledqc').'/'.$expeditionId.'.csv')) {
-            \Storage::disk('s3')->delete(config('zooniverse.directory.reconciledqc').'/'.$expeditionId.'.csv');
+        if (\Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv')) {
+            \Storage::disk('s3')->delete(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv');
         }
 
-        if (\Storage::disk('s3')->put(config('zooniverse.directory.reconciledqc').'/'.$expeditionId.'.csv', file_get_contents(request()->file('file')->getRealPath()))) {
-
-            return response()->json(['message' => t('File uploaded.')]);
+        if (\Storage::disk('s3')->put(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv', file_get_contents(request()->file('file')->getRealPath()))) {
+            $reconcileService->updateOrCreateReviewDownload($expeditionId, 'reconciled-with-user');
+            return \Response::json(['message' => t('File upload was successful. It will now be listed in your downloads section of the Expedition.')]);
         }
 
-        return response()->json(['message' => t('Error uploading file.')]);
+        return \Response::json(['message' => t('Error uploading file. Please try again or contact the Administration.')]);
     }
 }

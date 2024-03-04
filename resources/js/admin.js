@@ -129,7 +129,7 @@ $(function () {
             $footer.css('margin-top', marginTop + 'px') // padding of 30 on footer
         else
             $footer.css('margin-top', '0px')
-    }, 250)
+    }, 250);
 })
 
 function renumber_resource() {
@@ -167,3 +167,10 @@ function copyToClipboard(el) {
     }
 }
 
+function showHideJqGrid(selected) {
+    if (selected === '7') {
+        $('#jqGridDiv').hide()
+    } else {
+        $('#jqGridDiv').show()
+    }
+}

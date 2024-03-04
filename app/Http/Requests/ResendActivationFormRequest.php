@@ -19,6 +19,8 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ReCaptcha;
+
 /**
  * Class ResendActivationFormRequest
  *
@@ -45,7 +47,7 @@ class ResendActivationFormRequest extends Request
     {
         return [
             'email'                => 'required|min:4|max:32|email',
-            'g-recaptcha-response' => 'required|captcha',
+            'g-recaptcha-response' => ['required', new ReCaptcha],
         ];
     }
 }

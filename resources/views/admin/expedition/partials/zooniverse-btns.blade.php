@@ -48,6 +48,6 @@
        data-toggle="modal"
        data-target="#global-modal"
        data-size="modal-lg"
-       data-url="{{ route('admin.reconciles.qc', [$expedition->project->id, $expedition->id]) }}"
-       data-title="{{ t('Upload Reconciled QC File') }}"> {{ t('Upload Reconciled QC File') }}</a>
+       data-url="{{ route('admin.reconciles.upload', [$expedition->project->id, $expedition->id]) }}"
+       data-title="{{ t('Upload Reconciled With User Review') }}"> {{ t('Upload Reconciled With User Review') }}</a>
 @endif

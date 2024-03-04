@@ -20,6 +20,7 @@
 namespace App\Http\Requests;
 
 use App\Rules\EventJoinUniqueUserTeamValidation;
+use App\Rules\ReCaptcha;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -58,6 +59,7 @@ class EventJoinRequest extends FormRequest
             'team_id.required'        => 'Group Id missing',
             'nfn_user.required' => 'Zooniverse username required',
             'nfn_user.between' => 'Username must be between 3-30 characters',
+            'g-recaptcha-response' => ['required', new ReCaptcha],
         ];
     }
 }

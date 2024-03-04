@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Jobs\Traits\SkipZooniverse;
 use App\Notifications\Generic;
 use App\Repositories\ExpeditionRepository;
-use App\Services\Reconcile\ExpertReconcileProcess;
+use App\Services\Reconcile\ExpertReconcileService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -69,7 +69,7 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
      */
     public function handle(
         ExpeditionRepository $expeditionRepo,
-        ExpertReconcileProcess $expertReconcileProcess
+        ExpertReconcileService $expertReconcileService
     )
     {
         $expedition = $expeditionRepo->findExpeditionForExpertReview($this->expeditionId);
@@ -79,7 +79,7 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
                 throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [':id' => $expedition->id, ':title' => $expedition->title]));
             }
 
-            $expertReconcileProcess->migrateReconcileCsv($expedition->id);
+            $expertReconcileService->migrateReconcileCsv($expedition->id);
 
         } catch (\Throwable $throwable) {
             $attributes = [
