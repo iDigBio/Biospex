@@ -19,6 +19,7 @@ return [
         'classification' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/classification',
         'reconcile'      => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconcile', // normal reconcile
         'reconciled'     => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled', // expert review
+        'reconciledqc'   => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciledqc',
         'summary'        => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/summary',
         'transcript'     => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/transcript',
         'explained'      => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/explained',
@@ -69,17 +70,17 @@ return [
         'Deleting Working Files', // 7
     ],
 
-    'panoptes' => [
+    'panoptes'                    => [
         'client_id'     => env('ZOONIVERSE_PANOPTES_CLIENT_ID'),
         'client_secret' => env('ZOONIVERSE_PANOPTES_CLIENT_SECRET'),
         'api_uri'       => env('ZOONIVERSE_PANOPTES_URI'),
         'token_uri'     => env('ZOONIVERSE_PANOPTES_TOKEN_URI'),
         'redirect_uri'  => env('ZOONIVERSE_PANOPTES_REDIRECT_URI'),
-        'scopes'       => env('ZOONIVERSE_PANOPTES_SCOPES'),
+        'scopes'        => env('ZOONIVERSE_PANOPTES_SCOPES'),
     ],
 
     // See TranscriptionHelper.php
-    'reserved_encoded' => [
+    'reserved_encoded'            => [
         '_id',
         'classification_id',
         'workflow_id',

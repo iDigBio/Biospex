@@ -24,8 +24,10 @@ $(function () {
         }
     })
 
-    $('#global-modal').on('show.bs.modal', function (e) {
+    let $globalModal = $('#global-modal');
+    $globalModal.on('show.bs.modal', function (e) {
         let $target = $(e.relatedTarget)
+        console.log($target);
         let $modalBody = $(this).find('.modal-body')
         let size = $target.data('size')
 
@@ -36,7 +38,10 @@ $(function () {
         $modalBody.html('<div class="loader mx-auto"></div>')
         $modalBody.load($target.data("url"), function (){
             makeSelect($('.controls'));
-            toggleGeoLocateCommunityForm()
+            toggleGeoLocateCommunityForm();
+            if ($('#geolocate-source-select').length > 0) {
+                $('#geolocate-source-select').selectpicker();
+            }
         });
     }).on('hidden.bs.modal', function () {
         let size = $(this).data('size');
@@ -51,7 +56,7 @@ $(function () {
     }).on('submit', '.modal-form', function (e) { // used in workflow id and geolocate community modal forms.
         e.preventDefault() // avoid to execute the actual submit of the form.
         formPost($(this).attr('action'), $(this).serialize())
-        $('#global-modal').modal('toggle');
+        $globalModal.modal('toggle');
     }) // Geolocate Export form
     .on('change', '#geolocate-form-select', function (){
         if ($(this).val() === '') {
@@ -68,7 +73,7 @@ $(function () {
             renumber_geolocate()
         }).fail(function (response){
             let json = JSON.parse(response.responseText)
-            $('#global-modal').modal('toggle');
+            $globalModal.modal('toggle');
             notify("exclamation-circle", json.message, "warning")
         })
     }).on('click', '.geolocate-btn-add', function () {
@@ -88,27 +93,33 @@ $(function () {
     }).on('click', '#process', function () {
         //$('form#geolocate-form').attr('action', $(this).data('url')).trigger('submit')
         formPost($(this).data('url'), $(this).serialize())
-        $('#global-modal').modal('toggle');
+        $globalModal.modal('toggle');
     }).on('submit', 'form#geolocate-form', function (e) {
         e.preventDefault() // avoid to execute the actual submit of the form.
-        let $modal = $('#global-modal')
         if (checkDuplicates()) {
             notify("exclamation-circle", "GeoLocate Export field cannot contain duplicate values.", "warning")
-            $modal.modal('toggle');
+            $globalModal.modal('toggle');
             return;
         }
 
         let fields = checkRequiredValues()
         if (fields.length > 0) {
             notify("exclamation-circle", fields.toString() + ' GeoLocate Export fields are required.', "warning")
-            $modal.modal('toggle');
+            $globalModal.modal('toggle');
             return;
         }
 
         formPost($(this).attr('action'), $(this).serialize())
-        $modal.modal('toggle');
+        $globalModal.modal('toggle');
     })
-
+    .on('change', '#geolocate-source-select', function (){
+        if ($(this).val() === 'upload') {
+            let selected = $(this).find('option:selected');
+            let url = selected.data('foo');
+            $globalModal.modal('toggle');
+            $globalModal.modal('show');
+        }
+    })
 })
 
 // Make select box rows sortable and bootstrap-select
@@ -139,6 +150,7 @@ formPost = function (url, data) {
 }
 
 toggleGeoLocateCommunityForm = function() {
+    if($('#community-form-select').length === 0) return;
     let val = $('#community-form-select').val()
     if (val === '') {
         $('#community-row').collapse('show')

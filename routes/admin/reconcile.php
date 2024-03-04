@@ -22,3 +22,5 @@ Route::get('reconciles/{expeditions}', [ReconcileController::class, 'index'])->n
 Route::get('reconciles/{expeditions}/create', [ReconcileController::class, 'create'])->name('admin.reconciles.create');
 Route::put('reconciles/{expeditions}', [ReconcileController::class, 'update'])->name('admin.reconciles.update');
 Route::post('reconciles/{projects}/publish/{expeditions}', [ReconcileController::class, 'publish'])->name('admin.reconciles.publish');
+Route::get('reconciles/{projects}/qc/{expeditions}', [ReconcileController::class, 'reconciledQcFile'])->name('admin.reconciles.qc');
+Route::post('reconciles/{projects}/qc/{expeditions}', [ReconcileController::class, 'reconciledQcFile'])->name('admin.reconciles.qc');

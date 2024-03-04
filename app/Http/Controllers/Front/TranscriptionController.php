@@ -35,12 +35,12 @@ class TranscriptionController extends Controller
      * Return json data for transcription charts.
      *
      * @param \App\Repositories\AmChartRepository $amChartRepo
-     * @param string $projectId
+     * @param int $projectId
      * @param string $year
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function transcriptions(AmChartRepository $amChartRepo, string $projectId, string $year): \Illuminate\Http\JsonResponse
+    public function transcriptions(AmChartRepository $amChartRepo, int $projectId, string $year): \Illuminate\Http\JsonResponse
     {
         $chart = $amChartRepo->findBy('project_id', $projectId);
 
