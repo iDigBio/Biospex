@@ -269,11 +269,11 @@ class UpdateQueries extends Command
 
     public function updateDownloadsSetReconciledToReconciledWithExpert()
     {
-        Download::where('reconciled', 'reconciled')->update(['reconciled' => 'reconciled-with-expert']);
+        Download::where('type', 'reconciled')->update(['type' => 'reconciled-with-expert']);
     }
 
     public function updateDownloadsSetReconcileToReconciled()
     {
-        Download::where('reconciled', 'reconcile')->update(['reconciled' => 'reconciled']);
+        Download::where('type', 'reconcile')->update(['type' => 'reconciled']);
     }
 }
