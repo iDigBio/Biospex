@@ -263,7 +263,7 @@ class UpdateQueries extends Command
     public function createReconciledByUser()
     {
         if (!\Storage::disk('s3')->exists('zooniverse/reconciled_by_user')) {
-            exec("aws s3api put-object --bucket biospex-dev --key zooniverse/reconciled_by_user/");
+            exec("aws s3api put-object --bucket biospex-dev --key zooniverse/reconciled-with-user/");
         }
     }
 
