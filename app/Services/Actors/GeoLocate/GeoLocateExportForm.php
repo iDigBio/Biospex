@@ -123,6 +123,7 @@ class GeoLocateExportForm
         $record = isset($request['formId']) ? $this->findGeoLocateFormById($request['formId']) : null;
 
         $this->setUserReconciledVar($expedition);
+
         $this->setExpertExistVars($expedition);
 
         $this->setSource($request, $record);
@@ -247,11 +248,15 @@ class GeoLocateExportForm
             return;
         }
 
-        $this->source = match ($request['source']) {
-            'reconciled-with-user' => $this->userReconciledFileExists ? 'reconciled-with-user' : 'reconciled',
-            ($this->expertReconciledFileExists && $this->expertReviewExists) => "reconciled-with-expert",
-            default => "reconciled",
-        };
+        if (isset($request['source'])) {
+            $this->source = $request['source'];
+
+            return;
+        }
+
+        $this->source =
+            $this->userReconciledFileExists ? 'reconciled-with-user' :
+                (($this->expertReconciledFileExists && $this->expertReviewExists) ? "reconciled-with-expert" : "reconciled");
     }
 
     /**

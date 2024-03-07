@@ -92,6 +92,7 @@ class GeoLocateExportJob implements ShouldQueue
         $geoLocateExportService->setCsvFilePath($this->expedition->id);
 
         $geoLocateExportService->build($this->expedition);
+
         $csvFilePath = $geoLocateExportService->moveCsvFile();
         $geoLocateExportService->createDownload($this->expedition);
 

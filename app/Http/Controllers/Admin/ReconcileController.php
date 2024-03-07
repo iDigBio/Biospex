@@ -173,7 +173,7 @@ class ReconcileController extends Controller
         }
 
         if (! request()->hasFile('file') || request()->file('file')->getClientOriginalExtension() !== 'csv') {
-            return \Response::json(['message' => t('File must be a CSV.')]);
+            return \Response::json(['error' => true, 'message' => t('File must be a CSV.')]);
         }
 
         if (\Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv')) {
@@ -185,6 +185,6 @@ class ReconcileController extends Controller
             return \Response::json(['message' => t('File upload was successful. It will now be listed in your downloads section of the Expedition.')]);
         }
 
-        return \Response::json(['message' => t('Error uploading file. Please try again or contact the Administration.')]);
+        return \Response::json(['error' => true, 'message' => t('Error uploading file. Please try again or contact the Administration.')]);
     }
 }

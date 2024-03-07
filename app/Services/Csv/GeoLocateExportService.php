@@ -136,6 +136,7 @@ class GeoLocateExportService
      * @param \App\Models\Expedition $expedition
      * @return void
      * @throws \League\Csv\CannotInsertRecord
+     * @throws \Exception
      */
     public function build(Expedition $expedition): void
     {

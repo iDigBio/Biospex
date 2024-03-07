@@ -114,7 +114,7 @@ class GeoLocateController extends Controller
 
             return \View::make('admin.geolocate.partials.form-show', compact('expedition', 'route', 'formFields'));
         } catch (\Exception $e) {
-            return \Response::json(['message' => $e->getMessage()], 500);
+            return \Response::json(['message' => $e->getMessage() . $e->getFile() . $e->getLine()], 500);
         }
     }
 
@@ -148,6 +148,39 @@ class GeoLocateController extends Controller
     }
 
     /**
+     * Retireve form fields for selected form.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Http\JsonResponse|string
+     */
+    public function fields(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|string
+    {
+        if (! \Request::ajax()) {
+            return \Response::json(['message' => t('Request must be ajax.')], 400);
+        }
+
+        try {
+            $relations = ['project.group.geoLocateForms', 'geoLocateExport'];
+            $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
+
+            if (! $this->checkPermissions('readProject', $expedition->project->group)) {
+                return \Response::json(['message' => t('You do not have permission.')], 401);
+            }
+
+            $form = $this->geoLocateExportForm->getForm($expedition, [
+                'formId' => $expedition->geo_locate_form_id,
+                'source' => \Request::input('source')
+            ]);
+
+            return \View::make('admin.geolocate.partials.geolocate-fields', compact('expedition', 'form'))->render();
+
+        } catch (\Exception $e) {
+            return \Response::json(['message' => $e->getMessage() . $e->getFile() . $e->getLine()], 500);
+        }
+    }
+
+    /**
      * Store form data.
      *
      * @param int $projectId
@@ -161,9 +194,6 @@ class GeoLocateController extends Controller
         }
 
         try {
-            $data = [];
-            parse_str(\Request::input('data'), $data);
-
             $relations = ['project.group'];
             $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);
 
@@ -171,7 +201,7 @@ class GeoLocateController extends Controller
                 return \Response::json(['message' => t('You do not have permissions for this action.')], 401);
             }
 
-            $this->geoLocateExportForm->saveForm($data, $expedition);
+            $this->geoLocateExportForm->saveForm(\Request::all(), $expedition);
 
             return \Response::json(['message' => t('GeoLocate export form saved.')]);
 
@@ -248,10 +278,6 @@ class GeoLocateController extends Controller
      */
     public function delete(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|RedirectResponse
     {
-        if (! \Request::ajax()) {
-            return \Response::json(['message' => t('Request must be ajax.')], 400);
-        }
-
         try {
             $relations = ['project.group'];
             $expedition = $this->geoLocateExportForm->findExpeditionWithRelations($expeditionId, $relations);

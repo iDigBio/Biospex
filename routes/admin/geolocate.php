@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\GeoLocateController;
 Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/', [GeoLocateController::class, 'index'])->name('admin.geolocates.stats');
 Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/show', [GeoLocateController::class, 'show'])->name('admin.geolocates.show');
 Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/form', [GeoLocateController::class, 'form'])->name('admin.geolocates.form');
+Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/fields', [GeoLocateController::class, 'fields'])->name('admin.geolocates.fields');
 
 Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/community', [GeoLocateController::class, 'communityForm'])->name('admin.geolocates.communityForm');
 Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/community', [GeoLocateController::class, 'community'])->name('admin.geolocates.community');

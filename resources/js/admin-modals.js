@@ -24,7 +24,7 @@ $(function () {
         }
     })
 
-    let $globalModal = $('#global-modal');
+    let $globalModal = $('.modal');
     $globalModal.on('show.bs.modal', function (e) {
         let $target = $(e.relatedTarget)
         let $modalBody = $(this).find('.modal-body')
@@ -35,7 +35,7 @@ $(function () {
         $('#modal-title').html($target.data('title'))
 
         $modalBody.html('<div class="loader mx-auto"></div>')
-        $modalBody.load($target.data("url"), function (){
+        $modalBody.load($target.data("url"), function () {
             makeSelect($('.controls'));
             toggleGeoLocateCommunityForm();
             if ($('#geolocate-source-select').length > 0) {
@@ -50,79 +50,104 @@ $(function () {
     })
 
     // GeoLocate Community and datasource form.
-    $('.modal-body').on('change', '#community-form-select', function (){
-        toggleGeoLocateCommunityForm()
-    }).on('submit', '.modal-form', function (e) {
-        // used in workflow id and geolocate community modal forms.
-        e.preventDefault() // avoid to execute the actual submit of the form.
-        let formData = new FormData(this);
-        formPost($(this).attr('action'), formData)
-        $globalModal.modal('toggle');
-    }) // Geolocate Export form
-    .on('change', '#geolocate-form-select', function (){
-        if ($(this).val() === '') {
-            $('#name').val('');
-            return;
-        }
-
-        let $ajaxResults = $('#geolocate-results')
-        $ajaxResults.html('<div class="mt-5 loader mx-auto"></div>')
-        $.post($(this).data('url'), {formId: $('#geolocate-form-select').val(), source: $("input:radio.source:checked").val()}, function (data){
-            $ajaxResults.html(data).find("div.entry").each(function () {
-                makeSelect($(this))
-            })
-            renumber_geolocate()
-        }).fail(function (response){
-            let json = JSON.parse(response.responseText)
-            $globalModal.modal('toggle');
-            notify("exclamation-circle", json.message, "warning")
+    $('.modal-body')
+        .on('change', '#community-form-select', function () {
+            toggleGeoLocateCommunityForm()
         })
-    }).on('click', '.geolocate-btn-add', function () {
-        let $entry = $('.default').clone().appendTo($('#controls'))
-        $entry.find('.geolocate-field-default').removeClass('geolocate-field-default').addClass('geolocate-field').prop('required', true)
-        $entry.find('.header-select-default').removeClass('header-select-default').addClass('header-select').prop('required', true)
-        $entry.removeClass('default').addClass('entry').show()
+        .on('submit', '.modal-form', function (e) {
+            $('#warning').html('').collapse('hide')
+            // used in workflow id and geolocate community modal forms.
+            e.preventDefault() // avoid to execute the actual submit of the form.
+            let formData = new FormData(this);
+            formPost($(this).attr('action'), formData)
+            $globalModal.modal('hide');
+        }) // Geolocate Export form
+        .on('change', '#geolocate-form-select', function () {
+            $('#warning').html('').collapse('hide')
+            if ($(this).val() === '') {
+                $('#name').val('');
+                return;
+            }
 
-        makeSelect($entry)
-        renumber_geolocate()
-    }).on('click', '.geolocate-btn-remove', function () {
-        if ($('#controls').children('div.entry').length === 1) {
-            return
-        }
-        $('#controls div.entry:last').remove()
-        renumber_geolocate()
-    }).on('click', '#process', function () { // form-fields blade
-        //$('form#geolocate-form').attr('action', $(this).data('url')).trigger('submit')
-        let formData = new FormData(this);
-        formPost($(this).attr('action'), formData)
-        $globalModal.modal('toggle');
-    }).on('submit', 'form#geolocate-form', function (e) {
-        e.preventDefault() // avoid to execute the actual submit of the form.
-        if (checkDuplicates()) {
-            notify("exclamation-circle", "GeoLocate Export field cannot contain duplicate values.", "warning")
-            $globalModal.modal('toggle');
-            return;
-        }
+            let $ajaxResults = $('#geolocate-results')
+            $ajaxResults.html('<div class="mt-5 loader mx-auto"></div>')
+            $.post($(this).data('url'), {
+                formId: $('#geolocate-form-select').val(),
+                source: $("input:radio.source:checked").val()
+            }, function (data) {
+                $ajaxResults.html(data).find("div.entry").each(function () {
+                    makeSelect($(this))
+                })
+                renumber_geolocate()
+            }).fail(function (response) {
+                let json = JSON.parse(response.responseText)
+                $globalModal.modal('hide');
+                notify("exclamation-circle", json.message, "warning")
+            })
+        })
+        .on('click', '.geolocate-btn-add', function () {
+            $('#warning').html('').collapse('hide')
+            let $entry = $('.default').clone().appendTo($('#controls'))
+            $entry.find('.geolocate-field-default').removeClass('geolocate-field-default').addClass('geolocate-field').prop('required', true)
+            $entry.find('.header-select-default').removeClass('header-select-default').addClass('header-select').prop('required', true)
+            $entry.removeClass('default').addClass('entry').show()
 
-        let fields = checkRequiredValues()
-        if (fields.length > 0) {
-            notify("exclamation-circle", fields.toString() + ' GeoLocate Export fields are required.', "warning")
-            $globalModal.modal('toggle');
-            return;
-        }
+            makeSelect($entry)
+            renumber_geolocate()
+        })
+        .on('click', '.geolocate-btn-remove', function () {
+            $('#warning').html('').collapse('hide')
+            if ($('#controls').children('div.entry').length === 1) {
+                return
+            }
+            $('#controls div.entry:last').remove()
+            renumber_geolocate()
+        })
+        .on('click', '#export', function () { // form-fields blade
+            $('#warning').html('').collapse('hide')
+            $('form#geolocate-form').attr('action', $(this).data('url')).trigger('submit')
+        })
+        .on('submit', 'form#geolocate-form', function (e) {
+            e.preventDefault() // avoid to execute the actual submit of the form.
+            if (checkDuplicates()) {
+                $('#warning').html('GeoLocate Export fields my not contain duplicate values.').collapse('show');
+                return;
+            }
 
-        let formData = new FormData(this);
-        formPost($(this).attr('action'), formData)
-        $globalModal.modal('toggle');
-    })
-    .on('change', '#geolocate-source-select', function (){
-        if ($(this).val() === 'upload') {
+            let fields = checkRequiredValues()
+            if (fields.length > 0) {
+                $('#warning').html('Geolocate requires the fields: ' + fields.toString()).collapse('show');
+                return;
+            }
+
+            let formData = new FormData(this);
+            formPost($(this).attr('action'), formData)
+            $globalModal.modal('hide');
+        })
+        .on('change', '#geolocate-source-select', function (e) {
+            $('#warning').html('').hide();
+            if ($(this).val() === 'upload') {
+                $('#user-upload').trigger('click');
+                return;
+            }
+
             let selected = $(this).find('option:selected');
-            let url = selected.data('foo');
-            $globalModal.modal('toggle');
-            $globalModal.modal('show');
-        }
-    })
+            let $ajaxResults = $('#geolocate-fields')
+            $ajaxResults.html('<div class="loader mx-auto"></div>')
+
+            $.post($(this).data('url'), {
+                source: selected.val()
+            }, function (data) {
+                $ajaxResults.html(data).find("div.entry").each(function () {
+                    makeSelect($(this))
+                })
+                renumber_geolocate()
+            }).fail(function (response) {
+                let json = JSON.parse(response.responseText)
+                $globalModal.modal('hide');
+                notify("exclamation-circle", json.message, "warning")
+            })
+        })
 })
 
 // Make select box rows sortable and bootstrap-select
@@ -152,27 +177,31 @@ formPost = function (url, formData) {
         contentType: false,
         processData: false,
         async: false, //add this
-    }).done(function ( data ) {
+    }).done(function (data) {
+        if (data.error) {
+            notify("exclamation-circle", data.message, "warning")
+            return;
+        }
         notify("exclamation-circle", data.message, "success")
-    }).fail(function ( response ) {
+    }).fail(function (response) {
         let json = JSON.parse(response.responseText)
         notify("exclamation-circle", json.message, "warning")
     });
 
 
-/*
-    $.post(url, {data: data}, function (data) {
-        notify("exclamation-circle", data.message, "success")
-    }, "json").fail(function (response) {
-        let json = JSON.parse(response.responseText)
-        notify("exclamation-circle", json.message, "warning")
-    })
+    /*
+        $.post(url, {data: data}, function (data) {
+            notify("exclamation-circle", data.message, "success")
+        }, "json").fail(function (response) {
+            let json = JSON.parse(response.responseText)
+            notify("exclamation-circle", json.message, "warning")
+        })
 
- */
+     */
 }
 
-toggleGeoLocateCommunityForm = function() {
-    if($('#community-form-select').length === 0) return;
+toggleGeoLocateCommunityForm = function () {
+    if ($('#community-form-select').length === 0) return;
     let val = $('#community-form-select').val()
     if (val === '') {
         $('#community-row').collapse('show')
