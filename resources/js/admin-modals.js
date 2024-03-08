@@ -176,7 +176,7 @@ formPost = function (url, formData) {
         cache: false,
         contentType: false,
         processData: false,
-        async: false, //add this
+        async: true, //add this
     }).done(function (data) {
         if (data.error) {
             notify("exclamation-circle", data.message, "warning")
@@ -187,17 +187,6 @@ formPost = function (url, formData) {
         let json = JSON.parse(response.responseText)
         notify("exclamation-circle", json.message, "warning")
     });
-
-
-    /*
-        $.post(url, {data: data}, function (data) {
-            notify("exclamation-circle", data.message, "success")
-        }, "json").fail(function (response) {
-            let json = JSON.parse(response.responseText)
-            notify("exclamation-circle", json.message, "warning")
-        })
-
-     */
 }
 
 toggleGeoLocateCommunityForm = function () {
