@@ -9,12 +9,18 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($expedition->geoLocateDataSource->data['stats'] as $label => $count)
+            @if(isset($expedition->geoLocateDataSource->data))
+                @foreach($expedition->geoLocateDataSource->data['stats'] as $label => $stat)
+                    <tr>
+                        <td class="text-left">{{ $label }}</td>
+                        <td>{{ $stat }}</td>
+                    </tr>
+                @endforeach
+            @else
                 <tr>
-                    <td class="text-left">{{ $label }}</td>
-                    <td>{{ $count }}</td>
+                    <td colspan="2">{{ t('No current stats at this time') }}</td>
                 </tr>
-            @endforeach
+            @endif
             </tbody>
         </table>
     </div>

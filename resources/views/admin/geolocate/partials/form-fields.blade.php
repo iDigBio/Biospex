@@ -16,7 +16,7 @@
         @endif
     </div>
     <div class="form-group col-sm-10 mx-auto text-center">
-        <div class="form-row mt-2">
+        <div class="form-row mt-2 entry">
             <select id="geolocate-source-select" class="select selectpicker mx-auto" name="source"
                     title="{{ t('GeoLocateExport CSV Source') }}"
                     data-header="{{ t('Select CSV source') }}"
@@ -79,7 +79,7 @@
         </div>
         <div class="row mt-3 justify-content-center">
             <button type="submit"
-                    class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto">{{ t('Save') }}</button>
+                    class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto" {{ $disabled ? '' : '' }}>{{ t('Save') }}</button>
             @isset($form['fields'])
                 <button type="button" id="deleteExport" class="btn btn-primary pl-4 pr-4"
                         data-href=" {{ route('admin.geolocates.delete', [$expedition->project_id, $expedition->id]) }}"
@@ -94,7 +94,7 @@
             @if($form['fields'])
                 <button type="button" id="export"
                         data-url="{{ route('admin.geolocates.export', [$expedition->project_id, $expedition->id]) }}"
-                        class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto" {{ $form['exported'] && GeneralHelper::downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id) ? 'disabled' : '' }}>{{ t('Export') }}</button>
+                        class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto" {{ $disabled ? 'disabled' : '' }}>{{ t('Export') }}</button>
             @endif
         </div>
     </div>

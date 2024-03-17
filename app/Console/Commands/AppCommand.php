@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Expedition;
 use App\Notifications\Traits\ButtonTrait;
 use Illuminate\Console\Command;
 
@@ -54,7 +55,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
-
+        $expedition = Expedition::with('geoLocateDataSource')->find(270);
+        dd($expedition->geoLocateDataSource->data);
     }
 }

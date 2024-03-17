@@ -272,6 +272,15 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
         return $this->getRelationValue('geoLocateActor')->first();
     }
 
+    /*
+    TODO: This is a HasOneThrough relationship to access the actor but not pull back the pivot table. See if we can use it instead of attribute.
+    public function geoLocateActor(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
+    {
+        return $this->hasOneThrough(Actor::class, ActorExpedition::class, 'expedition_id', 'id', 'id', 'actor_id')
+            ->where('actor_id', 4);
+    }
+     */
+
     /**
      * PanoptesProject
      *

@@ -27,12 +27,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Throwable;
 
 class GeoLocateStatsJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * @var \App\Models\Actor $actor
@@ -59,6 +58,7 @@ class GeoLocateStatsJob implements ShouldQueue
     {
         $this->actor = $actor;
         $this->refresh = $refresh;
+        $this->onQueue(config('config.queue.geolocate'));
     }
 
     /**
@@ -66,6 +66,7 @@ class GeoLocateStatsJob implements ShouldQueue
      */
     public function handle(GeoLocateStat $geoLocateStat, ExpeditionRepository $expeditionRepository): void
     {
+
         $this->expedition = $expeditionRepository->findWith($this->actor->pivot->expedition_id, ['project.group.owner']);
         $geoLocateDataSource = $geoLocateStat->getCommunityAndDataSourceByExpeditionId($this->actor->pivot->expedition_id);
 
@@ -115,6 +116,13 @@ class GeoLocateStatsJob implements ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
+        \Log::alert(print_r([
+        t('Error: %s', $throwable->getMessage()),
+        t('File: %s', $throwable->getFile()),
+        t('Line: %s', $throwable->getLine()),
+    ], true));
+
+        /*
         $subject = t('GeoLocate stats for %s failed.', $this->expedition->title);
         $attributes = [
             'subject' => $subject,
@@ -127,5 +135,6 @@ class GeoLocateStatsJob implements ShouldQueue
         ];
 
         $this->expedition->project->group->owner->notify(new Generic($attributes, true));
+        */
     }
 }

@@ -19,6 +19,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Facades\GeneralHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GeoLocateCommunityRequest;
 use App\Jobs\GeoLocateExportJob;
@@ -107,8 +108,9 @@ class GeoLocateController extends Controller
             }
 
             $form = $this->geoLocateExportForm->getForm($expedition, ['formId' => $expedition->geo_locate_form_id]);
+            $disabled= $form['exported'] && GeneralHelper::downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
 
-            $formFields = \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form'))->render();
+            $formFields = \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'))->render();
 
             $route = route('admin.geolocates.form', [$expedition->project->id, $expedition->id]);
 
@@ -140,15 +142,16 @@ class GeoLocateController extends Controller
             }
 
             $form = $this->geoLocateExportForm->getForm($expedition, \Request::all());
+            $disabled= $form['exported'] && GeneralHelper::downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
 
-            return \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form'));
+            return \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'));
         } catch (\Exception $e) {
             return \Response::json(['message' => $e->getMessage()], 500);
         }
     }
 
     /**
-     * Retireve form fields for selected form.
+     * Retrieve form fields for selected form.
      *
      * @param int $projectId
      * @param int $expeditionId

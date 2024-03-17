@@ -43,7 +43,8 @@ class GeoLocateForm extends BaseEloquentModel
      * @var string[]
      */
     protected $casts = [
-        'fields' => 'array'
+        'fields' => 'array',
+        'created_at' => 'datetime:Y-m-d',
     ];
 
     /**

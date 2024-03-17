@@ -153,6 +153,7 @@ class GeoLocateExportForm
             'geo'               => $this->getGeoLocateFields(),
             'csv'               => $this->getCsvHeader($expedition),
             'mismatch_source'   => $this->mismatchSource,
+            'created_at'        => '',
         ];
     }
 
@@ -187,6 +188,7 @@ class GeoLocateExportForm
             'geo'               => $this->getGeoLocateFields(),
             'csv'               => $this->getCsvHeader($expedition),
             'mismatch_source'   => $this->mismatchSource,
+            'created_at'        => $record->created_at,
         ];
     }
 
@@ -199,7 +201,8 @@ class GeoLocateExportForm
      */
     public function saveForm(array $request, Expedition $expedition): void
     {
-        $hash = md5(json_encode($request['fields']));
+        unset($request['_token']);
+        $hash = md5(json_encode($request));
 
         $attributes = [
             'group_id' => $request['group_id'],

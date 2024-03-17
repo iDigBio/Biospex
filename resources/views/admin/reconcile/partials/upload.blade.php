@@ -9,7 +9,7 @@
           enctype="multipart/form-data"
           role="form">
         @csrf
-        <div id="spinner" style="display: none"></div>
+        <div class="form-row justify-content-center">
             <div class="form-group col-sm-10">
                 <div class="custom-file">
                     <label for="file" class="custom-file-label">{{ t('Upload Reconciled With User Review') }}</label>

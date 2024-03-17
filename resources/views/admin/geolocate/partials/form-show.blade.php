@@ -10,11 +10,12 @@
                 data-style="btn-primary">
             <option value="" class="text-uppercase">{{ t('New') }}</option>
             @foreach($expedition->project->group->geoLocateForms as $form)
-                <option value="{{ $form->id }}" {{ $expedition->geo_locate_form_id === $form->id ? 'selected' : ''}}>{{ $form->name }}</option>
+                <option value="{{ $form->id }}" {{ $expedition->geo_locate_form_id === $form->id ? 'selected' : ''}}>
+                    {{ $form->name }}: {{ $form->created_at }}</option>
             @endforeach
         </select>
     </div>
 </div>
 <div class="row">
-    <div id="geolocate-results" class="col-sm-12 text-center m-auto mt-5">{!! $formFields !!}</div>
+    <div id="geolocate-form-results" class="col-sm-12 text-center m-auto mt-5">{!! $formFields !!}</div>
 </div>

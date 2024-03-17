@@ -58,6 +58,7 @@ $(function () {
             $('#warning').html('').collapse('hide')
             // used in workflow id and geolocate community modal forms.
             e.preventDefault() // avoid to execute the actual submit of the form.
+            console.log('testing submit')
             let formData = new FormData(this);
             formPost($(this).attr('action'), formData)
             $globalModal.modal('hide');
@@ -69,7 +70,7 @@ $(function () {
                 return;
             }
 
-            let $ajaxResults = $('#geolocate-results')
+            let $ajaxResults = $('#geolocate-form-results')
             $ajaxResults.html('<div class="mt-5 loader mx-auto"></div>')
             $.post($(this).data('url'), {
                 formId: $('#geolocate-form-select').val(),
@@ -176,7 +177,7 @@ formPost = function (url, formData) {
         cache: false,
         contentType: false,
         processData: false,
-        async: true, //add this
+        async: false, //add this
     }).done(function (data) {
         if (data.error) {
             notify("exclamation-circle", data.message, "warning")
