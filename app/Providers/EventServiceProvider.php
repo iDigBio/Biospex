@@ -21,7 +21,7 @@ namespace App\Providers;
 
 use App\Listeners\ExportQueueEventSubscriber;
 use App\Listeners\GroupEventSubscriber;
-use App\Listeners\SnsNotificaitonListener;
+use App\Listeners\SnsNotificationListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -45,7 +45,7 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         SnsNotification::class             => [
-            SnsNotificaitonListener::class,
+            SnsNotificationListener::class,
         ],
         SnsSubscriptionConfirmation::class => [
 

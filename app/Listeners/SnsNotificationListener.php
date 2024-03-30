@@ -5,7 +5,7 @@ namespace App\Listeners;
 use App\Services\Process\SnsImageExportResultProcess;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SnsNotificaitonListener implements ShouldQueue
+class SnsNotificationListener implements ShouldQueue
 {
     /**
      * @var \App\Services\Process\SnsImageExportResultProcess
