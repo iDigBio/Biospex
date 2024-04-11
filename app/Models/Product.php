@@ -39,4 +39,9 @@ class Product extends BaseEloquentModel
         'key'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
 }

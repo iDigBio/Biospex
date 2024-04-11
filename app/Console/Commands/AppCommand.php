@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 /**
@@ -51,7 +52,8 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
+        $date = Carbon::now();
+        dd(Carbon::parse($date)->tz(null)->format('Y-m-d'));
     }
 
 }
