@@ -19,6 +19,8 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ReCaptcha;
+
 /**
  * Class RegisterFormRequest
  *
@@ -47,7 +49,7 @@ class RegisterFormRequest extends Request
             'email'                 => 'required|min:4|max:32|email|unique:users',
             'password'              => 'required|min:6|confirmed',
             'password_confirmation' => 'required',
-            'g-recaptcha-response'  => 'required|captcha',
+            'g-recaptcha-response'  => ['required', new ReCaptcha],
         ];
     }
 }

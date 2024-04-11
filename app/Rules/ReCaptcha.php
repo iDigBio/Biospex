@@ -17,32 +17,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+namespace App\Rules;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Http;
 
-class BaseMongoModel extends Model
+class ReCaptcha implements ValidationRule
 {
     /**
-     * @inheritDoc
-     */
-    protected $connection = 'mongodb';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = '_id';
-
-    /**
-     * @inheritDoc
-     */
-    public $incrementing = false;
-
-    /**
-     * The attributes that aren't mass assignable.
+     * Run the validation rule.
      *
-     * @var array
+     * @param \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString $fail
      */
-    protected $guarded = [];
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        $response = Http::asForm()->post(config('services.recaptcha.url'), [
+            'secret'   => config('services.recaptcha.secret_key'),
+            'response' => $value,
+        ]);
 
+        if (! ($response->json()["success"] ?? false)) {
+            $fail('The google recaptcha is required.');
+        }
+    }
 }

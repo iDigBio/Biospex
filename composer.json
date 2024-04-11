@@ -8,37 +8,30 @@
   ],
   "license": "MIT",
   "require": {
-    "php": "^7.3|^8.0",
-    "ext-json": "*",
-    "ext-mongodb": "*",
-    "ext-zip": "*",
-    "anhskohbo/no-captcha": "^3.0",
-    "fruitcake/laravel-cors": "^2.0",
-    "guzzlehttp/guzzle": "^7.0.1",
-    "jenssegers/mongodb": "^3.8",
-    "laracasts/utilities": "^3.2",
-    "laravel/framework": "^9.0",
-    "laravel/tinker": "^2.5",
-    "laravel/ui": "^v3.0",
-    "league/csv": "^9.6",
-    "league/oauth2-client": "^2.6",
-    "neitanod/forceutf8": "~2.0",
-    "pda/pheanstalk": "^4.0",
-    "spiritix/lada-cache": "^5.1",
+    "php": "^8.2",
+    "laracasts/utilities": "^3.0",
+    "laravel/framework": "^11.0",
+    "laravel/tinker": "^v2.9.0",
+    "laravel/ui": "^v4.5.1",
+    "league/csv": "^9.15",
+    "league/oauth2-client": "^2.7",
+    "mongodb/laravel-mongodb": "^4.0",
+    "neitanod/forceutf8": "^2.0",
+    "pda/pheanstalk": "^v5.0.5",
+    "spiritix/lada-cache": "^v5.4",
     "symfony/http-client": "^6.0",
     "symfony/mailgun-mailer": "^6.0",
-    "tio/laravel": "^1.10",
-    "yajra/laravel-datatables-oracle": "~9.0"
+    "tio/laravel": "^v1.23",
+    "yajra/laravel-datatables-oracle": "^v11.0.0"
   },
   "require-dev": {
-    "barryvdh/laravel-debugbar": "^3.5",
-    "barryvdh/laravel-ide-helper": "^2.8",
-    "beyondcode/laravel-dump-server": "^1.4",
-    "spatie/laravel-ignition": "^1.0",
-    "fakerphp/faker": "^1.9.1",
-    "mockery/mockery": "^1.4.2",
-    "nunomaduro/collision": "^6.1",
-    "phpunit/phpunit": "^9.3.3"
+    "barryvdh/laravel-debugbar": "^3.6",
+    "barryvdh/laravel-ide-helper": "^v3.0.0",
+    "spatie/laravel-ignition": "^2.5.1",
+    "fakerphp/faker": "^v1.23.0",
+    "mockery/mockery": "^1.6.11",
+    "nunomaduro/collision": "^v8.1.1",
+    "phpunit/phpunit": "^11.1.1"
   },
   "config": {
     "optimize-autoloader": true,
@@ -67,7 +60,7 @@
       "Tests\\": "tests/"
     }
   },
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "prefer-stable": true,
   "scripts": {
     "post-autoload-dump": [
