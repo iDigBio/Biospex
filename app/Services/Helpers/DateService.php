@@ -59,10 +59,10 @@ class DateService
      *
      * @param $date
      * @param null $format
-     * @param null $tz
+     * @param string $tz
      * @return mixed
      */
-    public function formatDate($date, $format = null, $tz = null)
+    public function formatDate($date, $format = null, string $tz = 'UTC')
     {
         if (is_null($date)) {
             return Carbon::now();
