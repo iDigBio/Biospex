@@ -325,15 +325,15 @@ return [
     'wedigbio_end_date'   => env('WEDIGBIO_END_DATE'),
 
     'deployment_fields' => [
-        'API_URL',
-        'API_VERSION',
-        'API_TOKEN',
         'APP_URL',
         'APP_ENV',
         'APP_DOMAIN',
         'SERVER_USER',
         'CURRENT_PATH',
         'REDIS_HOST',
+        'API_URL',
+        'API_VERSION',
+        'API_TOKEN',
         'NUM_PROCS',
         'QUEUE_CHART',
         'QUEUE_CLASSIFICATION',
