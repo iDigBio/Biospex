@@ -10,10 +10,7 @@
   "require": {
     "php": "^8.1",
     "ext-json": "*",
-    "ext-memcached": "*",
     "ext-mongodb": "*",
-    "ext-redis": "*",
-    "ext-zip": "*",
     "anhskohbo/no-captcha": "^3.0",
     "aws/aws-sdk-php": "~3.0",
     "axn/laravel-pk-int-to-bigint": "^2.1",
