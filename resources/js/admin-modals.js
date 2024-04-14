@@ -24,7 +24,7 @@ $(function () {
         }
     })
 
-    let $globalModal = $('.modal');
+    let $globalModal = $('.global-modal');
     $globalModal.on('show.bs.modal', function (e) {
         let $target = $(e.relatedTarget)
         let $modalBody = $(this).find('.modal-body')
