@@ -271,14 +271,14 @@ class UpdateQueries extends Command
         }
     }
 
-    public function updateDownloadsSetReconciledToReconciledWithExpert()
+    public function updateDownloadsSetReconciledToReconciledWithExpert(): void
     {
         echo 'Running '.__METHOD__.PHP_EOL;
 
         Download::where('type', 'reconciled')->update(['type' => 'reconciled-with-expert']);
     }
 
-    public function updateDownloadsSetReconcileToReconciled()
+    public function updateDownloadsSetReconcileToReconciled(): void
     {
         echo 'Running '.__METHOD__.PHP_EOL;
 

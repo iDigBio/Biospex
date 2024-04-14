@@ -33,7 +33,7 @@ return new class extends Migration
         Schema::table('expeditions', function (Blueprint $table) {
             $table->boolean('locked')->default(0)->after('keywords');
             $table->boolean('completed')->default(0)->after('keywords');
-            $table->unsignedInteger('workflow_id')->nullable()->after('keywords');
+            $table->unsignedBigInteger('workflow_id')->nullable()->after('keywords');
         });
     }
 

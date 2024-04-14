@@ -29,7 +29,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('expeditions', function (Blueprint $table) {
-            $table->unsignedInteger('geo_locate_form_id')
+            $table->unsignedBigInteger('geo_locate_form_id')
                 ->index('expeditions_geo_locate_form_id_foreign')
                 ->after('workflow_id')
                 ->nullable();

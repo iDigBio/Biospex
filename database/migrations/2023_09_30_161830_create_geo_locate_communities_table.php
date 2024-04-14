@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('geo_locate_communities', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('project_id');
+            $table->unsignedBigInteger('project_id');
             $table->foreign('project_id')->references('id')
                 ->on('projects')->onUpdate('RESTRICT')->onDelete('CASCADE');
             $table->string('name');

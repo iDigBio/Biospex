@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('geo_locate_data_sources', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('project_id');
+            $table->unsignedBigInteger('project_id');
             $table->foreign('project_id')->references('id')
                 ->on('projects')->onUpdate('RESTRICT')->onDelete('CASCADE');
-            $table->unsignedInteger('expedition_id');
+            $table->unsignedBigInteger('expedition_id');
             $table->foreign('expedition_id')->references('id')
                 ->on('expeditions')->onUpdate('RESTRICT')->onDelete('CASCADE');
             $table->unsignedBigInteger('geo_locate_community_id');

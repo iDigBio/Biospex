@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('geo_locate_forms', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('group_id');
+            $table->id();
+            $table->unsignedBigInteger('group_id');
             $table->foreign('group_id')->references('id')
                 ->on('groups')->onUpdate('RESTRICT')->onDelete('CASCADE');
             $table->string('name');
