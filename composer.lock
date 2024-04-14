@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "84759b852dcda1a73a1db6bea71cc76a",
+    "content-hash": "e56af85f2e4eee23ce07b90024b683cb",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -59,6 +59,65 @@
                 "source": "https://github.com/awslabs/aws-crt-php/tree/v1.2.4"
             },
             "time": "2023-11-08T00:42:13+00:00"
+        },
+        {
+            "name": "aws/aws-php-sns-message-validator",
+            "version": "1.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aws/aws-php-sns-message-validator.git",
+                "reference": "de457eaf8fbfa05f2f611d546d7357c6fdec86f8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aws/aws-php-sns-message-validator/zipball/de457eaf8fbfa05f2f611d546d7357c6fdec86f8",
+                "reference": "de457eaf8fbfa05f2f611d546d7357c6fdec86f8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "php": ">=7.2.5",
+                "psr/http-message": "^1.0 || ^2.0"
+            },
+            "require-dev": {
+                "guzzlehttp/psr7": "^1.9.1 || ^2.4.5",
+                "phpunit/phpunit": "^5.6.3 || ^8.5 || ^9.5",
+                "squizlabs/php_codesniffer": "^2.3",
+                "yoast/phpunit-polyfills": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Aws\\Sns\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Amazon Web Services",
+                    "homepage": "http://aws.amazon.com"
+                }
+            ],
+            "description": "Amazon SNS message validation for PHP",
+            "homepage": "http://aws.amazon.com/sdkforphp",
+            "keywords": [
+                "SNS",
+                "amazon",
+                "aws",
+                "cloud",
+                "message",
+                "sdk",
+                "webhooks"
+            ],
+            "support": {
+                "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
+                "issues": "https://github.com/aws/aws-sns-message-validator/issues",
+                "source": "https://github.com/aws/aws-php-sns-message-validator/tree/1.9.0"
+            },
+            "time": "2023-12-18T17:03:51+00:00"
         },
         {
             "name": "aws/aws-sdk-php",
