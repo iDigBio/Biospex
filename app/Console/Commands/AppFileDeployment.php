@@ -123,7 +123,7 @@ class AppFileDeployment extends Command
     /**
      * Set search and replace arrays.
      */
-    private function setConfig()
+    private function setConfig(): void
     {
         $this->config = collect(config('config.deployment_fields'));
     }

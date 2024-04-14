@@ -55,7 +55,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $expedition = Expedition::with('geoLocateDataSource')->find(270);
-        dd($expedition->geoLocateDataSource->data);
+
     }
 }
