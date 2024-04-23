@@ -44,9 +44,9 @@ class ExportQueueFileRepository extends BaseRepository
     /**
      * Return model.
      *
-     * @return \App\Models\ExportQueueFile|\Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
+     * @return \App\Models\ExportQueueFile|\Illuminate\Database\Eloquent\Model|\MongoDB\Laravel\Eloquent\Model
      */
-    public function model(): ExportQueueFile|\Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
+    public function model(): ExportQueueFile|\Illuminate\Database\Eloquent\Model|\MongoDB\Laravel\Eloquent\Model
     {
         return $this->model;
     }

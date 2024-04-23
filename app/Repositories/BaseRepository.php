@@ -28,7 +28,7 @@ namespace App\Repositories;
 class BaseRepository
 {
     /**
-     * @var \Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
+     * @var \Illuminate\Database\Eloquent\Model|\MongoDB\Laravel\Eloquent\Model
      */
     protected $model;
 

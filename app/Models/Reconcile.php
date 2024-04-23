@@ -61,7 +61,7 @@ class Reconcile extends BaseMongoModel
     /**
      * Project relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Mongodb\Laravel\Relations\BelongsTo
      */
     public function project()
     {
@@ -81,7 +81,7 @@ class Reconcile extends BaseMongoModel
     /**
      * Panoptes Transcripition relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Mongodb\Laravel\Relations\HasMany
      */
     public function transcriptions()
     {

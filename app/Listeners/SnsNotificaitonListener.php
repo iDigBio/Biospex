@@ -1,11 +1,28 @@
 <?php
+/*
+ * Copyright (c) 2022. Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 namespace App\Listeners;
 
 use App\Services\Process\SnsImageExportResultProcess;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SnsNotificaitonListener implements ShouldQueue
+class SnsNotificationListener implements ShouldQueue
 {
     /**
      * @var \App\Services\Process\SnsImageExportResultProcess
@@ -17,7 +34,9 @@ class SnsNotificaitonListener implements ShouldQueue
      *
      * @param \App\Services\Process\SnsImageExportResultProcess $snsImageExportResultProcess
      */
-    public function __construct(SnsImageExportResultProcess $snsImageExportResultProcess)
+    public function __construct(
+        SnsImageExportResultProcess $snsImageExportResultProcess
+    )
     {
         $this->snsImageExportResultProcess = $snsImageExportResultProcess;
     }
@@ -29,7 +48,7 @@ class SnsNotificaitonListener implements ShouldQueue
      */
     public function viaQueue()
     {
-        return config('config.queues.sns_image');
+        return config('config.queue.sns_image');
     }
 
     /**
@@ -38,11 +57,14 @@ class SnsNotificaitonListener implements ShouldQueue
      * @param object $event
      * @return void
      */
-    public function handle($event)
+    public function handle(object $event): void
     {
         // $event->payload is the data passed to the event.
         $content = json_decode($event->payload['message']['Message'], true);
-        $this->snsImageExportResultProcess->process($content);
+
+        if (\Str::contains($content['requestContext']['functionArn'], 'imageProcessExport')) {
+            $this->snsImageExportResultProcess->process($content);
+        }
     }
 }
 
@@ -52,7 +74,7 @@ class SnsNotificaitonListener implements ShouldQueue
   "timestamp": "2022-08-21T17:59:27.529Z",
   "requestContext": {
     "requestId": "36a960b2-bd75-4cee-b5b1-ffd567ebd94d",
-    "functionArn": "arn:aws:lambda:us-east-2:147899039648:function:imageProcessExport:$LATEST",
+    "functionArn": "arn:aws:lambda:us-east-2:147899039648:function:imageProcessExport:$LATEST", arn:aws:lambda:us-east-2:147899039648:function:tesseractOcr:$LATEST
     "condition": "Success",
     "approximateInvokeCount": 1
   },

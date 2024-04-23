@@ -35,6 +35,7 @@ _ide_helper.php
 /config/ide-helper.php
 yarn-error.log
 .env
+.env.dev.local
 /.phpunit.result.cache
 /laravel-echo-server.lock
 lang/.translation_io

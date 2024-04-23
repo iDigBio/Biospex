@@ -22,7 +22,7 @@
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
-                <form action="{{ route('api.post.register') }}" method="post" role="form" class="form-horizontal">
+                <form action="{{ route('api.post.register') }}" method="post" role="form" class="form-horizontal recaptcha">
                     @csrf
                     <input type="hidden" name="apiuser" value="true">
                     <div class="form-group">

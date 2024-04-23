@@ -19,7 +19,7 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\Model;
 
 /**
  * Class BaseMongoModel
@@ -54,7 +54,7 @@ class BaseMongoModel extends Model
      *
      * @param string $key
      * @param mixed $value
-     * @return \Jenssegers\Mongodb\Eloquent\Model|mixed|void
+     * @return \MongoDB\Laravel\Eloquent\Model|mixed|void
      */
     public function setAttribute($key, $value)
     {

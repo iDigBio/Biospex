@@ -21,7 +21,7 @@ namespace App\Models;
 
 use App\Facades\DateHelper;
 use App\Presenters\ProjectPresenter;
-use Jenssegers\Mongodb\Eloquent\HybridRelations;
+use MongoDB\Laravel\Eloquent\HybridRelations;
 use Illuminate\Support\Facades\Config;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
@@ -307,7 +307,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     /**
      * Bingos relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Mongodb\Laravel\Relations\HasMany
      */
     public function bingos()
     {

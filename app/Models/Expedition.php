@@ -22,7 +22,7 @@ namespace App\Models;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
 use App\Models\Traits\Presentable;
-use Jenssegers\Mongodb\Eloquent\HybridRelations;
+use MongoDB\Laravel\Eloquent\HybridRelations;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 

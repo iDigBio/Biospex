@@ -21,12 +21,12 @@ namespace App\Providers;
 
 use App\Listeners\ExportQueueEventSubscriber;
 use App\Listeners\GroupEventSubscriber;
-use App\Listeners\SnsNotificaitonListener;
+use App\Listeners\SnsNotificationListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Rennokki\LaravelSnsEvents\Events\SnsNotification;
-use Rennokki\LaravelSnsEvents\Events\SnsSubscriptionConfirmation;
+use App\Events\SnsNotification;
+use App\Events\SnsSubscriptionConfirmation;
 
 /**
  * Class EventServiceProvider
@@ -45,7 +45,7 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         SnsNotification::class             => [
-            SnsNotificaitonListener::class,
+            SnsNotificationListener::class,
         ],
         SnsSubscriptionConfirmation::class => [
 
