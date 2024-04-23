@@ -37,7 +37,7 @@ use Throwable;
  */
 class ZooniverseReconcileJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
+    use Dispatchable, InteractsWithQueue, Queueable, SkipZooniverse;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -104,6 +104,7 @@ class ZooniverseReconcileJob implements ShouldQueue
             ],
         ];
 
-        User::find(config('config.admin.user_id'))->notify(new Generic($attributes));
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

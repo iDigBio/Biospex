@@ -116,13 +116,6 @@ class GeoLocateStatsJob implements ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
-        \Log::alert(print_r([
-        t('Error: %s', $throwable->getMessage()),
-        t('File: %s', $throwable->getFile()),
-        t('Line: %s', $throwable->getLine()),
-    ], true));
-
-        /*
         $subject = t('GeoLocate stats for %s failed.', $this->expedition->title);
         $attributes = [
             'subject' => $subject,
@@ -135,6 +128,5 @@ class GeoLocateStatsJob implements ShouldQueue
         ];
 
         $this->expedition->project->group->owner->notify(new Generic($attributes, true));
-        */
     }
 }

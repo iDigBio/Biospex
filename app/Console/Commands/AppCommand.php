@@ -19,8 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Expedition;
-use App\Notifications\Traits\ButtonTrait;
 use Illuminate\Console\Command;
 
 /**
@@ -30,7 +28,6 @@ use Illuminate\Console\Command;
  */
 class AppCommand extends Command
 {
-    use ButtonTrait;
 
     /**
      * The console command name.

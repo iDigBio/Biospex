@@ -89,6 +89,7 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
             ],
         ];
 
-        User::find(config('config.admin_id'))->notify(new Generic($attributes));
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

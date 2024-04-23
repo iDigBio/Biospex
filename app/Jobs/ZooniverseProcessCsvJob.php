@@ -122,6 +122,7 @@ class ZooniverseProcessCsvJob implements ShouldQueue
             ],
         ];
 
-        User::find(config('config.admin.user_id'))->notify(new Generic($attributes));
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }
