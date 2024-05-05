@@ -29,20 +29,19 @@ use Illuminate\Http\Resources\Json\JsonResource ;
  */
 class PusherTranscriptionResource extends JsonResource
 {
-
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request
+     * @param $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'project'              => $this->project,
             'description'          => $this->description,
             'guid'                 => $this->guid,
-            'timestamp'            => DateHelper::formatMongoDbDate($this->timestamp, 'Y-m-d\TH:i:s\Z'),
+            'timestamp'            => $this->timestamp,
             'subject'              => $this->subject,
             'contributor'          => $this->contributor,
             'transcriptionContent' => $this->transcriptionContent,

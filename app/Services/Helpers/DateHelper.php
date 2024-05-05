@@ -22,7 +22,6 @@ namespace App\Services\Helpers;
 use Illuminate\Support\Carbon;
 use DateTime;
 use DateTimeZone;
-use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class DateHelper
@@ -31,28 +30,6 @@ use MongoDB\BSON\UTCDateTime;
  */
 class DateHelper
 {
-    /**
-     * Format date from mongo db.
-     *
-     * @param $date
-     * @param string $format
-     * @return mixed
-     */
-    public function formatMongoDbDate($date, $format = 'Y-m-d')
-    {
-        return $date->toDateTime()->format($format);
-    }
-
-    /**
-     * When doing raw queries for MongoDb, convert Carbon date to UTC.
-     *
-     * @param $date
-     * @return \MongoDB\BSON\UTCDateTime
-     */
-    public function formatDateToUtcTimestamp($date)
-    {
-        return new UTCDateTime($date);
-    }
 
     /**
      * Format date using timezone and format.

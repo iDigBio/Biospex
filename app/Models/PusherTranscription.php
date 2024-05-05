@@ -38,8 +38,6 @@ class PusherTranscription extends BaseMongoModel
         'classification_id' => 'int',
         'transcription_id' => 'string',
         'expedition_id' => 'int',
-        'classification_started_at' => 'datetime',
-        'classification_finished_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'timestamp' => 'datetime',

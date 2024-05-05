@@ -38,7 +38,7 @@ class PusherTranscriptionTransformer extends TransformerAbstract
             'project'              => $model->project,
             'description'          => $model->description,
             'guid'                 => $model->guid,
-            'timestamp'            => DateHelper::formatMongoDbDate($model->timestamp, 'Y-m-d\TH:i:s\Z'),
+            'timestamp'            => $model->timestamp,
             'subject'              => $model->subject,
             'contributor'          => $model->contributor,
             'transcriptionContent' => $model->transcriptionContent,

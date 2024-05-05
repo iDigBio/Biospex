@@ -19,9 +19,6 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use MongoDB\BSON\UTCDateTime;
-
 /**
  * Class PanoptesTranscription
  *
@@ -44,7 +41,9 @@ class PanoptesTranscription extends BaseMongoModel
         'workflow_id' => 'int',
         'subject_expeditionId' => 'int',
         'subject_projectId' => 'int',
-        'transcription_id' => 'string'
+        'transcription_id' => 'string',
+        'classification_started_at' => 'datetime',
+        'classification_finished_at' => 'datetime'
     ];
 
     /**
@@ -89,26 +88,5 @@ class PanoptesTranscription extends BaseMongoModel
     public function dashboard()
     {
         return $this->hasOne(PusherTranscription::class, 'classification_id', 'classification_id');
-    }
-
-    /**
-     * Mutate finished_at date for MongoDb
-     *
-     * @param  string  $value
-     */
-    public function setClassificationFinishedAtAttribute($value)
-    {
-        $this->attributes['classification_finished_at'] = new UTCDateTime(Carbon::parse($value)->timestamp * 1000);
-    }
-
-
-    /**
-     * Mutate started_at for MongoDb
-     *
-     * @param  string  $value
-     */
-    public function setClassificationStartedAtAttribute($value)
-    {
-        $this->attributes['classification_started_at'] = new UTCDateTime(Carbon::parse($value)->timestamp * 1000);
     }
 }
