@@ -38,11 +38,13 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     protected $table = 'profiles';
 
     /**
-     * @inheritDoc
+     * @var string[] $casts
      */
-    protected $dates = ['created_at', 'updated_at'];
-
-    protected $casts = ['avatar_updated_at' => 'datetime'];
+    protected $casts = [
+        'avatar_updated_at' => 'datetime',
+        'created_at'        => 'datetime',
+        'updated_at'        => 'datetime',
+    ];
 
     /**
      * @inheritDoc
@@ -63,11 +65,12 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     {
         $this->hasAttachedFile('avatar', [
             'variants' => [
-                'medium' => '160x160', 'small' => '25x25'
+                'medium' => '160x160',
+                'small'  => '25x25',
             ],
-            'url'  => config('config.missing_avatar_medium'),
-            'urls' => [
-                'small' => config('config.missing_avatar_small'),
+            'url'      => config('config.missing_avatar_medium'),
+            'urls'     => [
+                'small'  => config('config.missing_avatar_small'),
                 'medium' => config('config.missing_avatar_medium'),
             ],
         ]);

@@ -40,16 +40,6 @@ class Event extends BaseEloquentModel
     /**
      * @var array
      */
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'start_date',
-        'end_date'
-    ];
-
-    /**
-     * @var array
-     */
     protected $casts = [
         'project_id' => 'integer',
         'owner_id' => 'integer',
@@ -60,7 +50,9 @@ class Event extends BaseEloquentModel
         'contact_email' => 'string',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'timezone' => 'string'
+        'timezone' => 'string',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     /**

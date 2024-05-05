@@ -37,20 +37,18 @@ class Reconcile extends BaseMongoModel
     protected $collection = 'reconciles';
 
     /**
-     * @inheritDoc
-     */
-    protected $dates = ['created_at', 'updated_at', 'timestamp'];
-
-    /**
      * The attributes that should be cast.
      *
      * @var array
      */
     protected $casts = [
-        'subject_id' => 'integer',
-        'subject_projectId' => 'integer',
+        'subject_id'           => 'integer',
+        'subject_projectId'    => 'integer',
         'subject_expeditionId' => 'integer',
-        'problem' => 'integer'
+        'problem'              => 'integer',
+        'created_at'           => 'datetime',
+        'updated_at'           => 'datetime',
+        'timestamp'            => 'datetime',
     ];
 
     /**
@@ -87,5 +85,4 @@ class Reconcile extends BaseMongoModel
     {
         return $this->hasMany(PanoptesTranscription::class, 'subject_id', 'subject_id');
     }
-
 }

@@ -32,17 +32,17 @@ class PusherTranscription extends BaseMongoModel
     protected $collection = 'pusher_transcriptions';
 
     /**
-     * @inheritDoc
-     */
-    protected $dates = ['created_at', 'updated_at', 'timestamp'];
-
-    /**
      * @var string[]
      */
     protected $casts = [
         'classification_id' => 'int',
         'transcription_id' => 'string',
-        'expedition_id' => 'int'
+        'expedition_id' => 'int',
+        'classification_started_at' => 'datetime',
+        'classification_finished_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'timestamp' => 'datetime',
     ];
 
     /**
