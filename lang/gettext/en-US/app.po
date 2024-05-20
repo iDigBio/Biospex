@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: BIOSPEX Prod Local\n"
+"Project-Id-Version: BIOSPEX Local\n"
 "Report-Msgid-Bugs-To: contact@translation.io\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-04-23T19:07:21+00:00\n"
-"PO-Revision-Date: 2023-04-23 21:07+0200\n"
+"POT-Creation-Date: 2024-05-20T15:05:55+00:00\n"
+"PO-Revision-Date: 2024-05-20 17:05+0200\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n!=1;\n"
 
@@ -52,51 +52,51 @@ msgid "Uri is not available at this time."
 msgstr ""
 
 #: app/Http/Controllers/Admin/BingoController.php:93
-#: app/Http/Controllers/Admin/EventController.php:138
+#: app/Http/Controllers/Admin/EventController.php:137
 #: app/Http/Controllers/Admin/ExpeditionController.php:226
 #: app/Http/Controllers/Admin/GroupController.php:94
-#: app/Http/Controllers/Admin/ProjectController.php:152
+#: app/Http/Controllers/Admin/ProjectController.php:153
 msgid "Record was created successfully."
 msgstr ""
 
 #: app/Http/Controllers/Admin/BingoController.php:98
-#: app/Http/Controllers/Admin/EventController.php:143
+#: app/Http/Controllers/Admin/EventController.php:142
 #: app/Http/Controllers/Admin/ExpeditionController.php:202
-#: app/Http/Controllers/Admin/ExpeditionController.php:400
-#: app/Http/Controllers/Admin/ProjectController.php:157
+#: app/Http/Controllers/Admin/ExpeditionController.php:402
+#: app/Http/Controllers/Admin/ProjectController.php:158
 msgid "An error occurred when saving record."
 msgstr ""
 
 #: app/Http/Controllers/Admin/BingoController.php:154
-#: app/Http/Controllers/Admin/EventController.php:191
-#: app/Http/Controllers/Admin/ExpeditionController.php:396
+#: app/Http/Controllers/Admin/EventController.php:190
+#: app/Http/Controllers/Admin/ExpeditionController.php:398
 #: app/Http/Controllers/Admin/GroupController.php:158
-#: app/Http/Controllers/Admin/ProjectController.php:238
+#: app/Http/Controllers/Admin/ProjectController.php:239
 #: app/Http/Controllers/Admin/ReconcileController.php:138
 #: app/Http/Controllers/Admin/UserController.php:123
 msgid "Record was updated successfully."
 msgstr ""
 
 #: app/Http/Controllers/Admin/BingoController.php:159
-#: app/Http/Controllers/Admin/EventController.php:196
+#: app/Http/Controllers/Admin/EventController.php:195
 #: app/Http/Controllers/Admin/GroupController.php:158
-#: app/Http/Controllers/Admin/ProjectController.php:238
+#: app/Http/Controllers/Admin/ProjectController.php:239
 #: app/Http/Controllers/Admin/ReconcileController.php:133
 #: app/Http/Controllers/Admin/UserController.php:127
 msgid "Error while updating record."
 msgstr ""
 
 #: app/Http/Controllers/Admin/BingoController.php:183
-#: app/Http/Controllers/Admin/EventController.php:220
+#: app/Http/Controllers/Admin/EventController.php:219
 #: app/Http/Controllers/Admin/GroupController.php:190
-#: app/Http/Controllers/Admin/ProjectController.php:317
+#: app/Http/Controllers/Admin/ProjectController.php:318
 msgid "Record has been scheduled for deletion and changes will take effect in a few minutes."
 msgstr ""
 
 #: app/Http/Controllers/Admin/BingoController.php:188
-#: app/Http/Controllers/Admin/EventController.php:225
+#: app/Http/Controllers/Admin/EventController.php:224
 #: app/Http/Controllers/Admin/GroupController.php:194
-#: app/Http/Controllers/Admin/ProjectController.php:321
+#: app/Http/Controllers/Admin/ProjectController.php:322
 msgid "An error occurred when deleting record."
 msgstr ""
 
@@ -112,58 +112,58 @@ msgstr ""
 msgid "Your batch request has been submitted. You will receive an email with download links when the process is complete."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:430
+#: app/Http/Controllers/Admin/ExpeditionController.php:432
 msgid "NfnPanoptes Workflow Id is missing. Please update the Expedition once Workflow Id is acquired."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:436
+#: app/Http/Controllers/Admin/ExpeditionController.php:438
 msgid "The expedition has been removed from the process queue."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:448
+#: app/Http/Controllers/Admin/ExpeditionController.php:450
 msgid "The expedition has been added to the process queue."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:455
+#: app/Http/Controllers/Admin/ExpeditionController.php:457
 msgid "An error occurred when trying to process the expedition: %s"
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:479
-#: app/Http/Controllers/Admin/ProjectController.php:343
+#: app/Http/Controllers/Admin/ExpeditionController.php:481
+#: app/Http/Controllers/Admin/ProjectController.php:344
 msgid "OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:502
+#: app/Http/Controllers/Admin/ExpeditionController.php:504
 msgid "Expedition has no processes at this time."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:509
+#: app/Http/Controllers/Admin/ExpeditionController.php:511
 msgid "Expedition process has been stopped locally. This does not stop any processing occurring on remote sites."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:525
+#: app/Http/Controllers/Admin/ExpeditionController.php:527
 msgid "Request must be ajax."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:531
+#: app/Http/Controllers/Admin/ExpeditionController.php:533
 msgid "You are not authorized to update project."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:554
+#: app/Http/Controllers/Admin/ExpeditionController.php:556
 msgid "Could not update Panoptes Workflow Id."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:584
+#: app/Http/Controllers/Admin/ExpeditionController.php:586
 #: app/Http/Controllers/Admin/GroupController.php:180
-#: app/Http/Controllers/Admin/ProjectController.php:310
+#: app/Http/Controllers/Admin/ProjectController.php:311
 msgid "An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:591
+#: app/Http/Controllers/Admin/ExpeditionController.php:593
 msgid "Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ExpeditionController.php:595
+#: app/Http/Controllers/Admin/ExpeditionController.php:597
 msgid "record.record_delete_error"
 msgstr ""
 
@@ -202,17 +202,17 @@ msgstr ""
 msgid "Your message has been sent."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ProjectController.php:173
-#: app/Http/Controllers/Admin/ProjectController.php:202
+#: app/Http/Controllers/Admin/ProjectController.php:174
+#: app/Http/Controllers/Admin/ProjectController.php:203
 #: app/Http/Controllers/Front/EventController.php:93
 msgid "Error retrieving record from database"
 msgstr ""
 
-#: app/Http/Controllers/Admin/ProjectController.php:377
+#: app/Http/Controllers/Admin/ProjectController.php:378
 msgid "Subjects have been set for deletion. You will be notified by email when complete."
 msgstr ""
 
-#: app/Http/Controllers/Admin/ProjectController.php:381
+#: app/Http/Controllers/Admin/ProjectController.php:382
 msgid "There was an error setting the job to delete the Subjects."
 msgstr ""
 
@@ -285,7 +285,7 @@ msgstr ""
 #: app/Jobs/AmChartJob.php:89
 #: app/Jobs/ZooniverseClassificationCountJob.php:163
 #: app/Jobs/ZooniverseCsvDownloadJob.php:95
-#: app/Jobs/ZooniverseCsvJob.php:102
+#: app/Jobs/ZooniverseCsvJob.php:115
 #: app/Jobs/ZooniverseProcessCsvJob.php:118
 #: app/Jobs/ZooniversePusherJob.php:136
 #: app/Jobs/ZooniverseReconcileJob.php:100
@@ -296,7 +296,7 @@ msgstr ""
 #: app/Jobs/AmChartJob.php:90
 #: app/Jobs/ZooniverseClassificationCountJob.php:164
 #: app/Jobs/ZooniverseCsvDownloadJob.php:96
-#: app/Jobs/ZooniverseCsvJob.php:103
+#: app/Jobs/ZooniverseCsvJob.php:116
 #: app/Jobs/ZooniverseProcessCsvJob.php:119
 #: app/Jobs/ZooniversePusherJob.php:137
 #: app/Jobs/ZooniverseReconcileJob.php:101
@@ -308,7 +308,7 @@ msgstr ""
 #: app/Jobs/AmChartJob.php:91
 #: app/Jobs/ZooniverseClassificationCountJob.php:165
 #: app/Jobs/ZooniverseCsvDownloadJob.php:97
-#: app/Jobs/ZooniverseCsvJob.php:104
+#: app/Jobs/ZooniverseCsvJob.php:117
 #: app/Jobs/ZooniverseProcessCsvJob.php:120
 #: app/Jobs/ZooniversePusherJob.php:138
 #: app/Jobs/ZooniverseReconcileJob.php:102
@@ -417,15 +417,15 @@ msgstr ""
 msgid "BIOSPEX Export Completed"
 msgstr ""
 
-#: app/Nova/Actor.php:64
+#: app/Nova/Actor.php:67
 msgid "Actors"
 msgstr ""
 
-#: app/Nova/Actor.php:74
+#: app/Nova/Actor.php:77
 msgid "Actor"
 msgstr ""
 
-#: app/Nova/Actor.php:86
+#: app/Nova/Actor.php:89
 #: app/Nova/Expedition.php:88
 #: app/Nova/Group.php:88
 #: app/Nova/PanoptesProject.php:92
@@ -438,7 +438,7 @@ msgstr ""
 msgid "Id"
 msgstr ""
 
-#: app/Nova/Actor.php:87
+#: app/Nova/Actor.php:90
 #: app/Nova/Expedition.php:91
 #: app/Nova/Group.php:91
 #: app/Nova/Project.php:100
@@ -448,9 +448,9 @@ msgstr ""
 #: resources/views/admin/event/create.blade.php:35
 #: resources/views/admin/event/edit.blade.php:39
 #: resources/views/admin/event/partials/event-loop.blade.php:31
-#: resources/views/admin/expedition/clone.blade.php:24
-#: resources/views/admin/expedition/create.blade.php:24
-#: resources/views/admin/expedition/edit.blade.php:25
+#: resources/views/admin/expedition/clone.blade.php:21
+#: resources/views/admin/expedition/create.blade.php:21
+#: resources/views/admin/expedition/edit.blade.php:22
 #: resources/views/admin/group/create.blade.php:19
 #: resources/views/admin/group/edit.blade.php:20
 #: resources/views/admin/group/show.blade.php:54
@@ -463,15 +463,15 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: app/Nova/Actor.php:88
+#: app/Nova/Actor.php:91
 msgid "Url"
 msgstr ""
 
-#: app/Nova/Actor.php:89
+#: app/Nova/Actor.php:92
 msgid "Class"
 msgstr ""
 
-#: app/Nova/Actor.php:90
+#: app/Nova/Actor.php:93
 msgid "Private"
 msgstr ""
 
@@ -490,7 +490,7 @@ msgstr ""
 #: resources/views/front/expedition/index.blade.php:2
 #: resources/views/front/home.blade.php:82
 #: resources/views/front/home.blade.php:130
-#: resources/views/front/layout/default.blade.php:100
+#: resources/views/front/layout/default.blade.php:103
 #: resources/views/front/project/home.blade.php:127
 #: resources/views/front/project/home.blade.php:136
 #: resources/views/front/project/partials/project-loop.blade.php:14
@@ -512,9 +512,9 @@ msgstr ""
 #: app/Nova/Expedition.php:92
 #: resources/views/admin/event/create.blade.php:42
 #: resources/views/admin/event/edit.blade.php:46
-#: resources/views/admin/expedition/clone.blade.php:32
-#: resources/views/admin/expedition/create.blade.php:32
-#: resources/views/admin/expedition/edit.blade.php:33
+#: resources/views/admin/expedition/clone.blade.php:29
+#: resources/views/admin/expedition/create.blade.php:29
+#: resources/views/admin/expedition/edit.blade.php:30
 #: resources/views/admin/group/show.blade.php:55
 #: resources/views/admin/project/partials/resources.blade.php:32
 #: resources/views/front/project/home.blade.php:76
@@ -523,9 +523,9 @@ msgstr ""
 
 #: app/Nova/Expedition.php:93
 #: app/Nova/Project.php:115
-#: resources/views/admin/expedition/clone.blade.php:41
-#: resources/views/admin/expedition/create.blade.php:41
-#: resources/views/admin/expedition/edit.blade.php:42
+#: resources/views/admin/expedition/clone.blade.php:38
+#: resources/views/admin/expedition/create.blade.php:38
+#: resources/views/admin/expedition/edit.blade.php:39
 #: resources/views/admin/project/clone.blade.php:194
 #: resources/views/admin/project/create.blade.php:181
 #: resources/views/admin/project/edit.blade.php:183
@@ -618,10 +618,10 @@ msgstr ""
 #: resources/views/admin/group/partials/group-loop.blade.php:9
 #: resources/views/admin/group/partials/group-panel.blade.php:21
 #: resources/views/admin/project/index.blade.php:2
-#: resources/views/admin/welcome.blade.php:20
+#: resources/views/admin/welcome.blade.php:17
 #: resources/views/common/nav.blade.php:22
 #: resources/views/common/nav.blade.php:66
-#: resources/views/front/layout/default.blade.php:97
+#: resources/views/front/layout/default.blade.php:100
 #: resources/views/front/project/index.blade.php:2
 msgid "Projects"
 msgstr ""
@@ -635,7 +635,7 @@ msgstr ""
 #: resources/views/admin/event/partials/event-panel.blade.php:8
 #: resources/views/common/event-sort.blade.php:13
 #: resources/views/common/expedition-sort.blade.php:14
-#: resources/views/common/wedigbio-progress-content.blade.php:19
+#: resources/views/common/wedigbio-progress-content.blade.php:16
 #: resources/views/front/home.blade.php:72
 #: resources/views/mail/importerror.blade.php:5
 #: resources/views/mail/nfntranscriptsionerror.blade.php:10
@@ -664,7 +664,7 @@ msgstr ""
 #: resources/views/admin/project/edit.blade.php:61
 #: resources/views/common/nav.blade.php:56
 #: resources/views/front/contact.blade.php:2
-#: resources/views/front/layout/default.blade.php:87
+#: resources/views/front/layout/default.blade.php:90
 #: resources/views/front/project/home.blade.php:49
 #: resources/views/mail/contact.blade.php:2
 msgid "Contact"
@@ -962,13 +962,13 @@ msgstr ""
 
 #: app/Presenters/ExpeditionPresenter.php:112
 #: app/Presenters/ExpeditionPresenter.php:125
-#: resources/views/admin/expedition/edit.blade.php:23
+#: resources/views/admin/expedition/edit.blade.php:20
 msgid "Edit Expedition"
 msgstr ""
 
 #: app/Presenters/ExpeditionPresenter.php:138
 #: app/Presenters/ExpeditionPresenter.php:151
-#: resources/views/admin/expedition/clone.blade.php:22
+#: resources/views/admin/expedition/clone.blade.php:19
 msgid "Clone Expedition"
 msgstr ""
 
@@ -1071,12 +1071,12 @@ msgstr ""
 #: app/Presenters/ProjectPresenter.php:115
 #: app/Presenters/ProjectPresenter.php:128
 #: resources/views/admin/event/index.blade.php:2
-#: resources/views/admin/welcome.blade.php:36
+#: resources/views/admin/welcome.blade.php:33
 #: resources/views/common/nav.blade.php:29
 #: resources/views/common/nav.blade.php:70
 #: resources/views/front/event/index.blade.php:2
-#: resources/views/front/event/show.blade.php:5
-#: resources/views/front/layout/default.blade.php:103
+#: resources/views/front/event/show.blade.php:2
+#: resources/views/front/layout/default.blade.php:106
 #: resources/views/front/project/home.blade.php:159
 msgid "Events"
 msgstr ""
@@ -1281,7 +1281,7 @@ msgstr ""
 
 #: resources/views/admin/bingo/edit.blade.php:2
 #: resources/views/admin/event/edit.blade.php:2
-#: resources/views/admin/expedition/edit.blade.php:5
+#: resources/views/admin/expedition/edit.blade.php:2
 #: resources/views/admin/project/edit.blade.php:2
 msgid "Edit"
 msgstr ""
@@ -1348,9 +1348,9 @@ msgstr ""
 
 #: resources/views/admin/event/create.blade.php:70
 #: resources/views/admin/event/edit.blade.php:73
-#: resources/views/admin/expedition/clone.blade.php:43
-#: resources/views/admin/expedition/create.blade.php:43
-#: resources/views/admin/expedition/edit.blade.php:44
+#: resources/views/admin/expedition/clone.blade.php:40
+#: resources/views/admin/expedition/create.blade.php:40
+#: resources/views/admin/expedition/edit.blade.php:41
 msgid "Separated by commas"
 msgstr ""
 
@@ -1380,19 +1380,19 @@ msgstr ""
 #: resources/views/admin/event/index.blade.php:15
 #: resources/views/front/event/index.blade.php:25
 #: resources/views/front/project/home.blade.php:164
-#: resources/views/front/wedigbio/index.blade.php:28
+#: resources/views/front/wedigbio/index.blade.php:25
 msgid "view active events"
 msgstr ""
 
 #: resources/views/admin/event/index.blade.php:16
 #: resources/views/front/event/index.blade.php:26
 #: resources/views/front/project/home.blade.php:165
-#: resources/views/front/wedigbio/index.blade.php:29
+#: resources/views/front/wedigbio/index.blade.php:26
 msgid "view completed events"
 msgstr ""
 
 #: resources/views/admin/event/index.blade.php:18
-#: resources/views/admin/welcome.blade.php:44
+#: resources/views/admin/welcome.blade.php:41
 msgid "New Event"
 msgstr ""
 
@@ -1496,38 +1496,38 @@ msgstr ""
 msgid "Team Title"
 msgstr ""
 
-#: resources/views/admin/expedition/clone.blade.php:5
+#: resources/views/admin/expedition/clone.blade.php:2
 msgid "Clone"
 msgstr ""
 
-#: resources/views/admin/expedition/clone.blade.php:51
-#: resources/views/admin/expedition/create.blade.php:51
-#: resources/views/admin/expedition/edit.blade.php:51
+#: resources/views/admin/expedition/clone.blade.php:48
+#: resources/views/admin/expedition/create.blade.php:48
+#: resources/views/admin/expedition/edit.blade.php:48
 #: resources/views/admin/project/create.blade.php:248
 #: resources/views/admin/project/edit.blade.php:255
 msgid "Logo"
 msgstr ""
 
-#: resources/views/admin/expedition/clone.blade.php:71
-#: resources/views/admin/expedition/create.blade.php:78
-#: resources/views/admin/expedition/edit.blade.php:72
+#: resources/views/admin/expedition/clone.blade.php:68
+#: resources/views/admin/expedition/create.blade.php:75
+#: resources/views/admin/expedition/edit.blade.php:69
 #: resources/views/admin/expedition/show.blade.php:10
 #: resources/views/admin/project/explore.blade.php:20
 msgid "Subjects currently assigned"
 msgstr ""
 
-#: resources/views/admin/expedition/clone.blade.php:73
-#: resources/views/admin/expedition/create.blade.php:80
-#: resources/views/admin/expedition/edit.blade.php:74
+#: resources/views/admin/expedition/clone.blade.php:70
+#: resources/views/admin/expedition/create.blade.php:77
+#: resources/views/admin/expedition/edit.blade.php:71
 msgid "(%s max. per Expedition)"
 msgstr ""
 
-#: resources/views/admin/expedition/create.blade.php:5
-#: resources/views/admin/expedition/create.blade.php:22
+#: resources/views/admin/expedition/create.blade.php:2
+#: resources/views/admin/expedition/create.blade.php:19
 msgid "Create Expedition"
 msgstr ""
 
-#: resources/views/admin/expedition/create.blade.php:66
+#: resources/views/admin/expedition/create.blade.php:63
 msgid "Automatically Assign All Unassigned Subjects From Project"
 msgstr ""
 
@@ -1690,7 +1690,7 @@ msgid "Biospex Groups"
 msgstr ""
 
 #: resources/views/admin/group/index.blade.php:12
-#: resources/views/admin/welcome.blade.php:28
+#: resources/views/admin/welcome.blade.php:25
 msgid "New Group"
 msgstr ""
 
@@ -1725,12 +1725,12 @@ msgid "No Projects Exist"
 msgstr ""
 
 #: resources/views/admin/layout/foot.blade.php:4
-#: resources/views/front/layout/default.blade.php:117
+#: resources/views/front/layout/default.blade.php:120
 msgid "© 2014–2020 Copyright"
 msgstr ""
 
 #: resources/views/admin/layout/foot.blade.php:6
-#: resources/views/front/layout/default.blade.php:119
+#: resources/views/front/layout/default.blade.php:122
 msgid "FSU Department of Biological Science"
 msgstr ""
 
@@ -1956,7 +1956,7 @@ msgstr ""
 #: resources/views/admin/project/edit.blade.php:288
 #: resources/views/admin/project/partials/resources.blade.php:4
 #: resources/views/common/nav.blade.php:18
-#: resources/views/front/layout/default.blade.php:84
+#: resources/views/front/layout/default.blade.php:87
 #: resources/views/front/project/home.blade.php:114
 #: resources/views/front/resource/index.blade.php:2
 msgid "Resources"
@@ -2036,52 +2036,52 @@ msgstr ""
 msgid "Last Date"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:4
+#: resources/views/admin/reconcile/index.blade.php:2
 msgid "Expert Review"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:58
+#: resources/views/admin/reconcile/index.blade.php:56
 msgid "Your expert opinion of"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:66
+#: resources/views/admin/reconcile/index.blade.php:64
 msgid "Participants entered for"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:78
+#: resources/views/admin/reconcile/index.blade.php:76
 msgid "participant left blank"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:97
+#: resources/views/admin/reconcile/index.blade.php:95
 msgid "Save"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:108
+#: resources/views/admin/reconcile/index.blade.php:106
 msgid "Publish Reconciled File"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:109
+#: resources/views/admin/reconcile/index.blade.php:107
 msgid "This will publish a new reconciled_with_expert_opinion.csv file containing your edits in the Expedition downloads section."
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:110
+#: resources/views/admin/reconcile/index.blade.php:108
 msgid "Publish Expert Review"
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:116
+#: resources/views/admin/reconcile/index.blade.php:114
 msgid "Once you have submitted your expert opinion for all pages, go to the last page and click \"Publish Reconciled.\""
 msgstr ""
 
-#: resources/views/admin/reconcile/index.blade.php:126
-#: resources/views/admin/reconcile/index.blade.php:127
+#: resources/views/admin/reconcile/index.blade.php:124
+#: resources/views/admin/reconcile/index.blade.php:125
 msgid "toggle talk comments"
 msgstr ""
 
-#: resources/views/admin/update/index.blade.php:5
+#: resources/views/admin/update/index.blade.php:2
 msgid "Biospex Updates"
 msgstr ""
 
-#: resources/views/admin/update/index.blade.php:12
+#: resources/views/admin/update/index.blade.php:9
 msgid "Biospex  Updates"
 msgstr ""
 
@@ -2114,32 +2114,32 @@ msgstr ""
 msgid "Confirm Password"
 msgstr ""
 
-#: resources/views/admin/welcome.blade.php:5
+#: resources/views/admin/welcome.blade.php:2
 #: resources/views/mail/invite.blade.php:2
 msgid "Welcome"
 msgstr ""
 
-#: resources/views/admin/welcome.blade.php:11
+#: resources/views/admin/welcome.blade.php:8
 msgid "Biospex"
 msgstr ""
 
-#: resources/views/admin/welcome.blade.php:14
+#: resources/views/admin/welcome.blade.php:11
 msgid "This is the starting point where Biospex Projects and Events can be created."
 msgstr ""
 
-#: resources/views/admin/welcome.blade.php:23
+#: resources/views/admin/welcome.blade.php:20
 msgid "Projects begin with the initiation of a new Group. Groups manage Projects which launch Expeditions. You can manage a Project by yourself or invite collaborators to the Group. A Group can manage multiple Projects, and you can belong to multiple Groups."
 msgstr ""
 
-#: resources/views/admin/welcome.blade.php:39
+#: resources/views/admin/welcome.blade.php:36
 msgid "Events focus on creating data for a particular Project. Event participants are organized into one or more Teams. If the focus is collaboration, create one Team. If it is competitive, then multiple Teams. You will share a Team-specific sign-up link with team members, at which they will provide just their NfnPanoptes userid. This enables BIOSPEX to keep score during activity at NfnPanoptes."
 msgstr ""
 
-#: resources/views/admin/welcome.blade.php:52
+#: resources/views/admin/welcome.blade.php:49
 msgid "Have questions?"
 msgstr ""
 
-#: resources/views/admin/welcome.blade.php:55
+#: resources/views/admin/welcome.blade.php:52
 msgid "Contact_us"
 msgstr ""
 
@@ -2282,19 +2282,19 @@ msgid "File"
 msgstr ""
 
 #: resources/views/common/nav.blade.php:14
-#: resources/views/front/layout/default.blade.php:75
+#: resources/views/front/layout/default.blade.php:78
 msgid "About"
 msgstr ""
 
 #: resources/views/common/nav.blade.php:16
-#: resources/views/front/event/signup.blade.php:37
-#: resources/views/front/layout/default.blade.php:78
+#: resources/views/front/event/signup.blade.php:34
+#: resources/views/front/layout/default.blade.php:81
 #: resources/views/front/team/index.blade.php:2
 msgid "Team"
 msgstr ""
 
 #: resources/views/common/nav.blade.php:17
-#: resources/views/front/layout/default.blade.php:81
+#: resources/views/front/layout/default.blade.php:84
 msgid "FAQ"
 msgstr ""
 
@@ -2382,7 +2382,7 @@ msgid "No current WeDigBio Event"
 msgstr ""
 
 #: resources/views/common/wedigbio-progress-content.blade.php:9
-#: resources/views/common/wedigbio-progress-content.blade.php:20
+#: resources/views/common/wedigbio-progress-content.blade.php:17
 msgid "Transcriptions"
 msgstr ""
 
@@ -2399,7 +2399,7 @@ msgid "updates every 5 minutes"
 msgstr ""
 
 #: resources/views/front/api-index.blade.php:21
-#: resources/views/front/layout/default.blade.php:106
+#: resources/views/front/layout/default.blade.php:109
 msgid "Biospex API"
 msgstr ""
 
@@ -2417,31 +2417,31 @@ msgstr ""
 msgid "To"
 msgstr ""
 
-#: resources/views/front/event/show.blade.php:31
+#: resources/views/front/event/show.blade.php:28
 msgid "Important"
 msgstr ""
 
-#: resources/views/front/event/show.blade.php:32
+#: resources/views/front/event/show.blade.php:29
 msgid "Transcriptions will only count during the scheduled Event times. Please be sure to log in to NfnPanoptes when digitizing or your digitization will not count. To participate on a Team, please contact the Event sponsor."
 msgstr ""
 
-#: resources/views/front/event/signup.blade.php:5
+#: resources/views/front/event/signup.blade.php:2
 msgid "Event Team Registration"
 msgstr ""
 
-#: resources/views/front/event/signup.blade.php:22
+#: resources/views/front/event/signup.blade.php:19
 msgid "Biospex Event Team Registration"
 msgstr ""
 
-#: resources/views/front/event/signup.blade.php:32
+#: resources/views/front/event/signup.blade.php:29
 msgid "Event"
 msgstr ""
 
-#: resources/views/front/event/signup.blade.php:51
+#: resources/views/front/event/signup.blade.php:48
 msgid "NfnPanoptes Username"
 msgstr ""
 
-#: resources/views/front/event/signup.blade.php:57
+#: resources/views/front/event/signup.blade.php:54
 msgid "Event Closed"
 msgstr ""
 
@@ -2541,15 +2541,15 @@ msgstr ""
 msgid "Participants in Biospex-launched Projects"
 msgstr ""
 
-#: resources/views/front/layout/default.blade.php:38
+#: resources/views/front/layout/default.blade.php:41
 msgid "Get Connected"
 msgstr ""
 
-#: resources/views/front/layout/default.blade.php:67
+#: resources/views/front/layout/default.blade.php:70
 msgid "is funded by a grant from the National Science Foundation's Advances in Biological Informatics Program (Award Number 1458550). iDigBio is funded by grants from the National Science Foundation's Advancing Digitization of Biodiversity Collections Program (DBI-1115210 [2011-2018] and DBI-1547229 [2016-2021]). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation."
 msgstr ""
 
-#: resources/views/front/layout/default.blade.php:94
+#: resources/views/front/layout/default.blade.php:97
 msgid "Content"
 msgstr ""
 
@@ -2577,8 +2577,8 @@ msgstr ""
 msgid "Biospex Team"
 msgstr ""
 
-#: resources/views/front/wedigbio/index.blade.php:5
-#: resources/views/front/wedigbio/index.blade.php:21
+#: resources/views/front/wedigbio/index.blade.php:2
+#: resources/views/front/wedigbio/index.blade.php:18
 msgid "WeDigBio Events"
 msgstr ""
 
