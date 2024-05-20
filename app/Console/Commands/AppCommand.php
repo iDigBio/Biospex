@@ -19,9 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\PanoptesTranscriptionRepository;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 
 /**
  * Class AppCommand
@@ -41,17 +39,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\PanoptesTranscriptionRepository
-     */
-    private PanoptesTranscriptionRepository $repository;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(PanoptesTranscriptionRepository $repository)
+    public function __construct()
     {
         parent::__construct();
-        $this->repository = $repository;
     }
 
     /**
@@ -59,9 +51,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $record = $this->repository->find("625af0164071cd47737ff8c2");
-        dd($record->classification_finished_at->toDateTimeString());
-
 
     }
 }
