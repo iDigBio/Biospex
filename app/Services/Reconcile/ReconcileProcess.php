@@ -218,7 +218,7 @@ class ReconcileProcess
         $this->csvPath = config('config.zooniverse_dir.classification').'/'.$expeditionId.'.csv';
         $this->csvFullPath = Storage::disk('efs')->path($this->csvPath);
 
-        $this->recFullPath = Storage::disk('efs')->path(config('config.zooniverse_dir.reconcile').'/'.$expeditionId.'.csv');
+        $this->recFullPath = Storage::disk('efs')->path(config('config.zooniverse_dir.reconciled').'/'.$expeditionId.'.csv');
         $this->tranFullPath = Storage::disk('efs')->path(config('config.zooniverse_dir.transcript').'/'.$expeditionId.'.csv');
         $this->sumFullPath = Storage::disk('efs')->path(config('config.zooniverse_dir.summary').'/'.$expeditionId.'.html');
 
@@ -349,8 +349,8 @@ class ReconcileProcess
     {
 
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.classification')));
-        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconcile')));
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconciled')));
+        File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.reconciled-with-expert')));
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.transcript')));
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.summary')));
         File::cleanDirectory(Storage::disk('efs')->path(config('config.zooniverse_dir.explained')));

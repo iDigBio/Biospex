@@ -42,7 +42,7 @@ class ReconcileController extends Controller
     /**
      * @var \App\Services\Reconcile\ExpertReconcileProcess
      */
-    private ExpertReconcileProcess $expertreconcileRepo;
+    private ExpertReconcileProcess $expertReconcileRepo;
 
     /**
      * @var \App\Repositories\ExpeditionRepository
@@ -52,12 +52,12 @@ class ReconcileController extends Controller
     /**
      * ReconcileController constructor.
      *
-     * @param \App\Services\Reconcile\ExpertReconcileProcess $expertreconcileRepo
+     * @param \App\Services\Reconcile\ExpertReconcileProcess $expertReconcileRepo
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      */
-    public function __construct(ExpertReconcileProcess $expertreconcileRepo, ExpeditionRepository $expeditionRepo)
+    public function __construct(ExpertReconcileProcess $expertReconcileRepo, ExpeditionRepository $expeditionRepo)
     {
-        $this->expertreconcileRepo = $expertreconcileRepo;
+        $this->expertReconcileRepo = $expertReconcileRepo;
         $this->expeditionRepo = $expeditionRepo;
     }
 
@@ -77,7 +77,7 @@ class ReconcileController extends Controller
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        $reconciles = $this->expertreconcileRepo->getPagination((int) $expedition->id);
+        $reconciles = $this->expertReconcileRepo->getPagination((int) $expedition->id);
 
         if ($reconciles->isEmpty()) {
             Flash::error(t('Reconcile data for processing is missing.'));
@@ -88,7 +88,7 @@ class ReconcileController extends Controller
         $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, $reconciles->first()->subject_id);
 
         $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
-        $imgUrl = $this->expertreconcileRepo->getImageUrl($reconciles->first()->subject_imageName, $location);
+        $imgUrl = $this->expertReconcileRepo->getImageUrl($reconciles->first()->subject_imageName, $location);
         $columns = explode('|', $reconciles->first()->subject_columns);
 
         return view('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
@@ -129,7 +129,7 @@ class ReconcileController extends Controller
      */
     public function update(string $expeditionId): RedirectResponse
     {
-        if (! $this->expertreconcileRepo->updateRecord(request()->all())) {
+        if (! $this->expertReconcileRepo->updateRecord(request()->all())) {
             Flash::warning(t('Error while updating record.'));
 
             return redirect()->back();
