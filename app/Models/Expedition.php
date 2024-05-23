@@ -68,6 +68,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public static function boot()
     {
         parent::boot();
+        static::bootUuidTrait();
     }
 
     /**

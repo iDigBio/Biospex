@@ -1,5 +1,7 @@
 <?php namespace App\Models\Traits;
 
+
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Ramsey\Uuid\Uuid;
 
 trait UuidTrait
@@ -12,35 +14,24 @@ trait UuidTrait
     public static function bootUuidTrait()
     {
         static::creating(function ($model) {
-            $model->uuid = Uuid::uuid4()->__toString();
+            //$model->uuid = Uuid::uuid4()->__toString();
+            $model->uuid = Uuid::uuid4()->getBytes();
         });
     }
 
     /**
-     * Set uuid for binary storage.
+     * Define the uuid attribute.
      *
-     * @param $value
+     * @return Attribute
      */
-    public function setUuidAttribute($value)
+    protected function uuid(): Attribute
     {
-        $this->attributes['uuid'] = pack('H*', str_replace('-', '', $value));
+        return Attribute::make(
+            get: fn($value) => Uuid::fromBytes($value)->toString(),
+            set: fn($value) => Uuid::uuid4()->getBytes()
+        );
     }
 
-    /**
-     * Return uuid in normal format.
-     *
-     * @param $value
-     * @return string
-     */
-    public function getUuidAttribute($value)
-    {
-        if (is_null($value)) {
-            return null;
-        }
-
-        $uuid = bin2hex($value);
-        return substr($uuid, 0, 8) . '-' . substr($uuid, 8, 4) . '-' . substr($uuid, 12, 4) . '-' . substr($uuid, 16, 4) . '-' . substr($uuid, 20);
-    }
 }
 /**
  * Copyright (C) 2015  Biospex
