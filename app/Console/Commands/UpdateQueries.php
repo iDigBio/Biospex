@@ -19,8 +19,16 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Actor;
+use App\Models\Download;
+use App\Models\Project;
+use App\Models\Expedition;
+use App\Models\Workflow;
 use Illuminate\Console\Command;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class UpdateQueries
@@ -34,7 +42,7 @@ class UpdateQueries extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'update:queries {step}';
+    protected $signature = 'update:queries {method?}';
 
     /**
      * The console command description.
@@ -44,7 +52,8 @@ class UpdateQueries extends Command
     /**
      * UpdateQueries constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -53,7 +62,228 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
+        /*
+        $this->saveProjectWorkflowOrigAndMoveToExpedition();
+        $this->addWorkflowForeignIdToExpedition();
+        $this->dropWorkflowIdFromProjects();
+        $this->updateExpeditionCompleted();
+        $this->dropCompletedFromActorExpedition();
+        $this->updateWorkflowIds();
+        $this->deleteActors();
+        $this->addActorGeoLocate();
+        $this->deleteWorkflows();
+        $this->addWorkflowGeoLocate();
+        $this->updateActorExpeditionState();
+        $this->alterBingoMapIp();
+        $this->alterEventTransactionIds();
+        $this->changeNfnPanoptesActor();
+        */
 
+        $this->createReconciledByExpert();
+        $this->renameReconcileToReconciled();
+        $this->createReconciledByUser();
+
+        $this->updateDownloadsSetReconciledToReconciledWithExpert();
+        $this->updateDownloadsSetReconcileToReconciled();
     }
 
+    private function saveProjectWorkflowOrigAndMoveToExpedition(): void
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        $projects = DB::table('projects')->select('id', 'workflow_id')->get();
+        $projects->each(function ($project) {
+            DB::table('project_old_workflow')->insert([
+                'project_id'  => $project->id,
+                'workflow_id' => $project->workflow_id,
+            ]);
+
+            Expedition::where('project_id', $project->id)->get()->each(function ($expedition) use ($project) {
+                $expedition->workflow_id = $project->workflow_id;
+                $expedition->save();
+            });
+        });
+    }
+
+    public function addWorkflowForeignIdToExpedition(): void
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        Schema::table('expeditions', function (Blueprint $table) {
+            $table->foreign('workflow_id')->references('id')->on('workflows')->nullable()->constrained()->onUpdate('CASCADE')->onDelete('SET NULL');
+        });
+    }
+
+    public function dropWorkflowIdFromProjects(): void
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        Schema::table('projects', function (Blueprint $table) {
+            $table->dropForeign('projects_workflow_id_foreign');
+            $table->dropColumn('workflow_id');
+        });
+    }
+
+    private function updateExpeditionCompleted()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        $results = DB::table('expeditions')->select('expeditions.id', 'actor_expedition.actor_id', 'actor_expedition.completed')->join('actor_expedition', 'actor_expedition.expedition_id', '=', 'expeditions.id')->get();
+
+        $results->each(function ($result) {
+            if ($result->completed === 1) {
+                $expedition = Expedition::find($result->id);
+                $expedition->completed = 1;
+                $expedition->save();
+
+                $expedition->actors()->updateExistingPivot($result->actor_id, ['state' => 2]);
+            }
+        });
+    }
+
+    public function dropCompletedFromActorExpedition(): void
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        Schema::table('actor_expedition', function (Blueprint $table) {
+            $table->dropColumn('completed');
+        });
+    }
+
+    private function updateWorkflowIds()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+        // Ids not used: 1, 2, 4
+        // Ids used: 3, 5 (3 & 5 will be the same = Zooniverse)
+        Expedition::all()->each(function ($expedition) {
+            $expedition->workflow_id = 3;
+            $expedition->save();
+        });
+    }
+
+    private function deleteActors()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        Actor::all()->each(function ($actor) {
+            if ($actor->id === 2) {
+                return;
+            }
+
+            $actor->delete();
+        });
+    }
+
+    private function addActorGeoLocate()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        Actor::create(['title' => 'GeoLocate', 'url' => 'https://www.geo-locate.org/', 'class' => 'GeoLocate']);
+    }
+
+    private function deleteWorkflows()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        Workflow::all()->each(function ($workflow) {
+            if ($workflow->id === 3) {
+                return;
+            }
+
+            $workflow->delete();
+        });
+    }
+
+    private function addWorkflowGeoLocate()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        $workflow = Workflow::create(['title' => 'Zooniverse -> GeoLocate', 'enabled' => 1]);
+        $sync = [
+            2 => ['order' => 1],
+            4 => ['order' => 2],
+        ];
+        $workflow->actors()->sync($sync, false);
+    }
+
+    public function updateActorExpeditionState()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        $expeditions = Expedition::with(['actors', 'zooniverseExport'])->get();
+        $expeditions->each(function ($expedition) {
+            $expedition->actors->each(function ($actor) use ($expedition) {
+                if ($actor->pivot->state === 2) {
+                    $expedition->zooniverseActor()->updateExistingPivot($actor->id, ['state' => 3]);
+                }
+                if ($actor->pivot->state === 1) {
+                    $expedition->zooniverseActor()->updateExistingPivot($actor->id, ['state' => 2]);
+                }
+                if ($actor->pivot->state === 0 && $expedition->zooniverseExport !== null) {
+                    $expedition->zooniverseActor()->updateExistingPivot($actor->id, ['state' => 1]);
+                }
+            });
+        });
+    }
+
+    public function alterBingoMapIp()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+        DB::raw("ALTER TABLE `bingo_maps` CHANGE `ip` `ip` VARCHAR(30) NOT NULL;");
+    }
+
+    public function alterEventTransactionIds()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        DB::raw("ALTER TABLE `event_transcriptions` CHANGE `team_id` `team_id` INT UNSIGNED NOT NULL, CHANGE `user_id` `event_user_id` INT UNSIGNED NOT NULL; ");
+    }
+
+    public function changeNfnPanoptesActor()
+    {
+        DB::raw("UPDATE `actors` SET `class` = 'Zooniverse' WHERE `actors`.`id` = 2;");
+    }
+
+    public function createReconciledByExpert()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        if (!\Storage::disk('s3')->exists('zooniverse/reconciled-with-expert')) {
+            exec("aws s3 mv s3://biospex-dev/zooniverse/reconciled/ s3://biospex-dev/zooniverse/reconciled-with-expert/ --recursive");
+            exec("aws s3 rm s3://biospex-dev/zooniverse/reconciled --recursive");
+        }
+    }
+
+    public function renameReconcileToReconciled()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        if (!\Storage::disk('s3')->exists('zooniverse/reconciled')) {
+            exec("aws s3 mv s3://biospex-dev/zooniverse/reconcile/ s3://biospex-dev/zooniverse/reconciled/ --recursive");
+            exec("aws s3 rm s3://biospex-dev/zooniverse/reconcile/ --recursive");
+        }
+    }
+
+    public function createReconciledByUser()
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        if (!\Storage::disk('s3')->exists('zooniverse/reconciled_by_user')) {
+            exec("aws s3api put-object --bucket biospex-dev --key zooniverse/reconciled-with-user/");
+        }
+    }
+
+    public function updateDownloadsSetReconciledToReconciledWithExpert(): void
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        Download::where('type', 'reconciled')->update(['type' => 'reconciled-with-expert']);
+    }
+
+    public function updateDownloadsSetReconcileToReconciled(): void
+    {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
+        Download::where('type', 'reconcile')->update(['type' => 'reconciled']);
+    }
 }
