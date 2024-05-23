@@ -39,14 +39,14 @@ class DateHelper
      * @param null $tz
      * @return \Illuminate\Support\Carbon|string
      */
-    public function formatDate($date, $format = null, $tz = null)
+    public function formatDate($date, $format = null, $tz = null): Carbon|string
     {
         if (is_null($date)) {
             return Carbon::now();
         }
 
         if (!$date instanceof Carbon) {
-            $date = Carbon::parse($date);
+            return Carbon::parse($date, $tz)->format($format);
         }
 
         return $date->copy()->tz($tz)->format($format);
