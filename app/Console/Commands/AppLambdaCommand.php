@@ -19,11 +19,8 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ExportQueueRepository;
-use App\Services\Actor\Traits\ActorDirectory;
-use Aws\Lambda\LambdaClient;
+use App\Services\Api\AwsLambdaApiService;
 use Illuminate\Console\Command;
-use \Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
  * Class AppCommand
@@ -32,8 +29,6 @@ use \Illuminate\Foundation\Bus\DispatchesJobs;
  */
 class AppLambdaCommand extends Command
 {
-    use DispatchesJobs, ActorDirectory;
-
     /**
      * The console command name.
      */
@@ -45,18 +40,17 @@ class AppLambdaCommand extends Command
     protected $description = 'Used to test sqs lambda code';
 
     /**
-     * @var \App\Repositories\ExportQueueRepository
+     * @var \App\Services\Api\AwsLambdaApiService
      */
-    private ExportQueueRepository $exportQueueRepository;
+    private AwsLambdaApiService $awsLambdaApiService;
 
     /**
      * AppCommand constructor.
      */
-    public function __construct(
-        ExportQueueRepository $exportQueueRepository
-    ) {
+    public function __construct(AwsLambdaApiService $awsLambdaApiService)
+    {
         parent::__construct();
-        $this->exportQueueRepository = $exportQueueRepository;
+        $this->awsLambdaApiService = $awsLambdaApiService;
     }
 
     /**
@@ -66,99 +60,26 @@ class AppLambdaCommand extends Command
      */
     public function handle()
     {
-        $this->imageTar();
-        //$this->imageProcess();
-    }
+        // https://js2qavzr5g4kmzi5ssmg7gkw240wfvln.lambda-url.us-east-2.on.aws/
 
-    /**
-     * @return void
-     */
-    public function imageTar()
-    {
-        $exportQueue = $this->exportQueueRepository->findWith(1, ['expedition']);
-        $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
-        $this->setDirectories();
-
-
-        $client = $this->getLambdaClient();
-
-        $data = [
-            'queueId' => $exportQueue->id, //event.queueId;
-            'sourcePath' => $this->workingDir, //event.sourcePath;
-            'outputFilename' =>  md5($this->folderName) //event.outputFilename;
+        $attributes = [
+            'bucket' => 'biospex-dev',
+            'key' => 'zooniverse/classification/999999.csv',
+            'explanations' => true
         ];
 
-        $start_time = microtime(true);
+        $result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
 
-        $result = $client->invoke([
-            // The name your created Lamda function
-            'FunctionName'   => 'imageTarGz',
-            'Payload'        => json_encode($data),
-        ]);
-
-        echo $result['Payload'] . PHP_EOL;
-
-        // End clock time in seconds
-        $end_time = microtime(true);
-
-        // Calculate script execution time
-        $execution_time = ($end_time - $start_time);
-        echo " Execution time of script = ".$execution_time." sec" . PHP_EOL;
-    }
-
-    /**
-     * @return void
-     */
-    public function imageProcess()
-    {
-        $client = $this->getLambdaClient();
-
-        $data = $this->generateUrls(1);
-
-        collect($data)->each(function($image) use($client) {
-            $result = $client->invoke([
-                // The name your created Lamda function
-                'FunctionName'   => 'imageProcessExport',
-                'Payload'        => json_encode($image),
-                'InvocationType' => 'Event',
-            ]);
-
-            echo $result['Payload'] . PHP_EOL;
-        });
-    }
-
-    /**
-     * Temp method to generate urls for testing.
-     *
-     * @param int $total
-     * @return array
-     */
-    public function generateUrls(int $total): array
-    {
-        $files = $this->exportQueueFileRepository->findBy('queue_id', 10)->limit($total)->get();
-
-        return $files->map(function ($file) {
-            return [
-                'queueId' => $file->queue_id,
-                'subjectId'  => $file->subject_id,
-                'url' => $file->url,
-                'dir' => "scratch/testing-scratch",
-            ];
-        })->toArray();
-    }
-
-    /**
-     * @return \Aws\Lambda\LambdaClient
-     */
-    private function getLambdaClient(): LambdaClient
-    {
-        return new LambdaClient([
-            'credentials' => [
-                'key'    => config('config.aws_access_key'),
-                'secret' => config('config.aws_secret_key'),
-            ],
-            'version'     => '2015-03-31',
-            'region'      => config('config.aws_default_region'),
-        ]);
+        echo $result['Payload']->getContents();
     }
 }
+
+/*
+ Folders for old => new reconciliation service
+input_file: classification/ => classification
+--reconciled: reconcile/ => reconciled/
+--unreconciled: transcript/ => transcript/
+--summary: summary/ => summary/
+--reconciled --explanations: explained/ => explained/
+
+ */
