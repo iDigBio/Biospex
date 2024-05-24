@@ -19,6 +19,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 /**
  * Class WeDigBioProject
  *
@@ -40,25 +42,11 @@ class WeDigBioProject extends BaseEloquentModel
         'subject_sets',
     ];
 
-    /**
-     * Mutator for subject_sets column.
-     *
-     * @param $value
-     */
-    public function setSubjectSetsAttribute($value)
+    protected function subjectSets(): Attribute
     {
-        $this->attributes['subject_sets'] = json_encode($value);
+        return Attribute::make(
+            get: fn($value) => json_decode($value),
+            set: fn($value) => json_encode($value)
+        );
     }
-
-    /**
-     * Accessor for subjects column.
-     *
-     * @param $value
-     * @return mixed
-     */
-    public function getSubjectSetsAttribute($value)
-    {
-        return json_decode($value);
-    }
-
 }

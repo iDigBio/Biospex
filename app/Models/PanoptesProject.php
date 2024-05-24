@@ -21,6 +21,7 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\PanoptesProjectPresenter;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class PanoptesProject
@@ -76,25 +77,11 @@ class PanoptesProject extends BaseEloquentModel
         return $this->belongsTo(Expedition::class);
     }
 
-    /**
-     * Mutator for subject_sets column.
-     *
-     * @param $value
-     */
-    public function setSubjectSetsAttribute($value)
+    protected function subjectSets(): Attribute
     {
-        $this->attributes['subject_sets'] = json_encode($value);
+        return Attribute::make(
+            get: fn($value) => json_decode($value),
+            set: fn($value) => json_encode($value)
+        );
     }
-
-    /**
-     * Accessor for subjects column.
-     *
-     * @param $value
-     * @return mixed
-     */
-    public function getSubjectSetsAttribute($value)
-    {
-        return json_decode($value);
-    }
-
 }

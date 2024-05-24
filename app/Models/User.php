@@ -50,13 +50,20 @@ class User extends Authenticatable implements MustVerifyEmail
         'uuid',
         'email',
         'password',
-        'notification'
+        'notification',
     ];
 
     /**
-     * @var array
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = ['email_verified_at' => 'datetime'];
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime'
+        ];
+    }
 
     /**
      * @inheritDoc

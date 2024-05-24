@@ -39,17 +39,20 @@ class Reconcile extends BaseMongoModel
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @return string[]
      */
-    protected $casts = [
-        'subject_id'           => 'integer',
-        'subject_projectId'    => 'integer',
-        'subject_expeditionId' => 'integer',
-        'problem'              => 'integer',
-        'created_at'           => 'datetime',
-        'updated_at'           => 'datetime',
-        'timestamp'            => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'subject_id'           => 'integer',
+            'subject_projectId'    => 'integer',
+            'subject_expeditionId' => 'integer',
+            'problem'              => 'integer',
+            'created_at'           => 'datetime',
+            'updated_at'           => 'datetime',
+            'timestamp'            => 'datetime',
+        ];
+    }
 
     /**
      * @var string

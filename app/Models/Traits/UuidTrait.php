@@ -1,39 +1,5 @@
-<?php namespace App\Models\Traits;
-
-
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Ramsey\Uuid\Uuid;
-
-trait UuidTrait
-{
-    /**
-     * Boot the Uuid trait for the model.
-     *
-     * @return void
-     */
-    public static function bootUuidTrait()
-    {
-        static::creating(function ($model) {
-            //$model->uuid = Uuid::uuid4()->__toString();
-            $model->uuid = Uuid::uuid4()->getBytes();
-        });
-    }
-
-    /**
-     * Define the uuid attribute.
-     *
-     * @return Attribute
-     */
-    protected function uuid(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => Uuid::fromBytes($value)->toString(),
-            set: fn($value) => Uuid::uuid4()->getBytes()
-        );
-    }
-
-}
-/**
+<?php
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -50,5 +16,38 @@ trait UuidTrait
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+namespace App\Models\Traits;
+
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Ramsey\Uuid\Uuid;
+
+trait UuidTrait
+{
+    /**
+     * Boot the Uuid trait for the model.
+     *
+     * @return void
+     */
+    public static function bootUuidTrait()
+    {
+        static::creating(function ($model) {
+            $model->uuid = Uuid::uuid4()->getBytes();
+        });
+    }
+
+    /**
+     * Define the uuid attribute.
+     *
+     * @return Attribute
+     */
+    protected function uuid(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => Uuid::fromBytes($value)->toString(),
+            set: fn($value) => Uuid::uuid4()->getBytes()
+        );
+    }
+}
 
 
