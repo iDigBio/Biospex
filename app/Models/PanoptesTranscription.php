@@ -26,25 +26,29 @@ namespace App\Models;
  */
 class PanoptesTranscription extends BaseMongoModel
 {
-
     /**
      * Set Collection
      */
     protected $collection = 'panoptes_transcriptions';
 
     /**
-     * @var string[]
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'subject_id' => 'int',
-        'classification_id' => 'int',
-        'workflow_id' => 'int',
-        'subject_expeditionId' => 'int',
-        'subject_projectId' => 'int',
-        'transcription_id' => 'string',
-        'classification_started_at' => 'datetime',
-        'classification_finished_at' => 'datetime'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'subject_id'                 => 'integer',
+            'classification_id'          => 'integer',
+            'workflow_id'                => 'integer',
+            'subject_expeditionId'       => 'integer',
+            'subject_projectId'          => 'integer',
+            'transcription_id'           => 'string',
+            'classification_started_at'  => 'datetime',
+            'classification_finished_at' => 'datetime',
+        ];
+    }
 
     /**
      * OrderBy

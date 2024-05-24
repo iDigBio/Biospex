@@ -86,7 +86,7 @@ class ExpertReconcileProcess
      */
     public function migrateReconcileCsv(string $expeditionId)
     {
-        $file = config('config.zooniverse_dir.reconcile').'/'.$expeditionId.'.csv';
+        $file = config('config.zooniverse_dir.reconciled').'/'.$expeditionId.'.csv';
 
         if (! Storage::disk('s3')->exists($file)) {
             $message = t('File does not exist.');

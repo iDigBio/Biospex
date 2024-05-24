@@ -318,33 +318,36 @@ class Project extends BaseEloquentModel implements AttachableInterface
      * NfnClassificationsEarliestFinishedAtDate attribute.
      *
      * @return int
-     */
+     *
     public function getEarliestFinishedAtDateAttribute()
     {
         $related = $this->getRelationValue('classificationsEarliestFinishedAtDate')->first();
 
         return $related ? $related->earliest_finished_at_date : null;
     }
+    */
 
     /**
      * Get earliest last finished_at date
      *
      * @return mixed
-     */
+     *
     public function getTranscriptionsEarliestFinishedAtDate()
     {
         return $this->hasMany(PanoptesTranscription::class)->min('classification_finished_at');
     }
+    */
 
     /**
      * Set tag uri for rfc 4151 specs.
      *
      * @return string
-     */
+     *
     public function setTagUriAttribute()
     {
         return 'tag:'.$_ENV['site.domain'].','.date('Y-m-d').':'.$this->attributes['slug'];
     }
+     * /
 
     /**
      * Mutator for target_fields.
@@ -465,9 +468,10 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * @return int
-     */
+     *
     public function subjectsCount()
     {
         return $this->subjects()->count();
     }
+    */
 }

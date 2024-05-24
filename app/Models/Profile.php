@@ -22,6 +22,7 @@ namespace App\Models;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 use App\Models\Traits\Presentable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class Profile
@@ -38,13 +39,18 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     protected $table = 'profiles';
 
     /**
-     * @var string[] $casts
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'avatar_updated_at' => 'datetime',
-        'created_at'        => 'datetime',
-        'updated_at'        => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'avatar_updated_at' => 'datetime',
+            'created_at'        => 'datetime',
+            'updated_at'        => 'datetime',
+        ];
+    }
 
     /**
      * @inheritDoc
@@ -97,10 +103,14 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * @return string
+     * Define the full name attribute.
+     *
+     * @return Attribute
      */
-    public function getFullNameAttribute()
+    protected function fullName(): Attribute
     {
-        return "{$this->first_name} {$this->last_name}";
+        return Attribute::make(
+            get: fn() => "{$this->first_name} {$this->last_name}"
+        );
     }
 }

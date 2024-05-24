@@ -43,14 +43,19 @@ class TranscriptionLocation extends BaseEloquentModel
     ];
 
     /**
-     * @var string[]
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'classification_id' => 'int',
-        'project_id' => 'int',
-        'expedition_id' => 'int',
-        'state_county_id' => 'int'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'classification_id' => 'int',
+            'project_id' => 'int',
+            'expedition_id' => 'int',
+            'state_county_id' => 'int'
+        ];
+    }
 
     /**
      * Project relationship.

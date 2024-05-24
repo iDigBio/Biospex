@@ -41,8 +41,8 @@ return [
     'zooniverse_dir' => [
         'dir'            => env('ZOONIVERSE_DIR', 'zooniverse'),
         'classification' => env('ZOONIVERSE_DIR', 'zooniverse').'/classification',
-        'reconcile'      => env('ZOONIVERSE_DIR', 'zooniverse').'/reconcile',
-        'reconciled'     => env('ZOONIVERSE_DIR', 'zooniverse').'/reconciled',
+        'reconciled'      => env('ZOONIVERSE_DIR', 'zooniverse').'/reconcile', // Becomes 'reconciled'
+        'reconciled-with-expert'     => env('ZOONIVERSE_DIR', 'zooniverse').'/reconciled-with-expert', // Becomes 'reconciled-with-expert'
         'summary'        => env('ZOONIVERSE_DIR', 'zooniverse').'/summary',
         'transcript'     => env('ZOONIVERSE_DIR', 'zooniverse').'/transcript',
         'explained'      => env('ZOONIVERSE_DIR', 'zooniverse').'/explained',

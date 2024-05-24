@@ -19,6 +19,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 /**
  * Class BingoWord
  *
@@ -37,7 +39,7 @@ class BingoWord extends BaseEloquentModel
     protected $fillable = [
         'bingo_id',
         'word',
-        'definition'
+        'definition',
     ];
 
     /**
@@ -51,23 +53,15 @@ class BingoWord extends BaseEloquentModel
     }
 
     /**
-     * Accessor for ip.
+     * Define the ip attribute.
      *
-     * @param $value
-     * @return false|string
+     * @return Attribute
      */
-    public function getIpAttribute($value)
+    protected function ip()
     {
-        return inet_ntop($value);
-    }
-
-    /**
-     * Mutator for ip.
-     *
-     * @param $value
-     */
-    public function setIpAttribute($value)
-    {
-        $this->attributes['ip_address'] = inet_pton($value);
+        return Attribute::make(
+            get: fn($value) => inet_ntop($value),
+            set: fn($value) => inet_pton($value)
+        );
     }
 }

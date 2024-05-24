@@ -22,6 +22,7 @@ namespace App\Models;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
 use App\Models\Traits\Presentable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
@@ -68,6 +69,8 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public static function boot()
     {
         parent::boot();
+        static::bootUuidTrait();
+
     }
 
     /**
@@ -247,13 +250,13 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Get counts attribute.
-     *
-     * @return int
+     * Return subject count
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
-    public function getSubjectsCountAttribute()
+    protected function subjectsCount(): Attribute
     {
-        return $this->subjects()->count();
+        return Attribute::make(
+            get: fn($value) => $this->subjects()->count()
+        );
     }
-
 }

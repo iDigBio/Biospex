@@ -55,14 +55,20 @@ class EventTranscription extends BaseEloquentModel
     ];
 
     /**
-     * @var array
+     *
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'classification_id' => 'int',
-        'event_id' => 'int',
-        'team_id' => 'int',
-        'user_id' => 'int',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'classification_id' => 'int',
+            'event_id'          => 'int',
+            'team_id'           => 'int',
+            'user_id'           => 'int',
+        ];
+    }
 
     /**
      * Transcription relationship.

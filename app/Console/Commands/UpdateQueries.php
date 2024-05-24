@@ -79,9 +79,9 @@ class UpdateQueries extends Command
         $this->changeNfnPanoptesActor();
         */
 
-        $this->createReconciledByExpert();
-        $this->renameReconcileToReconciled();
-        $this->createReconciledByUser();
+        //$this->createReconciledByExpert();
+        //$this->renameReconcileToReconciled();
+        //$this->createReconciledByUser();
 
         $this->updateDownloadsSetReconciledToReconciledWithExpert();
         $this->updateDownloadsSetReconcileToReconciled();

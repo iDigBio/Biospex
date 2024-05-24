@@ -19,6 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Expedition;
+use App\Models\Subject;
 use Illuminate\Console\Command;
 
 /**
@@ -51,6 +53,11 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
+        //$expedition = Expedition::with('nfnActor')->find(17);
+        //dd($expedition->nfnActor); // "96b45c1f-6fe7-473a-99eb-7b9f9cdf564a"
+        $subject = new Subject();
+        $subject->project_id = "1000";
+        $subject->save();
+        echo 'test' . PHP_EOL;
     }
 }

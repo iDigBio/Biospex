@@ -42,13 +42,18 @@ class WeDigBioEventDate extends BaseEloquentModel
     ];
 
     /**
-     * @var array
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
-        'active' => 'int'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
+            'active' => 'int'
+        ];
+    }
 
     /**
      * @var string

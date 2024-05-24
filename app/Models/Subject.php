@@ -29,12 +29,15 @@ class Subject extends BaseMongoModel
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @return string[]
      */
-    protected $casts = [
-        'project_id' => 'integer',
-        'exported' => 'boolean'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'project_id' => 'integer',
+            'exported' => 'boolean'
+        ];
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -58,17 +61,6 @@ class Subject extends BaseMongoModel
     public function occurrence()
     {
         return $this->embedsOne(Occurrence::class, 'occurrence');
-    }
-
-    /**
-     * Set project id attribute.
-     *
-     * @param $value
-     * @return int
-     */
-    public function setProjectId($value)
-    {
-        return $this->attributes['project_id'] = (int) $value;
     }
 
     /**

@@ -21,6 +21,7 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\TeamPresenter;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class Team
@@ -65,11 +66,14 @@ class Team extends BaseEloquentModel
     }
 
     /**
-     * Get full name.
+     * Define the full name attribute.
      *
-     * @return string
+     * @return Attribute
      */
-    public function getFullNameAttribute() {
-        return $this->first_name . ' ' . $this->last_name;
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->first_name . ' ' . $this->last_name,
+        );
     }
 }
