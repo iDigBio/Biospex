@@ -22,7 +22,7 @@
                         @if ( ! empty($download) && GeneralHelper::downloadFileExists($download->type, $download->file))
                             <tr>
                                 <td>{{ $download->present()->file_type }}</td>
-                                <td>{{ $download->file }}</td>
+                                <td>{{ $download->present()->file_type . '-' . $download->file }}</td>
                                 <td>
                                     @if (GeneralHelper::downloadFileExists($download->type, $download->file))
                                         {{ GeneralHelper::humanFileSize(GeneralHelper::downloadFileSize($download->type, $download->file)) }}
