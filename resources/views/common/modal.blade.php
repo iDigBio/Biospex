@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div class="modal" id="global-modal" data-size="" tabindex="-2" role="dialog" aria-labelledby="ModalCenterTitle"
+<div class="modal global-modal" id="global-modal" data-size="" tabindex="-2" role="dialog" aria-labelledby="ModalCenterTitle"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">

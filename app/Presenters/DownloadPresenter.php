@@ -36,7 +36,7 @@ class DownloadPresenter extends Presenter
     public function fileType()
     {
         if ($this->model->type === 'reconciled-with-expert' || $this->model->type === 'reconciled-with-user') {
-            return $this->model->type . '-review';
+            return str_replace('-', '_', $this->model->type) . '_opinion';
         }
 
         if ($this->model->type === 'report') {
