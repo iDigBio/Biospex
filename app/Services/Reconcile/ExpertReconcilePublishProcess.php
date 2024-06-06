@@ -129,13 +129,13 @@ class ExpertReconcilePublishProcess
             'expedition_id' => $expeditionId,
             'actor_id'      => 2,
             'file'          => $expeditionId.'.csv',
-            'type'          => 'reconciled',
+            'type'          => 'reconciled-with-expert',
         ];
         $attributes = [
             'expedition_id' => $expeditionId,
             'actor_id'      => 2,
             'file'          => $expeditionId.'.csv',
-            'type'          => 'reconciled',
+            'type'          => 'reconciled-with-expert',
         ];
 
         $this->downloadRepo->updateOrCreate($attributes, $values);
