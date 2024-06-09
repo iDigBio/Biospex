@@ -19,54 +19,47 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ExpeditionRepository;
+use App\Jobs\ExpertReviewMigrateReconcilesJob;
+use App\Jobs\ExpertReviewSetProblemsJob;
 use App\Services\Reconcile\ReconcileService;
 use Illuminate\Console\Command;
 
-class ZooniverseExplainedCommand extends Command
+/**
+ * Class ZooniverseExpertReviewCommand
+ *
+ * Command to create explained for expert review.
+ */
+class ZooniverseExpertReviewCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'zooniverse:explained {expeditionIds?*}';
+    protected $signature = 'expert:review {expeditionId}';
 
     /**
      * The console command description.
+     * @see \App\Http\Controllers\Admin\ReconcileController::create()
      *
      * @var string
      */
-    protected $description = 'Generate Zooniverse explained files';
+    protected $description = 'Runs an expedition through creating expert review migrations';
 
-    /**
-     * Create a new command instance.
+   /**
+     * Execute command to create explained for expert review.
+     * @see \App\Listeners\LabelReconciliationListener for result processing.
+     * Will process explained and then chain:
+     * @see ExpertReviewMigrateReconcilesJob
+     * @see ExpertReviewSetProblemsJob
      *
+     * @param \App\Services\Reconcile\ReconcileService $reconcileService
      * @return void
      */
-    public function __construct()
+    public function handle(ReconcileService $reconcileService): void
     {
-        parent::__construct();
-    }
+        $expeditionId = $this->argument('expeditionId');
 
-    /**
-     * Execute the console command.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Services\Reconcile\ReconcileService $reconcileService
-     */
-    public function handle(ExpeditionRepository $expeditionRepo, ReconcileService $reconcileService)
-    {
-        try {
-            $expeditionIds = $this->argument('expeditionIds');
-
-            foreach ($expeditionIds as $expeditionId) {
-                $expedition = $expeditionRepo->findExpeditionForExpertReview($expeditionId);
-                $reconcileService->processExplained($expedition);
-            }
-
-        } catch (\Throwable $throwable) {
-            echo $throwable->getMessage() . PHP_EOL;
-        }
+        $reconcileService->invokeLambdaExplained($expeditionId);
     }
 }

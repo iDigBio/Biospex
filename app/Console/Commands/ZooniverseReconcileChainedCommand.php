@@ -18,19 +18,22 @@
  */
 namespace App\Console\Commands;
 
-use App\Jobs\ZooniversePusherJob;
-use App\Jobs\ZooniverseReconcileJob;
-use App\Jobs\ZooniverseTranscriptionJob;
 use App\Repositories\ExpeditionRepository;
+use App\Traits\SkipZooniverse;
 use Illuminate\Console\Command;
 
 /**
  * Class ZooniverseReconcileChainedCommand
  *
- * @package App\Console\Commands
+ * Runs lambda labelReconciliation for single or multiple expeditions.
+ * LabelReconciliationListener will handle the reconciliation process after it's complete
+ * by running ZooniverseTranscriptionJob() and ZooniversePusherJob().
+ *
  */
 class ZooniverseReconcileChainedCommand extends Command
 {
+    use SkipZooniverse;
+
     /**
      * The name and signature of the console command.
      *
@@ -57,20 +60,25 @@ class ZooniverseReconcileChainedCommand extends Command
 
     /**
      * Execute the console command.
+     * Copies classification csv to lambda-reconciliation on S3 and triggers lambda labelReconciliation function.
+     * @see \App\Listeners\LabelReconciliationListener for result processing.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @return void
      */
-    public function handle(ExpeditionRepository $expeditionRepo)
+    public function handle(ExpeditionRepository $expeditionRepo): void
     {
         $expeditionIds = empty($this->argument('expeditionIds')) ?
             $this->getExpeditionIds($expeditionRepo) : $this->argument('expeditionIds');
 
         foreach ($expeditionIds as $expeditionId) {
-            ZooniverseReconcileJob::withChain([
-                new ZooniverseTranscriptionJob($expeditionId),
-                new ZooniversePusherJob($expeditionId)
-            ])->dispatch($expeditionId);
+            if ($this->skipReconcile($expeditionId)) {
+                continue;
+            }
+
+            $classification = config('zooniverse.directory.classification') . '/' . $expeditionId . '.csv';
+            $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation') . '/' . $expeditionId . '.csv';
+            \Storage::disk('s3')->copy($classification, $lambda_reconciliation);
         }
     }
 

@@ -69,6 +69,7 @@ class WorkFlowManagerCommand extends Command
     /**
      * Execute the console command.
      *
+     * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
      * @return void
      * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
      */
@@ -78,11 +79,13 @@ class WorkFlowManagerCommand extends Command
 
         $managers = $this->workflowManagerRepo->getWorkflowManagersForProcessing($expeditionId);
 
-        if ($managers->isEmpty()) {
+        if ($managers->isEmpty())
+        {
             return;
         }
 
-        $managers->each(function ($manager) {
+        $managers->each(function ($manager)
+        {
             $this->processActors($manager->expedition);
         });
     }
