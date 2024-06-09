@@ -20,7 +20,6 @@
 namespace App\Repositories;
 
 use App\Models\Expedition;
-use App\Models\Project;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -146,6 +145,7 @@ class ExpeditionRepository extends BaseRepository
 
     /**
      * Find expedition for expert review.
+     * @see ExpertReviewSetProblemsJob
      *
      * @param int $expeditionId
      * @return \Illuminate\Database\Eloquent\Model
@@ -165,6 +165,9 @@ class ExpeditionRepository extends BaseRepository
     }
 
     /**
+     * Get expedition for Zooniverse process.
+     * @see ZooniverseCsvService::getExpedition()
+     *
      * @param int $expeditionId
      * @return \Illuminate\Database\Eloquent\Model
      */

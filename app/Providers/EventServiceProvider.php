@@ -19,8 +19,12 @@
 
 namespace App\Providers;
 
+use App\Events\ImageExportEvent;
+use App\Events\LabelReconciliationEvent;
 use App\Listeners\ExportQueueEventSubscriber;
 use App\Listeners\GroupEventSubscriber;
+use App\Listeners\ImageExportListener;
+use App\Listeners\LabelReconciliationListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -40,6 +44,12 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class                  => [
             SendEmailVerificationNotification::class,
+        ],
+        LabelReconciliationEvent::class => [
+            LabelReconciliationListener::class
+        ],
+        ImageExportEvent::class => [
+            ImageExportListener::class
         ],
     ];
 

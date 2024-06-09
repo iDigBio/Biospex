@@ -19,9 +19,9 @@
 
 namespace App\Repositories;
 
-use App\Facades\DateHelper;
 use App\Models\PanoptesTranscription;
 use Illuminate\Support\Facades\Cache;
+use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class PanoptesTranscriptionRepository
@@ -72,11 +72,10 @@ class PanoptesTranscriptionRepository extends BaseRepository
      * Get project transcription count.
      *
      * TODO Change to sum expedition stat table
-     *
-     * @param int $projectId
+     * @param $projectId
      * @return int
      */
-    public function getProjectTranscriptionCount(int $projectId)
+    public function getProjectTranscriptionCount(int $projectId): int
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -226,7 +225,7 @@ class PanoptesTranscriptionRepository extends BaseRepository
             })->first();
         });
 
-        return null === $result ? null : DateHelper::formatMongoDbDate($result->classification_finished_at, 'Y-m-d H:i:s');
+        return $result?->classification_finished_at->format('Y-m-d H:i:s');
     }
 
     /**
@@ -247,7 +246,7 @@ class PanoptesTranscriptionRepository extends BaseRepository
             })->first();
         });
 
-        return null === $result ? null : DateHelper::formatMongoDbDate($result->classification_finished_at, 'Y-m-d H:i:s');
+        return $result?->classification_finished_at->format('Y-m-d H:i:s');
     }
 
     /**
@@ -269,8 +268,8 @@ class PanoptesTranscriptionRepository extends BaseRepository
                         '$match' => [
                             'workflow_id'                => $workflowId,
                             'classification_finished_at' => [
-                                '$gte' => DateHelper::formatDateToUtcTimestamp($begin),
-                                '$lt'  => DateHelper::formatDateToUtcTimestamp($end),
+                                '$gte' => new UTCDateTime($begin),
+                                '$lt'  => new UTCDateTime($end),
                             ],
                         ],
                     ],

@@ -41,6 +41,8 @@ class ProjectRepository extends BaseRepository
     }
 
     /**
+     * Override create in base repository.
+     *
      * @param array $data
      * @return \App\Models\Project|\Illuminate\Database\Eloquent\Model|true
      */
@@ -153,6 +155,8 @@ class ProjectRepository extends BaseRepository
     }
 
     /**
+     * Get project for show page.
+     *
      * @param $projectId
      * @return \App\Models\Project|null
      */
