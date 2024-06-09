@@ -19,10 +19,10 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipZooniverse;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Transcriptions\CreatePanoptesTranscriptionService;
+use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

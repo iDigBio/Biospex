@@ -18,12 +18,12 @@
  */
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipZooniverse;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Transcriptions\CreateBiospexEventTranscriptionService;
 use App\Services\Transcriptions\CreateWeDigBioTranscriptionService;
 use App\Services\Transcriptions\UpdateOrCreatePusherTranscriptionService;
+use App\Traits\SkipZooniverse;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

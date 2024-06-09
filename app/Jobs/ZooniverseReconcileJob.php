@@ -18,16 +18,15 @@
  */
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipZooniverse;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Reconcile\ReconcileService;
+use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Queue\SerializesModels;
 use Throwable;
 
 /**

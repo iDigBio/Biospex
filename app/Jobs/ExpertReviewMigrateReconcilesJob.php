@@ -19,10 +19,10 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipZooniverse;
 use App\Notifications\Generic;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Reconcile\ExpertReconcileService;
+use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

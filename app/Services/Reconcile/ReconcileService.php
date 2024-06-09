@@ -26,7 +26,7 @@ use App\Jobs\ZooniversePusherJob;
 use App\Jobs\ZooniverseTranscriptionJob;
 use App\Repositories\DownloadRepository;
 use App\Services\Api\AwsLambdaApiService;
-use App\Jobs\Traits\SkipZooniverse;
+use App\Traits\SkipZooniverse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 
