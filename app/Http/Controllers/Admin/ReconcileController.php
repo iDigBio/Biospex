@@ -21,19 +21,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ExpertReconcileReviewPublishJob;
-use App\Jobs\ExpertReviewMigrateReconcilesJob;
-use App\Jobs\ExpertReviewProcessExplainedJob;
-use App\Jobs\ExpertReviewSetProblemsJob;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Api\ZooniverseTalkApiService;
 use App\Services\Reconcile\ExpertReconcileService;
 use App\Services\Reconcile\ReconcileService;
+use App\Traits\SkipZooniverse;
 use Flash;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Bus;
-use Redirect;
+use Illuminate\Support\Facades\Redirect;
 use Request;
 
 /**
@@ -43,6 +39,8 @@ use Request;
  */
 class ReconcileController extends Controller
 {
+    use SkipZooniverse;
+
     /**
      * @var \App\Services\Reconcile\ExpertReconcileService
      */
@@ -99,13 +97,15 @@ class ReconcileController extends Controller
     }
 
     /**
-     * Set up data and redirect to index for processing.
+     * Start Expert Review set up by invoking explained via lambda labelReconciliations
+     * and redirect to index for processing.
      *
      * @param int $expeditionId
+     * @param \App\Services\Reconcile\ReconcileService $reconcileService
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Throwable
      */
-    public function create(int $expeditionId): RedirectResponse
+    public function create(int $expeditionId, ReconcileService $reconcileService): RedirectResponse
     {
         $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
 
@@ -113,11 +113,13 @@ class ReconcileController extends Controller
             return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        Bus::batch([
-            new ExpertReviewProcessExplainedJob($expeditionId),
-            new ExpertReviewMigrateReconcilesJob($expeditionId),
-            new ExpertReviewSetProblemsJob($expeditionId)
-        ])->name('Expert Reconcile ' . $expedition->id)->onQueue(config('config.queue.reconcile'))->dispatch();
+        if ($this->skipReconcile($expeditionId)) {
+            Flash::warning(t('Expert Review Process for Expedition (:id) was skipped. Please contact Biospex Administration', [':id' => $expeditionId]));
+
+            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
+        }
+
+        $reconcileService->invokeLambdaExplained($expedition->id);
 
         Flash::success(t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
 

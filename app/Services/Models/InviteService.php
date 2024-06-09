@@ -30,11 +30,11 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 /**
- * Class InviteProcess
+ * Class InviteService
  *
  * @package App\Services\Process
  */
-class InviteProcess
+class InviteService
 {
 
     /**
@@ -53,7 +53,7 @@ class InviteProcess
     private $groupRepo;
 
     /**
-     * InviteProcess constructor.
+     * InviteService constructor.
      *
      * @param \App\Repositories\UserRepository $userRepo
      * @param \App\Repositories\InviteRepository $inviteRepo

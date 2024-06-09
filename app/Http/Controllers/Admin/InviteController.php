@@ -23,7 +23,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InviteFormRequest;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserRepository;
-use App\Services\Models\InviteProcess;
+use App\Services\Models\InviteService;
 
 /**
  * Class InviteController
@@ -43,23 +43,23 @@ class InviteController extends Controller
     public $userRepo;
 
     /**
-     * @var \App\Services\Models\InviteProcess
+     * @var \App\Services\Models\InviteService
      */
-    private $inviteProcess;
+    private $inviteService;
 
     /**
      * InviteController constructor.
      *
-     * @param \App\Services\Models\InviteProcess $inviteProcess
+     * @param \App\Services\Models\InviteService $inviteService
      * @param \App\Repositories\GroupRepository $groupRepo
      * @param \App\Repositories\UserRepository $userRepo
      */
     public function __construct(
-        InviteProcess $inviteProcess,
+        InviteService $inviteService,
         GroupRepository $groupRepo,
         UserRepository $userRepo
     ) {
-        $this->inviteProcess = $inviteProcess;
+        $this->inviteService = $inviteService;
         $this->groupRepo = $groupRepo;
         $this->userRepo = $userRepo;
     }
@@ -89,7 +89,7 @@ class InviteController extends Controller
      */
     public function store(InviteFormRequest $request, int $groupId): \Illuminate\Http\RedirectResponse
     {
-        $this->inviteProcess->storeInvites($groupId, $request);
+        $this->inviteService->storeInvites($groupId, $request);
 
         return back();
     }

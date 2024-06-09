@@ -51,9 +51,9 @@ class ExpeditionController extends Controller
      * Displays Completed Expeditions on public page.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|null
      */
-    public function sort(ExpeditionRepository $expeditionRepo)
+    public function sort(ExpeditionRepository $expeditionRepo): ?\Illuminate\Contracts\View\View
     {
         if ( ! \Request::ajax()) {
             return null;

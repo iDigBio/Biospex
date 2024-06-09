@@ -24,7 +24,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EditUserFormRequest;
 use App\Http\Requests\PasswordFormRequest;
 use App\Repositories\UserRepository;
-use Flash;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Hash;
 
@@ -40,7 +39,7 @@ class UserController extends Controller
     /**
      * @var \App\Repositories\UserRepository
      */
-    public $userContract;
+    public $userRepo;
 
     /**
      * UserController constructor.
@@ -74,10 +73,10 @@ class UserController extends Controller
     /**
      * Show the form for user edit.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function edit()
+    public function edit(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $user = $this->userRepo->findWith(\Request::user()->id, ['profile']);
 

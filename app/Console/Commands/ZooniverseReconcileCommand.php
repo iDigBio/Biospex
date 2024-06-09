@@ -16,26 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+namespace App\Console\Commands;
 
-namespace App\Events;
+use Illuminate\Console\Command;
 
-class SnsNotification
+/**
+ * Class ZooniverseReconcileCommand
+ *
+ * @package App\Console\Commands
+ */
+class ZooniverseReconcileCommand
 {
-    /**
-     * The payload to be delivered in the listeners.
-     *
-     * @var array
-     */
-    public array $payload;
-
-    /**
-     * Create a new event instance.
-     *
-     * @param  array  $payload
-     * @return void
-     */
-    public function __construct($payload)
-    {
-        $this->payload = $payload;
-    }
+    // TODO REMOVE THIS
 }

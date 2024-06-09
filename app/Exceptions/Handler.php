@@ -49,7 +49,7 @@ class Handler extends ExceptionHandler
     ];
 
     /**
-     * Report or log an exception.
+     * Report or log an exception
      *
      * @param \Throwable $e
      * @return void
@@ -61,6 +61,8 @@ class Handler extends ExceptionHandler
     }
 
     /**
+     * Render and Exception into an HTTP response.
+     *
      * @param $request
      * @param \Throwable $e
      * @return \Symfony\Component\HttpFoundation\Response
