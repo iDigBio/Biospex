@@ -24,7 +24,7 @@ use App\Http\Requests\GroupFormRequest;
 use App\Jobs\DeleteGroupJob;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserRepository;
-use App\Services\Actors\GeoLocate\GeoLocateExportForm;
+use App\Services\Actor\GeoLocate\GeoLocateExportForm;
 use Auth;
 use Exception;
 
@@ -236,7 +236,7 @@ class GroupController extends Controller
     /**
      * Delete geolocate form.
      *
-     * @param \App\Services\Actors\GeoLocate\GeoLocateExportForm $geoLocateExportForm
+     * @param \App\Services\Actor\GeoLocate\GeoLocateExportForm $geoLocateExportForm
      * @param int $groupId
      * @param int $formId
      * @return \Illuminate\Http\RedirectResponse

@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actor\Zooniverse\Traits\ZooniverseErrorNotification;
 use App\Services\Api\AwsLambdaApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

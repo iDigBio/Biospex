@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
-use App\Services\Actors\Zooniverse\ZooniverseExportDeleteFiles;
+use App\Services\Actor\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actor\Zooniverse\ZooniverseExportDeleteFiles;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -69,7 +69,7 @@ class ZooniverseExportDeleteFilesJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actors\Zooniverse\ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles
+     * @param \App\Services\Actor\Zooniverse\ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles
      * @throws \Exception
      */
     public function handle(ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles)

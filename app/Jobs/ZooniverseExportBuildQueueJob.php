@@ -22,8 +22,8 @@ namespace App\Jobs;
 use App\Models\Actor;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
-use App\Services\Actors\Zooniverse\ZooniverseBuildQueue;
+use App\Services\Actor\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actor\Zooniverse\ZooniverseBuildQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -59,7 +59,7 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actors\Zooniverse\ZooniverseBuildQueue $zooniverseBuildQueue
+     * @param \App\Services\Actor\Zooniverse\ZooniverseBuildQueue $zooniverseBuildQueue
      * @throws \Exception
      */
     public function handle(ZooniverseBuildQueue $zooniverseBuildQueue)

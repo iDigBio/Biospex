@@ -22,7 +22,7 @@ use App\Models\Actor;
 use App\Models\Expedition;
 use App\Notifications\Generic;
 use App\Repositories\ExpeditionRepository;
-use App\Services\Actors\GeoLocate\GeoLocateStat;
+use App\Services\Actor\GeoLocate\GeoLocateStat;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

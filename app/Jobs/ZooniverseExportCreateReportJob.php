@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
-use App\Services\Actors\Zooniverse\ZooniverseExportCreateReport;
+use App\Services\Actor\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actor\Zooniverse\ZooniverseExportCreateReport;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -69,7 +69,7 @@ class ZooniverseExportCreateReportJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actors\Zooniverse\ZooniverseExportCreateReport $zooniverseExportReport
+     * @param \App\Services\Actor\Zooniverse\ZooniverseExportCreateReport $zooniverseExportReport
      * @throws \Exception
      */
     public function handle(ZooniverseExportCreateReport $zooniverseExportReport)

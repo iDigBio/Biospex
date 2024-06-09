@@ -132,7 +132,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
 
         /**
          * State === 3 means Zooniverse actor completed.
-         * @see \App\Services\Actors\Zooniverse\Zooniverse::actor()
+         * @see \App\Services\Actor\Zooniverse\Zooniverse::actor()
          */
         $attributes = [
             'state' => 3,

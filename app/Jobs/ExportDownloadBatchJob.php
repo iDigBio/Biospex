@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Notifications\Generic;
 use App\Repositories\DownloadRepository;
-use App\Services\Actors\Zooniverse\ZooniverseExportBatch;
+use App\Services\Actor\Zooniverse\ZooniverseExportBatch;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -64,7 +64,7 @@ class ExportDownloadBatchJob implements ShouldQueue
      * Handle download batch job.
      *
      * @param \App\Repositories\DownloadRepository $downloadRepository
-     * @param \App\Services\Actors\Zooniverse\ZooniverseExportBatch $zooniverseExportBatch
+     * @param \App\Services\Actor\Zooniverse\ZooniverseExportBatch $zooniverseExportBatch
      */
     public function handle(DownloadRepository $downloadRepository, ZooniverseExportBatch $zooniverseExportBatch): void
     {

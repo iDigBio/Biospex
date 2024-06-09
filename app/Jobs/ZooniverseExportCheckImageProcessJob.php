@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Models\ExportQueue;
 use App\Repositories\ExportQueueFileRepository;
-use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actor\Zooniverse\Traits\ZooniverseErrorNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

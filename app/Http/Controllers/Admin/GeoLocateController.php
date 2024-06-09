@@ -24,8 +24,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GeoLocateCommunityRequest;
 use App\Jobs\GeoLocateExportJob;
 use App\Jobs\GeoLocateStatsJob;
-use App\Services\Actors\GeoLocate\GeoLocateExportForm;
-use App\Services\Actors\GeoLocate\GeoLocateStat;
+use App\Services\Actor\GeoLocate\GeoLocateExportForm;
+use App\Services\Actor\GeoLocate\GeoLocateStat;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -34,20 +34,20 @@ use Illuminate\Support\Facades\Auth;
 class GeoLocateController extends Controller
 {
     /**
-     * @var \App\Services\Actors\GeoLocate\GeoLocateExportForm
+     * @var \App\Services\Actor\GeoLocate\GeoLocateExportForm
      */
     private GeoLocateExportForm $geoLocateExportForm;
 
     /**
-     * @var \App\Services\Actors\GeoLocate\GeoLocateStat
+     * @var \App\Services\Actor\GeoLocate\GeoLocateStat
      */
     private GeoLocateStat $geoLocateStat;
 
     /**
      * GeoLocateController constructor.
      *
-     * @param \App\Services\Actors\GeoLocate\GeoLocateExportForm $geoLocateExportForm
-     * @param \App\Services\Actors\GeoLocate\GeoLocateStat $geoLocateStat
+     * @param \App\Services\Actor\GeoLocate\GeoLocateExportForm $geoLocateExportForm
+     * @param \App\Services\Actor\GeoLocate\GeoLocateStat $geoLocateStat
      */
     public function __construct(
         GeoLocateExportForm $geoLocateExportForm,

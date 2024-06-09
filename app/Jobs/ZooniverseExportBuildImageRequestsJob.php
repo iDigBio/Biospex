@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actors\Zooniverse\Traits\ZooniverseErrorNotification;
-use App\Services\Actors\Zooniverse\ZooniverseExportBuildImageRequests;
+use App\Services\Actor\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actor\Zooniverse\ZooniverseExportBuildImageRequests;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -68,7 +68,7 @@ class ZooniverseExportBuildImageRequestsJob implements ShouldQueue, ShouldBeUniq
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actors\Zooniverse\ZooniverseExportBuildImageRequests $zooniverseBuildRequests
+     * @param \App\Services\Actor\Zooniverse\ZooniverseExportBuildImageRequests $zooniverseBuildRequests
      * @return void
      * @throws \Exception
      */
