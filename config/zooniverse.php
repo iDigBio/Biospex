@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'actor_title'              => env('ZOONIVERSE_ACTOR_TITLE'),
     'actor_id'                 => env('ZOONIVERSE_ACTOR_ID'),
     'pusher_id'                => env('ZOONIVERSE_PUSHER_ID'),
     'project_url'              => env('ZOONIVERSE_PROJECT_URL'),
