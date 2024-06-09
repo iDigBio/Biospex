@@ -33,7 +33,7 @@ class PusherTranscriptionResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function toArray($request)
@@ -42,7 +42,7 @@ class PusherTranscriptionResource extends JsonResource
             'project'              => $this->project,
             'description'          => $this->description,
             'guid'                 => $this->guid,
-            'timestamp'            => DateHelper::formatMongoDbDate($this->timestamp, 'Y-m-d\TH:i:s\Z'),
+            'timestamp'            => $this->timestamp,
             'subject'              => $this->subject,
             'contributor'          => $this->contributor,
             'transcriptionContent' => $this->transcriptionContent,

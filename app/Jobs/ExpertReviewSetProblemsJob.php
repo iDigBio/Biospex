@@ -74,7 +74,6 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
     )
     {
         $expedition = $expeditionRepo->findExpeditionForExpertReview($this->expeditionId);
-        $user = $expedition->project->group->owner;
 
         try {
             if ($this->skipReconcile($this->expeditionId)) {
@@ -98,7 +97,7 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
                 'buttons' => [$btn]
             ];
 
-            $user->notify(new Generic($attributes));
+            $expedition->project->group->owner->notify(new Generic($attributes));
 
             $this->delete();
 
@@ -114,7 +113,7 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
                 ],
             ];
 
-            $user->notify(new Generic($attributes));
+            $expedition->project->group->owner->notify(new Generic($attributes, true));
 
             $this->delete();
         }

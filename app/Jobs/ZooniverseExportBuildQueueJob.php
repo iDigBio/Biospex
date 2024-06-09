@@ -22,7 +22,6 @@ namespace App\Jobs;
 use App\Models\Actor;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Actor\Zooniverse\Traits\ZooniverseErrorNotification;
 use App\Services\Actor\Zooniverse\ZooniverseBuildQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -38,7 +37,7 @@ use Throwable;
  */
 class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, ZooniverseErrorNotification;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * @var \App\Models\Actor

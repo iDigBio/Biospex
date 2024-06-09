@@ -72,7 +72,7 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
         ExpertReconcileService $expertReconcileService
     )
     {
-        $expedition = $expeditionRepo->findExpeditionForExpertReview($this->expeditionId);
+        $expedition = $expeditionRepo->findWith($this->expeditionId, ['project.group.owner']);
 
         try {
             if ($this->skipReconcile($this->expeditionId)) {

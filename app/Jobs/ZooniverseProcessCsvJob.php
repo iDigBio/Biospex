@@ -87,12 +87,7 @@ class ZooniverseProcessCsvJob implements ShouldQueue
             throw new \Exception(t('Zooniverse csv uri for Expedition Id %s is missing', $this->expeditionId));
         }
 
-        ZooniverseCsvDownloadJob::withChain([
-            new ZooniverseReconcileJob($this->expeditionId),
-            new ZooniverseTranscriptionJob($this->expeditionId),
-            new ZooniversePusherJob($this->expeditionId),
-            new ZooniverseClassificationCountJob($this->expeditionId),
-        ])->dispatch($this->expeditionId, $uri);
+        ZooniverseCsvDownloadJob::dispatch($this->expeditionId, $uri);
     }
 
     /**
