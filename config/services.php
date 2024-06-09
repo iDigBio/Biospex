@@ -44,5 +44,4 @@ return [
         'secret_key' => env('RECAPTCHA_SECRET_KEY'),
         'url' => env('RECAPTCHA_URL', 'https://www.google.com/recaptcha/api/siteverify')
     ],
-
 ];

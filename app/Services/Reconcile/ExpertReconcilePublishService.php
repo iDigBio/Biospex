@@ -20,6 +20,8 @@
 namespace App\Services\Reconcile;
 
 use App\Facades\TranscriptionMapHelper;
+use App\Repositories\DownloadRepository;
+use App\Repositories\ExpeditionRepository;
 use App\Repositories\ReconcileRepository;
 use App\Services\Csv\AwsS3CsvService;
 
@@ -36,43 +38,53 @@ class ExpertReconcilePublishService
     private ReconcileRepository $reconcileRepo;
 
     /**
+     * @var \App\Repositories\DownloadRepository
+     */
+    private DownloadRepository $downloadRepo;
+
+    /**
+     * @var \App\Repositories\ExpeditionRepository
+     */
+    private ExpeditionRepository $expeditionRepo;
+
+    /**
      * @var \App\Services\Csv\AwsS3CsvService
      */
     private AwsS3CsvService $awsS3CsvService;
 
     /**
-     * @var \App\Services\Reconcile\ReconcileService
-     */
-    private ReconcileService $reconcileService;
-
-    /**
      * ExpertReconcilePublishService constructor.
      *
      * @param \App\Repositories\ReconcileRepository $reconcileRepo
+     * @param \App\Repositories\DownloadRepository $downloadRepo
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
-     * @param \App\Services\Reconcile\ReconcileService $reconcileService
      */
     public function __construct(
         ReconcileRepository $reconcileRepo,
-        AwsS3CsvService $awsS3CsvService,
-        ReconcileService $reconcileService
+        DownloadRepository $downloadRepo,
+        ExpeditionRepository $expeditionRepo,
+        AwsS3CsvService $awsS3CsvService
     )
     {
         $this->reconcileRepo = $reconcileRepo;
+        $this->downloadRepo = $downloadRepo;
+        $this->expeditionRepo = $expeditionRepo;
         $this->awsS3CsvService = $awsS3CsvService;
-        $this->reconcileService = $reconcileService;
     }
 
     /**
      * Publish reconciled file.
+     * @see \App\Jobs\ExpertReconcileReviewPublishJob
      *
      * @param string $expeditionId
      * @throws \League\Csv\CannotInsertRecord
      */
     public function publishReconciled(string $expeditionId): void
     {
-        $this->createReconciledWithExpertCsv($expeditionId);
-        $this->reconcileService->updateOrCreateReviewDownload($expeditionId, config('zooniverse.directory.reconciled-with-expert'));
+        $this->createReconcileCsv($expeditionId);
+        $this->createDownload($expeditionId);
+        $this->sendEmail($expeditionId);
     }
 
     /**
@@ -81,7 +93,7 @@ class ExpertReconcilePublishService
      * @param string $expeditionId
      * @throws \League\Csv\CannotInsertRecord|\Exception
      */
-    private function createReconciledWithExpertCsv(string $expeditionId): void
+    private function createReconcileCsv(string $expeditionId): void
     {
         $results = $this->reconcileRepo->getBy('subject_expeditionId', (int) $expeditionId);
         $mapped = $results->map(function ($record) {
@@ -104,5 +116,40 @@ class ExpertReconcilePublishService
         $this->awsS3CsvService->createCsvWriterFromStream();
         $this->awsS3CsvService->csv->insertOne($decodedHeader);
         $this->awsS3CsvService->csv->insertAll($mapped->toArray());
+    }
+
+    /**
+     * Create download file.
+     *
+     * @param string $expeditionId
+     */
+    private function createDownload(string $expeditionId)
+    {
+        $values = [
+            'expedition_id' => $expeditionId,
+            'actor_id'      => 2,
+            'file'          => $expeditionId.'.csv',
+            'type'          => 'reconciled-with-expert',
+        ];
+        $attributes = [
+            'expedition_id' => $expeditionId,
+            'actor_id'      => 2,
+            'file'          => $expeditionId.'.csv',
+            'type'          => 'reconciled-with-expert',
+        ];
+
+        $this->downloadRepo->updateOrCreate($attributes, $values);
+    }
+
+    /**
+     * Send email to project owner.
+     *
+     * @param string $expeditionId
+     */
+    private function sendEmail(string $expeditionId)
+    {
+        // TODO create generic notification
+        $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
+        $expedition->project->group->owner->notify(new ExpertReviewPublished($expedition->title));
     }
 }

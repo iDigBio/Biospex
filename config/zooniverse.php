@@ -1,9 +1,7 @@
 <?php
 
 return [
-    'actor_title'              => env('ZOONIVERSE_ACTOR_TITLE'),
     'actor_id'                 => env('ZOONIVERSE_ACTOR_ID'),
-    'pusher_id'                => env('ZOONIVERSE_PUSHER_ID'),
     'project_url'              => env('ZOONIVERSE_PROJECT_URL'),
     'reconcile_problem_regex'  => env('ZOONIVERSE_RECONCILE_PROBLEM_REGEX'),
     'talk_api_uri'             => env('ZOONIVERSE_TALK_API'),
@@ -17,12 +15,13 @@ return [
     'directory' => [
         'parent'                 => env('ZOONIVERSE_DIRECTORY', 'zooniverse'),
         'classification'         => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/classification',
-        'reconciled'             => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled', // normal reconcile
-        'reconciled-with-expert' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled-with-expert', // expert review
-        'reconciled-with-user'   => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled-with-user', // user review
+        'reconciled'             => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled',
+        'reconciled-with-expert' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled-with-expert',
+        'reconciled-with-user'   => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled-with-user',
         'summary'                => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/summary',
         'transcript'             => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/transcript',
         'explained'              => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/explained',
+        'lambda-reconciliation'  => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/lambda-reconciliation',
     ],
 
     'file_types' => [

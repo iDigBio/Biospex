@@ -1024,3 +1024,10 @@ div.sort {
 .fa.fa-grip-large:before {
     content: "\f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142";
 }
+.reviewed {
+    color: green;
+}
+
+.need-review {
+    color: red;
+}

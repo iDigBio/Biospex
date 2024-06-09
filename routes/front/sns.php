@@ -17,6 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Front\SnsController;
+use App\Http\Controllers\Front\AwsSnsController;
 
-Route::post('/aws-sns-webhook', [SnsController::class, 'handle']);
+Route::post('/aws-sns-webhook', [AwsSnsController::class, 'handle']);
