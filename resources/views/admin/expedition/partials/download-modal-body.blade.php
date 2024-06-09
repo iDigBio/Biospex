@@ -7,7 +7,7 @@
         <div class="col-md-12 mb-2">
             <div id="downloadsTbl" class="table-responsive">
                 <h2 class="color-action">{{ $actor->title }}</h2>
-                <table class="table table-sm">
+                <table class="table table-sm text-left">
                     <thead>
                     <tr>
                         <th>{{ t('Download Type') }}</th>
