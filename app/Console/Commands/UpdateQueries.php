@@ -20,8 +20,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Actor;
-use App\Models\Download;
-use App\Models\Project;
 use App\Models\Expedition;
 use App\Models\Workflow;
 use Illuminate\Console\Command;
@@ -76,13 +74,6 @@ class UpdateQueries extends Command
         $this->alterBingoMapIp();
         $this->alterEventTransactionIds();
         $this->changeNfnPanoptesActor();
-
-        //$this->createReconciledByExpert();
-        //$this->renameReconcileToReconciled();
-        //$this->createReconciledByUser();
-
-        $this->updateDownloadsSetReconciledToReconciledWithExpert();
-        $this->updateDownloadsSetReconcileToReconciled();
     }
 
     private function saveProjectWorkflowOrigAndMoveToExpedition(): void
@@ -242,46 +233,4 @@ class UpdateQueries extends Command
         DB::raw("UPDATE `actors` SET `class` = 'Zooniverse' WHERE `actors`.`id` = 2;");
     }
 
-    public function createReconciledByExpert()
-    {
-        echo 'Running '.__METHOD__.PHP_EOL;
-
-        if (!\Storage::disk('s3')->exists('zooniverse/reconciled-with-expert')) {
-            exec("aws s3 mv s3://biospex-dev/zooniverse/reconciled/ s3://biospex-dev/zooniverse/reconciled-with-expert/ --recursive");
-            exec("aws s3 rm s3://biospex-dev/zooniverse/reconciled --recursive");
-        }
-    }
-
-    public function renameReconcileToReconciled()
-    {
-        echo 'Running '.__METHOD__.PHP_EOL;
-
-        if (!\Storage::disk('s3')->exists('zooniverse/reconciled')) {
-            exec("aws s3 mv s3://biospex-dev/zooniverse/reconcile/ s3://biospex-dev/zooniverse/reconciled/ --recursive");
-            exec("aws s3 rm s3://biospex-dev/zooniverse/reconcile/ --recursive");
-        }
-    }
-
-    public function createReconciledByUser()
-    {
-        echo 'Running '.__METHOD__.PHP_EOL;
-
-        if (!\Storage::disk('s3')->exists('zooniverse/reconciled_by_user')) {
-            exec("aws s3api put-object --bucket biospex-dev --key zooniverse/reconciled-with-user/");
-        }
-    }
-
-    public function updateDownloadsSetReconciledToReconciledWithExpert(): void
-    {
-        echo 'Running '.__METHOD__.PHP_EOL;
-
-        Download::where('type', 'reconciled')->update(['type' => 'reconciled-with-expert']);
-    }
-
-    public function updateDownloadsSetReconcileToReconciled(): void
-    {
-        echo 'Running '.__METHOD__.PHP_EOL;
-
-        Download::where('type', 'reconcile')->update(['type' => 'reconciled']);
-    }
 }
