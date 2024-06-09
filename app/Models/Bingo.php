@@ -53,16 +53,6 @@ class Bingo extends BaseEloquentModel
     protected $presenter = BingoPresenter::class;
 
     /**
-     * Project relation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(Project::class);
-    }
-
-    /**
      * User relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -70,6 +60,16 @@ class Bingo extends BaseEloquentModel
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Project relation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Project::class);
     }
 
     /**

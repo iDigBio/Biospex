@@ -19,8 +19,6 @@
 
 namespace App\Models;
 
-use App\Models\Casts\IntegerCast;
-
 /**
  * Class PanoptesTranscription
  *
@@ -34,18 +32,23 @@ class PanoptesTranscription extends BaseMongoModel
     protected $collection = 'panoptes_transcriptions';
 
     /**
-     * @var string[]
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'subject_id'                 => IntegerCast::class,
-        'classification_id'          => IntegerCast::class,
-        'workflow_id'                => IntegerCast::class,
-        'subject_expeditionId'       => IntegerCast::class,
-        'subject_projectId'          => IntegerCast::class,
-        'transcription_id'           => 'string',
-        'classification_started_at'  => 'datetime',
-        'classification_finished_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'subject_id'                 => 'integer',
+            'classification_id'          => 'integer',
+            'workflow_id'                => 'integer',
+            'subject_expeditionId'       => 'integer',
+            'subject_projectId'          => 'integer',
+            'transcription_id'           => 'string',
+            'classification_started_at'  => 'datetime',
+            'classification_finished_at' => 'datetime',
+        ];
+    }
 
     /**
      * OrderBy

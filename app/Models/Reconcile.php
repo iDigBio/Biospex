@@ -19,7 +19,6 @@
 
 namespace App\Models;
 
-use App\Models\Casts\IntegerCast;
 use App\Models\Traits\Presentable;
 use App\Presenters\ReconcilePresenter;
 
@@ -40,17 +39,20 @@ class Reconcile extends BaseMongoModel
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @return string[]
      */
-    protected $casts = [
-        'subject_id'           => IntegerCast::class,
-        'subject_projectId'    => IntegerCast::class,
-        'subject_expeditionId' => IntegerCast::class,
-        'problem'              => IntegerCast::class,
-        'created_at'           => 'datetime',
-        'updated_at'           => 'datetime',
-        'timestamp'            => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'subject_id'           => 'integer',
+            'subject_projectId'    => 'integer',
+            'subject_expeditionId' => 'integer',
+            'problem'              => 'integer',
+            'created_at'           => 'datetime',
+            'updated_at'           => 'datetime',
+            'timestamp'            => 'datetime',
+        ];
+    }
 
     /**
      * @var string

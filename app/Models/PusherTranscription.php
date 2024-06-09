@@ -19,8 +19,6 @@
 
 namespace App\Models;
 
-use App\Models\Casts\IntegerCast;
-
 /**
  * Class PusherTranscription
  *
@@ -34,15 +32,21 @@ class PusherTranscription extends BaseMongoModel
     protected $collection = 'pusher_transcriptions';
 
     /**
-     * @var string[]
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'classification_id' => IntegerCast::class,
-        'expedition_id'     => IntegerCast::class,
-        'created_at'        => 'datetime',
-        'updated_at'        => 'datetime',
-        'timestamp'         => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'classification_id' => 'integer',
+            'transcription_id' => 'string',
+            'expedition_id' => 'integer',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'timestamp' => 'datetime',
+        ];
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

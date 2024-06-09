@@ -47,13 +47,18 @@ class WeDigBioEventTranscription extends BaseEloquentModel
     ];
 
     /**
-     * @var array
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'classification_id' => 'integer',
-        'project_id' => 'integer',
-        'date_id' => 'integer'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'classification_id' => 'int',
+            'project_id' => 'int',
+            'date_id' => 'int'
+        ];
+    }
 
     /**
      * Transcription relationship.

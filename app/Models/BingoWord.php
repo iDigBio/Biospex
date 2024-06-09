@@ -26,7 +26,6 @@ namespace App\Models;
  */
 class BingoWord extends BaseEloquentModel
 {
-
     /**
      * @inheritDoc
      */
@@ -50,4 +49,5 @@ class BingoWord extends BaseEloquentModel
     {
         return $this->belongsTo(Bingo::class);
     }
+
 }

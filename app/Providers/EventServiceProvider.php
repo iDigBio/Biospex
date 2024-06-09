@@ -21,12 +21,9 @@ namespace App\Providers;
 
 use App\Listeners\ExportQueueEventSubscriber;
 use App\Listeners\GroupEventSubscriber;
-use App\Listeners\SnsNotificationListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use App\Events\SnsNotification;
-use App\Events\SnsSubscriptionConfirmation;
 
 /**
  * Class EventServiceProvider
@@ -43,12 +40,6 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class                  => [
             SendEmailVerificationNotification::class,
-        ],
-        SnsNotification::class             => [
-            SnsNotificationListener::class,
-        ],
-        SnsSubscriptionConfirmation::class => [
-
         ],
     ];
 

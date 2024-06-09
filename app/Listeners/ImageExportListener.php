@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 namespace App\Listeners;
 
+use App\Events\ImageExportEvent;
 use App\Services\Process\SnsImageExportResultProcess;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SnsNotificationListener implements ShouldQueue
+class ImageExportListener implements ShouldQueue
 {
     /**
      * @var \App\Services\Process\SnsImageExportResultProcess
@@ -31,12 +31,8 @@ class SnsNotificationListener implements ShouldQueue
 
     /**
      * Create the event listener.
-     *
-     * @param \App\Services\Process\SnsImageExportResultProcess $snsImageExportResultProcess
      */
-    public function __construct(
-        SnsImageExportResultProcess $snsImageExportResultProcess
-    )
+    public function __construct(SnsImageExportResultProcess $snsImageExportResultProcess)
     {
         $this->snsImageExportResultProcess = $snsImageExportResultProcess;
     }
@@ -44,31 +40,25 @@ class SnsNotificationListener implements ShouldQueue
     /**
      * Set tube for listener.
      *
-     * @return \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     * @return string
      */
-    public function viaQueue()
+    public function viaQueue(): string
     {
-        return config('config.queue.sns_image');
+        return config('config.queues.default');
     }
 
     /**
      * Handle the event.
-     *
-     * @param object $event
-     * @return void
      */
-    public function handle(object $event): void
+    public function handle(ImageExportEvent $event): void
     {
-        // $event->payload is the data passed to the event.
-        $content = json_decode($event->payload['message']['Message'], true);
-
-        if (\Str::contains($content['requestContext']['functionArn'], 'imageProcessExport')) {
-            $this->snsImageExportResultProcess->process($content);
-        }
+        $this->snsImageExportResultProcess->process($event->payload);
     }
 }
 
 /*
+Payload example
+
 {
   "version": "1.0",
   "timestamp": "2022-08-21T17:59:27.529Z",
@@ -93,5 +83,4 @@ class SnsNotificationListener implements ShouldQueue
     "body": "{\"queueId\":10,\"subjectId\":\"6298bb95c5143f1cc750d5a4\",\"message\":\"\"}"
   }
 }
-
  */

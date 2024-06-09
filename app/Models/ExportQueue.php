@@ -19,6 +19,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 /**
  * Class ExportQueue
  *
@@ -72,23 +74,15 @@ class ExportQueue extends BaseEloquentModel
     }
 
     /**
-     * Mutator for missing column.
+     * Define the missing attribute.
      *
-     * @param $value
+     * @return Attribute
      */
-    public function setMissingAttribute($value)
+    protected function missing(): Attribute
     {
-        $this->attributes['missing'] = serialize($value);
-    }
-
-    /**
-     * Accessor for missing column.
-     *
-     * @param $value
-     * @return mixed
-     */
-    public function getMissingAttribute($value): mixed
-    {
-        return empty($value) ? [] : unserialize($value);
+        return Attribute::make(
+            get: fn($value) => empty($value) ? [] : unserialize($value),
+            set: fn($value) => serialize($value)
+        );
     }
 }

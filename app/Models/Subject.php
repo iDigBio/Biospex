@@ -19,8 +19,6 @@
 
 namespace App\Models;
 
-use App\Models\Casts\IntegerCast;
-
 /**
  * Class Subject
  *
@@ -31,12 +29,15 @@ class Subject extends BaseMongoModel
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @return string[]
      */
-    protected $casts = [
-        'project_id' => IntegerCast::class,
-        'exported' => 'boolean'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'project_id' => 'integer',
+            'exported' => 'boolean'
+        ];
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

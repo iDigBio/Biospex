@@ -29,15 +29,26 @@ class Update extends BaseEloquentModel
      */
     protected $table = 'updates';
 
+    /**
+     * @inheritDoc
+     */
     protected $fillable = [
         'title',
         'message'
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
-    ];
+    /**
+     * The attributes that should be cast.
+     *
+     * @return string[]
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime'
+        ];
+    }
 
     /**
      * Date mutator.
