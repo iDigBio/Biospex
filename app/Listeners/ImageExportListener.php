@@ -21,6 +21,7 @@ namespace App\Listeners;
 use App\Events\ImageExportEvent;
 use App\Services\Process\SnsImageExportResultProcess;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Throwable;
 
 class ImageExportListener implements ShouldQueue
 {
@@ -53,6 +54,12 @@ class ImageExportListener implements ShouldQueue
     public function handle(ImageExportEvent $event): void
     {
         $this->snsImageExportResultProcess->process($event->payload);
+    }
+
+
+    public function failed(ImageExportEvent $event, Throwable $exception)
+    {
+        \Log::error('ImageExportListener failed', ['event' => $event, 'exception' => $exception]);
     }
 }
 
