@@ -121,7 +121,8 @@ class ZooniverseCsvService
     }
 
     /**
-     * Download csv file.
+     * Download csv file to S3 lambda-reconciliation and trigger reconciliation.
+     * @see \App\Listeners\LabelReconciliationListener for returned data.
      *
      * @param int $expeditionId
      * @param string $uri
@@ -130,7 +131,7 @@ class ZooniverseCsvService
      */
     public function downloadCsv(int $expeditionId, string $uri)
     {
-        $filePath = config('zooniverse.directory.classification') . '/' . $expeditionId . '.csv';
+        $filePath = config('zooniverse.directory.lambda-reconciliation') . '/' . $expeditionId . '.csv';
         $stream = $this->awsS3ApiService->createS3BucketStream(config('filesystems.disks.s3.bucket'), $filePath, 'w', false);
         $opts = [
             'sink' => $stream
