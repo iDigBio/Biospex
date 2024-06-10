@@ -30,6 +30,7 @@ return [
         'lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION'),
         'lambda_count'           => env('AWS_LAMBDA_COUNT'),
         'lambda_delay'           => env('AWS_LAMBDA_DELAY'),
+        'lambda_reconciliation_function' => env('AWS_LAMBDA_RECONCILIATION_FUNCTION'),
     ],
 
     'batch_dir'   => env('BATCH_DIR', 'batch'),
