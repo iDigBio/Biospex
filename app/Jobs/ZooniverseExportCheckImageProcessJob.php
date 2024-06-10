@@ -68,7 +68,7 @@ class ZooniverseExportCheckImageProcessJob implements ShouldQueue
     public function __construct(ExportQueue $exportQueue)
     {
         $this->exportQueue = $exportQueue;
-        $this->onQueue(config('config.queue.lambda'));
+        $this->onQueue(config('config.queue.lambda_export'));
     }
 
     /**

@@ -117,6 +117,7 @@ class AppFileDeployment extends Command
             return json_encode(base64_decode(config('config.'.strtolower($search))));
         }
 
+        echo config('config.' . strtolower(\Str::replaceFirst('_', '.', $search))).PHP_EOL;
         return config('config.' . strtolower(\Str::replaceFirst('_', '.', $search)));
     }
 

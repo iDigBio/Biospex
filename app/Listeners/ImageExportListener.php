@@ -45,7 +45,7 @@ class ImageExportListener implements ShouldQueue
      */
     public function viaQueue(): string
     {
-        return config('config.queues.default');
+        return config('config.queue.sns_image');
     }
 
     /**

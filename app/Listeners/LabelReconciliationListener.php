@@ -55,7 +55,7 @@ class LabelReconciliationListener implements ShouldQueue
      */
     public function viaQueue(): string
     {
-        return config('config.queues.reconcile');
+        return config('config.queues.sns_reconcile');
     }
 
     /**
