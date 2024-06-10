@@ -21,7 +21,7 @@ namespace App\Listeners;
 
 use App\Events\LabelReconciliationEvent;
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Services\Reconcile\ReconcileService;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -88,14 +88,18 @@ class LabelReconciliationListener implements ShouldQueue
      */
     public function failed(LabelReconciliationEvent $event, Throwable $exception)
     {
-        $user = User::find(1);
-        $messages = [
-            t('LabelReconciliationListener failed'),
-            t('Error: %s', $exception->getMessage()),
-            t('File: %s', $exception->getFile()),
-            t('Line: %s', $exception->getLine()),
+        $attributes = [
+            'subject' => t('LabelReconciliationListener Failed'),
+            'html'    => [
+                t('LabelReconciliationListener failed'),
+                t('Error: %s', $exception->getMessage()),
+                t('File: %s', $exception->getFile()),
+                t('Line: %s', $exception->getLine()),
+            ],
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        $user = User::find(1);
+        $user->notify(new Generic($attributes, true));
     }
 }
 
