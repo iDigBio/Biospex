@@ -59,4 +59,20 @@ class AwsLambdaApiService
             'InvocationType' => 'Event',
         ]);
     }
+
+    /**
+     * Invoke lambda client synchronously.
+     *
+     * @param string $function
+     * @param array $data
+     * @return \Aws\Result
+     */
+    public function lambdaInvoke(string $function, array $data)
+    {
+        return $this->lambdaClient->invoke([
+            // The name your created Lamda function
+            'FunctionName'   => $function,
+            'Payload'        => json_encode($data),
+        ]);
+    }
 }
