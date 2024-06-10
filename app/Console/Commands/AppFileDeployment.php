@@ -113,6 +113,10 @@ class AppFileDeployment extends Command
             return config('database.redis.default.host');
         }
 
+        if ($search === 'ZOONIVERSE_PUSHER_ID') {
+            return config('zooniverse.pusher_id');
+        }
+
         if ($search === 'MAP_PRIVATE_KEY') {
             return json_encode(base64_decode(config('config.'.strtolower($search))));
         }
@@ -137,6 +141,7 @@ class AppFileDeployment extends Command
      */
     private function rejectFiles($file): bool
     {
+        return false;
         $files = [
             'panoptes-pusher.conf',
             'panoptes-pusher.js',
