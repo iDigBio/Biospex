@@ -156,7 +156,7 @@ class ReconcileProcess
             }
 
             $this->uploadFileToS3('classification', $this->csvFullPath, $expedition->id);
-            $this->uploadFileToS3('reconcile', $this->recFullPath, $expedition->id);
+            $this->uploadFileToS3('reconciled', $this->recFullPath, $expedition->id);
             $this->uploadFileToS3('transcript', $this->tranFullPath, $expedition->id);
             $this->uploadFileToS3('summary', $this->sumFullPath, $expedition->id);
 
