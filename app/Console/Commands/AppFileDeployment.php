@@ -141,7 +141,6 @@ class AppFileDeployment extends Command
      */
     private function rejectFiles($file): bool
     {
-        return false;
         $files = [
             'panoptes-pusher.conf',
             'panoptes-pusher.js',
