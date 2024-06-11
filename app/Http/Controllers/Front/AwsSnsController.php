@@ -32,6 +32,10 @@ class AwsSnsController
 {
     /**
      * Handle incoming SNS messages.
+     * Checks the incoming message and fires the event for what's being requested.
+     *
+     * @see ImageExportEvent
+     * @see LabelReconciliationEvent
      *
      * @return \Illuminate\Http\Response
      */
