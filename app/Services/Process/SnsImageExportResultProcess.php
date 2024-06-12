@@ -53,16 +53,16 @@ class SnsImageExportResultProcess
     }
 
     /**
-     * Process result via sns from Lambda function.
+     * Process payload from Lambda function.
      *
-     * @param array $content
+     * @param array $payload
      * @return void
      */
-    public function process(array $content)
+    public function process(array $payload): void
     {
         try {
-            $requestPayload = $content['requestPayload'];
-            $responsePayload = $content['responsePayload'];
+            $requestPayload = $payload['requestPayload'];
+            $responsePayload = $payload['responsePayload'];
 
             // If errorMessage, something really went bad.
             if (isset($responsePayload['errorMessage'])) {
