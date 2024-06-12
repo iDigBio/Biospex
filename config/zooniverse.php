@@ -32,12 +32,6 @@ return [
         'summary',
     ],
 
-    'image_export' => [
-        'image_width' => 1500,
-        'image_height' => 1500,
-        'image_quality' => 96,
-    ],
-
     'search_urls' => [
         'eol'     => env('ZOONIVERSE_EOL_SEARCH'),
         'mol'     => env('ZOONIVERSE_MOL_SEARCH'),

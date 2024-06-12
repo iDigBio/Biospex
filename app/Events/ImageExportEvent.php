@@ -28,6 +28,7 @@ class ImageExportEvent
 
     /**
      * Create a new event instance.
+     * @see \App\Listeners\ImageExportListener
      */
     public function __construct(array $payload)
     {
