@@ -21,6 +21,7 @@ namespace App\Console\Commands;
 
 use App\Services\Api\AwsLambdaApiService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AppCommand
@@ -32,7 +33,7 @@ class AppLambdaCommand extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'lambda:test';
+    protected $signature = 'lambda:test {method}';
 
     /**
      * The console command description.
@@ -60,12 +61,38 @@ class AppLambdaCommand extends Command
      */
     public function handle()
     {
-        // https://js2qavzr5g4kmzi5ssmg7gkw240wfvln.lambda-url.us-east-2.on.aws/
+        if ($this->argument('method') === 'image') {
+            $this->imageTest();
+        } elseif ($this->argument('method') === 'reconcile') {
+            $this->reconcileTest();
+        }
+    }
 
+    private function imageTest(): void
+    {
+        $workingDir = "scratch/folderName-queueId-actorId-expeditionUuid";
         $attributes = [
-            'bucket' => 'biospex-dev',
-            'key' => 'zooniverse/classification/999999.csv',
-            'explanations' => true
+            'bucket' => config('filesystems.disks.s3.bucket'),
+            'queueId'    => 999999,
+            'subjectId'  => "615da36c65b16554e4781ed9",
+            'url'        => "https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg",
+            'dir'        => $workingDir,
+        ];
+
+        Storage::disk('s3')->makeDirectory($workingDir);
+
+        //$result = $this->awsLambdaApiService->lambdaInvoke(config('config.aws.lambda_export_function'), $attributes);
+        //echo $result['Payload']->getContents();
+
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_export_function'), $attributes);
+    }
+
+    private function reconcileTest(): void
+    {
+        $attributes = [
+            'bucket'       => 'biospex-dev',
+            'key'          => 'zooniverse/classification/999999.csv',
+            'explanations' => true,
         ];
 
         //$result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
@@ -74,13 +101,3 @@ class AppLambdaCommand extends Command
         $this->awsLambdaApiService->lambdaInvokeAsync('labelReconciliations', $attributes);
     }
 }
-
-/*
- Folders for old => new reconciliation service
-input_file: classification/ => classification
---reconciled: reconcile/ => reconciled/
---unreconciled: transcript/ => transcript/
---summary: summary/ => summary/
---reconciled --explanations: explained/ => explained/
-
- */
