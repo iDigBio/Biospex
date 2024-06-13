@@ -55,7 +55,7 @@ class LabelReconciliationListener implements ShouldQueue
      */
     public function viaQueue(): string
     {
-        return config('config.queues.sns_reconcile');
+        return config('config.queues.reconciliation_listener');
     }
 
     /**
@@ -66,32 +66,23 @@ class LabelReconciliationListener implements ShouldQueue
      */
     public function handle(LabelReconciliationEvent $event): void
     {
-        $responsePayload = $event->payload['responsePayload'];
-
-        // If errorMessage, something really went bad.
-        if (isset($event->responsePayload['errorMessage'])) {
-            throw new Exception($event->responsePayload['errorMessage']);
-        }
-
-        if ($responsePayload['statusCode'] !== 200) {
-            throw new Exception('Invalid response status code: ' . $responsePayload['body']['message']);
-        }
-
-        $this->reconcileService->processEvent((int) $responsePayload['body']['expeditionId'], $responsePayload['body']['explanations']);
+        $this->reconcileService->process($event->payload);
     }
 
     /**
-     * Handle a job failure.
+     * Handle a LabelReconciliationEvent failure.
+     * Will send email to admin so they can investigate.
      *
      * @param LabelReconciliationEvent $event
      * @param Throwable $exception
      */
-    public function failed(LabelReconciliationEvent $event, Throwable $exception)
+    public function failed(LabelReconciliationEvent $event, Throwable $exception): void
     {
         $attributes = [
             'subject' => t('LabelReconciliationListener Failed'),
             'html'    => [
-                t('LabelReconciliationListener failed'),
+                t('LabelReconciliationListener failed for Expedition ID: %s', $event->payload['responsePayload']['body']['expeditionId']),
+                t('Action: %s', $event->payload['responsePayload']['body']['explanations'] ? 'Explained' : 'Reconciled'),
                 t('Error: %s', $exception->getMessage()),
                 t('File: %s', $exception->getFile()),
                 t('Line: %s', $exception->getLine()),

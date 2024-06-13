@@ -45,21 +45,34 @@ class ImageExportListener implements ShouldQueue
      */
     public function viaQueue(): string
     {
-        return config('config.queue.sns_image');
+        return config('config.queue.image_export_listener');
     }
 
     /**
-     * Handle the event.
+     * Handle ImageExportEvent.
+     * Updates the database appropriately for success or failure of each image processed.
      */
     public function handle(ImageExportEvent $event): void
     {
-        $this->snsImageExportResultProcess->process($event->payload);
+        $requestPayload = $event->payload['requestPayload'];
+        $responsePayload = $event->payload['responsePayload'];
+
+        // If errorMessage, something really went bad.
+        if (isset($responsePayload['errorMessage'])) {
+            $this->snsImageExportResultProcess->handleErrorMessage($requestPayload, $responsePayload['errorMessage']);
+
+            return;
+        }
+
+        $this->snsImageExportResultProcess->handleResponse($responsePayload);
     }
 
-
-    public function failed(ImageExportEvent $event, Throwable $exception)
+    /**
+     * Handle a job failure.
+     */
+    public function failed(ImageExportEvent $event, Throwable $exception): void
     {
-        \Log::error('ImageExportListener failed', ['event' => $event, 'exception' => $exception]);
+        $this->snsImageExportResultProcess->handleErrorMessage($event->payload['requestPayload'], $exception->getMessage());
     }
 }
 

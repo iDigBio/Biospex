@@ -53,39 +53,13 @@ class SnsImageExportResultProcess
     }
 
     /**
-     * Process payload from Lambda function.
-     *
-     * @param array $payload
-     * @return void
-     */
-    public function process(array $payload): void
-    {
-        try {
-            $requestPayload = $payload['requestPayload'];
-            $responsePayload = $payload['responsePayload'];
-
-            // If errorMessage, something really went bad.
-            if (isset($responsePayload['errorMessage'])) {
-                $this->handleErrorMessage($requestPayload, $responsePayload['errorMessage']);
-
-                return;
-            }
-
-            $this->handleResponse($responsePayload);
-
-        } catch (\Throwable $throwable) {
-            \Log::alert($throwable->getMessage());
-        }
-    }
-
-    /**
      * Handle hard failure of lambda function.
      *
      * @param array $requestPayload
      * @param string $errorMessage
      * @return void
      */
-    private function handleErrorMessage(array $requestPayload, string $errorMessage): void
+    public function handleErrorMessage(array $requestPayload, string $errorMessage): void
     {
         $queueId = $requestPayload['queueId'];
         $subjectId = $requestPayload['subjectId'];
@@ -102,7 +76,7 @@ class SnsImageExportResultProcess
      * @param array $responsePayload
      * @return void
      */
-    private function handleResponse(array $responsePayload): void
+    public function handleResponse(array $responsePayload): void
     {
         $statusCode = $responsePayload['statusCode'];
         $body = json_decode($responsePayload['body'], true);
