@@ -61,14 +61,16 @@ class AppLambdaCommand extends Command
      */
     public function handle()
     {
-        if ($this->argument('method') === 'image') {
-            $this->imageTest();
+        if ($this->argument('method') === 'export') {
+            $this->exportTest();
+        } elseif ($this->argument('method') === 'explain') {
+            $this->explainTest();
         } elseif ($this->argument('method') === 'reconcile') {
             $this->reconcileTest();
         }
     }
 
-    private function imageTest(): void
+    private function exportTest(): void
     {
         $workingDir = "scratch/folderName-queueId-actorId-expeditionUuid";
         $attributes = [
@@ -87,7 +89,7 @@ class AppLambdaCommand extends Command
         $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_export_function'), $attributes);
     }
 
-    private function reconcileTest(): void
+    private function explainTest(): void
     {
         $attributes = [
             'bucket'       => 'biospex-dev',
@@ -95,9 +97,16 @@ class AppLambdaCommand extends Command
             'explanations' => true,
         ];
 
-        //$result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
-        //echo $result['Payload']->getContents();
+        $result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
+        echo $result['Payload']->getContents();
 
-        $this->awsLambdaApiService->lambdaInvokeAsync('labelReconciliations', $attributes);
+        //$this->awsLambdaApiService->lambdaInvokeAsync('labelReconciliations', $attributes);
+    }
+
+    private function reconcileTest(): void
+    {
+        $classification = config('zooniverse.directory.classification') . '/999999.csv';
+        $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation') . '/999999.csv';
+        \Storage::disk('s3')->copy($classification, $lambda_reconciliation);
     }
 }
