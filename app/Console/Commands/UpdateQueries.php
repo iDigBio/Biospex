@@ -218,6 +218,7 @@ class UpdateQueries extends Command
     public function alterBingoMapIp()
     {
         echo 'Running '.__METHOD__.PHP_EOL;
+
         DB::raw("ALTER TABLE `bingo_maps` CHANGE `ip` `ip` VARCHAR(30) NOT NULL;");
     }
 
@@ -230,6 +231,8 @@ class UpdateQueries extends Command
 
     public function changeNfnPanoptesActor()
     {
+        echo 'Running '.__METHOD__.PHP_EOL;
+
         DB::raw("UPDATE `actors` SET `class` = 'Zooniverse' WHERE `actors`.`id` = 2;");
     }
 
