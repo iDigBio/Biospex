@@ -5,7 +5,7 @@ return [
     'project_url'              => env('ZOONIVERSE_PROJECT_URL'),
     'reconcile_problem_regex'  => env('ZOONIVERSE_RECONCILE_PROBLEM_REGEX'),
     'talk_api_uri'             => env('ZOONIVERSE_TALK_API'),
-    'new_project_notification' => [2 => 'ZooniverseNewProject'],
+    'new_expedition_notification' => [2 => 'ZooniverseNewExpedition'],
     'participate_url'          => env('ZOONIVERSE_PARTICIPATE_URL'),
     // Skip api calls for expedition ids that cause issues
     'skip_api'                 => env('ZOONIVERSE_SKIP_API'),

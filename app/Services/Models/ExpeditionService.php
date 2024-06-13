@@ -236,14 +236,14 @@ class ExpeditionService
     /**
      * Send notifications for new projects and actors.
      *
-     * @see \App\Notifications\ZooniverseNewProject
+     * @see \App\Notifications\ZooniverseNewExpedition
      * @param $expedition
      * @param $project
      * @return void
      */
     public function notifyActorContacts($expedition, $project): void
     {
-        $newNotification = config('zooniverse.new_project_notification');
+        $newNotification = config('zooniverse.new_expedition_notification');
 
         $expedition->workflow->actors->reject(function ($actor) {
             return $actor->contacts->isEmpty();

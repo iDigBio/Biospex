@@ -25,11 +25,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * Class ZooniverseNewProject
+ * Class ZooniverseNewExpedition
  *
  * @package App\Notifications
  */
-class ZooniverseNewProject extends Notification implements ShouldQueue
+class ZooniverseNewExpedition extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -74,7 +74,7 @@ class ZooniverseNewProject extends Notification implements ShouldQueue
         ];
 
         return (new MailMessage)
-            ->subject(t('Biospex - New Zooniverse Project Submitted'))
+            ->subject(t('Biospex - New Zooniverse Expedition Submitted'))
             ->markdown('mail.newzooniverse', $vars);
     }
 
