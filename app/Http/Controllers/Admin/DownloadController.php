@@ -108,7 +108,6 @@ class DownloadController extends Controller
 
             \Flash::success(t('Export generation has been added to the job queue. You will be notified when completed.'));
         } catch (Exception $e) {
-            ;
             \Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
         }
 

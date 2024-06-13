@@ -23,6 +23,7 @@
         @include('front.bingo.partials.bingo-loop')
     </div>
     <div class="row">
+        @include('front.bingo.partials.bingo-loop', ['project' => $bingo->project])
         @include('front.bingo.partials.words-table')
     </div>
 @endsection
