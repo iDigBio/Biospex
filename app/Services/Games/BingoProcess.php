@@ -135,7 +135,7 @@ class BingoProcess
      */
     public function showBingo(string $bingoId): array
     {
-        $bingo = $this->findBingoWith($bingoId, ['words', 'user']);
+        $bingo = $this->findBingoWith($bingoId, ['words', 'user', 'project']);
 
         $words = $bingo->words->chunk(3);
 
