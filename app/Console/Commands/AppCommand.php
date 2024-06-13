@@ -52,6 +52,9 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
+        \Storage::disk('s3')->delete('zooniverse/transcript/999999.csv');
+        \Storage::disk('s3')->delete('zooniverse/summary/999999.html');
+        \Storage::disk('s3')->delete('zooniverse/reconciled/999999.csv');
+        \Storage::disk('s3')->delete('zooniverse/explained/999999.csv');
     }
 }
