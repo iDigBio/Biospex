@@ -28,8 +28,8 @@ return [
         'secret_key'                     => env('AWS_SECRET_ACCESS_KEY'),
         'default_region'                 => env('AWS_DEFAULT_REGION'),
         'lambda_export_function'         => env('AWS_LAMBDA_EXPORT_FUNCTION'),
-        'lambda_count'                   => env('AWS_LAMBDA_COUNT'),
-        'lambda_delay'                   => env('AWS_LAMBDA_DELAY'),
+        'lambda_count'                   => env('AWS_LAMBDA_EXPORT_COUNT'),
+        'lambda_delay'                   => env('AWS_LAMBDA_EXPORT_DELAY'),
         'lambda_reconciliation_function' => env('AWS_LAMBDA_RECONCILIATION_FUNCTION'),
     ],
 
