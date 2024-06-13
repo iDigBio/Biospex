@@ -67,6 +67,8 @@ class AppLambdaCommand extends Command
             $this->explainTest();
         } elseif ($this->argument('method') === 'reconcile') {
             $this->reconcileTest();
+        } elseif ($this->argument('method') === 'delete') {
+            $this->deleteTestFiles();
         }
     }
 
@@ -108,5 +110,13 @@ class AppLambdaCommand extends Command
         $classification = config('zooniverse.directory.classification') . '/999999.csv';
         $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation') . '/999999.csv';
         \Storage::disk('s3')->copy($classification, $lambda_reconciliation);
+    }
+
+    private function deleteTestFiles()
+    {
+        \Storage::disk('s3')->delete('zooniverse/transcript/999999.csv');
+        \Storage::disk('s3')->delete('zooniverse/summary/999999.html');
+        \Storage::disk('s3')->delete('zooniverse/reconciled/999999.csv');
+        \Storage::disk('s3')->delete('zooniverse/explained/999999.csv');
     }
 }
