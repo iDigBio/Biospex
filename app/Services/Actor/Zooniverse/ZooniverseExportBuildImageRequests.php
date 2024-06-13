@@ -106,10 +106,10 @@ class ZooniverseExportBuildImageRequests implements QueueInterface
      * @param \App\Models\ExportQueueFile $file
      * @return array
      */
-    #[ArrayShape(['queueId' => "mixed", 'subjectId' => "mixed", 'url' => "mixed", 'dir' => "string"])]
     private function createDataArray(ExportQueueFile $file): array
     {
         return [
+            'bucket'    => config('filesystems.disks.s3.bucket'),
             'queueId'   => $file->queue_id,
             'subjectId' => $file->subject_id,
             'url'       => $file->url,
