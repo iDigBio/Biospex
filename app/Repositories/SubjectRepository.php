@@ -87,11 +87,13 @@ class SubjectRepository extends BaseRepository
      * @param int|null $expeditionId
      * @return \App\Models\Subject|\Illuminate\Database\Eloquent\Builder
      */
-    public function getSubjectQueryForOcr(int $projectId, int $expeditionId = null)
+    public function getSubjectQueryForOcr(int $projectId, int $expeditionId = null): \Illuminate\Database\Eloquent\Builder|Subject
     {
         $query = $this->model->where('project_id', $projectId);
         $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = $query->where('ocr', '')->timeout(86400);
+        $query->where(function ($query) {
+            $query->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
+        })->timeout(86400);
 
         return $query;
     }
@@ -102,15 +104,13 @@ class SubjectRepository extends BaseRepository
      * @param int $projectId
      * @param int|null $expeditionId
      *
-     * @return \Illuminate\Support\LazyCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getSubjectErrorCursorForOcr(int $projectId, int $expeditionId = null): LazyCollection
+    public function getSubjectErrorForOcr(int $projectId, int $expeditionId = null): \Illuminate\Database\Eloquent\Collection
     {
         $query = $this->model->where('project_id', $projectId);
         $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = $query->where('ocr', 'like', '%Error:%');
-
-        return $query->cursor();
+        return $query->where('ocr', 'regex', '/^Error/')->get();
     }
 
     /**
@@ -125,7 +125,7 @@ class SubjectRepository extends BaseRepository
         $query = $this->model->where('project_id', $projectId);
         $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
         $query = $query->where(function ($query) {
-            $query->where('ocr', '')->orWhere('ocr', 'like', '%Error:%');
+            $query->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
         });
 
         return $query->count();

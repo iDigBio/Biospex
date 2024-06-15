@@ -23,10 +23,7 @@ use App\Facades\CountHelper;
 use App\Services\Requests\HttpRequest;
 use Cache;
 use GuzzleHttp\Exception\GuzzleException;
-use JetBrains\PhpStorm\ArrayShape;
-use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Http\Message\RequestInterface;
-use Storage;
 
 /**
  * Class PanoptesApiService
@@ -86,7 +83,6 @@ class PanoptesApiService extends HttpRequest
      *
      * @return array
      */
-    #[ArrayShape(self::CONFIG_SHAPE)]
     public function getConfig(): array
     {
         return [

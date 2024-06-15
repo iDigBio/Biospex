@@ -314,27 +314,6 @@ class ProjectController extends Controller
     }
 
     /**
-     * Reprocess OCR.
-     *
-     * @param $projectId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function ocr($projectId): \Illuminate\Http\RedirectResponse
-    {
-        $project = $this->projectRepo->findWith($projectId, ['group']);
-
-        if (! $this->checkPermissions('updateProject', $project->group)) {
-            return \Redirect::route('admin.projects.index');
-        }
-
-        OcrCreateJob::dispatch($projectId);
-
-        \Flash::success(t('OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete.'));
-
-        return \Redirect::route('admin.projects.show', [$projectId]);
-    }
-
-    /**
      * Project Stats.
      *
      * @param $projectId

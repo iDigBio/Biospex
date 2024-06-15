@@ -47,7 +47,7 @@ class OcrProcessCommand extends Command
     /**
      * @var \App\Services\Process\OcrService
      */
-    private $ocrService;
+    private OcrService $ocrService;
 
     /**
      * OcrProcessCommand constructor.
@@ -66,7 +66,7 @@ class OcrProcessCommand extends Command
      *
      * @throws \Exception
      */
-    public function handle()
+    public function handle(): void
     {
         $queue = $this->option('reset') ?
             $this->ocrService->getFirstQueue(true) :

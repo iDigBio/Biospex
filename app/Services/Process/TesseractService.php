@@ -33,7 +33,6 @@ use Exception;
  */
 class TesseractService
 {
-
     /**
      * @var \thiagoalessio\TesseractOCR\TesseractOCR
      */
@@ -78,37 +77,36 @@ class TesseractService
      *
      * @param Subject $subject
      */
-    public function process(Subject $subject)
+    public function process(Subject $subject): void
     {
         $this->subject = $subject;
 
         $file['subject_id'] = (string) $subject->_id;
         $file['ocr'] = $subject->ocr;
-        $file['url']  = $subject->accessURI;
+        $file['url'] = $subject->accessURI;
 
-        $this->createImagePath($file, 'ocr');
+        $this->createImagePath($file);
 
-        if ( ! $this->getImage($file)) {
-            Storage::delete($this->imgPath);
+        if (! $this->getImage($file)) {
+            \File::delete($this->imgPath);
 
             return;
         }
 
         $this->tesseractImage($file);
 
-        Storage::delete($this->imgPath);
+        \File::delete($this->imgPath);
     }
 
     /**
      * Create paths.
      *
      * @param array $file
-     * @param string $folderPath
      */
-    private function createImagePath(array $file, string $folderPath)
+    private function createImagePath(array $file): void
     {
         $this->imgUrl = str_replace(' ', '%20', $file['url']);
-        $this->imgPath = $folderPath.'/'.$file['subject_id'].'.jpg';
+        $this->imgPath = Storage::disk('efs')->path(config('config.ocr_dir').'/'.$file['subject_id'].'.jpg');
     }
 
     /**
@@ -120,16 +118,16 @@ class TesseractService
     private function getImage(array $file): bool
     {
         try {
-            if (Storage::exists($this->imgPath)) {
+            if (\File::exists($this->imgPath)) {
                 return true;
             }
 
             $this->httpRequest->setHttpProvider();
-            $this->httpRequest->getHttpClient()->request('GET', $this->imgUrl, ['sink' => Storage::path($this->imgPath)]);
+            $this->httpRequest->getHttpClient()->request('GET', $this->imgUrl, ['sink' => $this->imgPath]);
 
             return true;
         } catch (GuzzleException $e) {
-            $file['ocr'] = 'Error: ' . $e->getMessage();
+            $file['ocr'] = 'Error: '.$e->getMessage();
             $this->updateSubject($file);
 
             return false;
@@ -141,10 +139,10 @@ class TesseractService
      *
      * @param array $file
      */
-    private function tesseractImage(array $file)
+    private function tesseractImage(array $file): void
     {
         try {
-            $result = $this->tesseract->image(Storage::path($this->imgPath))->threadLimit(1)->run();
+            $result = $this->tesseract->image($this->imgPath)->threadLimit(1)->run();
             $ocr = preg_replace('/\s+/', ' ', trim($result));
             $file['ocr'] = empty($ocr) ? 'Error: OCR returned empty string.' : trim($ocr);
             $this->updateSubject($file);
@@ -159,7 +157,7 @@ class TesseractService
      *
      * @param array $file
      */
-    private function updateSubject(array $file)
+    private function updateSubject(array $file): void
     {
         $this->subject->ocr = $file['ocr'];
         $this->subject->save();

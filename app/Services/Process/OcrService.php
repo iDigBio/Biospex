@@ -167,9 +167,9 @@ class OcrService
      */
     public function sendNotify(OcrQueue $queue): void
     {
-        $cursor = $this->subjectRepo->getSubjectErrorCursorForOcr($queue->project_id, $queue->expedition_id);
+        $records = $this->subjectRepo->getSubjectErrorForOcr($queue->project_id, $queue->expedition_id);
 
-        $subjects = $cursor->map(function ($subject) {
+        $subjects = $records->map(function ($subject) {
             return [
                 'subject_id' => (string) $subject->_id,
                 'url'        => $subject->accessURI,

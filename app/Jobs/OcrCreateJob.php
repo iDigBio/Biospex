@@ -42,25 +42,25 @@ class OcrCreateJob implements ShouldQueue
     /**
      * @var int
      */
-    public $timeout = 3600;
+    public int $timeout = 3600;
 
     /**
-     * @var
+     * @var int
      */
-    private $projectId;
+    private int $projectId;
 
     /**
-     * @var null
+     * @var int|null $expeditionId
      */
-    private $expeditionId;
+    private ?int $expeditionId;
 
     /**
      * OcrCreateJob constructor.
      *
-     * @param $projectId
-     * @param null $expeditionId
+     * @param int $projectId
+     * @param int|null $expeditionId
      */
-    public function __construct($projectId, $expeditionId = null)
+    public function __construct(int $projectId, int $expeditionId = null)
     {
         $this->projectId = $projectId;
         $this->expeditionId = $expeditionId;
@@ -72,7 +72,7 @@ class OcrCreateJob implements ShouldQueue
      *
      * @param \App\Services\Process\OcrService $ocrService
      */
-    public function handle(OcrService $ocrService)
+    public function handle(OcrService $ocrService): void
     {
         if (config('config.ocr_disable')) {
             $this->delete();
@@ -90,12 +90,7 @@ class OcrCreateJob implements ShouldQueue
                 return;
             }
 
-            $queue = $ocrService->createOcrQueue($this->projectId, $this->expeditionId, ['total' => $total]);
-            if (! $queue) {
-                $this->delete();
-
-                return;
-            }
+            $ocrService->createOcrQueue($this->projectId, $this->expeditionId, ['total' => $total]);
 
             Artisan::call('ocrprocess:records');
 

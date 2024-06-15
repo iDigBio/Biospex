@@ -70,7 +70,7 @@ class OcrTesseractJob implements ShouldQueue
      *
      * @param \App\Services\Process\TesseractService $tesseract
      */
-    public function handle(TesseractService $tesseract)
+    public function handle(TesseractService $tesseract): void
     {
         $tesseract->process($this->subject);
         $this->delete();
@@ -82,7 +82,7 @@ class OcrTesseractJob implements ShouldQueue
      * @param \Throwable $throwable
      * @return void
      */
-    public function failed(\Throwable $throwable)
+    public function failed(\Throwable $throwable): void
     {
         $this->subject->ocr = 'Error: processing tesseract ocr job.';
         $this->subject->save();

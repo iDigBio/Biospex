@@ -25,12 +25,12 @@ class OcrProcessJob implements ShouldQueue
     /**
      * @var int
      */
-    public $timeout = 86400;
+    public int $timeout = 86400;
 
     /**
      * @var \App\Models\OcrQueue
      */
-    private $ocrQueue;
+    private OcrQueue $ocrQueue;
 
     /**
      * Create a new job instance.
@@ -49,7 +49,7 @@ class OcrProcessJob implements ShouldQueue
      *
      * @param \App\Services\Process\OcrService $ocrService
      */
-    public function handle(OcrService $ocrService)
+    public function handle(OcrService $ocrService): void
     {
         $queue = $ocrService->findOcrQueueById($this->ocrQueue->id);
 
@@ -87,7 +87,7 @@ class OcrProcessJob implements ShouldQueue
             $queue->status = 0;
             $queue->save();
 
-            $this->delete();
+            Artisan::call('ocrprocess:records');
 
             return;
         } catch (\Throwable $throwable) {
