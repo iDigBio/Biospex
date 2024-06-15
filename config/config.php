@@ -171,7 +171,7 @@ return [
         'ProjectDateLastUpdated'  => ['date' => 'updated_at'],
         'ProjectContactName'      => ['column' => 'contact'],
         'ProjectContactEmail'     => ['column' => 'contact_email'],
-        'ProjectStatus'           => ['column' => 'status'],
+        'ProjectStatus'           => [],
         'ProjectOrganization'     => ['column' => 'organization'],
         'ProjectVolunteerSupport' => ['column' => 'incentives'],
         'ProjectURL'              => ['url' => 'slug'],
