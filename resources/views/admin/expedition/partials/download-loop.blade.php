@@ -53,7 +53,7 @@
                        data-placement="left"
                        data-original-title="{{ t('Download %s batches', $download->type) }}"
                        data-content="{{ t('This action will split the Export file into several batch files that can be downloaded separately. You will be notified by email when the process is complete. Do you wish to continue?') }}">
-                        <i class="fas fa-file-download fa-2x"></i></a>
+                        <i class="fa fa-file-archive-o fa-2x" aria-hidden="true"></i></a>
                 @endif
 
             @endif
