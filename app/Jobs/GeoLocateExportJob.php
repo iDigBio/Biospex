@@ -108,7 +108,7 @@ class GeoLocateExportJob implements ShouldQueue
             'html'    => [
                 t('Your GeoLocateExport csv export is completed. You may click the download button to download the file or visit the Expedition and use the download section.')
             ],
-            'buttons' => [$btn]
+            'buttons' => $btn
         ];
 
         $this->user->notify(new Generic($attributes));

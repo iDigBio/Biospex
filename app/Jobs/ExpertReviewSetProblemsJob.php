@@ -94,7 +94,7 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
                     t('The Expert Review job for %s is complete and you may start reviewing the reconciled records.', $expedition->title),
                     t('You may access the page by going to the Expedition Download modal and clicking the green button or click the button below and be taken to the page directly.')
                 ],
-                'buttons' => [$btn]
+                'buttons' => $btn
             ];
 
             $expedition->project->group->owner->notify(new Generic($attributes));

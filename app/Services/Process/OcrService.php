@@ -180,15 +180,18 @@ class OcrService
 
         $csvName = Str::random().'.csv';
         $fileName = $this->createReportService->createCsvReport($csvName, $subjects->toArray());
+        $button = [];
+        if ($fileName !== null) {
+            $route = route('admin.downloads.report', ['file' => $fileName]);
+            $button = $this->createButton($route, t('View Rejected Records'), 'error');
+        }
 
-        $route = route('admin.downloads.report', ['file' => $fileName]);
-        $button = $this->createButton($route, t('View Rejected Records'), 'error');
         $attributes = [
             'subject' => t('Ocr Process Complete'),
             'html'    => [
                 t('The OCR processing of your data is complete for %s.', $queue->project->title)
             ],
-            'buttons' => [$button]
+            'buttons' => $button
         ];
 
         $queue->project->group->owner->notify(new Generic($attributes));

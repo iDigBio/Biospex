@@ -79,7 +79,7 @@ class SnsImageExportResultProcess
     public function handleResponse(array $responsePayload): void
     {
         $statusCode = $responsePayload['statusCode'];
-        $body = json_decode($responsePayload['body'], true);
+        $body = $responsePayload['body'];
         $message = $statusCode === 200 ? null :
             (is_array($body['message']) ? json_encode($body['message']) : $body['message']);
 

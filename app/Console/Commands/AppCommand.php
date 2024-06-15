@@ -19,6 +19,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
 use Illuminate\Console\Command;
 
 /**
@@ -28,7 +31,7 @@ use Illuminate\Console\Command;
  */
 class AppCommand extends Command
 {
-
+    use ButtonTrait;
     /**
      * The console command name.
      */
@@ -52,7 +55,22 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $dupButton = $this->createButton('dupurl', t('View Duplicate Records'));
+        $rejButton = $this->createButton('rejUrl', t('View Rejected Records'), 'error');
 
+        $buttons = array_merge([$dupButton, $rejButton]);
+
+        $attributes = [
+            'subject' => t('DWC File Import Complete'),
+            'html'    => [
+                t('The subject import for %s has been completed.', 'Project Title'),
+                t('OCR processing may take longer and you will receive an email when it is complete.')
+            ],
+            'buttons' => $buttons
+        ];
+
+        $user = User::find(1);
+        $user->notify(new Generic($attributes));
     }
 
 }

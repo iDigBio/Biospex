@@ -100,8 +100,11 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
 
             $csvFileName = Str::random() . '.csv';
             $fileName = $createReportService->createCsvReport($csvFileName, $transcriptions->toArray());
-            $fileRoute = route('admin.downloads.report', ['file' => $fileName]);
-            $fileButton = $this->createButton($fileRoute, t('Download CSV'));
+            $fileButton = [];
+            if ($fileName !== null) {
+                $fileRoute = route('admin.downloads.report', ['file' => $fileName]);
+                $fileButton = $this->createButton($fileRoute, t('Download CSV'));
+            }
 
             $attributes = [
                 'subject' => t('Event Transcription Export Complete'),
@@ -109,7 +112,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
                     t('Your export is completed. If a report was generated, you may click the download button to download the file. If no button is included, it is due to no records being located for the export. Some records require overnight processing before they are available.'),
                     t('If you believe this is an error, please contact the Administration.')
                 ],
-                'buttons' => [$fileButton]
+                'buttons' => $fileButton
             ];
 
             $this->user->notify(new Generic($attributes));

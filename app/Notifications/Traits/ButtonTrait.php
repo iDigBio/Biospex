@@ -21,12 +21,14 @@ namespace App\Notifications\Traits;
 
 trait ButtonTrait
 {
-    public function createButton(string $url, string $label, string $color = 'primary')
+    public function createButton(string $url, string $label, string $color = 'primary'): array
     {
         return [
-            'url' => $url,
-            'label' => $label,
-            'color' => $color,
+            $label => [
+                'url' => $url,
+                'label' => $label,
+                'color' => $color,
+            ],
         ];
     }
 }

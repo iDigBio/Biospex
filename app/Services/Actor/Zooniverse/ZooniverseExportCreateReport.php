@@ -83,13 +83,12 @@ class ZooniverseExportCreateReport implements QueueInterface
 
         $csvName = $exportQueue->expedition->uuid.'.csv';
         $fileName = $this->createReportService->createCsvReport($csvName, $data);
-
-        if ($fileName) {
+        $button = [];
+        if ($fileName !== null) {
             $this->createReportService->saveReport($exportQueue, $csvName);
+            $route = route('admin.downloads.report', ['file' => $fileName]);
+            $button = $this->createButton($route, t('Download Export Errors'), 'error');
         }
-
-        $route = route('admin.downloads.report', ['file' => $fileName]);
-        $button = $this->createButton($route, t('Download Export Errors'), 'error');
 
         $attributes = [
             'subject' => t('Zooniverse Export Completed'),
@@ -97,7 +96,7 @@ class ZooniverseExportCreateReport implements QueueInterface
                 t('The export process for "%s" has been completed successfully.', $exportQueue->expedition->title),
                 t('If a download file was created during this process, you may access the link on the Expedition view page.')
             ],
-            'buttons' => [$button]
+            'buttons' => $button
         ];
 
         $users = $exportQueue->expedition->project->group->users->push($exportQueue->expedition->project->group->owner);

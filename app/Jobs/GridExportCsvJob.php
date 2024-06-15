@@ -144,19 +144,19 @@ class GridExportCsvJob implements ShouldQueue
             $attributes = [
                 'subject' => t('Grid Export to CSV Complete'),
                 'html'    => [$html],
-                'buttons' => [$btn]
+                'buttons' => $btn
             ];
 
             $this->user->notify(new Generic($attributes));
 
         } catch (Exception $e) {
 
+            $idMessage = $this->expeditionId !== 0 ? t('Expedition Id: %s', $this->expeditionId) : t('Project Id: %s', $this->projectId);
             $attributes = [
                 'subject' => t('Grid Export to CSV Error'),
                 'html'    => [
                     t('An error occurred during csv export from the grid.'),
-                    t('Project Id: %', $this->projectId),
-                    t('Expedition Id: %', $this->expeditionId),
+                    $idMessage,
                     t('File: %s', $e->getFile()),
                     t('Line: %s', $e->getLine()),
                     t('Message: %s', $e->getMessage()),

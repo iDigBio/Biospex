@@ -3,16 +3,16 @@
 
 {!! $message !!}
 
-@isset($buttons)
-@foreach($buttons as $button)
+@if(!empty($buttons))
+@foreach($buttons as $label => $button)
 @component('mail::button', ['url' => $button['url'], 'color' => $button['color'] ?? 'primary'])
-{{ $button['label'] }}
+{{ $label }}
 @endcomponent
 @endforeach
 
 {{ t('If clicking a button does not work, right click and open in new window.') }}
 
-@endisset
+@endif
 
 {{ t('Thank you') }},
 {{ config('app.name') }}

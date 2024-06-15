@@ -92,15 +92,21 @@ class DwcFileImportJob implements ShouldQueue
 
             $dupsCsvName = md5($this->import->id).'dup.csv';
             $dupName = $createReportService->createCsvReport($dupsCsvName, $dwcProcess->getDuplicates());
+            $dupButton = [];
+            if ($dupName !== null) {
+                $dupRoute = route('admin.downloads.report', ['file' => $dupName]);
+                $dupButton = $this->createButton($dupRoute, t('View Duplicate Records'));
+            }
 
             $rejCsvName = md5($this->import->id).'rej.csv';
             $rejName = $createReportService->createCsvReport($rejCsvName, $dwcProcess->getRejectedMedia());
+            $rejButton = [];
+            if ($rejName !== null) {
+                $rejRoute = route('admin.downloads.report', ['file' => $rejName]);
+                $rejButton = $this->createButton($rejRoute, t('View Rejected Records'), 'error');
+            }
 
-            $dupRoute = route('admin.downloads.report', ['file' => $dupName]);
-            $dupButton = $this->createButton($dupRoute, t('View Rejected Duplicates'));
-
-            $rejRoute = route('admin.downloads.report', ['file' => $rejName]);
-            $rejButton = $this->createButton($rejRoute, t('View Rejected Records'), 'error');
+            $buttons = array_merge($dupButton, $rejButton);
 
             $attributes = [
                 'subject' => t('DWC File Import Complete'),
@@ -108,7 +114,7 @@ class DwcFileImportJob implements ShouldQueue
                     t('The subject import for %s has been completed.', $project->title),
                     t('OCR processing may take longer and you will receive an email when it is complete.')
                 ],
-                'buttons' => [$dupButton, $rejButton]
+                'buttons' => $buttons
             ];
 
             Notification::send($users, new Generic($attributes));
