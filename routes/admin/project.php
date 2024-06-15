@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use App\Http\Controllers\Admin\OcrController;
 use App\Http\Controllers\Admin\ProjectController;
 
 Route::get('projects', [ProjectController::class, 'index'])->name('admin.projects.index');
@@ -30,8 +31,6 @@ Route::get('projects/{projects}/explore', [ProjectController::class, 'explore'])
 Route::get('projects/{projects}/statistics', [ProjectController::class, 'statistics'])->name('admin.projects.statistics');
 
 Route::post('projects/sort', [ProjectController::class, 'sort'])->name('admin.projects.sort');
-
-Route::post('projects/{projects}/ocr', [ProjectController::class, 'ocr'])->name('admin.projects.ocr');
 
 Route::delete('projects/{projects}', [ProjectController::class, 'delete'])->name('admin.projects.delete');
 Route::delete('projects/{projects}/subject', [ProjectController::class, 'deleteSubjects'])->name('admin.projects.deleteSubjects');
