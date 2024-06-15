@@ -18,6 +18,7 @@
  */
 
 use App\Http\Controllers\Admin\ExpeditionController;
+use App\Http\Controllers\Admin\OcrController;
 
 Route::get('expeditions', [ExpeditionController::class, 'index'])->name('admin.expeditions.index');
 Route::post('expeditions/sort', [ExpeditionController::class, 'sort'])->name('admin.expeditions.sort');
@@ -33,6 +34,5 @@ Route::delete('projects/{projects}/expeditions/{expeditions}', [ExpeditionContro
 Route::get('projects/{projects}/expeditions/{expeditions}/clone', [ExpeditionController::class, 'clone'])->name('admin.expeditions.clone');
 Route::post('projects/{projects}/expeditions/{expeditions}/process', [ExpeditionController::class, 'process'])->name('admin.expeditions.process');
 Route::delete('projects/{projects}/expeditions/{expeditions}/stop', [ExpeditionController::class, 'stop'])->name('admin.expeditions.stop');
-Route::post('projects/{projects}/expeditions/{expeditions}/ocr', [ExpeditionController::class, 'ocr'])->name('admin.expeditions.ocr');
 
 Route::get('projects/{projects}/expeditions/{expeditions}/tools', [ExpeditionController::class, 'tools'])->name('admin.expeditions.tools');

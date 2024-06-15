@@ -21,32 +21,56 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\OcrCreateJob;
+use App\Repositories\ExpeditionRepository;
 use App\Repositories\ProjectRepository;
 use Flash;
 
 class OcrController extends Controller
 {
     /**
-     * Reprocess OCR.
+     * @var \App\Repositories\ProjectRepository
+     */
+    private ProjectRepository $projectRepository;
+
+    /**
+     * @var \App\Repositories\ExpeditionRepository
+     */
+    private ExpeditionRepository $expeditionRepository;
+
+    /**
+     * OcrController constructor.
      *
      * @param \App\Repositories\ProjectRepository $projectRepository
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
+     */
+    public function __construct(ProjectRepository $projectRepository, ExpeditionRepository $expeditionRepository)
+    {
+        $this->projectRepository = $projectRepository;
+        $this->expeditionRepository = $expeditionRepository;
+    }
+
+    /**
+     * Reprocess OCR.
+     *
      * @param int $projectId
-     * @param int $expeditionId
+     * @param int|null $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function index(ProjectRepository $projectRepository, int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
+    public function index(int $projectId, int $expeditionId = null): \Illuminate\Http\RedirectResponse
     {
-        $project = $projectRepository->findWith($projectId, ['group']);
+        $group = $expeditionId === null ?
+            $this->projectRepository->findWith($projectId, ['group'])->group :
+            $this->expeditionRepository->findWith($expeditionId, ['project.group'])->project->group;
+        dd($group);
 
-        if (! $this->checkPermissions('updateProject', $project->group)) {
+        if (! $this->checkPermissions('updateProject', $group)) {
             return \Redirect::route('admin.projects.index');
         }
 
         OcrCreateJob::dispatch($projectId, $expeditionId);
 
-        \Flash::success(t('OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete.'));
+        \Flash::success(t('OCR processing has been submitted. It may take some time before appearing in the Processes modal. You will be notified by email when the process is complete.'));
 
         return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
-
 }
