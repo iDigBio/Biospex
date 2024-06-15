@@ -119,10 +119,7 @@ class DwcFileImportJob implements ShouldQueue
 
             Notification::send($users, new Generic($attributes));
 
-            if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0) {
-                OcrCreateJob::dispatch($project->id);
-            }
-
+            OcrCreateJob::dispatch($project->id);
             File::cleanDirectory($scratchFileDir);
             File::deleteDirectory($scratchFileDir);
             File::delete($importFilePath);
