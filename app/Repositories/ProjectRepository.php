@@ -305,7 +305,7 @@ class ProjectRepository extends BaseRepository
      * @param $projectId
      * @return mixed
      */
-    public function getProjectForDarwinImportJob($projectId)
+    public function getProjectForDarwinImportJob($projectId): mixed
     {
         return $this->model->with(['group' => function($q){
             $q->with(['owner', 'users' => function($q){
