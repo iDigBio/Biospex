@@ -118,14 +118,15 @@ class SubjectRepository extends BaseRepository
      *
      * @param int $projectId
      * @param int|null $expeditionId
-     * @param bool $error
      * @return int
      */
-    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null, bool $error = false): int
+    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null): int
     {
         $query = $this->model->where('project_id', $projectId);
         $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = ! $error ? $query->where('ocr', '') : $query->where('ocr', 'like', '%Error:%');
+        $query = $query->where(function ($query) {
+            $query->where('ocr', '')->orWhere('ocr', 'like', '%Error:%');
+        });
 
         return $query->count();
     }

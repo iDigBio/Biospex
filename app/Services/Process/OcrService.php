@@ -151,12 +151,11 @@ class OcrService
      *
      * @param int $projectId
      * @param int|null $expeditionId
-     * @param bool $error
      * @return int
      */
-    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null, bool $error = false): int
+    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null): int
     {
-        return $this->subjectRepo->getSubjectCountForOcr($projectId, $expeditionId, $error);
+        return $this->subjectRepo->getSubjectCountForOcr($projectId, $expeditionId);
     }
 
     /**
