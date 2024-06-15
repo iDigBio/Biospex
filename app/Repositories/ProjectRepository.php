@@ -307,7 +307,7 @@ class ProjectRepository extends BaseRepository
      */
     public function getProjectForDarwinImportJob($projectId)
     {
-        return $this->model->with(['workflow.actors', 'group' => function($q){
+        return $this->model->with(['group' => function($q){
             $q->with(['owner', 'users' => function($q){
                 $q->where('notification', 1);
             }]);
