@@ -15,5 +15,6 @@
 @endif
 
 {{ t('Thank you') }},
+
 {{ config('app.name') }}
 @endcomponent

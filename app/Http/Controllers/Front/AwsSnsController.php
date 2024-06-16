@@ -67,9 +67,10 @@ class AwsSnsController
 
         if (isset($message['Type']) && $message['Type'] === 'Notification') {
             $payload = json_decode($message['Message'], true);
+
             $eventType = match (true) {
-                str_contains($payload['requestContext']['functionArn'], config('config.aws_lambda_export_function')) => ImageExportEvent::class,
-                str_contains($payload['requestContext']['functionArn'], config('config.aws_lambda_reconciliation_function')) => LabelReconciliationEvent::class,
+                str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_export_function')) => ImageExportEvent::class,
+                str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_reconciliation_function')) => LabelReconciliationEvent::class,
                 default => null,
             };
 

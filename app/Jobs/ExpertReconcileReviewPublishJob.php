@@ -40,16 +40,16 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var null
+     * @var int
      */
-    private $expeditionId;
+    private int $expeditionId;
 
     /**
      * ExpertReconcileReviewPublishJob constructor.
      *
-     * @param string $expeditionId
+     * @param int $expeditionId
      */
-    public function __construct(string $expeditionId)
+    public function __construct(int $expeditionId)
     {
         $this->expeditionId = $expeditionId;
         $this->onQueue(config('config.queue.reconcile'));
@@ -61,23 +61,15 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
      * @param \App\Services\Reconcile\ExpertReconcilePublishService $expertReconcilePublishService
      * @param \App\Repositories\ExpeditionRepository $expeditionRepository
      */
-    public function handle(ExpertReconcilePublishService $expertReconcilePublishService, ExpeditionRepository $expeditionRepository): void
-    {
+    public function handle(
+        ExpertReconcilePublishService $expertReconcilePublishService,
+        ExpeditionRepository $expeditionRepository
+    ): void {
         $expedition = $expeditionRepository->findWith($this->expeditionId, ['project.group.owner']);
 
         try {
             $expertReconcilePublishService->publishReconciled($this->expeditionId);
-
-            $attributes = [
-                'subject' => t('Expert Review Reconciled Published'),
-                'html'    => [
-                    t('The Expert Reviewed Reconciled CSV file has been published for %s', $expedition->title)
-                ]
-            ];
-
-            $expedition->project->group->owner->notify(new Generic($attributes));
-
-        } catch (CannotInsertRecord | Exception $e) {
+        } catch (CannotInsertRecord|Exception $e) {
             $attributes = [
                 'subject' => t('Expert Reconcile Publish Error'),
                 'html'    => [

@@ -23,7 +23,6 @@ use App\Events\LabelReconciliationEvent;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Reconcile\ReconcileService;
-use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Throwable;
 
@@ -55,7 +54,7 @@ class LabelReconciliationListener implements ShouldQueue
      */
     public function viaQueue(): string
     {
-        return config('config.queues.reconciliation_listener');
+        return config('config.queue.reconciliation_listener');
     }
 
     /**

@@ -20,6 +20,7 @@
 namespace App\Services\Reconcile;
 
 use App\Facades\TranscriptionMapHelper;
+use App\Notifications\Generic;
 use App\Repositories\DownloadRepository;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\ReconcileRepository;
@@ -123,7 +124,7 @@ class ExpertReconcilePublishService
      *
      * @param string $expeditionId
      */
-    private function createDownload(string $expeditionId)
+    private function createDownload(string $expeditionId): void
     {
         $values = [
             'expedition_id' => $expeditionId,
@@ -146,10 +147,18 @@ class ExpertReconcilePublishService
      *
      * @param string $expeditionId
      */
-    private function sendEmail(string $expeditionId)
+    private function sendEmail(string $expeditionId): void
     {
-        // TODO create generic notification
         $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
-        $expedition->project->group->owner->notify(new ExpertReviewPublished($expedition->title));
+
+        $attributes = [
+            'subject' => t('Reconciled Expert Review Published'),
+            'html'    => [
+                t('The Expert Reviewed Reconciled CSV file has been published for %s.', $expedition->title),
+                t('The file can be downloaded in the Downloads section of the Expedition page.'),
+            ]
+        ];
+
+        $expedition->project->group->owner->notify(new Generic($attributes));
     }
 }

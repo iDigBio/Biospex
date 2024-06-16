@@ -28,6 +28,7 @@ use App\Services\Reconcile\ExpertReconcileService;
 use App\Services\Reconcile\ReconcileService;
 use App\Traits\SkipZooniverse;
 use Flash;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Request;
@@ -52,15 +53,26 @@ class ReconcileController extends Controller
     private ExpeditionRepository $expeditionRepo;
 
     /**
+     * @var \App\Services\Reconcile\ReconcileService
+     */
+    private ReconcileService $reconcileService;
+
+    /**
      * ReconcileController constructor.
      *
      * @param \App\Services\Reconcile\ExpertReconcileService $expertReconcileService
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Reconcile\ReconcileService $reconcileService
      */
-    public function __construct(ExpertReconcileService $expertReconcileService, ExpeditionRepository $expeditionRepo)
+    public function __construct(
+        ExpertReconcileService $expertReconcileService,
+        ExpeditionRepository $expeditionRepo,
+        ReconcileService $reconcileService
+    )
     {
         $this->expertReconcileService = $expertReconcileService;
         $this->expeditionRepo = $expeditionRepo;
+        $this->reconcileService = $reconcileService;
     }
 
     /**
@@ -101,11 +113,10 @@ class ReconcileController extends Controller
      * and redirect to index for processing.
      *
      * @param int $expeditionId
-     * @param \App\Services\Reconcile\ReconcileService $reconcileService
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Throwable
      */
-    public function create(int $expeditionId, ReconcileService $reconcileService): RedirectResponse
+    public function create(int $expeditionId): RedirectResponse
     {
         $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
 
@@ -119,7 +130,7 @@ class ReconcileController extends Controller
             return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
         }
 
-        $reconcileService->invokeLambdaExplained($expedition->id);
+        $this->reconcileService->invokeLambdaExplained($expedition->id);
 
         Flash::success(t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
 
@@ -163,30 +174,12 @@ class ReconcileController extends Controller
     /**
      * Upload reconciled qc file.
      *
-     * @param \App\Services\Reconcile\ReconcileService $reconcileService
      * @param int $projectId
      * @param int $expeditionId
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
-    public function reconciledWithUser(ReconcileService $reconcileService, int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
+    public function reconciledWithUser(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {
-        if (Request::isMethod('get')) {
-            return \View::make('admin.reconcile.partials.upload', compact('projectId', 'expeditionId'));
-        }
-
-        if (! request()->hasFile('file') || request()->file('file')->getClientOriginalExtension() !== 'csv') {
-            return \Response::json(['error' => true, 'message' => t('File must be a CSV.')]);
-        }
-
-        if (\Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv')) {
-            \Storage::disk('s3')->delete(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv');
-        }
-
-        if (\Storage::disk('s3')->put(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv', file_get_contents(request()->file('file')->getRealPath()))) {
-            $reconcileService->updateOrCreateReviewDownload($expeditionId, 'reconciled-with-user');
-            return \Response::json(['message' => t('File upload was successful. It will now be listed in your downloads section of the Expedition.')]);
-        }
-
-        return \Response::json(['error' => true, 'message' => t('Error uploading file. Please try again or contact the Administration.')]);
+        return $this->reconcileService->reconciledWithUserFile($projectId, $expeditionId);
     }
 }

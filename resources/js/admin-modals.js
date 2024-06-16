@@ -56,9 +56,8 @@ $(function () {
         })
         .on('submit', '.modal-form', function (e) {
             $('#warning').html('').collapse('hide')
-            // used in workflow id and geolocate community modal forms.
+            // used in workflow id, geolocate community, reconcile with user modal forms.
             e.preventDefault() // avoid to execute the actual submit of the form.
-            console.log('testing submit')
             let formData = new FormData(this);
             formPost($(this).attr('action'), formData)
             $globalModal.modal('hide');

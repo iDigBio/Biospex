@@ -69,6 +69,7 @@ class ImageExportListener implements ShouldQueue
 
     /**
      * Handle a job failure.
+     * The error is handled differently than LabelReconciliationListener because it's updated in database for each image.
      */
     public function failed(ImageExportEvent $event, Throwable $exception): void
     {

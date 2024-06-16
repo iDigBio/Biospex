@@ -19,6 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App\Events\ImageExportEvent;
+use App\Events\LabelReconciliationEvent;
 use App\Models\Subject;
 use App\Repositories\SubjectRepository;
 use GuzzleHttp\Client;

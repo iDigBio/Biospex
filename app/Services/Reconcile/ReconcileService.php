@@ -27,6 +27,8 @@ use App\Jobs\ZooniverseTranscriptionJob;
 use App\Repositories\DownloadRepository;
 use App\Services\Api\AwsLambdaApiService;
 use App\Traits\SkipZooniverse;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 
@@ -106,7 +108,7 @@ class ReconcileService
         Bus::batch([
             new ExpertReviewMigrateReconcilesJob($expeditionId),
             new ExpertReviewSetProblemsJob($expeditionId)
-        ])->name('Expert Reconcile ' . $expeditionId)->onQueue(config('config.queues.reconcile'))->dispatch();
+        ])->name('Expert Reconcile ' . $expeditionId)->onQueue(config('config.queue.reconcile'))->dispatch();
     }
 
     /**
@@ -171,4 +173,58 @@ class ReconcileService
         });
     }
 
+    /**
+     * Update or create review download.
+     *
+     * @param string $expeditionId
+     * @param string $type
+     * @return void
+     */
+    public function updateOrCreateReviewDownload(string $expeditionId, string $type): void
+    {
+        $values = [
+            'expedition_id' => $expeditionId,
+            'actor_id'      => config('zooniverse.actor_id'),
+            'file'          => $expeditionId.'.csv',
+            'type'          => $type,
+            'updated_at'    => Carbon::now()->format('Y-m-d H:i:s'),
+        ];
+        $attributes = [
+            'expedition_id' => $expeditionId,
+            'actor_id'      => config('zooniverse.actor_id'),
+            'file'          => $expeditionId.'.csv',
+            'type'          => $type,
+        ];
+
+        $this->downloadRepo->updateOrCreate($attributes, $values);
+    }
+
+    /**
+     * Upload reconciled with user file.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
+     */
+    public function reconciledWithUserFile(int $projectId, int $expeditionId): View|JsonResponse
+    {
+        if (\Request::isMethod('get')) {
+            return \View::make('admin.reconcile.partials.upload', compact('projectId', 'expeditionId'));
+        }
+
+        if (! \Request::hasFile('file') || request()->file('file')->getClientOriginalExtension() !== 'csv') {
+            return \Response::json(['error' => true, 'message' => t('File must be a CSV.')]);
+        }
+
+        if (\Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv')) {
+            \Storage::disk('s3')->delete(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv');
+        }
+
+        if (\Storage::disk('s3')->put(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv', file_get_contents(request()->file('file')->getRealPath()))) {
+            $this->updateOrCreateReviewDownload($expeditionId, 'reconciled-with-user');
+            return \Response::json(['message' => t('File upload was successful. It will now be listed in your downloads section of the Expedition.')]);
+        }
+
+        return \Response::json(['error' => true, 'message' => t('Error uploading file. Please try again or contact the Administration.')]);
+    }
 }
