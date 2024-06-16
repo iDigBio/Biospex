@@ -19,9 +19,6 @@
 
 namespace App\Models;
 
-use App\Models\Traits\Presentable;
-use App\Presenters\ActorPresenter;
-
 /**
  * Class Actor
  *
@@ -29,8 +26,6 @@ use App\Presenters\ActorPresenter;
  */
 class Actor extends BaseEloquentModel
 {
-    use Presentable;
-
     /**
      * @inheritDoc
      */
@@ -46,11 +41,6 @@ class Actor extends BaseEloquentModel
     ];
 
     /**
-     * @var string
-     */
-    protected $presenter = ActorPresenter::class;
-
-    /**
      * Scope for active.
      *
      * @param $query
@@ -62,11 +52,10 @@ class Actor extends BaseEloquentModel
     }
 
     /**
-     * Workflow relationship.
-     *
-     * @return mixed
+     * Workflows relationship.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function workflows()
+    public function workflows(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Workflow::class)->using(ActorWorkflow::class);
     }
@@ -76,7 +65,7 @@ class Actor extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function downloads()
+    public function downloads(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Download::class);
     }
@@ -84,7 +73,7 @@ class Actor extends BaseEloquentModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function contacts()
+    public function contacts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ActorContact::class);
     }
@@ -94,7 +83,7 @@ class Actor extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function expeditions()
+    public function expeditions(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Expedition::class, 'actor_expedition')
             ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'error', 'order', 'expert')

@@ -29,11 +29,11 @@
                         {{ $form['source'] === 'reconciled' ? 'selected' : '' }}>{{ t('Reconciled') }}</option>
                 <option value="reconciled-with-expert"
                         {{ $form['source'] === 'reconciled-with-expert' ? 'selected' : '' }}
-                        {{ $form['expert_reconciled'] && $form['expert_review'] ? '' : 'disabled' }}>{{ t('Reconciled With Expert Review') }}</option>
+                        {{ $form['expert_reconciled'] && $form['expert_review'] ? '' : 'disabled' }}>{{ t('Reconciled With Expert Opinion') }}</option>
                 <option value="reconciled-with-user"
                         {{ $form['source'] === 'reconciled-with-user' ? 'selected' : '' }}
-                        {{ $form['user_reconciled'] ? '' : 'disabled' }}>{{ t('Reconciled With User Review') }}</option>
-                <option value="upload">{{ t('Upload Reconciled With User Review') }}</option>
+                        {{ $form['user_reconciled'] ? '' : 'disabled' }}>{{ t('Reconciled With User Opinion') }}</option>
+                <option value="upload">{{ t('Upload Reconciled With User Opinion') }}</option>
             </select>
         </div>
         <button id="user-upload" style="display: none"
@@ -42,7 +42,7 @@
                 data-target="#global-modal"
                 data-size="modal-lg"
                 data-url="{{ route('admin.reconciles.uploadShow', [$expedition->project->id, $expedition->id]) }}"
-                data-title="{{ t('Upload Reconciled With User Review') }}"></button>
+                data-title="{{ t('Upload Reconciled With User Opinion') }}"></button>
     </div>
     <div class="form-group col-sm-10 mx-auto text-center">
         <div class="form-row col-sm-6 m-auto mt-4 text-justify">

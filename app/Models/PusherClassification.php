@@ -40,7 +40,14 @@ class PusherClassification extends BaseEloquentModel
     ];
 
     /**
-     * @var string[]
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = ['data' => 'array'];
+    protected function casts(): array
+    {
+        return [
+            'data' => 'array'
+        ];
+    }
 }

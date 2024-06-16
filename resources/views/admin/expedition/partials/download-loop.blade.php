@@ -22,18 +22,12 @@
                            title="{{ t('Download') }} {{ $download->type }}">
                             <i class="fas fa-file-download fa-2x pl-2 ml-2"></i></a>
                     @else
-                        <a href="{{ $download->present()->other_download }}"
+                        <a href="{{ $download->present()->download_type }}"
                            data-hover="tooltip"
+                           data-browse="type"
                            data-placement="left"
                            title="{{ t('Download') }} {{ $download->present()->file_type }}">
                             <i class="fas fa-file-download fa-2x"></i></a>
-                        @if ($download->type === 'summary')
-                            <a href="{{ $download->present()->summary_html }}"
-                               data-hover="tooltip" target="_blank"
-                               data-placement="left"
-                               title="{{ t('View') }} {{ $download->type }}">
-                                <i class="fas fa-eye fa-2x pl-2 ml-2"></i></a>
-                        @endif
                     @endif
                 @endcan
             @else

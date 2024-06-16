@@ -40,12 +40,17 @@ class GeoLocateForm extends BaseEloquentModel
     ];
 
     /**
-     * @var string[]
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'fields' => 'array',
-        'created_at' => 'datetime:Y-m-d',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'fields' => 'array',
+            'created_at' => 'datetime:Y-m-d',
+        ];
+    }
 
     /**
      * Group relation.

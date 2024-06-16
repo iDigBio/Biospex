@@ -49,5 +49,5 @@
        data-target="#global-modal"
        data-size="modal-lg"
        data-url="{{ route('admin.reconciles.uploadShow', [$expedition->project->id, $expedition->id]) }}"
-       data-title="{{ t('Upload Reconciled With User Review') }}"> {{ t('Upload Reconciled With User Review') }}</a>
+       data-title="{{ t('Upload Reconciled With User Opinion') }}"> {{ t('Upload Reconciled With User Opinion') }}</a>
 @endif

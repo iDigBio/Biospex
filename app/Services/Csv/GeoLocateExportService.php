@@ -65,12 +65,48 @@ class GeoLocateExportService
     public function __construct(
         AwsS3CsvService $awsS3CsvService,
         GeoLocateRepository $geoLocateRepository,
-        DownloadRepository $downloadRepository
+        DownloadRepository $downloadRepository,
     )
     {
         $this->awsS3CsvService = $awsS3CsvService;
         $this->geoLocateRepository = $geoLocateRepository;
         $this->downloadRepository = $downloadRepository;
+    }
+
+    /**
+     * Process GeoLocate export.
+     *
+     * @param \App\Models\Expedition $expedition
+     * @return void
+     * @throws \Exception
+     */
+    public function process(Expedition $expedition): void
+    {
+        try {
+            $this->migrateRecords($expedition);
+            $this->setCsvFilePath($expedition->id);
+            $this->build($expedition);
+            $this->moveCsvFile();
+            $this->createDownload($expedition);
+            $this->updateActorExpeditionPivot($expedition);
+
+        } catch (Exception $e) {
+            $expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
+                'state' => 0,
+            ]);
+
+            $csvFilePath = $this->getCsvFilePath();
+
+            if (Storage::disk('s3')->exists($csvFilePath)) {
+                Storage::disk('s3')->delete($csvFilePath);
+            }
+
+            if (Storage::disk('efs')->exists($csvFilePath)) {
+                Storage::disk('efs')->delete($csvFilePath);
+            }
+
+            throw new Exception(t('Could not export GeoLocate data for Expedition %s', $expedition->title));
+        }
     }
 
     /**
@@ -183,7 +219,6 @@ class GeoLocateExportService
     /**
      * Move csv file to s3
      *
-     * @return string
      * @throws \Exception
      */
     public function moveCsvFile(): string
@@ -223,5 +258,12 @@ class GeoLocateExportService
         ];
 
         $this->downloadRepository->updateOrCreate($attributes, $values);
+    }
+
+    public function updateActorExpeditionPivot(Expedition $expedition)
+    {
+        $expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
+            'state' => 1,
+        ]);
     }
 }

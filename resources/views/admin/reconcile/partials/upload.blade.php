@@ -1,8 +1,8 @@
 <div class="col-md-10 mx-auto mt-3 mb-3">
     <p class="text-justify">
         {{ t('The form below provides a means to upload a user reviewed CSV file generated from the "Reconciled" file or
-            "Reconciled With Expert Review" file located in the Expedition Download section. The file must be in CSV
-            format and columns should match those in the "Reconciled" or "Reconciled With Expert Review" CSV files.') }}
+            "Reconciled With Expert Opinion" file located in the Expedition Download section. The file must be in CSV
+            format and columns should match those in the "Reconciled" or "Reconciled With Expert Opinion" CSV files.') }}
     </p>
     <form id="uploadForm" class="modal-form" method="post"
           action="{{ route('admin.reconciles.upload', [$projectId, $expeditionId]) }}"
@@ -12,7 +12,7 @@
         <div class="form-row justify-content-center">
             <div class="form-group col-sm-10">
                 <div class="custom-file">
-                    <label for="file" class="custom-file-label">{{ t('Upload Reconciled With User Review') }}</label>
+                    <label for="file" class="custom-file-label">{{ t('Upload Reconciled With User Opinion') }}</label>
                     <input type="file" class="form-control custom-file-input mb-4 {{ ($errors->has('file')) ? 'is-invalid' : '' }}" name="file" accept=".csv">
                 </div>
             </div>

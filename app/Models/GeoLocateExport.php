@@ -16,13 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-namespace App\Models;
 
-use App\Models\Casts\IntegerCast;
+namespace App\Models;
 
 class GeoLocateExport extends BaseMongoModel
 {
-
     protected $connection = 'mongodb';
 
     /**
@@ -33,12 +31,15 @@ class GeoLocateExport extends BaseMongoModel
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @return string[]
      */
-    protected $casts = [
-        'subject_id'           => IntegerCast::class,
-        'subject_expeditionId' => IntegerCast::class
-    ];
+    protected function casts(): array
+    {
+        return [
+            'subject_id'           => 'integer',
+            'subject_expeditionId' => 'integer',
+        ];
+    }
 
     /**
      * Expedition relation.

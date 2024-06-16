@@ -37,9 +37,16 @@ class GeoLocateDataSource extends BaseEloquentModel
     ];
 
     /**
-     * @inheritDoc
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = ['data' => 'array'];
+    protected function casts(): array
+    {
+        return [
+            'data' => 'array'
+        ];
+    }
 
     /**
      * Project relation

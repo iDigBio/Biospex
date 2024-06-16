@@ -83,22 +83,10 @@ class GeoLocateExportJob implements ShouldQueue
      */
     public function handle(GeoLocateExportService $geoLocateExportService): void
     {
-        $this->geoLocateExportService = $geoLocateExportService;
-
         $this->expedition->load('geoLocateForm');
 
-        $geoLocateExportService->migrateRecords($this->expedition);
-
-        $geoLocateExportService->setCsvFilePath($this->expedition->id);
-
-        $geoLocateExportService->build($this->expedition);
-
-        $csvFilePath = $geoLocateExportService->moveCsvFile();
-        $geoLocateExportService->createDownload($this->expedition);
-
-        $this->expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
-            'state' => 1,
-        ]);
+        $geoLocateExportService->process($this->expedition);
+        $csvFilePath = $geoLocateExportService->getCsvFilePath();
 
         $route = route('admin.downloads.geolocate', ['file' => base64_encode($csvFilePath)]);
         $btn = $this->createButton($route, t('Download GeoLocateExport CSV'));
@@ -122,24 +110,10 @@ class GeoLocateExportJob implements ShouldQueue
      */
     public function failed(\Throwable $throwable): void
     {
-        $this->expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
-            'state' => 0,
-        ]);
-
-        $csvFilePath = $this->geoLocateExportService->getCsvFilePath();
-
-        if (Storage::disk('s3')->exists($csvFilePath)) {
-            Storage::disk('s3')->delete($csvFilePath);
-        }
-
-        if (Storage::disk('efs')->exists($csvFilePath)) {
-            Storage::disk('efs')->delete($csvFilePath);
-        }
-
         $attributes = [
             'subject' => t('DWC File Import Error'),
             'html'    => [
-                'Error: '.t('Could not export GeoLocate data for Expedition %s', $this->expedition->title),
+                'Error: '.$throwable->getMessage(),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),
