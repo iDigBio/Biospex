@@ -44,17 +44,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    private SubjectRepository $subjectRepository;
-
-    /**
      * Create a new command instance.
      */
-    public function __construct(SubjectRepository $subjectRepository)
+    public function __construct()
     {
-        parent::__construct();;
-        $this->subjectRepository = $subjectRepository;
+        parent::__construct();
     }
 
     /**
@@ -62,7 +56,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
     }
 
 }

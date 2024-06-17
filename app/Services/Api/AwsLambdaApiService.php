@@ -50,8 +50,11 @@ class AwsLambdaApiService
      * @param array $data
      * @return void
      */
-    public function lambdaInvokeAsync(string $function, array $data)
+    public function lambdaInvokeAsync(string $function, array $data): void
     {
+        // Add environment variable to $data. Used in filtering Aws SNS subscriptions.
+        $data['env'] = config('config.env');
+
         $this->lambdaClient->invoke([
             // The name your created Lamda function
             'FunctionName'   => $function,
@@ -67,8 +70,11 @@ class AwsLambdaApiService
      * @param array $data
      * @return \Aws\Result
      */
-    public function lambdaInvoke(string $function, array $data)
+    public function lambdaInvoke(string $function, array $data): \Aws\Result
     {
+        // Add environment variable to $data. Used in filtering Aws SNS subscriptions.
+        $data['env'] = config('config.env');
+
         return $this->lambdaClient->invoke([
             // The name your created Lamda function
             'FunctionName'   => $function,
