@@ -69,6 +69,8 @@ class AppLambdaCommand extends Command
             $this->reconcileTest();
         } elseif ($this->argument('method') === 'delete') {
             $this->deleteTestFiles();
+        } elseif ($this->argument('method') === 'tesseract') {
+            $this->tesseractTest();
         }
     }
 
@@ -99,10 +101,10 @@ class AppLambdaCommand extends Command
             'explanations' => true,
         ];
 
-        $result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
-        echo $result['Payload']->getContents();
+        //$result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
+        //echo $result['Payload']->getContents();
 
-        //$this->awsLambdaApiService->lambdaInvokeAsync('labelReconciliations', $attributes);
+        $this->awsLambdaApiService->lambdaInvokeAsync('labelReconciliations', $attributes);
     }
 
     private function reconcileTest(): void
@@ -118,5 +120,18 @@ class AppLambdaCommand extends Command
         \Storage::disk('s3')->delete('zooniverse/summary/999999.html');
         \Storage::disk('s3')->delete('zooniverse/reconciled/999999.csv');
         \Storage::disk('s3')->delete('zooniverse/explained/999999.csv');
+    }
+
+    private function tesseractTest()
+    {
+        $attributes = [
+            'env'    => config('app.env'),
+            'queue_id' => 999999,
+            'subject_id' => '615da36c65b16554e4781ed9',
+            'access_uri' => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
+        ]; //https://sernecportal.org/imglib/seinet/sernec/FTU/FTU0016/FTU0016693.jpg
+
+        $result = $this->awsLambdaApiService->lambdaInvoke('tesseractOcr', $attributes);
+        echo $result['Payload']->getContents();
     }
 }
