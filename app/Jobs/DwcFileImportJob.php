@@ -119,7 +119,7 @@ class DwcFileImportJob implements ShouldQueue
 
             Notification::send($users, new Generic($attributes));
 
-            OcrCreateJob::dispatch($project->id);
+            TesseractOcrCreateJob::dispatch($project->id);
             File::cleanDirectory($scratchFileDir);
             File::deleteDirectory($scratchFileDir);
             File::delete($importFilePath);
@@ -129,8 +129,8 @@ class DwcFileImportJob implements ShouldQueue
         } catch (Exception $e) {
             $this->import->error = 1;
             $this->import->save();
-            //File::cleanDirectory($scratchFileDir);
-            //File::deleteDirectory($scratchFileDir);
+            File::cleanDirectory($scratchFileDir);
+            File::deleteDirectory($scratchFileDir);
 
             $attributes = [
                 'subject' => t('DWC File Import Error'),
