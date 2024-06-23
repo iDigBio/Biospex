@@ -57,7 +57,7 @@ class ExportQueueEventSubscriber
     /**
      * Check queue.
      */
-    public function check()
+    public function check(): void
     {
         $exportQueue = $this->exportQueueRepo->findBy('error', 0);
 

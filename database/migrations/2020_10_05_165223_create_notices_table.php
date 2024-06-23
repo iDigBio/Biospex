@@ -14,7 +14,7 @@ class CreateNoticesTable extends Migration
     public function up()
     {
         Schema::create('notices', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('message', 500)->nullable();
             $table->tinyInteger('enabled')->default(0)->index();
             $table->timestamp('created_at')->nullable()->useCurrent();

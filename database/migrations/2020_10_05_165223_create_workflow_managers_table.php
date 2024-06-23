@@ -14,8 +14,8 @@ class CreateWorkflowManagersTable extends Migration
     public function up()
     {
         Schema::create('workflow_managers', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('expedition_id')->index('workflow_manager_expedition_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('expedition_id')->index('workflow_manager_expedition_id_foreign');
             $table->tinyInteger('stopped')->default(0)->index('workflow_manager_stopped_index');
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrent();

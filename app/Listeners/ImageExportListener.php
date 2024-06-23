@@ -82,18 +82,20 @@ Payload example
 
 {
   "version": "1.0",
-  "timestamp": "2022-08-21T17:59:27.529Z",
+  "timestamp": "2024-06-20T20:36:13.325Z",
   "requestContext": {
-    "requestId": "36a960b2-bd75-4cee-b5b1-ffd567ebd94d",
-    "functionArn": "arn:aws:lambda:us-east-2:147899039648:function:imageProcessExport:$LATEST", arn:aws:lambda:us-east-2:147899039648:function:tesseractOcr:$LATEST
+    "requestId": "a2de2a13-7440-4e89-bb55-eba853a8cbeb",
+    "functionArn": "arn:aws:lambda:us-east-2:147899039648:function:imageProcessExportDev:$LATEST",
     "condition": "Success",
     "approximateInvokeCount": 1
   },
   "requestPayload": {
-    "queueId": 10,
-    "subjectId": "6298bb95c5143f1cc750d5a4",
-    "url": "http:\/\/cdn.flmnh.ufl.edu\/Herbarium\/jpg\/185\/185753a1.jpg",
-    "dir": "scratch\/testing-scratch"
+    "bucket": "biospex-dev",
+    "queueId": 8,
+    "subjectId": "65ce1fdde2e632f27807654d",
+    "url": "https://sernecportal.org/imglib/seinet/sernec/FTU/FTU0016/FTU0016888.jpg",
+    "dir": "scratch/8-2-46ccbb8b-4d56-4c11-91f4-f7754d1fc7a3",
+    "env": null
   },
   "responseContext": {
     "statusCode": 200,
@@ -101,7 +103,14 @@ Payload example
   },
   "responsePayload": {
     "statusCode": 200,
-    "body": "{\"queueId\":10,\"subjectId\":\"6298bb95c5143f1cc750d5a4\",\"message\":\"\"}"
+    "body": {
+      "env": null,
+      "bucket": "biospex-dev",
+      "queueId": 8,
+      "subjectId": "65ce1fdde2e632f27807654d",
+      "message": ""
+    }
   }
 }
+
  */

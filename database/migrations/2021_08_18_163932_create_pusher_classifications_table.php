@@ -14,7 +14,7 @@ class CreatePusherClassificationsTable extends Migration
     public function up()
     {
         Schema::create('pusher_classifications', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->integer('classification_id')->unique();
             $table->json('data');
             $table->timestamps();

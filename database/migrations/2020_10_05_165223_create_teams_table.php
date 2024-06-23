@@ -14,8 +14,8 @@ class CreateTeamsTable extends Migration
     public function up()
     {
         Schema::create('teams', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('team_category_id')->index('teams_team_category_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('team_category_id')->index('teams_team_category_id_foreign');
             $table->string('first_name', 50)->nullable();
             $table->string('last_name', 50)->nullable();
             $table->string('email', 255)->nullable();

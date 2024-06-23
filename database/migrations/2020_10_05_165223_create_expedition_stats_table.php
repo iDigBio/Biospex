@@ -14,8 +14,8 @@ class CreateExpeditionStatsTable extends Migration
     public function up()
     {
         Schema::create('expedition_stats', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('expedition_id')->index('expedition_stats_expedition_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('expedition_id')->index('expedition_stats_expedition_id_foreign');
             $table->integer('local_subject_count')->default(0);
             $table->integer('subject_count')->default(0);
             $table->integer('transcriptions_total')->default(0);

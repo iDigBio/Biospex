@@ -16,72 +16,67 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 namespace App\Console\Commands;
 
-use App\Jobs\OcrProcessJob;
-use App\Services\Process\OcrService;
+use App\Jobs\TesseractOcrProcessJob;
+use App\Services\Ocr\TesseractOcrService;
 use Illuminate\Console\Command;
 
-/**
- * Class OcrProcessCommand
- *
- * @package App\Console\Commands
- */
-class OcrProcessCommand extends Command
+class TesseractOcrCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'ocrprocess:records {--reset}';
+    protected $signature = 'tesseract:ocr-process {--reset}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Starts ocr processing if queues exist.';
+    protected $description = 'Checks queue and processes OCR jobs.';
 
     /**
-     * @var \App\Services\Process\OcrService
+     * @var \App\Services\Ocr\TesseractOcrService
      */
-    private OcrService $ocrService;
+    private TesseractOcrService $tesseractOcrService;
 
     /**
-     * OcrProcessCommand constructor.
+     * Create a new command instance.
+     * Command is called after queue is created and while processing.
      *
-     * @param \App\Services\Process\OcrService $ocrService
+     * @see \App\Jobs\TesseractOcrCreateJob
+     * @see TesseractOcrService
+     * @param \App\Services\Ocr\TesseractOcrService $tesseractOcrService
      */
-    public function __construct(OcrService $ocrService)
+    public function __construct(TesseractOcrService $tesseractOcrService)
     {
         parent::__construct();
-
-        $this->ocrService = $ocrService;
+        $this->tesseractOcrService = $tesseractOcrService;
     }
-
     /**
      * Execute the console command.
-     *
-     * @throws \Exception
      */
-    public function handle(): void
+    public function handle()
     {
+        // If reset is true, it will return first in the queue whether it's error or not.
         $queue = $this->option('reset') ?
-            $this->ocrService->getFirstQueue(true) :
-            $this->ocrService->getFirstQueue();
+            $this->tesseractOcrService->getFirstQueue(true) :
+            $this->tesseractOcrService->getFirstQueue();
 
-        if ($queue !== null && $this->option('reset')) {
+        if ($queue === null) {
+            return;
+        }
+
+        // Resetting the queue if it's not null and reset is true.
+        if ($this->option('reset')) {
             $queue->status = 0;
             $queue->error = 0;
             $queue->save();
         }
 
-        if ($queue === null || $queue->status === 1) {
-            return;
-        }
-
-        OcrProcessJob::dispatch($queue);
+        TesseractOcrProcessJob::dispatch($queue);
     }
 }

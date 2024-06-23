@@ -14,9 +14,9 @@ class CreateActorExpeditionTable extends Migration
     public function up()
     {
         Schema::create('actor_expedition', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('expedition_id')->index('expedition_actor_expedition_id_foreign');
-            $table->unsignedInteger('actor_id')->index('expedition_actor_actor_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('expedition_id')->index('expedition_actor_expedition_id_foreign');
+            $table->unsignedBigInteger('actor_id')->index('expedition_actor_actor_id_foreign');
             $table->tinyInteger('state')->default(0);
             $table->integer('total')->default(0);
             $table->integer('processed')->default(0)->index();

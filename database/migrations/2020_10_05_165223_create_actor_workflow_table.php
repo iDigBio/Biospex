@@ -14,9 +14,9 @@ class CreateActorWorkflowTable extends Migration
     public function up()
     {
         Schema::create('actor_workflow', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('workflow_id')->index('actor_workflow_workflow_id_foreign');
-            $table->unsignedInteger('actor_id')->index('actor_workflow_actor_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('workflow_id')->index('actor_workflow_workflow_id_foreign');
+            $table->unsignedBigInteger('actor_id')->index('actor_workflow_actor_id_foreign');
             $table->integer('order')->default(0);
         });
     }

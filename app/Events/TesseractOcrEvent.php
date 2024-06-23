@@ -16,14 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 namespace App\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class LabelReconciliationEvent
+class TesseractOcrEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -34,10 +33,11 @@ class LabelReconciliationEvent
 
     /**
      * Create a new event instance.
-     * @see \App\Listeners\LabelReconciliationListener
+     * @see \App\Listeners\TesseractOcrListener
      */
     public function __construct(array $payload)
     {
         $this->payload = $payload;
     }
+
 }

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('wedigbio_event_dates', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->boolean('active')->default(0);

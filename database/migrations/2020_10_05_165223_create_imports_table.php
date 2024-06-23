@@ -14,9 +14,9 @@ class CreateImportsTable extends Migration
     public function up()
     {
         Schema::create('imports', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('user_id')->index('imports_user_id_foreign');
-            $table->unsignedInteger('project_id')->index('imports_project_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('user_id')->index('imports_user_id_foreign');
+            $table->unsignedBigInteger('project_id')->index('imports_project_id_foreign');
             $table->string('file', 255)->nullable();
             $table->boolean('error')->default(0);
             $table->timestamp('created_at')->nullable()->useCurrent();

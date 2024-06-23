@@ -14,8 +14,8 @@ class CreateMetasTable extends Migration
     public function up()
     {
         Schema::create('metas', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('project_id')->index('metas_project_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('project_id')->index('metas_project_id_foreign');
             $table->binary('xml');
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrent();

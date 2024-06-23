@@ -14,8 +14,8 @@ class CreateBingoMapsTable extends Migration
     public function up()
     {
         Schema::create('bingo_maps', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('bingo_id')->index('bingo_maps_bingo_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('bingo_id')->index('bingo_maps_bingo_id_foreign');
             $table->binary('uuid');
             $table->binary('ip');
             $table->double('latitude', 8, 6);

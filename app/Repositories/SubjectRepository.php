@@ -90,7 +90,7 @@ class SubjectRepository extends BaseRepository
     public function getSubjectQueryForOcr(int $projectId, int $expeditionId = null): \Illuminate\Database\Eloquent\Builder|Subject
     {
         $query = $this->model->where('project_id', $projectId);
-        $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
+        $query = null === $expeditionId ? $query : $query->where('expedition_ids', $expeditionId);
         $query->where(function ($query) {
             $query->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
         })->timeout(86400);
@@ -109,7 +109,7 @@ class SubjectRepository extends BaseRepository
     public function getSubjectErrorForOcr(int $projectId, int $expeditionId = null): \Illuminate\Database\Eloquent\Collection
     {
         $query = $this->model->where('project_id', $projectId);
-        $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
+        $query = null === $expeditionId ? $query : $query->where('expedition_ids', $expeditionId);
         return $query->where('ocr', 'regex', '/^Error/')->get();
     }
 
@@ -123,12 +123,10 @@ class SubjectRepository extends BaseRepository
     public function getSubjectCountForOcr(int $projectId, int $expeditionId = null): int
     {
         $query = $this->model->where('project_id', $projectId);
-        $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = $query->where(function ($query) {
+        $query = null === $expeditionId ? $query : $query->where('expedition_ids', $expeditionId);
+        return $query->where(function ($query) {
             $query->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
-        });
-
-        return $query->count();
+        })->count();
     }
 
     /**

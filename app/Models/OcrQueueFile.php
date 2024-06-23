@@ -24,52 +24,32 @@ namespace App\Models;
  *
  * @package App\Models
  */
-class OcrQueue extends BaseEloquentModel
+class OcrQueueFile extends BaseEloquentModel
 {
     /**
      * @inheritDoc
      */
-    protected $table = 'ocr_queues';
+    protected $table = 'ocr_queue_files';
 
     /**
      * @inheritDoc
      */
     protected $fillable = [
-        'project_id',
-        'expedition_id',
-        'total',
+        'queue_id',
+        'subject_id',
+        'access_uri',
+        'message',
         'processed',
-        'status',
-        'error'
+        'tries'
     ];
 
     /**
-     * Project relation
+     * Queue relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function ocrQueue(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Project::class);
-    }
-
-    /**
-     * Expedition relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function expedition()
-    {
-        return $this->belongsTo(Expedition::class);
-    }
-
-    /**
-     * OcrQueueFiles relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function ocrQueueFiles(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(OcrQueueFile::class);
+        return $this->belongsTo(OcrQueue::class);
     }
 }

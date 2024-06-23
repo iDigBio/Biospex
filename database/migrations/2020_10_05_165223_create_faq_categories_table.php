@@ -14,7 +14,7 @@ class CreateFaqCategoriesTable extends Migration
     public function up()
     {
         Schema::create('faq_categories', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('name', 255)->nullable()->unique();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrent();

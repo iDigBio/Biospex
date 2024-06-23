@@ -16,12 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Process\OcrService;
+use App\Services\Ocr\TesseractOcrService;
 use Artisan;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -35,7 +34,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
  *
  * @package App\Jobs
  */
-class OcrCreateJob implements ShouldQueue
+class TesseractOcrCreateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -70,29 +69,23 @@ class OcrCreateJob implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param \App\Services\Process\OcrService $ocrService
+     * @param \App\Services\Ocr\TesseractOcrService $tesseractOcrService
      */
-    public function handle(OcrService $ocrService): void
+    public function handle(TesseractOcrService $tesseractOcrService): void
     {
-        if (config('config.ocr_disable')) {
-            $this->delete();
-
+        if (config('config.ocr_disable'))
             return;
-        }
 
         try {
+            $total = $tesseractOcrService->getSubjectCountForOcr($this->projectId, $this->expeditionId);
 
-            $total = $ocrService->getSubjectCountForOcr($this->projectId, $this->expeditionId);
-
-            if ($total === 0) {
-                $this->delete();
-
+            // If no subjects to OCR, return
+            if ($total === 0)
                 return;
-            }
 
-            $ocrService->createOcrQueue($this->projectId, $this->expeditionId, ['total' => $total]);
+            $ocrQueue = $tesseractOcrService->createOcrQueue($this->projectId, $this->expeditionId, ['total' => $total]);
 
-            Artisan::call('ocrprocess:records');
+            $tesseractOcrService->createOcrQueueFiles($ocrQueue->id, $this->projectId, $this->expeditionId);
 
         } catch (Exception $e) {
             $attributes = [

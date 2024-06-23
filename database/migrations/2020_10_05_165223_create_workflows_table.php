@@ -14,7 +14,7 @@ class CreateWorkflowsTable extends Migration
     public function up()
     {
         Schema::create('workflows', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('title', 255)->nullable()->unique();
             $table->tinyInteger('enabled')->default(0)->index();
             $table->timestamp('created_at')->nullable()->useCurrent();

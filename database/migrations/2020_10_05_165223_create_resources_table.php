@@ -14,7 +14,7 @@ class CreateResourcesTable extends Migration
     public function up()
     {
         Schema::create('resources', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('title', 255)->nullable();
             $table->text('description')->nullable();
             $table->string('document_file_name')->nullable();

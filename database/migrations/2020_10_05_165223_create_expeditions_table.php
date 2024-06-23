@@ -14,9 +14,9 @@ class CreateExpeditionsTable extends Migration
     public function up()
     {
         Schema::create('expeditions', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->binary('uuid')->nullable();
-            $table->unsignedInteger('project_id')->index('expeditions_project_id_foreign');
+            $table->unsignedBigInteger('project_id')->index('expeditions_project_id_foreign');
             $table->string('title', 255)->nullable();
             $table->text('description')->nullable();
             $table->string('keywords', 255)->nullable();

@@ -34,8 +34,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('queue:prune-batches --hours=48 --unfinished=72')->daily();
 
-        // Run ocr every 15 minutes.
-        $schedule->command('ocrprocess:records')->everyFiveMinutes();
+        // Run ocr every 2 minutes.
+        $schedule->command('tesseract:ocr-process')->everyTwoMinutes();
 
         // Failed jobs report used to check ocr
         $schedule->command('report:failed')->dailyAt('09:30');

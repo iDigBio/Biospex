@@ -14,8 +14,8 @@ class CreateHeadersTable extends Migration
     public function up()
     {
         Schema::create('headers', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('project_id')->index('headers_project_id_type_index');
+            $table->id();
+            $table->unsignedBigInteger('project_id')->index('headers_project_id_type_index');
             $table->text('header')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrent();

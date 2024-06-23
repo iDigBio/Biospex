@@ -14,9 +14,9 @@ class CreateExportQueuesTable extends Migration
     public function up()
     {
         Schema::create('export_queues', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('expedition_id');
-            $table->unsignedInteger('actor_id')->index('exports_actor_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('expedition_id');
+            $table->unsignedBigInteger('actor_id')->index('exports_actor_id_foreign');
             $table->integer('stage')->default(0)->index();
             $table->boolean('queued')->default(0)->index();
             $table->smallInteger('count');

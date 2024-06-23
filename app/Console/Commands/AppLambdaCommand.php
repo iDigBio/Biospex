@@ -104,7 +104,7 @@ class AppLambdaCommand extends Command
         //$result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
         //echo $result['Payload']->getContents();
 
-        $this->awsLambdaApiService->lambdaInvokeAsync('labelReconciliations', $attributes);
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_reconciliation_function'), $attributes);
     }
 
     private function reconcileTest(): void
@@ -126,12 +126,14 @@ class AppLambdaCommand extends Command
     {
         $attributes = [
             'env'    => config('app.env'),
+            'id'     => 5,
             'queue_id' => 999999,
             'subject_id' => '615da36c65b16554e4781ed9',
             'access_uri' => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
         ]; //https://sernecportal.org/imglib/seinet/sernec/FTU/FTU0016/FTU0016693.jpg
 
-        $result = $this->awsLambdaApiService->lambdaInvoke('tesseractOcr', $attributes);
-        echo $result['Payload']->getContents();
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), $attributes);
+        //$result = $this->awsLambdaApiService->lambdaInvoke('tesseractOcr', $attributes);
+        //echo $result['Payload']->getContents();
     }
 }

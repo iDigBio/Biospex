@@ -131,6 +131,7 @@ class ReconcileService
 
     /**
      * Process returned reconcile event. Pass on to:
+     *
      * @see ZooniverseTranscriptionJob
      * @see ZooniversePusherJob
      * @see ZooniverseClassificationCountJob

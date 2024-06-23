@@ -14,8 +14,8 @@ class CreateAmchartsTable extends Migration
     public function up()
     {
         Schema::create('amcharts', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('project_id')->index('amcharts_project_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('project_id')->index('amcharts_project_id_foreign');
             $table->json('series')->nullable();
             $table->json('data')->nullable();
             $table->tinyInteger('queued')->default(0)->index();

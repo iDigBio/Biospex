@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Events\ImageExportEvent;
 use App\Events\LabelReconciliationEvent;
+use App\Events\TesseractOcrEvent;
 use Aws\Sns\Exception\InvalidSnsMessageException;
 use Aws\Sns\Message;
 use Aws\Sns\MessageValidator;
@@ -69,8 +70,9 @@ class AwsSnsController
             $payload = json_decode($message['Message'], true);
 
             $eventType = match (true) {
-                str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_export_function')) => ImageExportEvent::class,
                 str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_reconciliation_function')) => LabelReconciliationEvent::class,
+                str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_ocr_function')) => TesseractOcrEvent::class,
+                str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_export_function')) => ImageExportEvent::class,
                 default => null,
             };
 

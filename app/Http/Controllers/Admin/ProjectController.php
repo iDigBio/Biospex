@@ -23,7 +23,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectFormRequest;
 use App\Jobs\DeleteProjectJob;
 use App\Jobs\DeleteUnassignedSubjectsJob;
-use App\Jobs\OcrCreateJob;
 use App\Repositories\GroupRepository;
 use App\Repositories\ProjectRepository;
 use App\Services\Grid\JqGridEncoder;

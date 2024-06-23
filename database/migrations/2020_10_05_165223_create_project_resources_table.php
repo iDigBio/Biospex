@@ -14,8 +14,8 @@ class CreateProjectResourcesTable extends Migration
     public function up()
     {
         Schema::create('project_resources', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('project_id')->index('project_resources_project_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('project_id')->index('project_resources_project_id_foreign');
             $table->string('type');
             $table->string('name', 255)->nullable();
             $table->string('description', 255)->nullable();
