@@ -20,10 +20,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\OcrCreateJob;
+use App\Jobs\TesseractOcrCreateJob;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\ProjectRepository;
-use Flash;
 
 class OcrController extends Controller
 {
@@ -66,7 +65,7 @@ class OcrController extends Controller
             return \Redirect::route('admin.projects.index');
         }
 
-        OcrCreateJob::dispatch($projectId, $expeditionId);
+        TesseractOcrCreateJob::dispatch($projectId, $expeditionId);
 
         \Flash::success(t('OCR processing has been submitted. It may take some time before appearing in the Processes modal. You will be notified by email when the process is complete.'));
 
