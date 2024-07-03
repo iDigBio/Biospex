@@ -78,11 +78,11 @@ class AppLambdaCommand extends Command
     {
         $workingDir = "scratch/folderName-queueId-actorId-expeditionUuid";
         $attributes = [
-            'bucket' => config('filesystems.disks.s3.bucket'),
-            'queueId'    => 999999,
-            'subjectId'  => "615da36c65b16554e4781ed9",
-            'url'        => "https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg",
-            'dir'        => $workingDir,
+            'bucket'    => config('filesystems.disks.s3.bucket'),
+            'queueId'   => 999999,
+            'subjectId' => "615da36c65b16554e4781ed9",
+            'url'       => "https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg",
+            'dir'       => $workingDir,
         ];
 
         Storage::disk('s3')->makeDirectory($workingDir);
@@ -109,8 +109,8 @@ class AppLambdaCommand extends Command
 
     private function reconcileTest(): void
     {
-        $classification = config('zooniverse.directory.classification') . '/999999.csv';
-        $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation') . '/999999.csv';
+        $classification = config('zooniverse.directory.classification').'/999999.csv';
+        $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation').'/999999.csv';
         \Storage::disk('s3')->copy($classification, $lambda_reconciliation);
     }
 
@@ -125,11 +125,10 @@ class AppLambdaCommand extends Command
     private function tesseractTest()
     {
         $attributes = [
-            'env'    => config('app.env'),
-            'id'     => 5,
-            'queue_id' => 999999,
-            'subject_id' => '615da36c65b16554e4781ed9',
-            'access_uri' => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
+            'bucket' => config('filesystems.disks.s3.bucket'),
+            'key'    => config('zooniverse.directory.lambda-ocr').'/615da36c65b16554e4781ed9.txt',
+            'file'   => 999,
+            'uri'    => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
         ]; //https://sernecportal.org/imglib/seinet/sernec/FTU/FTU0016/FTU0016693.jpg
 
         $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), $attributes);

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('queue_id')->index('ocr_files_queue_id_foreign');
             $table->string('subject_id', 30)->nullable()->unique();
             $table->string('access_uri')->nullable();
-            $table->string('message')->nullable();
             $table->boolean('processed')->default(0);
             $table->tinyInteger('tries')->default(0);
             $table->timestamps();

@@ -89,6 +89,7 @@ class AppFileDeployment extends Command
 
         $this->config->each(function ($search) use ($files) {
             $replace = $this->configureReplace($search);
+            echo $replace . PHP_EOL;
             $files->each(function ($file) use ($search, $replace) {
                 exec("sed -i 's*$search*$replace*g' $file");
             });

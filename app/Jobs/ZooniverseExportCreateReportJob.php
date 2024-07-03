@@ -20,7 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actor\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actor\ActorDirectory;
+use App\Services\Actor\Traits\ZooniverseErrorNotification;
 use App\Services\Actor\Zooniverse\ZooniverseExportCreateReport;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -56,13 +57,20 @@ class ZooniverseExportCreateReportJob implements ShouldQueue, ShouldBeUnique
     public bool $failOnTimeout = true;
 
     /**
+     * @var \App\Services\Actor\ActorDirectory
+     */
+    private ActorDirectory $actorDirectory;
+
+    /**
      * Create a new job instance.
      *
      * @param \App\Models\ExportQueue $exportQueue
+     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      */
-    public function __construct(ExportQueue $exportQueue)
+    public function __construct(ExportQueue $exportQueue, ActorDirectory $actorDirectory)
     {
         $this->exportQueue = $exportQueue;
+        $this->actorDirectory = $actorDirectory;
         $this->onQueue(config('config.queue.export'));
     }
 
@@ -74,7 +82,9 @@ class ZooniverseExportCreateReportJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(ZooniverseExportCreateReport $zooniverseExportReport)
     {
-        $zooniverseExportReport->process($this->exportQueue);
+        $this->exportQueue->increment('stage');
+        \Artisan::call('export:poll');
+        $zooniverseExportReport->process($this->exportQueue, $this->actorDirectory);
     }
 
     /**

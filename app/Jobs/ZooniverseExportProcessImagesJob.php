@@ -20,34 +20,24 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
+use App\Models\User;
+use App\Notifications\Generic;
 use App\Services\Actor\ActorDirectory;
-use App\Services\Actor\Traits\ZooniverseErrorNotification;
-use App\Services\Actor\Zooniverse\ZooniverseBuildCsv;
-use Illuminate\Bus\Batchable;
+use App\Services\Actor\Zooniverse\ZooniverseExportProcessImages;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Throwable;
 
-/**
- * Class ZooniverseExportBuildCsvJob
- */
-class ZooniverseExportBuildCsvJob implements ShouldQueue, ShouldBeUnique
+class ZooniverseExportProcessImagesJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var \App\Models\ExportQueue
      */
     private ExportQueue $exportQueue;
-
-    /**
-     * @var int
-     */
-    public int $timeout = 1800;
 
     /**
      * @var \App\Services\Actor\ActorDirectory
@@ -70,25 +60,39 @@ class ZooniverseExportBuildCsvJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\Zooniverse\ZooniverseBuildCsv $zooniverseBuildCsv
-     * @throws \Exception
-     */
-    public function handle(ZooniverseBuildCsv $zooniverseBuildCsv): void
-    {
-        $this->exportQueue->stage = 2;
-        $this->exportQueue->save();
-        \Artisan::call('export:poll');
-        $zooniverseBuildCsv->process($this->exportQueue, $this->actorDirectory);
-    }
-
-    /**
-     * Handle a job failure.
-     *
-     * @param  \Throwable  $throwable
+     * @param \App\Services\Actor\Zooniverse\ZooniverseExportProcessImages $zooniverseExportProcessImages
      * @return void
      */
-    public function failed(Throwable $throwable): void
+    public function handle(ZooniverseExportProcessImages $zooniverseExportProcessImages): void
     {
-        $this->sendErrorNotification($this->exportQueue, $throwable);
+        // Make sure it's always stage 1 entering this job.
+        $this->exportQueue->load('expedition');
+        $this->exportQueue->stage = 1;
+        $this->exportQueue->save();
+        \Artisan::call('export:poll');
+
+        try {
+            $zooniverseExportProcessImages->process($this->exportQueue, $this->actorDirectory);
+        } catch (\Throwable $throwable) {
+            $this->exportQueue->error = 1;
+            $this->exportQueue->save();
+
+            $attributes = [
+                'subject' => t('Ocr Process Error'),
+                'html'    => [
+                    t('Queue Id: %s', $this->exportQueue->id),
+                    t('Expedition Id: %s'.$this->exportQueue->expedition->id),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                ],
+            ];
+            $user = User::find(config('config.admin.user_id'));
+            $user->notify(new Generic($attributes));
+
+            $this->delete();
+
+            return;
+        }
     }
 }

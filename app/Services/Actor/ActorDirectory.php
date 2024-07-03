@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2015  Biospex
+ * Copyright (c) 2022. Biospex
  * biospex@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -22,7 +22,7 @@ namespace App\Services\Actor;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * ActorDirectory
+ * Trait ActorDirectory
  */
 class ActorDirectory
 {
@@ -30,11 +30,6 @@ class ActorDirectory
      * @var string
      */
     public string $folderName;
-
-    /**
-     * @var string
-     */
-    public string $randomStr;
 
     /**
      * @var string
@@ -49,37 +44,47 @@ class ActorDirectory
     /**
      * @var string
      */
-    public string $tmpDir;
-
-    /**
-     * @var string
-     */
     public string $exportDirectory;
 
     /**
      * @var string
      */
-    public string $archiveTar;
+    public string $exportArchiveFile;
 
     /**
      * @var string
      */
-    public string $archiveTarPath;
-
-    /**
-     * @var string
-     */
-    public string $archiveTarGz;
-
-    /**
-     * @var string
-     */
-    public string $archiveTarGzPath;
+    public string $exportArchiveFilePath;
 
     /**
      * @var array
      */
     public array $rejected  = [];
+
+    /**
+     * @var string
+     */
+    public string $expeditionUuid;
+
+    /**
+     * @var string
+     */
+    public string $efsExportDir;
+
+    /**
+     * @var string
+     */
+    public string $efsExportDirFolder;
+
+    /**
+     * @var string
+     */
+    public string $bucketPath;
+
+    /**
+     * @var string
+     */
+    public string $exportCsvFilePath;
 
     /**
      * Set folder property.
@@ -88,121 +93,92 @@ class ActorDirectory
      * @param int $actorId
      * @param string $expeditionUuid
      */
-    public function setFolder(int $queueId, int $actorId, string $expeditionUuid)
+    public function setFolder(int $queueId, int $actorId, string $expeditionUuid): void
     {
+        $this->expeditionUuid = $expeditionUuid;
         $this->folderName = $queueId.'-'.$actorId.'-'.$expeditionUuid;
     }
 
     /**
      * Set directories.
      *
-     * @param bool $delete
-     * @param bool $batch
      * @return void
      */
-    public function setDirectories(bool $delete = false, bool $batch = false)
+    public function setDirectories(): void
     {
-        $this->setRandomString();
         $this->setScratchDirectory();
-        $this->setWorkingDirectory($delete);
-        $this->setTmpDirectory();
+        $this->setWorkingDirectory();
         $this->setExportDirectory();
-        $this->setArchiveTar();
-        $this->setArchiveTarGz($batch);
-    }
-
-    /**
-     * Creates random string for tar archive name.
-     *
-     * @return void
-     */
-    public function setRandomString()
-    {
-        $this->randomStr = md5(\Str::random(10).$this->folderName);
+        $this->setExportArchiveFileAndPath();
+        $this->setExportCsvFilePath();
+        $this->setEfsExportDirectory();
+        $this->setBucketPath();
     }
 
     /**
      * Set scratch directory.
      */
-    private function setScratchDirectory()
+    private function setScratchDirectory(): void
     {
         $this->scratchDir = config('config.scratch_dir');
     }
 
+
     /**
      * Set working directory.
-     * If delete, clear existing folder of everything.
-     *
-     * @param bool $delete
      */
-    private function setWorkingDirectory(bool $delete)
+    private function setWorkingDirectory(): void
     {
         $this->workingDir = $this->scratchDir.'/'.$this->folderName;
-
-        if (Storage::disk('s3')->exists($this->workingDir) && $delete) {
-            Storage::disk('s3')->deleteDirectory($this->workingDir);
-        }
 
         Storage::disk('s3')->makeDirectory($this->workingDir);
     }
 
     /**
-     * Set tmp directory.
+     * Set export directory.
      */
-    private function setTmpDirectory()
-    {
-        $this->tmpDir = $this->workingDir.'/tmp';
-        Storage::disk('s3')->makeDirectory($this->tmpDir);
-    }
-
-    /**
-     * Set zooniverse export directory.
-     */
-    private function setExportDirectory()
+    private function setExportDirectory(): void
     {
         $this->exportDirectory = config('config.export_dir');
     }
 
     /**
-     * Set gz archive and path.
+     * Set export csv file path.
      */
-    private function setArchiveTar()
+    private function setExportCsvFilePath(): void
     {
-        $this->archiveTar = $this->randomStr.'.tar';
-        $this->archiveTarPath = $this->exportDirectory.'/'.$this->archiveTar;
+        $this->exportCsvFilePath = $this->workingDir.'/'.$this->expeditionUuid.'.csv';
     }
 
     /**
      * Set archive tar gz file and path.
-     *
-     * @param bool $batch
      */
-    protected function setArchiveTarGz(bool $batch = false)
+    private function setExportArchiveFileAndPath(): void
     {
-        $this->archiveTarGz = $batch ? $this->folderName.'.tar.gz' : $this->randomStr.'.tar.gz';
-        $this->archiveTarGzPath = $this->exportDirectory.'/'.$this->archiveTarGz;
+        $this->exportArchiveFile = $this->folderName.'.zip';
+        $this->exportArchiveFilePath = $this->exportDirectory.'/'.$this->exportArchiveFile;
     }
 
     /**
-     * Set folder name using already created download file name.
+     * Set efs batch directory.
      *
-     * @param string $fileName
+     * @return void
      */
-    public function setBatchFolder(string $fileName)
+    private function setEfsExportDirectory(): void
     {
-        $folder = str_replace('.tar.gz', '', $fileName);
-        $this->folderName = $folder;
+        $this->efsExportDir = config('config.export_dir');
+        $this->efsExportDirFolder = $this->efsExportDir . '/' . $this->folderName;
+        Storage::disk('efs')->makeDirectory($this->efsExportDirFolder);
     }
 
     /**
-     * Set archive for batch files.
+     * Set bucket path.
      *
-     * @param string $fileName
-     * @return string
+     * @return void
      */
-    public function setBatchArchiveTarGz(string $fileName): string
+    private function setBucketPath(): void
     {
-        return $this->exportDirectory.'/'.$fileName.'.tar.gz';
+        $this->bucketPath = 's3://' . config('filesystems.disks.s3.bucket');
     }
 
     /**
@@ -210,7 +186,19 @@ class ActorDirectory
      *
      * @param string $filePath
      */
-    public function deleteFile(string $filePath)
+    public function deleteEfsFile(string $filePath): void
+    {
+        if (Storage::disk('efs')->exists($filePath)) {
+            Storage::disk('efs')->delete($filePath);
+        }
+    }
+
+    /**
+     * Delete existing file.
+     *
+     * @param string $filePath
+     */
+    public function deleteS3File(string $filePath): void
     {
         if (Storage::disk('s3')->exists($filePath)) {
             Storage::disk('s3')->delete($filePath);
@@ -223,7 +211,20 @@ class ActorDirectory
      * @param string $dir
      * @return void
      */
-    public function deleteDirectory(string $dir)
+    public function deleteEfsDirectory(string $dir): void
+    {
+        if (Storage::disk('efs')->exists($dir)) {
+            Storage::disk('efs')->deleteDirectory($dir);
+        }
+    }
+
+    /**
+     * Delete directory.
+     *
+     * @param string $dir
+     * @return void
+     */
+    public function deleteS3Directory(string $dir): void
     {
         if (Storage::disk('s3')->exists($dir)) {
             Storage::disk('s3')->deleteDirectory($dir);
@@ -231,43 +232,13 @@ class ActorDirectory
     }
 
     /**
-     * Check if file exists and is image.
+     * Check if file exists.
      *
      * @param string $filePath
-     * @param string $subjectId
-     * @param bool $reject
      * @return bool
      */
-    public function checkFileExists(string $filePath, string $subjectId, bool $reject = true): bool
+    public function checkS3FileExists(string $filePath): bool
     {
-        if (! Storage::disk('s3')->exists($filePath)) {
-            if ($reject) {
-                $this->rejected[$subjectId] = 'Image was not downloaded and converted.';
-            }
-
-            return false;
-        }
-
-        if (false === exif_imagetype($filePath)) {
-            if ($reject) {
-                $this->rejected[$subjectId] = 'Converted image file was corrupt.';
-            }
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Save file.
-     *
-     * @param string $filePath
-     * @param string $content
-     * @return void
-     */
-    public function putFile(string $filePath, string $content)
-    {
-        Storage::disk('s3')->put($filePath, $content);
+        return Storage::disk('s3')->exists($filePath);
     }
 }

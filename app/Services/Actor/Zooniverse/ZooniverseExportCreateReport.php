@@ -24,7 +24,7 @@ use App\Models\ExportQueue;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use App\Repositories\ExportQueueFileRepository;
-use App\Services\Actor\QueueInterface;
+use App\Services\Actor\ActorDirectory;
 use App\Services\Process\CreateReportService;
 use Notification;
 
@@ -33,7 +33,7 @@ use Notification;
  *
  * @package App\Services\Actor
  */
-class ZooniverseExportCreateReport implements QueueInterface
+class ZooniverseExportCreateReport
 {
     use ButtonTrait;
 
@@ -66,10 +66,11 @@ class ZooniverseExportCreateReport implements QueueInterface
      * Process actor.
      *
      * @param \App\Models\ExportQueue $exportQueue
+     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      * @return void
-     * @throws \Exception
+     * @throws \League\Csv\CannotInsertRecord
      */
-    public function process(ExportQueue $exportQueue)
+    public function process(ExportQueue $exportQueue, ActorDirectory $actorDirectory): void
     {
         $exportQueue->load([
             'expedition.project.group' => function($q) {
@@ -79,10 +80,10 @@ class ZooniverseExportCreateReport implements QueueInterface
             }
         ]);
 
-        $data = $this->exportQueueFileRepository->getQueueFileErrorsData($exportQueue->id);
+        $data = $this->exportQueueFileRepository->getExportQueueFileWithErrors($exportQueue->id);
 
         $csvName = $exportQueue->expedition->uuid.'.csv';
-        $fileName = $this->createReportService->createCsvReport($csvName, $data);
+        $fileName = $this->createReportService->createCsvReport($csvName, $data->toArray());
         $button = [];
         if ($fileName !== null) {
             $this->createReportService->saveReport($exportQueue, $csvName);
@@ -103,12 +104,6 @@ class ZooniverseExportCreateReport implements QueueInterface
 
         Notification::send($users, new Generic($attributes));
 
-        $exportQueue->processed = 0;
-        $exportQueue->stage = 7;
-        $exportQueue->save();
-
-        \Artisan::call('export:poll');
-
-        ZooniverseExportDeleteFilesJob::dispatch($exportQueue);
+        ZooniverseExportDeleteFilesJob::dispatch($exportQueue, $actorDirectory);
     }
 }

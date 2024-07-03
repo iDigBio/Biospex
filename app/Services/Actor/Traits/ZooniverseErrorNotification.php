@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor\Zooniverse\Traits;
+namespace App\Services\Actor\Traits;
 
 use App\Models\ExportQueue;
 use App\Notifications\Generic;
@@ -45,7 +45,6 @@ trait ZooniverseErrorNotification
 
         $exportQueue->error = 1;
         $exportQueue->queued = 0;
-        $exportQueue->processed = 0;
         $exportQueue->save();
 
         $users = $exportQueue->expedition->project->group->users->push($exportQueue->expedition->project->group->owner);

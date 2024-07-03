@@ -20,8 +20,8 @@
 namespace App\Repositories;
 
 use App\Models\OcrQueueFile;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\LazyCollection;
 
 /**
  * Class OcrQueueRepository
@@ -37,7 +37,6 @@ class OcrQueueFileRepository extends BaseRepository
      */
     public function __construct(OcrQueueFile $ocrQueueFile)
     {
-
         $this->model = $ocrQueueFile;
     }
 
@@ -46,34 +45,22 @@ class OcrQueueFileRepository extends BaseRepository
      *
      * @param int $queueId
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Support\LazyCollection
      */
-    public function getOcrQueueFileQuery(int $queueId): Builder
+    public function getOcrQueueFileQuery(int $queueId): LazyCollection
     {
-        return $this->model->where('queue_id', $queueId);
+        return $this->model->where('queue_id', $queueId)->cursor();
     }
 
     /**
      * Get OcrQueueFile empty.
      *
      * @param int $queueId
-     *
+     * @param int $take
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getUnprocessedOcrQueueFiles(int $queueId): \Illuminate\Database\Eloquent\Collection|array
+    public function getUnprocessedOcrQueueFiles(int $queueId, int $take = 50): \Illuminate\Database\Eloquent\Collection|array
     {
-        return $this->model->where('queue_id', $queueId)->where('processed', 0)->take(config('config.aws.lambda_ocr_count'))->get();
-    }
-
-    /**
-     * Get OcrQueueFile with error.
-     *
-     * @param int $queueId
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function getFilesWithError(int $queueId): Collection
-    {
-        return $this->model->where('id', $queueId)->where('message', 'LIKE', '%Error%')->get();
+        return $this->model->where('queue_id', $queueId)->where('processed', 0)->take($take)->get();
     }
 }

@@ -19,10 +19,8 @@
 
 namespace App\Services\Actor\Zooniverse;
 
-use App\Jobs\ZooniverseExportBuildImageRequestsJob;
 use App\Models\Actor;
 use App\Models\ExportQueue;
-use App\Services\Actor\ActorInterface;
 use App\Repositories\ExportQueueFileRepository;
 use App\Repositories\ExportQueueRepository;
 use App\Repositories\SubjectRepository;
@@ -32,7 +30,7 @@ use App\Repositories\SubjectRepository;
  *
  * @package App\Services\Actor
  */
-class ZooniverseBuildQueue implements ActorInterface
+class ZooniverseBuildQueue
 {
     /**
      * @var \App\Repositories\ExportQueueRepository
@@ -70,12 +68,12 @@ class ZooniverseBuildQueue implements ActorInterface
      * Process actor.
      *
      * @param \App\Models\Actor $actor
-     * @return void
      * @throws \Exception
      */
-    public function process(Actor $actor)
+    public function process(Actor $actor): void
     {
-        $this->exportQueueRepository->createQueue($actor->pivot->expedition_id, $actor->id, $actor->pivot->total);
+        $queue = $this->exportQueueRepository->createQueue($actor->pivot->expedition_id, $actor->id, $actor->pivot->total);
+        $this->buildFiles($queue);
     }
 
     /**
@@ -84,19 +82,12 @@ class ZooniverseBuildQueue implements ActorInterface
      * @param \App\Models\ExportQueue $exportQueue
      * @return void
      */
-    public function buildFiles(ExportQueue $exportQueue)
+    public function buildFiles(ExportQueue $exportQueue): void
     {
-        $subjects = $this->subjectRepository->getAssignedByExpeditionId($exportQueue->expedition_id);
+        $subjects = $this->subjectRepository->getSubjectCursorForExport($exportQueue->expedition_id);
 
         $subjects->each(function ($subject) use ($exportQueue) {
             $this->exportQueueFileRepository->createQueueFile($exportQueue, $subject);
         });
-
-        $exportQueue->stage = 1;
-        $exportQueue->save();
-
-        \Artisan::call('export:poll');
-
-        ZooniverseExportBuildImageRequestsJob::dispatch($exportQueue);
     }
 }

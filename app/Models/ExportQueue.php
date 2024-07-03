@@ -41,10 +41,8 @@ class ExportQueue extends BaseEloquentModel
         'actor_id',
         'stage',
         'queued',
-        'count',
-        'processed',
-        'error',
-        'missing'
+        'total',
+        'error'
     ];
 
     /**
@@ -70,7 +68,7 @@ class ExportQueue extends BaseEloquentModel
      */
     public function files(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(ExportQueueFile::class);
+        return $this->hasMany(ExportQueueFile::class, 'queue_id', 'id');
     }
 
     /**

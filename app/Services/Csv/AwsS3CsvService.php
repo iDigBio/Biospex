@@ -77,7 +77,7 @@ class AwsS3CsvService
      *
      * @return void
      */
-    public function createCsvWriterFromStream()
+    public function createCsvWriterFromStream(): void
     {
         $this->csv->writerCreateFromStream($this->stream);
     }
@@ -87,8 +87,19 @@ class AwsS3CsvService
      *
      * @return void
      */
-    public function createCsvReaderFromStream()
+    public function createCsvReaderFromStream(): void
     {
         $this->csv->readerCreateFromStream($this->stream);
+    }
+
+    /**
+     * Get csv row count.
+     *
+     * @param string $dir
+     * @return int
+     */
+    public function getCsvRowCount(string $dir): int
+    {
+        return $this->awsS3ApiService->getFileCount(config('filesystems.disks.s3.bucket'), $dir);
     }
 }

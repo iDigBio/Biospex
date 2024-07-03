@@ -21,24 +21,15 @@ namespace App\Services\Actor\Zooniverse;
 
 use App\Jobs\ZooniverseExportCreateReportJob;
 use App\Models\ExportQueue;
-use App\Services\Actor\QueueInterface;
-use App\Services\Actor\Traits\ActorDirectory;
 use App\Repositories\DownloadRepository;
-use App\Repositories\ExportQueueRepository;
+use App\Services\Actor\ActorDirectory;
 use Storage;
 
 /**
  * Class ZooniverseBuildZip
  */
-class ZooniverseBuildZip implements QueueInterface
+class ZooniverseBuildZip
 {
-    use ActorDirectory;
-
-    /**
-     * @var \App\Repositories\ExportQueueRepository
-     */
-    private ExportQueueRepository $exportQueueRepository;
-
     /**
      * @var \App\Repositories\DownloadRepository
      */
@@ -47,15 +38,10 @@ class ZooniverseBuildZip implements QueueInterface
     /**
      * Construct.
      *
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
      * @param \App\Repositories\DownloadRepository $downloadRepository
      */
-    public function __construct(
-        ExportQueueRepository $exportQueueRepository,
-        DownloadRepository $downloadRepository
-    )
+    public function __construct(DownloadRepository $downloadRepository)
     {
-        $this->exportQueueRepository = $exportQueueRepository;
         $this->downloadRepository = $downloadRepository;
     }
 
@@ -63,45 +49,38 @@ class ZooniverseBuildZip implements QueueInterface
      * Process the actor.
      *
      * @param \App\Models\ExportQueue $exportQueue
+     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      * @return void
      * @throws \Exception
      */
-    public function process(ExportQueue $exportQueue)
+    public function process(ExportQueue $exportQueue, ActorDirectory $actorDirectory)
     {
         $exportQueue->load(['expedition']);
 
-        $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
+        $actorDirectory->deleteS3File($actorDirectory->exportArchiveFilePath);
 
-        $this->setDirectories();
+        $this->copyFilesToEfs($actorDirectory);
 
-        $this->deleteFile($this->exportArchiveFilePath);
+        $this->zipDirectory($actorDirectory);
 
-        $this->copyFilesToEfs();
+        $this->moveZipFile($actorDirectory);
 
-        $this->zipDirectory();
+        $this->createDownload($exportQueue, $actorDirectory->exportArchiveFile);
 
-        $this->moveZipFile();
-
-        $this->createDownload($exportQueue);
-
-        $exportQueue->stage = 6;
-        $exportQueue->save();
-
-        \Artisan::call('export:poll');
-
-        ZooniverseExportCreateReportJob::dispatch($exportQueue);
+        ZooniverseExportCreateReportJob::dispatch($exportQueue, $actorDirectory);
     }
 
     /**
      * Copy exported files from s3 to efs.
      *
+     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      * @return void
      * @throws \Exception
      */
-    private function copyFilesToEfs()
+    private function copyFilesToEfs(ActorDirectory $actorDirectory): void
     {
-        $bucketPath = $this->bucketPath . '/' . $this->workingDir;
-        $efsPath = Storage::disk('efs')->path($this->efsExportDirFolder);
+        $bucketPath = $actorDirectory->bucketPath . '/' . $actorDirectory->workingDir;
+        $efsPath = Storage::disk('efs')->path($actorDirectory->efsExportDirFolder);
         exec("aws s3 cp $bucketPath $efsPath --recursive", $out, $ret);
         if ($ret !== 0) {
             throw new \Exception("Could not copy $bucketPath to $efsPath");
@@ -111,31 +90,33 @@ class ZooniverseBuildZip implements QueueInterface
     /**
      * Create zip file from efs directory.
      *
+     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      * @return void
      * @throws \Exception
      */
-    private function zipDirectory()
+    private function zipDirectory(ActorDirectory $actorDirectory): void
     {
-        $efsExportDirFolder = Storage::disk('efs')->path($this->efsExportDirFolder);
-        $efsExportDir = Storage::disk('efs')->path($this->efsExportDir);
+        $efsExportDirFolder = Storage::disk('efs')->path($actorDirectory->efsExportDirFolder);
+        $efsExportDir = Storage::disk('efs')->path($actorDirectory->efsExportDir);
 
-        exec("zip -r -j $efsExportDir/{$this->exportArchiveFile} $efsExportDirFolder" , $output, $retval);
+        exec("zip -r -j $efsExportDir/{$actorDirectory->exportArchiveFile} $efsExportDirFolder" , $output, $retval);
 
         if ($retval !== 0) {
-            throw new \Exception(t("Could not create zip file $efsExportDir/{$this->exportArchiveFile} from $efsExportDirFolder"));
+            throw new \Exception(t("Could not create zip file $efsExportDir/{$actorDirectory->exportArchiveFile} from $efsExportDirFolder"));
         }
     }
 
     /**
      * Move zip file to s3 bucket.
      *
+     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      * @return void
      * @throws \Exception
      */
-    private function moveZipFile()
+    private function moveZipFile(ActorDirectory $actorDirectory): void
     {
-        $bucketPathZip = $this->bucketPath . '/' . $this->exportDirectory . '/' . $this->exportArchiveFile;
-        $efsZipFle = Storage::disk('efs')->path("{$this->efsExportDir}/{$this->exportArchiveFile}");
+        $bucketPathZip = $actorDirectory->bucketPath . '/' . $actorDirectory->exportDirectory . '/' . $actorDirectory->exportArchiveFile;
+        $efsZipFle = Storage::disk('efs')->path("{$actorDirectory->efsExportDir}/{$actorDirectory->exportArchiveFile}");
 
         exec("aws s3 mv $efsZipFle $bucketPathZip", $out, $ret);
         if ($ret !== 0) {
@@ -147,20 +128,21 @@ class ZooniverseBuildZip implements QueueInterface
      * Create download file.
      *
      * @param \App\Models\ExportQueue $exportQueue
+     * @param string $exportArchiveFile
      * @return void
      */
-    private function createDownload(ExportQueue $exportQueue)
+    private function createDownload(ExportQueue $exportQueue, string $exportArchiveFile): void
     {
         $values = [
             'expedition_id' => $exportQueue->expedition_id,
             'actor_id'      => $exportQueue->actor_id,
-            'file'          => $this->exportArchiveFile,
+            'file'          => $exportArchiveFile,
             'type'          => 'export',
         ];
         $attributes = [
             'expedition_id' => $exportQueue->expedition_id,
             'actor_id'      => $exportQueue->actor_id,
-            'file'          => $this->exportArchiveFile,
+            'file'          => $exportArchiveFile,
             'type'          => 'export',
         ];
 

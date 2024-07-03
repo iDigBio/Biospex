@@ -38,7 +38,6 @@ class OcrQueueFile extends BaseEloquentModel
         'queue_id',
         'subject_id',
         'access_uri',
-        'message',
         'processed',
         'tries'
     ];
@@ -50,6 +49,6 @@ class OcrQueueFile extends BaseEloquentModel
      */
     public function ocrQueue(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(OcrQueue::class);
+        return $this->belongsTo(OcrQueue::class, 'queue_id', 'id');
     }
 }

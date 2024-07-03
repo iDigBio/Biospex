@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor\Traits;
+namespace App\Services\Actor;
 
 use App\Models\Actor;
 use App\Models\Download;
@@ -25,7 +25,7 @@ use App\Models\Expedition;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
-trait ActorBatchDirectory
+class ActorBatchDirectory
 {
     /**
      * @var \App\Models\Expedition
@@ -77,7 +77,7 @@ trait ActorBatchDirectory
      * @param \App\Models\Download $download
      * @throws \Exception
      */
-    private function setProperties(Download $download)
+    public function setProperties(Download $download): void
     {
         $this->expedition = $download->expedition;
         $this->actor = $download->actor;
@@ -194,7 +194,7 @@ trait ActorBatchDirectory
      * @param string $dir
      * @return void
      */
-    private function setBatchTmpDirectory(string $dir): void
+    public function setBatchTmpDirectory(string $dir): void
     {
         $this->batchTmpDir = $this->batchWorkingDir.'/'.$dir;
         Storage::disk('efs')->makeDirectory($this->batchTmpDir);

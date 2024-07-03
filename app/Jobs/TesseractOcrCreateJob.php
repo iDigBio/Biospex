@@ -20,8 +20,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Ocr\TesseractOcrService;
-use Artisan;
+use App\Services\Actor\TesseractOcr\TesseractOcrBuild;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -69,23 +68,23 @@ class TesseractOcrCreateJob implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param \App\Services\Ocr\TesseractOcrService $tesseractOcrService
+     * @param \App\Services\Actor\TesseractOcr\TesseractOcrBuild $tesseractOcrBuild
      */
-    public function handle(TesseractOcrService $tesseractOcrService): void
+    public function handle(TesseractOcrBuild $tesseractOcrBuild): void
     {
         if (config('config.ocr_disable'))
             return;
 
         try {
-            $total = $tesseractOcrService->getSubjectCountForOcr($this->projectId, $this->expeditionId);
+            $total = $tesseractOcrBuild->getSubjectCountForOcr($this->projectId, $this->expeditionId);
 
             // If no subjects to OCR, return
             if ($total === 0)
                 return;
 
-            $ocrQueue = $tesseractOcrService->createOcrQueue($this->projectId, $this->expeditionId, ['total' => $total]);
+            $ocrQueue = $tesseractOcrBuild->createOcrQueue($this->projectId, $this->expeditionId, ['total' => $total]);
 
-            $tesseractOcrService->createOcrQueueFiles($ocrQueue->id, $this->projectId, $this->expeditionId);
+            $tesseractOcrBuild->createOcrQueueFiles($ocrQueue->id, $this->projectId, $this->expeditionId);
 
         } catch (Exception $e) {
             $attributes = [

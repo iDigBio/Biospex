@@ -57,14 +57,13 @@ class ImageExportListener implements ShouldQueue
         $requestPayload = $event->payload['requestPayload'];
         $responsePayload = $event->payload['responsePayload'];
 
-        // If errorMessage, something really went bad.
+        // If errorMessage, something really went bad with the lambda function.
         if (isset($responsePayload['errorMessage'])) {
             $this->snsImageExportResultProcess->handleErrorMessage($requestPayload, $responsePayload['errorMessage']);
-
             return;
         }
 
-        $this->snsImageExportResultProcess->handleResponse($responsePayload);
+        $this->snsImageExportResultProcess->handleResponse($responsePayload['statusCode'], $responsePayload['body']);
     }
 
     /**

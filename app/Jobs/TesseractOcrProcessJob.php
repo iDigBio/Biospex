@@ -16,19 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Jobs;
 
 use App\Models\OcrQueue;
 use App\Models\User;
 use App\Notifications\Generic;
+use App\Services\Actor\TesseractOcr\TesseractOcrComplete;
+use App\Services\Actor\TesseractOcr\TesseractOcrProcess;
 use App\Services\Api\AwsLambdaApiService;
-use App\Services\Ocr\TesseractOcrService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-
 
 class TesseractOcrProcessJob implements ShouldQueue
 {
@@ -47,32 +48,46 @@ class TesseractOcrProcessJob implements ShouldQueue
     public function __construct(OcrQueue $ocrQueue)
     {
         $this->ocrQueue = $ocrQueue;
-        $this->onQueue(config('config.queue.default'));
+        $this->onQueue(config('config.queue.lambda_ocr'));
     }
 
     /**
      * Execute the job.
      */
-    public function handle(TesseractOcrService $tesseractOcrService, AwsLambdaApiService $awsLambdaApiService): void
+    public function handle(
+        TesseractOcrProcess $tesseractOcrProcess,
+        AwsLambdaApiService $awsLambdaApiService,
+        TesseractOcrComplete $tesseractOcrComplete): void
     {
         try {
-            $files = $tesseractOcrService->getUnprocessedOcrQueueFiles($this->ocrQueue->id);
+            $files = $tesseractOcrProcess->getUnprocessedOcrQueueFiles($this->ocrQueue->id);
 
             // If processed files count is 0, update subjects in mongodb, send notification to user, and delete the queue
             if ($files->count() === 0) {
-                $tesseractOcrService->ocrCompleted($this->ocrQueue);
+                $tesseractOcrComplete->ocrCompleted($this->ocrQueue);
                 $this->delete();
+
                 return;
             }
 
-            $files->each(function($file) use ($awsLambdaApiService){
-                if ($file->tries < 3) {
-                    $this->invoke($awsLambdaApiService, $file);
+            $files->each(function ($file) use ($tesseractOcrProcess, $awsLambdaApiService) {
+                $filePath = config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt';
+                if (\Storage::disk('s3')->exists($filePath)) {
+                    $file->processed = 1;
+                    $file->save();
+
                     return;
                 }
 
+                if ($file->tries < 3) {
+                    $file->increment('tries');
+                    $this->invoke($awsLambdaApiService, $file);
+
+                    return;
+                }
+
+                \Storage::disk('s3')->put($filePath, t('Error: Exceeded maximum tries trying to read OCR.'));
                 $file->processed = 1;
-                $file->message = t('Error: Excceded maximum tries.');
                 $file->save();
             });
 
@@ -88,7 +103,7 @@ class TesseractOcrProcessJob implements ShouldQueue
                     t('Project Id: %s'.$this->ocrQueue->project->id),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage())
+                    t('Message: %s', $throwable->getMessage()),
                 ],
             ];
             $user = User::find(config('config.admin.user_id'));
@@ -108,14 +123,10 @@ class TesseractOcrProcessJob implements ShouldQueue
     function invoke(AwsLambdaApiService $awsLambdaApiService, $file): void
     {
         $awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), [
-            'env'        => config('config.app.env'),
-            'id'         => $file->id,
-            'queue_id'   => $file->queue_id,
-            'subject_id' => $file->subject_id,
-            'access_uri' => $file->access_uri,
+            'bucket'     => config('filesystems.disks.s3.bucket'),
+            'key'        => config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt',
+            'file'    => $file->id,
+            'uri' => $file->access_uri,
         ]);
-
-        $file->tries++;
-        $file->save();
     }
 }

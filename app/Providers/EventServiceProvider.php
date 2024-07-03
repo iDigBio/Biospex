@@ -22,7 +22,6 @@ namespace App\Providers;
 use App\Events\ImageExportEvent;
 use App\Events\LabelReconciliationEvent;
 use App\Events\TesseractOcrEvent;
-use App\Listeners\ExportQueueEventSubscriber;
 use App\Listeners\GroupEventSubscriber;
 use App\Listeners\ImageExportListener;
 use App\Listeners\LabelReconciliationListener;
@@ -55,7 +54,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         TesseractOcrEvent::class        => [
             TesseractOcrListener::class,
-        ],
+        ]
     ];
 
     /**
@@ -65,7 +64,6 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $subscribe = [
         GroupEventSubscriber::class,
-        ExportQueueEventSubscriber::class,
     ];
 
     /**

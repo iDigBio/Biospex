@@ -19,9 +19,9 @@
 
 namespace App\Jobs;
 
-use App\Models\Actor;
 use App\Models\ExportQueue;
-use App\Services\Actor\Zooniverse\Traits\ZooniverseErrorNotification;
+use App\Services\Actor\ActorDirectory;
+use App\Services\Actor\Traits\ZooniverseErrorNotification;
 use App\Services\Actor\Zooniverse\ZooniverseBuildZip;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -50,20 +50,20 @@ class ZooniverseExportBuildZipJob implements ShouldQueue, ShouldBeUnique
     public int $timeout = 1800;
 
     /**
-     * Indicate if the job should be marked as failed on timeout.
-     *
-     * @var bool
+     * @var \App\Services\Actor\ActorDirectory
      */
-    public bool $failOnTimeout = true;
+    private ActorDirectory $actorDirectory;
 
     /**
      * Create a new job instance.
      *
      * @param \App\Models\ExportQueue $exportQueue
+     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      */
-    public function __construct(ExportQueue $exportQueue)
+    public function __construct(ExportQueue $exportQueue, ActorDirectory $actorDirectory)
     {
         $this->exportQueue = $exportQueue;
+        $this->actorDirectory = $actorDirectory;
         $this->onQueue(config('config.queue.export'));
     }
 
@@ -73,9 +73,11 @@ class ZooniverseExportBuildZipJob implements ShouldQueue, ShouldBeUnique
      * @param \App\Services\Actor\Zooniverse\ZooniverseBuildZip $zooniverseBuildZip
      * @throws \Exception
      */
-    public function handle(ZooniverseBuildZip $zooniverseBuildZip)
+    public function handle(ZooniverseBuildZip $zooniverseBuildZip): void
     {
-        $zooniverseBuildZip->process($this->exportQueue);
+        $this->exportQueue->increment('stage');
+        \Artisan::call('export:poll');
+        $zooniverseBuildZip->process($this->exportQueue, $this->actorDirectory);
     }
 
     /**

@@ -23,6 +23,7 @@ return [
         'transcript'             => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/transcript',
         'explained'              => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/explained',
         'lambda-reconciliation'  => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/lambda-reconciliation',
+        'lambda-ocr'             => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/lambda-ocr',
     ],
 
     'file_types' => [
@@ -60,14 +61,12 @@ return [
     ],
 
     'export_stages' => [
-        'Building File Queue', // 0
-        'Building Image Requests', // 1
-        'Processing Image Requests', // 2
-        'Checking Image Process', // 3
-        'Building CSV', // 4
-        'Compressing Export File', // 5
-        'Creating Report', // 6
-        'Deleting Working Files', // 7
+        'Building Queue', // 0
+        'Processing Images', // 1
+        'Building CSV', // 2
+        'Compressing Export File', // 3
+        'Creating Report', // 4
+        'Deleting Working Files', // 5
     ],
 
     'panoptes'                    => [

@@ -19,13 +19,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
  * Class ExportQueueFile
  *
- * @method inComplete()
- * @method completed()
  * @package App\Models
  */
 class ExportQueueFile extends BaseEloquentModel
@@ -48,9 +47,10 @@ class ExportQueueFile extends BaseEloquentModel
     protected $fillable = [
         'queue_id',
         'subject_id',
-        'url',
-        'completed',
-        'error_message'
+        'access_uri',
+        'message',
+        'processed',
+        'tries'
     ];
 
     /**
@@ -60,7 +60,7 @@ class ExportQueueFile extends BaseEloquentModel
      */
     public function queue()
     {
-        return $this->belongsTo(ExportQueue::class);
+        return $this->belongsTo(ExportQueue::class, 'queue_id', 'id');
     }
 
     /**
@@ -73,24 +73,14 @@ class ExportQueueFile extends BaseEloquentModel
     }
 
     /**
-     * Scope for completed.
+     * Define the message attribute.
      *
-     * @param $query
-     * @return void
+     * @return Attribute
      */
-    public function scopeCompleted($query)
+    protected function message(): Attribute
     {
-        $query->where('completed', 1);
-    }
-
-    /**
-     * Scope for incomplete.
-     *
-     * @param $query
-     * @return void
-     */
-    public function scopeInComplete($query)
-    {
-        $query->where('completed', 0);
+        return Attribute::make(
+            set: fn($value) => $value === '' ? NULL : $value,
+        );
     }
 }

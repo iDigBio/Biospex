@@ -22,6 +22,7 @@ namespace App\Repositories;
 use App\Models\OcrQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * Class OcrQueueRepository
@@ -44,13 +45,15 @@ class OcrQueueRepository extends BaseRepository
     /**
      * Get ocr queue for poll command.
      *
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection
      */
-    public function getOcrQueuesForPollCommand()
+    public function getOcrQueuesForPollCommand(): Collection
     {
-        return $this->model->with(['project.group', 'expedition'])
-            ->orderBy('id', 'asc')
-            ->get();
+        return $this->model->withCount([
+            'files' => function ($q) {
+                $q->where('processed', 1);
+            },
+        ])->with(['project.group', 'expedition'])->orderBy('id', 'asc')->get();
     }
 
     /**
@@ -61,8 +64,6 @@ class OcrQueueRepository extends BaseRepository
      */
     public function getFirstQueue(bool $reset = false): Model|Builder|null
     {
-        return $reset ?
-            $this->model->orderBy('id', 'asc')->first() :
-            $this->model->where('error', 0)->orderBy('id', 'asc')->first();
+        return $reset ? $this->model->orderBy('id', 'asc')->first() : $this->model->where('error', 0)->orderBy('id', 'asc')->first();
     }
 }

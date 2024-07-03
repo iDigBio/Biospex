@@ -42,24 +42,13 @@ class ExportQueueFileRepository extends BaseRepository
     }
 
     /**
-     * Return model.
+     * Model for repository.
      *
-     * @return \App\Models\ExportQueueFile|\Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
+     * @return \App\Models\ExportQueueFile
      */
-    public function model(): ExportQueueFile|\Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
+    public function model(): ExportQueueFile
     {
         return $this->model;
-    }
-
-    /**
-     * Get uncompleted export queue file count.
-     *
-     * @param int $queueId
-     * @return int
-     */
-    public function getUncompletedCount(int $queueId): int
-    {
-        return $this->model->where('queue_id', $queueId)->inComplete()->count();
     }
 
     /**
@@ -76,44 +65,42 @@ class ExportQueueFileRepository extends BaseRepository
         ];
 
         $file = $this->model->firstOrNew($attributes);
-        $file->url = $subject->accessURI;
-        $file->completed = 0;
-        $file->error_message = null;
+        $file->access_uri = $subject->accessURI;
+        $file->processed = 0;
+        $file->message = null;
         $file->save();
+    }
+
+    /**
+     * Get uncompleted export queue file count.
+     *
+     * @param int $queueId
+     * @param int $limit
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getUnprocessedExportQueueFiles(int $queueId, int $limit): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->model->where('queue_id', $queueId)
+            ->where('processed', 0)
+            ->orderBy('id')
+            ->take($limit)->get();
+    }
+
+    public function getExportQueueFileCursor(int $queueId): LazyCollection
+    {
+        return $this->model->where('queue_id', $queueId)->cursor();
     }
 
     /**
      * Get queue files with errors for reporting.
      *
      * @param int $queueId
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
-    public function getQueueFileErrorsData(int $queueId): array
+    public function getExportQueueFileWithErrors(int $queueId): Collection
     {
-        $data = [];
-        $remove = array_flip(['id', 'queue_id', 'completed', 'created_at', 'updated_at']);
-
-        $callback = function ($files) use($remove, &$data) {
-            $data = $files->map(function ($file) use ($remove) {
-                return array_diff_key($file->toArray(), $remove);
-            })->toArray();
-        };
-
-        $this->model->where('queue_id', $queueId)
-            ->whereNotNull('error_message')
-            ->chunk(100, $callback);
-
-        return $data;
-    }
-
-    /**
-     * Get count.
-     *
-     * @param int $queueId
-     * @return int
-     */
-    public function getExportFilesCount(int $queueId): int
-    {
-        return $this->model->where('queue_id', $queueId)->count();
+        return $this->model->where('queue_id', $queueId)
+            ->whereNotNull('message')
+            ->get(['subject_id', 'message']);
     }
 }

@@ -38,7 +38,6 @@ class OcrQueue extends BaseEloquentModel
         'project_id',
         'expedition_id',
         'total',
-        'processed',
         'status',
         'error'
     ];
@@ -68,8 +67,8 @@ class OcrQueue extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function ocrQueueFiles(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function files(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(OcrQueueFile::class);
+        return $this->hasMany(OcrQueueFile::class, 'queue_id', 'id');
     }
 }

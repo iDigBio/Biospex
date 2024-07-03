@@ -38,12 +38,20 @@ class Zooniverse
      * State = 2: Will not run until process started and set to 2, added to WorkflowManager. @see \App\Http\Controllers\Admin\ZooniverseController
      * State = 3: Zooniverse classifications completed. @see \App\Console\Commands\ZooniverseClassificationCount
      *
+     * Stages of export
+     * Processing Images // 1
+     * Building CSV // 2
+     * Compressing Export File // 3
+     * Creating Report // 4
+     * Deleting Working Files // 5
+     *
      * @param \App\Models\Actor $actor
      * @throws \Throwable
      */
     public function actor(Actor $actor): void
     {
         if ($actor->pivot->state === 1) {
+            // @see \App\Console\Commands\ExportQueueCommand
             ZooniverseExportBuildQueueJob::dispatch($actor);
         } elseif ($actor->pivot->state === 2) {
             ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);

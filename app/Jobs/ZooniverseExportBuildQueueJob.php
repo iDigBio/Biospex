@@ -61,11 +61,9 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
      * @param \App\Services\Actor\Zooniverse\ZooniverseBuildQueue $zooniverseBuildQueue
      * @throws \Exception
      */
-    public function handle(ZooniverseBuildQueue $zooniverseBuildQueue)
+    public function handle(ZooniverseBuildQueue $zooniverseBuildQueue): void
     {
         $zooniverseBuildQueue->process($this->actor);
-
-        event('exportQueue.check');
     }
 
     /**

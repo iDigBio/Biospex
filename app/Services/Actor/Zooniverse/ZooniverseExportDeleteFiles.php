@@ -20,33 +20,28 @@
 namespace App\Services\Actor\Zooniverse;
 
 use App\Models\ExportQueue;
-use App\Services\Actor\QueueInterface;
-use App\Services\Actor\Traits\ActorDirectory;
+use App\Services\Actor\ActorDirectory;
 
 /**
  * Class ZooniverseExportDeleteFiles
  */
-class ZooniverseExportDeleteFiles implements QueueInterface
+class ZooniverseExportDeleteFiles
 {
-    use ActorDirectory;
-
     /**
      * Process actor.
      *
      * @param \App\Models\ExportQueue $exportQueue
+     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      * @return void
      */
-    public function process(ExportQueue $exportQueue)
+    public function process(ExportQueue $exportQueue, ActorDirectory $actorDirectory): void
     {
         $exportQueue->load(['expedition']);
 
-        $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
-        $this->setDirectories();
-        $this->deleteDirectory($this->workingDir);
-        $this->cleanLocalDirectory(\Storage::disk('efs')->path($this->efsExportDirFolder));
+        $actorDirectory->deleteS3Directory($actorDirectory->workingDir);
+        $actorDirectory->deleteEfsDirectory($actorDirectory->efsExportDirFolder);
         $exportQueue->delete();
 
         \Artisan::call('export:poll');
-        event('exportQueue.check');
     }
 }

@@ -21,23 +21,23 @@ namespace App\Listeners;
 use App\Events\TesseractOcrEvent;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Ocr\TesseractOcrService;
+use App\Services\Actor\TesseractOcr\TesseractOcrResponse;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Throwable;
 
 class TesseractOcrListener implements ShouldQueue
 {
     /**
-     * @var \App\Services\Ocr\TesseractOcrService
+     * @var \App\Services\Actor\TesseractOcr\TesseractOcrResponse $tesseractOcrResponse
      */
-    private TesseractOcrService $tesseractOcrService;
+    private TesseractOcrResponse $tesseractOcrResponse;
 
     /**
      * Create the event listener.
      */
-    public function __construct(TesseractOcrService $tesseractOcrService)
+    public function __construct(TesseractOcrResponse $tesseractOcrResponse)
     {
-        $this->tesseractOcrService = $tesseractOcrService;
+        $this->tesseractOcrResponse = $tesseractOcrResponse;
     }
 
     /**
@@ -47,7 +47,7 @@ class TesseractOcrListener implements ShouldQueue
      */
     public function handle(TesseractOcrEvent $event): void
     {
-        $this->tesseractOcrService->process($event->payload);
+        $this->tesseractOcrResponse->process($event->payload);
     }
 
     /**
@@ -72,7 +72,7 @@ class TesseractOcrListener implements ShouldQueue
         $attributes = [
             'subject' => t('TesseractOcrListener Failed'),
             'html'    => [
-                t('TesseractOcrListener failed for Queue File ID: %s', $event->payload['responsePayload']['body']['id']),
+                t('TesseractOcrListener failed for Queue File ID: %s', $event->payload['responsePayload']['body']['file']),
                 t('Error: %s', $exception->getMessage()),
                 t('File: %s', $exception->getFile()),
                 t('Line: %s', $exception->getLine()),
@@ -95,12 +95,10 @@ class TesseractOcrListener implements ShouldQueue
     "approximateInvokeCount": 1
   },
   "requestPayload": {
-    "env": null,
-    "id": 5,
-    "queue_id": 999999,
-    "subject_id": "615da36c65b16554e4781ed9",
-    "access_uri": "https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg"
-    "count": 1
+    "bucket": "biospex-dev",
+    "key": "zooniverse/lambda-ocr/615da36c65b16554e4781ed9.txt",
+    "file": 5,
+    "uri": "https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg"
   },
   "responseContext": {
     "statusCode": 200,
@@ -109,13 +107,10 @@ class TesseractOcrListener implements ShouldQueue
   "responsePayload": {
     "statusCode": 200,
     "body": {
-      "env": null,
-      "id": 5,
-      "queue_id": 999999,
-      "subject_id": "615da36c65b16554e4781ed9",
-      "access_uri": "https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg",
-      "message": "Ocr text here",
-      "
+      "bucket": "biospex-dev",
+      "key": "zooniverse/lambda-ocr/615da36c65b16554e4781ed9.txt",
+      "file": 5
+      "message": "Ocr text here"
     }
   }
 }
