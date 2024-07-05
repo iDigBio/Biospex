@@ -9,8 +9,6 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
-    "ext-mongodb": "*",
-    "ext-fileinfo": "*",
     "aws/aws-sdk-php": "~3.0",
     "aws/aws-php-sns-message-validator": "^1.0",
     "cviebrock/eloquent-sluggable": "^11.0",
