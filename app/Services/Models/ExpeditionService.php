@@ -249,10 +249,10 @@ class ExpeditionService
             return $actor->contacts->isEmpty();
         })->filter(function ($actor) use ($newNotification) {
             return isset($newNotification[$actor->id]);
-        })->each(function ($actor) use ($project, $newNotification) {
+        })->each(function ($actor) use ($project, $expedition, $newNotification) {
             $class = '\App\Notifications\\'.$newNotification[$actor->id];
             if (class_exists($class)) {
-                Notification::send($actor->contacts, new $class($project));
+                Notification::send($actor->contacts, new $class($project, $expedition));
             }
         });
     }

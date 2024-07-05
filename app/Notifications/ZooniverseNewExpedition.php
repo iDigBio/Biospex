@@ -39,13 +39,20 @@ class ZooniverseNewExpedition extends Notification implements ShouldQueue
     private $project;
 
     /**
+     * @var mixed
+     */
+    private mixed $expedition;
+
+    /**
      * Create a new notification instance.
      *
      * @param $project
+     * @param $expedition
      */
-    public function __construct($project)
+    public function __construct($project, $expedition)
     {
         $this->project = $project;
+        $this->expedition = $expedition;
         $this->onQueue(config('config.queue.default'));
     }
 
@@ -67,15 +74,14 @@ class ZooniverseNewExpedition extends Notification implements ShouldQueue
     public function toMail()
     {
         $vars = [
-            'contact'     => $this->project->contact,
-            'email'       => $this->project->contact_email,
-            'title'       => $this->project->title,
-            'description' => $this->project->description_long
+            'contact'               => $this->project->contact,
+            'email'                 => $this->project->contact_email,
+            'projectTitle'          => $this->project->title,
+            'expeditionTitle'       => $this->expedition->title,
+            'expeditionDescription' => $this->expedition->description,
         ];
 
-        return (new MailMessage)
-            ->subject(t('Biospex - New Zooniverse Expedition Submitted'))
-            ->markdown('mail.newzooniverse', $vars);
+        return (new MailMessage)->subject(t('Biospex - New Zooniverse Expedition Submitted'))->markdown('mail.newzooniverse', $vars);
     }
 
     /**
@@ -85,8 +91,7 @@ class ZooniverseNewExpedition extends Notification implements ShouldQueue
      */
     public function toArray()
     {
-        return [
-            //
+        return [//
         ];
     }
 }
