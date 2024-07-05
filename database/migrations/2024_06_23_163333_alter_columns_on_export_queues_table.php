@@ -15,7 +15,6 @@ return new class extends Migration
             $table->dropColumn('completed');
             $table->tinyInteger('tries')->default(0)->after('error_message');
             $table->boolean('processed')->default(false)->after('error_message');
-            $table->renameColumn('count', 'total');
             $table->renameColumn('url', 'access_uri');
             $table->renameColumn('error_message', 'message');
         });

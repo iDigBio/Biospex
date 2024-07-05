@@ -11,6 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('ocr_queue_files')) {
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+            Schema::drop('ocr_queue_files');
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+        }
+
         Schema::create('ocr_queue_files', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('queue_id')->index('ocr_files_queue_id_foreign');

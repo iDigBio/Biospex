@@ -13,6 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('project_old_workflow');
+
         Schema::create('project_old_workflow', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('project_id');

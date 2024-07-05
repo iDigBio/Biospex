@@ -11,6 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('geo_locate_data_sources')) {
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+            Schema::drop('geo_locate_data_sources');
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+        }
+
         Schema::create('geo_locate_data_sources', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
@@ -20,7 +26,7 @@ return new class extends Migration
             $table->foreign('expedition_id')->references('id')
                 ->on('expeditions')->onUpdate('RESTRICT')->onDelete('CASCADE');
             $table->unsignedBigInteger('geo_locate_community_id');
-            $table->foreign('id')->references('id')
+            $table->foreign('geo_locate_community_id')->references('id')
                 ->on('geo_locate_communities')->onUpdate('RESTRICT')->onDelete('CASCADE');
             $table->string('data_source');
             $table->json('data');

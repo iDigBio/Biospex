@@ -13,6 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('geo_locate_forms')) {
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+            Schema::drop('geo_locate_forms');
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+        }
+
         Schema::create('geo_locate_forms', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('group_id');

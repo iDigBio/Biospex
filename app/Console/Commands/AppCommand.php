@@ -19,9 +19,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Subject;
-use App\Repositories\OcrQueueFileRepository;
 use Illuminate\Console\Command;
+use Illuminate\Database\Schema\Blueprint;
+use Schema;
 
 /**
  * Class AppCommand
@@ -42,17 +42,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\OcrQueueFileRepository
-     */
-    private OcrQueueFileRepository $repository;
-
-    /**
      * Create a new command instance.
      */
-    public function __construct(OcrQueueFileRepository $repository)
+    public function __construct()
     {
         parent::__construct();
-        $this->repository = $repository;
     }
 
     /**
@@ -60,13 +54,8 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $subjects = Subject::where('expedition_ids', 462)->get();
-        $subjects->each(function ($subject) {
-            $subject->ocr = '';
-            $subject->save();
-        });
-
-        $files = \Storage::disk('s3')->allFiles(config('zooniverse.directory.lambda-ocr'));
-        \Storage::disk('s3')->delete($files);
+        if ( Schema::hasTable('project_old_workflow')) {
+            $this->info('Creating project_old_workflow table');
+        }
     }
 }

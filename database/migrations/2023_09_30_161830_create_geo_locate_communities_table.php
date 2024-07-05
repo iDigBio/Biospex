@@ -11,6 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('geo_locate_communities')) {
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+            Schema::drop('geo_locate_communities');
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+        }
+
         Schema::create('geo_locate_communities', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
