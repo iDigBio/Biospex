@@ -78,7 +78,7 @@ class ZooniverseExportQueue
     {
         $exportQueue = $this->exportQueueRepository->findExportQueueFirst();
 
-        if ($exportQueue === null) {
+        if ($exportQueue === null || $exportQueue->queued === 1) {
             return;
         }
 

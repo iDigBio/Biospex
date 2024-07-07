@@ -85,6 +85,9 @@ class ZooniverseExportProcessImages
             $file->message = is_null($file->message) ? t('Error: Exceeded maximum tries sending to Lambda for download.') : $file->message;
             $file->save();
         });
+
+        $exportQueue->queued = 0;
+        $exportQueue->save();
     }
 
     /**

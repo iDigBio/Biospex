@@ -26,15 +26,13 @@ use App\Services\Actor\ActorDirectory;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Process\MapZooniverseCsvColumnsService;
 use Exception;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\LazyCollection;
+use Illuminate\Support\Collection;
 
 /**
  * Class ZooniverseBuildCsv
  */
 class ZooniverseBuildCsv
 {
-
     /**
      * @var \App\Repositories\ExportQueueFileRepository
      */
@@ -61,8 +59,7 @@ class ZooniverseBuildCsv
         ExportQueueFileRepository $exportQueueFileRepository,
         AwsS3CsvService $awsS3CsvService,
         MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService
-    )
-    {
+    ) {
         $this->exportQueueFileRepository = $exportQueueFileRepository;
         $this->awsS3CsvService = $awsS3CsvService;
         $this->mapZooniverseCsvColumnsService = $mapZooniverseCsvColumnsService;
@@ -85,19 +82,28 @@ class ZooniverseBuildCsv
         $this->awsS3CsvService->createCsvWriterFromStream();
         $this->awsS3CsvService->csv->addEncodingFormatter();
 
-        $cursor = $this->exportQueueFileRepository->getExportQueueFileCursor($exportQueue->id);
-        $csvData = $cursor->map(function ($file) use($exportQueue, $actorDirectory) {
-            if ($actorDirectory->checkS3FileExists($actorDirectory->workingDir.'/'.$file->subject_id.'.jpg')) {
+        $first = true;
+        $this->exportQueueFileRepository->model()->chunk(config('config.aws.lambda_export_count'), function ($chunk) use
+        (
+            $exportQueue,
+            $actorDirectory,
+            &$first
+        ) {
+            $csvData = $chunk->filter(function ($file) use ($actorDirectory) {
+                \Log::info('Checking file: '.$file->subject_id.'.jpg');
+                return $actorDirectory->checkS3FileExists($actorDirectory->workingDir.'/'.$file->subject_id.'.jpg');
+            })->map(function ($file) use ($exportQueue) {
+                \Log::info('Mapping file: '.$file->subject_id.'.jpg');
                 return $this->mapZooniverseCsvColumnsService->mapColumns($file, $exportQueue);
+            });
+
+            if (empty($csvData)) {
+                throw new Exception(t('CSV data empty while creating file for Expedition ID: %s', $exportQueue->expedition->id));
             }
-            return null;
+
+            $this->buildCsv($csvData, $first);
+            $first = false;
         });
-
-        if ($csvData->isEmpty()) {
-            throw new Exception(t('CSV data empty while creating file for Expedition ID: %s', $exportQueue->expedition->id));
-        }
-
-        $this->buildCsv($csvData);
 
         if (! $this->checkCsvImageCount($actorDirectory)) {
             throw new Exception(t('The row count in the csv export file does not match image count.'));
@@ -110,12 +116,16 @@ class ZooniverseBuildCsv
      * Create csv file.
      *=
      *
-     * @param \Illuminate\Support\LazyCollection $data
+     * @param \Illuminate\Support\Collection $data
+     * @param bool $first
      * @throws \League\Csv\CannotInsertRecord
      */
-    private function buildCsv(LazyCollection $data): void
+    private function buildCsv(Collection $data, bool $first = false): void
     {
-        $this->awsS3CsvService->csv->insertOne(array_keys($data->first()));
+        if ($first) {
+            $this->awsS3CsvService->csv->insertOne(array_keys($data->first()));
+        }
+
         $this->awsS3CsvService->csv->insertAll($data->toArray());
     }
 

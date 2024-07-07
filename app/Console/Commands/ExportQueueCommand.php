@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Actor\ActorDirectory;
 use App\Services\Actor\Zooniverse\ZooniverseExportQueue;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;

@@ -86,11 +86,6 @@ class ExportQueueFileRepository extends BaseRepository
             ->take($limit)->get();
     }
 
-    public function getExportQueueFileCursor(int $queueId): LazyCollection
-    {
-        return $this->model->where('queue_id', $queueId)->cursor();
-    }
-
     /**
      * Get queue files with errors for reporting.
      *
