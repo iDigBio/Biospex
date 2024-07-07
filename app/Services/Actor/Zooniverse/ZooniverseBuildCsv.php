@@ -90,10 +90,8 @@ class ZooniverseBuildCsv
             &$first
         ) {
             $csvData = $chunk->filter(function ($file) use ($actorDirectory) {
-                \Log::info('Checking file: '.$file->subject_id.'.jpg');
                 return $actorDirectory->checkS3FileExists($actorDirectory->workingDir.'/'.$file->subject_id.'.jpg');
             })->map(function ($file) use ($exportQueue) {
-                \Log::info('Mapping file: '.$file->subject_id.'.jpg');
                 return $this->mapZooniverseCsvColumnsService->mapColumns($file, $exportQueue);
             });
 
