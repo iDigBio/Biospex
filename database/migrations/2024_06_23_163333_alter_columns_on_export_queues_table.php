@@ -8,16 +8,18 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * 'expedition_id',
+     * 'actor_id',
+     * 'stage',
+     * 'queued',
+     * 'total',
+     * 'error'
      */
     public function up(): void
     {
-        Schema::table('export_queue_files', function(Blueprint $table) {
-            $table->dropColumn('completed');
-            $table->tinyInteger('tries')->default(0)->after('error_message');
-            $table->boolean('processed')->default(false)->after('error_message');
+        Schema::table('export_queues', function(Blueprint $table) {
+            $table->dropColumn('processed');
             $table->renameColumn('count', 'total');
-            $table->renameColumn('url', 'access_uri');
-            $table->renameColumn('error_message', 'message');
         });
     }
 
@@ -26,13 +28,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('export_queue_files', function(Blueprint $table) {
-            $table->tinyInteger('completed')->default(0)->after('message');
+        Schema::table('export_queues', function(Blueprint $table) {
+            $table->tinyInteger('processed')->default(0)->after('total');
             $table->renameColumn('total', 'count');
             $table->renameColumn('access_uri', 'url');
-            $table->renameColumn('message', 'error_message');
-            $table->dropColumn('processed');
-            $table->dropColumn('tries');
         });
     }
 };
