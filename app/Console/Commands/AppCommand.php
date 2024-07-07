@@ -20,8 +20,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Schema\Blueprint;
-use Schema;
 
 /**
  * Class AppCommand
@@ -54,8 +52,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        if ( Schema::hasTable('project_old_workflow')) {
-            $this->info('Creating project_old_workflow table');
-        }
+
     }
 }
