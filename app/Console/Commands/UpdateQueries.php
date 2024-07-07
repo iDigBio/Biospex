@@ -71,8 +71,6 @@ class UpdateQueries extends Command
         $this->deleteWorkflows();
         $this->addWorkflowGeoLocate();
         $this->updateActorExpeditionState();
-        $this->alterBingoMapIp();
-        $this->alterEventTransactionIds();
         $this->changeNfnPanoptesActor();
     }
 
@@ -215,25 +213,13 @@ class UpdateQueries extends Command
         });
     }
 
-    public function alterBingoMapIp()
-    {
-        echo 'Running '.__METHOD__.PHP_EOL;
-
-        DB::raw("ALTER TABLE `bingo_maps` CHANGE `ip` `ip` VARCHAR(30) NOT NULL;");
-    }
-
-    public function alterEventTransactionIds()
-    {
-        echo 'Running '.__METHOD__.PHP_EOL;
-
-        DB::raw("ALTER TABLE `event_transcriptions` CHANGE `team_id` `team_id` INT UNSIGNED NOT NULL, CHANGE `user_id` `event_user_id` INT UNSIGNED NOT NULL; ");
-    }
-
     public function changeNfnPanoptesActor()
     {
         echo 'Running '.__METHOD__.PHP_EOL;
 
-        DB::raw("UPDATE `actors` SET `class` = 'Zooniverse' WHERE `actors`.`id` = 2;");
+        $actor = Actor::find(2);
+        $actor->class = 'Zooniverse';
+        $actor->save();
     }
 
 }
