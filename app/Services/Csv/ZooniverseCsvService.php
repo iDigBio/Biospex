@@ -129,7 +129,7 @@ class ZooniverseCsvService
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function downloadCsv(int $expeditionId, string $uri)
+    public function downloadCsv(int $expeditionId, string $uri): void
     {
         $filePath = config('zooniverse.directory.lambda-reconciliation') . '/' . $expeditionId . '.csv';
         $stream = $this->awsS3ApiService->createS3BucketStream(config('filesystems.disks.s3.bucket'), $filePath, 'w', false);

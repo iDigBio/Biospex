@@ -58,7 +58,6 @@ class ZooniverseDownloadCommand extends Command
      * Execute the console command.
      *
      * @param \App\Services\Csv\ZooniverseCsvService $service
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle(ZooniverseCsvService $service)
     {
