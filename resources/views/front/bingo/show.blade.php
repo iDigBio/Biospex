@@ -20,10 +20,9 @@
     <h2 class="text-center pt-4 text-uppercase">{{ $bingo->title }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="d-flex align-items-center justify-content-center ">
-        @include('front.bingo.partials.bingo-loop')
+        @include('front.bingo.partials.bingo-loop', ['project' => $bingo->project])
     </div>
     <div class="row">
-        @include('front.bingo.partials.bingo-loop', ['project' => $bingo->project])
         @include('front.bingo.partials.words-table')
     </div>
 @endsection
