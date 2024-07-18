@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Csv\ZooniverseCsvService;
 use Illuminate\Console\Command;
 
 /**
@@ -40,11 +41,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Services\Csv\ZooniverseCsvService
+     */
+    private ZooniverseCsvService $service;
+
+    /**
      * Create a new command instance.
      */
-    public function __construct()
+    public function __construct(ZooniverseCsvService $service)
     {
         parent::__construct();
+        $this->service = $service;
     }
 
     /**
@@ -52,6 +59,20 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $result = $this->service->checkCsvRequest(461);
+        if ($result['media'][0]['metadata']['state'] === 'creating') {
+            echo 'Zooniverse csv creation for Expedition Id 461 is still in progress.';
+
+            return;
+        }
+
+        $uri = $result['media'][0]['src'] ?? null;
+        if ($uri === null) {
+            dd('null');
+        }
+
+        echo $uri . PHP_EOL;
+
 
     }
 }

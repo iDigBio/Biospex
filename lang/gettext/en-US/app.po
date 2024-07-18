@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-07-16T19:12:11+00:00\n"
-"PO-Revision-Date: 2024-07-16 21:12+0200\n"
+"POT-Creation-Date: 2024-07-18T15:09:41+00:00\n"
+"PO-Revision-Date: 2024-07-18 17:09+0200\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n!=1;\n"
 
@@ -644,8 +644,6 @@ msgid "Expert Review for Expedition (:id) \":title\" was skipped. Please contact
 msgstr ""
 
 #: app/Jobs/ExpertReviewMigrateReconcilesJob.php:86
-#: app/Jobs/ZooniverseCsvDownloadJob.php:94
-#: app/Jobs/ZooniverseProcessCsvJob.php:112
 msgid "Expert Review Migration Failed"
 msgstr ""
 
@@ -800,6 +798,10 @@ msgstr ""
 msgid "Zooniverse Classification Count Job Failed"
 msgstr ""
 
+#: app/Jobs/ZooniverseCsvDownloadJob.php:94
+msgid "Zooniverse CSV Download Failed"
+msgstr ""
+
 #: app/Jobs/ZooniverseCsvJob.php:114
 msgid "Zooniverse CSV Job Failed"
 msgstr ""
@@ -822,6 +824,10 @@ msgstr ""
 
 #: app/Jobs/ZooniverseProcessCsvJob.php:87
 msgid "Zooniverse csv uri for Expedition Id %s is missing"
+msgstr ""
+
+#: app/Jobs/ZooniverseProcessCsvJob.php:112
+msgid "Zooniverse Process CSV Failed"
 msgstr ""
 
 #: app/Jobs/ZooniversePusherJob.php:98

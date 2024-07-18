@@ -91,7 +91,7 @@ class ZooniverseCsvDownloadJob implements ShouldQueue
     public function failed(Throwable $throwable): void
     {
         $attributes = [
-            'subject' => t('Expert Review Migration Failed'),
+            'subject' => t('Zooniverse CSV Download Failed'),
             'html'    => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
