@@ -76,8 +76,8 @@ class ReconcileService
         $responsePayload = $payload['responsePayload'];
 
         // If errorMessage, something really went bad.
-        if (isset($event->responsePayload['errorMessage'])) {
-            throw new \Exception($event->responsePayload['errorMessage']);
+        if (isset($responsePayload['errorMessage'])) {
+            throw new \Exception($responsePayload['errorMessage']);
         }
 
         if ($responsePayload['statusCode'] !== 200) {
