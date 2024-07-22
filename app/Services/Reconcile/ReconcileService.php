@@ -74,8 +74,6 @@ class ReconcileService
     public function process(array $payload): void
     {
         $responsePayload = $payload['responsePayload'];
-        $expeditionId = (int) $responsePayload['body']['expeditionId'];
-        $explanations = (bool) $responsePayload['body']['explanations'];
 
         // If errorMessage, something really went bad.
         if (isset($event->responsePayload['errorMessage'])) {
@@ -85,6 +83,9 @@ class ReconcileService
         if ($responsePayload['statusCode'] !== 200) {
             throw new \Exception('Invalid response status code: ' . $responsePayload['body']['message']);
         }
+
+        $expeditionId = (int) $responsePayload['body']['expeditionId'];
+        $explanations = (bool) $responsePayload['body']['explanations'];
 
         if ($explanations) {
             $this->processExplained($expeditionId);

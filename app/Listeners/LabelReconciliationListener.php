@@ -80,8 +80,7 @@ class LabelReconciliationListener implements ShouldQueue
         $attributes = [
             'subject' => t('LabelReconciliationListener Failed'),
             'html'    => [
-                t('LabelReconciliationListener failed for Expedition ID: %s', $event->payload['responsePayload']['body']['expeditionId']),
-                t('Action: %s', $event->payload['responsePayload']['body']['explanations'] ? 'Explained' : 'Reconciled'),
+                t('LabelReconciliationListener failed'),
                 t('Error: %s', $exception->getMessage()),
                 t('File: %s', $exception->getFile()),
                 t('Line: %s', $exception->getLine()),
@@ -95,7 +94,7 @@ class LabelReconciliationListener implements ShouldQueue
 
 /*
  Payload example:
-
+Message:
 {
   "version": "1.0",
   "timestamp": "2024-06-20T23:01:06.677Z",

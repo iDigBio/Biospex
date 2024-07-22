@@ -38,9 +38,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('export:queue')->everyTwoMinutes();
         $schedule->command('tesseract:ocr-process')->everyTwoMinutes();
 
-        // Failed jobs report used to check ocr
-        $schedule->command('report:failed')->dailyAt('09:30');
-
         // Clean bingo maps
         $schedule->command('bingo:clean')->dailyAt('10:05');
 

@@ -137,7 +137,7 @@ class BingoProcess
     {
         $bingo = $this->findBingoWith($bingoId, ['words', 'user', 'project']);
 
-        $words = $bingo->words->chunk(3);
+        $words = is_null($bingo) ? null : $bingo->words->chunk(3);
 
         return [$bingo, $words];
     }
