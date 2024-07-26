@@ -42,6 +42,7 @@ class TranscriptionController extends Controller
      */
     public function transcriptions(AmChartRepository $amChartRepo, int $projectId, string $year): \Illuminate\Http\JsonResponse
     {
+        \Log::info('TranscriptionController.transcriptions', ['projectId' => $projectId, 'year' => $year]);
         $chart = $amChartRepo->findBy('project_id', $projectId);
 
         $file = json_decode(File::get(config('config.project_chart_config')), true);
