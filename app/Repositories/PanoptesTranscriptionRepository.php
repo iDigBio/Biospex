@@ -257,7 +257,7 @@ class PanoptesTranscriptionRepository extends BaseRepository
      * @param $end
      * @return mixed
      */
-    public function getTranscriptionCountPerDate(int $workflowId, $begin, $end)
+    public function getTranscriptionCountPerDate(int $workflowId, $begin, $end): mixed
     {
         $key = $workflowId . $begin->__toString() . $end->__toString();
 

@@ -180,6 +180,7 @@ class ProjectRepository extends BaseRepository
     public function getProjectPageBySlug($slug)
     {
         return $this->model->withCount('events')->withCount('expeditions')->with([
+            'amChart',
             'group.users.profile',
             'resources',
             'lastPanoptesProject',
