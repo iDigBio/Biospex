@@ -122,7 +122,7 @@ class ProjectController extends Controller
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
         $transcribersCount = CountHelper::projectTranscriberCount($project->id);
 
-        $years = (!$project->amChart || is_null($project->amChart->data1)) ?
+        $years = !isset($project->amChart) || is_null($project->amChart->data) ?
             null : array_keys($project->amChart->data);
 
         $states = $stateCountyRepo->getStateTranscriptCount($project->id);
