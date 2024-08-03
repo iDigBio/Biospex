@@ -19,8 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\AmChartJob;
-use App\Models\AmChart;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -31,8 +29,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
  */
 class UpdateQueries extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The console command name.
      */
@@ -56,12 +52,6 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        $charts = AmChart::get();
-        $charts->each(function ($chart) {
-            $chart->series = null;
-            $chart->data = null;
-            $chart->save();
-            AmChartJob::dispatch($chart->project_id);
-        });
+
     }
 }
