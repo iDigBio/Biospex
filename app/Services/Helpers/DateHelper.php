@@ -19,7 +19,7 @@
 
 namespace App\Services\Helpers;
 
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
 
@@ -30,26 +30,21 @@ use DateTimeZone;
  */
 class DateHelper
 {
-
     /**
      * Format date using timezone and format.
      *
-     * @param $date
-     * @param null $format
-     * @param null $tz
-     * @return \Illuminate\Support\Carbon|string
+     * @param mixed $date
+     * @param string $format
+     * @param string $tz
+     * @return \Carbon\Carbon|string
      */
-    public function formatDate($date, $format = null, $tz = null): Carbon|string
+    public function formatDate(mixed $date, string $format = 'Y-m-d', string $tz = 'UTC'): Carbon|string
     {
-        if (is_null($date)) {
-            return Carbon::now();
+        if (! $date instanceof Carbon) {
+            $date = is_string($date) ? Carbon::parse($date) : Carbon::now();
         }
 
-        if (!$date instanceof Carbon) {
-            return Carbon::parse($date, $tz)->format($format);
-        }
-
-        return $date->copy()->tz($tz)->format($format);
+        return $date->shiftTimezone($tz)->format($format);
     }
 
     /**
@@ -89,7 +84,7 @@ class DateHelper
      */
     public function eventRateChartTimezone($timezone): string
     {
-        return str_replace('_', ' ', $timezone) . ' Timezone';
+        return str_replace('_', ' ', $timezone).' Timezone';
     }
 
     /**
@@ -103,7 +98,7 @@ class DateHelper
     {
         $timezone = $tz === null ? $event->timezone : 'UTC';
         $start_date = $event->start_date->setTimezone($timezone);
-        $now = \Carbon\Carbon::now($timezone);
+        $now = Carbon::now($timezone);
 
         return $now->isBefore($start_date);
     }
