@@ -92,6 +92,16 @@ class Group extends BaseEloquentModel
     }
 
     /**
+     * PanoptesProjects relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function panoptesProjects()
+    {
+        return $this->hasManyThrough(PanoptesProject::class, Project::class);
+    }
+
+    /**
      * Expeditions relationship
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */

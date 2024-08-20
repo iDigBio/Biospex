@@ -21,7 +21,6 @@ namespace App\Models;
 
 class GeoLocateExport extends BaseMongoModel
 {
-    protected $connection = 'mongodb';
 
     /**
      * Set Collection

@@ -19,12 +19,11 @@
 
 namespace App\Jobs;
 
-use App\Facades\GeneralHelper;
+use General;
 use App\Notifications\Generic;
 use App\Repositories\ImportRepository;
 use App\Repositories\ProjectRepository;
 use Exception;
-use finfo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -91,7 +90,7 @@ class DwcUriImportJob implements ShouldQueue
             $fileName = basename($this->data['url']);
             $filePath = config('config.import_dir').'/'.$fileName;
 
-            $file = file_get_contents(GeneralHelper::urlEncode($this->data['url']));
+            $file = file_get_contents(General::urlEncode($this->data['url']));
             if ($file === false)
             {
                 throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));

@@ -21,12 +21,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterFormRequest;
-use App\Repositories\GroupRepository;
-use App\Repositories\InviteRepository;
-use App\Repositories\UserRepository;
-use DateHelper;
-use Flash;
-use Hash;
+use App\Services\Auth\RegisterUserService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
@@ -63,73 +58,40 @@ class RegisterController extends Controller
     public $loginView = 'auth.login';
 
     /**
-     * @var \App\Repositories\InviteRepository
+     * @var \App\Services\Auth\RegisterUserService
      */
-    private $inviteRepo;
+    private RegisterUserService $registerUserService;
 
     /**
      * Create a new controller instance.
-     *
-     * @param \App\Repositories\InviteRepository $inviteRepo
      */
-    public function __construct(InviteRepository $inviteRepo)
+    public function __construct(RegisterUserService $registerUserService)
     {
         $this->middleware('guest');
-        $this->inviteRepo = $inviteRepo;
+        $this->registerUserService = $registerUserService;
     }
 
     /**
      * Show registration form. Overrides trait so Invite code can be checked.
      *
+     * @param \App\Services\Auth\RegisterUserService $registerUserService
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function showRegistrationForm(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function showRegistrationForm(RegisterUserService $registerUserService): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        if ( ! config('config.app_registration')) {
-            return \Redirect::route('home')->with('error', t('Registration is not available at this time.'));
-        }
-
-        $code = request('code');
-
-        $invite = $this->inviteRepo->findBy('code', $code);
-
-        if ( ! empty($code) && ! $invite)
-        {
-            \Flash::warning( t('Your invite was unable to be found. Please contact the administration.'));
-        }
-
-        $code = $invite->code ?? null;
-        $email = $invite->email ?? null;
-        $timezones = ['' => null] + DateHelper::timeZoneSelect();
-
-        return \View::make('auth.register', compact('code', 'email', 'timezones'));
+        return $registerUserService->showForm();
     }
 
     /**
      * Register the user. Overrides trait so invite is checked.
      *
      * @param \App\Http\Requests\RegisterFormRequest $request
-     * @param \App\Repositories\UserRepository $userRepo
-     * @param \App\Repositories\GroupRepository $groupRepo
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
      */
-    public function register(RegisterFormRequest $request, UserRepository $userRepo, GroupRepository $groupRepo): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    public function register(RegisterFormRequest $request): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
-        $input = $request->only('email', 'password', 'first_name', 'last_name', 'invite');
-        $input['password'] = Hash::make($input['password']);
-        $user = $userRepo->create($input);
-
-        if ( ! empty($input['invite']))
-        {
-            $invite = $this->inviteRepo->findBy('code', $input['invite']);
-            if ($invite->email === $user->email)
-            {
-                $group = $groupRepo->find($invite->group_id);
-                $user->assignGroup($group);
-                $invite->delete();
-            }
-        }
+        $user = $this->registerUserService->registerUser();
 
         event(new Registered($user));
 

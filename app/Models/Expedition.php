@@ -22,7 +22,6 @@ namespace App\Models;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
 use App\Models\Traits\Presentable;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
@@ -60,7 +59,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * @var string
      */
-    protected $presenter = ExpeditionPresenter::class;
+    protected string $presenter = ExpeditionPresenter::class;
 
     /**
      * Model Boot

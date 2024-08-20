@@ -19,12 +19,12 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\DateHelper;
+use Date;
 use App\Http\Controllers\Controller;
 use App\Repositories\ProjectRepository;
 use App\Repositories\StateCountyRepository;
 use App\Services\Chart\TranscriptionChartService;
-use CountHelper;
+use Count;
 use Flash;
 use JavaScript;
 
@@ -114,13 +114,13 @@ class ProjectController extends Controller
         $eventsCompleted = null;
         if (isset($project->events)) {
             [$events, $eventsCompleted] = $project->events->partition(function ($event) {
-                return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
+                return Date::eventBefore($event) || Date::eventActive($event);
             });
         }
 
         // TODO change to stat table count
-        $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
-        $transcribersCount = CountHelper::projectTranscriberCount($project->id);
+        $transcriptionsCount = Count::projectTranscriptionCount($project->id);
+        $transcribersCount = Count::projectTranscriberCount($project->id);
 
         $years = !isset($project->amChart) || is_null($project->amChart->data) ?
             null : array_keys($project->amChart->data);

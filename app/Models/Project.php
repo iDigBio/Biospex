@@ -19,7 +19,7 @@
 
 namespace App\Models;
 
-use App\Facades\DateHelper;
+use Date;
 use App\Presenters\ProjectPresenter;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 use Illuminate\Support\Facades\Config;
@@ -332,6 +332,10 @@ class Project extends BaseEloquentModel implements AttachableInterface
      */
     public function setTargetFieldsAttribute($input)
     {
+        if (empty($input)) {
+            return;
+        }
+
         $target_fields = [];
 
         if (isset($input['targetCount']) && $input['targetCount'] > 0) {
@@ -378,6 +382,10 @@ class Project extends BaseEloquentModel implements AttachableInterface
      */
     public function setAdvertiseAttribute($input)
     {
+        if (empty($input)) {
+            return;
+        }
+
         $extra = isset($input['advertiseExtra']) ? $input['advertiseExtra'] : '';
 
         $build = [];
@@ -390,7 +398,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
                 }
 
                 if ($type === 'date') {
-                    $build[$field] = isset($this->{$value}) ? DateHelper::formatDate($this->{$value}, 'Y-m-d m:d:s') : DateHelper::formatDate(null);
+                    $build[$field] = isset($this->{$value}) ? Date::formatDate($this->{$value}, 'Y-m-d m:d:s') : Date::formatDate(null);
                 }
 
                 if ($type === 'column') {

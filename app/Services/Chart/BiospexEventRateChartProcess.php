@@ -19,7 +19,7 @@
 
 namespace App\Services\Chart;
 
-use App\Facades\DateHelper;
+use Date;
 use App\Models\Event;
 use App\Repositories\EventRepository;
 use App\Repositories\EventTranscriptionRepository;
@@ -94,7 +94,7 @@ class BiospexEventRateChartProcess
      */
     public function processEmptyResult(Event $event, Collection $intervals): array
     {
-        if (DateHelper::eventAfter($event)) {
+        if (Date::eventAfter($event)) {
             return [];
         }
 

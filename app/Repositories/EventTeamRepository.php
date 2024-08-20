@@ -19,7 +19,7 @@
 
 namespace App\Repositories;
 
-use App\Facades\GeneralHelper;
+use General;
 use App\Models\EventTeam;
 
 /**
@@ -50,6 +50,6 @@ class EventTeamRepository extends BaseRepository
      */
     public function getTeamByUuid($uuid)
     {
-        return $this->model->with(['event'])->where('uuid', GeneralHelper::uuidToBin($uuid))->first();
+        return $this->model->with(['event'])->where('uuid', General::uuidToBin($uuid))->first();
     }
 }

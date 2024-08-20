@@ -19,7 +19,7 @@
 
 namespace App\Services\Transcriptions;
 
-use App\Facades\TranscriptionMapHelper;
+use TranscriptionMap;
 use App\Repositories\PanoptesTranscriptionRepository;
 use App\Repositories\SubjectRepository;
 use App\Services\Csv\AwsS3CsvService;
@@ -180,7 +180,7 @@ class CreatePanoptesTranscriptionService
         $row = array_merge($row, ['subject_projectId' => $subject->project_id]);
 
         $rowWithEncodeHeaders = collect($row)->mapWithKeys(function($value, $field){
-            $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
+            $newField = TranscriptionMap::encodeTranscriptionField($field);
             return [$newField => $value];
         })->toArray();
 

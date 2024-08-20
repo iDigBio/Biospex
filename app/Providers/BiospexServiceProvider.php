@@ -20,11 +20,11 @@
 namespace App\Providers;
 
 use App\Repositories\PanoptesTranscriptionRepository;
-use App\Services\Helpers\CountHelper;
-use App\Services\Helpers\DateHelper;
-use App\Services\Helpers\FlashHelper;
-use App\Services\Helpers\GeneralHelper;
-use App\Services\Helpers\TranscriptionMapHelper;
+use App\Services\Helpers\CountService;
+use App\Services\Helpers\DateService;
+use App\Services\Helpers\FlashService;
+use App\Services\Helpers\GeneralService;
+use App\Services\Helpers\TranscriptionMapService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
@@ -69,25 +69,25 @@ class BiospexServiceProvider extends ServiceProvider
      */
     public function registerFacades(): void
     {
-        $this->app->singleton('flash', function ()
-        {
-            return new FlashHelper();
+        $this->app->singleton('counthelper', function(){
+            return new CountService(app(PanoptesTranscriptionRepository::class));
         });
 
         $this->app->singleton('datehelper', function(){
-            return new DateHelper();
+            return new DateService();
+        });
+
+        $this->app->singleton('flashhelper', function ()
+        {
+            return new FlashService();
         });
 
         $this->app->singleton('generalhelper', function(){
-            return new GeneralHelper();
-        });
-
-        $this->app->singleton('counthelper', function(){
-            return new CountHelper(app(PanoptesTranscriptionRepository::class));
+            return new GeneralService();
         });
 
         $this->app->singleton('transcriptionmaphelper', function() {
-            return new TranscriptionMapHelper(
+            return new TranscriptionMapService(
                 $this->app['config']->get('zooniverse.reserved_encoded'),
                 $this->app['config']->get('zooniverse.mapped_transcription_fields')
             );

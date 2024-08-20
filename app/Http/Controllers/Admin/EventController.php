@@ -19,7 +19,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\DateHelper;
+use Date;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
@@ -61,7 +61,7 @@ class EventController extends Controller
         $results = $this->eventRepo->getEventAdminIndex(Auth::user());
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
-            return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
+            return Date::eventBefore($event) || Date::eventActive($event);
         });
 
         return \View::make('admin.event.index', compact('events', 'eventsCompleted'));
@@ -83,7 +83,7 @@ class EventController extends Controller
         $results = $this->eventRepo->getEventPublicIndex(\Request::get('sort'), \Request::get('order'));
 
         [$active, $completed] = $results->partition(function ($event) {
-            return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
+            return Date::eventBefore($event) || Date::eventActive($event);
         });
 
         $events = \Request::get('type') === 'active' ? $active : $completed;
@@ -119,7 +119,7 @@ class EventController extends Controller
     public function create(ProjectRepository $projectRepo)
     {
         $projects = $projectRepo->getProjectEventSelect();
-        $timezones = DateHelper::timeZoneSelect();
+        $timezones = Date::timeZoneSelect();
         $teamsCount = old('entries', 1);
 
         return \View::make('admin.event.create', compact('projects', 'timezones', 'teamsCount'));
@@ -164,7 +164,7 @@ class EventController extends Controller
         }
 
         $projects = $projectRepo->getProjectEventSelect();
-        $timezones = DateHelper::timeZoneSelect();
+        $timezones = Date::timeZoneSelect();
         $teamsCount = old('entries', $event->teams->count() ?: 1);
 
         return \View::make('admin.event.edit', compact('event', 'projects', 'timezones', 'teamsCount'));

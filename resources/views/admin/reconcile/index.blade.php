@@ -47,7 +47,7 @@
                 </div>
                 @foreach($columns as $encodedColumn)
                     @php
-                        $decodedColumn = TranscriptionMapHelper::decodeTranscriptionField($encodedColumn);
+                        $decodedColumn = TranscriptionMap::decodeTranscriptionField($encodedColumn);
                     @endphp
                     <div class="row">
                         <div class="input-group mt-5">
@@ -62,7 +62,7 @@
                                 <label class="col-form-label">{{ t('Participants entered for') }} {{ $decodedColumn }}:</label>
                                 @foreach($reconciles->first()->transcriptions as $transcription)
                                     @php
-                                        $count = CountHelper::getTranscriptionCountForTranscriber($transcription->subject_projectId, $transcription->user_name);
+                                        $count = Count::getTranscriptionCountForTranscriber($transcription->subject_projectId, $transcription->user_name);
                                     @endphp
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="radio"

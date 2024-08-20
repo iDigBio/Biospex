@@ -13,7 +13,7 @@
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Edit Account') }}</h2>
                     <form method="post"
-                          action="{{ route('admin.users.update', [$user->id]) }}"
+                          action="{{ route('admin.users.update', ['users' => $user->id]) }}"
                           role="form" enctype="multipart/form-data">
                         {!! method_field('put') !!}
                         @csrf
@@ -93,36 +93,36 @@
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Change Password') }}</h2>
                     <form method="post"
-                          action="{{ route('admin.users.password', [$user->id]) }}" role="form">
+                          action="{{ route('admin.users.password', ['users' => $user->id]) }}" role="form">
                         {!! method_field('put') !!}
                         @csrf
                         <input type="hidden" id="id" name="id" value="{{ $user->id }}">
                         <div class="form-group">
-                            <label for="oldPassword" class="col-form-label required">{{ t('Old Password') }}
+                            <label for="current_password" class="col-form-label required">{{ t('Old Password') }}
                                 :</label>
                             <input type="password"
-                                   class="form-control {{ ($errors->has('oldPassword')) ? 'is-invalid' : '' }}"
-                                   id="oldPassword" name="oldPassword"
+                                   class="form-control {{ ($errors->has('current_password')) ? 'is-invalid' : '' }}"
+                                   id="current_password" name="current_password"
                                    required>
-                            <span class="invalid-feedback">{{ $errors->first('oldPassword') }}</span>
+                            <span class="invalid-feedback">{{ $errors->first('current_password') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="newPassword" class="col-form-label required">{{ t('New Password') }}
+                            <label for="password" class="col-form-label required">{{ t('New Password') }}
                                 :</label>
                             <input type="password"
-                                   class="form-control {{ ($errors->has('newPassword')) ? 'is-invalid' : '' }}"
-                                   id="newPassword" name="newPassword"
+                                   class="form-control {{ ($errors->has('password')) ? 'is-invalid' : '' }}"
+                                   id="password" name="password"
                                    required>
-                            <span class="invalid-feedback">{{ $errors->first('newPassword') }}</span>
+                            <span class="invalid-feedback">{{ $errors->first('password') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="newPassword_confirmation"
+                            <label for="password_confirmation"
                                    class="col-form-label required">{{ t('Confirm Password') }}:</label>
                             <input type="password"
-                                   class="form-control {{ ($errors->has('newPassword_confirmation')) ? 'is-invalid' : '' }}"
-                                   id="newPassword_confirmation" name="newPassword_confirmation"
+                                   class="form-control {{ ($errors->has('password_confirmation')) ? 'is-invalid' : '' }}"
+                                   id="password_confirmation" name="password_confirmation"
                                    required>
-                            <span class="invalid-feedback">{{ $errors->first('newPassword_confirmation') }}</span>
+                            <span class="invalid-feedback">{{ $errors->first('password_confirmation') }}</span>
                         </div>
                         @include('common.cancel-submit-buttons')
                     </form>

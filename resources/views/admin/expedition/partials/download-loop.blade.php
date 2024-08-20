@@ -1,16 +1,16 @@
-@if (GeneralHelper::downloadFileExists($download->file, $download->type, $download->actor_id))
+@if (General::downloadFileExists($download->file, $download->type, $download->actor_id))
     <tr>
         <td>{{ $download->present()->file_type }}</td>
         <td>{{ $download->present()->file_type . '-' . $download->file }}</td>
         <td>
-            @if (GeneralHelper::downloadFileExists($download->file, $download->type, $download->actor_id))
-                {{ GeneralHelper::humanFileSize(GeneralHelper::downloadFileSize($download->file, $download->type, $download->actor_id)) }}
+            @if (General::downloadFileExists($download->file, $download->type, $download->actor_id))
+                {{ General::humanFileSize(General::downloadFileSize($download->file, $download->type, $download->actor_id)) }}
             @else
-                {{ GeneralHelper::humanFileSize(mb_strlen($download->data, '8bit')) }}
+                {{ General::humanFileSize(mb_strlen($download->data, '8bit')) }}
             @endif
         </td>
-        <td>{{ DateHelper::formatDate($download->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
-        <td>{{ DateHelper::formatDate($download->updated_at, 'Y-m-d', $user->profile->timezone) }}</td>
+        <td>{{ format_date($download->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
+        <td>{{ format_date($download->updated_at, 'Y-m-d', $user->profile->timezone) }}</td>
         <td class="d-flex justify-content-between">
             @if ($download->type != 'export')
                 @can('isOwner', $expedition->project->group)

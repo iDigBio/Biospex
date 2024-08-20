@@ -20,6 +20,7 @@
 namespace App\Models;
 
 use Eloquent;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
@@ -31,7 +32,8 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
  */
 class BaseEloquentModel extends Model
 {
-    use LadaCacheTrait;
+    use LadaCacheTrait, HasFactory;
+
     /**
      * @inheritDoc
      */
@@ -41,4 +43,16 @@ class BaseEloquentModel extends Model
      * @inheritDoc
      */
     protected $primaryKey = 'id';
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct(array $attributes = [])
+    {
+        if (\App::environment('testing')) {
+            $this->connection = 'sqlite';
+        }
+
+        parent::__construct($attributes);
+    }
 }

@@ -40,36 +40,6 @@ class GroupRepository extends BaseRepository
         $this->model = $group;
     }
 
-    /**
-     * Get all groups by user id.
-     *
-     * @param $userId
-     * @return \App\Models\Group[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public function getGroupsByUserId($userId)
-    {
-        return $this->model->withCount(['projects', 'expeditions', 'users'])
-            ->whereHas('users', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })->get();
-    }
-
-    /**
-     * Get group for show page.
-     *
-     * @param $groupId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
-     */
-    public function getGroupShow($groupId)
-    {
-        return $this->model->with([
-            'projects',
-            'expeditions',
-            'geoLocateForms.expeditions:id,project_id,geo_locate_form_id',
-            'owner.profile',
-            'users.profile',
-        ])->withCount('expeditions')->find($groupId);
-    }
 
     /**
      * Get group ids for user session.

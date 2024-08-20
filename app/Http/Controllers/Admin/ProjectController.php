@@ -27,9 +27,12 @@ use App\Repositories\GroupRepository;
 use App\Repositories\ProjectRepository;
 use App\Services\Grid\JqGridEncoder;
 use Auth;
-use CountHelper;
+use Count;
 use Exception;
+use Flash;
 use JavaScript;
+use Redirect;
+use View;
 
 /**
  * Class ProjectController
@@ -74,7 +77,7 @@ class ProjectController extends Controller
         $groups = $this->groupRepo->getUserGroupCount($user->id);
         $projects = $this->projectRepo->getAdminProjectIndex($user->id);
 
-        return $groups === 0 ? \View::make('admin.welcome') : \View::make('admin.project.index', compact('projects'));
+        return $groups === 0 ? View::make('admin.welcome') : View::make('admin.project.index', compact('projects'));
     }
 
     /**
@@ -90,7 +93,7 @@ class ProjectController extends Controller
 
         $vars = compact('groupOptions', 'resourceOptions', 'resourceCount');
 
-        return \View::make('admin.project.create', $vars);
+        return View::make('admin.project.create', $vars);
     }
 
     /**
@@ -104,15 +107,15 @@ class ProjectController extends Controller
         $project = $this->projectRepo->getProjectShow($projectId);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
-            return \Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index');
         }
 
         [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
             return $expedition->completed === 0;
         });
 
-        $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
-        $transcribersCount = CountHelper::projectTranscriberCount($project->id);
+        $transcriptionsCount = Count::projectTranscriptionCount($project->id);
+        $transcribersCount = Count::projectTranscriberCount($project->id);
 
         $viewParams = [
             'project'              => $project,
@@ -123,7 +126,7 @@ class ProjectController extends Controller
             'transcribersCount'    => $transcribersCount,
         ];
 
-        return \View::make('admin.project.show', $viewParams);
+        return View::make('admin.project.show', $viewParams);
     }
 
     /**
@@ -137,20 +140,20 @@ class ProjectController extends Controller
         $group = $this->groupRepo->find($request->get('group_id'));
 
         if (! $this->checkPermissions('createProject', $group)) {
-            return \Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index');
         }
 
         $model = $this->projectRepo->create($request->all());
 
         if ($model) {
-            \Flash::success(t('Record was created successfully.'));
+            Flash::success(t('Record was created successfully.'));
 
-            return \Redirect::route('admin.projects.show', [$model->id]);
+            return Redirect::route('admin.projects.show', [$model->id]);
         }
 
-        \Flash::error(t('An error occurred when saving record.'));
+        Flash::error(t('An error occurred when saving record.'));
 
-        return \Redirect::route('admin.projects.create')->withInput();
+        return Redirect::route('admin.projects.create')->withInput();
     }
 
     /**
@@ -164,9 +167,9 @@ class ProjectController extends Controller
         $project = $this->projectRepo->findWith($projectId, ['group']);
 
         if (! $project) {
-            \Flash::error(t('Error retrieving record from database'));
+            Flash::error(t('Error retrieving record from database'));
 
-            return \Redirect::route('admin.projects.show', [$projectId]);
+            return Redirect::route('admin.projects.show', [$projectId]);
         }
 
         $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(\Request::user());
@@ -175,7 +178,7 @@ class ProjectController extends Controller
 
         $vars = compact('project', 'groupOptions', 'resourceOptions', 'resourceCount');
 
-        return \View::make('admin.project.clone', $vars);
+        return View::make('admin.project.clone', $vars);
     }
 
     /**
@@ -191,9 +194,9 @@ class ProjectController extends Controller
     {
         $project = $this->projectRepo->findWith($projectId, ['group', 'resources']);
         if (! $project) {
-            \Flash::error(t('Error retrieving record from database'));
+            Flash::error(t('Error retrieving record from database'));
 
-            return \Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index');
         }
 
         $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(\Request::user());
@@ -203,7 +206,7 @@ class ProjectController extends Controller
 
         $vars = compact('project', 'resources', 'groupOptions', 'resourceOptions', 'resourceCount');
 
-        return \View::make('admin.project.edit', $vars);
+        return View::make('admin.project.edit', $vars);
     }
 
     /**
@@ -218,12 +221,12 @@ class ProjectController extends Controller
         $group = $this->groupRepo->find($request->get('group_id'));
 
         if (! $this->checkPermissions('updateProject', $group)) {
-            return \Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index');
         }
 
         $project = $this->projectRepo->update($request->all(), $projectId);
 
-        $project ? \Flash::success(t('Record was updated successfully.')) : \Flash::error(t('Error while updating record.'));
+        $project ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
 
         return back();
     }
@@ -244,7 +247,7 @@ class ProjectController extends Controller
         $order = \Request::get('order');
         $projects = $this->projectRepo->getAdminProjectIndex($user->id, $sort, $order);
 
-        return \View::make('admin.project.partials.project', compact('projects'));
+        return View::make('admin.project.partials.project', compact('projects'));
     }
 
     /**
@@ -259,7 +262,7 @@ class ProjectController extends Controller
         $project = $this->projectRepo->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
-            return \Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index');
         }
 
         $model = $grid->loadGridModel($projectId);
@@ -276,7 +279,7 @@ class ProjectController extends Controller
 
         $subjectAssignedCount = $this->projectRepo->find($projectId)->expeditionStats->sum('local_subject_count');
 
-        return \View::make('admin.project.explore', compact('project', 'subjectAssignedCount'));
+        return View::make('admin.project.explore', compact('project', 'subjectAssignedCount'));
     }
 
     /**
@@ -290,25 +293,25 @@ class ProjectController extends Controller
         $project = $this->projectRepo->getProjectForDelete($projectId);
 
         if (! $this->checkPermissions('isOwner', $project->group)) {
-            return \Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index');
         }
 
         try {
             if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                \Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+                Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
-                \Redirect::route('admin.projects.index');
+                Redirect::route('admin.projects.index');
             }
 
             DeleteProjectJob::dispatch($project);
 
-            \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
+            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
-            return \Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index');
         } catch (Exception $e) {
-            \Flash::error(t('An error occurred when deleting record.'));
+            Flash::error(t('An error occurred when deleting record.'));
 
-            return \Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index');
         }
     }
 
@@ -322,12 +325,12 @@ class ProjectController extends Controller
     {
         $project = $this->projectRepo->findWith($projectId, ['group']);
 
-        $transcribers = CountHelper::getTranscribersTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
-        $transcriptions = CountHelper::getTranscriptionsPerTranscribers($projectId, $transcribers);
+        $transcribers = Count::getTranscribersTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
+        $transcriptions = Count::getTranscriptionsPerTranscribers($projectId, $transcribers);
 
         JavaScript::put(['transcriptions' => $transcriptions]);
 
-        return \View::make('admin.project.statistics', compact('project', 'transcribers', 'transcriptions'));
+        return View::make('admin.project.statistics', compact('project', 'transcribers', 'transcriptions'));
     }
 
     /**
@@ -341,13 +344,13 @@ class ProjectController extends Controller
         try {
             DeleteUnassignedSubjectsJob::dispatch(Auth::user(), (int) $projectId);
 
-            \Flash::success(t('Subjects have been set for deletion. You will be notified by email when complete.'));
+            Flash::success(t('Subjects have been set for deletion. You will be notified by email when complete.'));
 
-            return \Redirect::route('admin.projects.explore', [$projectId]);
+            return Redirect::route('admin.projects.explore', [$projectId]);
         } catch (Exception $e) {
-            \Flash::warning(t('There was an error setting the job to delete the Subjects.'));
+            Flash::warning(t('There was an error setting the job to delete the Subjects.'));
 
-            return \Redirect::route('admin.projects.explore', [$projectId]);
+            return Redirect::route('admin.projects.explore', [$projectId]);
         }
     }
 }

@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\PanoptesTranscription;
 use Illuminate\Console\Command;
 
 /**
@@ -28,7 +29,6 @@ use Illuminate\Console\Command;
  */
 class AppCommand extends Command
 {
-
     /**
      * The console command name.
      */

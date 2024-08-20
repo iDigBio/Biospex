@@ -19,7 +19,6 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Repositories\WeDigBioEventDateRepository;
 

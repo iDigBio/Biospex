@@ -25,6 +25,8 @@ use App\Repositories\BingoRepository;
 use App\Repositories\ProjectRepository;
 use Flash;
 use Illuminate\Support\Facades\Auth;
+use Redirect;
+use View;
 
 /**
  * Class BingoController
@@ -64,7 +66,7 @@ class BingoController extends Controller
     {
         $bingos = $this->bingoRepo->getAdminIndex(Auth::user()->id);
 
-        return \View::make('admin.bingo.index', compact('bingos'));
+        return View::make('admin.bingo.index', compact('bingos'));
     }
 
     /**
@@ -76,7 +78,7 @@ class BingoController extends Controller
     {
         $projects = $this->projectRepo->getProjectEventSelect();
 
-        return \View::make('admin.bingo.create', compact('projects'));
+        return View::make('admin.bingo.create', compact('projects'));
     }
 
     /**
@@ -90,14 +92,14 @@ class BingoController extends Controller
         $bingo = $this->bingoRepo->createBingo($request->all());
 
         if ($bingo) {
-            \Flash::success(t('Record was created successfully.'));
+            Flash::success(t('Record was created successfully.'));
 
-            return \Redirect::route('admin.bingos.show', [$bingo->id]);
+            return Redirect::route('admin.bingos.show', [$bingo->id]);
         }
 
-        \Flash::error(t('An error occurred when saving record.'));
+        Flash::error(t('An error occurred when saving record.'));
 
-        return \Redirect::route('admin.bingos.index');
+        return Redirect::route('admin.bingos.index');
     }
 
     /**
@@ -112,10 +114,10 @@ class BingoController extends Controller
 
         if ( ! $this->checkPermissions('read', $bingo))
         {
-            return \Redirect::route('admin.bingos.index');
+            return Redirect::route('admin.bingos.index');
         }
 
-        return \View::make('admin.bingo.show', compact('bingo'));
+        return View::make('admin.bingo.show', compact('bingo'));
     }
 
     /**
@@ -129,7 +131,7 @@ class BingoController extends Controller
         $bingo = $this->bingoRepo->findWith($bingoId, ['words', 'project']);
         $projects = $this->projectRepo->getProjectEventSelect();
 
-        return \View::make('admin.bingo.edit', compact('bingo', 'projects'));
+        return View::make('admin.bingo.edit', compact('bingo', 'projects'));
     }
 
     /**
@@ -145,20 +147,20 @@ class BingoController extends Controller
 
         if ( ! $this->checkPermissions('update', $bingo))
         {
-            return \Redirect::route('admin.bingos.index');
+            return Redirect::route('admin.bingos.index');
         }
 
         $result = $this->bingoRepo->updatebingo($request->all(), $bingoId);
 
         if ($result) {
-            \Flash::success(t('Record was updated successfully.'));
+            Flash::success(t('Record was updated successfully.'));
 
-            return \Redirect::route('admin.bingos.show', [$bingoId]);
+            return Redirect::route('admin.bingos.show', [$bingoId]);
         }
 
-        \Flash::error(t('Error while updating record.'));
+        Flash::error(t('Error while updating record.'));
 
-        return \Redirect::route('admin.bingos.edit', [$bingoId]);
+        return Redirect::route('admin.bingos.edit', [$bingoId]);
     }
 
     /**
@@ -173,20 +175,20 @@ class BingoController extends Controller
 
         if ( ! $this->checkPermissions('delete', $bingo))
         {
-            return \Redirect::route('admin.bingos.index');
+            return Redirect::route('admin.bingos.index');
         }
 
         $result = $bingo->delete();
 
         if ($result)
         {
-            \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
+            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
-            return \Redirect::route('admin.bingos.index');
+            return Redirect::route('admin.bingos.index');
         }
 
-        \Flash::error(t('An error occurred when deleting record.'));
+        Flash::error(t('An error occurred when deleting record.'));
 
-        return \Redirect::route('admin.bingos.edit', [$bingoId]);
+        return Redirect::route('admin.bingos.edit', [$bingoId]);
     }
 }

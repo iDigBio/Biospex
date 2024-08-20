@@ -1,9 +1,9 @@
 <div class="col-md-4 mb-4">
     <div class="card px-4 box-shadow h-100">
         <div class="card-body text-center">
-            @if(DateHelper::eventBefore($event))
+            @if(event_before($event))
                 <h3 class="card-text">{{ t('Starting') }} {{ $event->present()->start_date_to_string }}</h3>
-            @elseif(DateHelper::eventAfter($event))
+            @elseif(event_after($event))
                 <h3 class="card-text">{{ t('Completed') }}</h3>
             @else
                 <h2 class="card-text">{{ t('Time Remaining') }}</h2>
@@ -35,7 +35,7 @@
                 {{ t('for') }} {{ isset($project) ? $project->title : $event->project->title }}
             </h5>
         </div>
-        @if( ! DateHelper::eventBefore($event))
+        @if( ! event_before($event))
             <div class="text-center">
                 <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
                         data-remote="false"
@@ -51,7 +51,7 @@
                         data-target="#step-chart-modal"
                         data-event="{{ $event->id }}"
                         data-teams="{{ $event->teams->pluck('title')->implode(',') }}"
-                        data-timezone="{{ DateHelper::eventRateChartTimezone($event->timezone) }}"
+                        data-timezone="{{ event_rate_chart_timezone($event->timezone) }}"
                         data-href="{{ route('ajax.get.step', [$event->id]) }}">{{ t('Rate Chart') }}
                 </button>
                 @endif
@@ -61,7 +61,7 @@
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 {!! isset($project) ? $project->present()->project_page_icon : $event->project->present()->project_page_icon !!}
                 {!! $event->present()->event_show_icon !!}
-                @if(DateHelper::eventBefore($event) || DateHelper::eventActive($event))
+                @if(event_before($event) || event_active($event))
                     {!! $project->lastPanoptesProject->present()->project_icon !!}
                 @endif
                 {!! $event->present()->twitter_icon !!}

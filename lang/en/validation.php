@@ -22,17 +22,16 @@ return [
     'custom'               => [
         'g-recaptcha-response'     => [
             'required' => 'Please verify that you are not a robot.',
-            'captcha'  => 'Captcha error! try again later or contact site admin.',
         ],
-        'oldPassword'              => [
+        'current_password'              => [
             'required' => 'You must enter your old password.',
             'min'      => 'Your old password must be at least 6 characters long.',
         ],
-        'newPassword'              => [
+        'password'              => [
             'required' => 'You must enter a new password.',
             'min'      => 'Your new password must be at least 6 characters long.',
         ],
-        'newPassword_confirmation' => [
+        'password_confirmation' => [
             'required' => 'You must confirm your new password.',
         ],
         'minutes'                  => [

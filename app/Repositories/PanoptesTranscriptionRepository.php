@@ -45,7 +45,7 @@ class PanoptesTranscriptionRepository extends BaseRepository
      * Get contributor count for all transcriptions.
      * @return mixed
      */
-    public function getContributorCount()
+    public function getContributorCount(): mixed
     {
         // TODO: Eventually resolve Laravel issue with count.
         return Cache::remember(md5(__METHOD__), 14440, function () {

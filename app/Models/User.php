@@ -23,6 +23,7 @@ use App\Models\Traits\HasGroup;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\UserPresenter;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Traits\Presentable;
@@ -36,7 +37,7 @@ use Laravel\Sanctum\HasApiTokens;
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasGroup, UuidTrait, Notifiable, Presentable, LadaCacheTrait, HasApiTokens;
+    use HasFactory, HasGroup, UuidTrait, Notifiable, Presentable, LadaCacheTrait, HasApiTokens;
 
     /**
      * @inheritDoc
@@ -90,15 +91,6 @@ class User extends Authenticatable implements MustVerifyEmail
         parent::boot();
 
         static::bootUuidTrait();
-
-        static::created(function ($model) {
-            $profile = new Profile;
-            $profile->user_id = $model->id;
-            $profile->first_name = \Request::input('first_name');
-            $profile->last_name = \Request::input('last_name');
-            $profile->timezone = \Request::input('timezone');
-            $model->profile()->save($profile);
-        });
     }
 
     /**

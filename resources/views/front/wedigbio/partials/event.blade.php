@@ -1,7 +1,7 @@
 <div class="col-md-4 mb-4">
     <div class="card px-4 box-shadow h-100">
         <div class="card-body text-center">
-            @if(DateHelper::eventBefore($event, 'UTC'))
+            @if(event_before($event, 'UTC'))
                 <h3 class="card-text">{{ t('Starting') }} {{ $event->present()->start_date_to_string }}</h3>
             @endif
             <h4 class="text-center pt-4">{{ t('WeDigBio') }}</h4>
@@ -10,7 +10,7 @@
                 {{ $event->present()->end_date_to_string }} {{ t('UTC') }}<br>
             </h5>
         </div>
-        @if( ! DateHelper::eventBefore($event, 'UTC'))
+        @if( ! event_before($event, 'UTC'))
             <div class="text-center">
                 <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
                         data-remote="false"

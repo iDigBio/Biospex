@@ -23,7 +23,7 @@ use App\Models\Bingo;
 use App\Repositories\BingoMapRepository;
 use App\Repositories\BingoRepository;
 use App\Services\Api\GeoPlugin;
-use GeneralHelper;
+use General;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use JavaScript;
@@ -152,7 +152,7 @@ class BingoProcess
     {
         $this->location->locate();
 
-        $uuid = GeneralHelper::uuidToBin(Session::get('bingoUuid'));
+        $uuid = General::uuidToBin(Session::get('bingoUuid'));
 
         $map = $uuid === null ? $this->createBingoMap($bingo) : $this->findBingoMapByUuid($bingo, $uuid);
 

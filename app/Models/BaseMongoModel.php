@@ -19,6 +19,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\Model;
 
 /**
@@ -29,6 +30,8 @@ use MongoDB\Laravel\Eloquent\Model;
  */
 class BaseMongoModel extends Model
 {
+    use HasFactory;
+
     /**
      * @inheritDoc
      */
@@ -48,6 +51,14 @@ class BaseMongoModel extends Model
      * @inheritDoc
      */
     public $incrementing = false;
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+    }
 
     /**
      * Enable casts in models.

@@ -38,7 +38,7 @@ class MailController extends Controller
     private $userRepo;
 
     /**
-     * UserController constructor.
+     * UserAccountController constructor.
      *
      * @param \App\Repositories\UserRepository $userRepo
      */

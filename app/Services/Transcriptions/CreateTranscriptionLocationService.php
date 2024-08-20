@@ -21,7 +21,7 @@ namespace App\Services\Transcriptions;
 
 use App\Repositories\StateCountyRepository;
 use App\Repositories\TranscriptionLocationRepository;
-use GeneralHelper;
+use General;
 use function config;
 
 /**
@@ -93,7 +93,7 @@ class CreateTranscriptionLocationService
         }
 
         $this->prepCounty($data);
-        $stateAbbr = GeneralHelper::getState($data['state_province']);
+        $stateAbbr = General::getState($data['state_province']);
         $stateResult = $this->stateCountyRepo->findByCountyState($data['county'], $stateAbbr);
 
         if ($stateResult === null) {

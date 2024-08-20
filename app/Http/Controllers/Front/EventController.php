@@ -19,7 +19,7 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\DateHelper;
+use Date;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventJoinRequest;
 use App\Repositories\EventRepository;
@@ -45,7 +45,7 @@ class EventController extends Controller
         $project = $results->first()->project;
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
-            return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
+            return Date::eventBefore($event) || Date::eventActive($event);
         });
 
         return \View::make('front.event.index', compact('events', 'project', 'eventsCompleted'));
@@ -70,7 +70,7 @@ class EventController extends Controller
         $results = $eventRepo->getEventPublicIndex($sort, $order, $projectId);
 
         [$active, $completed] = $results->partition(function ($event) {
-            return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
+            return Date::eventBefore($event) || Date::eventActive($event);
         });
 
         $events = \Request::get('type') === 'active' ? $active : $completed;
@@ -110,7 +110,7 @@ class EventController extends Controller
     {
         $team = $eventTeamRepo->getTeamByUuid($uuid);
 
-        $active = DateHelper::eventBefore($team->event) || DateHelper::eventActive($team->event);
+        $active = Date::eventBefore($team->event) || Date::eventActive($team->event);
 
         if ($team === null) {
             \Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));

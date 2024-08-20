@@ -19,7 +19,7 @@
 
 namespace App\Services\Reconcile;
 
-use App\Facades\TranscriptionMapHelper;
+use TranscriptionMap;
 use App\Repositories\ReconcileRepository;
 use App\Repositories\SubjectRepository;
 use App\Services\Csv\AwsS3CsvService;
@@ -101,7 +101,7 @@ class ExpertReconcileService
         })->each(function ($row) use (&$create) {
             $newRecord = [];
             foreach ($row as $field => $value) {
-                $newField = TranscriptionMapHelper::encodeTranscriptionField($field);
+                $newField = TranscriptionMap::encodeTranscriptionField($field);
                 $newRecord[$newField] = $value;
                 $newRecord['subject_problem'] = 0;
                 $newRecord['subject_columns'] = '';
@@ -215,7 +215,7 @@ class ExpertReconcileService
             $string = $problem->keys()->map(function ($key) {
                 $trimmedKey = trim(str_replace('Explanation', '', $key));
 
-                return TranscriptionMapHelper::encodeTranscriptionField($trimmedKey);
+                return TranscriptionMap::encodeTranscriptionField($trimmedKey);
             })->flatten()->join('|');
 
             return [$subjectId => $string];

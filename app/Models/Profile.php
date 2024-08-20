@@ -47,6 +47,7 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     {
         return [
             'avatar_updated_at' => 'datetime',
+            'avatar_created_at' => 'datetime',
             'created_at'        => 'datetime',
             'updated_at'        => 'datetime',
         ];

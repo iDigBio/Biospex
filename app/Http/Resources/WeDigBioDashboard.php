@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Facades\DateHelper;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**

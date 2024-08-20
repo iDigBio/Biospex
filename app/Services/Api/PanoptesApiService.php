@@ -19,7 +19,7 @@
 
 namespace App\Services\Api;
 
-use App\Facades\CountHelper;
+use Count;
 use App\Services\Requests\HttpRequest;
 use Cache;
 use GuzzleHttp\Exception\GuzzleException;
@@ -239,7 +239,7 @@ class PanoptesApiService extends HttpRequest
         $this->subject_count = (int) $workflow['subjects_count'];
         $this->transcriptions_goal = (int) $workflow['subjects_count'] * (int) $workflow['retirement']['options']['count'];
         $this->transcriptions_completed = (int) $workflow['classifications_count'];
-        $this->local_transcriptions_completed = CountHelper::expeditionTranscriptionCount($expeditionId);
+        $this->local_transcriptions_completed = Count::expeditionTranscriptionCount($expeditionId);
         $this->percent_completed = $this->percentCompleted();
     }
 

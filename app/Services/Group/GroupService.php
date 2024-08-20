@@ -1,0 +1,246 @@
+<?php
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+namespace App\Services\Group;
+
+use App\Jobs\DeleteGroupJob;
+use App\Models\GeoLocateForm;
+use App\Models\Group;
+use App\Models\User;
+use App\Services\Permission\CheckPermission;
+use Exception;
+use Flash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
+
+class GroupService
+{
+    /**
+     * Display groups.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function getAdminIndex(): \Illuminate\View\View
+    {
+        $groups = Group::withCount(['projects', 'expeditions', 'users'])
+            ->whereHas('users', function ($q) {
+                $q->where('user_id', Auth::id());
+            })->get();
+
+        return View::make('admin.group.index', compact('groups'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function storeGroup(): \Illuminate\Http\RedirectResponse
+    {
+        $group = Group::create(['user_id' => Auth::id(), 'title' => request()->get('title')]);
+
+        if ($group) {
+            Auth::user()->assignGroup($group);
+            $admin = User::find(1);
+            $admin->assignGroup($group);
+
+            event('group.saved');
+
+            Flash::success(t('Group successfully created.'));
+
+            return Redirect::route('admin.groups.index');
+        }
+
+        Flash::warning(t('Failed to create Group.'));
+
+        return Redirect::back();
+    }
+
+    /**
+     * Show group.
+     *
+     * @param int $groupId
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function showGroup(int $groupId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    {
+        $group = Group::with([
+            'projects',
+            'expeditions',
+            'geoLocateForms.expeditions:id,project_id,geo_locate_form_id',
+            'owner.profile',
+            'users.profile',
+        ])->withCount('expeditions')->find($groupId);
+
+        if (!CheckPermission::handle('read', $group)) {
+            return Redirect::back();
+        }
+
+        return View::make('admin.group.show', compact('group'));
+    }
+
+    /**
+     * Show group edit form.
+     *
+     * @param int $groupId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function editGroup(int $groupId): \Illuminate\Contracts\View\Factory|\Illuminate\View\View|\Illuminate\Http\RedirectResponse
+    {
+        $group = Group::with(['owner', 'users.profile'])->find($groupId);
+
+        if (!CheckPermission::handle('isOwner', $group)) {
+            return Redirect::back();
+        }
+
+        $users = $group->users->mapWithKeys(function ($user) {
+            return [$user->id => $user->profile->full_name];
+        });
+
+        return View::make('admin.group.edit', compact('group', 'users'));
+    }
+
+    public function updateGroup(int $groupId): \Illuminate\Http\RedirectResponse
+    {
+        $group = Group::find($groupId);
+
+        if (!CheckPermission::handle('isOwner', $group)) {
+            return Redirect::back();
+        }
+
+        $group->fill(request()->all())->save() ?
+            Flash::success(t('Record was updated successfully.')) :
+            Flash::error(t('Error while updating record.'));
+
+        return Redirect::route('admin.groups.show', [$group->id]);
+    }
+
+    /**
+     * Delete the specified resource from storage.
+     *
+     * @param int $groupId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteGroup(int $groupId): \Illuminate\Http\RedirectResponse
+    {
+        $group = Group::withCount(['panoptesProjects'])->with([
+            'projects' => function ($q) {
+                $q->withCount('workflowManagers');
+            },
+        ])->find($groupId);
+
+        if (!CheckPermission::handle('isOwner', $group)) {
+            return Redirect::back();
+        }
+
+        try {
+            if($group->panoptes_projects_count > 0 || $group->projects->sum('id') > 0) {
+                Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+
+                return Redirect::route('admin.groups.index');
+            }
+
+            DeleteGroupJob::dispatch($group);
+
+            event('group.deleted', $group->id);
+
+            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
+
+            return Redirect::route('admin.groups.index');
+        } catch (Exception $e) {
+            Flash::error(t('An error occurred when deleting record.'));
+
+            return Redirect::route('admin.groups.index');
+        }
+    }
+
+    /**
+     * Delete user from group.
+     *
+     * @param int $groupId
+     * @param int $userId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteUserFromGroup(int $groupId, int $userId): \Illuminate\Http\RedirectResponse
+    {
+        $group = Group::find($groupId);
+
+        if (!CheckPermission::handle('isOwner', $group)) {
+            return Redirect::route('admin.groups.index');
+        }
+
+        try {
+            if ($group->user_id === $userId) {
+                Flash::error(t('You cannot delete the owner until another owner is selected.'));
+
+                return Redirect::route('admin.groups.show', [$groupId]);
+            }
+
+            $user = User::find($userId);
+            $user->detachGroup($group->id);
+
+            Flash::success(t('User was removed from the group'));
+
+            return Redirect::route('admin.groups.show', [$groupId]);
+        } catch (Exception $e) {
+            Flash::error(t('An error occurred when deleting record.'));
+
+            return Redirect::route('admin.groups.show', [$groupId]);
+        }
+    }
+
+    /**
+     * Delete GeoLocateExport Form.
+     *
+     * @param int $groupId
+     * @param int $formId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteGeoLocateForm(int $groupId, int $formId): \Illuminate\Http\RedirectResponse
+    {
+        try {
+            $group = Group::find($groupId);
+
+            if (!CheckPermission::handle('isOwner', $group)) {
+                return Redirect::back();
+            }
+
+            $geoLocateForm = GeoLocateForm::withCount('expeditions')->find($formId);
+
+            if ($geoLocateForm->expeditions_count > 0) {
+                Flash::error(t('GeoLocateExport Form cannot be deleted while still being used by Expeditions.'));
+
+                return Redirect::route('admin.groups.show', [$groupId]);
+            }
+
+            $geoLocateForm->delete();
+
+            Flash::success(t('GeoLocateExport Form was deleted.'));
+
+            return Redirect::route('admin.groups.show', [$groupId]);
+        } catch (Exception $e) {
+            Flash::error(t('There was an error deleteing the GeoLocateExport Form.'));
+
+            return Redirect::route('admin.groups.show', [$groupId]);
+        }
+    }
+}

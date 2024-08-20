@@ -26,7 +26,7 @@
 </table>
 
 <!-- countdown clock -->
-@if(DateHelper::eventActive($event))
+@if(event_active($event))
 <h2 class="text-center color-action pt-4">{{ t('Time Remaining') }}</h2>
 <div class="clockdiv mx-auto">
     <div>

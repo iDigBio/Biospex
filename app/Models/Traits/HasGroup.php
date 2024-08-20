@@ -27,7 +27,7 @@ trait HasGroup
      * @param $group
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function assignGroup($group)
+    public function assignGroup($group): \Illuminate\Database\Eloquent\Model
     {
         return $this->groups()->save($group);
     }
@@ -38,7 +38,7 @@ trait HasGroup
      * @param $groupId
      * @return int
      */
-    public function detachGroup($groupId)
+    public function detachGroup($groupId): int
     {
         return $this->groups()->detach($groupId);
     }
@@ -49,7 +49,7 @@ trait HasGroup
      * @param  mixed $group
      * @return boolean
      */
-    public function hasGroup($group)
+    public function hasGroup($group): bool
     {
         if (is_string($group)) {
             return $this->groups->contains('title', $group);
@@ -63,7 +63,7 @@ trait HasGroup
      *
      * @return bool
      */
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->hasGroup(config('config.admin.group'));
     }

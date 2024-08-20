@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Facades\GeneralHelper;
+use General;
 use App\Models\Header;
 use App\Models\User;
 use App\Notifications\Generic;
@@ -122,7 +122,7 @@ class GridExportCsvJob implements ShouldQueue
                 $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
                 $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
                 $subjectArray['created_at'] = $subject->created_at->toDateTimeString();;
-                $subjectArray['ocr'] = GeneralHelper::forceUtf8($subject->ocr);
+                $subjectArray['ocr'] = General::forceUtf8($subject->ocr);
                 $subjectArray['occurrence'] = $this->decodeAndEncode($subject->occurrence->getAttributes());
 
                 $merged = $header->merge($subjectArray);

@@ -32,11 +32,6 @@ class ExportQueueFile extends BaseEloquentModel
     use HybridRelations;
 
     /**
-     * @var string
-     */
-    protected $connection = 'mysql';
-
-    /**
      * @ineritDoc
      */
     protected $table = 'export_queue_files';
