@@ -51,13 +51,12 @@ class ExpeditionController extends Controller
      * Displays Completed Expeditions on public page.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @return \Illuminate\Contracts\View\View|null
      */
-    public function sort(ExpeditionRepository $expeditionRepo): ?\Illuminate\Contracts\View\View
+    public function sort(ExpeditionRepository $expeditionRepo)
     {
-        if ( ! \Request::ajax()) {
-            return null;
-        }
+        //if ( ! \Request::ajax()) {
+        //    return null;
+        //}
 
         $type = \Request::get('type');
         $sort = \Request::get('sort');
@@ -66,7 +65,7 @@ class ExpeditionController extends Controller
 
         [$active, $completed] = $expeditionRepo->getExpeditionPublicIndex($sort, $order, $projectId)
             ->partition(function($expedition) {
-                return $expedition->completed;
+                return $expedition->completed === 0;
         });
 
         $expeditions = $type === 'active' ? $active : $completed;
