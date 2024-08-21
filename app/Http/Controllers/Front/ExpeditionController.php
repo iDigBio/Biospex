@@ -54,9 +54,9 @@ class ExpeditionController extends Controller
      */
     public function sort(ExpeditionRepository $expeditionRepo)
     {
-        //if ( ! \Request::ajax()) {
-        //    return null;
-        //}
+        if ( ! \Request::ajax()) {
+            return null;
+        }
 
         $type = \Request::get('type');
         $sort = \Request::get('sort');
