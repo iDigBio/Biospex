@@ -70,7 +70,8 @@ class ExpeditionController extends Controller
         });
 
         $expeditions = $type === 'active' ? $active : $completed;
+        $project = false;
 
-        return \View::make('front.expedition.partials.expedition', compact('expeditions'));
+        return \View::make('front.expedition.partials.expedition', compact('expeditions', 'project'));
     }
 }
