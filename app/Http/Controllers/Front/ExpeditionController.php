@@ -38,13 +38,13 @@ class ExpeditionController extends Controller
     public function index(ExpeditionRepository $expeditionRepo)
     {
         $results = $expeditionRepo->getExpeditionPublicIndex();
-        $project = $results->first()->project;
+        //$project = $results->first()->project;
 
         [$expeditions, $expeditionsCompleted] = $results->partition(function($expedition) {
             return $expedition->completed === 0;
         });
 
-        return \View::make('front.expedition.index', compact('expeditions', 'project', 'expeditionsCompleted'));
+        return \View::make('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
     }
 
     /**
