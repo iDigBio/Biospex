@@ -40,7 +40,7 @@ class AwsSnsController
      *
      * @return \Illuminate\Http\Response
      */
-    public function handle(): \Illuminate\Http\Response
+    public function index(): \Illuminate\Http\Response
     {
         $message = Message::fromRawPostData();
 
