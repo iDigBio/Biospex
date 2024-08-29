@@ -23,7 +23,7 @@ use App\Models\GeoLocateExport;
 use Illuminate\Support\LazyCollection;
 
 /**
- * Class ActorRepository
+ * Class GeoLocateRepository
  *
  * @package App\Repositories
  */

@@ -22,7 +22,7 @@ namespace App\Repositories;
 use App\Models\GeoLocateCommunity;
 
 /**
- * Class ActorRepository
+ * Class GeoLocateCommunityRepository
  *
  * @package App\Repositories
  */
