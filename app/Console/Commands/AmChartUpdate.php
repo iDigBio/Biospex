@@ -48,9 +48,8 @@ class AmChartUpdate extends Command
      * AmChartUpdate constructor.
      *
      * @param \App\Models\AmChart $amChart
-     * @param \App\Jobs\AmChartJob $amChartJob
      */
-    public function __construct(private readonly AmChart $amChart, private readonly AmChartJob $amChartJob)
+    public function __construct(private readonly AmChart $amChart)
     {
         parent::__construct();
     }
@@ -64,7 +63,7 @@ class AmChartUpdate extends Command
             $this->amChart->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
 
         $projectIds->each(function($projectId) {
-            $this->amChartJob::dispatch((int) $projectId);
+            AmChartJob::dispatch((int) $projectId);
         });
     }
 }
