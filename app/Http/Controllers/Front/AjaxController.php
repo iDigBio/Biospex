@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Repositories\AmChartRepository;
+use App\Models\AmChart;
 use App\Repositories\EventRepository;
 use App\Repositories\WeDigBioEventDateRepository;
 use App\Services\Chart\BiospexEventRateChartProcess;
@@ -50,17 +50,17 @@ class AjaxController extends Controller
     /**
      * Load amChart.
      *
-     * @param \App\Repositories\AmChartRepository $amChartRepo
+     * @param \App\Models\AmChart $amChart
      * @param $projectId
      * @return \Illuminate\Http\JsonResponse|mixed
      */
-    public function loadAmChart(AmChartRepository $amChartRepo, $projectId)
+    public function loadAmChart(AmChart $amChart, $projectId)
     {
         if (! \Request::ajax() || $projectId === null) {
             return response()->json(['html' => 'hitting null']);
         }
 
-        $record = $amChartRepo->findBy('project_id', $projectId);
+        $record = $amChart->where('project_id', $projectId)->first();
 
         return json_decode($record->data);
     }

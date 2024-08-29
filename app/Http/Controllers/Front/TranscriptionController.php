@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\AmChartRepository;
+use App\Models\AmChart;
 use App\Repositories\StateCountyRepository;
 use File;
 
@@ -34,15 +34,15 @@ class TranscriptionController extends Controller
     /**
      * Return json data for transcription charts.
      *
-     * @param \App\Repositories\AmChartRepository $amChartRepo
+     * @param \App\Models\AmChart $amChart
      * @param int $projectId
      * @param string $year
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function transcriptions(AmChartRepository $amChartRepo, int $projectId, string $year): \Illuminate\Http\JsonResponse
+    public function transcriptions(AmChart $amChart, int $projectId, string $year): \Illuminate\Http\JsonResponse
     {
-        $chart = $amChartRepo->findBy('project_id', $projectId);
+        $chart = $amChart->where('project_id', $projectId)->first();
 
         $file = json_decode(File::get(config('config.project_chart_config')), true);
         $file['series'] = $chart->series[$year];
