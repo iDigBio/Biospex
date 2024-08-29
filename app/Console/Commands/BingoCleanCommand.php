@@ -19,8 +19,9 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\BingoMapRepository;
+use App\Models\BingoMap;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 
 /**
  * Class BingoCleanCommand
@@ -44,30 +45,18 @@ class BingoCleanCommand extends Command
      */
     protected $description = "Remove expired bingo maps.";
 
-    /**
-     * @var \App\Repositories\BingoMapRepository
-     */
-    private $bingoMapRepo;
-
-    /**
-     * BingoCleanCommand constructor.
-     *
-     * @param \App\Repositories\BingoMapRepository $bingoMapRepo
-     */
-    public function __construct(BingoMapRepository $bingoMapRepo)
+    public function __construct(private readonly BingoMap $bingoMap)
     {
         parent::__construct();
-        $this->bingoMapRepo = $bingoMapRepo;
     }
-
     /**
      * Handle job
      *
      * @throws \Exception
      */
-    public function handle()
+    public function handle(): void
     {
-        $records = $this->bingoMapRepo->getBingoMapForCleaning();
+        $records = $this->bingoMap->where('created_at', '<', Carbon::now()->subDays(1))->get();
 
         $records->each(function($record){
             $record->delete();

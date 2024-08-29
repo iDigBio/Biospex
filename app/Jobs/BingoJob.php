@@ -20,9 +20,9 @@
 namespace App\Jobs;
 
 use App\Events\BingoEvent;
+use App\Models\BingoMap;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Repositories\BingoMapRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -64,11 +64,12 @@ class BingoJob implements ShouldQueue
     /**
      * Job handle.
      *
-     * @param \App\Repositories\BingoMapRepository $bingoMapRepo
+     * @param \App\Models\BingoMap $bingoMap
+     * @param \App\Events\BingoEvent $bingoEvent
      */
-    public function handle(BingoMapRepository $bingoMapRepo): void
+    public function handle(BingoMap $bingoMap, BingoEvent $bingoEvent): void
     {
-        $locations = $bingoMapRepo->getBy('bingo_id', $this->bingoId);
+        $locations = $bingoMap->where('bingo_id', $this->bingoId)->get();
         $data['markers'] = $locations->map(function($location) {
             return [
                 'latitude' => $location->latitude,
@@ -79,13 +80,13 @@ class BingoJob implements ShouldQueue
 
         $data['winner'] = null;
         if ($this->mapId !== null) {
-            $map = $bingoMapRepo->find($this->mapId);
+            $map = $bingoMap->find($this->mapId);
             $data['winner']['city'] = $map->city;
             $data['winner']['uuid'] = $map->uuid;
         }
 
 
-        BingoEvent::dispatch($this->bingoId, $data);
+        $bingoEvent::dispatch($this->bingoId, $data);
     }
 
     /**

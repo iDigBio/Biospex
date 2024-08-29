@@ -21,8 +21,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BingoFormRequest;
-use App\Repositories\BingoRepository;
-use App\Repositories\ProjectRepository;
+use App\Services\Models\BingoModelService;
+use App\Services\Models\ProjectModelService;
 use Flash;
 use Illuminate\Support\Facades\Auth;
 use Redirect;
@@ -36,25 +36,13 @@ use View;
 class BingoController extends Controller
 {
     /**
-     * @var \App\Repositories\BingoRepository
-     */
-    private BingoRepository $bingoRepo;
-
-    /**
-     * @var \App\Repositories\ProjectRepository
-     */
-    private $projectRepo;
-
-    /**
      * BingoController constructor.
      *
-     * @param \App\Repositories\BingoRepository $bingoRepo
-     * @param \App\Repositories\ProjectRepository $projectRepo
      */
-    public function __construct(BingoRepository $bingoRepo, ProjectRepository $projectRepo)
-    {
-        $this->bingoRepo = $bingoRepo;
-        $this->projectRepo = $projectRepo;
+    public function __construct(
+        private readonly BingoModelService $bingoModelService,
+        private readonly ProjectModelService $projectModelService
+    ) {
     }
 
     /**
@@ -64,7 +52,7 @@ class BingoController extends Controller
      */
     public function index()
     {
-        $bingos = $this->bingoRepo->getAdminIndex(Auth::user()->id);
+        $bingos = $this->bingoModelService->getBingoByUserIdWithRelations(Auth::id(), ['user', 'project', 'words']);
 
         return View::make('admin.bingo.index', compact('bingos'));
     }
@@ -76,7 +64,7 @@ class BingoController extends Controller
      */
     public function create()
     {
-        $projects = $this->projectRepo->getProjectEventSelect();
+        $projects = $this->projectModelService->getProjectEventSelect();
 
         return View::make('admin.bingo.create', compact('projects'));
     }
@@ -89,7 +77,7 @@ class BingoController extends Controller
      */
     public function store(BingoFormRequest $request)
     {
-        $bingo = $this->bingoRepo->createBingo($request->all());
+        $bingo = $this->bingoModelService->createBingo($request->all());
 
         if ($bingo) {
             Flash::success(t('Record was created successfully.'));
@@ -110,10 +98,9 @@ class BingoController extends Controller
      */
     public function show(string $bingoId)
     {
-        $bingo = $this->bingoRepo->findWith($bingoId, ['words']);
+        $bingo = $this->bingoModelService->findBingoWithRelations($bingoId, ['words']);
 
-        if ( ! $this->checkPermissions('read', $bingo))
-        {
+        if (! $this->checkPermissions('read', $bingo)) {
             return Redirect::route('admin.bingos.index');
         }
 
@@ -128,8 +115,8 @@ class BingoController extends Controller
      */
     public function edit(string $bingoId)
     {
-        $bingo = $this->bingoRepo->findWith($bingoId, ['words', 'project']);
-        $projects = $this->projectRepo->getProjectEventSelect();
+        $bingo = $this->bingoModelService->findBingoWithRelations($bingoId, ['words', 'project']);
+        $projects = $this->projectModelService->getProjectEventSelect();
 
         return View::make('admin.bingo.edit', compact('bingo', 'projects'));
     }
@@ -143,24 +130,17 @@ class BingoController extends Controller
      */
     public function update(BingoFormRequest $request, string $bingoId)
     {
-        $bingo = $this->bingoRepo->findWith($bingoId, ['words']);
+        $bingo = $this->bingoModelService->findBingoWithRelations($bingoId, ['words']);
 
-        if ( ! $this->checkPermissions('update', $bingo))
-        {
+        if (! $this->checkPermissions('update', $bingo)) {
             return Redirect::route('admin.bingos.index');
         }
 
-        $result = $this->bingoRepo->updatebingo($request->all(), $bingoId);
+        $result = $this->bingoModelService->updateBingo($request->all(), $bingoId);
 
-        if ($result) {
-            Flash::success(t('Record was updated successfully.'));
+        Flash::success(t('Record was updated successfully.'));
 
-            return Redirect::route('admin.bingos.show', [$bingoId]);
-        }
-
-        Flash::error(t('Error while updating record.'));
-
-        return Redirect::route('admin.bingos.edit', [$bingoId]);
+        return Redirect::route('admin.bingos.show', [$bingoId]);
     }
 
     /**
@@ -171,17 +151,15 @@ class BingoController extends Controller
      */
     public function delete(string $bingoId)
     {
-        $bingo = $this->bingoRepo->find($bingoId);
+        $bingo = $this->bingoModelService->findBingoWithRelations($bingoId);
 
-        if ( ! $this->checkPermissions('delete', $bingo))
-        {
+        if (! $this->checkPermissions('delete', $bingo)) {
             return Redirect::route('admin.bingos.index');
         }
 
         $result = $bingo->delete();
 
-        if ($result)
-        {
+        if ($result) {
             Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
             return Redirect::route('admin.bingos.index');

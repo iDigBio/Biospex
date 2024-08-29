@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -11,66 +11,55 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\Bingo;
-use App\Models\BingoWord;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use function collect;
 
-/**
- * Class BingoRepository
- *
- * @package App\Repositories
- */
-class BingoRepository extends BaseRepository
+readonly class BingoModelService
 {
-    /**
-     * BingoRepository constructor.
-     *
-     * @param \App\Models\Bingo $bingo
-     */
-    public function __construct(Bingo $bingo)
-    {
+    public function __construct(private Bingo $bingo, private BingoWordModelService $bingoWordModelService)
+    {}
 
-        $this->model = $bingo;
+    public function findBingoWithRelations(int $id, array $relations = []): mixed
+    {
+        return $this->bingo->with($relations)->find($id);
     }
 
     /**
-     * Get bingo admin index.
+     * Get bingo with relations by user id.
      *
      * @param int $userId
-     * @return \Illuminate\Support\Collection
+     * @param array $relations
+     * @return Collection
      */
-    public function getAdminIndex(int $userId): Collection
+    public function getBingoByUserIdWithRelations(int $userId, array $relations = []): Collection
     {
-        return $this->model->with(['user', 'project', 'words'])
-            ->where('user_id', $userId)->get();
+        return $this->bingo->with($relations)->where('user_id', $userId)->get();
     }
 
     /**
-     * Created bingo.
+     * Create bingo.
      *
      * @param array $attributes
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return mixed
      */
-    public function createBingo(array $attributes): Model
+    public function createBingo(array $attributes): mixed
     {
-        $bingo = $this->create($attributes);
+        $bingo = $this->bingo->create($attributes);
 
         $words = collect($attributes['words'])->map(function ($word) {
             $values = [
                 'word' => $word['word'],
                 'definition' => $word['definition']
             ];
-            return new BingoWord($values);
+            return $this->bingoWordModelService->makeBingoWord($values);
         });
 
         $bingo->words()->saveMany($words->all());
@@ -83,14 +72,15 @@ class BingoRepository extends BaseRepository
      *
      * @param array $attributes
      * @param string $resourceId
-     * @return false
+     * @return Bingo
      */
-    public function updateBingo(array $attributes, string $resourceId)
+    public function updateBingo(array $attributes, string $resourceId): Bingo
     {
-        $bingo = $this->update($attributes, $resourceId);
+        $bingo = $this->bingo->find($resourceId);
+        $bingo->fill($attributes)->save();
 
         $words = collect($attributes['words'])->map(function ($word) {
-            $result = BingoWord::find($word['id']);
+            $result = $this->bingoWordModelService->findBingoWordWithRelations($word['id']);
             $result->word = $word['word'];
             $result->definition = $word['definition'];
 

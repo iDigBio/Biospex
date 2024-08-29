@@ -1,5 +1,5 @@
 <?php declare(strict_types = 1);
-/**
+/*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
  *
@@ -20,53 +20,30 @@
 namespace App\Services\Games;
 
 use App\Models\Bingo;
-use App\Repositories\BingoMapRepository;
-use App\Repositories\BingoRepository;
+use App\Models\BingoMap;
 use App\Services\Api\GeoPlugin;
 use General;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use JavaScript;
 use Session;
-use function collect;
-use function config;
-use function route;
 
 /**
  * Class BingoProcess
  *
  * @package App\Services\Process
  */
-class BingoProcess
+readonly class BingoProcess
 {
     /**
-     * @var \App\Repositories\BingoRepository
-     */
-    private BingoRepository $bingoRepo;
-
-    /**
-     * @var \App\Repositories\BingoMapRepository
-     */
-    private BingoMapRepository $bingoMapRepo;
-
-    /**
-     * @var \App\Services\Api\GeoPlugin
-     */
-    private $location;
-
-    /**
-     * BingoRepository constructor.
+     * BingoProcess constructor.
      *
-     * @param \App\Repositories\BingoRepository $bingoRepo
-     * @param \App\Repositories\BingoMapRepository $bingoMapRepo
+     * @param \App\Models\Bingo $bingo
+     * @param \App\Models\BingoMap $bingoMap
      * @param \App\Services\Api\GeoPlugin $location
      */
-    public function __construct(BingoRepository $bingoRepo, BingoMapRepository $bingoMapRepo, GeoPlugin $location)
-    {
-        $this->bingoRepo = $bingoRepo;
-        $this->bingoMapRepo = $bingoMapRepo;
-        $this->location = $location;
-    }
+    public function __construct(private Bingo $bingo, private BingoMap $bingoMap, private GeoPlugin $location)
+    {}
 
     /**
      * Get all bingo games.
@@ -75,7 +52,7 @@ class BingoProcess
      */
     public function getAllBingos(): Collection
     {
-        return $this->bingoRepo->allWith(['user', 'project']);
+        return $this->bingo->with(['user', 'project'])->get();
     }
 
     /**
@@ -83,11 +60,11 @@ class BingoProcess
      *
      * @param string $id
      * @param array $with
-     * @return mixed
+     * @return \App\Models\Bingo
      */
-    public function findBingoWith(string $id, array $with = [])
+    public function findBingoWith(string $id, array $with = []): Bingo
     {
-        return $this->bingoRepo->findWith($id, $with);
+        return $this->bingo->with($with)->find($id);
     }
 
     /**
@@ -95,11 +72,11 @@ class BingoProcess
      *
      * @param \App\Models\Bingo $bingo
      * @param string $uuid
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return \App\Models\BingoMap
      */
-    private function findBingoMapByUuid(Bingo $bingo, string $uuid): Model
+    private function findBingoMapByUuid(Bingo $bingo, string $uuid): BingoMap
     {
-        $map = $this->bingoMapRepo->getBingoMapByBingoIdUuid($bingo->id, $uuid);
+        $map = $this->bingoMap->where('bingo_id', $bingo->id)->where('uuid', $uuid)->first();
 
         if ($map === null) {
             $map = $this->createBingoMap($bingo);
@@ -112,9 +89,9 @@ class BingoProcess
      * Create bingo map. Default Tallahassee if lat/long empty.
      *
      * @param \App\Models\Bingo $bingo
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return \App\Models\BingoMap|\Illuminate\Database\Eloquent\Model
      */
-    private function createBingoMap(Bingo $bingo): Model
+    private function createBingoMap(Bingo $bingo): Model|BingoMap
     {
         $values = [
             'bingo_id' => $bingo->id,
@@ -135,7 +112,7 @@ class BingoProcess
      */
     public function showBingo(string $bingoId): array
     {
-        $bingo = $this->findBingoWith($bingoId, ['words', 'user', 'project']);
+        $bingo = $this->bingo->with(['words', 'user', 'project'])->find($bingoId);
 
         $words = is_null($bingo) ? null : $bingo->words->chunk(3);
 
