@@ -24,16 +24,6 @@ use App\Services\Api\AwsS3ApiService;
 class AwsS3CsvService
 {
     /**
-     * @var \App\Services\Api\AwsS3ApiService
-     */
-    public AwsS3ApiService $awsS3ApiService;
-
-    /**
-     * @var \App\Services\Csv\Csv
-     */
-    public Csv $csv;
-
-    /**
      * @var false|resource
      */
     private $stream;
@@ -43,11 +33,8 @@ class AwsS3CsvService
      * @param \App\Services\Csv\Csv $csv
      * @return void
      */
-    public function __construct(AwsS3ApiService $awsS3ApiService, Csv $csv)
-    {
-        $this->awsS3ApiService = $awsS3ApiService;
-        $this->csv = $csv;
-    }
+    public function __construct(private readonly AwsS3ApiService $awsS3ApiService, private readonly Csv $csv)
+    {}
 
     /**
      * Create bucket stream.
