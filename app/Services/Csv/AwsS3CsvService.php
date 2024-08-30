@@ -33,7 +33,7 @@ class AwsS3CsvService
      * @param \App\Services\Csv\Csv $csv
      * @return void
      */
-    public function __construct(private readonly AwsS3ApiService $awsS3ApiService, private readonly Csv $csv)
+    public function __construct(private readonly AwsS3ApiService $awsS3ApiService, public Csv $csv)
     {}
 
     /**

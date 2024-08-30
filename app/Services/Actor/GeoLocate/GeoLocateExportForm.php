@@ -21,7 +21,6 @@ namespace App\Services\Actor\GeoLocate;
 
 use App\Models\Expedition;
 use App\Models\GeoLocateForm;
-use App\Repositories\GeoLocateFormRepository;
 use App\Repositories\GeoLocateRepository;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Models\ExpeditionService;
@@ -31,27 +30,6 @@ use Storage;
 
 class GeoLocateExportForm
 {
-    /**
-     * @var \App\Services\Models\ExpeditionService
-     */
-    private ExpeditionService $expeditionService;
-
-    /**
-     * @var \App\Repositories\GeoLocateFormRepository
-     */
-    private GeoLocateFormRepository $geoLocateFormRepository;
-
-    /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvService;
-
-    /**
-     * @var \App\Repositories\GeoLocateRepository
-     */
-    private GeoLocateRepository $geoLocateRepository;
-
-
     /**
      * @var string
      */
@@ -81,22 +59,16 @@ class GeoLocateExportForm
      * Construct.
      *
      * @param \App\Services\Models\ExpeditionService $expeditionService
-     * @param \App\Repositories\GeoLocateFormRepository $geoLocateFormRepository
+     * @param \App\Models\GeoLocateForm $geoLocateForm
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      * @param \App\Repositories\GeoLocateRepository $geoLocateRepository
      */
     public function __construct(
-        ExpeditionService $expeditionService,
-        GeoLocateFormRepository $geoLocateFormRepository,
-        AwsS3CsvService $awsS3CsvService,
-        GeoLocateRepository $geoLocateRepository
-    ) {
-
-        $this->expeditionService = $expeditionService;
-        $this->geoLocateFormRepository = $geoLocateFormRepository;
-        $this->awsS3CsvService = $awsS3CsvService;
-        $this->geoLocateRepository = $geoLocateRepository;
-    }
+        private ExpeditionService $expeditionService,
+        private GeoLocateForm $geoLocateForm,
+        private AwsS3CsvService $awsS3CsvService,
+        private GeoLocateRepository $geoLocateRepository
+    ) {}
 
     /**
      * Find project with relations.
@@ -218,7 +190,7 @@ class GeoLocateExportForm
             'fields'   => $request['fields'],
         ];
 
-        $geoLocateForm = $this->geoLocateFormRepository->updateOrCreate($attributes, $values);
+        $geoLocateForm = $this->geoLocateForm->updateOrCreate($attributes, $values);
         $expedition->geoLocateForm()->associate($geoLocateForm)->save();
     }
 
@@ -321,18 +293,7 @@ class GeoLocateExportForm
      */
     public function findGeoLocateFormById(int $id): GeoLocateForm
     {
-        return $this->geoLocateFormRepository->find($id);
-    }
-
-    /**
-     * Find form with expedition count. Used in Groups for deleting.
-     *
-     * @param int $formId
-     * @return mixed
-     */
-    public function findGeoLocateFormByIdWithExpeditionCount(int $formId): mixed
-    {
-        return $this->geoLocateFormRepository->findByIdWithRelationCount($formId, 'expeditions');
+        return $this->geoLocateForm->find($id);
     }
 
     /**
