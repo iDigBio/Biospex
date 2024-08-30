@@ -21,7 +21,7 @@ namespace App\Services\Actor\Zooniverse;
 
 use App\Jobs\ZooniverseExportBuildZipJob;
 use App\Models\ExportQueue;
-use App\Repositories\ExportQueueFileRepository;
+use App\Models\ExportQueueFile;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Process\MapZooniverseCsvColumnsService;
@@ -34,36 +34,17 @@ use Illuminate\Support\Collection;
 class ZooniverseBuildCsv
 {
     /**
-     * @var \App\Repositories\ExportQueueFileRepository
-     */
-    private ExportQueueFileRepository $exportQueueFileRepository;
-
-    /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvService;
-
-    /**
-     * @var \App\Services\Process\MapZooniverseCsvColumnsService
-     */
-    private MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService;
-
-    /**
      * Construct.
      *
-     * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
+     * @param \App\Models\ExportQueueFile $exportQueueFile
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      * @param \App\Services\Process\MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService
      */
     public function __construct(
-        ExportQueueFileRepository $exportQueueFileRepository,
-        AwsS3CsvService $awsS3CsvService,
-        MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService
-    ) {
-        $this->exportQueueFileRepository = $exportQueueFileRepository;
-        $this->awsS3CsvService = $awsS3CsvService;
-        $this->mapZooniverseCsvColumnsService = $mapZooniverseCsvColumnsService;
-    }
+        private ExportQueueFile $exportQueueFile,
+        private AwsS3CsvService $awsS3CsvService,
+        private MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService
+    ) {}
 
     /**
      * Process actor.
@@ -83,7 +64,7 @@ class ZooniverseBuildCsv
         $this->awsS3CsvService->csv->addEncodingFormatter();
 
         $first = true;
-        $this->exportQueueFileRepository->model()->chunk(config('config.aws.lambda_export_count'), function ($chunk) use
+        $this->exportQueueFile->chunk(config('config.aws.lambda_export_count'), function ($chunk) use
         (
             $exportQueue,
             $actorDirectory,

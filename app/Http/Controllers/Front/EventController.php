@@ -19,12 +19,13 @@
 
 namespace App\Http\Controllers\Front;
 
-use Date;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventJoinRequest;
-use App\Repositories\EventRepository;
-use App\Repositories\EventTeamRepository;
-use App\Repositories\EventUserRepository;
+use App\Models\EventTeam;
+use App\Services\Models\EventModelService;
+use App\Services\Models\EventUserModelService;
+use Date;
+use General;
 
 /**
  * Class EventController
@@ -33,31 +34,31 @@ use App\Repositories\EventUserRepository;
  */
 class EventController extends Controller
 {
+    public function __construct(private readonly EventModelService $eventModelService)
+    {}
+
     /**
      * Displays Events on public page.
      *
-     * @param \App\Repositories\EventRepository $eventRepo
      * @return \Illuminate\Contracts\View\View
      */
-    public function index(EventRepository $eventRepo): \Illuminate\Contracts\View\View
+    public function index(): \Illuminate\Contracts\View\View
     {
-        $results = $eventRepo->getEventPublicIndex();
-        $project = $results->first()->project;
+        $results = $this->eventModelService->getEventPublicIndex();
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
             return Date::eventBefore($event) || Date::eventActive($event);
         });
 
-        return \View::make('front.event.index', compact('events', 'project', 'eventsCompleted'));
+        return \View::make('front.event.index', compact('events', 'eventsCompleted'));
     }
 
     /**
      * Displays Completed Events on public page.
      *
-     * @param \App\Repositories\EventRepository $eventRepo
      * @return \Illuminate\Contracts\View\View|null
      */
-    public function sort(EventRepository $eventRepo): ?\Illuminate\Contracts\View\View
+    public function sort(): ?\Illuminate\Contracts\View\View
     {
         if (! \Request::ajax()) {
             return null;
@@ -67,7 +68,7 @@ class EventController extends Controller
         $order = \Request::get('order');
         $projectId = \Request::get('id');
 
-        $results = $eventRepo->getEventPublicIndex($sort, $order, $projectId);
+        $results = $this->eventModelService->getEventPublicIndex($sort, $order, $projectId);
 
         [$active, $completed] = $results->partition(function ($event) {
             return Date::eventBefore($event) || Date::eventActive($event);
@@ -81,13 +82,12 @@ class EventController extends Controller
     /**
      * Display the show page for an event.
      *
-     * @param \App\Repositories\EventRepository $eventRepo
-     * @param $eventId
+     * @param int $eventId
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function read(EventRepository $eventRepo, $eventId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function read(int $eventId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $event = $eventRepo->findWith($eventId, ['project.lastPanoptesProject', 'teams:id,title,event_id']);
+        $event = $this->eventModelService->findEventWithRelations($eventId, ['project.lastPanoptesProject', 'teams:id,title,event_id']);
 
         if ($event === null) {
             \Flash::error(t('Error retrieving record from database'));
@@ -101,14 +101,13 @@ class EventController extends Controller
     /**
      * Group join page for events.
      *
-     * @param \App\Repositories\EventTeamRepository $eventTeamRepo
+     * @param \App\Models\EventTeam $eventTeam
      * @param $uuid
      * @return \Illuminate\Contracts\View\View
-     * @throws \Exception
      */
-    public function signup(EventTeamRepository $eventTeamRepo, $uuid): \Illuminate\Contracts\View\View
+    public function signup(EventTeam $eventTeam, $uuid): \Illuminate\Contracts\View\View
     {
-        $team = $eventTeamRepo->getTeamByUuid($uuid);
+        $team = $eventTeam->with(['event'])->where('uuid', General::uuidToBin($uuid))->first();
 
         $active = Date::eventBefore($team->event) || Date::eventActive($team->event);
 
@@ -122,23 +121,23 @@ class EventController extends Controller
     /**
      * Store user for event group.
      *
-     * @param \App\Repositories\EventUserRepository $eventUserRepo
-     * @param \App\Repositories\EventTeamRepository $eventTeamRepo
+     * @param \App\Services\Models\EventUserModelService $eventUserModelService
+     * @param \App\Models\EventTeam $eventTeam
      * @param \App\Http\Requests\EventJoinRequest $request
      * @param $uuid
      * @return \Illuminate\Http\RedirectResponse
      */
     public function join(
-        EventUserRepository $eventUserRepo,
-        EventTeamRepository $eventTeamRepo,
+        EventUserModelService $eventUserModelService,
+        EventTeam $eventTeam,
         EventJoinRequest $request,
         $uuid
     ) {
 
-        $user = $eventUserRepo->updateOrCreate(['nfn_user' => $request->get('nfn_user')], ['nfn_user' => $request->get('nfn_user')]);
+        $user = $eventUserModelService->updateOrCreate(['nfn_user' => $request->get('nfn_user')], ['nfn_user' => $request->get('nfn_user')]);
 
         if ($user !== null) {
-            $team = $eventTeamRepo->findWith($request->get('team_id'), ['event']);
+            $team = $eventTeam->with(['event'])->find($request->get('team_id'));
             $team->users()->syncWithoutDetaching([$user->id]);
 
             \Flash::success(t('Thank you for your registration.'));

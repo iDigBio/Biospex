@@ -11,34 +11,32 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\EventTranscription;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-/**
- * Class EventTranscriptionRepository
- *
- * @package App\Repositories
- */
-class EventTranscriptionRepository extends BaseRepository
+class EventTranscriptionModelService
 {
-    /**
-     * EventTranscriptionRepository constructor.
-     *
-     * @param \App\Models\EventTranscription $eventTranscription
-     */
-    public function __construct(EventTranscription $eventTranscription)
-    {
+    public function __construct(private readonly EventTranscription $eventTranscription)
+    {}
 
-        $this->model = $eventTranscription;
+    /**
+     * Create.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create(array $data): mixed
+    {
+        return $this->eventTranscription->create($data);
     }
 
     /**
@@ -49,20 +47,20 @@ class EventTranscriptionRepository extends BaseRepository
      */
     public function getEventClassificationIds($eventId): mixed
     {
-        return $this->model->where('event_id', $eventId)->pluck('classification_id');
+        return $this->eventTranscription->where('event_id', $eventId)->pluck('classification_id');
     }
 
     /**
      * Get transcriptions for event step chart.
      *
-     * @param string $eventId
+     * @param int $eventId
      * @param \Illuminate\Support\Carbon $startLoad
      * @param \Illuminate\Support\Carbon $endLoad
      * @return \Illuminate\Support\Collection|null
      */
-    public function getEventRateChartTranscriptions(string $eventId, Carbon $startLoad, Carbon $endLoad): ?Collection
+    public function getEventRateChartTranscriptions(int $eventId, Carbon $startLoad, Carbon $endLoad): ?Collection
     {
-        return $this->model->with(['team:id,title'])
+        return $this->eventTranscription->with(['team:id,title'])
             ->selectRaw('event_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, team_id, count(id) as count')
             ->where('event_id', $eventId)
             ->where('created_at', '>=', $startLoad->toDateTimeString())

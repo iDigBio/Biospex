@@ -21,8 +21,8 @@ namespace App\Jobs;
 use App\Models\Actor;
 use App\Models\Expedition;
 use App\Notifications\Generic;
-use App\Repositories\ExpeditionRepository;
 use App\Services\Actor\GeoLocate\GeoLocateStat;
+use App\Services\Models\ExpeditionModelService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -64,10 +64,10 @@ class GeoLocateStatsJob implements ShouldQueue
     /**
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(GeoLocateStat $geoLocateStat, ExpeditionRepository $expeditionRepository): void
+    public function handle(GeoLocateStat $geoLocateStat, ExpeditionModelService $expeditionModelService): void
     {
 
-        $this->expedition = $expeditionRepository->findWith($this->actor->pivot->expedition_id, ['project.group.owner']);
+        $this->expedition = $expeditionModelService->findExpeditionWithRelations($this->actor->pivot->expedition_id, ['project.group.owner']);
         $geoLocateDataSource = $geoLocateStat->getCommunityAndDataSourceByExpeditionId($this->actor->pivot->expedition_id);
 
         if (!$this->refresh && $geoLocateDataSource->updated_at->diffInDays(now()) < 2) {

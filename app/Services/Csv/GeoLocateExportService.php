@@ -22,7 +22,7 @@ namespace App\Services\Csv;
 use App\Models\Expedition;
 use App\Models\GeoLocateExport;
 use App\Models\GeoLocateForm;
-use App\Repositories\DownloadRepository;
+use App\Models\Download;
 use App\Repositories\GeoLocateRepository;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -32,18 +32,8 @@ use Illuminate\Support\Facades\Storage;
  *
  * @package App\Services\Export
  */
-class GeoLocateExportService
+readonly class GeoLocateExportService
 {
-
-    /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvService;
-
-    /**
-     * @var \App\Repositories\GeoLocateRepository
-     */
-    private GeoLocateRepository $geoLocateRepository;
 
     /**
      * @var string
@@ -51,27 +41,18 @@ class GeoLocateExportService
     private string $csvFilePath;
 
     /**
-     * @var \App\Repositories\DownloadRepository
-     */
-    private DownloadRepository $downloadRepository;
-
-    /**
      * Construct
      *
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      * @param \App\Repositories\GeoLocateRepository $geoLocateRepository
-     * @param \App\Repositories\DownloadRepository $downloadRepository
+     * @param \App\Models\Download $download
      */
     public function __construct(
-        AwsS3CsvService $awsS3CsvService,
-        GeoLocateRepository $geoLocateRepository,
-        DownloadRepository $downloadRepository,
+        private AwsS3CsvService $awsS3CsvService,
+        private GeoLocateRepository $geoLocateRepository,
+        private Download $download,
     )
-    {
-        $this->awsS3CsvService = $awsS3CsvService;
-        $this->geoLocateRepository = $geoLocateRepository;
-        $this->downloadRepository = $downloadRepository;
-    }
+    {}
 
     /**
      * Process GeoLocate export.
@@ -257,7 +238,7 @@ class GeoLocateExportService
             'type'          => 'export',
         ];
 
-        $this->downloadRepository->updateOrCreate($attributes, $values);
+        $this->download->updateOrCreate($attributes, $values);
     }
 
     public function updateActorExpeditionPivot(Expedition $expedition)

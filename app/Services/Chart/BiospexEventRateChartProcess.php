@@ -19,55 +19,42 @@
 
 namespace App\Services\Chart;
 
+use App\Facades\DateHelper;
+use App\Services\Models\EventModelService;
+use App\Services\Models\EventTranscriptionModelService;
 use Date;
 use App\Models\Event;
-use App\Repositories\EventRepository;
-use App\Repositories\EventTranscriptionRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use function collect;
 
 /**
  * Class BiospexEventRateChartProcess
  *
  * @package App\Services\Process
  */
-class BiospexEventRateChartProcess
+readonly class BiospexEventRateChartProcess
 {
-    /**
-     * @var \App\Repositories\EventRepository
-     */
-    private EventRepository $eventRepo;
-
-    /**
-     * @var \App\Repositories\EventTranscriptionRepository
-     */
-    private EventTranscriptionRepository $eventTranscriptionRepo;
-
     /**
      * AjaxService constructor.
      *
-     * @param \App\Repositories\EventRepository $eventRepo
-     * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
+     * @param \App\Services\Models\EventModelService $eventModelService
+     * @param \App\Services\Models\EventTranscriptionModelService $eventTranscriptionModelService
      */
     public function __construct(
-        EventRepository $eventRepo,
-        EventTranscriptionRepository $eventTranscriptionRepo
-    ) {
-        $this->eventRepo = $eventRepo;
-        $this->eventTranscriptionRepo = $eventTranscriptionRepo;
-    }
+        private EventModelService $eventModelService,
+        private EventTranscriptionModelService $eventTranscriptionModelService
+    ) {}
 
     /**
      * Get event transcription data for step chart.
      *
-     * @param string $eventId
+     * @param int $eventId
      * @param string|null $timestamp
-     * @return array
+     * @return array|null
      */
-    public function eventStepChart(string $eventId, string $timestamp = null): ?array
+    public function eventStepChart(int $eventId, string $timestamp = null): ?array
     {
-        $event = $this->eventRepo->findWith($eventId, ['teams']);
+        $event = $this->eventModelService->findEventWithRelations($eventId, ['teams']);
         if ($event === null) {
             return null;
         }
@@ -80,7 +67,7 @@ class BiospexEventRateChartProcess
 
         $intervals = $this->setTimeIntervals($startLoad, $endLoad, $timestamp);
 
-        $transcriptions = $this->eventTranscriptionRepo->getEventRateChartTranscriptions($eventId, $startLoad, $endLoad);
+        $transcriptions = $this->eventTranscriptionModelService->getEventRateChartTranscriptions($eventId, $startLoad, $endLoad);
 
         return $transcriptions->isEmpty() ? $this->processEmptyResult($event, $intervals) : $this->processTranscriptionResult($event, $transcriptions, $intervals);
     }

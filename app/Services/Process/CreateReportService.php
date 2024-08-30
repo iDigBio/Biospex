@@ -20,38 +20,22 @@
 namespace App\Services\Process;
 
 use App\Models\ExportQueue;
-use App\Repositories\DownloadRepository;
+use App\Models\Download;
 use App\Services\Csv\AwsS3CsvService;
 
 /**
  * Class CreateReportService
  */
-class CreateReportService
+readonly class CreateReportService
 {
-    /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvService;
-
-    /**
-     * @var \App\Repositories\DownloadRepository
-     */
-    private DownloadRepository $downloadRepository;
-
     /**
      * Construct.
      *
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
-     * @param \App\Repositories\DownloadRepository $downloadRepository
+     * @param \App\Models\Download $download
      */
-    public function __construct(
-        AwsS3CsvService $awsS3CsvService,
-        DownloadRepository $downloadRepository
-    )
-    {
-        $this->awsS3CsvService = $awsS3CsvService;
-        $this->downloadRepository = $downloadRepository;
-    }
+    public function __construct(private AwsS3CsvService $awsS3CsvService, private Download $download)
+    {}
 
     /**
      * Create csv report.
@@ -100,6 +84,6 @@ class CreateReportService
             'type' => 'report'
         ];
 
-        $this->downloadRepository->updateOrCreate($attributes, $values);
+        $this->download->updateOrCreate($attributes, $values);
     }
 }

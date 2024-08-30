@@ -19,8 +19,8 @@
 
 namespace App\Jobs;
 
+use App\Models\Download;
 use App\Notifications\Generic;
-use App\Repositories\DownloadRepository;
 use App\Services\Actor\Zooniverse\ZooniverseExportBatch;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -63,12 +63,11 @@ class ExportDownloadBatchJob implements ShouldQueue
     /**
      * Handle download batch job.
      *
-     * @param \App\Repositories\DownloadRepository $downloadRepository
      * @param \App\Services\Actor\Zooniverse\ZooniverseExportBatch $zooniverseExportBatch
      */
-    public function handle(DownloadRepository $downloadRepository, ZooniverseExportBatch $zooniverseExportBatch): void
+    public function handle(Download $download, ZooniverseExportBatch $zooniverseExportBatch): void
     {
-        $download = $downloadRepository->findWith($this->downloadId, ['expedition.project.group.owner', 'actor']);
+        $download = $download->with(['expedition.project.group.owner', 'actor'])->find($this->downloadId);
 
         try {
             $zooniverseExportBatch->process($download);

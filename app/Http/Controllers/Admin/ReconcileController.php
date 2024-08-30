@@ -21,9 +21,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ExpertReconcileReviewPublishJob;
-use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Api\ZooniverseTalkApiService;
+use App\Services\Models\ExpeditionModelService;
 use App\Services\Reconcile\ExpertReconcileService;
 use App\Services\Reconcile\ReconcileService;
 use App\Traits\SkipZooniverse;
@@ -43,37 +43,18 @@ class ReconcileController extends Controller
     use SkipZooniverse;
 
     /**
-     * @var \App\Services\Reconcile\ExpertReconcileService
-     */
-    private ExpertReconcileService $expertReconcileService;
-
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
-     * @var \App\Services\Reconcile\ReconcileService
-     */
-    private ReconcileService $reconcileService;
-
-    /**
      * ReconcileController constructor.
      *
      * @param \App\Services\Reconcile\ExpertReconcileService $expertReconcileService
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param \App\Services\Reconcile\ReconcileService $reconcileService
      */
     public function __construct(
-        ExpertReconcileService $expertReconcileService,
-        ExpeditionRepository $expeditionRepo,
-        ReconcileService $reconcileService
+        private ExpertReconcileService $expertReconcileService,
+        private ExpeditionModelService $expeditionModelService,
+        private ReconcileService $reconcileService
     )
-    {
-        $this->expertReconcileService = $expertReconcileService;
-        $this->expeditionRepo = $expeditionRepo;
-        $this->reconcileService = $reconcileService;
-    }
+    {}
 
     /**
      * Show files needing reconciliation with pagination.
@@ -85,7 +66,7 @@ class ReconcileController extends Controller
      */
     public function index(int $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService): View|RedirectResponse
     {
-        $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner', 'panoptesProject']);
+        $expedition = $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['project.group.owner', 'panoptesProject']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
@@ -118,7 +99,7 @@ class ReconcileController extends Controller
      */
     public function create(int $expeditionId): RedirectResponse
     {
-        $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
+        $expedition = $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['project.group.owner']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);

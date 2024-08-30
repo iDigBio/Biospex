@@ -20,9 +20,9 @@
 namespace App\Services\Transcriptions;
 
 use App\Jobs\ScoreboardJob;
-use App\Repositories\EventRepository;
-use App\Repositories\EventTranscriptionRepository;
-use App\Repositories\EventUserRepository;
+use App\Services\Models\EventModelService;
+use App\Services\Models\EventTranscriptionModelService;
+use App\Services\Models\EventUserModelService;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Validator;
@@ -32,39 +32,20 @@ use Validator;
  *
  * @package App\Services\Transcriptions
  */
-class CreateBiospexEventTranscriptionService
+readonly class CreateBiospexEventTranscriptionService
 {
-    /**
-     * @var \App\Repositories\EventRepository
-     */
-    private EventRepository $eventRepo;
-
-    /**
-     * @var \App\Repositories\EventTranscriptionRepository
-     */
-    private EventTranscriptionRepository $eventTranscriptionRepo;
-
-    /**
-     * @var \App\Repositories\EventUserRepository
-     */
-    private EventUserRepository $eventUserRepo;
-
     /**
      * CreateBiospexEventTranscriptionService constructor.
      *
-     * @param \App\Repositories\EventRepository $eventRepo
-     * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
-     * @param \App\Repositories\EventUserRepository $eventUserRepo
+     * @param \App\Services\Models\EventModelService $eventModelService
+     * @param \App\Services\Models\EventTranscriptionModelService $eventTranscriptionModelService
+     * @param \App\Services\Models\EventUserModelService $eventUserModelService
      */
     public function __construct(
-        EventRepository $eventRepo,
-        EventTranscriptionRepository $eventTranscriptionRepo,
-        EventUserRepository $eventUserRepo
-    ) {
-        $this->eventRepo = $eventRepo;
-        $this->eventTranscriptionRepo = $eventTranscriptionRepo;
-        $this->eventUserRepo = $eventUserRepo;
-    }
+        private EventModelService $eventModelService,
+        private EventTranscriptionModelService $eventTranscriptionModelService,
+        private EventUserModelService $eventUserModelService
+    ) {}
 
     /**
      * Create event transcription for user.
@@ -80,7 +61,7 @@ class CreateBiospexEventTranscriptionService
         string $userName,
         Carbon $date = null
     ): void {
-        $user = $this->eventUserRepo->findBy('nfn_user', $userName, ['id']);
+        $user = $this->eventUserModelService->findByNfnUser($userName, ['id']);
 
         if ($user === null) {
             return;
@@ -88,7 +69,7 @@ class CreateBiospexEventTranscriptionService
 
         $timestamp = ! isset($date) ? Carbon::now('UTC') : $date;
 
-        $events = $this->eventRepo->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp->toDateTimeString());
+        $events = $this->eventModelService->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp->toDateTimeString());
 
         $events->each(function ($event) use ($classification_id, $user, $timestamp) {
             $event->teams->each(function ($team) use ($event, $classification_id, $user, $timestamp) {
@@ -105,7 +86,7 @@ class CreateBiospexEventTranscriptionService
 
                 $values = array_merge($attributes, ['created_at' => $timestamp->toDateTimeString(), 'updated_at' => $timestamp->toDateTimeString()]);
 
-                $this->eventTranscriptionRepo->create($values);
+                $this->eventTranscriptionModelService->create($values);
             });
         });
 

@@ -19,16 +19,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\GeoLocateCommunityRequest;
 use App\Http\Requests\WorkflowIdFormRequest;
 use App\Jobs\PanoptesProjectUpdateJob;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\PanoptesProjectRepository;
 use App\Repositories\ProjectRepository;
 use App\Repositories\WorkflowManagerRepository;
+use App\Services\Models\ExpeditionModelService;
 use Exception;
-use Flash;
-use Response;
 
 class ZooniverseController extends Controller
 {
@@ -59,12 +56,12 @@ class ZooniverseController extends Controller
     /**
      * Start processing expedition actors
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param int $projectId
      * @param int $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function process(ExpeditionRepository $expeditionRepository, int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
+    public function process(ExpeditionModelService $expeditionModelService, int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepository->findWith($projectId, ['group']);
 
@@ -73,7 +70,7 @@ class ZooniverseController extends Controller
         }
 
         try {
-            $expedition = $expeditionRepository->findWith($expeditionId, [
+            $expedition = $expeditionModelService->findExpeditionWithRelations($expeditionId, [
                 'actors',
                 'panoptesProject',
                 'workflowManager',

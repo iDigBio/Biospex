@@ -23,7 +23,7 @@ use App\Jobs\ZooniverseExportDeleteFilesJob;
 use App\Models\ExportQueue;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Repositories\ExportQueueFileRepository;
+use App\Models\ExportQueueFile;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Process\CreateReportService;
 use Notification;
@@ -38,29 +38,16 @@ class ZooniverseExportCreateReport
     use ButtonTrait;
 
     /**
-     * @var \App\Repositories\ExportQueueFileRepository
-     */
-    private ExportQueueFileRepository $exportQueueFileRepository;
-
-    /**
-     * @var \App\Services\Process\CreateReportService
-     */
-    private CreateReportService $createReportService;
-
-    /**
      * Construct.
      *
-     * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
+     * @param \App\Models\ExportQueueFile $exportQueueFile
      * @param \App\Services\Process\CreateReportService $createReportService
      */
     public function __construct(
-        ExportQueueFileRepository $exportQueueFileRepository,
-        CreateReportService $createReportService
+        private ExportQueueFile $exportQueueFile,
+        private CreateReportService $createReportService
     )
-    {
-        $this->exportQueueFileRepository = $exportQueueFileRepository;
-        $this->createReportService = $createReportService;
-    }
+    {}
 
     /**
      * Process actor.
@@ -80,7 +67,9 @@ class ZooniverseExportCreateReport
             }
         ]);
 
-        $data = $this->exportQueueFileRepository->getExportQueueFileWithErrors($exportQueue->id);
+        $data = $this->exportQueueFile->where('queue_id', $exportQueue->id)
+            ->whereNotNull('message')
+            ->get(['subject_id', 'message']);
 
         $csvName = $exportQueue->expedition->uuid.'.csv';
         $fileName = $this->createReportService->createCsvReport($csvName, $data->toArray());

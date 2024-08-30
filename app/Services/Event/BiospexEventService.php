@@ -19,8 +19,8 @@
 
 namespace App\Services\Event;
 
-use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
+use App\Services\Models\ExpeditionModelService;
 use App\Services\Transcriptions\CreateBiospexEventTranscriptionService;
 
 /**
@@ -31,37 +31,17 @@ use App\Services\Transcriptions\CreateBiospexEventTranscriptionService;
 class BiospexEventService
 {
     /**
-     * @var \App\Services\Transcriptions\CreateBiospexEventTranscriptionService
-     */
-    private CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService;
-
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
-     * @var \App\Services\Api\PanoptesApiService
-     */
-    private PanoptesApiService $apiService;
-
-    /**
      * BiospexEventService constructor.
      *
      * @param \App\Services\Transcriptions\CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param \App\Services\Api\PanoptesApiService $apiService
      */
     public function __construct(
-        CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService,
-        ExpeditionRepository $expeditionRepo,
-        PanoptesApiService $apiService)
-    {
-
-        $this->createBiospexEventTranscriptionService = $createBiospexEventTranscriptionService;
-        $this->expeditionRepo = $expeditionRepo;
-        $this->apiService = $apiService;
-    }
+        private CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService,
+        private ExpeditionModelService $expeditionModelService,
+        private PanoptesApiService $apiService)
+    {}
 
     /**
      * Adds transcription to event for particular user.
@@ -73,7 +53,7 @@ class BiospexEventService
      */
     public function process(array $data, int $expeditionId)
     {
-        $expedition = $this->expeditionRepo->find($expeditionId);
+        $expedition = $this->expeditionModelService->findExpeditionWithRelations($expeditionId);
 
         if ($expedition === null) {
             return;

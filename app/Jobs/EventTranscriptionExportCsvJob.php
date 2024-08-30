@@ -22,8 +22,8 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Repositories\EventTranscriptionRepository;
 use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Models\EventTranscriptionModelService;
 use App\Services\Process\CreateReportService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -75,20 +75,20 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
+     * @param \App\Services\Models\EventTranscriptionModelService $eventTranscriptionModelService
      * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      * @param \App\Services\Process\CreateReportService $createReportService
      * @return void
      */
     public function handle(
-        EventTranscriptionRepository $eventTranscriptionRepo,
+        EventTranscriptionModelService $eventTranscriptionModelService,
         PanoptesTranscriptionRepository $panoptesTranscriptionRepo,
         CreateReportService $createReportService,
     )
     {
         try
         {
-            $ids = $eventTranscriptionRepo->getEventClassificationIds($this->eventId);
+            $ids = $eventTranscriptionModelService->getEventClassificationIds($this->eventId);
 
             $transcriptions = $ids->map(function($id) use($panoptesTranscriptionRepo) {
                 $transcript = $panoptesTranscriptionRepo->findBy('classification_id', $id);

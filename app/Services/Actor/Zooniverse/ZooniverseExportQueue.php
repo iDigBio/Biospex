@@ -20,63 +20,37 @@
 namespace App\Services\Actor\Zooniverse;
 
 use App\Jobs\ZooniverseExportProcessImagesJob;
+use App\Models\Download;
 use App\Models\Expedition;
 use App\Models\ExportQueue;
-use App\Repositories\DownloadRepository;
-use App\Repositories\ExpeditionRepository;
-use App\Repositories\ExportQueueRepository;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Actor\ActorFactory;
+use App\Services\Models\ExpeditionModelService;
 use Illuminate\Support\Facades\Storage;
 
-class ZooniverseExportQueue
+readonly class ZooniverseExportQueue
 {
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepository;
-
-    /**
-     * @var \App\Repositories\DownloadRepository
-     */
-    private DownloadRepository $downloadRepository;
-
-    /**
-     * @var \App\Repositories\ExportQueueRepository
-     */
-    private ExportQueueRepository $exportQueueRepository;
-
-    /**
-     * @var \App\Services\Actor\ActorDirectory
-     */
-    private ActorDirectory $actorDirectory;
-
     /**
      * ExportQueueCommand constructor.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
-     * @param \App\Repositories\DownloadRepository $downloadRepository
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
+     * @param \App\Models\ExportQueue $exportQueue
      * @param \App\Services\Actor\ActorDirectory $actorDirectory
+     * @param \App\Models\Download $download
      */
     public function __construct(
-        ExpeditionRepository $expeditionRepository,
-        DownloadRepository $downloadRepository,
-        ExportQueueRepository $exportQueueRepository,
-        ActorDirectory $actorDirectory
-    ) {
-        $this->expeditionRepository = $expeditionRepository;
-        $this->downloadRepository = $downloadRepository;
-        $this->exportQueueRepository = $exportQueueRepository;
-        $this->actorDirectory = $actorDirectory;
-    }
+        private ExpeditionModelService $expeditionModelService,
+        private ExportQueue $exportQueue,
+        private ActorDirectory $actorDirectory,
+        private Download $download
+    ) {}
 
     /**
      * Process export queue.
      */
     public function processQueue(): void
     {
-        $exportQueue = $this->exportQueueRepository->findExportQueueFirst();
+        $exportQueue = $this->exportQueue->with('expedition')->where('error', 0)->first();
 
         if ($exportQueue === null || $exportQueue->queued === 1) {
             return;
@@ -148,7 +122,7 @@ class ZooniverseExportQueue
      */
     public function deleteExportFiles(string $expeditionId): void
     {
-        $downloads = $this->downloadRepository->getZooniverseExportFiles($expeditionId);
+        $downloads = $this->download->getZooniverseExportFiles($expeditionId);
 
         $downloads->each(function ($download) {
             if (Storage::disk('s3')->exists(config('config.export_dir').'/'.$download->file)) {
@@ -171,6 +145,6 @@ class ZooniverseExportQueue
      */
     private function getExpedition(int $expeditionId): Expedition
     {
-        return $this->expeditionRepository->findWith($expeditionId, ['zooniverseActor', 'stat', 'exportQueue']);
+        return $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['zooniverseActor', 'stat', 'exportQueue']);
     }
 }

@@ -21,8 +21,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ExportDownloadBatchJob;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\UserRepository;
+use App\Services\Models\ExpeditionModelService;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -39,28 +39,13 @@ use Illuminate\View\View;
 class DownloadController extends Controller
 {
     /**
-     * @var \App\Repositories\UserRepository
-     */
-    private UserRepository $userRepo;
-
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
      * DownloadController constructor.
      *
-     * @param \App\Repositories\UserRepository $userRepo
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      */
     public function __construct(
-        UserRepository $userRepo,
-        ExpeditionRepository $expeditionRepo,
-    ) {
-        $this->userRepo = $userRepo;
-        $this->expeditionRepo = $expeditionRepo;
-    }
+        private UserRepository $userRepo,
+        private ExpeditionModelService $expeditionModelService,
+    ) {}
 
     /**
      * Index showing downloads for Expedition.
@@ -72,7 +57,7 @@ class DownloadController extends Controller
     public function index(int $projectId, int $expeditionId): Factory|View
     {
         $user = $this->userRepo->findWith(\Request::user()->id, ['profile']);
-        $expedition = $this->expeditionRepo->expeditionDownloadsByActor($expeditionId);
+        $expedition = $this->expeditionModelService->expeditionDownloadsByActor($expeditionId);
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group);
 

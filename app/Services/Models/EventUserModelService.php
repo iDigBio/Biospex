@@ -11,25 +11,25 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\EventUser;
 
 /**
- * Class EventUserRepository
+ * Class EventUserModelService
  *
  * @package App\Repositories
  */
-class EventUserRepository extends BaseRepository
+class EventUserModelService
 {
     /**
-     * EventUserRepository constructor.
+     * EventUserModelService constructor.
      *
      * @param \App\Models\EventUser $eventUser
      */
@@ -39,4 +39,27 @@ class EventUserRepository extends BaseRepository
         $this->model = $eventUser;
     }
 
+    /**
+     * Update or Create.
+     *
+     * @param array $attributes
+     * @param array $values
+     * @return mixed
+     */
+    public function updateOrCreate(array $attributes, array $values): mixed
+    {
+        return $this->model->updateOrCreate($attributes, $values);
+    }
+
+    /**
+     * Find user by nfn_user name.
+     *
+     * @param string $userName
+     * @param array $columns
+     * @return \App\Models\EventUser|null
+     */
+    public function findByNfnUser(string $userName, array $columns = ['*']): EventUser|null
+    {
+        return $this->model->where('nfn_user', $userName)->first($columns);
+    }
 }

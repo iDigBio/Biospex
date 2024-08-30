@@ -19,12 +19,11 @@
 
 namespace App\Services\Csv;
 
-use App\Repositories\ExpeditionRepository;
 use App\Services\Api\AwsS3ApiService;
 use App\Services\Api\PanoptesApiService;
+use App\Services\Models\ExpeditionModelService;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Facades\Storage;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /**
@@ -35,37 +34,18 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 class ZooniverseCsvService
 {
     /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
-     * @var \App\Services\Api\PanoptesApiService
-     */
-    private PanoptesApiService $panoptesApiService;
-
-    /**
-     * @var \App\Services\Api\AwsS3ApiService
-     */
-    private AwsS3ApiService $awsS3ApiService;
-
-    /**
      * ZooniverseCsvService constructor.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @param \App\Services\Api\AwsS3ApiService $awsS3ApiService
      */
     public function __construct(
-        ExpeditionRepository $expeditionRepo,
-        PanoptesApiService $panoptesApiService,
-        AwsS3ApiService $awsS3ApiService
+        private ExpeditionModelService $expeditionModelService,
+        private PanoptesApiService $panoptesApiService,
+        private AwsS3ApiService $awsS3ApiService
     )
-    {
-        $this->expeditionRepo = $expeditionRepo;
-        $this->panoptesApiService = $panoptesApiService;
-        $this->awsS3ApiService = $awsS3ApiService;
-    }
+    {}
 
     /**
      * Get expedition for processing.
@@ -75,7 +55,7 @@ class ZooniverseCsvService
      */
     public function getExpedition(int $expeditionId): mixed
     {
-        return $this->expeditionRepo->getExpeditionForZooniverseProcess($expeditionId);
+        return $this->expeditionModelService->getExpeditionForZooniverseProcess($expeditionId);
     }
 
     /**

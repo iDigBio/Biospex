@@ -24,7 +24,7 @@ use App\Jobs\ExpertReviewSetProblemsJob;
 use App\Jobs\ZooniverseClassificationCountJob;
 use App\Jobs\ZooniversePusherJob;
 use App\Jobs\ZooniverseTranscriptionJob;
-use App\Repositories\DownloadRepository;
+use App\Models\Download;
 use App\Services\Api\AwsLambdaApiService;
 use App\Traits\SkipZooniverse;
 use Illuminate\Contracts\View\View;
@@ -39,31 +39,18 @@ use Illuminate\Support\Facades\Bus;
  *
  * @see \App\Listeners\LabelReconciliationListener
  */
-class ReconcileService
+readonly class ReconcileService
 {
     use SkipZooniverse;
 
     /**
-     * @var \App\Repositories\DownloadRepository
-     */
-    private DownloadRepository $downloadRepo;
-
-    /**
-     * @var \App\Services\Api\AwsLambdaApiService
-     */
-    private AwsLambdaApiService $awsLambdaApiService;
-
-    /**
      * ReconcileService constructor.
      *
-     * @param \App\Repositories\DownloadRepository $downloadRepo
+     * @param \App\Models\Download $download
      * @param \App\Services\Api\AwsLambdaApiService $awsLambdaApiService
      */
-    public function __construct(DownloadRepository $downloadRepo, AwsLambdaApiService $awsLambdaApiService)
-    {
-        $this->downloadRepo = $downloadRepo;
-        $this->awsLambdaApiService = $awsLambdaApiService;
-    }
+    public function __construct(private Download $download, private AwsLambdaApiService $awsLambdaApiService)
+    {}
 
     /**
      * Process payload from lambda function.
@@ -171,7 +158,7 @@ class ReconcileService
                 'type'          => $type,
             ];
 
-            $this->downloadRepo->updateOrCreate($attributes, $values);
+            $this->download->updateOrCreate($attributes, $values);
         });
     }
 
@@ -198,7 +185,7 @@ class ReconcileService
             'type'          => $type,
         ];
 
-        $this->downloadRepo->updateOrCreate($attributes, $values);
+        $this->download->updateOrCreate($attributes, $values);
     }
 
     /**

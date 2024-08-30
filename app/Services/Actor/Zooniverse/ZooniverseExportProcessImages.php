@@ -22,29 +22,21 @@ namespace App\Services\Actor\Zooniverse;
 use App\Jobs\ZooniverseExportBuildCsvJob;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
-use App\Repositories\ExportQueueFileRepository;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Api\AwsLambdaApiService;
 
 class ZooniverseExportProcessImages
 {
     /**
-     * @var \App\Repositories\ExportQueueFileRepository
+     * ZooniverseExportProcessImages constructor.
+     *
+     * @param \App\Models\ExportQueueFile $exportQueueFile
+     * @param \App\Services\Api\AwsLambdaApiService $awsLambdaApiService
      */
-    private ExportQueueFileRepository $exportQueueFileRepository;
-
-    /**
-     * @var \App\Services\Api\AwsLambdaApiService
-     */
-    private AwsLambdaApiService $awsLambdaApiService;
-
     public function __construct(
-        ExportQueueFileRepository $exportQueueFileRepository,
-        AwsLambdaApiService $awsLambdaApiService
-    ) {
-        $this->exportQueueFileRepository = $exportQueueFileRepository;
-        $this->awsLambdaApiService = $awsLambdaApiService;
-    }
+        private ExportQueueFile $exportQueueFile,
+        private AwsLambdaApiService $awsLambdaApiService
+    ) {}
 
     /**
      * Process export queue files.
@@ -55,7 +47,10 @@ class ZooniverseExportProcessImages
      */
     public function process(ExportQueue $exportQueue, ActorDirectory $actorDirectory): void
     {
-        $files = $this->exportQueueFileRepository->getUnprocessedExportQueueFiles($exportQueue->id, config('config.aws.lambda_export_count'));
+        $files = $this->exportQueueFile->where('queue_id', $exportQueue->id)
+            ->where('processed', 0)
+            ->orderBy('id')
+            ->take(config('config.aws.lambda_export_count'))->get();
 
         // If processed files count is 0, send to csv job.
         if ($files->count() === 0) {

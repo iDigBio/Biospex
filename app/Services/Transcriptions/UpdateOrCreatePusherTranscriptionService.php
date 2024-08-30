@@ -19,8 +19,8 @@
 
 namespace App\Services\Transcriptions;
 
+use App\Services\Models\ExpeditionModelService;
 use TranscriptionMap;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\PanoptesTranscriptionRepository;
 use App\Repositories\PusherTranscriptionRepository;
 use Ramsey\Uuid\Uuid;
@@ -31,49 +31,30 @@ use Validator;
  *
  * @package App\Services\Transcriptions
  */
-class UpdateOrCreatePusherTranscriptionService
+readonly  class UpdateOrCreatePusherTranscriptionService
 {
-    /**
-     * @var \App\Repositories\PusherTranscriptionRepository
-     */
-    private PusherTranscriptionRepository $pusherTranscriptionRepo;
-
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
-     * @var \App\Repositories\PanoptesTranscriptionRepository
-     */
-    private PanoptesTranscriptionRepository $panoptesTranscriptionRepo;
-
     /**
      * UpdateOrCreatePusherTranscriptionService constructor.
      *
      * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepo
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      */
     public function __construct(
-        PusherTranscriptionRepository $pusherTranscriptionRepo,
-        ExpeditionRepository $expeditionRepo,
-        PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-    ) {
-        $this->pusherTranscriptionRepo = $pusherTranscriptionRepo;
-        $this->expeditionRepo = $expeditionRepo;
-        $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
-    }
+        private PusherTranscriptionRepository $pusherTranscriptionRepo,
+        private ExpeditionModelService $expeditionModelService,
+        private PanoptesTranscriptionRepository $panoptesTranscriptionRepo
+    ) {}
 
     /**
      * Get expedition.
      *
      * @param $expeditionId
-     * @return \Illuminate\Support\Collection
+     * @return \App\Models\Expedition|null
      */
     public function getExpedition($expeditionId)
     {
-        return $this->expeditionRepo->findWith($expeditionId, ['panoptesProject']);
+        return $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['panoptesProject']);
     }
 
     /**

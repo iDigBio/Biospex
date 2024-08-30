@@ -11,38 +11,35 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\Event;
 use App\Models\EventTeam;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use function collect;
 
-/**
- * Class EventRepository
- *
- * @package App\Repositories
- */
-class EventRepository extends BaseRepository
+readonly class EventModelService
 {
+    public function __construct(private Event $event)
+    {}
 
     /**
-     * EventRepository constructor.
+     * Find event with relations.
      *
-     * @param \App\Models\Event $event
+     * @param int $id
+     * @param array $relations
+     * @return mixed
      */
-    public function __construct(Event $event)
+    public function findEventWithRelations(int $id, array $relations = []): mixed
     {
-
-        $this->model = $event;
+        return $this->event->with($relations)->find($id);
     }
 
     /**
@@ -56,8 +53,8 @@ class EventRepository extends BaseRepository
     public function getEventAdminIndex(User $user, $sort = null, $order = null): Collection
     {
         $results = $user->isAdmin() ?
-            $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
-            $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('owner_id', $user->id)->get();
+            $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
+            $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('owner_id', $user->id)->get();
 
         return $this->sortResults($order, $results, $sort);
     }
@@ -72,8 +69,8 @@ class EventRepository extends BaseRepository
      */
     public function getEventPublicIndex($sort = null, $order = null, $projectId = null): Collection
     {
-        $results = $projectId === null ? $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
-            $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('project_id', $projectId)->get();
+        $results = $projectId === null ? $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
+            $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('project_id', $projectId)->get();
 
         return $this->sortResults($order, $results, $sort);
     }
@@ -86,7 +83,7 @@ class EventRepository extends BaseRepository
      */
     public function getEventShow($eventId)
     {
-        return $this->model->withCount('transcriptions')->with([
+        return $this->event->withCount('transcriptions')->with([
             'project.lastPanoptesProject',
             'teams.users' => function ($q) use ($eventId) {
                 $q->withcount([
@@ -109,7 +106,7 @@ class EventRepository extends BaseRepository
         $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'].':00', $attributes['timezone']);
         $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'].':00', $attributes['timezone']);
 
-        $event = $this->create($attributes);
+        $event = $this->event->create($attributes);
 
         $teams = collect($attributes['teams'])->reject(function ($team) {
             return empty($team['title']);
@@ -134,99 +131,13 @@ class EventRepository extends BaseRepository
         $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'].':00', $attributes['timezone']);
         $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'].':00', $attributes['timezone']);
 
-        $event = $this->update($attributes, $resourceId);
+        $event = $this->event->update($attributes, $resourceId);
 
         collect($attributes['teams'])->each(function ($team) use ($event) {
             $this->handleTeam($team, $event);
         });
 
         return $event;
-    }
-
-    /**
-     * Get event scoreboard.
-     *
-     * @param $eventId
-     * @param array|string[] $columns
-     * @return mixed
-     */
-    public function getEventScoreboard($eventId, array $columns = ['*'])
-    {
-        return $this->model->withCount('transcriptions')->with([
-            'teams' => function ($q) use ($eventId) {
-                $q->withcount([
-                    'transcriptions' => function ($q) use ($eventId) {
-                        $q->where('event_id', $eventId);
-                    },
-                ])->orderBy('transcriptions_count', 'desc');
-            },
-        ])->find($eventId, $columns);
-    }
-
-    /**
-     * Get events by project id.
-     *
-     * @param $projectId
-     * @return \Illuminate\Support\Collection
-     */
-    public function getEventsByProjectId($projectId): Collection
-    {
-        return $this->model->withCount('transcriptions')->with([
-            'teams' => function ($q) {
-                $q->withCount('transcriptions')->orderBy('transcriptions_count', 'desc');
-            },
-        ])->whereHas('teams')->where('project_id', $projectId)->get();
-    }
-
-    /**
-     * Get any ongoing events for user using project id and dates.
-     *
-     * @param int $projectId
-     * @param int $userId
-     * @param string $date
-     * @return \Illuminate\Database\Eloquent\Collection|array
-     */
-    public function getAnyEventsForUserByProjectIdAndDate(int $projectId, int $userId, string $date): \Illuminate\Database\Eloquent\Collection|array
-    {
-        $callback = function ($q) use($userId){
-            $q->where('user_id', $userId);
-        };
-
-        return $this->model->with(['teams' => function($q) use($callback) {
-            $q->whereHas('users', $callback);
-            $q->with(['users' => $callback]);
-        }])
-            ->where('project_id', $projectId)
-            ->where('start_date', '<', $date)
-            ->where('end_date', '>', $date)->get();
-    }
-
-    /**
-     * Handle team create, update, delete.
-     *
-     * @param $team
-     * @param $event
-     */
-    protected function handleTeam($team, $event)
-    {
-        $record = EventTeam::where('id', $team['id'])->where('event_id', $event->id)->first();
-        if ($record && $team['title'] !== null) {
-            $record->fill($team)->save();
-
-            return;
-        }
-
-        if ($record && $team['title'] === null) {
-            $record->delete();
-
-            return;
-        }
-
-        if (! $record && $team['title'] !== null) {
-            $team = new EventTeam($team);
-            $event->teams()->save($team);
-        }
-
     }
 
     /**
@@ -260,5 +171,91 @@ class EventRepository extends BaseRepository
         }
 
         return $results;
+    }
+
+    /**
+     * Handle team create, update, delete.
+     *
+     * @param $team
+     * @param $event
+     */
+    protected function handleTeam($team, $event)
+    {
+        $record = EventTeam::where('id', $team['id'])->where('event_id', $event->id)->first();
+        if ($record && $team['title'] !== null) {
+            $record->fill($team)->save();
+
+            return;
+        }
+
+        if ($record && $team['title'] === null) {
+            $record->delete();
+
+            return;
+        }
+
+        if (! $record && $team['title'] !== null) {
+            $team = new EventTeam($team);
+            $event->teams()->save($team);
+        }
+
+    }
+
+    /**
+     * Get event scoreboard.
+     *
+     * @param $eventId
+     * @param array|string[] $columns
+     * @return mixed
+     */
+    public function getEventScoreboard($eventId, array $columns = ['*']): mixed
+    {
+        return $this->event->withCount('transcriptions')->with([
+            'teams' => function ($q) use ($eventId) {
+                $q->withcount([
+                    'transcriptions' => function ($q) use ($eventId) {
+                        $q->where('event_id', $eventId);
+                    },
+                ])->orderBy('transcriptions_count', 'desc');
+            },
+        ])->find($eventId, $columns);
+    }
+
+    /**
+     * Get events by project id.
+     *
+     * @param $projectId
+     * @return \Illuminate\Support\Collection
+     */
+    public function getEventsByProjectId($projectId): Collection
+    {
+        return $this->event->withCount('transcriptions')->with([
+            'teams' => function ($q) {
+                $q->withCount('transcriptions')->orderBy('transcriptions_count', 'desc');
+            },
+        ])->whereHas('teams')->where('project_id', $projectId)->get();
+    }
+
+    /**
+     * Get any ongoing events for user using project id and dates.
+     *
+     * @param int $projectId
+     * @param int $userId
+     * @param string $date
+     * @return \Illuminate\Database\Eloquent\Collection|array
+     */
+    public function getAnyEventsForUserByProjectIdAndDate(int $projectId, int $userId, string $date): \Illuminate\Database\Eloquent\Collection|array
+    {
+        $callback = function ($q) use($userId){
+            $q->where('user_id', $userId);
+        };
+
+        return $this->event->with(['teams' => function($q) use($callback) {
+            $q->whereHas('users', $callback);
+            $q->with(['users' => $callback]);
+        }])
+            ->where('project_id', $projectId)
+            ->where('start_date', '<', $date)
+            ->where('end_date', '>', $date)->get();
     }
 }

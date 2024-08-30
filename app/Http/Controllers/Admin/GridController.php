@@ -21,10 +21,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\GridExportCsvJob;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\SubjectRepository;
 use App\Services\Csv\Csv;
 use App\Services\Grid\JqGridEncoder;
+use App\Services\Models\ExpeditionModelService;
 use Auth;
 use Exception;
 
@@ -173,10 +173,10 @@ class GridController extends Controller
      *
      * @note Removed from jqGrid but keep code in case we need it again.
      * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete(SubjectRepository $subjectRepo, ExpeditionRepository $expeditionRepo)
+    public function delete(SubjectRepository $subjectRepo, ExpeditionModelService $expeditionModelService)
     {
         if (! \Request::ajax()) {
             return response()->json(['error' => 'Delete must be performed via ajax.'], 404);
@@ -190,9 +190,9 @@ class GridController extends Controller
 
         $subjects = $subjectRepo->whereIn('_id', $subjectIds);
 
-        $subjects->reject(function ($subject) use($expeditionRepo) {
+        $subjects->reject(function ($subject) use($expeditionModelService) {
             foreach ($subject->expedition_ids as $expeditionId) {
-                $expedition = $expeditionRepo->findExpeditionHavingWorkflowManager($expeditionId);
+                $expedition = $expeditionModelService->findExpeditionHavingWorkflowManager($expeditionId);
                 if ($expedition !== null) {
                     return true;
                 }

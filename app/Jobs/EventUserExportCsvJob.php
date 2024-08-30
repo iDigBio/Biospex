@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Repositories\EventRepository;
+use App\Services\Models\EventModelService;
 use App\Services\Process\CreateReportService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -74,16 +74,16 @@ class EventUserExportCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\EventRepository $eventRepo
+     * @param \App\Services\Models\EventModelService $eventModelService
      * @param \App\Services\Process\CreateReportService $createReportService
      * @return void
      */
     public function handle(
-        EventRepository $eventRepo,
+        EventModelService $eventModelService,
         CreateReportService $createReportService,
     ) {
         try {
-            $event = $eventRepo->getEventShow($this->eventId);
+            $event = $eventModelService->getEventShow($this->eventId);
             $rows = $event->teams->flatMap(function ($team) {
                 return $team->users->map(function ($user) use ($team) {
                     return [

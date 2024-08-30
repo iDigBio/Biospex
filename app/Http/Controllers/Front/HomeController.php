@@ -20,8 +20,8 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Models\ExpeditionModelService;
 
 /**
  * Class HomeController
@@ -33,13 +33,13 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      * @return \Illuminate\Contracts\View\View
      */
-    public function index(ExpeditionRepository $expeditionRepo, PanoptesTranscriptionRepository $panoptesTranscriptionRepo): \Illuminate\Contracts\View\View
+    public function index(ExpeditionModelService $expeditionModelService, PanoptesTranscriptionRepository $panoptesTranscriptionRepo): \Illuminate\Contracts\View\View
     {
-        $expedition = $expeditionRepo->getHomePageProjectExpedition();
+        $expedition = $expeditionModelService->getHomePageProjectExpedition();
         $contributorCount = $panoptesTranscriptionRepo->getContributorCount();
         $transcriptionCount = $panoptesTranscriptionRepo->getTotalTranscriptions();
 

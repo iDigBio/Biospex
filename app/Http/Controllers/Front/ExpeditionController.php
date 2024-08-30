@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\ExpeditionRepository;
+use App\Services\Models\ExpeditionModelService;
 
 /**
  * Class ExpeditionController
@@ -32,12 +32,12 @@ class ExpeditionController extends Controller
     /**
      * Displays Expeditions on public page.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
+     * @return \Illuminate\Contracts\View\View
      */
-    public function index(ExpeditionRepository $expeditionRepo)
+    public function index(ExpeditionModelService $expeditionModelService)
     {
-        $results = $expeditionRepo->getExpeditionPublicIndex();
+        $results = $expeditionModelService->getExpeditionPublicIndex();
         $project = $results->first()->project;
 
         [$expeditions, $expeditionsCompleted] = $results->partition(function($expedition) {
@@ -50,10 +50,10 @@ class ExpeditionController extends Controller
     /**
      * Displays Completed Expeditions on public page.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @return \Illuminate\Contracts\View\View|null
      */
-    public function sort(ExpeditionRepository $expeditionRepo): ?\Illuminate\Contracts\View\View
+    public function sort(ExpeditionModelService $expeditionModelService): ?\Illuminate\Contracts\View\View
     {
         if ( ! \Request::ajax()) {
             return null;
@@ -64,7 +64,7 @@ class ExpeditionController extends Controller
         $order = \Request::get('order');
         $projectId = \Request::get('id');
 
-        [$active, $completed] = $expeditionRepo->getExpeditionPublicIndex($sort, $order, $projectId)
+        [$active, $completed] = $expeditionModelService->getExpeditionPublicIndex($sort, $order, $projectId)
             ->partition(function($expedition) {
                 return $expedition->completed;
         });

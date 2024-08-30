@@ -21,7 +21,6 @@ namespace App\Services\Models;
 
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Models\Expedition;
-use App\Repositories\ExpeditionRepository;
 use App\Repositories\SubjectRepository;
 use App\Repositories\WorkflowRepository;
 use Illuminate\Support\Collection;
@@ -35,34 +34,17 @@ class ExpeditionService
     private Collection $subjectIds;
 
     /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepository;
-
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    private SubjectRepository $subjectRepository;
-
-    /**
-     * @var \App\Repositories\WorkflowRepository
-     */
-    private WorkflowRepository $workflowRepository;
-
-    /**
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
+     * ExpeditionService constructor.
+     *
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param \App\Repositories\SubjectRepository $subjectRepository
      * @param \App\Repositories\WorkflowRepository $workflowRepository
      */
     public function __construct(
-        ExpeditionRepository $expeditionRepository,
-        SubjectRepository $subjectRepository,
-        WorkflowRepository $workflowRepository
-    ) {
-        $this->expeditionRepository = $expeditionRepository;
-        $this->subjectRepository = $subjectRepository;
-        $this->workflowRepository = $workflowRepository;
-    }
+        private ExpeditionModelService $expeditionModelService,
+        private SubjectRepository $subjectRepository,
+        private WorkflowRepository $workflowRepository
+    ) {}
 
     /**
      * Create Expedition and return.
@@ -72,7 +54,7 @@ class ExpeditionService
      */
     public function createExpedition(array $request): mixed
     {
-        return $this->expeditionRepository->create($request);
+        return $this->expeditionModelService->create($request);
     }
 
     /**
@@ -85,7 +67,7 @@ class ExpeditionService
      */
     public function findExpeditionWithRelations(int $expeditionId, array $relations = []): mixed
     {
-        return $this->expeditionRepository->findWith($expeditionId, $relations);
+        return $this->expeditionModelService->findExpeditionWithRelations($expeditionId, $relations);
     }
 
     /**
@@ -278,6 +260,6 @@ class ExpeditionService
      */
     public function getAdminIndex(int $userId = null, $sort = null, $order = null, $projectId = null): mixed
     {
-        return $this->expeditionRepository->getExpeditionAdminIndex($userId, $sort, $order, $projectId);
+        return $this->expeditionModelService->getExpeditionAdminIndex($userId, $sort, $order, $projectId);
     }
 }

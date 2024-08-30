@@ -19,27 +19,20 @@
 
 namespace App\Services\Process;
 
-use App\Repositories\ExportQueueFileRepository;
-use App\Repositories\ExportQueueRepository;
+use App\Models\ExportQueueFile;
 
 /**
  * Class SnsImageExportResultProcess
  */
-class SnsImageExportResultProcess
+readonly class SnsImageExportResultProcess
 {
-    /**
-     * @var \App\Repositories\ExportQueueFileRepository
-     */
-    private ExportQueueFileRepository $exportQueueFileRepository;
-
     /**
      * Construct.
      *
-     * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
+     * @param \App\Models\ExportQueueFile $exportQueueFile
      */
-    public function __construct(ExportQueueFileRepository $exportQueueFileRepository) {
-        $this->exportQueueFileRepository = $exportQueueFileRepository;
-    }
+    public function __construct(private ExportQueueFile $exportQueueFile)
+    {}
 
     /**
      * Handle hard failure of lambda function.
@@ -81,7 +74,9 @@ class SnsImageExportResultProcess
             'processed'  => 1,
             'message'    => $message,
         ];
-        $this->exportQueueFileRepository->updateBy($attributes, 'subject_id', $subjectId);
+
+        $exportQueueFile = $this->exportQueueFile->where('subject_id', $subjectId)->first();
+        $exportQueueFile->fill($attributes)->save();
     }
 }
 

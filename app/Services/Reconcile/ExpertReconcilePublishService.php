@@ -19,10 +19,10 @@
 
 namespace App\Services\Reconcile;
 
+use App\Services\Models\ExpeditionModelService;
 use TranscriptionMap;
 use App\Notifications\Generic;
-use App\Repositories\DownloadRepository;
-use App\Repositories\ExpeditionRepository;
+use App\Models\Download;
 use App\Repositories\ReconcileRepository;
 use App\Services\Csv\AwsS3CsvService;
 
@@ -31,48 +31,23 @@ use App\Services\Csv\AwsS3CsvService;
  *
  * @package App\Services\Process
  */
-class ExpertReconcilePublishService
+readonly class ExpertReconcilePublishService
 {
-    /**
-     * @var \App\Repositories\ReconcileRepository
-     */
-    private ReconcileRepository $reconcileRepo;
-
-    /**
-     * @var \App\Repositories\DownloadRepository
-     */
-    private DownloadRepository $downloadRepo;
-
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvService;
-
     /**
      * ExpertReconcilePublishService constructor.
      *
      * @param \App\Repositories\ReconcileRepository $reconcileRepo
-     * @param \App\Repositories\DownloadRepository $downloadRepo
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Models\Download $download
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
-        ReconcileRepository $reconcileRepo,
-        DownloadRepository $downloadRepo,
-        ExpeditionRepository $expeditionRepo,
-        AwsS3CsvService $awsS3CsvService
+        private ReconcileRepository $reconcileRepo,
+        private Download $download,
+        private ExpeditionModelService $expeditionModelService,
+        private AwsS3CsvService $awsS3CsvService
     )
-    {
-        $this->reconcileRepo = $reconcileRepo;
-        $this->downloadRepo = $downloadRepo;
-        $this->expeditionRepo = $expeditionRepo;
-        $this->awsS3CsvService = $awsS3CsvService;
-    }
+    {}
 
     /**
      * Publish reconciled file.
@@ -139,7 +114,7 @@ class ExpertReconcilePublishService
             'type'          => 'reconciled-with-expert',
         ];
 
-        $this->downloadRepo->updateOrCreate($attributes, $values);
+        $this->download->updateOrCreate($attributes, $values);
     }
 
     /**
@@ -149,7 +124,7 @@ class ExpertReconcilePublishService
      */
     private function sendEmail(string $expeditionId): void
     {
-        $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
+        $expedition = $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['project.group.owner']);
 
         $attributes = [
             'subject' => t('Reconciled Expert Review Published'),

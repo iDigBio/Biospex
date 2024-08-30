@@ -20,30 +20,22 @@
 namespace App\Services\Actor\Zooniverse;
 
 use App\Jobs\ZooniverseExportCreateReportJob;
+use App\Models\Download;
 use App\Models\ExportQueue;
-use App\Repositories\DownloadRepository;
 use App\Services\Actor\ActorDirectory;
 use Storage;
 
 /**
  * Class ZooniverseBuildZip
  */
-class ZooniverseBuildZip
+readonly class ZooniverseBuildZip
 {
-    /**
-     * @var \App\Repositories\DownloadRepository
-     */
-    private DownloadRepository $downloadRepository;
-
     /**
      * Construct.
      *
-     * @param \App\Repositories\DownloadRepository $downloadRepository
      */
-    public function __construct(DownloadRepository $downloadRepository)
-    {
-        $this->downloadRepository = $downloadRepository;
-    }
+    public function __construct(private Download $download)
+    {}
 
     /**
      * Process the actor.
@@ -146,6 +138,6 @@ class ZooniverseBuildZip
             'type'          => 'export',
         ];
 
-        $this->downloadRepository->updateOrCreate($attributes, $values);
+        $this->download->updateOrCreate($attributes, $values);
     }
 }

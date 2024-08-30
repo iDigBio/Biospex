@@ -23,8 +23,8 @@ use App\Models\Actor;
 use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
+use App\Services\Models\ExpeditionModelService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -65,15 +65,15 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @return void
      */
     public function handle(
-        ExpeditionRepository $expeditionRepo,
+        ExpeditionModelService $expeditionModelService,
         PanoptesApiService $panoptesApiService
     ) {
-        $expedition = $expeditionRepo->findWith($this->expeditionId, [
+        $expedition = $expeditionModelService->findExpeditionWithRelations($this->expeditionId, [
             'project.group.owner',
             'stat',
             'zooniverseActor',

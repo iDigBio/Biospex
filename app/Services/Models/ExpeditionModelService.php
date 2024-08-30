@@ -11,33 +11,43 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\Expedition;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * Class ExpeditionRepository
- *
- * @package App\Repositories
- */
-class ExpeditionRepository extends BaseRepository
+readonly class ExpeditionModelService
 {
-    /**
-     * ExpeditionRepository constructor.
-     *
-     * @param \App\Models\Expedition $expedition
-     */
-    public function __construct(Expedition $expedition)
-    {
+    public function __construct(private Expedition $model)
+    {}
 
-        $this->model = $expedition;
+    /**
+     * Create expedition.
+     *
+     * @param array $data
+     * @return \App\Models\Expedition
+     */
+    public function create(array $data): Expedition
+    {
+        return $this->model->create($data);
+    }
+
+    /**
+     * Find expedition with relations.
+     *
+     * @param int $id
+     * @param array $relations
+     * @return \App\Models\Expedition|null
+     */
+    public function findExpeditionWithRelations(int $id, array $relations = []): Expedition|null
+    {
+        return $this->model->with($relations)->find($id);
     }
 
     /**
@@ -119,11 +129,10 @@ class ExpeditionRepository extends BaseRepository
 
     /**
      * Find expedition having workflow manager by id.
-     *
      * @param $expeditionId
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return \App\Models\Expedition|null
      */
-    public function findExpeditionHavingWorkflowManager($expeditionId): \Illuminate\Database\Eloquent\Model
+    public function findExpeditionHavingWorkflowManager($expeditionId): Expedition|null
     {
         return $this->model->has('workflowManager')->find($expeditionId);
     }

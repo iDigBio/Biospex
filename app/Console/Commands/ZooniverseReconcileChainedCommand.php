@@ -18,7 +18,7 @@
  */
 namespace App\Console\Commands;
 
-use App\Repositories\ExpeditionRepository;
+use App\Services\Models\ExpeditionModelService;
 use App\Traits\SkipZooniverse;
 use Illuminate\Console\Command;
 
@@ -61,15 +61,16 @@ class ZooniverseReconcileChainedCommand extends Command
     /**
      * Execute the console command.
      * Copies classification csv to lambda-reconciliation on S3 and triggers lambda labelReconciliation function.
+     *
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
+     * @return void
      * @see \App\Listeners\LabelReconciliationListener for result processing.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @return void
      */
-    public function handle(ExpeditionRepository $expeditionRepo): void
+    public function handle(ExpeditionModelService $expeditionModelService): void
     {
         $expeditionIds = empty($this->argument('expeditionIds')) ?
-            $this->getExpeditionIds($expeditionRepo) : $this->argument('expeditionIds');
+            $this->getExpeditionIds($expeditionModelService) : $this->argument('expeditionIds');
 
         foreach ($expeditionIds as $expeditionId) {
             if ($this->skipReconcile($expeditionId)) {
@@ -85,12 +86,12 @@ class ZooniverseReconcileChainedCommand extends Command
     /**
      * Get all expeditions for process if no ids are passed.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @return array
      */
-    private function getExpeditionIds(ExpeditionRepository $expeditionRepo): array
+    private function getExpeditionIds(ExpeditionModelService $expeditionModelService): array
     {
-        $expeditions = $expeditionRepo->getExpeditionsForZooniverseProcess();
+        $expeditions = $expeditionModelService->getExpeditionsForZooniverseProcess();
 
         return $expeditions->pluck('id')->toArray();
     }
