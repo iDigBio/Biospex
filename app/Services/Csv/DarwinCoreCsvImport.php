@@ -19,7 +19,7 @@
 
 namespace App\Services\Csv;
 
-use App\Repositories\HeaderRepository;
+use App\Services\Models\HeaderModelService;
 use App\Repositories\PropertyRepository;
 use App\Repositories\SubjectRepository;
 use App\Services\MongoDbService;
@@ -37,21 +37,6 @@ use MongoDB\BSON\ObjectId;
  */
 class DarwinCoreCsvImport
 {
-    /**
-     * @var \App\Repositories\PropertyRepository
-     */
-    public PropertyRepository $propertyRepo;
-
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    public SubjectRepository $subjectRepo;
-
-    /**
-     * @var \App\Repositories\HeaderRepository
-     */
-    public HeaderRepository $headerRepo;
-
     /**
      * Array for meta file fields: core and extension
      *
@@ -95,19 +80,9 @@ class DarwinCoreCsvImport
     public array $duplicateArray = [];
 
     /**
-     * @var Validation
-     */
-    public Validation $factory;
-
-    /**
      * @var array
      */
     public $identifiers;
-
-    /**
-     * @var \App\Services\Csv\Csv
-     */
-    public $csv;
 
     /**
      * @var int
@@ -120,35 +95,24 @@ class DarwinCoreCsvImport
     public $header;
 
     /**
-     * @var MongoDbService
-     */
-    private $mongoDbService;
-
-    /**
      * Construct
      *
      * @param \App\Repositories\PropertyRepository $propertyRepo
      * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Repositories\HeaderRepository $headerRepo
+     * @param \App\Services\Models\HeaderModelService $headerModelService
      * @param Validation $factory
      * @param \App\Services\Csv\Csv $csv
      * @param MongoDbService $mongoDbService
      */
     public function __construct(
-        PropertyRepository $propertyRepo,
-        SubjectRepository $subjectRepo,
-        HeaderRepository $headerRepo,
-        Validation $factory,
-        Csv $csv,
-        MongoDbService $mongoDbService
+        private PropertyRepository $propertyRepo,
+        private SubjectRepository $subjectRepo,
+        private HeaderModelService $headerModelService,
+        private Validation $factory,
+        private Csv $csv,
+        private MongoDbService $mongoDbService
     ) {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
-        $this->propertyRepo = $propertyRepo;
-        $this->subjectRepo = $subjectRepo;
-        $this->headerRepo = $headerRepo;
-        $this->factory = $factory;
-        $this->csv = $csv;
-        $this->mongoDbService = $mongoDbService;
         $this->mongoDbService->setCollection('subjects');
     }
 
@@ -536,7 +500,7 @@ class DarwinCoreCsvImport
      * @param $row
      * @return bool
      */
-    public function reject($row)
+    public function reject($row): bool
     {
         $this->rejectedMultimedia[] = $row;
 
@@ -609,19 +573,19 @@ class DarwinCoreCsvImport
     {
         $type = $loadMedia ? 'image' : 'occurrence';
 
-        $result = $this->headerRepo->findBy('project_id', $this->projectId);
+        $result = $this->headerModelService->getFirst('project_id', $this->projectId);
 
         if (empty($result)) {
             $insert = [
                 'project_id' => $this->projectId,
                 'header'     => [$type => $header],
             ];
-            $this->headerRepo->create($insert);
+            $this->headerModelService->create($insert);
         } else {
             $existingHeader = $result->header;
             $existingHeader[$type] = isset($existingHeader[$type]) ? $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
             $result->header = $existingHeader;
-            $this->headerRepo->update($result->toArray(), $result->id);
+            $result->save();
         }
     }
 

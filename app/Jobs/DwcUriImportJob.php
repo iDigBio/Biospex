@@ -19,9 +19,9 @@
 
 namespace App\Jobs;
 
+use App\Models\Import;
 use General;
 use App\Notifications\Generic;
-use App\Repositories\ImportRepository;
 use App\Repositories\ProjectRepository;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -54,16 +54,6 @@ class DwcUriImportJob implements ShouldQueue
     public $data;
 
     /**
-     * @var \App\Repositories\ImportRepository
-     */
-    public $importRepo;
-
-    /**
-     * @var \App\Repositories\ProjectRepository
-     */
-    public $projectRepo;
-
-    /**
      * Create a new job instance.
      *
      * @param $data
@@ -77,11 +67,11 @@ class DwcUriImportJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\ImportRepository $importRepo
+     * @param \App\Models\Import $import
      * @param \App\Repositories\ProjectRepository $projectRepo
      * @return void
      */
-    public function handle(ImportRepository $importRepo, ProjectRepository $projectRepo): void {
+    public function handle(Import $import, ProjectRepository $projectRepo): void {
         $project = $projectRepo->getProjectForDarwinImportJob($this->data['id']);
         $users = $project->group->users->push($project->group->owner);
 
@@ -106,7 +96,7 @@ class DwcUriImportJob implements ShouldQueue
                 throw new Exception(t('An error occurred while attempting to save file: %s', $filePath));
             }
 
-            $import = $importRepo->create([
+            $import = $import->create([
                 'user_id'    => $this->data['user_id'],
                 'project_id' => $this->data['id'],
                 'file'       => $filePath

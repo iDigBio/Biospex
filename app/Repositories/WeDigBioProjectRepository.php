@@ -29,7 +29,7 @@ use App\Models\WeDigBioProject;
 class WeDigBioProjectRepository extends BaseRepository
 {
     /**
-     * PanoptesProjectRepository constructor.
+     * WeDigBioProjectRepository constructor.
      *
      * @param \App\Models\WeDigBioProject
      */

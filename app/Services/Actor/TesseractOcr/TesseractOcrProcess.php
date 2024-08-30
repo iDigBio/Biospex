@@ -20,8 +20,8 @@
 namespace App\Services\Actor\TesseractOcr;
 
 use App\Notifications\Traits\ButtonTrait;
-use App\Repositories\OcrQueueFileRepository;
-use App\Repositories\OcrQueueRepository;
+use App\Models\OcrQueueFile;
+use App\Models\OcrQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -30,33 +30,18 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Services\Process
  */
-class TesseractOcrProcess
+readonly class TesseractOcrProcess
 {
     use ButtonTrait;
 
     /**
-     * @var \App\Repositories\OcrQueueRepository
-     */
-    private OcrQueueRepository $ocrQueueRepo;
-
-    /**
-     * @var \App\Repositories\OcrQueueFileRepository
-     */
-    private OcrQueueFileRepository $ocrQueueFileRepo;
-
-    /**
      * Ocr constructor.
      *
-     * @param \App\Repositories\OcrQueueRepository $ocrQueueRepo
-     * @param \App\Repositories\OcrQueueFileRepository $ocrQueueFileRepo
      */
     public function __construct(
-        OcrQueueRepository $ocrQueueRepo,
-        OcrQueueFileRepository $ocrQueueFileRepo,
-    ) {
-        $this->ocrQueueRepo = $ocrQueueRepo;
-        $this->ocrQueueFileRepo = $ocrQueueFileRepo;
-    }
+        private OcrQueue $ocrQueue,
+        private OcrQueueFile $ocrQueueFile,
+    ) {}
 
     /**
      * Return ocr queue for command process.
@@ -66,7 +51,9 @@ class TesseractOcrProcess
      */
     public function getFirstQueue(bool $reset = false): Model|Builder|null
     {
-        return $this->ocrQueueRepo->getFirstQueue($reset);
+        return $reset ?
+            $this->ocrQueue->orderBy('id', 'asc')->first() :
+            $this->ocrQueue->where('error', 0)->orderBy('id', 'asc')->first();
     }
 
     /**
@@ -79,7 +66,7 @@ class TesseractOcrProcess
      */
     public function getUnprocessedOcrQueueFiles(int $queueId, int $take = 50): \Illuminate\Database\Eloquent\Collection|array
     {
-        return $this->ocrQueueFileRepo->getUnprocessedOcrQueueFiles($queueId, $take);
+        return $this->ocrQueueFile->where('queue_id', $queueId)->where('processed', 0)->take($take)->get();
     }
 
 

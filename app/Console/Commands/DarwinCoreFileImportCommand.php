@@ -20,7 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\DwcFileImportJob;
-use App\Repositories\ImportRepository;
+use App\Models\Import;
 use Illuminate\Console\Command;
 
 /**
@@ -30,12 +30,6 @@ use Illuminate\Console\Command;
  */
 class DarwinCoreFileImportCommand extends Command
 {
-
-    /**
-     * @var \App\Repositories\ImportRepository
-     */
-    private $importRepo;
-
     /**
      * The console command name.
      *
@@ -52,14 +46,10 @@ class DarwinCoreFileImportCommand extends Command
 
     /**
      * DarwinCoreFileImportCommand constructor.
-     * 
-     * @param \App\Repositories\ImportRepository $importRepo
      */
-    public function __construct(ImportRepository $importRepo)
+    public function __construct(private Import $import)
     {
         parent::__construct();
-
-        $this->importRepo = $importRepo;
     }
 
     /**
@@ -69,7 +59,7 @@ class DarwinCoreFileImportCommand extends Command
      */
     public function handle()
     {
-        $import = $this->importRepo->findBy('error', 0);
+        $import = $this->import->where('error', 0)->first();
 
         if ($import === null)
             return;

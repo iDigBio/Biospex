@@ -23,13 +23,10 @@ use App\Http\Controllers\Controller;
 use App\Jobs\DwcFileImportJob;
 use App\Jobs\DwcUriImportJob;
 use App\Jobs\RecordsetImportJob;
-use App\Repositories\ImportRepository;
+use App\Models\Import;
 use App\Repositories\ProjectRepository;
 use Auth;
 use Exception;
-use Flash;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 
 /**
  * Class ImportController
@@ -55,16 +52,16 @@ class ImportController extends Controller
     /**
      * Upload DWC file.
      *
-     * @param \App\Repositories\ImportRepository $importRepo
+     * @param \App\Models\Import $import
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function dwcFile(ImportRepository $importRepo)
+    public function dwcFile(Import $import)
     {
         try {
             $projectId = \Request::input('project_id');
             $path = \Request::file('dwc-file')->store(config('config.import_dir'), 'efs');
 
-            $import = $importRepo->create([
+            $import = $import->create([
                 'user_id'    => Auth::user()->id,
                 'project_id' => $projectId,
                 'file'       => $path

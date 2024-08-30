@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
-use App\Services\Group\GroupService;
+use App\Services\Models\GroupModelService;
 
 /**
  * Class GroupController
@@ -31,19 +31,12 @@ use App\Services\Group\GroupService;
 class GroupController extends Controller
 {
     /**
-     * @var \App\Services\Group\GroupService
-     */
-    private GroupService $groupService;
-
-    /**
      * GroupController constructor.
      *
-     * @param \App\Services\Group\GroupService $groupService
+     * @param \App\Services\Models\GroupModelService $groupModelService
      */
-    public function __construct(GroupService $groupService)
-    {
-        $this->groupService = $groupService;
-    }
+    public function __construct(private readonly GroupModelService $groupModelService)
+    {}
 
     /**
      * Display groups.
@@ -52,7 +45,7 @@ class GroupController extends Controller
      */
     public function index(): \Illuminate\View\View
     {
-        return $this->groupService->getAdminIndex();
+        return $this->groupModelService->getAdminIndex();
     }
 
     /**
@@ -75,7 +68,7 @@ class GroupController extends Controller
      */
     public function store(GroupFormRequest $request): \Illuminate\Http\RedirectResponse
     {
-        return $this->groupService->storeGroup();
+        return $this->groupModelService->storeGroup();
     }
 
     /**
@@ -86,7 +79,7 @@ class GroupController extends Controller
      */
     public function show(int $groupId)
     {
-        return $this->groupService->showGroup($groupId);
+        return $this->groupModelService->showGroup($groupId);
     }
 
     /**
@@ -97,7 +90,7 @@ class GroupController extends Controller
      */
     public function edit(int $groupId)
     {
-        return $this->groupService->editGroup($groupId);
+        return $this->groupModelService->editGroup($groupId);
     }
 
     /**
@@ -109,7 +102,7 @@ class GroupController extends Controller
      */
     public function update(GroupFormRequest $request, int $groupId): \Illuminate\Http\RedirectResponse
     {
-        return $this->groupService->updateGroup($groupId);
+        return $this->groupModelService->updateGroup($groupId);
     }
 
     /**
@@ -120,7 +113,7 @@ class GroupController extends Controller
      */
     public function delete(int $groupId): \Illuminate\Http\RedirectResponse
     {
-        return $this->groupService->deleteGroup($groupId);
+        return $this->groupModelService->deleteGroup($groupId);
     }
 
     /**
@@ -132,7 +125,7 @@ class GroupController extends Controller
      */
     public function deleteGroupUser(int $groupId, int $userId)
     {
-        return $this->groupService->deleteUserFromGroup($groupId, $userId);
+        return $this->groupModelService->deleteUserFromGroup($groupId, $userId);
     }
 
     /**
@@ -144,6 +137,6 @@ class GroupController extends Controller
      */
     public function deleteGeoLocateForm(int $groupId, int $formId)
     {
-        return $this->groupService->deleteGeoLocateForm($groupId, $formId);
+        return $this->groupModelService->deleteGeoLocateForm($groupId, $formId);
     }
 }

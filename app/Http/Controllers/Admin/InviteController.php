@@ -21,9 +21,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InviteFormRequest;
-use App\Repositories\GroupRepository;
-use App\Repositories\UserRepository;
-use App\Services\Models\InviteService;
+use App\Services\Models\GroupModelService;
+use App\Services\Models\InviteModelService;
 
 /**
  * Class InviteController
@@ -33,36 +32,15 @@ use App\Services\Models\InviteService;
 class InviteController extends Controller
 {
     /**
-     * @var \App\Repositories\GroupRepository
-     */
-    public $groupRepo;
-
-    /**
-     * @var \App\Repositories\UserRepository
-     */
-    public $userRepo;
-
-    /**
-     * @var \App\Services\Models\InviteService
-     */
-    private $inviteService;
-
-    /**
      * InviteController constructor.
      *
-     * @param \App\Services\Models\InviteService $inviteService
-     * @param \App\Repositories\GroupRepository $groupRepo
-     * @param \App\Repositories\UserRepository $userRepo
+     * @param \App\Services\Models\InviteModelService $inviteModelService \
+     * @param \App\Services\Models\GroupModelService $groupModelService
      */
     public function __construct(
-        InviteService $inviteService,
-        GroupRepository $groupRepo,
-        UserRepository $userRepo
-    ) {
-        $this->inviteService = $inviteService;
-        $this->groupRepo = $groupRepo;
-        $this->userRepo = $userRepo;
-    }
+        private readonly InviteModelService $inviteModelService,
+        private readonly GroupModelService $groupModelService
+    ) {}
 
     /**
      * Show invite form
@@ -72,7 +50,7 @@ class InviteController extends Controller
      */
     public function index(int $groupId): \Illuminate\View\View
     {
-        $group = $this->groupRepo->findWith($groupId, ['invites']);
+        $group = $this->groupModelService->findWithRelations($groupId, ['invites']);
 
         $error = ! $this->checkPermissions('isOwner', $group);
         $inviteCount = old('entries', $group->invites->count() ?: 1);
@@ -89,7 +67,7 @@ class InviteController extends Controller
      */
     public function store(InviteFormRequest $request, int $groupId): \Illuminate\Http\RedirectResponse
     {
-        $this->inviteService->storeInvites($groupId, $request);
+        $this->inviteModelService->storeInvites($groupId, $request);
 
         return back();
     }

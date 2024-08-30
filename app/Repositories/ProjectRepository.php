@@ -198,9 +198,9 @@ class ProjectRepository extends BaseRepository
      * Get project for deletion.
      *
      * @param $projectId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder[]
+     * @return \App\Models\Project|null
      */
-    public function getProjectForDelete($projectId): \Illuminate\Database\Eloquent\Builder|array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+    public function getProjectForDelete($projectId): ?Project
     {
         return $this->model->with([
             'group',

@@ -20,9 +20,8 @@
 namespace App\Services\Actor\TesseractOcr;
 
 use App\Models\OcrQueue;
+use App\Models\OcrQueueFile;
 use App\Notifications\Traits\ButtonTrait;
-use App\Repositories\OcrQueueFileRepository;
-use App\Repositories\OcrQueueRepository;
 use App\Repositories\SubjectRepository;
 
 /**
@@ -30,41 +29,22 @@ use App\Repositories\SubjectRepository;
  *
  * @package App\Services\Process
  */
-class TesseractOcrBuild
+readonly class TesseractOcrBuild
 {
     use ButtonTrait;
 
     /**
-     * @var \App\Repositories\OcrQueueRepository
-     */
-    private OcrQueueRepository $ocrQueueRepo;
-
-    /**
-     * @var \App\Repositories\OcrQueueFileRepository
-     */
-    private OcrQueueFileRepository $ocrQueueFileRepo;
-
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    private SubjectRepository $subjectRepo;
-
-    /**
      * Ocr constructor.
      *
-     * @param \App\Repositories\OcrQueueRepository $ocrQueueRepo
-     * @param \App\Repositories\OcrQueueFileRepository $ocrQueueFileRepo
+     * @param \App\Models\OcrQueue $ocrQueue
+     * @param \App\Models\OcrQueueFile $ocrQueueFile
      * @param \App\Repositories\SubjectRepository $subjectRepo
      */
     public function __construct(
-        OcrQueueRepository $ocrQueueRepo,
-        OcrQueueFileRepository $ocrQueueFileRepo,
-        SubjectRepository $subjectRepo,
-    ) {
-        $this->ocrQueueRepo = $ocrQueueRepo;
-        $this->ocrQueueFileRepo = $ocrQueueFileRepo;
-        $this->subjectRepo = $subjectRepo;
-    }
+        private OcrQueue $ocrQueue,
+        private OcrQueueFile $ocrQueueFile,
+        private SubjectRepository $subjectRepo,
+    ) {}
 
     /**
      * Get subject count for ocr process.
@@ -88,7 +68,7 @@ class TesseractOcrBuild
      */
     public function createOcrQueue(int $projectId, int $expeditionId = null, array $data = []): OcrQueue
     {
-        return $this->ocrQueueRepo->firstOrCreate([
+        return $this->ocrQueue->firstOrCreate([
             'project_id'    => $projectId,
             'expedition_id' => $expeditionId,
         ], $data);
@@ -112,7 +92,7 @@ class TesseractOcrBuild
                 'access_uri' => $subject->accessURI,
             ];
 
-            $this->ocrQueueFileRepo->firstOrCreate($attributes, $attributes);
+            $this->ocrQueueFile->firstOrCreate($attributes, $attributes);
         });
     }
 }

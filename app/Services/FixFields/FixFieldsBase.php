@@ -19,7 +19,7 @@
 
 namespace App\Services\FixFields;
 
-use App\Repositories\HeaderRepository;
+use App\Services\Models\HeaderModelService;
 use App\Repositories\PropertyRepository;
 use App\Services\MongoDbService;
 use Illuminate\Support\Collection;
@@ -28,35 +28,17 @@ use Illuminate\Support\Facades\Storage;
 class FixFieldsBase
 {
     /**
-     * @var \App\Services\MongoDbService
-     */
-    public MongoDbService $mongoDbService;
-
-    /**
-     * @var \App\Repositories\HeaderRepository
-     */
-    public HeaderRepository $headerRepository;
-
-    /**
-     * @var \App\Repositories\PropertyRepository
-     */
-    public PropertyRepository $propertyRepository;
-
-    /**
+     * FixFieldsBase constructor.
+     *
      * @param \App\Services\MongoDbService $mongoDbService
-     * @param \App\Repositories\HeaderRepository $headerRepository
+     * @param \App\Services\Models\HeaderModelService $headerModelService
      * @param \App\Repositories\PropertyRepository $propertyRepository
      */
     public function __construct(
-        MongoDbService $mongoDbService,
-        HeaderRepository $headerRepository,
-        PropertyRepository $propertyRepository
-    ) {
-
-        $this->mongoDbService = $mongoDbService;
-        $this->headerRepository = $headerRepository;
-        $this->propertyRepository = $propertyRepository;
-    }
+        public MongoDbService $mongoDbService,
+        public HeaderModelService $headerModelService,
+        public PropertyRepository $propertyRepository
+    ) {}
 
     /**
      * Write contents to file.
@@ -152,7 +134,7 @@ class FixFieldsBase
      */
     public function removeAndSetHeader(string $projectId, array $fields, string $type)
     {
-        $record = $this->headerRepository->findBy('project_id', $projectId);
+        $record = $this->headerModelService->getFirst('project_id', $projectId);
 
         if ($record !== null) {
             $header = $record->header;

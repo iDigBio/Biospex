@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkflowIdFormRequest;
 use App\Jobs\PanoptesProjectUpdateJob;
-use App\Repositories\PanoptesProjectRepository;
+use App\Models\PanoptesProject;
 use App\Repositories\ProjectRepository;
 use App\Repositories\WorkflowManagerRepository;
 use App\Services\Models\ExpeditionModelService;
@@ -30,28 +30,15 @@ use Exception;
 class ZooniverseController extends Controller
 {
     /**
-     * @var \App\Repositories\ProjectRepository
-     */
-    private ProjectRepository $projectRepository;
-
-    /**
-     * @var \App\Repositories\WorkflowManagerRepository
-     */
-    private WorkflowManagerRepository $workflowManagerRepository;
-
-    /**
      * Construct
      *
      * @param \App\Repositories\ProjectRepository $projectRepository
      * @param \App\Repositories\WorkflowManagerRepository $workflowManagerRepository
      */
     public function __construct(
-        ProjectRepository $projectRepository,
-        WorkflowManagerRepository $workflowManagerRepository
-    ) {
-        $this->projectRepository = $projectRepository;
-        $this->workflowManagerRepository = $workflowManagerRepository;
-    }
+        private ProjectRepository $projectRepository,
+        private WorkflowManagerRepository $workflowManagerRepository
+    ) {}
 
     /**
      * Start processing expedition actors
@@ -146,35 +133,33 @@ class ZooniverseController extends Controller
     /**
      * Return workflow id form.
      *
-     * @param \App\Repositories\PanoptesProjectRepository $panoptesProjectRepository
      * @param int $projectId
      * @param int $expeditionId
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
-    public function workflowShowForm(PanoptesProjectRepository $panoptesProjectRepository, int $projectId, int $expeditionId): \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
+    public function workflowShowForm(PanoptesProject $panoptesProjectModel, int $projectId, int $expeditionId): \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
     {
         if (! \Request::ajax()) {
             return \Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
-        $panoptesProject = $panoptesProjectRepository->findBy('expedition_id', $expeditionId);
+        $panoptesProject = $panoptesProjectModel->where('expedition_id', $expeditionId)->first();
 
         return \View::make('admin.expedition.partials.workflow-modal-body', compact('projectId', 'expeditionId', 'panoptesProject'));
     }
-
 
     /**
      * Update or create the workflow id.
      *
      * @param \App\Http\Requests\WorkflowIdFormRequest $request
-     * @param \App\Repositories\PanoptesProjectRepository $panoptesProjectRepository
+     * @param \App\Models\PanoptesProject $panoptesProjectModel
      * @param int $projectId
      * @param int $expeditionId
      * @return \Illuminate\Http\JsonResponse
      */
     public function workflowUpdateForm(
         WorkflowIdFormRequest $request,
-        PanoptesProjectRepository $panoptesProjectRepository,
+        PanoptesProject $panoptesProjectModel,
         int $projectId,
         int $expeditionId
     ): \Illuminate\Http\JsonResponse {
@@ -201,7 +186,7 @@ class ZooniverseController extends Controller
                 'panoptes_workflow_id' => $request->input('panoptes_workflow_id'),
             ];
 
-            $panoptesProject = $panoptesProjectRepository->updateOrCreate($attributes, $values);
+            $panoptesProject = $panoptesProjectModel->updateOrCreate($attributes, $values);
 
             PanoptesProjectUpdateJob::dispatch($panoptesProject);
 

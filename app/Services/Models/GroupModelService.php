@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Group;
+namespace App\Services\Models;
 
 use App\Jobs\DeleteGroupJob;
 use App\Models\GeoLocateForm;
@@ -30,8 +30,23 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
 
-class GroupService
+readonly class GroupModelService
 {
+    public function __construct(private Group $model)
+    {}
+
+    /**
+     * Get group ids for user session.
+     *
+     * @param int $id
+     * @param array $relations
+     * @return \App\Models\Group|null
+     */
+    public function findWithRelations(int $id, array $relations = []): \App\Models\Group|null
+    {
+        return $this->model->with($relations)->find($id);
+    }
+
     /**
      * Display groups.
      *
@@ -39,7 +54,7 @@ class GroupService
      */
     public function getAdminIndex(): \Illuminate\View\View
     {
-        $groups = Group::withCount(['projects', 'expeditions', 'users'])
+        $groups = $this->model->withCount(['projects', 'expeditions', 'users'])
             ->whereHas('users', function ($q) {
                 $q->where('user_id', Auth::id());
             })->get();
@@ -56,7 +71,7 @@ class GroupService
      */
     public function storeGroup(): \Illuminate\Http\RedirectResponse
     {
-        $group = Group::create(['user_id' => Auth::id(), 'title' => request()->get('title')]);
+        $group = $this->model->create(['user_id' => Auth::id(), 'title' => request()->get('title')]);
 
         if ($group) {
             Auth::user()->assignGroup($group);
@@ -83,7 +98,7 @@ class GroupService
      */
     public function showGroup(int $groupId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $group = Group::with([
+        $group = $this->model->with([
             'projects',
             'expeditions',
             'geoLocateForms.expeditions:id,project_id,geo_locate_form_id',
@@ -106,7 +121,7 @@ class GroupService
      */
     public function editGroup(int $groupId): \Illuminate\Contracts\View\Factory|\Illuminate\View\View|\Illuminate\Http\RedirectResponse
     {
-        $group = Group::with(['owner', 'users.profile'])->find($groupId);
+        $group = $this->model->with(['owner', 'users.profile'])->find($groupId);
 
         if (!CheckPermission::handle('isOwner', $group)) {
             return Redirect::back();
@@ -121,7 +136,7 @@ class GroupService
 
     public function updateGroup(int $groupId): \Illuminate\Http\RedirectResponse
     {
-        $group = Group::find($groupId);
+        $group = $this->model->find($groupId);
 
         if (!CheckPermission::handle('isOwner', $group)) {
             return Redirect::back();
@@ -142,7 +157,7 @@ class GroupService
      */
     public function deleteGroup(int $groupId): \Illuminate\Http\RedirectResponse
     {
-        $group = Group::withCount(['panoptesProjects'])->with([
+        $group = $this->model->withCount(['panoptesProjects'])->with([
             'projects' => function ($q) {
                 $q->withCount('workflowManagers');
             },
@@ -182,7 +197,7 @@ class GroupService
      */
     public function deleteUserFromGroup(int $groupId, int $userId): \Illuminate\Http\RedirectResponse
     {
-        $group = Group::find($groupId);
+        $group = $this->model->find($groupId);
 
         if (!CheckPermission::handle('isOwner', $group)) {
             return Redirect::route('admin.groups.index');
@@ -218,7 +233,7 @@ class GroupService
     public function deleteGeoLocateForm(int $groupId, int $formId): \Illuminate\Http\RedirectResponse
     {
         try {
-            $group = Group::find($groupId);
+            $group = $this->model->find($groupId);
 
             if (!CheckPermission::handle('isOwner', $group)) {
                 return Redirect::back();
@@ -242,5 +257,48 @@ class GroupService
 
             return Redirect::route('admin.groups.show', [$groupId]);
         }
+    }
+
+    /**
+     * Check group count for admin welcome/index page.
+     *
+     * @param $userId
+     * @return int
+     */
+    public function getUserGroupCount($userId): int
+    {
+        return $this->model->withCount(['users' => function($q) use($userId) {
+            $q->where('user_id', $userId);
+        }])->whereHas('users', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })->pluck('users_count')->sum();
+    }
+
+    /**
+     * Get group select for user.
+     *
+     * @param $user
+     * @return array
+     */
+    public function getUsersGroupsSelect($user): array
+    {
+        return $this->model->whereHas('users', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->pluck('title', 'id')->toArray();
+    }
+
+    /**
+     * Get group ids for user session.
+     *
+     * @param $userId
+     * @return \Illuminate\Support\Collection
+     */
+    public function getUserGroupIds($userId): \Illuminate\Support\Collection
+    {
+        return $this->model->whereHas('users', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->get()->map(function ($item) {
+            return $item['id'];
+        });
     }
 }

@@ -23,7 +23,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectFormRequest;
 use App\Jobs\DeleteProjectJob;
 use App\Jobs\DeleteUnassignedSubjectsJob;
-use App\Repositories\GroupRepository;
+use App\Services\Models\GroupModelService;
 use App\Repositories\ProjectRepository;
 use App\Services\Grid\JqGridEncoder;
 use Auth;
@@ -42,28 +42,15 @@ use View;
 class ProjectController extends Controller
 {
     /**
-     * @var \App\Repositories\ProjectRepository
-     */
-    private ProjectRepository $projectRepo;
-
-    /**
-     * @var \App\Repositories\GroupRepository
-     */
-    private GroupRepository $groupRepo;
-
-    /**
      * ProjectController constructor.
      *
      * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param \App\Repositories\GroupRepository $groupRepo
+     * @param \App\Services\Models\GroupModelService $groupModelService
      */
     public function __construct(
-        ProjectRepository $projectRepo,
-        GroupRepository $groupRepo,
-    ) {
-        $this->projectRepo = $projectRepo;
-        $this->groupRepo = $groupRepo;
-    }
+        private readonly ProjectRepository $projectRepo,
+        private readonly GroupModelService $groupModelService,
+    ) {}
 
     /**
      * Show projects list for admin page.
@@ -74,7 +61,7 @@ class ProjectController extends Controller
     {
         $user = Auth::user();
 
-        $groups = $this->groupRepo->getUserGroupCount($user->id);
+        $groups = $this->groupModelService->getUserGroupCount($user->id);
         $projects = $this->projectRepo->getAdminProjectIndex($user->id);
 
         return $groups === 0 ? View::make('admin.welcome') : View::make('admin.project.index', compact('projects'));
@@ -87,7 +74,7 @@ class ProjectController extends Controller
      */
     public function create(): \Illuminate\View\View
     {
-        $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(\Request::user());
+        $groupOptions = ['' => '--Select--'] + $this->groupModelService->getUsersGroupsSelect(\Request::user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
@@ -137,7 +124,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectFormRequest $request): mixed
     {
-        $group = $this->groupRepo->find($request->get('group_id'));
+        $group = $this->groupModelService->findWithRelations($request->get('group_id'));
 
         if (! $this->checkPermissions('createProject', $group)) {
             return Redirect::route('admin.projects.index');
@@ -172,7 +159,7 @@ class ProjectController extends Controller
             return Redirect::route('admin.projects.show', [$projectId]);
         }
 
-        $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(\Request::user());
+        $groupOptions = ['' => '--Select--'] + $this->groupModelService->getUsersGroupsSelect(\Request::user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
@@ -192,14 +179,14 @@ class ProjectController extends Controller
      */
     public function edit($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectRepo->findWith($projectId, ['group', 'resources']);
+        $project = $this->groupModelService->findWithRelations($projectId, ['group', 'resources']);
         if (! $project) {
             Flash::error(t('Error retrieving record from database'));
 
             return Redirect::route('admin.projects.index');
         }
 
-        $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(\Request::user());
+        $groupOptions = ['' => '--Select--'] + $this->groupModelService->getUsersGroupsSelect(\Request::user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', $project->resources->count() ?: 1);
         $resources = $project->resources;
@@ -218,7 +205,7 @@ class ProjectController extends Controller
      */
     public function update(ProjectFormRequest $request, $projectId): \Illuminate\Http\RedirectResponse
     {
-        $group = $this->groupRepo->find($request->get('group_id'));
+        $group = $this->groupModelService->findWithRelations($request->get('group_id'));
 
         if (! $this->checkPermissions('updateProject', $group)) {
             return Redirect::route('admin.projects.index');

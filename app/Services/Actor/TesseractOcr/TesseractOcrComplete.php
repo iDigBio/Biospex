@@ -22,7 +22,7 @@ namespace App\Services\Actor\TesseractOcr;
 use App\Models\OcrQueue;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Repositories\OcrQueueFileRepository;
+use App\Models\OcrQueueFile;
 use App\Repositories\SubjectRepository;
 use App\Services\Process\CreateReportService;
 use Str;
@@ -37,36 +37,17 @@ class TesseractOcrComplete
     use ButtonTrait;
 
     /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    private SubjectRepository $subjectRepo;
-
-    /**
-     * @var \App\Services\Process\CreateReportService
-     */
-    private CreateReportService $createReportService;
-
-    /**
-     * @var \App\Repositories\OcrQueueFileRepository
-     */
-    private OcrQueueFileRepository $ocrQueueFileRepo;
-
-    /**
      * Ocr constructor.
      *
      * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Repositories\OcrQueueFileRepository $ocrQueueFileRepo
+     * @param \App\Models\OcrQueueFile $ocrQueueFile
      * @param \App\Services\Process\CreateReportService $createReportService
      */
     public function __construct(
-        SubjectRepository $subjectRepo,
-        OcrQueueFileRepository $ocrQueueFileRepo,
-        CreateReportService $createReportService
-    ) {
-        $this->subjectRepo = $subjectRepo;
-        $this->createReportService = $createReportService;
-        $this->ocrQueueFileRepo = $ocrQueueFileRepo;
-    }
+        private SubjectRepository $subjectRepo,
+        private OcrQueueFile $ocrQueueFile,
+        private CreateReportService $createReportService
+    ) {}
 
     /**
      * Ocr process completed.
@@ -95,7 +76,7 @@ class TesseractOcrComplete
      */
     public function updateSubjects(int $queueId): void
     {
-        $cursor = $this->ocrQueueFileRepo->getOcrQueueFileQuery($queueId);
+        $cursor = $this->ocrQueueFile->where('queue_id', $queueId)->cursor();
 
         $cursor->each(function ($file) use ($queueId) {
             $filePath = config('zooniverse.directory.lambda-ocr') . '/' . $file->subject_id . '.txt';

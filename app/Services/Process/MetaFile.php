@@ -19,7 +19,7 @@
 
 namespace App\Services\Process;
 
-use App\Repositories\MetaRepository;
+use App\Models\Meta;
 use Exception;
 
 /**
@@ -29,11 +29,6 @@ use Exception;
  */
 class MetaFile
 {
-
-    /**
-     * @var Xml
-     */
-    protected $xml;
 
     /**
      * @var null
@@ -91,11 +86,6 @@ class MetaFile
     protected $metaFields;
 
     /**
-     * @var \App\Repositories\MetaRepository
-     */
-    protected $metaRepo;
-
-    /**
      * @var
      */
     protected $file;
@@ -108,14 +98,11 @@ class MetaFile
     /**
      * Constructor
      *
-     * @param \App\Repositories\MetaRepository $metaRepo
+     * @param \App\Models\Meta $meta
      * @param Xml $xml
      */
-    public function __construct(MetaRepository $metaRepo, Xml $xml)
+    public function __construct(protected Meta $meta, protected Xml $xml)
     {
-        $this->xml = $xml;
-        $this->metaRepo = $metaRepo;
-
         $this->dwcRequiredRowTypes = config('config.dwcRequiredRowTypes');
         $this->dwcRequiredFields = config('config.dwcRequiredFields');
     }
@@ -155,7 +142,7 @@ class MetaFile
      */
     public function saveMetaFile($projectId, $meta)
     {
-        $this->metaRepo->create([
+        $this->meta->create([
             'project_id' => $projectId,
             'xml'        => $meta,
         ]);

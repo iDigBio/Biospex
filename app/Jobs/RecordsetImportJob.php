@@ -19,8 +19,8 @@
 
 namespace App\Jobs;
 
+use App\Models\Import;
 use App\Notifications\Generic;
-use App\Repositories\ImportRepository;
 use App\Repositories\ProjectRepository;
 use Exception;
 use GuzzleHttp\Client;
@@ -54,9 +54,9 @@ class RecordsetImportJob implements ShouldQueue
     public $data;
 
     /**
-     * @var \App\Repositories\ImportRepository
+     * @var
      */
-    public $importRepo;
+    public $import;
 
     /**
      * Curl response
@@ -79,13 +79,13 @@ class RecordsetImportJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\ImportRepository $importRepo
+     * @param \App\Models\Import $import
      * @param \App\Repositories\ProjectRepository $projectRepo
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(ImportRepository $importRepo, ProjectRepository $projectRepo): void
+    public function handle(Import $import, ProjectRepository $projectRepo): void
     {
-        $this->importRepo = $importRepo;
+        $this->import = $import;
         $project = $projectRepo->getProjectForDarwinImportJob($this->data['id']);
         $users = $project->group->users->push($project->group->owner);
 
@@ -169,7 +169,7 @@ class RecordsetImportJob implements ShouldQueue
             throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
         }
 
-        return $this->importRepo->create([
+        return $this->import->create([
             'user_id'    => $this->data['user_id'],
             'project_id' => $this->data['project_id'],
             'file'       => $filePath,

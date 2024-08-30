@@ -20,55 +20,34 @@
 namespace App\Services\Models;
 
 use App\Http\Requests\InviteFormRequest;
+use App\Models\Invite;
 use App\Models\Group;
 use App\Notifications\GroupInvite;
-use App\Repositories\GroupRepository;
-use App\Repositories\InviteRepository;
 use App\Repositories\UserRepository;
 use Exception;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 /**
- * Class InviteService
+ * Class InviteModelService
  *
  * @package App\Services\Process
  */
-class InviteService
+readonly class InviteModelService
 {
-
     /**
-     * @var \App\Repositories\UserRepository
-     */
-    private $userRepo;
-
-    /**
-     * @var \App\Repositories\InviteRepository
-     */
-    private $inviteRepo;
-
-    /**
-     * @var \App\Repositories\GroupRepository
-     */
-    private $groupRepo;
-
-    /**
-     * InviteService constructor.
+     * InviteModelService constructor.
      *
      * @param \App\Repositories\UserRepository $userRepo
-     * @param \App\Repositories\InviteRepository $inviteRepo
-     * @param \App\Repositories\GroupRepository $groupRepo
+     * @param \App\Models\Invite $invite
+     * @param \App\Services\Models\GroupModelService $groupModelService
      */
     public function __construct(
-        UserRepository $userRepo,
-        InviteRepository $inviteRepo,
-        GroupRepository $groupRepo
+        private UserRepository $userRepo,
+        private Invite $invite,
+        private GroupModelService $groupModelService
     )
-    {
-        $this->userRepo = $userRepo;
-        $this->inviteRepo = $inviteRepo;
-        $this->groupRepo = $groupRepo;
-    }
+    {}
 
     /**
      * Create and send invites to group.
@@ -79,7 +58,7 @@ class InviteService
      */
     public function storeInvites(int $groupId, InviteFormRequest $request): bool
     {
-        $group = $this->groupRepo->findWith($groupId, ['invites']);
+        $group = $this->groupModelService->findWithRelations($groupId, ['invites']);
 
         try {
             $requestInvites = collect($request->get('invites'))->reject(function($invite){
@@ -148,6 +127,6 @@ class InviteService
             'code'     => Str::random(10)
         ];
 
-        return $this->inviteRepo->create($inviteData);
+        return $this->invite->create($inviteData);
     }
 }

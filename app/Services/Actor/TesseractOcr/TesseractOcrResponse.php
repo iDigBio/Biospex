@@ -19,23 +19,17 @@
 
 namespace App\Services\Actor\TesseractOcr;
 
-use App\Repositories\OcrQueueFileRepository;
+use App\Models\OcrQueueFile;
 
 class TesseractOcrResponse
 {
     /**
-     * @var \App\Repositories\OcrQueueFileRepository
-     */
-    private OcrQueueFileRepository $ocrQueueFileRepo;
-
-    /**
      * Create a new instance.
-     * @param \App\Repositories\OcrQueueFileRepository $ocrQueueFileRepo
+     *
+     * @param \App\Models\OcrQueueFile $ocrQueueFile
      */
-    public function __construct(OcrQueueFileRepository $ocrQueueFileRepo)
-    {
-        $this->ocrQueueFileRepo = $ocrQueueFileRepo;
-    }
+    public function __construct(private OcrQueueFile $ocrQueueFile)
+    {}
 
     /**
      * Process ocr payload.
@@ -68,7 +62,7 @@ class TesseractOcrResponse
         $message = empty($errorMessage) ? 'Error: Unable to complete OCR.' : 'Error: ' . $errorMessage;
         \Storage::disk('s3')->put($requestPayload['key'], $message);
 
-        $file = $this->ocrQueueFileRepo->find($requestPayload['file']);
+        $file = $this->ocrQueueFile->find($requestPayload['file']);
         $file->processed = 1;
         $file->save();
     }
@@ -85,6 +79,7 @@ class TesseractOcrResponse
         $attributes = [
             'processed' => 1,
         ];
-        $this->ocrQueueFileRepo->update($attributes, $body['file']);
+        $ocrQueueFile = $this->ocrQueueFile->find($body['file']);
+        $ocrQueueFile->fill($attributes)->save();
     }
 }
