@@ -19,8 +19,8 @@
 
 namespace App\Services\Actor\GeoLocate;
 
-use App\Repositories\GeoLocateCommunityRepository;
-use App\Repositories\GeoLocateDataSourceRepository;
+use App\Models\GeoLocateCommunity;
+use App\Models\GeoLocateDataSource;
 use App\Services\Api\GeoLocateApi;
 
 /**
@@ -31,36 +31,15 @@ use App\Services\Api\GeoLocateApi;
 class GeoLocateStat
 {
     /**
-     * @var \App\Repositories\GeoLocateCommunityRepository
-     */
-    private GeoLocateCommunityRepository $geoLocateCommunityRepository;
-
-    /**
-     * @var \App\Repositories\GeoLocateDataSourceRepository
-     */
-    private GeoLocateDataSourceRepository $geoLocateDataSourceRepository;
-
-    /**
-     * @var \App\Services\Api\GeoLocateApi
-     */
-    private GeoLocateApi $geoLocateApi;
-
-    /**
      * GeoLocateStat constructor.
      *
-     * @param \App\Repositories\GeoLocateCommunityRepository $geoLocateCommunityRepository
-     * @param \App\Repositories\GeoLocateDataSourceRepository $geoLocateDataSourceRepository
      * @param \App\Services\Api\GeoLocateApi $geoLocateApi
      */
     public function __construct(
-        GeoLocateCommunityRepository $geoLocateCommunityRepository,
-        GeoLocateDataSourceRepository $geoLocateDataSourceRepository,
-        GeoLocateApi $geoLocateApi
-    ) {
-        $this->geoLocateCommunityRepository = $geoLocateCommunityRepository;
-        $this->geoLocateDataSourceRepository = $geoLocateDataSourceRepository;
-        $this->geoLocateApi = $geoLocateApi;
-    }
+        private GeoLocateCommunity $geoLocateCommunity,
+        private GeoLocateDataSource $geoLocateDataSource,
+        private GeoLocateApi $geoLocateApi
+    ) {}
 
     /**
      * Save community and data source.
@@ -77,7 +56,7 @@ class GeoLocateStat
             $this->getCommunityDataSource($data['community']);
             $community = $this->updateOrCreateCommunity($projectId, $data['community']);
         } else {
-            $community = $this->geoLocateCommunityRepository->find($data['community_id']);
+            $community = $this->geoLocateCommunity->find($data['community_id']);
         }
 
         if (! empty($data['data_source'])) {
@@ -105,7 +84,7 @@ class GeoLocateStat
             'name' => $community
         ];
 
-        return $this->geoLocateCommunityRepository->updateOrCreate($attributes, $values);
+        return $this->geoLocateCommunity->updateOrCreate($attributes, $values);
     }
 
     /**
@@ -130,7 +109,7 @@ class GeoLocateStat
             'data_source' => $dataSource
         ];
 
-        return $this->geoLocateDataSourceRepository->updateOrCreate($attributes, $values);
+        return $this->geoLocateDataSource->updateOrCreate($attributes, $values);
     }
 
     /**
@@ -141,7 +120,8 @@ class GeoLocateStat
      */
     public function updateGeoLocateCommunityStat(int $id, array $data): void
     {
-        $this->geoLocateCommunityRepository->update(['data' => $data], $id);
+
+        $this->geoLocateCommunity->updateOrCreate(['id' => $id], ['data' => $data]);
     }
 
     /**
@@ -150,9 +130,9 @@ class GeoLocateStat
      * @param array $data
      * @return void
      */
-    public function updateGeoLocateDataSourceStat(int $id, array $data)
+    public function updateGeoLocateDataSourceStat(int $id, array $data): void
     {
-        $this->geoLocateDataSourceRepository->update(['data' => $data], $id);
+        $this->geoLocateDataSource->update(['id' => $id], ['data' => $data]);
     }
 
     /**
@@ -185,7 +165,7 @@ class GeoLocateStat
      */
     public function getCommunityAndDataSourceByExpeditionId(int $expeditionId): \App\Models\GeoLocateDataSource
     {
-        return $this->geoLocateDataSourceRepository->findByWith('expedition_id',$expeditionId, ['geoLocateCommunity'])->first();
+        return $this->geoLocateDataSource->where('expedition_id', $expeditionId)->with(['geoLocateCommunity'])->first();
     }
 
     /**

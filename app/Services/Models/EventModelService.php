@@ -131,7 +131,8 @@ readonly class EventModelService
         $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'].':00', $attributes['timezone']);
         $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'].':00', $attributes['timezone']);
 
-        $event = $this->event->update($attributes, $resourceId);
+        $event = $this->event->find($resourceId);
+        $event = $event->fill($attributes)->save();
 
         collect($attributes['teams'])->each(function ($team) use ($event) {
             $this->handleTeam($team, $event);
