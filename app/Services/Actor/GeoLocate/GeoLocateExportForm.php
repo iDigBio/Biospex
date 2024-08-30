@@ -21,7 +21,7 @@ namespace App\Services\Actor\GeoLocate;
 
 use App\Models\Expedition;
 use App\Models\GeoLocateForm;
-use App\Repositories\GeoLocateRepository;
+use App\Models\GeoLocateExport;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Models\ExpeditionService;
 use Illuminate\Support\Facades\Cache;
@@ -61,13 +61,13 @@ class GeoLocateExportForm
      * @param \App\Services\Models\ExpeditionService $expeditionService
      * @param \App\Models\GeoLocateForm $geoLocateForm
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
-     * @param \App\Repositories\GeoLocateRepository $geoLocateRepository
+     * @param \App\Models\GeoLocateExport $geoLocateExport
      */
     public function __construct(
         private ExpeditionService $expeditionService,
         private GeoLocateForm $geoLocateForm,
         private AwsS3CsvService $awsS3CsvService,
-        private GeoLocateRepository $geoLocateRepository
+        private GeoLocateExport $geoLocateExport
     ) {}
 
     /**
@@ -304,7 +304,7 @@ class GeoLocateExportForm
      */
     public function deleteGeoLocate(int $expeditionId): void
     {
-        $this->geoLocateRepository->getBy('subject_expeditionId', '=', $expeditionId)->each(function ($geoLocate) {
+        $this->geoLocateExport->where('subject_expeditionId', '=', $expeditionId)->get()->each(function ($geoLocate) {
             $geoLocate->delete();
         });
     }

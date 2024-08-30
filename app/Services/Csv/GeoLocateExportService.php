@@ -23,7 +23,6 @@ use App\Models\Expedition;
 use App\Models\GeoLocateExport;
 use App\Models\GeoLocateForm;
 use App\Models\Download;
-use App\Repositories\GeoLocateRepository;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 
@@ -44,12 +43,12 @@ readonly class GeoLocateExportService
      * Construct
      *
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
-     * @param \App\Repositories\GeoLocateRepository $geoLocateRepository
+     * @param \App\Models\GeoLocateExport $geoLocateExport
      * @param \App\Models\Download $download
      */
     public function __construct(
         private AwsS3CsvService $awsS3CsvService,
-        private GeoLocateRepository $geoLocateRepository,
+        private GeoLocateExport $geoLocateExport,
         private Download $download,
     )
     {}
@@ -109,7 +108,7 @@ readonly class GeoLocateExportService
         $records = $this->awsS3CsvService->csv->getRecords($header);
 
         foreach ($records as $record) {
-            $this->geoLocateRepository->updateOrCreate(['subject_id' => (int)$record['subject_id']], $record);
+            $this->geoLocateExport->updateOrCreate(['subject_id' => (int)$record['subject_id']], $record);
         }
 
         $this->awsS3CsvService->closeBucketStream();
@@ -159,7 +158,8 @@ readonly class GeoLocateExportService
     {
         $this->awsS3CsvService->csv->writerCreateFromPath(Storage::disk('efs')->path($this->csvFilePath));
 
-        $cursor = $this->geoLocateRepository->getByExpeditionId($expedition->id);
+        $cursor = $this->geoLocateExport->where('subject_expeditionId', $expedition->id)
+            ->options(['allowDiskUse' => true])->timeout(86400)->cursor();
 
         $first = true;
         foreach ($cursor as $record) {
