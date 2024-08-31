@@ -37,17 +37,6 @@ use Illuminate\Http\JsonResponse;
 class AjaxController extends Controller
 {
     /**
-     * Call polling command when process modal opened. Trigger inside biospex.js
-     */
-    public function poll()
-    {
-        if (\Request::ajax()) {
-            Artisan::call('ocr:poll');
-            Artisan::call('export:poll');
-        }
-    }
-
-    /**
      * Load amChart.
      *
      * @param \App\Models\AmChart $amChart

@@ -42,9 +42,9 @@ class NoticesComposer
      * @param  View  $view
      * @return void
      */
-    public function compose(View $view)
+    public function compose(View $view): void
     {
-        $notices = $this->notice->where('enabled', 1)->first();
+        $notices = $this->notice->where('enabled', 1)->get();
         $notices = $notices->isEmpty() ? null : $notices;
 
         $view->with('notices', $notices);
