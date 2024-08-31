@@ -19,13 +19,12 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Services\Models\ProjectModelService;
 use Date;
 use App\Http\Controllers\Controller;
-use App\Repositories\ProjectRepository;
-use App\Repositories\StateCountyRepository;
+use App\Services\Models\StateCountyModelService;
 use App\Services\Chart\TranscriptionChartService;
 use Count;
-use Flash;
 use JavaScript;
 
 /**
@@ -36,20 +35,12 @@ use JavaScript;
 class ProjectController extends Controller
 {
     /**
-     * @var \App\Repositories\ProjectRepository
-     */
-    private $projectRepo;
-
-    /**
      * ProjectController constructor.
      *
-     * @param \App\Repositories\ProjectRepository $projectRepo
+     * @param \App\Services\Models\ProjectModelService $projectModelService
      */
-    public function __construct(ProjectRepository $projectRepo)
-    {
-
-        $this->projectRepo = $projectRepo;
-    }
+    public function __construct(private readonly ProjectModelService $projectModelService)
+    {}
 
     /**
      * Public Projects page.
@@ -58,7 +49,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = $this->projectRepo->getPublicProjectIndex();
+        $projects = $this->projectModelService->getPublicProjectIndex();
 
         return \View::make('front.project.index', compact('projects'));
     }
@@ -76,7 +67,7 @@ class ProjectController extends Controller
 
         $sort = \Request::get('sort');
         $order = \Request::get('order');
-        $projects = $this->projectRepo->getPublicProjectIndex($sort, $order);
+        $projects = $this->projectModelService->getPublicProjectIndex($sort, $order);
 
         return \View::make('front.project.partials.project', compact('projects'));
     }
@@ -85,16 +76,16 @@ class ProjectController extends Controller
      * Show public project page.
      *
      * @param \App\Services\Chart\TranscriptionChartService $chartService
-     * @param \App\Repositories\StateCountyRepository $stateCountyRepo
+     * @param \App\Services\Models\StateCountyModelService $stateCountyModelService
      * @param $slug
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function project(
         TranscriptionChartService $chartService,
-        StateCountyRepository $stateCountyRepo,
+        StateCountyModelService $stateCountyModelService,
         $slug
     ) {
-        $project = $this->projectRepo->getProjectPageBySlug($slug);
+        $project = $this->projectModelService->getProjectPageBySlug($slug);
 
         if ($project === null) {
             \Flash::error(t('Unable to locate project. Please alert the Admin.'));
@@ -125,7 +116,7 @@ class ProjectController extends Controller
         $years = !isset($project->amChart) || is_null($project->amChart->data) ?
             null : array_keys($project->amChart->data);
 
-        $states = $stateCountyRepo->getStateTranscriptCount($project->id);
+        $states = $stateCountyModelService->getStateTranscriptCount($project->id);
         $max = abs(round(($states->max('value') + 500), -3));
 
         JavaScript::put([

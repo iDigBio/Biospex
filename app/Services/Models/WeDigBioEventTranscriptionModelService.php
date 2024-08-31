@@ -11,33 +11,37 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\WeDigBioEventTranscription;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-/**
- * Class WeDigBioEventTranscriptionRepository
- *
- * @package App\Repositories
- */
-class WeDigBioEventTranscriptionRepository extends BaseRepository
+class WeDigBioEventTranscriptionModelService
 {
     /**
      * WeDigBioEventTranscriptionRepository constructor.
      *
-     * @param \App\Models\WeDigBioEventTranscription $weDigBioEventTranscription
+     * @param \App\Models\WeDigBioEventTranscription $model
      */
-    public function __construct(WeDigBioEventTranscription $weDigBioEventTranscription)
+    public function __construct(private readonly WeDigBioEventTranscription $model)
+    {}
+
+    /**
+     * Create.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create(array $data)
     {
-        $this->model = $weDigBioEventTranscription;
+        return $this->model->create($data);
     }
 
     /**

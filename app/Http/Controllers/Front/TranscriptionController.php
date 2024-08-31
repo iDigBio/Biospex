@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\AmChart;
-use App\Repositories\StateCountyRepository;
+use App\Services\Models\StateCountyModelService;
 use File;
 
 /**
@@ -56,16 +56,16 @@ class TranscriptionController extends Controller
      *
      * @param $projectId
      * @param $stateId
-     * @param \App\Repositories\StateCountyRepository $stateCountyRepo
+     * @param \App\Services\Models\StateCountyModelService $stateCountyModelService
      * @return array|\Illuminate\Http\JsonResponse
      */
-    public function state($projectId, $stateId, StateCountyRepository $stateCountyRepo)
+    public function state($projectId, $stateId, StateCountyModelService $stateCountyModelService)
     {
         if (! \Request::ajax()) {
             return response()->json(['html' => 'Error retrieving the counties.']);
         }
 
-        $counties = $stateCountyRepo->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
+        $counties = $stateCountyModelService->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
             return [
                 'id'    => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
                 'value' => $item->transcription_locations_count,

@@ -21,7 +21,6 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Repositories\PusherTranscriptionRepository;
 use App\Services\Transcriptions\CreatePusherTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -43,11 +42,6 @@ class PusherTranscriptionJob implements ShouldQueue
      * @var int
      */
     public $timeout = 300;
-
-    /**
-     * @var \App\Repositories\PusherTranscriptionRepository
-     */
-    private PusherTranscriptionRepository $pusherTranscriptionRepository;
 
     /**
      * Create a new job instance.

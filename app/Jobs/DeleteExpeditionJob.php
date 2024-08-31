@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Repositories\SubjectRepository;
+use App\Services\Models\SubjectModelService;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -66,12 +66,12 @@ class DeleteExpeditionJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\SubjectRepository $subjectRepo
+     * @param \App\Services\Models\SubjectModelService $subjectModelService
      * @param \App\Services\MongoDbService $mongoDbService
      * @return void
      */
     public function handle(
-        SubjectRepository $subjectRepo,
+        SubjectModelService $subjectModelService,
         MongoDbService $mongoDbService
     ): void {
 
@@ -87,10 +87,10 @@ class DeleteExpeditionJob implements ShouldQueue
         $mongoDbService->setCollection('panoptes_transcriptions');
         $mongoDbService->deleteMany(['subject_expeditionId' => $this->expedition->id]);
 
-        $subjectIds = $subjectRepo->findByExpeditionId((int) $this->expedition->id, ['_id'])->pluck('_id');
+        $subjectIds = $subjectModelService->findByExpeditionId((int) $this->expedition->id, ['_id'])->pluck('_id');
 
         if ($subjectIds->isNotEmpty()) {
-            $subjectRepo->detachSubjects($subjectIds, $this->expedition->id);
+            $subjectModelService->detachSubjects($subjectIds, $this->expedition->id);
         }
 
         $this->expedition->delete();

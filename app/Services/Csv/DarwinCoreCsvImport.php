@@ -20,8 +20,8 @@
 namespace App\Services\Csv;
 
 use App\Services\Models\HeaderModelService;
-use App\Repositories\PropertyRepository;
-use App\Repositories\SubjectRepository;
+use App\Models\Property;
+use App\Services\Models\SubjectModelService;
 use App\Services\MongoDbService;
 use Carbon\Carbon;
 use Exception;
@@ -97,20 +97,20 @@ class DarwinCoreCsvImport
     /**
      * Construct
      *
-     * @param \App\Repositories\PropertyRepository $propertyRepo
-     * @param \App\Repositories\SubjectRepository $subjectRepo
+     * @param \App\Models\Property $property
+     * @param \App\Services\Models\SubjectModelService $subjectModelService
      * @param \App\Services\Models\HeaderModelService $headerModelService
      * @param Validation $factory
      * @param \App\Services\Csv\Csv $csv
      * @param MongoDbService $mongoDbService
      */
     public function __construct(
-        private PropertyRepository $propertyRepo,
-        private SubjectRepository $subjectRepo,
-        private HeaderModelService $headerModelService,
-        private Validation $factory,
-        private Csv $csv,
-        private MongoDbService $mongoDbService
+        private readonly Property $property,
+        private readonly SubjectModelService $subjectModelService,
+        private readonly HeaderModelService $headerModelService,
+        private readonly Validation $factory,
+        private readonly Csv $csv,
+        private readonly MongoDbService $mongoDbService
     ) {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
         $this->mongoDbService->setCollection('subjects');
@@ -306,9 +306,9 @@ class DarwinCoreCsvImport
      */
     protected function setShortName(string $short)
     {
-        $checkShort = $this->propertyRepo->findBy('short', $short);
+        $checkShort = $this->property->where('short', $short)->first();
         if ($checkShort === null) {
-            $this->propertyRepo->create(['short' => $short]);
+            $this->property->create(['short' => $short]);
         }
     }
 
@@ -326,7 +326,7 @@ class DarwinCoreCsvImport
             'short'     => $short,
             'namespace' => $namespace,
         ];
-        $this->propertyRepo->create($array);
+        $this->property->create($array);
     }
 
     /**
@@ -474,7 +474,7 @@ class DarwinCoreCsvImport
             unset($subject['language']);
         }
 
-        $this->subjectRepo->create($subject);
+        $this->subjectModelService->create($subject);
         $this->subjectCount++;
     }
 

@@ -19,7 +19,7 @@
 
 namespace App\Services\Event;
 
-use App\Repositories\ProjectRepository;
+use App\Services\Models\ProjectModelService;
 use App\Services\Transcriptions\CreateWeDigBioTranscriptionService;
 
 /**
@@ -30,29 +30,16 @@ use App\Services\Transcriptions\CreateWeDigBioTranscriptionService;
 class WeDigBioEventService
 {
     /**
-     * @var \App\Services\Transcriptions\CreateWeDigBioTranscriptionService
-     */
-    private CreateWeDigBioTranscriptionService $createWeDigBioTranscriptionService;
-
-    /**
-     * @var \App\Repositories\ProjectRepository
-     */
-    private ProjectRepository $projectRepository;
-
-    /**
      * BiospexEventService constructor.
      *
      * @param \App\Services\Transcriptions\CreateWeDigBioTranscriptionService $createWeDigBioTranscriptionService
-     * @param \App\Repositories\ProjectRepository $projectRepository
+     * @param \App\Services\Models\ProjectModelService $projectModelService
      */
     public function __construct(
-        CreateWeDigBioTranscriptionService $createWeDigBioTranscriptionService,
-        ProjectRepository $projectRepository
+        private readonly CreateWeDigBioTranscriptionService $createWeDigBioTranscriptionService,
+        private readonly ProjectModelService $projectModelService
     )
-    {
-        $this->createWeDigBioTranscriptionService = $createWeDigBioTranscriptionService;
-        $this->projectRepository = $projectRepository;
-    }
+    {}
 
     /**
      * Adds transcription to event for particular user.
@@ -64,7 +51,7 @@ class WeDigBioEventService
      */
     public function process(array $data, int $projectId)
     {
-        $project = $this->projectRepository->find($projectId);
+        $project = $this->projectModelService->findWithRelations($projectId);
 
         if ($project === null) {
             return;

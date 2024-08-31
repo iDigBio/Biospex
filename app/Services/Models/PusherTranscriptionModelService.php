@@ -11,23 +11,18 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\PusherTranscription;
 use Carbon\Carbon;
 
-/**
- * Class PusherTranscriptionRepository
- *
- * @package App\Repositories
- */
-class PusherTranscriptionRepository extends BaseRepository
+class PusherTranscriptionModelService
 {
     /**
      * @var \Illuminate\Database\Eloquent\Builder
@@ -35,14 +30,49 @@ class PusherTranscriptionRepository extends BaseRepository
     private $dashboardQuery;
 
     /**
-     * PusherTranscriptionRepository constructor.
+     * PusherTranscriptionModelService constructor.
      *
-     * @param \App\Models\PusherTranscription $pusherTranscription
+     * @param \App\Models\PusherTranscription $model
      */
-    public function __construct(PusherTranscription $pusherTranscription)
-    {
+    public function __construct(private readonly PusherTranscription $model)
+    {}
 
-        $this->model = $pusherTranscription;
+    /**
+     * Find by column and value.
+     *
+     * @param string $column
+     * @param string $value
+     * @return mixed
+     */
+    public function findBy(string $column, string $value)
+    {
+        return $this->model->where($column, $value)->first();
+    }
+
+    /**
+     * Create.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
+
+    /**
+     * Update.
+     *
+     * @param array $data
+     * @param $resourceId
+     * @return \App\Models\PusherTranscription|bool
+     */
+    public function update(array $data, $resourceId): \App\Models\PusherTranscription|false
+    {
+        $model = $this->model->find($resourceId);
+        $result = $model->fill($data)->save();
+
+        return $result ? $model : false;
     }
 
     /**

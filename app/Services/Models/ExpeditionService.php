@@ -21,8 +21,7 @@ namespace App\Services\Models;
 
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Models\Expedition;
-use App\Repositories\SubjectRepository;
-use App\Repositories\WorkflowRepository;
+use App\Models\Workflow;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Notification;
 
@@ -37,13 +36,13 @@ class ExpeditionService
      * ExpeditionService constructor.
      *
      * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @param \App\Repositories\SubjectRepository $subjectRepository
-     * @param \App\Repositories\WorkflowRepository $workflowRepository
+     * @param \App\Services\Models\SubjectModelService $subjectModelService
+     * @param \App\Models\Workflow $workflow
      */
     public function __construct(
         private ExpeditionModelService $expeditionModelService,
-        private SubjectRepository $subjectRepository,
-        private WorkflowRepository $workflowRepository
+        private SubjectModelService $subjectModelService,
+        private Workflow $workflow
     ) {}
 
     /**
@@ -78,7 +77,7 @@ class ExpeditionService
      */
     public function getSubjectIdsByExpeditionId(int $expeditionId): Collection
     {
-        return collect($this->subjectRepository->findByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id'));
+        return collect($this->subjectModelService->findByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id'));
     }
 
     /**
@@ -187,7 +186,7 @@ class ExpeditionService
      */
     public function detachSubjects(int $expeditionId, Collection $detachIds): void
     {
-        $this->subjectRepository->detachSubjects($detachIds, $expeditionId);
+        $this->subjectModelService->detachSubjects($detachIds, $expeditionId);
     }
 
     /**
@@ -201,7 +200,7 @@ class ExpeditionService
     {
         $attachIds = $attachIds === null ? $this->subjectIds : $attachIds;
 
-        $this->subjectRepository->attachSubjects($attachIds, $expeditionId);
+        $this->subjectModelService->attachSubjects($attachIds, $expeditionId);
     }
 
     /**
@@ -246,7 +245,10 @@ class ExpeditionService
      */
     public function getWorkflowSelect(): array
     {
-        return ['' => '--Select--'] + $this->workflowRepository->getWorkflowSelect();
+        return ['' => '--Select--'] + $this->workflow->where('enabled', '=',1)
+                ->orderBy('id', 'asc')
+                ->pluck('title', 'id')
+                ->toArray();
     }
 
     /**

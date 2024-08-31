@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\ProjectRepository;
+use App\Services\Models\ProjectModelService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 
 /**
@@ -30,18 +30,17 @@ use Illuminate\Contracts\Routing\ResponseFactory;
  */
 class AdvertiseController extends Controller
 {
-
     /**
      * Show advertise page.
      *
      * @param \Illuminate\Contracts\Routing\ResponseFactory $response
-     * @param \App\Repositories\ProjectRepository $projectRepo
+     * @param \App\Services\Models\ProjectModelService $projectModelService
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function index(ResponseFactory $response, ProjectRepository $projectRepo, $projectId)
+    public function index(ResponseFactory $response, ProjectModelService $projectModelService, $projectId)
     {
-        $project = $projectRepo->findWith($projectId, ['group']);
+        $project = $projectModelService->findWithRelations($projectId, ['group']);
 
         if ( ! $this->checkPermissions('readProject', $project->group))
         {

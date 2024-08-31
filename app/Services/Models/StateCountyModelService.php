@@ -11,32 +11,30 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\StateCounty;
 
-/**
- * Class StateCountyRepository
- *
- * @package App\Repositories
- */
-class StateCountyRepository extends BaseRepository
+readonly class StateCountyModelService
 {
-    /**
-     * StateCountyRepository constructor.
-     *
-     * @param \App\Models\StateCounty $stateCounty
-     */
-    public function __construct(StateCounty $stateCounty)
-    {
+    public function __construct(private StateCounty $model)
+    {}
 
-        $this->model = $stateCounty;
+    /**
+     * Create.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create(array $data)
+    {
+        return $this->model->create($data);
     }
 
     /**
@@ -86,5 +84,20 @@ class StateCountyRepository extends BaseRepository
     public function findByCountyState($county, $stateAbbr)
     {
         return $this->model->where('county_name','like', '%'.$county.'%')->where('state_abbr', $stateAbbr)->first();
+    }
+
+    /**
+     * Truncate database table.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function truncate(): void
+    {
+        if (\App::isProduction()) {
+            throw new \Exception('Cannot truncate database table in production.');
+        }
+
+        $this->model->truncate();
     }
 }

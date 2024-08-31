@@ -20,8 +20,7 @@
 namespace App\Services\Transcriptions;
 
 use App\Models\PusherClassification;
-use App\Repositories\PusherClassificationRepository;
-use App\Repositories\PusherTranscriptionRepository;
+use App\Services\Models\PusherTranscriptionModelService;
 use Validator;
 
 /**
@@ -29,30 +28,17 @@ use Validator;
  *
  * @package App\Services\Transcriptions
  */
-class CreatePusherTranscriptionService
+readonly class CreatePusherTranscriptionService
 {
     /**
-     * @var \App\Repositories\PusherClassificationRepository
-     */
-    private PusherClassificationRepository $pusherClassificationRepo;
-
-    /**
-     * @var \App\Repositories\PusherTranscriptionRepository
-     */
-    private PusherTranscriptionRepository $pusherTranscriptionRepository;
-
-    /**
-     * @param \App\Repositories\PusherClassificationRepository $pusherClassificationRepo
-     * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepository
+     * @param \App\Models\PusherClassification $pusherClassification
+     * @param \App\Services\Models\PusherTranscriptionModelService $pusherTranscriptionModelService
      */
     public function __construct(
-        PusherClassificationRepository $pusherClassificationRepo,
-        PusherTranscriptionRepository $pusherTranscriptionRepository)
-    {
-
-        $this->pusherClassificationRepo = $pusherClassificationRepo;
-        $this->pusherTranscriptionRepository = $pusherTranscriptionRepository;
-    }
+        private PusherClassification $pusherClassification,
+        private PusherTranscriptionModelService $pusherTranscriptionModelService
+    )
+    {}
 
     /**
      * Method called to start processing pusher classifications held in the MySql database to MongoDb
@@ -62,7 +48,7 @@ class CreatePusherTranscriptionService
      */
     public function process()
     {
-        $this->pusherClassificationRepo->model->chunkById(50, function ($chunk) {
+        $this->pusherClassification->chunkById(50, function ($chunk) {
             $chunk->each(function ($record) {
                 $this->createDashboardRecord($record);
                 $record->delete();
@@ -83,7 +69,7 @@ class CreatePusherTranscriptionService
             return;
         }
 
-        $this->pusherTranscriptionRepository->create($pusherClassification->data);
+        $this->pusherTranscriptionModelService->create($pusherClassification->data);
     }
 
     /**

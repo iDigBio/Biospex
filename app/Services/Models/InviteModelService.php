@@ -23,7 +23,7 @@ use App\Http\Requests\InviteFormRequest;
 use App\Models\Invite;
 use App\Models\Group;
 use App\Notifications\GroupInvite;
-use App\Repositories\UserRepository;
+use App\Services\Models\UserModelService;
 use Exception;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -38,12 +38,12 @@ readonly class InviteModelService
     /**
      * InviteModelService constructor.
      *
-     * @param \App\Repositories\UserRepository $userRepo
+     * @param \App\Services\Models\UserModelService $userModelService
      * @param \App\Models\Invite $invite
      * @param \App\Services\Models\GroupModelService $groupModelService
      */
     public function __construct(
-        private UserRepository $userRepo,
+        private UserModelService $userModelService,
         private Invite $invite,
         private GroupModelService $groupModelService
     )
@@ -95,7 +95,7 @@ readonly class InviteModelService
      */
     private function checkExistingUser(string $email, Group $group): bool
     {
-        $user = $this->userRepo->findBy('email',$email);
+        $user = $this->userModelService->getFirstBy('email',$email);
 
         if ($user === null)
         {

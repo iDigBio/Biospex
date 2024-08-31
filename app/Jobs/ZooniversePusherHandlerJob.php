@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\PanoptesProject;
-use App\Repositories\WeDigBioProjectRepository;
+use App\Models\WeDigBioProject;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -60,20 +60,21 @@ class ZooniversePusherHandlerJob implements ShouldQueue
      */
     public function handle(
         PanoptesProject $panoptesProjectModel,
-        WeDigBioProjectRepository $weDigBioProjectRepo,
+        WeDigBioProject $weDigBioProject,
     ) {
         $panoptesProject = $panoptesProjectModel->where('panoptes_project_id', $this->data['project_id'])
             ->where('panoptes_workflow_id', $this->data['workflow_id'])->first();
 
-        $weDigBioProject = $weDigBioProjectRepo->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
+        $record = $weDigBioProject->where('panoptes_project_id', $this->data['project_id'])
+            ->where('panoptes_workflow_id', $this->data['workflow_id'])->first();
 
-        if ($panoptesProject === null && $weDigBioProject === null) {
+        if ($panoptesProject === null && $record === null) {
             $this->delete();
 
             return;
         }
 
-        $title = $weDigBioProject === null ? $panoptesProject->title : $weDigBioProject->title;
+        $title = $record === null ? $panoptesProject->title : $record->title;
 
         ZooniverseClassificationJob::dispatch($this->data, $title);
 

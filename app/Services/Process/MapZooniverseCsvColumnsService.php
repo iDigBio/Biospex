@@ -22,29 +22,22 @@ namespace App\Services\Process;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
 use App\Models\Subject;
-use App\Repositories\SubjectRepository;
+use App\Services\Models\SubjectModelService;
 
 class MapZooniverseCsvColumnsService
 {
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    private SubjectRepository $subjectRepository;
-
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
     private mixed $zooniverseCsvMap;
 
     /**
-     * @param \App\Repositories\SubjectRepository $subjectRepository
+     * @param \App\Services\Models\SubjectModelService $subjectModelService
      */
     public function __construct(
-        SubjectRepository $subjectRepository
+        private readonly SubjectModelService $subjectModelService
     )
     {
-
-        $this->subjectRepository = $subjectRepository;
         $this->zooniverseCsvMap = config('zooniverse.csv_map');
     }
 
@@ -57,7 +50,7 @@ class MapZooniverseCsvColumnsService
      */
     public function mapColumns(ExportQueueFile $file, ExportQueue $queue): array
     {
-        $subject = $this->subjectRepository->find($file->subject_id);
+        $subject = $this->subjectModelService->find($file->subject_id);
 
         $csvArray = [];
         $presetValues = ['#expeditionId', '#expeditionTitle', 'imageName'];

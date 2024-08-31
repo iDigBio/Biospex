@@ -11,48 +11,89 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\Subject;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 
-/**
- * Class SubjectRepository
- *
- * @package App\Repositories
- */
-class SubjectRepository extends BaseRepository
+class SubjectModelService
 {
     /**
-     * @var
+     * @var bool $groupAnd
      */
-    private $groupAnd;
+    private bool $groupAnd;
 
     /**
-     * @var
+     * @var bool $groupOpProcessed
      */
-    private $groupOpProcessed;
+    private bool $groupOpProcessed;
 
     /**
      * @var mixed
      */
-    private $assignedRuleData;
+    private mixed $assignedRuleData;
 
     /**
-     * SubjectRepository constructor.
+     * SubjectModelService constructor.
      *
-     * @param \App\Models\Subject $subject
+     * @param Subject $model
      */
-    public function __construct(Subject $subject)
+    public function __construct(private readonly Subject $model)
+    {}
+
+    /**
+     * Create.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create(array $data)
     {
-        $this->model = $subject;
+        return $this->model->create($data);
+    }
+
+    /**
+     * Update.
+     *
+     * @param array $data
+     * @param $resourceId
+     * @return \App\Models\Subject|bool
+     */
+    public function update(array $data, $resourceId)
+    {
+        $model = $this->model->find($resourceId);
+        $result = $model->fill($data)->save();
+
+        return $result ? $model : false;
+    }
+
+    /**
+     * Find.
+     *
+     * @param string $id
+     * @return mixed
+     */
+    public function find(string $id)
+    {
+        return $this->model->find($id);
+    }
+
+    /**
+     * Get subjects where values are whereIn.
+     *
+     * @param array|string[] $columns
+     * @return mixed
+     */
+    public function getWhereIn(string $field, array $values, array $columns = ['*'])
+    {
+        return $this->model->whereIn($field, $values)->get($columns);
     }
 
     /**

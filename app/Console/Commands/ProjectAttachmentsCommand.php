@@ -19,7 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ProjectRepository;
+use App\Services\Models\ProjectModelService;
 use Illuminate\Console\Command;
 use Storage;
 
@@ -45,19 +45,13 @@ class ProjectAttachmentsCommand extends Command
     protected $description = 'Command description';
 
     /**
-     * @var \App\Repositories\ProjectRepository
-     */
-    private $projectRepo;
-
-    /**
      * Create a new command instance.
      *
-     * @param \App\Repositories\ProjectRepository $projectRepo
+     * @param \App\Services\Models\ProjectModelService $projectModelService
      */
-    public function __construct(ProjectRepository $projectRepo)
+    public function __construct(private ProjectModelService $projectModelService)
     {
         parent::__construct();
-        $this->projectRepo = $projectRepo;
     }
 
     /**
@@ -65,7 +59,7 @@ class ProjectAttachmentsCommand extends Command
      */
     public function handle()
     {
-        $projects = $this->projectRepo->all();
+        $projects = $this->projectModelService->all();
 
         $projects->each(function($project){
             if ( ! $this->variantExists($project->logo)) {

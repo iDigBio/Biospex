@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ReconcileRepository;
-use App\Repositories\SubjectRepository;
+use App\Models\Reconcile;
+use App\Services\Models\SubjectModelService;
 use App\Services\Csv\Csv;
 use Illuminate\Console\Command;
 
@@ -23,16 +23,6 @@ class FixExpedition extends Command
      */
     protected $description = 'Temp command to fix Catherine reconcile files';
 
-    /**
-     * @var \App\Services\Csv\Csv
-     */
-    private Csv $csv;
-
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    private SubjectRepository $subjectRepo;
-
     private $fixDir;
     
     private $birdImages;
@@ -40,22 +30,17 @@ class FixExpedition extends Command
     private $birdOccurrences;
 
     /**
-     * @var \App\Repositories\ReconcileRepository
-     */
-    private ReconcileRepository $reconcileRepo;
-
-    /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(Csv $csv, SubjectRepository $subjectRepo, ReconcileRepository $reconcileRepo)
+    public function __construct(
+        public Csv $csv,
+        public SubjectModelService $subjectModelService,
+        public Reconcile $reconcile)
     {
         parent::__construct();
-        $this->csv = $csv;
-        $this->subjectRepo = $subjectRepo;
         $this->fixDir = \Storage::disk('local')->path('fossils/fix/');
-        $this->reconcileRepo = $reconcileRepo;
     }
 
     /**
@@ -83,7 +68,7 @@ class FixExpedition extends Command
         foreach ($reconcileReader as $offset => $record) {
             $this->fixReconcileWithExpert($record);
 
-            $subject = $this->subjectRepo->find($record['subject_subjectId']);
+            $subject = $this->subjectModelService->find($record['subject_subjectId']);
             $identifier = $subject['identifier'];
 
             $birdImage = $this->findBirdImageRecord($identifier);
@@ -138,7 +123,7 @@ class FixExpedition extends Command
 
     public function fixReconcileWithExpert(&$record)
     {
-        $reconciled = $this->reconcileRepo->findBy('subject_id', $record['subject_id']);
+        $reconciled = $this->reconcile->where('subject_id', $record['subject_id'])->first();
         foreach ($record as $key => $value) {
             $record[$key] = $reconciled[$key] ?? $value;
         }

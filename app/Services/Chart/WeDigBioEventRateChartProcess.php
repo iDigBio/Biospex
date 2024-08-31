@@ -20,8 +20,8 @@
 namespace App\Services\Chart;
 
 use App\Models\WeDigBioEventDate;
-use App\Repositories\WeDigBioEventDateRepository;
-use App\Repositories\WeDigBioEventTranscriptionRepository;
+use App\Services\Models\WeDigBioEventDateModelService;
+use App\Services\Models\WeDigBioEventTranscriptionModelService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -30,32 +30,18 @@ use Illuminate\Support\Collection;
  *
  * @package App\Services\Process
  */
-class WeDigBioEventRateChartProcess
+readonly class WeDigBioEventRateChartProcess
 {
-    /**
-     * @var \App\Repositories\WeDigBioEventDateRepository
-     */
-    private WeDigBioEventDateRepository $weDigBioEventDateRepository;
-
-    /**
-     * @var \App\Repositories\WeDigBioEventTranscriptionRepository
-     */
-    private WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository;
-
     /**
      * AjaxService constructor.
      *
-     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
-     * @param \App\Repositories\WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository
+     * @param \App\Services\Models\WeDigBioEventDateModelService $weDigBioEventDateModelService
+     * @param \App\Services\Models\WeDigBioEventTranscriptionModelService $weDigBioEventTranscriptionModelService
      */
     public function __construct(
-        WeDigBioEventDateRepository $weDigBioEventDateRepository,
-        WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository
-    ) {
-
-        $this->weDigBioEventDateRepository = $weDigBioEventDateRepository;
-        $this->weDigBioEventTranscriptionRepository = $weDigBioEventTranscriptionRepository;
-    }
+        private WeDigBioEventDateModelService $weDigBioEventDateModelService,
+        private WeDigBioEventTranscriptionModelService $weDigBioEventTranscriptionModelService
+    ) {}
 
     /**
      * Get wedigbio event transcription data for step chart.
@@ -66,7 +52,7 @@ class WeDigBioEventRateChartProcess
      */
     public function getWeDigBioEventRateChart(int $dateId, string $timestamp = null): ?array
     {
-        $weDigBioDate = $this->weDigBioEventDateRepository->getByActiveOrDateId($dateId);
+        $weDigBioDate = $this->weDigBioEventDateModelService->getByActiveOrDateId($dateId);
 
         if ($weDigBioDate === null) {
             return null;
@@ -80,7 +66,7 @@ class WeDigBioEventRateChartProcess
 
         $intervals = $this->setTimeIntervals($startLoad, $endLoad, $timestamp);
 
-        $transcriptions = $this->weDigBioEventTranscriptionRepository->getWeDigBioRateChartTranscriptions($weDigBioDate->id, $startLoad, $endLoad);
+        $transcriptions = $this->weDigBioEventTranscriptionModelService->getWeDigBioRateChartTranscriptions($weDigBioDate->id, $startLoad, $endLoad);
 
         $projects = $transcriptions->map(function($transcription){
             return $transcription->project->title;

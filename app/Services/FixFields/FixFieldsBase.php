@@ -20,7 +20,7 @@
 namespace App\Services\FixFields;
 
 use App\Services\Models\HeaderModelService;
-use App\Repositories\PropertyRepository;
+use App\Models\Property;
 use App\Services\MongoDbService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -32,12 +32,12 @@ class FixFieldsBase
      *
      * @param \App\Services\MongoDbService $mongoDbService
      * @param \App\Services\Models\HeaderModelService $headerModelService
-     * @param \App\Repositories\PropertyRepository $propertyRepository
+     * @param \App\Models\Property $property
      */
     public function __construct(
         public MongoDbService $mongoDbService,
         public HeaderModelService $headerModelService,
-        public PropertyRepository $propertyRepository
+        public Property $property
     ) {}
 
     /**
@@ -163,12 +163,12 @@ class FixFieldsBase
     public function removeAndSetProperty(array $fields)
     {
         collect($fields)->each(function ($newFieldName, $oldFieldName) {
-            $record = $this->propertyRepository->findBy('short', $oldFieldName);
+            $record = $this->property->where('short', $oldFieldName)->first();
             $record?->delete();
 
-            $result = $this->propertyRepository->findBy('short', $newFieldName);
+            $result = $this->property->where('short', $newFieldName)->first();
             if ($result === null) {
-                $this->propertyRepository->create(['short' => $newFieldName]);
+                $this->property->create(['short' => $newFieldName]);
             }
         });
     }

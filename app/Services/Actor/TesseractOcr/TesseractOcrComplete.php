@@ -23,7 +23,7 @@ use App\Models\OcrQueue;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use App\Models\OcrQueueFile;
-use App\Repositories\SubjectRepository;
+use App\Services\Models\SubjectModelService;
 use App\Services\Process\CreateReportService;
 use Str;
 
@@ -39,12 +39,12 @@ class TesseractOcrComplete
     /**
      * Ocr constructor.
      *
-     * @param \App\Repositories\SubjectRepository $subjectRepo
+     * @param \App\Services\Models\SubjectModelService $subjectModelService
      * @param \App\Models\OcrQueueFile $ocrQueueFile
      * @param \App\Services\Process\CreateReportService $createReportService
      */
     public function __construct(
-        private SubjectRepository $subjectRepo,
+        private SubjectModelService $subjectModelService,
         private OcrQueueFile $ocrQueueFile,
         private CreateReportService $createReportService
     ) {}
@@ -82,7 +82,7 @@ class TesseractOcrComplete
             $filePath = config('zooniverse.directory.lambda-ocr') . '/' . $file->subject_id . '.txt';
             $content = \Storage::disk('s3')->get($filePath);
             $ocrText = trim(preg_replace('/\s+/', ' ', trim($content)));
-            $this->subjectRepo->update(['ocr' => $ocrText], $file->subject_id);
+            $this->subjectModelService->update(['ocr' => $ocrText], $file->subject_id);
         });
     }
 
@@ -97,7 +97,7 @@ class TesseractOcrComplete
     {
         $queue->load('project.group.owner');
 
-        $cursor = $this->subjectRepo->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id);
+        $cursor = $this->subjectModelService->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id);
         $subjects = $cursor->map(function ($subject) {
             return [
                 'subject_id' => $subject->_id,

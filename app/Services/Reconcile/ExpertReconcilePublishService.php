@@ -23,7 +23,7 @@ use App\Services\Models\ExpeditionModelService;
 use TranscriptionMap;
 use App\Notifications\Generic;
 use App\Models\Download;
-use App\Repositories\ReconcileRepository;
+use App\Models\Reconcile;
 use App\Services\Csv\AwsS3CsvService;
 
 /**
@@ -36,13 +36,13 @@ readonly class ExpertReconcilePublishService
     /**
      * ExpertReconcilePublishService constructor.
      *
-     * @param \App\Repositories\ReconcileRepository $reconcileRepo
+     * @param \App\Models\Reconcile $reconcile
      * @param \App\Models\Download $download
      * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
-        private ReconcileRepository $reconcileRepo,
+        private Reconcile $reconcile,
         private Download $download,
         private ExpeditionModelService $expeditionModelService,
         private AwsS3CsvService $awsS3CsvService
@@ -71,7 +71,7 @@ readonly class ExpertReconcilePublishService
      */
     private function createReconcileCsv(string $expeditionId): void
     {
-        $results = $this->reconcileRepo->getBy('subject_expeditionId', (int) $expeditionId);
+        $results = $this->reconcile->where('subject_expeditionId', (int) $expeditionId)->get();
         $mapped = $results->map(function ($record) {
             unset($record->_id, $record->subject_columns, $record->subject_problem, $record->updated_at, $record->created_at, $record->reviewed);
             return $record;

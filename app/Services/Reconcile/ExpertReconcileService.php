@@ -20,8 +20,8 @@
 namespace App\Services\Reconcile;
 
 use TranscriptionMap;
-use App\Repositories\ReconcileRepository;
-use App\Repositories\SubjectRepository;
+use App\Models\Reconcile;
+use App\Services\Models\SubjectModelService;
 use App\Services\Csv\AwsS3CsvService;
 use Exception;
 use File;
@@ -38,21 +38,6 @@ use Validator;
 class ExpertReconcileService
 {
     /**
-     * @var \App\Repositories\ReconcileRepository
-     */
-    private ReconcileRepository $reconcileRepo;
-
-    /**
-     * @var SubjectRepository
-     */
-    private SubjectRepository $subjectRepo;
-
-    /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvService;
-
-    /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
     private mixed $problemRegex;
@@ -60,20 +45,15 @@ class ExpertReconcileService
     /**
      * ExpertReconcileService constructor.
      *
-     * @param \App\Repositories\ReconcileRepository $reconcileRepo
-     * @param \App\Repositories\SubjectRepository $subjectRepo
+     * @param \App\Models\Reconcile $reconcile
+     * @param \App\Services\Models\SubjectModelService $subjectModelService
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
-        ReconcileRepository $reconcileRepo,
-        SubjectRepository $subjectRepo,
-        AwsS3CsvService $awsS3CsvService
+        private readonly Reconcile $reconcile,
+        private readonly SubjectModelService $subjectModelService,
+        private readonly AwsS3CsvService $awsS3CsvService
     ) {
-
-        $this->reconcileRepo = $reconcileRepo;
-        $this->subjectRepo = $subjectRepo;
-        $this->awsS3CsvService = $awsS3CsvService;
-
         $this->problemRegex = config('zooniverse.reconcile_problem_regex');
     }
 
@@ -106,7 +86,7 @@ class ExpertReconcileService
                 $newRecord['subject_problem'] = 0;
                 $newRecord['subject_columns'] = '';
             }
-            $this->reconcileRepo->create($newRecord);
+            $this->reconcile->create($newRecord);
         });
     }
 
@@ -134,7 +114,11 @@ class ExpertReconcileService
      */
     public function getPagination(int $expeditionId): LengthAwarePaginator
     {
-        return $this->reconcileRepo->paging($expeditionId);
+        return $this->reconcile->with(['transcriptions'])
+            ->where('subject_expeditionId', $expeditionId)
+            ->where('subject_problem', 1)
+            ->orderBy('subject_id', 'asc')
+            ->paginate(1);
     }
 
     /**
@@ -158,7 +142,7 @@ class ExpertReconcileService
     public function getAccessUri($imageName): mixed
     {
         $id = File::name($imageName);
-        $subject = $this->subjectRepo->find($id, ['accessURI']);
+        $subject = $this->subjectModelService->find($id, ['accessURI']);
 
         return $subject->accessURI;
     }
@@ -182,7 +166,10 @@ class ExpertReconcileService
         }
         $attributes['reviewed'] = 1;
 
-        return $this->reconcileRepo->update($attributes, $id);
+        $model = $this->reconcile->find($id);
+        $result = $model->fill($attributes)->save();
+
+        return $result ? $model : false;
     }
 
     /**
@@ -220,7 +207,7 @@ class ExpertReconcileService
 
             return [$subjectId => $string];
         })->each(function ($columns, $subjectId) {
-            $reconcile = $this->reconcileRepo->findBy('subject_id', $subjectId);
+            $reconcile = $this->reconcile->where('subject_id', $subjectId)->first();
             if ($reconcile === null) {
                 return;
             }

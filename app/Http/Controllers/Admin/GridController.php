@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\GridExportCsvJob;
-use App\Repositories\SubjectRepository;
+use App\Services\Models\SubjectModelService;
 use App\Services\Csv\Csv;
 use App\Services\Grid\JqGridEncoder;
 use App\Services\Models\ExpeditionModelService;
@@ -172,11 +172,11 @@ class GridController extends Controller
      * Delete subject if not part of expedition process.
      *
      * @note Removed from jqGrid but keep code in case we need it again.
-     * @param \App\Repositories\SubjectRepository $subjectRepo
-
+     * @param \App\Services\Models\SubjectModelService $subjectModelService
+     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete(SubjectRepository $subjectRepo, ExpeditionModelService $expeditionModelService)
+    public function delete(SubjectModelService $subjectModelService, ExpeditionModelService $expeditionModelService)
     {
         if (! \Request::ajax()) {
             return response()->json(['error' => 'Delete must be performed via ajax.'], 404);
@@ -188,7 +188,7 @@ class GridController extends Controller
 
         $subjectIds = explode(',', \Request::get('ids'));
 
-        $subjects = $subjectRepo->whereIn('_id', $subjectIds);
+        $subjects = $subjectModelService->getWhereIn('_id', $subjectIds);
 
         $subjects->reject(function ($subject) use($expeditionModelService) {
             foreach ($subject->expedition_ids as $expeditionId) {
@@ -199,7 +199,7 @@ class GridController extends Controller
             }
 
             return false;
-        })->each(function ($subject) use ($subjectRepo) {
+        })->each(function ($subject) {
             $subject->delete();
         });
 

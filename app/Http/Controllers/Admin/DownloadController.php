@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ExportDownloadBatchJob;
-use App\Repositories\UserRepository;
+use App\Services\Models\UserModelService;
 use App\Services\Models\ExpeditionModelService;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -43,7 +43,7 @@ class DownloadController extends Controller
      *
      */
     public function __construct(
-        private UserRepository $userRepo,
+        private UserModelService $userModelService,
         private ExpeditionModelService $expeditionModelService,
     ) {}
 
@@ -56,7 +56,7 @@ class DownloadController extends Controller
      */
     public function index(int $projectId, int $expeditionId): Factory|View
     {
-        $user = $this->userRepo->findWith(\Request::user()->id, ['profile']);
+        $user = $this->userModelService->findWithRelations(\Request::user()->id, ['profile']);
         $expedition = $this->expeditionModelService->expeditionDownloadsByActor($expeditionId);
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group);

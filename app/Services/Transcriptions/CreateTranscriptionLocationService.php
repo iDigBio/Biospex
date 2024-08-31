@@ -19,8 +19,8 @@
 
 namespace App\Services\Transcriptions;
 
-use App\Repositories\StateCountyRepository;
-use App\Repositories\TranscriptionLocationRepository;
+use App\Services\Models\StateCountyModelService;
+use App\Models\TranscriptionLocation;
 use General;
 use function config;
 
@@ -31,16 +31,6 @@ use function config;
  */
 class CreateTranscriptionLocationService
 {
-    /**
-     * @var \App\Repositories\TranscriptionLocationRepository
-     */
-    private $transcriptionLocationRepo;
-
-    /**
-     * @var \App\Repositories\StateCountyRepository
-     */
-    private $stateCountyRepo;
-
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
@@ -54,17 +44,14 @@ class CreateTranscriptionLocationService
     /**
      * CreateTranscriptionLocationService constructor.
      *
-     * @param \App\Repositories\TranscriptionLocationRepository $transcriptionLocationRepo
-     * @param \App\Repositories\StateCountyRepository $stateCountyRepo
+     * @param \App\Models\TranscriptionLocation $transcriptionLocation
+     * @param \App\Services\Models\StateCountyModelService $stateCountyModelService
      */
     public function __construct(
-        TranscriptionLocationRepository $transcriptionLocationRepo,
-        StateCountyRepository $stateCountyRepo
+        private TranscriptionLocation $transcriptionLocation,
+        private StateCountyModelService $stateCountyModelService
     )
     {
-
-        $this->transcriptionLocationRepo = $transcriptionLocationRepo;
-        $this->stateCountyRepo = $stateCountyRepo;
         $this->dwcTranscriptFields =  config('config.dwcTranscriptFields');
         $this->dwcOccurrenceFields = config('config.dwcOccurrenceFields');
     }
@@ -94,7 +81,7 @@ class CreateTranscriptionLocationService
 
         $this->prepCounty($data);
         $stateAbbr = General::getState($data['state_province']);
-        $stateResult = $this->stateCountyRepo->findByCountyState($data['county'], $stateAbbr);
+        $stateResult = $this->stateCountyModelService->findByCountyState($data['county'], $stateAbbr);
 
         if ($stateResult === null) {
             return;
@@ -106,7 +93,7 @@ class CreateTranscriptionLocationService
         $values['state_county_id'] = $stateResult->id;
         $attributes = ['classification_id' => $transcription['classification_id']];
 
-        $this->transcriptionLocationRepo->updateOrCreate($attributes, $values);
+        $this->transcriptionLocation->updateOrCreate($attributes, $values);
     }
 
     /**

@@ -20,9 +20,10 @@
 namespace App\Jobs;
 
 use App\Models\Import;
+use finfo;
 use General;
 use App\Notifications\Generic;
-use App\Repositories\ProjectRepository;
+use App\Services\Models\ProjectModelService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -68,11 +69,11 @@ class DwcUriImportJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Models\Import $import
-     * @param \App\Repositories\ProjectRepository $projectRepo
+     * @param \App\Services\Models\ProjectModelService $projectModelService
      * @return void
      */
-    public function handle(Import $import, ProjectRepository $projectRepo): void {
-        $project = $projectRepo->getProjectForDarwinImportJob($this->data['id']);
+    public function handle(Import $import, ProjectModelService $projectModelService): void {
+        $project = $projectModelService->getProjectForDarwinImportJob($this->data['id']);
         $users = $project->group->users->push($project->group->owner);
 
         try

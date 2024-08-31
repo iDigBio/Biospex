@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Events\WeDigBioProgressEvent;
-use App\Repositories\WeDigBioEventDateRepository;
+use App\Services\Models\WeDigBioEventDateModelService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -50,12 +50,12 @@ class WeDigBioEventProgressJob implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
+     * @param \App\Services\Models\WeDigBioEventDateModelService $weDigBioEventDateModelService
      * @return void
      */
-    public function handle(WeDigBioEventDateRepository $weDigBioEventDateRepository)
+    public function handle(WeDigBioEventDateModelService $weDigBioEventDateModelService)
     {
-        $weDigBioDate = $weDigBioEventDateRepository->getWeDigBioEventTranscriptions($this->dateId);
+        $weDigBioDate = $weDigBioEventDateModelService->getWeDigBioEventTranscriptions($this->dateId);
         $id = $weDigBioDate->active ? 0 : $weDigBioDate->id;
 
         $data = [$id => \View::make('common.wedigbio-progress-content', compact('weDigBioDate'))->render()];

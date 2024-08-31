@@ -23,21 +23,16 @@ use App\Models\EventUser;
 
 /**
  * Class EventUserModelService
- *
- * @package App\Repositories
  */
-class EventUserModelService
+readonly class EventUserModelService
 {
     /**
      * EventUserModelService constructor.
      *
-     * @param \App\Models\EventUser $eventUser
+     * @param \App\Models\EventUser $model
      */
-    public function __construct(EventUser $eventUser)
-    {
-
-        $this->model = $eventUser;
-    }
+    public function __construct(private EventUser $model)
+    {}
 
     /**
      * Update or Create.

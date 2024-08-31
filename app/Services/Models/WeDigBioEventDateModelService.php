@@ -11,33 +11,48 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\WeDigBioEventDate;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Class WeDigBioEventDateRepository
- *
- * @package App\Repositories
- */
-class WeDigBioEventDateRepository extends BaseRepository
+class WeDigBioEventDateModelService
 {
     /**
      * WeDigBioEventDateRepository constructor.
      *
-     * @param \App\Models\WeDigBioEventDate $weDigBioEventDate
+     * @param \App\Models\WeDigBioEventDate $model
      */
-    public function __construct(WeDigBioEventDate $weDigBioEventDate)
+    public function __construct(private readonly WeDigBioEventDate $model)
+    {}
+
+    /**
+     * Get all.
+     *
+     * @return mixed
+     */
+    public function all()
     {
-        $this->model = $weDigBioEventDate;
+        return $this->model->all();
+    }
+
+    /**
+     * Get first by given column and value.
+     *
+     * @param string $column
+     * @param mixed $value
+     * @return mixed
+     */
+    public function getFirstBy(string $column, mixed $value): mixed
+    {
+        return $this->model->where($column, $value)->first();
     }
 
     /**

@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\TeamCategoryRepository;
+use App\Models\TeamCategory;
 
 /**
  * Class TeamController
@@ -31,28 +31,16 @@ class TeamController extends Controller
 {
 
     /**
-     * @var \App\Repositories\TeamCategoryRepository
-     */
-    public $teamCategoryRepo;
-
-    /**
-     * TeamController constructor.
-     * 
-     * @param \App\Repositories\TeamCategoryRepository $teamCategoryRepo
-     */
-    public function __construct(TeamCategoryRepository $teamCategoryRepo)
-    {
-        $this->teamCategoryRepo = $teamCategoryRepo;
-    }
-
-    /**
      * Show categories.
      * 
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(TeamCategory $teamCategory)
     {
-        $categories = $this->teamCategoryRepo->getTeamIndexPage();
+        $categories = $teamCategory->with('teams')
+            ->orderBy('id', 'asc')
+            ->groupBy('id')
+            ->get();
 
         return \View::make('front.team.index', compact('categories'));
     }

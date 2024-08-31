@@ -19,7 +19,7 @@
 
 namespace App\Services\Dashboard;
 
-use App\Repositories\PusherTranscriptionRepository;
+use App\Services\Models\PusherTranscriptionModelService;
 
 /**
  * Class WeDigBioDashboardProcess
@@ -29,20 +29,12 @@ use App\Repositories\PusherTranscriptionRepository;
 class WeDigBioDashboardProcess
 {
     /**
-     * @var \App\Repositories\PusherTranscriptionRepository
-     */
-    private $pusherTranscriptionRepo;
-
-    /**
      * WeDigBioDashboardProcess constructor.
      *
-     * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepo
+     * @param \App\Services\Models\PusherTranscriptionModelService $pusherTranscriptionModelService
      */
-    public function __construct(PusherTranscriptionRepository $pusherTranscriptionRepo)
-    {
-
-        $this->pusherTranscriptionRepo = $pusherTranscriptionRepo;
-    }
+    public function __construct(private readonly PusherTranscriptionModelService $pusherTranscriptionModelService)
+    {}
 
     /**
      * Set dashboard query
@@ -51,7 +43,7 @@ class WeDigBioDashboardProcess
      */
     public function setDashboardQuery(array $request)
     {
-        $this->pusherTranscriptionRepo->setQueryForDashboard($request);
+        $this->pusherTranscriptionModelService->setQueryForDashboard($request);
     }
 
     /**
@@ -61,7 +53,7 @@ class WeDigBioDashboardProcess
      */
     public function getTotalCount()
     {
-        return $this->pusherTranscriptionRepo->getWeDigBioDashboardCount();
+        return $this->pusherTranscriptionModelService->getWeDigBioDashboardCount();
     }
 
     /**
@@ -73,7 +65,7 @@ class WeDigBioDashboardProcess
      */
     public function getItems(int $limit, int $offset)
     {
-        return $this->pusherTranscriptionRepo->getWeDigBioDashboardItems($limit, $offset);
+        return $this->pusherTranscriptionModelService->getWeDigBioDashboardItems($limit, $offset);
     }
 
     /**
@@ -106,6 +98,6 @@ class WeDigBioDashboardProcess
      */
     public function showApiDashboard($guid)
     {
-        return $this->pusherTranscriptionRepo->findBy('guid', $guid);
+        return $this->pusherTranscriptionModelService->findBy('guid', $guid);
     }
 }

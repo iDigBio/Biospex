@@ -19,7 +19,7 @@
 
 namespace App\Services\Transcriptions;
 
-use App\Repositories\PusherClassificationRepository;
+use App\Models\PusherClassification;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
 use JetBrains\PhpStorm\ArrayShape;
@@ -33,29 +33,16 @@ use Ramsey\Uuid\Uuid;
 class CreatePusherClassificationService
 {
     /**
-     * @var \App\Services\Api\PanoptesApiService
-     */
-    private PanoptesApiService $apiService;
-
-    /**
-     * @var \App\Repositories\PusherClassificationRepository
-     */
-    private PusherClassificationRepository $pusherClassificationRepo;
-
-    /**
      * CreatePusherClassificationService constructor.
      *
      * @param \App\Services\Api\PanoptesApiService $apiService
-     * @param \App\Repositories\PusherClassificationRepository $pusherClassificationRepo
+     * @param \App\Models\PusherClassification $pusherClassification
      */
     public function __construct(
-        PanoptesApiService $apiService,
-        PusherClassificationRepository $pusherClassificationRepo
+        private readonly PanoptesApiService $apiService,
+        private readonly PusherClassification $pusherClassification
     )
-    {
-        $this->apiService = $apiService;
-        $this->pusherClassificationRepo = $pusherClassificationRepo;
-    }
+    {}
 
     /**
      * Process pusher data for dashboard.
@@ -78,7 +65,7 @@ class CreatePusherClassificationService
 
         $values = $this->setDashboardData($title, $data, $subject, $user);
 
-        $this->pusherClassificationRepo->updateOrCreate(['classification_id' => $values['classification_id']], ['data' => $values]);
+        $this->pusherClassification->updateOrCreate(['classification_id' => $values['classification_id']], ['data' => $values]);
     }
 
     /**

@@ -21,7 +21,7 @@ namespace App\Services\Transcriptions;
 
 use TranscriptionMap;
 use App\Services\Models\PanoptesTranscriptionModelService;
-use App\Repositories\SubjectRepository;
+use App\Services\Models\SubjectModelService;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Process\CreateReportService;
 use Exception;
@@ -49,14 +49,14 @@ class CreatePanoptesTranscriptionService
      * CreatePanoptesTranscriptionService constructor.
      * Used in overnight scripts to create transcriptions from csv to mongodb.
      *
-     * @param \App\Repositories\SubjectRepository $subjectRepo
+     * @param \App\Services\Models\SubjectModelService $subjectModelService
      * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
      * @param \App\Services\Transcriptions\CreateTranscriptionLocationService $createTranscriptionLocationService
      * @param \App\Services\Process\CreateReportService $createReportService
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
-        private SubjectRepository $subjectRepo,
+        private SubjectModelService $subjectModelService,
         private PanoptesTranscriptionModelService $panoptesTranscriptionModelService,
         private CreateTranscriptionLocationService $createTranscriptionLocationService,
         private CreateReportService $createReportService,
@@ -137,7 +137,7 @@ class CreatePanoptesTranscriptionService
             return;
         }
 
-        $subject = $this->subjectRepo->find(trim($row['subject_subjectId']));
+        $subject = $this->subjectModelService->find(trim($row['subject_subjectId']));
 
         if ($subject === null) {
             $this->csvError[] = array_merge(['error' => 'Could not find subject id for classification'], $row);

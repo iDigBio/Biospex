@@ -22,8 +22,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkflowIdFormRequest;
 use App\Jobs\PanoptesProjectUpdateJob;
 use App\Models\PanoptesProject;
-use App\Repositories\ProjectRepository;
-use App\Repositories\WorkflowManagerRepository;
+use App\Services\Models\ProjectModelService;
+use App\Services\Models\WorkflowManagerModelService;
 use App\Services\Models\ExpeditionModelService;
 use Exception;
 
@@ -32,12 +32,12 @@ class ZooniverseController extends Controller
     /**
      * Construct
      *
-     * @param \App\Repositories\ProjectRepository $projectRepository
-     * @param \App\Repositories\WorkflowManagerRepository $workflowManagerRepository
+     * @param \App\Services\Models\ProjectModelService $projectModelService
+     * @param \App\Services\Models\WorkflowManagerModelService $workflowManagerModelService
      */
     public function __construct(
-        private ProjectRepository $projectRepository,
-        private WorkflowManagerRepository $workflowManagerRepository
+        private ProjectModelService $projectModelService,
+        private WorkflowManagerModelService $workflowManagerModelService
     ) {}
 
     /**
@@ -50,7 +50,7 @@ class ZooniverseController extends Controller
      */
     public function process(ExpeditionModelService $expeditionModelService, int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectRepository->findWith($projectId, ['group']);
+        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return \Redirect::route('admin.projects.index');
@@ -86,7 +86,7 @@ class ZooniverseController extends Controller
                     $expedition->actors()->sync($sync, false);
                 });
 
-                $this->workflowManagerRepository->create(['expedition_id' => $expeditionId]);
+                $this->workflowManagerModelService->create(['expedition_id' => $expeditionId]);
                 $message = t('The expedition has been added to the process queue.');
             }
 
@@ -109,13 +109,13 @@ class ZooniverseController extends Controller
      */
     public function stop(int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectRepository->findWith($projectId, ['group']);
+        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return \Redirect::route('admin.projects.index');
         }
 
-        $workflow = $this->workflowManagerRepository->findBy('expedition_id', $expeditionId);
+        $workflow = $this->workflowManagerModelService->getFirstBy('expedition_id', $expeditionId);
 
         if ($workflow === null) {
             \Flash::error(t('Expedition has no processes at this time.'));
@@ -124,7 +124,7 @@ class ZooniverseController extends Controller
         }
 
         $workflow->stopped = 1;
-        $this->workflowManagerRepository->update(['stopped' => 1], $workflow->id);
+        $this->workflowManagerModelService->update(['stopped' => 1], $workflow->id);
         \Flash::success(t('Expedition process has been stopped locally. This does not stop any processing occurring on remote sites.'));
 
         return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
@@ -168,7 +168,7 @@ class ZooniverseController extends Controller
             return \Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
-        $project = $this->projectRepository->findWith($projectId, ['group']);
+        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return \Response::json(['message' => t('You are not authorized for this action.')], 401);

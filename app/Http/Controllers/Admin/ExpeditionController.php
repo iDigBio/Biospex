@@ -22,7 +22,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpeditionJob;
-use App\Repositories\ProjectRepository;
+use App\Services\Models\ProjectModelService;
 use App\Services\Grid\JqGridEncoder;
 use App\Services\Models\ExpeditionService;
 use Auth;
@@ -37,26 +37,13 @@ use JavaScript;
 class ExpeditionController extends Controller
 {
     /**
-     * @var \App\Repositories\ProjectRepository
-     */
-    private ProjectRepository $projectRepository;
-
-    /**
-     * @var \App\Services\Models\ExpeditionService
-     */
-    private ExpeditionService $expeditionService;
-
-    /**
      * ExpeditionController constructor.
      *
-     * @param \App\Repositories\ProjectRepository $projectRepository
+     * @param \App\Services\Models\ProjectModelService $projectModelService
      * @param \App\Services\Models\ExpeditionService $expeditionService
      */
-    public function __construct(ProjectRepository $projectRepository, ExpeditionService $expeditionService)
-    {
-        $this->projectRepository = $projectRepository;
-        $this->expeditionService = $expeditionService;
-    }
+    public function __construct(private ProjectModelService $projectModelService, private ExpeditionService $expeditionService)
+    {}
 
     /**
      * Display all expeditions for user.
@@ -83,7 +70,7 @@ class ExpeditionController extends Controller
      */
     public function create($projectId, JqGridEncoder $grid)
     {
-        $project = $this->projectRepository->findWith($projectId, ['group']);
+        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
         if (! $this->checkPermissions('createProject', $project->group)) {
             return \Redirect::route('admin.projects.index');
@@ -115,7 +102,7 @@ class ExpeditionController extends Controller
      */
     public function store(ExpeditionFormRequest $request, $projectId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectRepository->findWith($projectId, ['group']);
+        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
         if (! $this->checkPermissions('createProject', $project->group)) {
             return \Redirect::route('admin.projects.index');
@@ -251,7 +238,7 @@ class ExpeditionController extends Controller
      */
     public function update(ExpeditionFormRequest $request, $projectId, $expeditionId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectRepository->findWith($projectId, ['group']);
+        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return \Redirect::route('admin.projects.index');
@@ -285,7 +272,7 @@ class ExpeditionController extends Controller
      */
     public function delete($projectId, $expeditionId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectRepository->findWith($projectId, ['group']);
+        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
         if (! $this->checkPermissions('isOwner', $project->group)) {
             return \Redirect::route('admin.projects.index');

@@ -20,24 +20,18 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\WeDigBioEventDateRepository;
+use App\Services\Models\WeDigBioEventDateModelService;
 
 class WeDigBioController extends Controller
 {
-
-    public function __construct()
-    {
-        
-    }
-
     /**
      * Index page.
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index(WeDigBioEventDateRepository $weDigBioEventDateRepository)
+    public function index(WeDigBioEventDateModelService $weDigBioEventDateModelService)
     {
-        $results = $weDigBioEventDateRepository->all()->sortBy('created_at');
+        $results = $weDigBioEventDateModelService->all()->sortBy('created_at');
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
             return $event->active;

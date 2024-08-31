@@ -49,7 +49,7 @@ class FixFieldsStepThree extends FixFieldsBase
         $propertiesRefreshed = $properties->mapWithKeys(function ($property, $key){
             foreach ($property['fields'] as $field => $object) {
                 if(empty($object['imageHeaderIds']) && empty($object['occurrenceHeaderIds'])) {
-                    $record = $this->propertyRepository->findBy('short', $field);
+                    $record = $this->property->where('short', $field)->first();
                     $record?->delete();
                     unset($property['fields'][$field]);
                 }

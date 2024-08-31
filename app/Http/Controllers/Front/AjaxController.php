@@ -22,7 +22,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
 use App\Models\AmChart;
-use App\Repositories\WeDigBioEventDateRepository;
+use App\Services\Models\WeDigBioEventDateModelService;
 use App\Services\Chart\BiospexEventRateChartProcess;
 use App\Services\Chart\WeDigBioEventRateChartProcess;
 use App\Services\Models\EventModelService;
@@ -113,17 +113,17 @@ class AjaxController extends Controller
     /**
      * Show progress for wedigbio events.
      *
-     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
+     * @param \App\Services\Models\WeDigBioEventDateModelService $weDigBioEventDateModelService
      * @param string $dateId
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
-    public function weDigBioProgress(WeDigBioEventDateRepository $weDigBioEventDateRepository, string $dateId)
+    public function weDigBioProgress(WeDigBioEventDateModelService $weDigBioEventDateModelService, string $dateId)
     {
         if (! \Request::ajax()) {
             return response()->json(['html' => 'Error retrieving the WeDigBio Event']);
         }
 
-        $weDigBioDate = $weDigBioEventDateRepository->getWeDigBioEventTranscriptions((int) $dateId);
+        $weDigBioDate = $weDigBioEventDateModelService->getWeDigBioEventTranscriptions((int) $dateId);
 
         return \View::make('common.wedigbio-progress-content', compact('weDigBioDate'));
     }
@@ -131,17 +131,17 @@ class AjaxController extends Controller
     /**
      * Returns titles of projects that have transcriptions from WeDigBio.
      *
-     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
+     * @param \App\Services\Models\WeDigBioEventDateModelService $weDigBioEventDateModelService
      * @param string $dateId
      * @return \Illuminate\Http\JsonResponse|null
      */
-    public function getProjectsForWeDigBioRateChart(WeDigBioEventDateRepository $weDigBioEventDateRepository, string $dateId)
+    public function getProjectsForWeDigBioRateChart(WeDigBioEventDateModelService $weDigBioEventDateModelService, string $dateId)
     {
         if (! \Request::ajax()) {
             return response()->json(['html' => 'Request must be ajax.']);
         }
 
-        return $weDigBioEventDateRepository->getProjectsForWeDigBioRateChart((int) $dateId);
+        return $weDigBioEventDateModelService->getProjectsForWeDigBioRateChart((int) $dateId);
     }
 
     /**

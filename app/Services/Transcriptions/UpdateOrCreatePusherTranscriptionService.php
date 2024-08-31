@@ -22,7 +22,7 @@ namespace App\Services\Transcriptions;
 use App\Services\Models\ExpeditionModelService;
 use App\Services\Models\PanoptesTranscriptionModelService;
 use TranscriptionMap;
-use App\Repositories\PusherTranscriptionRepository;
+use App\Services\Models\PusherTranscriptionModelService;
 use Ramsey\Uuid\Uuid;
 use Validator;
 
@@ -36,12 +36,12 @@ readonly  class UpdateOrCreatePusherTranscriptionService
     /**
      * UpdateOrCreatePusherTranscriptionService constructor.
      *
-     * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepo
+     * @param \App\Services\Models\PusherTranscriptionModelService $pusherTranscriptionModelService
      * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
      */
     public function __construct(
-        private PusherTranscriptionRepository $pusherTranscriptionRepo,
+        private PusherTranscriptionModelService $pusherTranscriptionModelService,
         private ExpeditionModelService $expeditionModelService,
         private PanoptesTranscriptionModelService $panoptesTranscriptionModelService
     ) {}
@@ -80,7 +80,7 @@ readonly  class UpdateOrCreatePusherTranscriptionService
      */
     public function processTranscripts($transcription, $expedition)
     {
-        $classification = $this->pusherTranscriptionRepo->findBy('classification_id', $transcription->classification_id);
+        $classification = $this->pusherTranscriptionModelService->findBy('classification_id', $transcription->classification_id);
         $classification === null ?
             $this->createClassification($transcription, $expedition) :
             $this->updateClassification($transcription, $classification, $expedition);
@@ -142,7 +142,7 @@ readonly  class UpdateOrCreatePusherTranscriptionService
             'discretionaryState'   => 'Transcribed',
         ];
 
-        $this->pusherTranscriptionRepo->create($item);
+        $this->pusherTranscriptionModelService->create($item);
     }
 
     /**
@@ -178,7 +178,7 @@ readonly  class UpdateOrCreatePusherTranscriptionService
             'transcriptionContent' => array_merge($classification->transcriptionContent, $transcriptionContent),
         ];
 
-        $this->pusherTranscriptionRepo->update($attributes, $classification->_id);
+        $this->pusherTranscriptionModelService->update($attributes, $classification->_id);
     }
 
     /**

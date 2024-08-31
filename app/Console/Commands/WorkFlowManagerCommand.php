@@ -19,7 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\WorkflowManagerRepository;
+use App\Services\Models\WorkflowManagerModelService;
 use App\Services\Actor\ActorFactory;
 use Illuminate\Console\Command;
 
@@ -45,11 +45,6 @@ class WorkFlowManagerCommand extends Command
     protected $description = "Workflow manager";
 
     /**
-     * @var \App\Repositories\WorkflowManagerRepository
-     */
-    protected WorkflowManagerRepository $workflowManagerRepo;
-
-    /**
      * @var mixed
      */
     public mixed $tube;
@@ -57,13 +52,12 @@ class WorkFlowManagerCommand extends Command
     /**
      * WorkFlowManagerCommand constructor.
      *
-     * @param \App\Repositories\WorkflowManagerRepository $workflowManagerRepo
+     * @param \App\Services\Models\WorkflowManagerModelService $workflowManagerModelService
      */
-    public function __construct(WorkflowManagerRepository $workflowManagerRepo)
+    public function __construct(private readonly WorkflowManagerModelService $workflowManagerModelService)
     {
         parent::__construct();
         $this->tube = config('config.queue.workflow');
-        $this->workflowManagerRepo = $workflowManagerRepo;
     }
 
     /**
@@ -77,7 +71,7 @@ class WorkFlowManagerCommand extends Command
     {
         $expeditionId = $this->argument('expeditionId');
 
-        $managers = $this->workflowManagerRepo->getWorkflowManagersForProcessing($expeditionId);
+        $managers = $this->workflowManagerModelService->getWorkflowManagersForProcessing($expeditionId);
 
         if ($managers->isEmpty())
         {

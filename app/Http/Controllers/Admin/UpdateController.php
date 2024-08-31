@@ -20,14 +20,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\UpdateRepository;
-use Illuminate\Http\Request;
+use App\Models\Update;
 
 class UpdateController extends Controller
 {
-    public function index(UpdateRepository $updateRepository)
+    public function index(Update $update)
     {
-        $updates = $updateRepository->all()->sortByDesc('created_at');
+        $updates = $update->all()->sortByDesc('created_at');
         return \View::make('admin.update.index', compact('updates'));
     }
 }

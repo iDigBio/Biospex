@@ -22,7 +22,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MailFormRequest;
 use App\Mail\SiteMailer;
-use App\Repositories\UserRepository;
+use App\Services\Models\UserModelService;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -33,19 +33,12 @@ use Illuminate\Support\Facades\Mail;
 class MailController extends Controller
 {
     /**
-     * @var \App\Repositories\UserRepository
-     */
-    private $userRepo;
-
-    /**
      * UserAccountController constructor.
      *
-     * @param \App\Repositories\UserRepository $userRepo
+     * @param \App\Services\Models\UserModelService $userModelService
      */
-    public function __construct(UserRepository $userRepo)
-    {
-        $this->userRepo = $userRepo;
-    }
+    public function __construct(private readonly UserModelService $userModelService)
+    {}
 
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -63,7 +56,7 @@ class MailController extends Controller
      */
     public function send(MailFormRequest $request)
     {
-        $users = $this->userRepo->getUsersForMailer($request->get('recipients'));
+        $users = $this->userModelService->getUsersForMailer($request->get('recipients'));
         $recipients = $users->reject(function($user){
             return $user->email === config('mail.from.address');
         })->pluck('email');

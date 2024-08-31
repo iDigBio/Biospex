@@ -11,23 +11,24 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
-use MongoDB\Laravel\Eloquent\Model as MongoModel;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use MongoDB\Laravel\Eloquent\Model as MongoModel;
+
 /**
- * Class BaseRepository
+ * Class ModelService
  *
  * @mixin \Eloquent
  * @package App\Repositories
  */
-class BaseRepository
+class ModelService
 {
     /**
      * @var \MongoDB\Laravel\Eloquent\Model|\Illuminate\Database\Eloquent\Model $model

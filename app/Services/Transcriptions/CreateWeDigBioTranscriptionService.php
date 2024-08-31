@@ -21,8 +21,8 @@ namespace App\Services\Transcriptions;
 
 use App\Jobs\WeDigBioEventProgressJob;
 use App\Models\WeDigBioEventDate;
-use App\Repositories\WeDigBioEventDateRepository;
-use App\Repositories\WeDigBioEventTranscriptionRepository;
+use App\Services\Models\WeDigBioEventDateModelService;
+use App\Services\Models\WeDigBioEventTranscriptionModelService;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Validator;
@@ -35,29 +35,15 @@ use Validator;
 class CreateWeDigBioTranscriptionService
 {
     /**
-     * @var \App\Repositories\WeDigBioEventDateRepository
-     */
-    private WeDigBioEventDateRepository $weDigBioEventDateRepository;
-
-    /**
-     * @var \App\Repositories\WeDigBioEventTranscriptionRepository
-     */
-    private WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository;
-
-    /**
      * CreateBiospexEventTranscriptionService constructor.
      *
-     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
-     * @param \App\Repositories\WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository
+     * @param \App\Services\Models\WeDigBioEventDateModelService $weDigBioEventDateModelService
+     * @param \App\Services\Models\WeDigBioEventTranscriptionModelService $weDigBioEventTranscriptionModelService
      */
     public function __construct(
-        WeDigBioEventDateRepository $weDigBioEventDateRepository,
-        WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository
-    ) {
-
-        $this->weDigBioEventDateRepository = $weDigBioEventDateRepository;
-        $this->weDigBioEventTranscriptionRepository = $weDigBioEventTranscriptionRepository;
-    }
+        private readonly WeDigBioEventDateModelService $weDigBioEventDateModelService,
+        private readonly WeDigBioEventTranscriptionModelService $weDigBioEventTranscriptionModelService
+    ) {}
 
     /**
      * Create event transcription for user.
@@ -71,7 +57,7 @@ class CreateWeDigBioTranscriptionService
         int $projectId,
         Carbon $date = null
     ) {
-        $wedigbioDate = $this->weDigBioEventDateRepository->findBy('active', 1);
+        $wedigbioDate = $this->weDigBioEventDateModelService->getFirstBy('active', 1);
 
         $timestamp = ! isset($date) ? Carbon::now('UTC') : $date;
 
@@ -91,7 +77,7 @@ class CreateWeDigBioTranscriptionService
 
         $values = array_merge($attributes, ['created_at' => $timestamp->toDateTimeString(), 'updated_at' => $timestamp->toDateTimeString()]);
 
-        $this->weDigBioEventTranscriptionRepository->create($values);
+        $this->weDigBioEventTranscriptionModelService->create($values);
         \Cache::forget('wedigbio-event-transcription');
 
         WeDigBioEventProgressJob::dispatch($wedigbioDate->id);

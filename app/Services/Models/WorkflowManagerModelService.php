@@ -11,32 +11,62 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\WorkflowManager;
 
-/**
- * Class WorkflowManagerRepository
- *
- * @package App\Repositories
- */
-class WorkflowManagerRepository extends BaseRepository
+readonly class WorkflowManagerModelService
 {
     /**
      * WorkflowManagerRepository constructor.
      *
-     * @param \App\Models\WorkflowManager $workflowManager
+     * @param \App\Models\WorkflowManager $model
      */
-    public function __construct(WorkflowManager $workflowManager)
-    {
+    public function __construct(private WorkflowManager $model)
+    {}
 
-        $this->model = $workflowManager;
+    /**
+     * Create.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
+
+    /**
+     * Update.
+     *
+     * @param array $data
+     * @param $resourceId
+     * @return WorkflowManager|bool
+     */
+    public function update(array $data, $resourceId)
+    {
+        $model = $this->model->find($resourceId);
+        $result = $model->fill($data)->save();
+
+        return $result ? $model : false;
+    }
+
+    /**
+     * Get first by column.
+     *
+     * @param string $column
+     * @param string $value
+     * @return \App\Models\WorkflowManager|null
+     */
+    public function getFirstBy(string $column, string $value): ?WorkflowManager
+    {
+        return $this->model->where($column, $value)->first();
     }
 
     /**
