@@ -17,4 +17,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-Route::get('poll', [\App\Http\Controllers\Front\PollController::class, 'index'])->name('ajax.get.poll');
+Route::get('poll', [\App\Http\Controllers\Front\PollController::class, 'index']);
