@@ -19,7 +19,7 @@
 
 namespace App\Services\Helpers;
 
-use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Models\PanoptesTranscriptionModelService;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -30,19 +30,11 @@ use Illuminate\Support\Facades\Cache;
 class CountService
 {
     /**
-     * @var \App\Repositories\PanoptesTranscriptionRepository
-     */
-    private $panoptesTranscriptionRepo;
-
-    /**
      * CountService constructor.
      *
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      */
-    public function __construct(PanoptesTranscriptionRepository $panoptesTranscriptionRepo)
-    {
-        $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
-    }
+    public function __construct(public PanoptesTranscriptionModelService $panoptesTranscriptionModelService)
+    {}
 
     /**
      * Return project transcription count.
@@ -53,7 +45,7 @@ class CountService
      */
     public function projectTranscriptionCount(int $projectId)
     {
-        return $this->panoptesTranscriptionRepo->getProjectTranscriptionCount($projectId);
+        return $this->panoptesTranscriptionModelService->getProjectTranscriptionCount($projectId);
     }
 
     /**
@@ -64,7 +56,7 @@ class CountService
      */
     public function expeditionTranscriptionCount(int $expeditionId)
     {
-        return $this->panoptesTranscriptionRepo->getExpeditionTranscriptionCount($expeditionId);
+        return $this->panoptesTranscriptionModelService->getExpeditionTranscriptionCount($expeditionId);
     }
 
     /**
@@ -75,7 +67,7 @@ class CountService
      */
     public function projectTranscriberCount(int $projectId)
     {
-        return $this->panoptesTranscriptionRepo->getProjectTranscriberCount($projectId);
+        return $this->panoptesTranscriptionModelService->getProjectTranscriberCount($projectId);
     }
 
     /**
@@ -86,7 +78,7 @@ class CountService
      */
     public function getTranscribersTranscriptionCount(int $projectId)
     {
-        return $this->panoptesTranscriptionRepo->getTranscribersTranscriptionCount($projectId);
+        return $this->panoptesTranscriptionModelService->getTranscribersTranscriptionCount($projectId);
     }
 
     /**
@@ -119,7 +111,7 @@ class CountService
     public function getTranscriptionCountForTranscriber(int $projectId, string $transcriber)
     {
         return Cache::remember(md5(__METHOD__.$projectId.$transcriber), 86400, function () use ($projectId, $transcriber) {
-            return $this->panoptesTranscriptionRepo->getTranscriptionCountForTranscriber($projectId, $transcriber);
+            return $this->panoptesTranscriptionModelService->getTranscriptionCountForTranscriber($projectId, $transcriber);
         });
     }
 }

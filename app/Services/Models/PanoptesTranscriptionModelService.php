@@ -11,34 +11,42 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Repositories;
+namespace App\Services\Models;
 
 use App\Models\PanoptesTranscription;
 use Illuminate\Support\Facades\Cache;
 use MongoDB\BSON\UTCDateTime;
 
-/**
- * Class PanoptesTranscriptionRepository
- *
- * @package App\Repositories
- */
-class PanoptesTranscriptionRepository extends BaseRepository
+class PanoptesTranscriptionModelService
 {
-    /**
-     * PanoptesTranscriptionRepository constructor.
-     *
-     * @param \App\Models\PanoptesTranscription $panoptesTranscription
-     */
-    public function __construct(PanoptesTranscription $panoptesTranscription)
-    {
+    public function __construct(private PanoptesTranscription $model)
+    {}
 
-        $this->model = $panoptesTranscription;
+    /**
+     * Create.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
+
+    /**
+     * Get first transcription by column value.
+     *
+     * @return mixed
+     */
+    public function getFirst(string $column, string $value)
+    {
+        return $this->model->where($column, $value)->first();
     }
 
     /**

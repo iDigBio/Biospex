@@ -19,12 +19,12 @@
 
 namespace App\Providers;
 
-use App\Repositories\PanoptesTranscriptionRepository;
 use App\Services\Helpers\CountService;
 use App\Services\Helpers\DateService;
 use App\Services\Helpers\FlashService;
 use App\Services\Helpers\GeneralService;
 use App\Services\Helpers\TranscriptionMapService;
+use App\Services\Models\PanoptesTranscriptionModelService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
@@ -70,7 +70,7 @@ class BiospexServiceProvider extends ServiceProvider
     public function registerFacades(): void
     {
         $this->app->singleton('counthelper', function(){
-            return new CountService(app(PanoptesTranscriptionRepository::class));
+            return new CountService(app(PanoptesTranscriptionModelService::class));
         });
 
         $this->app->singleton('datehelper', function(){

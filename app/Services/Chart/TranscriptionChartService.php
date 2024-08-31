@@ -22,7 +22,7 @@ namespace App\Services\Chart;
 use App\Models\AmChart;
 use App\Models\Expedition;
 use App\Models\Project;
-use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Models\PanoptesTranscriptionModelService;
 use Carbon\CarbonPeriod;
 use File;
 use Illuminate\Support\Carbon;
@@ -35,11 +35,6 @@ use Illuminate\Support\Collection;
  */
 class TranscriptionChartService
 {
-    /**
-     * @var \App\Repositories\PanoptesTranscriptionRepository
-     */
-    private $panoptesTranscriptionRepo;
-
     /**
      * @var mixed
      */
@@ -73,13 +68,10 @@ class TranscriptionChartService
     /**
      * TranscriptionChartService constructor.
      *
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
+     * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
      */
-    public function __construct(
-        PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-    ) {
-        $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
-    }
+    public function __construct(private PanoptesTranscriptionModelService $panoptesTranscriptionModelService
+    ) {}
 
     /**
      * Process project for amchart.
@@ -182,8 +174,8 @@ class TranscriptionChartService
      */
     public function setYearsArray(int $projectId)
     {
-        $earliest_date = $this->panoptesTranscriptionRepo->getMinFinishedAtDateByProjectId($projectId);
-        $latest_date = $this->panoptesTranscriptionRepo->getMaxFinishedAtDateByProjectId($projectId);
+        $earliest_date = $this->panoptesTranscriptionModelService->getMinFinishedAtDateByProjectId($projectId);
+        $latest_date = $this->panoptesTranscriptionModelService->getMaxFinishedAtDateByProjectId($projectId);
 
         if (null === $earliest_date || null === $latest_date) {
             return null;
@@ -259,7 +251,7 @@ class TranscriptionChartService
      */
     protected function transcriptionCountPerDate(int $workflowId): mixed
     {
-        return $this->panoptesTranscriptionRepo->getTranscriptionCountPerDate($workflowId, $this->begin, $this->end);
+        return $this->panoptesTranscriptionModelService->getTranscriptionCountPerDate($workflowId, $this->begin, $this->end);
     }
 
     /**

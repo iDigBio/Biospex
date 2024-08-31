@@ -20,8 +20,8 @@
 namespace App\Services\Transcriptions;
 
 use App\Services\Models\ExpeditionModelService;
+use App\Services\Models\PanoptesTranscriptionModelService;
 use TranscriptionMap;
-use App\Repositories\PanoptesTranscriptionRepository;
 use App\Repositories\PusherTranscriptionRepository;
 use Ramsey\Uuid\Uuid;
 use Validator;
@@ -38,12 +38,12 @@ readonly  class UpdateOrCreatePusherTranscriptionService
      *
      * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepo
      * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
+     * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
      */
     public function __construct(
         private PusherTranscriptionRepository $pusherTranscriptionRepo,
         private ExpeditionModelService $expeditionModelService,
-        private PanoptesTranscriptionRepository $panoptesTranscriptionRepo
+        private PanoptesTranscriptionModelService $panoptesTranscriptionModelService
     ) {}
 
     /**
@@ -66,7 +66,7 @@ readonly  class UpdateOrCreatePusherTranscriptionService
      */
     public function getTranscriptions(int $expeditionId, $timestamp = null): mixed
     {
-        return $this->panoptesTranscriptionRepo->getTranscriptionForDashboardJob($expeditionId, $timestamp);
+        return $this->panoptesTranscriptionModelService->getTranscriptionForDashboardJob($expeditionId, $timestamp);
     }
 
     /**

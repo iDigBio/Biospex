@@ -20,7 +20,7 @@
 namespace App\Services\Transcriptions;
 
 use TranscriptionMap;
-use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Repositories\SubjectRepository;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Process\CreateReportService;
@@ -41,31 +41,6 @@ class CreatePanoptesTranscriptionService
     protected mixed $collection;
 
     /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    protected SubjectRepository $subjectRepo;
-
-    /**
-     * @var \App\Repositories\PanoptesTranscriptionRepository
-     */
-    protected PanoptesTranscriptionRepository $panoptesTranscriptionRepo;
-
-    /**
-     * @var \App\Services\Transcriptions\CreateTranscriptionLocationService
-     */
-    protected CreateTranscriptionLocationService $createTranscriptionLocationService;
-
-    /**
-     * @var \App\Services\Process\CreateReportService
-     */
-    private CreateReportService $createReportService;
-
-    /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvService;
-
-    /**
      * @var array
      */
     protected array $csvError = [];
@@ -75,24 +50,18 @@ class CreatePanoptesTranscriptionService
      * Used in overnight scripts to create transcriptions from csv to mongodb.
      *
      * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
+     * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
      * @param \App\Services\Transcriptions\CreateTranscriptionLocationService $createTranscriptionLocationService
      * @param \App\Services\Process\CreateReportService $createReportService
      * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
-        SubjectRepository $subjectRepo,
-        PanoptesTranscriptionRepository $panoptesTranscriptionRepo,
-        CreateTranscriptionLocationService $createTranscriptionLocationService,
-        CreateReportService $createReportService,
-        AwsS3CsvService $awsS3CsvService
-    ) {
-        $this->subjectRepo = $subjectRepo;
-        $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
-        $this->createTranscriptionLocationService = $createTranscriptionLocationService;
-        $this->createReportService = $createReportService;
-        $this->awsS3CsvService = $awsS3CsvService;
-    }
+        private SubjectRepository $subjectRepo,
+        private PanoptesTranscriptionModelService $panoptesTranscriptionModelService,
+        private CreateTranscriptionLocationService $createTranscriptionLocationService,
+        private CreateReportService $createReportService,
+        private AwsS3CsvService $awsS3CsvService
+    ) {}
 
     /**
      * Process transcription csv file and enter into MongoDB.
@@ -184,7 +153,7 @@ class CreatePanoptesTranscriptionService
             return [$newField => $value];
         })->toArray();
 
-        $this->panoptesTranscriptionRepo->create($rowWithEncodeHeaders);
+        $this->panoptesTranscriptionModelService->create($rowWithEncodeHeaders);
     }
 
     /**

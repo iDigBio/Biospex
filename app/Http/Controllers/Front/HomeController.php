@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Services\Models\ExpeditionModelService;
 
 /**
@@ -34,14 +34,14 @@ class HomeController extends Controller
      * Display a listing of the resource.
      *
      * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
+     * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
      * @return \Illuminate\Contracts\View\View
      */
-    public function index(ExpeditionModelService $expeditionModelService, PanoptesTranscriptionRepository $panoptesTranscriptionRepo): \Illuminate\Contracts\View\View
+    public function index(ExpeditionModelService $expeditionModelService, PanoptesTranscriptionModelService $panoptesTranscriptionModelService): \Illuminate\Contracts\View\View
     {
         $expedition = $expeditionModelService->getHomePageProjectExpedition();
-        $contributorCount = $panoptesTranscriptionRepo->getContributorCount();
-        $transcriptionCount = $panoptesTranscriptionRepo->getTotalTranscriptions();
+        $contributorCount = $panoptesTranscriptionModelService->getContributorCount();
+        $transcriptionCount = $panoptesTranscriptionModelService->getTotalTranscriptions();
 
         return \View::make('front.home', compact('expedition', 'contributorCount', 'transcriptionCount'));
     }
@@ -51,7 +51,6 @@ class HomeController extends Controller
      * TODO remove after project 115 completed.
      * @param string $name
      * @return \Illuminate\Http\Response|void
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function tmpimage(string $name)
     {

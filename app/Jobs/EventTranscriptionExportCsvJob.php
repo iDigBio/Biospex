@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Services\Models\EventTranscriptionModelService;
 use App\Services\Process\CreateReportService;
 use Exception;
@@ -76,13 +76,13 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Models\EventTranscriptionModelService $eventTranscriptionModelService
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
+     * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
      * @param \App\Services\Process\CreateReportService $createReportService
      * @return void
      */
     public function handle(
         EventTranscriptionModelService $eventTranscriptionModelService,
-        PanoptesTranscriptionRepository $panoptesTranscriptionRepo,
+        PanoptesTranscriptionModelService $panoptesTranscriptionModelService,
         CreateReportService $createReportService,
     )
     {
@@ -90,8 +90,8 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
         {
             $ids = $eventTranscriptionModelService->getEventClassificationIds($this->eventId);
 
-            $transcriptions = $ids->map(function($id) use($panoptesTranscriptionRepo) {
-                $transcript = $panoptesTranscriptionRepo->findBy('classification_id', $id);
+            $transcriptions = $ids->map(function($id) use($panoptesTranscriptionModelService) {
+                $transcript = $panoptesTranscriptionModelService->getFirst('classification_id', $id);
                 unset($transcript['_id']);
                 return $transcript;
             })->reject(function($transcription){
