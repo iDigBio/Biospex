@@ -21,7 +21,6 @@ namespace App\Providers;
 
 use App\Services\Helpers\CountService;
 use App\Services\Helpers\DateService;
-use App\Services\Helpers\FlashService;
 use App\Services\Helpers\GeneralService;
 use App\Services\Helpers\TranscriptionMapService;
 use App\Services\Models\PanoptesTranscriptionModelService;
@@ -75,11 +74,6 @@ class BiospexServiceProvider extends ServiceProvider
 
         $this->app->singleton('datehelper', function(){
             return new DateService();
-        });
-
-        $this->app->singleton('flashhelper', function ()
-        {
-            return new FlashService();
         });
 
         $this->app->singleton('generalhelper', function(){

@@ -44,7 +44,7 @@ class EventService
             $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
             $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('owner_id', $user->id)->get();
 
-        $sortedRecords = $this->sortRecord($records, $sort, $order);
+        $sortedRecords = $this->sortRecords($records, $sort, $order);
 
         return $this->partitionRecords($sortedRecords);
     }
