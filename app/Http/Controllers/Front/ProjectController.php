@@ -88,9 +88,8 @@ class ProjectController extends Controller
         $project = $this->projectModelService->getProjectPageBySlug($slug);
 
         if ($project === null) {
-            \Flash::error(t('Unable to locate project. Please alert the Admin.'));
 
-            return \Redirect::route('front.projects.index');
+            return \Redirect::route('front.projects.index')->with('error', t('Unable to locate project. Please alert the Admin.'));
         }
 
         $expeditions = null;

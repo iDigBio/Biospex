@@ -24,6 +24,8 @@ use App\Models\Invite;
 use App\Models\User;
 use Date;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use View;
 
 class RegisterUserService
 {
@@ -45,14 +47,14 @@ class RegisterUserService
 
         if ( ! empty($code) && ! $invite)
         {
-            \Flash::warning( t('Your invite was unable to be found. Please contact the administration.'));
+            Session::flash('warning', t('Your invite was unable to be found. Please contact the administration.'));
         }
 
         $code = $invite->code ?? null;
         $email = $invite->email ?? null;
         $timezones = Date::timeZoneSelect();
 
-        return \View::make('auth.register', compact('code', 'email', 'timezones'));
+        return View::make('auth.register', compact('code', 'email', 'timezones'));
     }
 
     /**

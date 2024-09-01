@@ -25,21 +25,23 @@ use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-readonly class EventModelService
+class EventModel extends ModelService
 {
-    public function __construct(private Event $event)
-    {}
+    /**
+     * @var \App\Services\Models\EventTeamModel
+     */
+    private EventTeamModel $eventTeamModel;
 
     /**
-     * Find event with relations.
+     * EventModel constructor.
      *
-     * @param int $id
-     * @param array $relations
-     * @return mixed
+     * @param \App\Models\Event $model
+     * @param \App\Services\Models\EventTeamModel $eventTeamModel
      */
-    public function findEventWithRelations(int $id, array $relations = []): mixed
+    public function __construct(Event $model, EventTeamModel $eventTeamModel)
     {
-        return $this->event->with($relations)->find($id);
+        $this->model = $model;
+        $this->eventTeamModel = $eventTeamModel;
     }
 
     /**
@@ -50,11 +52,11 @@ readonly class EventModelService
      * @param null $order
      * @return \Illuminate\Support\Collection
      */
-    public function getEventAdminIndex(User $user, $sort = null, $order = null): Collection
+    public function getAdminIndex(User $user, $sort = null, $order = null): Collection
     {
         $results = $user->isAdmin() ?
-            $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
-            $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('owner_id', $user->id)->get();
+            $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
+            $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('owner_id', $user->id)->get();
 
         return $this->sortResults($order, $results, $sort);
     }
@@ -67,10 +69,11 @@ readonly class EventModelService
      * @param null $projectId
      * @return \Illuminate\Support\Collection
      */
-    public function getEventPublicIndex($sort = null, $order = null, $projectId = null): Collection
+    public function getPublicIndex($sort = null, $order = null, $projectId = null): Collection
     {
-        $results = $projectId === null ? $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
-            $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('project_id', $projectId)->get();
+        $results = $projectId === null ?
+            $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
+            $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('project_id', $projectId)->get();
 
         return $this->sortResults($order, $results, $sort);
     }
@@ -81,9 +84,9 @@ readonly class EventModelService
      * @param $eventId
      * @return mixed
      */
-    public function getEventShow($eventId)
+    public function getShow($eventId): mixed
     {
-        return $this->event->withCount('transcriptions')->with([
+        return $this->model->withCount('transcriptions')->with([
             'project.lastPanoptesProject',
             'teams.users' => function ($q) use ($eventId) {
                 $q->withcount([
@@ -96,45 +99,20 @@ readonly class EventModelService
     }
 
     /**
-     * Created event.
+     * Overwrite model update method.
      *
-     * @param array $attributes
-     * @return mixed
-     */
-    public function createEvent(array $attributes)
-    {
-        $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'].':00', $attributes['timezone']);
-        $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'].':00', $attributes['timezone']);
-
-        $event = $this->event->create($attributes);
-
-        $teams = collect($attributes['teams'])->reject(function ($team) {
-            return empty($team['title']);
-        })->map(function ($team) {
-            return new EventTeam($team);
-        });
-
-        $event->teams()->saveMany($teams->all());
-
-        return $event;
-    }
-
-    /**
-     * Update event.
-     *
-     * @param array $attributes
+     * @param array $data
      * @param $resourceId
      * @return false
      */
-    public function updateEvent(array $attributes, $resourceId)
+    public function update(array $data, $resourceId): false
     {
-        $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'].':00', $attributes['timezone']);
-        $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'].':00', $attributes['timezone']);
+        $this->setDates($data);
 
-        $event = $this->event->find($resourceId);
-        $event = $event->fill($attributes)->save();
+        $event = $this->model->find($resourceId);
+        $event = $event->fill($data)->save();
 
-        collect($attributes['teams'])->each(function ($team) use ($event) {
+        collect($data['teams'])->each(function ($team) use ($event) {
             $this->handleTeam($team, $event);
         });
 
@@ -211,7 +189,7 @@ readonly class EventModelService
      */
     public function getEventScoreboard($eventId, array $columns = ['*']): mixed
     {
-        return $this->event->withCount('transcriptions')->with([
+        return $this->model->withCount('transcriptions')->with([
             'teams' => function ($q) use ($eventId) {
                 $q->withcount([
                     'transcriptions' => function ($q) use ($eventId) {
@@ -230,7 +208,7 @@ readonly class EventModelService
      */
     public function getEventsByProjectId($projectId): Collection
     {
-        return $this->event->withCount('transcriptions')->with([
+        return $this->model->withCount('transcriptions')->with([
             'teams' => function ($q) {
                 $q->withCount('transcriptions')->orderBy('transcriptions_count', 'desc');
             },
@@ -251,12 +229,26 @@ readonly class EventModelService
             $q->where('user_id', $userId);
         };
 
-        return $this->event->with(['teams' => function($q) use($callback) {
+        return $this->model->with(['teams' => function($q) use($callback) {
             $q->whereHas('users', $callback);
             $q->with(['users' => $callback]);
         }])
             ->where('project_id', $projectId)
             ->where('start_date', '<', $date)
             ->where('end_date', '>', $date)->get();
+    }
+
+    /**
+     * Set dates for event.
+     *
+     * @param array $data
+     * @return array
+     */
+    public function setDates(array $data): array
+    {
+        $data['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $data['start_date'].':00', $data['timezone']);
+        $data['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $data['end_date'].':00', $data['timezone']);
+
+        return $data;
     }
 }

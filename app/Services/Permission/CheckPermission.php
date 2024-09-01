@@ -19,6 +19,9 @@
 
 namespace App\Services\Permission;
 
+use Gate;
+use Illuminate\Support\Facades\Session;
+
 class CheckPermission
 {
     //use AuthorizesRequests;
@@ -29,11 +32,11 @@ class CheckPermission
     public static function handle(string $ability, $object): bool
     {
         try {
-            \Gate::authorize($ability, $object);
+            Gate::authorize($ability, $object);
 
             return true;
         } catch (\Throwable $throwable) {
-            \Flash::warning(t('You do not have sufficient permissions.'));
+            Session::flash('warning', t('You do not have sufficient permissions.'));
 
             return false;
         }

@@ -20,7 +20,7 @@
 namespace App\Services\Chart;
 
 use App\Facades\DateHelper;
-use App\Services\Models\EventModelService;
+use App\Services\Models\EventModel;
 use App\Services\Models\EventTranscriptionModelService;
 use Date;
 use App\Models\Event;
@@ -37,11 +37,11 @@ readonly class BiospexEventRateChartProcess
     /**
      * AjaxService constructor.
      *
-     * @param \App\Services\Models\EventModelService $eventModelService
+     * @param \App\Services\Models\EventModel $eventModel
      * @param \App\Services\Models\EventTranscriptionModelService $eventTranscriptionModelService
      */
     public function __construct(
-        private EventModelService $eventModelService,
+        private EventModel $eventModel,
         private EventTranscriptionModelService $eventTranscriptionModelService
     ) {}
 
@@ -54,7 +54,7 @@ readonly class BiospexEventRateChartProcess
      */
     public function eventStepChart(int $eventId, string $timestamp = null): ?array
     {
-        $event = $this->eventModelService->findEventWithRelations($eventId, ['teams']);
+        $event = $this->eventModel->findEventWi($eventId, ['teams']);
         if ($event === null) {
             return null;
         }

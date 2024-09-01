@@ -90,13 +90,11 @@ class ZooniverseController extends Controller
                 $message = t('The expedition has been added to the process queue.');
             }
 
-            \Flash::success($message);
-
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('success', $message);
         } catch (Exception $e) {
-            \Flash::error(t('An error occurred when trying to process the expedition: %s', $e->getMessage()));
 
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+                ->with('error', t('An error occurred when trying to process the expedition: %s', $e->getMessage()));
         }
     }
 
@@ -118,21 +116,22 @@ class ZooniverseController extends Controller
         $workflow = $this->workflowManagerModelService->getFirstBy('expedition_id', $expeditionId);
 
         if ($workflow === null) {
-            \Flash::error(t('Expedition has no processes at this time.'));
 
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+                ->with('error', t('Expedition has no processes at this time.'));
         }
 
         $workflow->stopped = 1;
         $this->workflowManagerModelService->update(['stopped' => 1], $workflow->id);
-        \Flash::success(t('Expedition process has been stopped locally. This does not stop any processing occurring on remote sites.'));
 
-        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+            ->with('success', t('Expedition process has been stopped locally. This does not stop any processing occurring on remote sites.'));
     }
 
     /**
      * Return workflow id form.
      *
+     * @param \App\Models\PanoptesProject $panoptesProjectModel
      * @param int $projectId
      * @param int $expeditionId
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse

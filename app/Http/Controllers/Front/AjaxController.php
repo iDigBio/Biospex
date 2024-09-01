@@ -21,11 +21,10 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Models\AmChart;
 use App\Services\Models\WeDigBioEventDateModelService;
 use App\Services\Chart\BiospexEventRateChartProcess;
 use App\Services\Chart\WeDigBioEventRateChartProcess;
-use App\Services\Models\EventModelService;
+use App\Services\Models\EventModel;
 use Artisan;
 use Illuminate\Http\JsonResponse;
 
@@ -37,32 +36,15 @@ use Illuminate\Http\JsonResponse;
 class AjaxController extends Controller
 {
     /**
-     * Load amChart.
-     *
-     * @param \App\Models\AmChart $amChart
-     * @param $projectId
-     * @return \Illuminate\Http\JsonResponse|mixed
-     */
-    public function loadAmChart(AmChart $amChart, $projectId)
-    {
-        if (! \Request::ajax() || $projectId === null) {
-            return response()->json(['html' => 'hitting null']);
-        }
-
-        $record = $amChart->where('project_id', $projectId)->first();
-
-        return json_decode($record->data);
-    }
-
-    /**
      * Load event scoreboard.
-     * @param \App\Services\Models\EventModelService $eventModelService
+     *
+     * @param \App\Services\Models\EventModel $eventModel
      * @param string $eventId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
-    public function scoreboard(EventModelService $eventModelService, string $eventId)
+    public function scoreboard(EventModel $eventModel, string $eventId)
     {
-        $event = $eventModelService->getEventScoreboard($eventId, ['id']);
+        $event = $eventModel->getEventScoreboard($eventId, ['id']);
 
         if (! \Request::ajax() || is_null($event)) {
             return response()->json(['html' => 'Error retrieving the Event']);

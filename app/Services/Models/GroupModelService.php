@@ -33,7 +33,8 @@ use Illuminate\Support\Facades\View;
 readonly class GroupModelService
 {
     public function __construct(private Group $model)
-    {}
+    {
+    }
 
     /**
      * Get group ids for user session.
@@ -54,8 +55,7 @@ readonly class GroupModelService
      */
     public function getAdminIndex(): \Illuminate\View\View
     {
-        $groups = $this->model->withCount(['projects', 'expeditions', 'users'])
-            ->whereHas('users', function ($q) {
+        $groups = $this->model->withCount(['projects', 'expeditions', 'users'])->whereHas('users', function ($q) {
                 $q->where('user_id', Auth::id());
             })->get();
 
@@ -80,14 +80,10 @@ readonly class GroupModelService
 
             event('group.saved');
 
-            Flash::success(t('Group successfully created.'));
-
-            return Redirect::route('admin.groups.index');
+            return Redirect::route('admin.groups.index')->with('success', t('Group successfully created.'));
         }
 
-        Flash::warning(t('Failed to create Group.'));
-
-        return Redirect::back();
+        return Redirect::back()->with('error', t('Failed to create Group.'));
     }
 
     /**
@@ -106,7 +102,7 @@ readonly class GroupModelService
             'users.profile',
         ])->withCount('expeditions')->find($groupId);
 
-        if (!CheckPermission::handle('read', $group)) {
+        if (! CheckPermission::handle('read', $group)) {
             return Redirect::back();
         }
 
@@ -119,11 +115,11 @@ readonly class GroupModelService
      * @param int $groupId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function editGroup(int $groupId): \Illuminate\Contracts\View\Factory|\Illuminate\View\View|\Illuminate\Http\RedirectResponse
-    {
+    public function editGroup(int $groupId
+    ): \Illuminate\Contracts\View\Factory|\Illuminate\View\View|\Illuminate\Http\RedirectResponse {
         $group = $this->model->with(['owner', 'users.profile'])->find($groupId);
 
-        if (!CheckPermission::handle('isOwner', $group)) {
+        if (! CheckPermission::handle('isOwner', $group)) {
             return Redirect::back();
         }
 
@@ -138,15 +134,11 @@ readonly class GroupModelService
     {
         $group = $this->model->find($groupId);
 
-        if (!CheckPermission::handle('isOwner', $group)) {
+        if (! CheckPermission::handle('isOwner', $group)) {
             return Redirect::back();
         }
 
-        $group->fill(request()->all())->save() ?
-            Flash::success(t('Record was updated successfully.')) :
-            Flash::error(t('Error while updating record.'));
-
-        return Redirect::route('admin.groups.show', [$group->id]);
+        return $group->fill(request()->all())->save() ? Redirect::route('admin.groups.show', [$group->id])->with('success', t('Record was updated successfully.')) : Redirect::route('admin.groups.show', [$group->id])->with('error', t('Error while updating record.'));
     }
 
     /**
@@ -163,28 +155,24 @@ readonly class GroupModelService
             },
         ])->find($groupId);
 
-        if (!CheckPermission::handle('isOwner', $group)) {
+        if (! CheckPermission::handle('isOwner', $group)) {
             return Redirect::back();
         }
 
         try {
-            if($group->panoptes_projects_count > 0 || $group->projects->sum('id') > 0) {
-                Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+            if ($group->panoptes_projects_count > 0 || $group->projects->sum('id') > 0) {
 
-                return Redirect::route('admin.groups.index');
+                return Redirect::route('admin.groups.index')->with('error', t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
             }
 
             DeleteGroupJob::dispatch($group);
 
             event('group.deleted', $group->id);
 
-            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
-
-            return Redirect::route('admin.groups.index');
+            return Redirect::route('admin.groups.index')->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
         } catch (Exception $e) {
-            Flash::error(t('An error occurred when deleting record.'));
 
-            return Redirect::route('admin.groups.index');
+            return Redirect::route('admin.groups.index')->with('error', t('An error occurred when deleting record.'));
         }
     }
 
@@ -199,27 +187,23 @@ readonly class GroupModelService
     {
         $group = $this->model->find($groupId);
 
-        if (!CheckPermission::handle('isOwner', $group)) {
+        if (! CheckPermission::handle('isOwner', $group)) {
             return Redirect::route('admin.groups.index');
         }
 
         try {
             if ($group->user_id === $userId) {
-                Flash::error(t('You cannot delete the owner until another owner is selected.'));
 
-                return Redirect::route('admin.groups.show', [$groupId]);
+                return Redirect::route('admin.groups.show', [$groupId])->with('error', t('You cannot delete the owner until another owner is selected.'));
             }
 
             $user = User::find($userId);
             $user->detachGroup($group->id);
 
-            Flash::success(t('User was removed from the group'));
-
-            return Redirect::route('admin.groups.show', [$groupId]);
+            return Redirect::route('admin.groups.show', [$groupId])->with('success', t('User was removed from the group.'));
         } catch (Exception $e) {
-            Flash::error(t('An error occurred when deleting record.'));
 
-            return Redirect::route('admin.groups.show', [$groupId]);
+            return Redirect::route('admin.groups.show', [$groupId])->with('error', t('An error occurred when deleting record.'));
         }
     }
 
@@ -235,27 +219,24 @@ readonly class GroupModelService
         try {
             $group = $this->model->find($groupId);
 
-            if (!CheckPermission::handle('isOwner', $group)) {
+            if (! CheckPermission::handle('isOwner', $group)) {
                 return Redirect::back();
             }
 
             $geoLocateForm = GeoLocateForm::withCount('expeditions')->find($formId);
 
             if ($geoLocateForm->expeditions_count > 0) {
-                Flash::error(t('GeoLocateExport Form cannot be deleted while still being used by Expeditions.'));
 
-                return Redirect::route('admin.groups.show', [$groupId]);
+                return Redirect::route('admin.groups.show', [$groupId])
+                    ->with('error', t('GeoLocateExport Form cannot be deleted while still being used by Expeditions.'));
             }
 
             $geoLocateForm->delete();
 
-            Flash::success(t('GeoLocateExport Form was deleted.'));
-
-            return Redirect::route('admin.groups.show', [$groupId]);
+            return Redirect::route('admin.groups.show', [$groupId])->with('success', t('GeoLocateExport Form was deleted.'));
         } catch (Exception $e) {
-            Flash::error(t('There was an error deleteing the GeoLocateExport Form.'));
 
-            return Redirect::route('admin.groups.show', [$groupId]);
+            return Redirect::route('admin.groups.show', [$groupId])->with('error', t('There was an error deleteing the GeoLocateExport Form.'));
         }
     }
 
@@ -267,9 +248,11 @@ readonly class GroupModelService
      */
     public function getUserGroupCount($userId): int
     {
-        return $this->model->withCount(['users' => function($q) use($userId) {
-            $q->where('user_id', $userId);
-        }])->whereHas('users', function ($q) use ($userId) {
+        return $this->model->withCount([
+            'users' => function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            },
+        ])->whereHas('users', function ($q) use ($userId) {
             $q->where('user_id', $userId);
         })->pluck('users_count')->sum();
     }

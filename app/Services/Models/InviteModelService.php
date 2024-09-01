@@ -26,6 +26,7 @@ use App\Notifications\GroupInvite;
 use App\Services\Models\UserModelService;
 use Exception;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 /**
@@ -74,13 +75,13 @@ readonly class InviteModelService
             Notification::send($newInvites, new GroupInvite($group));
             Notification::send($group->invites, new GroupInvite($group));
 
-            \Flash::success(t('Invites to %s sent successfully.', $group->title));
+            Session::flash('success', t('Invites to %s sent successfully.', $group->title));
 
             return true;
         }
         catch (Exception $e)
         {
-            \Flash::error(t('Unable to sent invites for %s. Please contact the administration.', $group->title));
+            Session::flash('error', t('Unable to sent invites for %s. Please contact the administration.', $group->title));
 
             return false;
         }

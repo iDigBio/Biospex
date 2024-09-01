@@ -42,7 +42,7 @@
                         data-target="#scoreboard-modal"
                         data-channel="{{ config('config.poll_board_channel') .'.'. $event->project_id }}"
                         data-event="{{ $event->id }}"
-                        data-href="{{ route('ajax.get.scoreboard', [$event->id]) }}">{{ t('Scoreboard') }}
+                        data-href="{{ route('event.get.scoreboard', [$event->id]) }}">{{ t('Scoreboard') }}
                 </button>
 
                 @if($event->teams->isNotEmpty())

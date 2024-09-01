@@ -23,7 +23,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BingoFormRequest;
 use App\Services\Models\BingoModelService;
 use App\Services\Models\ProjectModelService;
-use Flash;
 use Illuminate\Support\Facades\Auth;
 use Redirect;
 use View;
@@ -80,14 +79,10 @@ class BingoController extends Controller
         $bingo = $this->bingoModelService->createBingo($request->all());
 
         if ($bingo) {
-            Flash::success(t('Record was created successfully.'));
-
-            return Redirect::route('admin.bingos.show', [$bingo->id]);
+            return Redirect::route('admin.bingos.show', [$bingo->id])->with('success', t('Record was created successfully.'));
         }
 
-        Flash::error(t('An error occurred when saving record.'));
-
-        return Redirect::route('admin.bingos.index');
+        return Redirect::route('admin.bingos.index')->with('error', t('An error occurred when saving record.'));
     }
 
     /**
@@ -136,11 +131,9 @@ class BingoController extends Controller
             return Redirect::route('admin.bingos.index');
         }
 
-        $result = $this->bingoModelService->updateBingo($request->all(), $bingoId);
+        $this->bingoModelService->updateBingo($request->all(), $bingoId);
 
-        Flash::success(t('Record was updated successfully.'));
-
-        return Redirect::route('admin.bingos.show', [$bingoId]);
+        return Redirect::route('admin.bingos.show', [$bingoId])->with('success', t('Record was updated successfully.'));
     }
 
     /**
@@ -160,13 +153,10 @@ class BingoController extends Controller
         $result = $bingo->delete();
 
         if ($result) {
-            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
-
-            return Redirect::route('admin.bingos.index');
+            return Redirect::route('admin.bingos.index')->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
         }
 
-        Flash::error(t('An error occurred when deleting record.'));
 
-        return Redirect::route('admin.bingos.edit', [$bingoId]);
+        return Redirect::route('admin.bingos.edit', [$bingoId])->with('error', t('An error occurred when deleting record.'));
     }
 }

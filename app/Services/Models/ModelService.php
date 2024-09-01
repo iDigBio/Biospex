@@ -31,9 +31,9 @@ use MongoDB\Laravel\Eloquent\Model as MongoModel;
 class ModelService
 {
     /**
-     * @var \MongoDB\Laravel\Eloquent\Model|\Illuminate\Database\Eloquent\Model $model
+     * @var mixed $model
      */
-    protected MongoModel|EloquentModel $model;
+    protected mixed $model;
 
     /**
      * Override __get().
@@ -44,41 +44,6 @@ class ModelService
     public function __get($key)
     {
         return $this->{$key};
-    }
-
-    /**
-     * Get all.
-     *
-     * @param array|string[] $columns
-     * @return mixed
-     */
-    public function all(array $columns = ['*'])
-    {
-        return $this->model->get($columns);
-    }
-
-    /**
-     * Get all with relations.
-     *
-     * @param array $with
-     * @param array|string[] $columns
-     * @return mixed
-     */
-    public function allWith(array $with = [], array $columns = ['*'])
-    {
-        return $this->model->with($with)->get($columns);
-    }
-
-    /**
-     * Find by id.
-     *
-     * @param $resourceId
-     * @param array|string[] $columns
-     * @return mixed
-     */
-    public function find($resourceId, array $columns = ['*'])
-    {
-        return $this->model->find($resourceId, $columns);
     }
 
     /**
@@ -129,7 +94,7 @@ class ModelService
      * @param array $with
      * @return mixed
      */
-    public function findWith($resourceId, array $with = [])
+    public function findWith($resourceId, array $with = []): mixed
     {
         return $this->model->with($with)->find($resourceId);
     }
@@ -145,17 +110,6 @@ class ModelService
     public function whereIn($field, array $values, array $columns = ['*'])
     {
         return $this->model->whereIn($field, $values)->get($columns);
-    }
-
-    /**
-     * Create.
-     *
-     * @param array $data
-     * @return mixed
-     */
-    public function create(array $data)
-    {
-        return $this->model->create($data);
     }
 
     /**

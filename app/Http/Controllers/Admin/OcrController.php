@@ -54,9 +54,8 @@ class OcrController extends Controller
 
         TesseractOcrCreateJob::dispatch($projectId, $expeditionId);
 
-        \Flash::success(t('OCR processing has been submitted. It may take some time before appearing in the Processes modal. You will be notified by email when the process is complete.'));
-
         $route = $expeditionId === null ? 'admin.projects.show' : 'admin.expeditions.show';
-        return \Redirect::route($route, [$projectId, $expeditionId]);
+        return \Redirect::route($route, [$projectId, $expeditionId])
+            ->with('success', t('OCR processing has been submitted. It may take some time before appearing in the Processes modal. You will be notified by email when the process is complete.'));
     }
 }

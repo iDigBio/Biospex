@@ -22,10 +22,14 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventJoinRequest;
 use App\Models\EventTeam;
-use App\Services\Models\EventModelService;
+use App\Services\Models\EventModel;
 use App\Services\Models\EventUserModelService;
 use Date;
 use General;
+use Redirect;
+use Request;
+use Session;
+use View;
 
 /**
  * Class EventController
@@ -34,7 +38,7 @@ use General;
  */
 class EventController extends Controller
 {
-    public function __construct(private readonly EventModelService $eventModelService)
+    public function __construct(private readonly EventModel $eventModel)
     {}
 
     /**
@@ -44,13 +48,13 @@ class EventController extends Controller
      */
     public function index(): \Illuminate\Contracts\View\View
     {
-        $results = $this->eventModelService->getEventPublicIndex();
+        $results = $this->eventModel->getPublicIndex();
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
             return Date::eventBefore($event) || Date::eventActive($event);
         });
 
-        return \View::make('front.event.index', compact('events', 'eventsCompleted'));
+        return View::make('front.event.index', compact('events', 'eventsCompleted'));
     }
 
     /**
@@ -60,23 +64,23 @@ class EventController extends Controller
      */
     public function sort(): ?\Illuminate\Contracts\View\View
     {
-        if (! \Request::ajax()) {
+        if (! Request::ajax()) {
             return null;
         }
 
-        $sort = \Request::get('sort');
-        $order = \Request::get('order');
-        $projectId = \Request::get('id');
+        $sort = Request::get('sort');
+        $order = Request::get('order');
+        $projectId = Request::get('id');
 
-        $results = $this->eventModelService->getEventPublicIndex($sort, $order, $projectId);
+        $results = $this->eventModel->getPublicIndex($sort, $order, $projectId);
 
         [$active, $completed] = $results->partition(function ($event) {
             return Date::eventBefore($event) || Date::eventActive($event);
         });
 
-        $events = \Request::get('type') === 'active' ? $active : $completed;
+        $events = Request::get('type') === 'active' ? $active : $completed;
 
-        return \View::make('front.event.partials.event', compact('events'));
+        return View::make('front.event.partials.event', compact('events'));
     }
 
     /**
@@ -87,15 +91,14 @@ class EventController extends Controller
      */
     public function read(int $eventId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $event = $this->eventModelService->findEventWithRelations($eventId, ['project.lastPanoptesProject', 'teams:id,title,event_id']);
+        $event = $this->eventModel->findWith($eventId, ['project.lastPanoptesProject', 'teams:id,title,event_id']);
 
         if ($event === null) {
-            \Flash::error(t('Error retrieving record from database'));
 
-            return \Redirect::route('front.events.index');
+            return Redirect::route('front.events.index')->with('error', t('Error retrieving record from database'));
         }
 
-        return \View::make('front.event.show', compact('event'));
+        return View::make('front.event.show', compact('event'));
     }
 
     /**
@@ -112,10 +115,10 @@ class EventController extends Controller
         $active = Date::eventBefore($team->event) || Date::eventActive($team->event);
 
         if ($team === null) {
-            \Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
+            Session::flash('error', t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
         }
 
-        return \View::make('front.event.signup', compact('team', 'active'));
+        return View::make('front.event.signup', compact('team', 'active'));
     }
 
     /**
@@ -140,13 +143,10 @@ class EventController extends Controller
             $team = $eventTeam->with(['event'])->find($request->get('team_id'));
             $team->users()->syncWithoutDetaching([$user->id]);
 
-            \Flash::success(t('Thank you for your registration.'));
-
-            return \Redirect::route('front.events.read', [$team->event->id]);
+            return Redirect::route('front.events.read', [$team->event->id])->with('success', t('Thank you for your registration.'));
         }
 
-        \Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
-
-        return \Redirect::route('front.events.signup', [$uuid]);
+        return Redirect::route('front.events.signup', [$uuid])
+            ->with('error', t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
     }
 }

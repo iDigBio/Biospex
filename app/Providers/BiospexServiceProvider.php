@@ -61,7 +61,7 @@ class BiospexServiceProvider extends ServiceProvider
             'common.notices', 'App\Http\ViewComposers\NoticesComposer'
         );
 
-        \View::composer(['common.process-modal', 'common.modal', 'common.project-modal'], 'App\Http\ViewComposers\PhpVarsComposer');
+        \View::composer(['common.process-modal', 'common.modal'], 'App\Http\ViewComposers\PhpVarsComposer');
     }
 
     /**

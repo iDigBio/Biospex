@@ -19,10 +19,13 @@
 
 use App\Http\Controllers\Front\AjaxController;
 
-Route::get('ajax/chart/{project}', [AjaxController::class, 'loadAmChart'])->name('ajax.get.chart');
-Route::get('ajax/scoreboard/{event}', [AjaxController::class, 'scoreboard'])->name('ajax.get.scoreboard');
+Route::get('poll', [\App\Http\Controllers\Front\PollController::class, 'index']);
+
+Route::get('ajax/scoreboard/{event}', [\App\Http\Controllers\Front\EventScoreboardController::class, 'show'])->name('event.get.scoreboard');
 Route::get('ajax/step/{event}/{load?}', [AjaxController::class, 'eventStepChart'])->name('ajax.get.step');
+
 Route::get('bingos/{bingo}/winner/{map}', [AjaxController::class, 'bingoWinner'])->name('ajax.get.bingoWinner');
+
 Route::get('ajax/wedigbio-progress/{dateId}', [AjaxController::class, 'weDigBioProgress'])->name('ajax.get.wedigbio-progress');
 Route::get('ajax/wedigbio-rate/{dateId}', [AjaxController::class, 'weDigBioRate'])->name('ajax.get.wedigbio-rate');
 Route::get('ajax/wedigbio-projects/{dateId}', [AjaxController::class, 'getProjectsForWeDigBioRateChart'])->name('ajax.get.wedigbio-projects');

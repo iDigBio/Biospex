@@ -27,6 +27,7 @@ use App\Models\Import;
 use App\Services\Models\ProjectModelService;
 use Auth;
 use Exception;
+use Illuminate\Support\Facades\Redirect;
 
 /**
  * Class ImportController
@@ -69,15 +70,11 @@ class ImportController extends Controller
 
             DwcFileImportJob::dispatch($import);
 
-            \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
-
-            return back();
+            return Redirect::back()->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));
         }
         catch(\Throwable $throwable)
         {
-            \Flash::error(t('Error uploading file. %', $throwable->getMessage()));
-
-            return back();
+            return Redirect::back()->with('error', t('Error uploading file. %', $throwable->getMessage()));
         }
     }
 
@@ -100,15 +97,11 @@ class ImportController extends Controller
 
             RecordsetImportJob::dispatch($data);
 
-            \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
-
-            return back();
+            return Redirect::back()->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));
         }
         catch(Exception $e)
         {
-            \Flash::error(t('Error uploading file'));
-
-            return back();
+            return Redirect::back()->with('error', t('Error uploading file. %', $e->getMessage()));
         }
     }
 
@@ -131,15 +124,11 @@ class ImportController extends Controller
 
             DwcUriImportJob::dispatch($data);
 
-            \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
-
-            return back();
+            return Redirect::back()->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));
         }
         catch(Exception $e)
         {
-            \Flash::error(t('Error uploading file'));
-
-            return back();
+            return Redirect::back()->with('error', t('Error uploading file. %', $e->getMessage()));
         }
     }
 }

@@ -17,4 +17,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-Route::get('poll', [\App\Http\Controllers\Front\PollController::class, 'index']);
+namespace App\Services\Models;
+
+use App\Models\Event;
+use App\Models\EventTeam;
+
+class EventTeamModel extends ModelService
+{
+    /**
+     * EventTeamModel constructor.
+     *
+     * @param \App\Models\EventTeam $model
+     */
+    public function __construct(EventTeam $model)
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * Make teams.
+     *
+     * @param array $teams
+     * @return array
+     */
+    public function makeTeams(array $teams): array
+    {
+        return collect($teams)->map(function ($team) {
+            return $this->model->make($team);
+        })->toArray();
+    }
+}

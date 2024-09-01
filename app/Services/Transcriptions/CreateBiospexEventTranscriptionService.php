@@ -20,7 +20,7 @@
 namespace App\Services\Transcriptions;
 
 use App\Jobs\ScoreboardJob;
-use App\Services\Models\EventModelService;
+use App\Services\Models\EventModel;
 use App\Services\Models\EventTranscriptionModelService;
 use App\Services\Models\EventUserModelService;
 use Illuminate\Support\Carbon;
@@ -37,12 +37,12 @@ readonly class CreateBiospexEventTranscriptionService
     /**
      * CreateBiospexEventTranscriptionService constructor.
      *
-     * @param \App\Services\Models\EventModelService $eventModelService
+     * @param \App\Services\Models\EventModel $eventModel
      * @param \App\Services\Models\EventTranscriptionModelService $eventTranscriptionModelService
      * @param \App\Services\Models\EventUserModelService $eventUserModelService
      */
     public function __construct(
-        private EventModelService $eventModelService,
+        private EventModel $eventModel,
         private EventTranscriptionModelService $eventTranscriptionModelService,
         private EventUserModelService $eventUserModelService
     ) {}
@@ -69,7 +69,7 @@ readonly class CreateBiospexEventTranscriptionService
 
         $timestamp = ! isset($date) ? Carbon::now('UTC') : $date;
 
-        $events = $this->eventModelService->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp->toDateTimeString());
+        $events = $this->eventModel->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp->toDateTimeString());
 
         $events->each(function ($event) use ($classification_id, $user, $timestamp) {
             $event->teams->each(function ($team) use ($event, $classification_id, $user, $timestamp) {

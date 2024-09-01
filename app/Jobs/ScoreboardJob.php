@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Events\ScoreboardEvent;
-use App\Services\Models\EventModelService;
+use App\Services\Models\EventModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -57,9 +57,9 @@ class ScoreboardJob implements ShouldQueue
      *
      * @throws \Throwable
      */
-    public function handle(EventModelService $eventModelService)
+    public function handle(EventModel $eventModel)
     {
-        $events = $eventModelService->getEventsByProjectId($this->projectId);
+        $events = $eventModel->getEventsByProjectId($this->projectId);
         $data = $events->mapWithKeys(function($event) {
             return [$event->id => \View::make('common.scoreboard-content', ['event' => $event])->render()];
         });

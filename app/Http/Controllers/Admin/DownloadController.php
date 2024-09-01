@@ -45,7 +45,8 @@ class DownloadController extends Controller
     public function __construct(
         private UserModelService $userModelService,
         private ExpeditionModelService $expeditionModelService,
-    ) {}
+    ) {
+    }
 
     /**
      * Index showing downloads for Expedition.
@@ -80,22 +81,23 @@ class DownloadController extends Controller
     /**
      * Generate export download.
      *
-     * @see \App\Console\Commands\ExportQueueCommand
      * @param int $projectId
      * @param int $expeditionId
      * @return \Illuminate\Http\RedirectResponse
+     * @see \App\Console\Commands\ExportQueueCommand
      */
     public function export(int $projectId, int $expeditionId): RedirectResponse
     {
         try {
             \Artisan::call('export:queue', ['expeditionId' => $expeditionId]);
-
-            \Flash::success(t('Export generation has been added to the job queue. You will be notified when completed.'));
+            $status = 'success';
+            $message = t('Export generation has been added to the job queue. You will be notified when completed.');
         } catch (Exception $e) {
-            \Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
+            $status = 'error';
+            $message = t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.');
         }
 
-        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with($status, $message);
     }
 
     /**
@@ -110,9 +112,10 @@ class DownloadController extends Controller
     {
         ExportDownloadBatchJob::dispatch($downloadId);
 
-        \Flash::success(t('Your batch request has been submitted. You will receive an email with download links when the process is complete.'));
-
-        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return \Redirect::route('admin.expeditions.show', [
+            $projectId,
+            $expeditionId,
+        ])->with('success', t('Your batch request has been submitted. You will receive an email with download links when the process is complete.'));
     }
 
     /**

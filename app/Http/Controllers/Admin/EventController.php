@@ -19,14 +19,18 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Services\EventService;
+use App\Services\Models\EventTeamModel;
 use Date;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
 use App\Jobs\EventUserExportCsvJob;
-use App\Services\Models\EventModelService;
+use App\Services\Models\EventModel;
 use App\Services\Models\ProjectModelService;
 use Auth;
+use Illuminate\Support\Facades\View;
+use Redirect;
 
 /**
  * Class EventController
@@ -39,39 +43,43 @@ class EventController extends Controller
      * EventController constructor.
      *
      */
-    public function __construct(private EventModelService $eventModelService, private ProjectModelService $projectModelService)
-    {}
+    public function __construct(
+        protected EventService $eventService,
+
+        protected EventModel $eventModel,
+        protected EventTeamModel $eventTeamModel,
+        protected ProjectModelService $projectModelService
+    ) {
+    }
 
     /**
-     * Displays Events on public page.
-     *
-     * @return \Illuminate\View\View
+     * Display events.
      */
-    public function index(): \Illuminate\View\View
+    public function index()
     {
-        $results = $this->eventModelService->getEventAdminIndex(Auth::user());
+        try {
+            [$events, $eventsCompleted] = $this->eventService->index(Auth::user());
 
-        [$events, $eventsCompleted] = $results->partition(function ($event) {
-            return Date::eventBefore($event) || Date::eventActive($event);
-        });
+            return View::make('admin.event.index', compact('events', 'eventsCompleted'));
+        }
+        catch (\Throwable $throwable) {
 
-        return \View::make('admin.event.index', compact('events', 'eventsCompleted'));
+            return Redirect::route('admin.projects.index')->with('error', t('An error occurred when retrieving Event records.'));
+        }
     }
 
     /**
      * Displays Completed Events on public page.
      *
      * @return \Illuminate\Contracts\View\View|null
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function sort(): ?\Illuminate\Contracts\View\View
     {
-        if ( ! \Request::ajax()) {
+        if (! \Request::ajax()) {
             return null;
         }
 
-        $results = $this->eventModelService->getEventAdminIndex(Auth::user(), \Request::get('sort'), \Request::get('order'));
+        $results = $this->eventModel->getAdminIndex(Auth::user(), \Request::get('sort'), \Request::get('order'));
 
         [$active, $completed] = $results->partition(function ($event) {
             return Date::eventBefore($event) || Date::eventActive($event);
@@ -90,11 +98,10 @@ class EventController extends Controller
      */
     public function show($eventId)
     {
-        $event = $this->eventModelService->getEventShow($eventId);
+        $event = $this->eventModel->getShow($eventId);
 
-        if ( ! $this->checkPermissions('read', $event))
-        {
-            return \Redirect::route('admin.events.index');
+        if (! $this->checkPermissions('read', $event)) {
+            return Redirect::route('admin.events.index');
         }
 
         return \View::make('admin.event.show', compact('event'));
@@ -123,17 +130,16 @@ class EventController extends Controller
      */
     public function store(EventFormRequest $request)
     {
-        $event = $this->eventModelService->createEvent($request->all());
+        try {
+            $data = $this->eventModel->setDates($request->all());
+            $event = $this->eventModel->create($data);
+            $event->teams()->saveMany($this->eventTeamModel->makeTeams($request->get('teams')));
 
-        if ($event) {
-            \Flash::success(t('Record was created successfully.'));
+            return Redirect::route('admin.events.show', [$event->id])->with('success', t('Record was created successfully.'));
+        } catch (\Throwable $throwable) {
 
-            return \Redirect::route('admin.events.show', [$event->id]);
+            return Redirect::route('admin.events.index')->with('error', t('An error occurred when saving record.'));
         }
-
-        \Flash::error(t('An error occurred when saving record.'));
-
-        return \Redirect::route('admin.events.index');
     }
 
     /**
@@ -145,10 +151,9 @@ class EventController extends Controller
      */
     public function edit(int $eventId)
     {
-        $event = $this->eventModelService->getEventShow($eventId);
+        $event = $this->eventModel->getShow($eventId);
 
-        if ( ! $this->checkPermissions('update', $event))
-        {
+        if (! $this->checkPermissions('update', $event)) {
             return back();
         }
 
@@ -168,24 +173,19 @@ class EventController extends Controller
      */
     public function update($eventId, EventFormRequest $request)
     {
-        $event = $this->eventModelService->findEventWithRelations($eventId, ['teams']);
+        $event = $this->eventModel->findWith($eventId, ['teams']);
 
-        if ( ! $this->checkPermissions('update', $event))
-        {
-            return \Redirect::route('admin.events.index');
+        if (! $this->checkPermissions('update', $event)) {
+            return Redirect::route('admin.events.index');
         }
 
-        $result = $this->eventModelService->updateEvent($request->all(), $eventId);
+        $result = $this->eventModel->updateEvent($request->all(), $eventId);
 
         if ($result) {
-            \Flash::success(t('Record was updated successfully.'));
-
-            return \Redirect::route('admin.events.show', [$eventId]);
+            return Redirect::route('admin.events.show', [$eventId])->with('success', t('Record was updated successfully.'));
         }
 
-        \Flash::error(t('Error while updating record.'));
-
-        return \Redirect::route('admin.events.edit', [$eventId]);
+        return Redirect::route('admin.events.edit', [$eventId])->with('error', t('Error while updating record.'));
     }
 
     /**
@@ -196,25 +196,19 @@ class EventController extends Controller
      */
     public function delete($eventId)
     {
-        $event = $this->eventModelService->findEventWithRelations($eventId);
+        $event = $this->eventModel->find($eventId);
 
-        if ( ! $this->checkPermissions('delete', $event))
-        {
-            return \Redirect::route('admin.events.index');
+        if (! $this->checkPermissions('delete', $event)) {
+            return Redirect::route('admin.events.index');
         }
 
         $result = $event->delete();
 
-        if ($result)
-        {
-            \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
-
-            return \Redirect::route('admin.events.index');
+        if ($result) {
+            return Redirect::route('admin.events.index')->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
         }
 
-        \Flash::error(t('An error occurred when deleting record.'));
-
-        return \Redirect::route('admin.events.edit', [$eventId]);
+        return Redirect::route('admin.events.edit', [$eventId])->with('error', t('An error occurred when deleting record.'));
     }
 
     /**
@@ -225,7 +219,7 @@ class EventController extends Controller
      */
     public function exportTranscriptions($eventId)
     {
-        if ( ! \Request::ajax()) {
+        if (! \Request::ajax()) {
             return response()->json(false);
         }
 
@@ -242,7 +236,7 @@ class EventController extends Controller
      */
     public function exportUsers($eventId)
     {
-        if ( ! \Request::ajax()) {
+        if (! \Request::ajax()) {
             return response()->json(false);
         }
 

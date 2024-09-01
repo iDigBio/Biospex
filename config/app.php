@@ -232,7 +232,6 @@ return [
         #### Packages
         'Count'            => CountHelper::class,
         'Date'             => DateHelper::class,
-        'Flash'            => FlashHelper::class,
         'General'          => GeneralHelper::class,
         'TranscriptionMap' => TranscriptionMapHelper::class,
     ],

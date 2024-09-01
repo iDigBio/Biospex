@@ -133,14 +133,11 @@ class ProjectController extends Controller
         $model = $this->projectModelService->create($request->all());
 
         if ($model) {
-            Flash::success(t('Record was created successfully.'));
-
-            return Redirect::route('admin.projects.show', [$model->id]);
+            return Redirect::route('admin.projects.show', [$model->id])
+                ->with('success', t('Record was created successfully.'));
         }
 
-        Flash::error(t('An error occurred when saving record.'));
-
-        return Redirect::route('admin.projects.create')->withInput();
+        return Redirect::route('admin.projects.create')->withInput()->with('error', t('An error occurred when saving record.'));
     }
 
     /**
@@ -154,9 +151,8 @@ class ProjectController extends Controller
         $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
         if (! $project) {
-            Flash::error(t('Error retrieving record from database'));
-
-            return Redirect::route('admin.projects.show', [$projectId]);
+            return Redirect::route('admin.projects.show', [$projectId])
+                ->with('error', t('Error retrieving record from database'));
         }
 
         $groupOptions = ['' => '--Select--'] + $this->groupModelService->getUsersGroupsSelect(\Request::user());
@@ -181,9 +177,9 @@ class ProjectController extends Controller
     {
         $project = $this->groupModelService->findWithRelations($projectId, ['group', 'resources']);
         if (! $project) {
-            Flash::error(t('Error retrieving record from database'));
 
-            return Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index')
+                ->with('error', t('Error retrieving record from database'));
         }
 
         $groupOptions = ['' => '--Select--'] + $this->groupModelService->getUsersGroupsSelect(\Request::user());
@@ -213,9 +209,9 @@ class ProjectController extends Controller
 
         $project = $this->projectModelService->update($request->all(), $projectId);
 
-        $project ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
-
-        return back();
+        return $project ?
+            Redirect::back()->with('success', t('Record was updated successfully.')) :
+            Redirect::back()->with('error', t('Error while updating record.'));
     }
 
     /**
@@ -285,20 +281,18 @@ class ProjectController extends Controller
 
         try {
             if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
-                Redirect::route('admin.projects.index');
+                Redirect::route('admin.projects.index')
+                    ->with('error', t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
             }
 
             DeleteProjectJob::dispatch($project);
 
-            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
-
-            return Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index')
+                ->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
         } catch (Exception $e) {
-            Flash::error(t('An error occurred when deleting record.'));
 
-            return Redirect::route('admin.projects.index');
+            return Redirect::route('admin.projects.index')->with('error', t('An error occurred when deleting record.'));
         }
     }
 
@@ -331,13 +325,12 @@ class ProjectController extends Controller
         try {
             DeleteUnassignedSubjectsJob::dispatch(Auth::user(), (int) $projectId);
 
-            Flash::success(t('Subjects have been set for deletion. You will be notified by email when complete.'));
-
-            return Redirect::route('admin.projects.explore', [$projectId]);
+            return Redirect::route('admin.projects.explore', [$projectId])
+                ->with('success', t('Subjects have been set for deletion. You will be notified by email when complete.'));
         } catch (Exception $e) {
-            Flash::warning(t('There was an error setting the job to delete the Subjects.'));
 
-            return Redirect::route('admin.projects.explore', [$projectId]);
+            return Redirect::route('admin.projects.explore', [$projectId])
+                ->with('error', t('An error occurred when deleting Subjects.'));
         }
     }
 }

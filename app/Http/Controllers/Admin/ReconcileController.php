@@ -75,9 +75,9 @@ class ReconcileController extends Controller
         $reconciles = $this->expertReconcileService->getPagination((int) $expedition->id);
 
         if ($reconciles->isEmpty()) {
-            Flash::error(t('Reconcile data for processing is missing.'));
 
-            return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
+            return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id])
+                ->with('error', t('Reconcile data for processing is missing.'));
         }
 
         $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, $reconciles->first()->subject_id);
@@ -106,16 +106,15 @@ class ReconcileController extends Controller
         }
 
         if ($this->skipReconcile($expeditionId)) {
-            Flash::warning(t('Expert Review Process for Expedition (:id) was skipped. Please contact Biospex Administration', [':id' => $expeditionId]));
 
-            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
+            return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expeditionId])
+                ->with('warning', t('Expert Review Process for Expedition (:id) was skipped. Please contact Biospex Administration', [':id' => $expeditionId]));
         }
 
         $this->reconcileService->invokeLambdaExplained($expedition->id);
 
-        Flash::success(t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
-
-        return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
+        return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expeditionId])
+            ->with('success', t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
     }
 
     /**
@@ -127,14 +126,11 @@ class ReconcileController extends Controller
     public function update(int $expeditionId): RedirectResponse
     {
         if (! $this->expertReconcileService->updateRecord(Request::all())) {
-            Flash::warning(t('Error while updating record.'));
 
-            return back();
+            return Redirect::back()->with('error', t('Error while updating record.'));
         }
 
-        Flash::success(t('Record was updated successfully.'));
-
-        return Redirect::to(Request::get('page'));
+        return Redirect::to(Request::get('page'))->with('success', t('Record was updated successfully.'));
     }
 
     /**
@@ -147,9 +143,9 @@ class ReconcileController extends Controller
     public function publish(int $projectId, int $expeditionId): RedirectResponse
     {
         ExpertReconcileReviewPublishJob::dispatch($expeditionId);
-        Flash::success(t('The Expert Review Publish job has been submitted. You will receive and email when it has completed.'));
 
-        return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+            ->with('success', t('The Expert Review Publish job has been submitted. You will receive an email when it has completed.'));
     }
 
     /**

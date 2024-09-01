@@ -74,11 +74,9 @@ class UserAccountService
         $result = $user->fill($input)->save();
         $user->profile->fill($request->all())->save();
 
-        $result === true ?
-            Flash::success(t('User profile updated.')) :
-            Flash::error(t('User profile could not be updated.'));
-
-        return Redirect::route('admin.users.edit', [$user->id]);
+        return $result === true ?
+            Redirect::route('admin.users.edit', [$user->id])->with('success', t('User profile updated.')) :
+            Redirect::route('admin.users.edit', [$user->id])->with('error', t('User profile could not be updated.'));
     }
 
     /**
@@ -97,8 +95,6 @@ class UserAccountService
 
         $this->resetPassword($request->user(), $request->password);
 
-        Flash::success(t('Your password has been changed.'));
-
-        return Redirect::back();
+        return Redirect::back()->with('success', t('Your password has been changed.'));
     }
 }

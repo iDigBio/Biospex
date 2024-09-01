@@ -42,8 +42,11 @@ class ExpeditionController extends Controller
      * @param \App\Services\Models\ProjectModelService $projectModelService
      * @param \App\Services\Models\ExpeditionService $expeditionService
      */
-    public function __construct(private ProjectModelService $projectModelService, private ExpeditionService $expeditionService)
-    {}
+    public function __construct(
+        private ProjectModelService $projectModelService,
+        private ExpeditionService $expeditionService
+    ) {
+    }
 
     /**
      * Display all expeditions for user.
@@ -110,9 +113,7 @@ class ExpeditionController extends Controller
 
         $expedition = $this->expeditionService->createExpedition($request->all());
         if (! $expedition) {
-            \Flash::error(t('An error occurred when saving record.'));
-
-            return \Redirect::route('admin.projects.show', [$project->id]);
+            return \Redirect::route('admin.projects.show', [$project->id])->with('error', t('An error occurred when saving record.'));
         }
         $expedition->load('workflow.actors.contacts');
 
@@ -123,9 +124,10 @@ class ExpeditionController extends Controller
 
         $this->expeditionService->notifyActorContacts($expedition, $project);
 
-        \Flash::success(t('Record was created successfully.'));
-
-        return \Redirect::route('admin.expeditions.show', [$projectId, $expedition->id]);
+        return \Redirect::route('admin.expeditions.show', [
+            $projectId,
+            $expedition->id,
+        ])->with('success', t('Record was created successfully.'));
     }
 
     /**
@@ -136,8 +138,11 @@ class ExpeditionController extends Controller
      * @param \App\Services\Grid\JqGridEncoder $grid
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function show($projectId, $expeditionId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
-    {
+    public function show(
+        $projectId,
+        $expeditionId,
+        JqGridEncoder $grid
+    ): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse {
         $relations = ['project.group', 'downloads', 'stat'];
         $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
 
@@ -168,8 +173,11 @@ class ExpeditionController extends Controller
      * @param \App\Services\Grid\JqGridEncoder $grid
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function clone($projectId, $expeditionId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
-    {
+    public function clone(
+        $projectId,
+        $expeditionId,
+        JqGridEncoder $grid
+    ): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse {
         $relations = ['project.group', 'downloads', 'stat'];
         $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
 
@@ -200,8 +208,11 @@ class ExpeditionController extends Controller
      * @param \App\Services\Grid\JqGridEncoder $grid
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function edit($projectId, $expeditionId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
-    {
+    public function edit(
+        $projectId,
+        $expeditionId,
+        JqGridEncoder $grid
+    ): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse {
         $relations = ['project.group', 'downloads', 'stat'];
         $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
 
@@ -252,14 +263,15 @@ class ExpeditionController extends Controller
             $this->expeditionService->updateSubjects($expedition);
             $this->expeditionService->syncActors($expedition);
 
-            // Success!
-            \Flash::success(t('Record was updated successfully.'));
-
-            return \Redirect::route('admin.expeditions.show', [$project->id, $expeditionId]);
+            return \Redirect::route('admin.expeditions.show', [
+                $project->id,
+                $expeditionId,
+            ])->with('success', t('Record was updated successfully.'));
         } catch (Exception $e) {
-            \Flash::error(t('An error occurred when saving record.'));
-
-            return \Redirect::route('admin.expeditions.edit', [$projectId, $expeditionId]);
+            return \Redirect::route('admin.expeditions.edit', [
+                $projectId,
+                $expeditionId,
+            ])->with('error', t('An error occurred when saving record.'));
         }
     }
 
@@ -282,20 +294,19 @@ class ExpeditionController extends Controller
             $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId);
 
             if (isset($expedition->workflowManager) || isset($expedition->panoptesProject)) {
-                \Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
-                return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+                return \Redirect::route('admin.expeditions.show', [
+                    $projectId,
+                    $expeditionId,
+                ])->with('error', t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
             }
 
             DeleteExpeditionJob::dispatch(Auth::user(), $expedition);
 
-            \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete.'));
-
-            return \Redirect::route('admin.projects.show', [$projectId]);
+            return \Redirect::route('admin.projects.show', [$projectId])->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete.'));
         } catch (Exception $e) {
-            \Flash::error(t('record.record_delete_error'));
 
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('error', t('An error occurred when deleting record.'));
         }
     }
 
@@ -319,7 +330,12 @@ class ExpeditionController extends Controller
         $order = \Request::get('order');
         $projectId = \Request::get('id');
 
-        [$active, $completed] = $this->expeditionService->getAdminIndex($user->id, $sort, $order, $projectId)->partition(function ($expedition) {
+        [
+            $active,
+            $completed,
+        ] = $this->expeditionService->getAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
+            $expedition
+        ) {
             return $expedition->completed === 0;
         });
 
@@ -330,13 +346,16 @@ class ExpeditionController extends Controller
 
     /**
      * Display expedition tools.
+     *
      * @param int $projectId
      * @param int $expeditionId
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
-    public function tools(int $projectId, int $expeditionId): \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
-    {
-        if (!\Request::ajax()) {
+    public function tools(
+        int $projectId,
+        int $expeditionId
+    ): \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse {
+        if (! \Request::ajax()) {
             return \Response::json(['message' => t('You do not have permission.')], 400);
         }
 
@@ -348,7 +367,7 @@ class ExpeditionController extends Controller
             'stat',
             'zooniverseExport',
             'panoptesProject',
-            'workflowManager'
+            'workflowManager',
         ];
 
         $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);

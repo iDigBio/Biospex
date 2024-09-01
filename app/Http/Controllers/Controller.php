@@ -34,7 +34,7 @@ abstract class Controller extends BaseController
         }
         catch (\Throwable $throwable)
         {
-            \Flash::warning(t('You do not have sufficient permissions.'));
+            session()->flash('error', t('You do not have sufficient permissions.'));
 
             return false;
         }
