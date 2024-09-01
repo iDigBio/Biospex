@@ -50,7 +50,7 @@
                         data-target="#step-chart-modal"
                         data-event="{{ $event->id }}"
                         data-teams="{{ $event->teams->pluck('title')->implode(',') }}"
-                        data-timezone="{{ event_rate_chart_timezone(($event->timezone) }}"
+                        data-timezone="{{ event_rate_chart_timezone(($event->timezone)) }}"
                         data-href="{{ route('ajax.get.step', [$event->id]) }}">{{ t('Rate Chart') }}
                 </button>
             @endif
