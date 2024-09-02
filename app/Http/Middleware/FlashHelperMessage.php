@@ -24,15 +24,74 @@ class FlashHelperMessage
             'flashIcon'    => ''
         ];
 
-        if (session()->has('flash_message'))
-        {
-            $message['flashType'] = session('flash_message')['type'];
-            $message['flashMessage'] = session('flash_message')['message'];
-            $message['flashIcon'] = session('flash_message')['icon'];
+        $status = ['success', 'info', 'warning', 'danger'];
+        if (session()->hasAny('success', 'info', 'warning', 'danger')) {
+            foreach ($status as $type) {
+                if (session()->has($type)) {
+                    $message['flashType'] = $type;
+                    $message['flashMessage'] = session($type);
+                    $message['flashIcon'] = match ($type) {
+                        'success' => 'check-circle',
+                        'info'    => 'info-circle',
+                        'warning' => 'exclamation-circle',
+                        'danger'  => 'times-circle',
+                    };
+                    break;
+                }
+            }
         }
 
         JavaScript::put($message);
 
         return $next($request);
+    }
+
+    private function create($message, $type, $icon)
+    {
+        session()->flash('flash_message', [
+            'type'    => $type,
+            'message' => $message,
+            'icon'    => $icon
+        ]);
+    }
+
+    /**
+     * Create success message.
+     *
+     * @param $message
+     */
+    public function success($message)
+    {
+        $this->create($message, 'success', 'check-circle');
+    }
+
+    /**
+     * Create info message.
+     *
+     * @param $message
+     */
+    public function info($message)
+    {
+        $this->create($message, 'info', 'info-circle');
+    }
+
+    /**
+     * Create warning message.
+     *
+     * @param $message
+     */
+    public function warning($message)
+    {
+        $this->create($message, 'warning', 'exclamation-circle');
+    }
+
+    /**
+     * Create danger message.
+     *
+     * @param $message
+     */
+    public function error($message)
+    {
+        $this->create($message, 'danger', 'times-circle');
     }
 }
