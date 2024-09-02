@@ -51,6 +51,7 @@ class ZooniverseCsvJob implements ShouldQueue
 
     /**
      * Create a new job instance.
+     * noDelay is used to skip the delay in the job.
      *
      * @param int $expeditionId
      * @param bool $noDelay
@@ -89,7 +90,7 @@ class ZooniverseCsvJob implements ShouldQueue
             return;
         }
 
-        ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addMinutes(30));
+        ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addHours(3));
     }
 
     /**
