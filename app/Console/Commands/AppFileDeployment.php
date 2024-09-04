@@ -145,6 +145,8 @@ class AppFileDeployment extends Command
             'panoptes-pusher.js',
         ];
 
-        return config('app.env') !== 'production' && in_array($file->getBaseName(), $files);
+        $env = ['production', 'local'];
+
+        return !in_array(config('app.env'), $env) && in_array($file->getBaseName(), $files);
     }
 }
