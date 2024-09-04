@@ -29,7 +29,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Class RapidExportJob
@@ -70,7 +69,7 @@ class GeoLocateExportJob implements ShouldQueue
      */
     public function __construct(Expedition $expedition, User $user)
     {
-        $this->onQueue(config('config.queue.default'));
+        $this->onQueue(config('config.queue.geolocate'));
         $this->expedition = $expedition;
         $this->user = $user;
     }
@@ -111,7 +110,7 @@ class GeoLocateExportJob implements ShouldQueue
     public function failed(\Throwable $throwable): void
     {
         $attributes = [
-            'subject' => t('DWC File Import Error'),
+            'subject' => t('GeoLocate Form Export Error'),
             'html'    => [
                 'Error: '.$throwable->getMessage(),
                 t('File: %s', $throwable->getFile()),
