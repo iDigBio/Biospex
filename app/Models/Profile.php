@@ -22,6 +22,7 @@ namespace App\Models;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 use App\Models\Traits\Presentable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class Profile
@@ -38,11 +39,18 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     protected $table = 'profiles';
 
     /**
-     * @inheritDoc
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $dates = ['created_at', 'updated_at'];
-
-    protected $casts = ['avatar_updated_at' => 'datetime'];
+    protected function casts(): array
+    {
+        return [
+            'avatar_updated_at' => 'datetime',
+            'created_at'        => 'datetime',
+            'updated_at'        => 'datetime',
+        ];
+    }
 
     /**
      * @inheritDoc
@@ -63,11 +71,12 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     {
         $this->hasAttachedFile('avatar', [
             'variants' => [
-                'medium' => '160x160', 'small' => '25x25'
+                'medium' => '160x160',
+                'small'  => '25x25',
             ],
-            'url'  => config('config.missing_avatar_medium'),
-            'urls' => [
-                'small' => config('config.missing_avatar_small'),
+            'url'      => config('config.missing_avatar_medium'),
+            'urls'     => [
+                'small'  => config('config.missing_avatar_small'),
                 'medium' => config('config.missing_avatar_medium'),
             ],
         ]);

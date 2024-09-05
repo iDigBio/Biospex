@@ -19,10 +19,10 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Repositories\ExpeditionRepository;
-use App\Services\Reconcile\ExpertReconcileProcess;
+use App\Services\Reconcile\ExpertReconcileService;
+use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -32,7 +32,7 @@ use Illuminate\Queue\SerializesModels;
 
 class ExpertReviewMigrateReconcilesJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
     /**
      * @var int
@@ -59,7 +59,7 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
     public function __construct(int $expeditionId)
     {
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.queues.reconcile'));
+        $this->onQueue(config('config.queue.reconcile'));
     }
 
     /**
@@ -69,25 +69,31 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
      */
     public function handle(
         ExpeditionRepository $expeditionRepo,
-        ExpertReconcileProcess $expertReconcileProcess
+        ExpertReconcileService $expertReconcileService
     )
     {
-        $expedition = $expeditionRepo->findExpeditionForExpertReview($this->expeditionId);
-        $user = $expedition->project->group->owner;
+        $expedition = $expeditionRepo->findWith($this->expeditionId, ['project.group.owner']);
 
         try {
             if ($this->skipReconcile($this->expeditionId)) {
                 throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [':id' => $expedition->id, ':title' => $expedition->title]));
             }
 
-            $expertReconcileProcess->migrateReconcileCsv($expedition->id);
+            $expertReconcileService->migrateReconcileCsv($expedition->id);
 
-        } catch (\Throwable $e) {
-            $messages = [
-                'Message: ' .  $e->getMessage(),
-                'File : ' . $e->getFile() . ': ' . $e->getLine()
+        } catch (\Throwable $throwable) {
+            $attributes = [
+                'subject' => t('Expert Review Migration Failed'),
+                'html'    => [
+                    t('Expedition %s', $expedition->title),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.')
+                ],
             ];
-            $user->notify(new JobError(__FILE__, $messages));
+
+            $expedition->project->group->owner->notify(new Generic($attributes, true));
 
             $this->delete();
         }

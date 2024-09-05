@@ -19,9 +19,9 @@
 
 namespace App\Repositories;
 
-use App\Facades\DateHelper;
 use App\Models\PanoptesTranscription;
 use Illuminate\Support\Facades\Cache;
+use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class PanoptesTranscriptionRepository
@@ -47,11 +47,11 @@ class PanoptesTranscriptionRepository extends BaseRepository
      */
     public function getContributorCount()
     {
+        // TODO: Eventually resolve Laravel issue with count.
         return Cache::remember(md5(__METHOD__), 14440, function () {
-            return $this->model->where('user_name', 'not regexp', '/^not-logged-in.*/i')
-                ->groupBy('user_name')
-                ->get()
-                ->count();
+            return $this->model->select('user_name')
+                ->where('user_name', 'not regexp', '/^not-logged-in.*/i')
+                ->groupBy('user_name')->get()->count();
         });
     }
 
@@ -75,7 +75,7 @@ class PanoptesTranscriptionRepository extends BaseRepository
      * @param $projectId
      * @return int
      */
-    public function getProjectTranscriptionCount($projectId)
+    public function getProjectTranscriptionCount(int $projectId): int
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -112,10 +112,10 @@ class PanoptesTranscriptionRepository extends BaseRepository
     /**
      * Get transcriber count for project.
      *
-     * @param $projectId
+     * @param int $projectId
      * @return int
      */
-    public function getProjectTranscriberCount($projectId)
+    public function getProjectTranscriberCount(int $projectId)
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -137,10 +137,10 @@ class PanoptesTranscriptionRepository extends BaseRepository
     /**
      * Get transcribers transcription count.
      *
-     * @param $projectId
+     * @param int $projectId
      * @return mixed
      */
-    public function getTranscribersTranscriptionCount($projectId)
+    public function getTranscribersTranscriptionCount(int $projectId)
     {
         return Cache::rememberForever(md5(__METHOD__.$projectId), function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -188,11 +188,11 @@ class PanoptesTranscriptionRepository extends BaseRepository
     /**
      * Get transcription for dashboard.
      *
-     * @param $expeditionId
+     * @param int $expeditionId
      * @param null $timestamp
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getTranscriptionForDashboardJob($expeditionId, $timestamp = null)
+    public function getTranscriptionForDashboardJob(int $expeditionId, $timestamp = null)
     {
         $model = $this->model->with([
             'subject' => function ($query) {
@@ -210,10 +210,10 @@ class PanoptesTranscriptionRepository extends BaseRepository
     /**
      * Get minimum finish date of transcriptions for project.
      *
-     * @param $projectId
+     * @param int $projectId
      * @return mixed|null
      */
-    public function getMinFinishedAtDateByProjectId($projectId)
+    public function getMinFinishedAtDateByProjectId(int $projectId)
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -225,7 +225,7 @@ class PanoptesTranscriptionRepository extends BaseRepository
             })->first();
         });
 
-        return null === $result ? null : DateHelper::formatMongoDbDate($result->classification_finished_at, 'Y-m-d H:i:s');
+        return $result?->classification_finished_at->format('Y-m-d H:i:s');
     }
 
     /**
@@ -234,7 +234,7 @@ class PanoptesTranscriptionRepository extends BaseRepository
      * @param $projectId
      * @return mixed|null
      */
-    public function getMaxFinishedAtDateByProjectId($projectId)
+    public function getMaxFinishedAtDateByProjectId(int $projectId)
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -246,18 +246,18 @@ class PanoptesTranscriptionRepository extends BaseRepository
             })->first();
         });
 
-        return null === $result ? null : DateHelper::formatMongoDbDate($result->classification_finished_at, 'Y-m-d H:i:s');
+        return $result?->classification_finished_at->format('Y-m-d H:i:s');
     }
 
     /**
      * Get transcription count and group by date.
      *
-     * @param $workflowId
+     * @param int $workflowId
      * @param $begin
      * @param $end
      * @return mixed
      */
-    public function getTranscriptionCountPerDate($workflowId, $begin, $end)
+    public function getTranscriptionCountPerDate(int $workflowId, $begin, $end): mixed
     {
         $key = $workflowId . $begin->__toString() . $end->__toString();
 
@@ -268,8 +268,8 @@ class PanoptesTranscriptionRepository extends BaseRepository
                         '$match' => [
                             'workflow_id'                => $workflowId,
                             'classification_finished_at' => [
-                                '$gte' => DateHelper::formatDateToUtcTimestamp($begin),
-                                '$lt'  => DateHelper::formatDateToUtcTimestamp($end),
+                                '$gte' => new UTCDateTime($begin),
+                                '$lt'  => new UTCDateTime($end),
                             ],
                         ],
                     ],

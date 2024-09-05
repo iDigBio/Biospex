@@ -19,6 +19,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 /**
  * Class AmChart
  *
@@ -39,50 +41,34 @@ class AmChart extends BaseEloquentModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function project()
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
     /**
-     * Mutator for data column.
+     * Define the data attribute.
      *
-     * @param $value
+     * @return Attribute
      */
-    public function setDataAttribute($value)
+    protected function data(): Attribute
     {
-        $this->attributes['data'] = json_encode($value);
+        return Attribute::make(
+            get: fn($value) => json_decode($value, true),
+            set: fn($value) => json_encode($value)
+        );
     }
 
     /**
-     * Accessor for data column.
+     * Define the series attribute.
      *
-     * @param $value
-     * @return false|string
+     * @return Attribute
      */
-    public function getDataAttribute($value)
+    protected function series(): Attribute
     {
-        return json_decode($value, true);
-    }
-
-    /**
-     * Mutator for data column.
-     *
-     * @param $value
-     */
-    public function setSeriesAttribute($value)
-    {
-        $this->attributes['series'] = json_encode($value);
-    }
-
-    /**
-     * Accessor for data column.
-     *
-     * @param $value
-     * @return false|string
-     */
-    public function getSeriesAttribute($value)
-    {
-        return json_decode($value, true);
+        return Attribute::make(
+            get: fn($value) => json_decode($value, true),
+            set: fn($value) => json_encode($value)
+        );
     }
 }

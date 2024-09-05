@@ -68,8 +68,8 @@ class ResourceDownloadValidation implements Rule
     public function passes($attribute, $value)
     {
         $parts = explode('.', $attribute);
-        $resources = request()->get('resources');
-        $fileUpload = request()->hasFile('resources.'.$parts[1].'.download');
+        $resources = \Request::get('resources');
+        $fileUpload = \Request::hasFile('resources.'.$parts[1].'.download');
 
         if ($resources[$parts[1]]['type'] !== 'File Download'||
             $resources[$parts[1]]['type'] === 'delete' ||
@@ -77,7 +77,7 @@ class ResourceDownloadValidation implements Rule
             return true;
         }
 
-        $file = request()->file('resources.'.$parts[1].'.download');
+        $file = \Request::file('resources.'.$parts[1].'.download');
 
         return preg_match('/^[\w\-.]+$/', $file->getClientOriginalName()) === 1;
     }

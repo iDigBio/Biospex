@@ -22,7 +22,7 @@ namespace App\Services\Transcriptions;
 use App\Facades\TranscriptionMapHelper;
 use App\Repositories\PanoptesTranscriptionRepository;
 use App\Repositories\SubjectRepository;
-use App\Services\Process\AwsS3CsvService;
+use App\Services\Csv\AwsS3CsvService;
 use App\Services\Process\CreateReportService;
 use Exception;
 use Str;
@@ -61,7 +61,7 @@ class CreatePanoptesTranscriptionService
     private CreateReportService $createReportService;
 
     /**
-     * @var \App\Services\Process\AwsS3CsvService
+     * @var \App\Services\Csv\AwsS3CsvService
      */
     private AwsS3CsvService $awsS3CsvService;
 
@@ -78,7 +78,7 @@ class CreatePanoptesTranscriptionService
      * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      * @param \App\Services\Transcriptions\CreateTranscriptionLocationService $createTranscriptionLocationService
      * @param \App\Services\Process\CreateReportService $createReportService
-     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
+     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         SubjectRepository $subjectRepo,

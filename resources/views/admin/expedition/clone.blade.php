@@ -57,16 +57,29 @@
                             </div>
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
-                                     src="{{ GeneralHelper::expeditionDefaultLogo() }}"/>
+                                     src="{{ GeneralHelper::expeditionDefaultLogo() }}" alt="Expedition Logo"/>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label for="workflow-id" class="col-form-label col-12 required">{{ t('Workflows') }}
+                                :</label>
+                            <select name="workflow_id" id="workflow-id"
+                                    class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}" required>
+                                @foreach($workflowOptions as $key => $name)
+                                    <option value="{{ $key }}" {{ $key == old('workflow_id', $expedition->workflow_id) ? ' selected=selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            <span class="invalid-feedback">{{ $errors->first('workflow_id') }}</span>
+                        </div>
+                        <input type="hidden" name="locked" value="1">
                     </div>
                 </div>
             </div>
             @include('common.cancel-submit-buttons')
         </div>
     </form>
-    <div class="row">
+    <div id="jqGridDiv" class="row">
         <h3 class="mx-auto">{{ t('Subjects currently assigned') }}
             <span id="max">{{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}</span>:
             <span id="subject-count-html">0</span></h3>
@@ -74,5 +87,4 @@
             <table class="table table-bordered" id="jqGridTable"></table>
         </div>
     </div>
-    @include('admin.partials.jqgrid-modal')
 @endsection

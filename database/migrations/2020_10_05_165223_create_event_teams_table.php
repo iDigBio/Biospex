@@ -14,9 +14,9 @@ class CreateEventTeamsTable extends Migration
     public function up()
     {
         Schema::create('event_teams', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->binary('uuid')->nullable();
-            $table->unsignedInteger('event_id');
+            $table->unsignedBigInteger('event_id');
             $table->string('title')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrent();

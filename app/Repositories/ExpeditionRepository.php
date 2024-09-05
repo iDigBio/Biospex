@@ -41,17 +41,17 @@ class ExpeditionRepository extends BaseRepository
     }
 
     /**
-     * Get expeditions for NfnPanoptes processing.
+     * Get expeditions for Zooniverse processing.
      *
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getExpeditionsForZooniverseProcess()
+    public function getExpeditionsForZooniverseProcess(): \Illuminate\Database\Eloquent\Collection
     {
         return $this->model->with([
             'panoptesProject',
             'stat',
-            'nfnActor',
-        ])->has('panoptesProject')->whereHas('nfnActor', function ($query) {
+            'zooniverseActor',
+        ])->has('panoptesProject')->whereHas('zooniverseActor', function ($query) {
             $query->where('completed', 0);
         })->get();
     }
@@ -60,9 +60,9 @@ class ExpeditionRepository extends BaseRepository
      * Get expedition download by actor.
      *
      * @param $expeditionId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|Expedition|null
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function expeditionDownloadsByActor($expeditionId)
+    public function expeditionDownloadsByActor($expeditionId): \Illuminate\Database\Eloquent\Model
     {
         return $this->model->with([
             'project.group',
@@ -75,21 +75,20 @@ class ExpeditionRepository extends BaseRepository
     /**
      * Get expeditions for admin index.
      *
-     * @param null $userId
-     * @param null $sort
-     * @param null $order
-     * @param null $projectId
-     * @return mixed
+     * @param $userId
+     * @param $sort
+     * @param $order
+     * @param $projectId
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getExpeditionAdminIndex($userId = null, $sort = null, $order = null, $projectId = null)
+    public function getExpeditionAdminIndex($userId = null, $sort = null, $order = null, $projectId = null): \Illuminate\Database\Eloquent\Collection|array
     {
         $query = $this->model->with([
             'project.group',
             'stat',
-            'nfnActor',
             'panoptesProject',
             'workflowManager',
-            'export'
+            'zooniverseExport'
         ])->whereHas('project.group.users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         });
@@ -100,9 +99,9 @@ class ExpeditionRepository extends BaseRepository
     /**
      * Get expedition for home page visuals.
      *
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function getHomePageProjectExpedition()
+    public function getHomePageProjectExpedition(): \Illuminate\Database\Eloquent\Model
     {
         return $this->model->with([
             'project' => function ($q) {
@@ -122,9 +121,9 @@ class ExpeditionRepository extends BaseRepository
      * Find expedition having workflow manager by id.
      *
      * @param $expeditionId
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function findExpeditionHavingWorkflowManager($expeditionId)
+    public function findExpeditionHavingWorkflowManager($expeditionId): \Illuminate\Database\Eloquent\Model
     {
         return $this->model->has('workflowManager')->find($expeditionId);
     }
@@ -135,22 +134,23 @@ class ExpeditionRepository extends BaseRepository
      * @param null $sort
      * @param null $order
      * @param null $projectId
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null)
+    public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null): \Illuminate\Database\Eloquent\Collection
     {
-        $query = $this->model->with('project')->has('panoptesProject')->has('nfnActor')->with('panoptesProject', 'stat', 'nfnActor');
+        $query = $this->model->with('project')->has('panoptesProject')->has('zooniverseActor')->with('panoptesProject', 'stat', 'zooniverseActor');
 
         return $this->sortResults($projectId, $query, $order, $sort);
     }
 
     /**
      * Find expedition for expert review.
+     * @see ExpertReviewSetProblemsJob
      *
      * @param int $expeditionId
-     * @return \App\Models\Expedition|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function findExpeditionForExpertReview(int $expeditionId)
+    public function findExpeditionForExpertReview(int $expeditionId): \Illuminate\Database\Eloquent\Model
     {
         return $this->model->with([
             'project' => function ($query) {
@@ -160,18 +160,21 @@ class ExpeditionRepository extends BaseRepository
                     },
                 ]);
             },
-            'nfnActor',
+            'zooniverseActor',
         ])->has('panoptesProject')->find($expeditionId);
     }
 
     /**
+     * Get expedition for Zooniverse process.
+     * @see ZooniverseCsvService::getExpedition()
+     *
      * @param int $expeditionId
-     * @return \App\Models\Expedition|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function getExpeditionForZooniverseProcess(int $expeditionId)
+    public function getExpeditionForZooniverseProcess(int $expeditionId): \Illuminate\Database\Eloquent\Model
     {
-        return $this->model->with(['panoptesProject', 'stat', 'nfnActor'])
-            ->has('panoptesProject')->whereHas('nfnActor', function ($query) {
+        return $this->model->with(['panoptesProject', 'stat', 'zooniverseActor'])
+            ->has('panoptesProject')->whereHas('zooniverseActor', function ($query) {
                 $query->where('completed', 0);
             })->find($expeditionId);
     }
@@ -183,9 +186,9 @@ class ExpeditionRepository extends BaseRepository
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param $order
      * @param $sort
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    protected function sortResults($projectId, Builder $query, $order, $sort)
+    protected function sortResults($projectId, Builder $query, $order, $sort): \Illuminate\Database\Eloquent\Collection
     {
         $results = $projectId === null ? $query->get() : $query->where('project_id', $projectId)->get();
 

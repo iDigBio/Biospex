@@ -18,12 +18,12 @@
  */
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
+use App\Services\Transcriptions\CreateBiospexEventTranscriptionService;
 use App\Services\Transcriptions\CreateWeDigBioTranscriptionService;
 use App\Services\Transcriptions\UpdateOrCreatePusherTranscriptionService;
-use App\Services\Transcriptions\CreateBiospexEventTranscriptionService;
+use App\Traits\SkipZooniverse;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,7 +41,7 @@ use Throwable;
  */
 class ZooniversePusherJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
     /**
      * @var int
@@ -66,7 +66,7 @@ class ZooniversePusherJob implements ShouldQueue
      */
     public function __construct(int $expeditionId, int $days = null)
     {
-        $this->onQueue(config('config.queues.reconcile'));
+        $this->onQueue(config('config.queue.reconcile'));
         $this->expeditionId = $expeditionId;
         $this->days = $days;
     }
@@ -126,17 +126,21 @@ class ZooniversePusherJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable)
     {
-        $user = User::find(1);
-        $messages = [
-            t('Error: %s', $exception->getMessage()),
-            t('File: %s', $exception->getFile()),
-            t('Line: %s', $exception->getLine()),
+        $attributes = [
+            'subject' => t('Zooniverse Pusher Job Failed'),
+            'html'    => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

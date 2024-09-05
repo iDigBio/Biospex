@@ -22,6 +22,7 @@ namespace App\Listeners;
 /**
  * Class BingoEventSubscriber
  *
+ * TODO: Is this listener necessary?
  * @package App\Listeners
  */
 class BingoEventSubscriber

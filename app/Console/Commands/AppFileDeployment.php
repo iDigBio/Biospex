@@ -19,11 +19,10 @@
 
 namespace App\Console\Commands;
 
-use App;
-use File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AppFileDeployment
@@ -47,51 +46,23 @@ class AppFileDeployment extends Command
     protected $description = 'Handles moving, renaming, and replacing files needed per environment settings';
 
     /**
-     * @var string
-     */
-    private $resPath;
-
-    /**
-     * @var string
-     */
-    private $appPath;
-
-    /**
-     * @var string
-     */
-    private $supPath;
-
-    /**
      * @var Collection
      */
     private Collection $config;
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->resPath = base_path('resources');
-        $this->appPath = base_path();
-        $this->supPath = Storage::path('supervisord');
-        $this->setConfig();
-    }
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
+        $this->setConfig();
+
         // copy needed files to locations
-        $appFiles = File::files($this->resPath.'/apps');
+        $appFiles = File::files(base_path('resources').'/apps');
         $appTargets = collect($appFiles)->reject(function ($file) {
             return $this->rejectFiles($file);
         })->map(function ($file) {
-            $target = $this->appPath.'/'.$file->getBaseName();
+            $target = base_path().'/'.$file->getBaseName();
             if (File::exists($target)) {
                 File::delete($target);
             }
@@ -101,11 +72,11 @@ class AppFileDeployment extends Command
             return $target;
         });
 
-        $supFiles = File::files($this->resPath.'/supervisord');
+        $supFiles = File::files(base_path('resources').'/supervisor');
         $subTargets = collect($supFiles)->reject(function ($file) {
             return $this->rejectFiles($file);
         })->map(function ($file) {
-            $target = $this->supPath.'/'.$file->getBaseName();
+            $target = Storage::path('supervisor').'/'.$file->getBaseName();
             if (File::exists($target)) {
                 File::delete($target);
             }
@@ -134,27 +105,29 @@ class AppFileDeployment extends Command
             return config('config.' . strtolower($search));
         }
 
+        if ($search === 'PUSHER_APP_CLUSTER') {
+            return config('config.' . strtolower($search));
+        }
+
         if ($search === 'REDIS_HOST') {
             return config('database.redis.default.host');
         }
 
-        if (str_starts_with($search, 'QUEUE_')) {
-            $replace = strtolower(str_replace('QUEUE_', '', $search));
-
-            return config('config.queues.'.$replace);
+        if ($search === 'ZOONIVERSE_PUSHER_ID') {
+            return config('zooniverse.pusher_id');
         }
 
         if ($search === 'MAP_PRIVATE_KEY') {
             return json_encode(base64_decode(config('config.'.strtolower($search))));
         }
 
-        return config('config.'.strtolower($search));
+        return config('config.' . strtolower(\Str::replaceFirst('_', '.', $search)));
     }
 
     /**
      * Set search and replace arrays.
      */
-    private function setConfig()
+    private function setConfig(): void
     {
         $this->config = collect(config('config.deployment_fields'));
     }
@@ -172,6 +145,8 @@ class AppFileDeployment extends Command
             'panoptes-pusher.js',
         ];
 
-        return config('app.env') === 'dev' && in_array($file->getBaseName(), $files);
+        $env = ['production', 'local'];
+
+        return !in_array(config('app.env'), $env) && in_array($file->getBaseName(), $files);
     }
 }

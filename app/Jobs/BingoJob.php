@@ -20,6 +20,8 @@
 namespace App\Jobs;
 
 use App\Events\BingoEvent;
+use App\Models\User;
+use App\Notifications\Generic;
 use App\Repositories\BingoMapRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,12 +41,12 @@ class BingoJob implements ShouldQueue
     /**
      * @var string
      */
-    private $bingoId;
+    private string $bingoId;
 
     /**
      * @var string|null
      */
-    private $mapId;
+    private ?string $mapId;
 
     /**
      * BingoJob constructor.
@@ -56,7 +58,7 @@ class BingoJob implements ShouldQueue
     {
         $this->bingoId = $bingoId;
         $this->mapId = $mapId;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**
@@ -64,7 +66,7 @@ class BingoJob implements ShouldQueue
      *
      * @param \App\Repositories\BingoMapRepository $bingoMapRepo
      */
-    public function handle(BingoMapRepository $bingoMapRepo)
+    public function handle(BingoMapRepository $bingoMapRepo): void
     {
         $locations = $bingoMapRepo->getBy('bingo_id', $this->bingoId);
         $data['markers'] = $locations->map(function($location) {
@@ -84,5 +86,26 @@ class BingoJob implements ShouldQueue
 
 
         BingoEvent::dispatch($this->bingoId, $data);
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param \Throwable $throwable
+     * @return void
+     */
+    public function failed(\Throwable $throwable): void
+    {
+        $attributes = [
+            'subject' => t('Bingo Job Failed'),
+            'html'    => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage())
+            ],
+        ];
+
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

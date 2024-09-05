@@ -30,7 +30,6 @@ use Illuminate\Console\Command;
  */
 class WorkFlowManagerCommand extends Command
 {
-
     /**
      * The console command name.
      *
@@ -63,16 +62,16 @@ class WorkFlowManagerCommand extends Command
     public function __construct(WorkflowManagerRepository $workflowManagerRepo)
     {
         parent::__construct();
-        $this->tube = config('config.queues.workflow');
+        $this->tube = config('config.queue.workflow');
         $this->workflowManagerRepo = $workflowManagerRepo;
     }
-
 
     /**
      * Execute the console command.
      *
      * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
      * @return void
+     * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
      */
     public function handle()
     {
@@ -96,15 +95,16 @@ class WorkFlowManagerCommand extends Command
      *
      * @param $expedition
      */
-    protected function processActors($expedition)
+    protected function processActors($expedition): void
     {
-        $expedition->actors->each(function ($actor) use ($expedition)
-        {
-            $attributes = [
-                'total' => $expedition->stat->local_subject_count
-            ];
+        $expedition->actors->each(function ($actor) use ($expedition) {
+            if ($actor->id == config('zooniverse.actor_id')) {
+                $attributes = [
+                    'total' => $expedition->stat->local_subject_count,
+                ];
 
-            $actor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+                $actor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+            }
 
             ActorFactory::create($actor->class)->actor($actor);
         });

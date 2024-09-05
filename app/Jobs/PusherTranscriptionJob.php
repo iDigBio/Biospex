@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Repositories\PusherTranscriptionRepository;
 use App\Services\Transcriptions\CreatePusherTranscriptionService;
 use Illuminate\Bus\Queueable;
@@ -42,7 +42,7 @@ class PusherTranscriptionJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 7200;
+    public $timeout = 300;
 
     /**
      * @var \App\Repositories\PusherTranscriptionRepository
@@ -56,7 +56,7 @@ class PusherTranscriptionJob implements ShouldQueue
      */
     public function __construct()
     {
-        $this->onQueue(config('config.queus.pusher_process'));
+        $this->onQueue(config('config.queue.pusher_process'));
     }
 
     /**
@@ -72,12 +72,18 @@ class PusherTranscriptionJob implements ShouldQueue
             $this->delete();
 
             return;
-        } catch (\Exception $e) {
-            $user = User::find(1);
-            $messages = [
-                'Message:'.$e->getFile().': '.$e->getLine().' - '.$e->getMessage(),
+        } catch (\Throwable $throwable) {
+            $attributes = [
+                'subject' => t('Pusher Transcription Job Error'),
+                'html'    => [
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                ],
             ];
-            $user->notify(new JobError(__FILE__, $messages));
+
+            $user = User::find(config('config.admin.user_id'));
+            $user->notify(new Generic($attributes));
 
             $this->delete();
 

@@ -34,7 +34,7 @@ class ReconcilePresenter extends Presenter
     public function reconcileReviewed(): string
     {
         return isset($this->model['reviewed']) && ($this->model['reviewed'] == 1) ?
-                '<span class="reviewed">Reviewed</span>' :
-                '<span class="need-review">Needs Review</span>';
+                '<span class="text-success">Reviewed</span>' :
+                '<span class="text-danger">Needs Review</span>';
     }
 }

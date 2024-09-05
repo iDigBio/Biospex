@@ -110,8 +110,9 @@ class GroupPresenter extends Presenter
     {
         $route = route('admin.invites.index', [$this->model->id]);
 
-        return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
-                    data-target="#invite-modal" 
+        return '<a href="#" class="prevent-default" data-toggle="modal" data-url="'.$route.'" 
+                    data-target="#global-modal" data-size="modal-lg" data-dismiss="modal" data-toggle="modal"
+                    data-title="'.t('Invite users to %s group.', $this->model->title).'"
                     data-hover="tooltip" title="'.t('Invite users to %s group.', $this->model->title).'">
                     <i class="fas fa-user-plus"></i></a>';
     }
@@ -125,8 +126,9 @@ class GroupPresenter extends Presenter
     {
         $route = route('admin.invites.index', [$this->model->id]);
 
-        return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
-                    data-target="#invite-modal" 
+        return '<a href="#" class="prevent-default" data-toggle="modal" data-url="'.$route.'" 
+                    data-target="#global-modal" data-size="modal-lg" data-dismiss="modal" data-toggle="modal"
+                    data-title="'.t('Invite users to %s group.', $this->model->title).'"
                     data-hover="tooltip" title="'.t('Invite users to %s group.', $this->model->title).'">
                     <i class="fas fa-user-plus fa-2x"></i></a>';
     }

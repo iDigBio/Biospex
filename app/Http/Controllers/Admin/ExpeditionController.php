@@ -21,20 +21,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
-use App\Http\Requests\WorkflowIdFormRequest;
-use App\Jobs\DeleteExpedition;
-use App\Jobs\OcrCreateJob;
-use App\Jobs\PanoptesProjectUpdateJob;
-use App\Repositories\ExpeditionRepository;
-use App\Repositories\ExpeditionStatRepository;
-use App\Repositories\PanoptesProjectRepository;
+use App\Jobs\DeleteExpeditionJob;
 use App\Repositories\ProjectRepository;
-use App\Repositories\SubjectRepository;
-use App\Repositories\WorkflowManagerRepository;
 use App\Services\Grid\JqGridEncoder;
+use App\Services\Models\ExpeditionService;
+use Auth;
 use Exception;
-use Flash;
-use Illuminate\Support\Facades\Auth;
 use JavaScript;
 
 /**
@@ -45,111 +37,41 @@ use JavaScript;
 class ExpeditionController extends Controller
 {
     /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
      * @var \App\Repositories\ProjectRepository
      */
-    private ProjectRepository $projectRepo;
+    private ProjectRepository $projectRepository;
 
     /**
-     * @var \App\Repositories\PanoptesProjectRepository
+     * @var \App\Services\Models\ExpeditionService
      */
-    private PanoptesProjectRepository $panoptesProjectRepo;
-
-    /**
-     * @var \App\Repositories\ExpeditionStatRepository
-     */
-    private ExpeditionStatRepository $expeditionStatRepo;
-
-    /**
-     * @var \App\Repositories\WorkflowManagerRepository
-     */
-    private WorkflowManagerRepository $workflowManagerRepo;
-
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    private SubjectRepository $subjectRepo;
+    private ExpeditionService $expeditionService;
 
     /**
      * ExpeditionController constructor.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param \App\Repositories\PanoptesProjectRepository $panoptesProjectRepo
-     * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Repositories\ExpeditionStatRepository $expeditionStatRepo
-     * @param \App\Repositories\WorkflowManagerRepository $workflowManagerRepo
+     * @param \App\Repositories\ProjectRepository $projectRepository
+     * @param \App\Services\Models\ExpeditionService $expeditionService
      */
-    public function __construct(
-        ExpeditionRepository $expeditionRepo,
-        ProjectRepository $projectRepo,
-        PanoptesProjectRepository $panoptesProjectRepo,
-        SubjectRepository $subjectRepo,
-        ExpeditionStatRepository $expeditionStatRepo,
-        WorkflowManagerRepository $workflowManagerRepo
-    ) {
-        $this->expeditionRepo = $expeditionRepo;
-        $this->projectRepo = $projectRepo;
-        $this->panoptesProjectRepo = $panoptesProjectRepo;
-        $this->expeditionStatRepo = $expeditionStatRepo;
-        $this->workflowManagerRepo = $workflowManagerRepo;
-        $this->subjectRepo = $subjectRepo;
+    public function __construct(ProjectRepository $projectRepository, ExpeditionService $expeditionService)
+    {
+        $this->projectRepository = $projectRepository;
+        $this->expeditionService = $expeditionService;
     }
 
     /**
      * Display all expeditions for user.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(): \Illuminate\View\View
     {
-        $user = Auth::user();
-
-        $results = $this->expeditionRepo->getExpeditionAdminIndex($user->id);
+        $results = $this->expeditionService->getAdminIndex(\Auth::user()->id);
 
         [$expeditions, $expeditionsCompleted] = $results->partition(function ($expedition) {
-            return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
+            return $expedition->completed === 0;
         });
 
-        return view('admin.expedition.index', compact('expeditions', 'expeditionsCompleted'));
-    }
-
-    /**
-     * Sort expedition admin page.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|null
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    public function sort()
-    {
-        if (! request()->ajax()) {
-            return null;
-        }
-
-        $user = Auth::user();
-
-        $type = request()->get('type');
-        $sort = request()->get('sort');
-        $order = request()->get('order');
-        $projectId = request()->get('id');
-
-        [
-            $active,
-            $completed,
-        ] = $this->expeditionRepo->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
-                $expedition
-            ) {
-                return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
-            });
-
-        $expeditions = $type === 'active' ? $active : $completed;
-
-        return view('admin.expedition.partials.expedition', compact('expeditions'));
+        return \View::make('admin.expedition.index', compact('expeditions', 'expeditionsCompleted'));
     }
 
     /**
@@ -157,15 +79,17 @@ class ExpeditionController extends Controller
      *
      * @param $projectId
      * @param \App\Services\Grid\JqGridEncoder $grid
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function create($projectId, JqGridEncoder $grid)
     {
-        $project = $this->projectRepo->findWith($projectId, ['group']);
+        $project = $this->projectRepository->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('createProject', $project->group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
+
+        $workflowOptions = $this->expeditionService->getWorkflowSelect();
 
         $model = $grid->loadGridModel($projectId);
 
@@ -179,53 +103,42 @@ class ExpeditionController extends Controller
             'route'      => 'create', // used for export
         ]);
 
-        return view('admin.expedition.create', compact('project'));
+        return \View::make('admin.expedition.create', compact('project', 'workflowOptions'));
     }
 
     /**
      * Store new expedition.
      *
-     * @param ExpeditionFormRequest $request
+     * @param \App\Http\Requests\ExpeditionFormRequest $request
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(ExpeditionFormRequest $request, $projectId)
+    public function store(ExpeditionFormRequest $request, $projectId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectRepo->findWith($projectId, ['group', 'workflow.actors']);
+        $project = $this->projectRepository->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('createProject', $project->group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
-        $expedition = $this->expeditionRepo->create($request->all());
+        $expedition = $this->expeditionService->createExpedition($request->all());
         if (! $expedition) {
-            Flash::error(t('An error occurred when saving record.'));
+            \Flash::error(t('An error occurred when saving record.'));
 
-            return redirect()->route('admin.projects.show', [$project->id]);
+            return \Redirect::route('admin.projects.show', [$project->id]);
         }
+        $expedition->load('workflow.actors.contacts');
 
-        $subjects = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
-        $count = count($subjects);
-        $expedition->subjects()->attach($subjects);
+        $this->expeditionService->setSubjectIds($request->get('subject-ids'));;
+        $this->expeditionService->attachSubjects($expedition->id);
+        $this->expeditionService->syncActors($expedition);
+        $this->expeditionService->syncStat($expedition);
 
-        $values = [
-            'local_subject_count' => $count,
-        ];
+        $this->expeditionService->notifyActorContacts($expedition, $project);
 
-        $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
+        \Flash::success(t('Record was created successfully.'));
 
-        $project->workflow->actors->reject(function ($actor) {
-            return $actor->private;
-        })->each(function ($actor) use ($expedition, $count) {
-            $sync = [
-                $actor->id => ['order' => $actor->pivot->order, 'state' => 0, 'total' => $count],
-            ];
-            $expedition->actors()->sync($sync, false);
-        });
-
-        Flash::success(t('Record was created successfully.'));
-
-        return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
+        return \Redirect::route('admin.expeditions.show', [$projectId, $expedition->id]);
     }
 
     /**
@@ -234,24 +147,15 @@ class ExpeditionController extends Controller
      * @param $projectId
      * @param $expeditionId
      * @param \App\Services\Grid\JqGridEncoder $grid
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function show($projectId, $expeditionId, JqGridEncoder $grid)
+    public function show($projectId, $expeditionId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $relations = [
-            'project.group',
-            'project.ocrQueue',
-            'downloads',
-            'export',
-            'workflowManager',
-            'stat',
-            'panoptesProject',
-        ];
-
-        $expedition = $this->expeditionRepo->findWith($expeditionId, $relations);
+        $relations = ['project.group', 'downloads', 'stat'];
+        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
 
         if (! $this->checkPermissions('readProject', $expedition->project->group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         $model = $grid->loadGridModel($projectId);
@@ -266,7 +170,7 @@ class ExpeditionController extends Controller
             'route'      => 'show', // used for export
         ]);
 
-        return view('admin.expedition.show', compact('expedition'));
+        return \View::make('admin.expedition.show', compact('expedition'));
     }
 
     /**
@@ -275,15 +179,18 @@ class ExpeditionController extends Controller
      * @param $projectId
      * @param $expeditionId
      * @param \App\Services\Grid\JqGridEncoder $grid
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function clone($projectId, $expeditionId, JqGridEncoder $grid)
+    public function clone($projectId, $expeditionId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group']);
+        $relations = ['project.group', 'downloads', 'stat'];
+        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
 
         if (! $this->checkPermissions('create', $expedition->project->group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
+
+        $workflowOptions = $this->expeditionService->getWorkflowSelect();
 
         $model = $grid->loadGridModel($projectId);
 
@@ -297,36 +204,27 @@ class ExpeditionController extends Controller
             'route'      => 'create', // used for export
         ]);
 
-        return view('admin.expedition.clone', compact('expedition'));
+        return \View::make('admin.expedition.clone', compact('expedition', 'workflowOptions'));
     }
 
     /**
-     * Show the form for editing the specified resource
-     *
      * @param $projectId
      * @param $expeditionId
      * @param \App\Services\Grid\JqGridEncoder $grid
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function edit($projectId, $expeditionId, JqGridEncoder $grid)
+    public function edit($projectId, $expeditionId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $relations = [
-            'project.group',
-            'project.ocrQueue',
-            'downloads',
-            'export',
-            'workflowManager',
-            'stat',
-            'panoptesProject',
-        ];
-
-        $expedition = $this->expeditionRepo->findWith($expeditionId, $relations);
+        $relations = ['project.group', 'downloads', 'stat'];
+        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
-        $subjectIds = $this->subjectRepo->findByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id');
+        $workflowOptions = $this->expeditionService->getWorkflowSelect();
+
+        $subjectIds = $this->expeditionService->getSubjectIdsByExpeditionId($expeditionId)->toArray();
 
         $model = $grid->loadGridModel($projectId);
 
@@ -340,7 +238,7 @@ class ExpeditionController extends Controller
             'route'      => 'edit', // used for export
         ]);
 
-        return view('admin.expedition.edit', compact('expedition'));
+        return \View::make('admin.expedition.edit', compact('expedition', 'workflowOptions'));
     }
 
     /**
@@ -351,212 +249,30 @@ class ExpeditionController extends Controller
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(ExpeditionFormRequest $request, $projectId, $expeditionId)
+    public function update(ExpeditionFormRequest $request, $projectId, $expeditionId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectRepo->findWith($projectId, ['group', 'workflow.actors']);
+        $project = $this->projectRepository->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         try {
-            $expedition = $this->expeditionRepo->update($request->all(), $expeditionId);
+            // If expedition is completed and unlocked, this is a first change. If workflow id
+            $expedition = $this->expeditionService->updateForGeoLocate($expeditionId, $request);
 
-            // If process already in place, do not update subjects.
-            $workflowManager = $this->workflowManagerRepo->findBy('expedition_id', $expeditionId);
-            if ($workflowManager === null) {
-                $subjectIds = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
-
-                $count = count($subjectIds);
-
-                $oldIds = collect($this->subjectRepo->findByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id'));
-                $newIds = collect($subjectIds);
-
-                $detachIds = $oldIds->diff($newIds);
-                $attachIds = $newIds->diff($oldIds);
-
-                $this->subjectRepo->detachSubjects($detachIds, $expeditionId);
-                $this->subjectRepo->attachSubjects($attachIds, $expeditionId);
-
-                $values = [
-                    'local_subject_count' => $count,
-                ];
-
-                $this->expeditionStatRepo->updateOrCreate(['expedition_id' => $expeditionId], $values);
-
-                $project->workflow->actors->reject(function ($actor) {
-                    return $actor->private;
-                })->each(function ($actor) use ($expedition, $count) {
-                    $sync = [
-                        $actor->id => ['order' => $actor->pivot->order, 'state' => 0, 'total' => $count],
-                    ];
-                    $expedition->actors()->sync($sync, false);
-                });
-            }
+            $this->expeditionService->setSubjectIds($request->get('subject-ids'));
+            $this->expeditionService->updateSubjects($expedition);
+            $this->expeditionService->syncActors($expedition);
 
             // Success!
-            Flash::success(t('Record was updated successfully.'));
+            \Flash::success(t('Record was updated successfully.'));
 
-            return redirect()->route('admin.expeditions.show', [$project->id, $expeditionId]);
+            return \Redirect::route('admin.expeditions.show', [$project->id, $expeditionId]);
         } catch (Exception $e) {
-            Flash::error(t('An error occurred when saving record.'));
+            \Flash::error(t('An error occurred when saving record.'));
 
-            return redirect()->route('admin.expeditions.edit', [$projectId, $expeditionId]);
-        }
-    }
-
-    /**
-     * Start processing expedition actors
-     *
-     * @param $projectId
-     * @param $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function process($projectId, $expeditionId)
-    {
-        $project = $this->projectRepo->findWith($projectId, ['group']);
-
-        if (! $this->checkPermissions('updateProject', $project->group)) {
-            return redirect()->route('admin.projects.index');
-        }
-
-        try {
-            $expedition = $this->expeditionRepo->findWith($expeditionId, [
-                'project.workflow.actors',
-                'panoptesProject',
-                'workflowManager',
-                'stat',
-            ]);
-
-            if (null === $expedition->panoptesProject) {
-                throw new Exception(t('NfnPanoptes Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
-            }
-
-            if (null !== $expedition->workflowManager) {
-                $expedition->workflowManager->stopped = 0;
-                $expedition->workflowManager->save();
-                $message = t('The expedition has been removed from the process queue.');
-            } else {
-                $expedition->project->workflow->actors->reject(function ($actor) {
-                    return $actor->private;
-                })->each(function ($actor) use ($expedition) {
-                    $sync = [
-                        $actor->id => ['order' => $actor->pivot->order, 'state' => 1],
-                    ];
-                    $expedition->actors()->sync($sync, false);
-                });
-
-                $this->workflowManagerRepo->create(['expedition_id' => $expeditionId]);
-                $message = t('The expedition has been added to the process queue.');
-            }
-
-            Flash::success($message);
-
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-        } catch (Exception $e) {
-            Flash::error(t('An error occurred when trying to process the expedition: %s', $e->getMessage()));
-
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-        }
-    }
-
-    /**
-     * Reprocess OCR.
-     *
-     * @param $projectId
-     * @param $expeditionId
-     * @return mixed
-     */
-    public function ocr($projectId, $expeditionId)
-    {
-
-        $project = $this->projectRepo->findWith($projectId, ['group']);
-
-        if (! $this->checkPermissions('updateProject', $project->group)) {
-            return redirect()->route('admin.projects.index');
-        }
-
-        OcrCreateJob::dispatch($projectId, $expeditionId);
-
-        Flash::success(t('OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete.'));
-
-        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-    }
-
-    /**
-     * Stop a expedition process.
-     *
-     * @param $projectId
-     * @param $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function stop($projectId, $expeditionId)
-    {
-        $project = $this->projectRepo->findWith($projectId, ['group']);
-
-        if (! $this->checkPermissions('updateProject', $project->group)) {
-            return redirect()->route('admin.projects.index');
-        }
-
-        $workflow = $this->workflowManagerRepo->findBy('expedition_id', $expeditionId);
-
-        if ($workflow === null) {
-            Flash::error(t('Expedition has no processes at this time.'));
-
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-        }
-
-        $workflow->stopped = 1;
-        $this->workflowManagerRepo->update(['stopped' => 1], $workflow->id);
-        Flash::success(t('Expedition process has been stopped locally. This does not stop any processing occurring on remote sites.'));
-
-        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-    }
-
-    /**
-     * Update or create the workflow id.
-     *
-     * @param \App\Http\Requests\WorkflowIdFormRequest $request
-     * @param $projectId
-     * @param $expeditionId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function workflowId(WorkflowIdFormRequest $request, $projectId, $expeditionId)
-    {
-        if (! request()->ajax()) {
-            return response()->json(['code' => 400, 'message' => t('Request must be ajax.')]);
-        }
-
-        $project = $this->projectRepo->findWith($projectId, ['group']);
-
-        if (! $this->checkPermissions('updateProject', $project->group)) {
-            return response()->json(['code' => 401, 'message' => t('You are not authorized to update project.')]);
-        }
-
-        try {
-            if ($request->filled('panoptes_workflow_id')) {
-                $attributes = [
-                    'project_id'    => $projectId,
-                    'expedition_id' => $expeditionId,
-                ];
-
-                $values = [
-                    'project_id'           => $project->id,
-                    'expedition_id'        => $expeditionId,
-                    'panoptes_workflow_id' => $request->get('panoptes_workflow_id'),
-                ];
-
-                $panoptesProject = $this->panoptesProjectRepo->updateOrCreate($attributes, $values);
-
-                PanoptesProjectUpdateJob::dispatch($panoptesProject);
-
-                return response()->json(['code' => 200, 'message' => 'Workflow id is updated.']);
-            }
-
-            throw new Exception(t('Could not update Panoptes Workflow Id.'));
-        }
-        catch (Exception $exception) {
-            return response()->json(['code' => 401, 'message' => $exception->getMessage()]);
+            return \Redirect::route('admin.expeditions.edit', [$projectId, $expeditionId]);
         }
     }
 
@@ -567,36 +283,89 @@ class ExpeditionController extends Controller
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($projectId, $expeditionId)
+    public function delete($projectId, $expeditionId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectRepo->findWith($projectId, ['group']);
+        $project = $this->projectRepository->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('isOwner', $project->group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         try {
-            $expedition = $this->expeditionRepo->findWith($expeditionId, [
-                'panoptesProject',
-                'downloads',
-                'workflowManager',
-            ]);
+            $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId);
 
             if (isset($expedition->workflowManager) || isset($expedition->panoptesProject)) {
-                Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+                \Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
-                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+                return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            DeleteExpedition::dispatch(Auth::user(), $expedition);
+            DeleteExpeditionJob::dispatch(Auth::user(), $expedition);
 
-            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete.'));
+            \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete.'));
 
-            return redirect()->route('admin.projects.show', [$projectId]);
+            return \Redirect::route('admin.projects.show', [$projectId]);
         } catch (Exception $e) {
-            Flash::error(t('record.record_delete_error'));
+            \Flash::error(t('record.record_delete_error'));
 
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
+    }
+
+    /**
+     * Sort expedition admin page.
+     *
+     * @return \Illuminate\Contracts\View\View|null
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function sort(): ?\Illuminate\Contracts\View\View
+    {
+        if (! \Request::ajax()) {
+            return null;
+        }
+
+        $user = Auth::user();
+
+        $type = \Request::get('type');
+        $sort = \Request::get('sort');
+        $order = \Request::get('order');
+        $projectId = \Request::get('id');
+
+        [$active, $completed] = $this->expeditionService->getAdminIndex($user->id, $sort, $order, $projectId)->partition(function ($expedition) {
+            return $expedition->completed === 0;
+        });
+
+        $expeditions = $type === 'active' ? $active : $completed;
+
+        return \View::make('admin.expedition.partials.expedition', compact('expeditions'));
+    }
+
+    /**
+     * Display expedition tools.
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
+     */
+    public function tools(int $projectId, int $expeditionId): \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
+    {
+        if (!\Request::ajax()) {
+            return \Response::json(['message' => t('You do not have permission.')], 400);
+        }
+
+        $relations = [
+            'project.group',
+            'project.ocrQueue',
+            'project.group.geoLocateForms',
+            'actors',
+            'stat',
+            'zooniverseExport',
+            'panoptesProject',
+            'workflowManager'
+        ];
+
+        $expedition = $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
+
+        return \View::make('admin.expedition.partials.tools', compact('expedition'));
     }
 }

@@ -15,6 +15,7 @@
     @include('common.wedigbio-progress-modal')
     @include('common.wedigbio-rate-modal')
     @include('common.process-modal')
+    @include('common.modal')
 </div>
 @include('admin.layout.foot')
 </body>

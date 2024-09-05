@@ -46,11 +46,12 @@ class CountHelper
 
     /**
      * Return project transcription count.
+     *
      * @TODO Change to get project total from expedition_stat
-     * @param $projectId
+     * @param int $projectId
      * @return mixed
      */
-    public function projectTranscriptionCount($projectId)
+    public function projectTranscriptionCount(int $projectId)
     {
         return $this->panoptesTranscriptionRepo->getProjectTranscriptionCount($projectId);
     }
@@ -69,10 +70,10 @@ class CountHelper
     /**
      * Return unique transcriber count for project.
      *
-     * @param $projectId
+     * @param int $projectId
      * @return mixed
      */
-    public function projectTranscriberCount($projectId)
+    public function projectTranscriberCount(int $projectId)
     {
         return $this->panoptesTranscriptionRepo->getProjectTranscriberCount($projectId);
     }
@@ -80,10 +81,10 @@ class CountHelper
     /**
      * Return user transcription count for stats.
      *
-     * @param $projectId
+     * @param int $projectId
      * @return mixed
      */
-    public function getTranscribersTranscriptionCount($projectId)
+    public function getTranscribersTranscriptionCount(int $projectId)
     {
         return $this->panoptesTranscriptionRepo->getTranscribersTranscriptionCount($projectId);
     }
@@ -91,12 +92,12 @@ class CountHelper
     /**
      * Return transcriptions per transcribers
      *
-     * @param $projectId
+     * @param int $projectId
      * @param $transcribers
      * @return mixed
      * @static
      */
-    public function getTranscriptionsPerTranscribers($projectId, $transcribers)
+    public function getTranscriptionsPerTranscribers(int $projectId, $transcribers)
     {
         return Cache::rememberForever(md5(__METHOD__.$projectId), function () use ($transcribers) {
             return $transcribers->isEmpty() ? null :

@@ -23,7 +23,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InviteFormRequest;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserRepository;
-use App\Services\Process\InviteProcess;
+use App\Services\Models\InviteService;
 
 /**
  * Class InviteController
@@ -43,23 +43,23 @@ class InviteController extends Controller
     public $userRepo;
 
     /**
-     * @var \App\Services\Process\InviteProcess
+     * @var \App\Services\Models\InviteService
      */
-    private $inviteProcess;
+    private $inviteService;
 
     /**
      * InviteController constructor.
      *
-     * @param \App\Services\Process\InviteProcess $inviteProcess
+     * @param \App\Services\Models\InviteService $inviteService
      * @param \App\Repositories\GroupRepository $groupRepo
      * @param \App\Repositories\UserRepository $userRepo
      */
     public function __construct(
-        InviteProcess $inviteProcess,
+        InviteService $inviteService,
         GroupRepository $groupRepo,
         UserRepository $userRepo
     ) {
-        $this->inviteProcess = $inviteProcess;
+        $this->inviteService = $inviteService;
         $this->groupRepo = $groupRepo;
         $this->userRepo = $userRepo;
     }
@@ -67,32 +67,30 @@ class InviteController extends Controller
     /**
      * Show invite form
      *
-     * @param $groupId
+     * @param int $groupId
      * @return \Illuminate\View\View
      */
-    public function index($groupId)
+    public function index(int $groupId): \Illuminate\View\View
     {
         $group = $this->groupRepo->findWith($groupId, ['invites']);
 
         $error = ! $this->checkPermissions('isOwner', $group);
         $inviteCount = old('entries', $group->invites->count() ?: 1);
 
-        return view('admin.partials.invite-modal-body', compact('group', 'inviteCount', 'error'));
+        return \View::make('admin.partials.invite-modal-body', compact('group', 'inviteCount', 'error'));
     }
 
     /**
      * Send invites to emails
      *
      * @param InviteFormRequest $request
-     * @param $groupId
+     * @param int $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(InviteFormRequest $request, $groupId)
+    public function store(InviteFormRequest $request, int $groupId): \Illuminate\Http\RedirectResponse
     {
-        $group = $this->groupRepo->findWith($groupId, ['invites']);
+        $this->inviteService->storeInvites($groupId, $request);
 
-        $this->inviteProcess->storeInvites($group->id, $request);
-
-        return redirect()->back();
+        return back();
     }
 }

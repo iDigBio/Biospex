@@ -30,7 +30,6 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RetryMiddleware;
 use Illuminate\Support\Facades\Cache;
-use JetBrains\PhpStorm\Pure;
 use League\OAuth2\Client\Provider\GenericProvider;
 use GuzzleHttp\Pool;
 use League\OAuth2\Client\Token\AccessTokenInterface;
@@ -84,7 +83,6 @@ class HttpRequest
      *
      * @return \GuzzleHttp\ClientInterface
      */
-    #[Pure]
     public function getHttpClient(): ClientInterface
     {
         return $this->provider->getHttpClient();

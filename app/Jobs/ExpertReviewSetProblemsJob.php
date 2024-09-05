@@ -19,11 +19,11 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
-use App\Notifications\ExpertReviewJobComplete;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
 use App\Repositories\ExpeditionRepository;
-use App\Services\Reconcile\ExpertReconcileProcess;
+use App\Services\Reconcile\ExpertReconcileService;
+use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,7 +33,7 @@ use Illuminate\Queue\SerializesModels;
 
 class ExpertReviewSetProblemsJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse, ButtonTrait;
 
     /**
      * @var int
@@ -60,7 +60,7 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
     public function __construct(int $expeditionId)
     {
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.queues.reconcile'));
+        $this->onQueue(config('config.queue.reconcile'));
     }
 
     /**
@@ -70,32 +70,50 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
      */
     public function handle(
         ExpeditionRepository $expeditionRepo,
-        ExpertReconcileProcess $expertReconcileProcess
+        ExpertReconcileService $expertReconcileService
     )
     {
         $expedition = $expeditionRepo->findExpeditionForExpertReview($this->expeditionId);
-        $user = $expedition->project->group->owner;
 
         try {
             if ($this->skipReconcile($this->expeditionId)) {
                 throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [':id' => $expedition->id, ':title' => $expedition->title]));
             }
 
-            $expertReconcileProcess->setReconcileProblems($expedition->id);
+            $expertReconcileService->setReconcileProblems($expedition->id);
 
-            $expedition->nfnActor->pivot->expert = 1;
-            $expedition->nfnActor->pivot->save();
+            $expedition->zooniverseActor->pivot->expert = 1;
+            $expedition->zooniverseActor->pivot->save();
 
-            $user->notify(new ExpertReviewJobComplete($expedition->title, $expedition->id));
+            $route = route('admin.reconciles.index', ['expeditions' => $this->expeditionId]);
+            $btn = $this->createButton($route, t('Expert Review Start'));
+
+            $attributes = [
+                'subject' => t('Expert Review Job Complete'),
+                'html'    => [
+                    t('The Expert Review job for %s is complete and you may start reviewing the reconciled records.', $expedition->title),
+                    t('You may access the page by going to the Expedition Download modal and clicking the green button or click the button below and be taken to the page directly.')
+                ],
+                'buttons' => $btn
+            ];
+
+            $expedition->project->group->owner->notify(new Generic($attributes));
 
             $this->delete();
 
-        } catch (\Exception $e) {
-            $messages = [
-                'Message: ' .  $e->getMessage(),
-                'File : ' . $e->getFile() . ': ' . $e->getLine()
+        } catch (\Throwable $throwable) {
+            $attributes = [
+                'subject' => t('Expert Review Job Error'),
+                'html'    => [
+                    t('An error occurred while setting the problems for Expedition %s.', $expedition->title),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ],
             ];
-            $user->notify(new JobError(__FILE__, $messages));
+
+            $expedition->project->group->owner->notify(new Generic($attributes, true));
 
             $this->delete();
         }

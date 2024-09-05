@@ -27,4 +27,3 @@
         </div>
     </div>
 </div>
-@include('admin.partials.import-modal')

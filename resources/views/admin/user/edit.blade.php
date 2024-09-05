@@ -12,7 +12,7 @@
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Edit Account') }}</h2>
-                    <form id="gridForm" method="post"
+                    <form method="post"
                           action="{{ route('admin.users.update', [$user->id]) }}"
                           role="form" enctype="multipart/form-data">
                         {!! method_field('put') !!}
@@ -77,7 +77,7 @@
                             </div>
                             <input type="hidden" name="current_avatar" value="{{ $user->profile->avatar_file_name }}">
                             <div class="form-group col-sm-6">
-                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
+                                <img alt="profile avatar" class="img-fluid" style="display: inline; width: 100px; height: 100px;"
                                      src="{{ $user->profile->avatar->url('medium') }}"/>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Change Password') }}</h2>
-                    <form id="gridForm" method="post"
+                    <form method="post"
                           action="{{ route('admin.users.password', [$user->id]) }}" role="form">
                         {!! method_field('put') !!}
                         @csrf

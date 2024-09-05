@@ -264,7 +264,7 @@ class EventPresenter extends Presenter
             $this->model->id,
         ]);
 
-        return '<a href="#" class="preventDefault event-export"
+        return '<a href="#" class="prevent-default event-export"
         data-href="'.$route.'"
         data-success="An email with attached export will be sent."
         data-error="There was an error while exporting. Please inform the Administration"
@@ -282,7 +282,7 @@ class EventPresenter extends Presenter
             $this->model->id,
         ]);
 
-        return '<a href="#" class="preventDefault event-export"
+        return '<a href="#" class="prevent-default event-export"
         data-href="'.$route.'"
         data-success="An email with attached export will be sent."
         data-error="There was an error while exporting. Please inform the Administration"

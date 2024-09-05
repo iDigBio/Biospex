@@ -25,7 +25,6 @@ use App\Http\Requests\EventJoinRequest;
 use App\Repositories\EventRepository;
 use App\Repositories\EventTeamRepository;
 use App\Repositories\EventUserRepository;
-use Flash;
 
 /**
  * Class EventController
@@ -38,34 +37,35 @@ class EventController extends Controller
      * Displays Events on public page.
      *
      * @param \App\Repositories\EventRepository $eventRepo
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View
      */
-    public function index(EventRepository $eventRepo)
+    public function index(EventRepository $eventRepo): \Illuminate\Contracts\View\View
     {
         $results = $eventRepo->getEventPublicIndex();
+        $project = $results->first()->project;
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
             return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
         });
 
-        return view('front.event.index', compact('events', 'eventsCompleted'));
+        return \View::make('front.event.index', compact('events', 'project', 'eventsCompleted'));
     }
 
     /**
      * Displays Completed Events on public page.
      *
      * @param \App\Repositories\EventRepository $eventRepo
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|null
      */
-    public function sort(EventRepository $eventRepo)
+    public function sort(EventRepository $eventRepo): ?\Illuminate\Contracts\View\View
     {
-        if (! request()->ajax()) {
+        if (! \Request::ajax()) {
             return null;
         }
 
-        $sort = request()->get('sort');
-        $order = request()->get('order');
-        $projectId = request()->get('id');
+        $sort = \Request::get('sort');
+        $order = \Request::get('order');
+        $projectId = \Request::get('id');
 
         $results = $eventRepo->getEventPublicIndex($sort, $order, $projectId);
 
@@ -73,9 +73,9 @@ class EventController extends Controller
             return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
         });
 
-        $events = request()->get('type') === 'active' ? $active : $completed;
+        $events = \Request::get('type') === 'active' ? $active : $completed;
 
-        return view('front.event.partials.event', compact('events'));
+        return \View::make('front.event.partials.event', compact('events'));
     }
 
     /**
@@ -83,19 +83,19 @@ class EventController extends Controller
      *
      * @param \App\Repositories\EventRepository $eventRepo
      * @param $eventId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function read(EventRepository $eventRepo, $eventId)
+    public function read(EventRepository $eventRepo, $eventId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $event = $eventRepo->findWith($eventId, ['project.lastPanoptesProject', 'teams:id,title,event_id']);
 
         if ($event === null) {
-            Flash::error(t('Error retrieving record from database'));
+            \Flash::error(t('Error retrieving record from database'));
 
-            return redirect()->route('front.events.index');
+            return \Redirect::route('front.events.index');
         }
 
-        return view('front.event.show', compact('event'));
+        return \View::make('front.event.show', compact('event'));
     }
 
     /**
@@ -103,20 +103,20 @@ class EventController extends Controller
      *
      * @param \App\Repositories\EventTeamRepository $eventTeamRepo
      * @param $uuid
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View
      * @throws \Exception
      */
-    public function signup(EventTeamRepository $eventTeamRepo, $uuid)
+    public function signup(EventTeamRepository $eventTeamRepo, $uuid): \Illuminate\Contracts\View\View
     {
         $team = $eventTeamRepo->getTeamByUuid($uuid);
 
         $active = DateHelper::eventBefore($team->event) || DateHelper::eventActive($team->event);
 
         if ($team === null) {
-            Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
+            \Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
         }
 
-        return view('front.event.signup', compact('team', 'active'));
+        return \View::make('front.event.signup', compact('team', 'active'));
     }
 
     /**
@@ -141,13 +141,13 @@ class EventController extends Controller
             $team = $eventTeamRepo->findWith($request->get('team_id'), ['event']);
             $team->users()->syncWithoutDetaching([$user->id]);
 
-            Flash::success(t('Thank you for your registration.'));
+            \Flash::success(t('Thank you for your registration.'));
 
-            return redirect()->route('front.events.read', [$team->event->id]);
+            return \Redirect::route('front.events.read', [$team->event->id]);
         }
 
-        Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
+        \Flash::error(t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
 
-        return redirect()->route('front.events.signup', [$uuid]);
+        return \Redirect::route('front.events.signup', [$uuid]);
     }
 }

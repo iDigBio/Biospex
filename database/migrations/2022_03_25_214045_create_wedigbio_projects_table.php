@@ -14,7 +14,7 @@ class CreateWedigbioProjectsTable extends Migration
     public function up()
     {
         Schema::create('wedigbio_projects', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->integer('panoptes_project_id')->nullable();
             $table->integer('panoptes_workflow_id')->unique();
             $table->text('subject_sets')->nullable();

@@ -55,21 +55,19 @@ class BiospexServiceProvider extends ServiceProvider
     /**
      * Set up view composers
      */
-    public function setViewComposers()
+    public function setViewComposers(): void
     {
-        view()->composer(
+        \View::composer(
             'common.notices', 'App\Http\ViewComposers\NoticesComposer'
         );
 
-        view()->composer(
-            'common.process-modal', 'App\Http\ViewComposers\PollComposer'
-        );
+        \View::composer(['common.process-modal', 'common.modal', 'common.project-modal'], 'App\Http\ViewComposers\PhpVarsComposer');
     }
 
     /**
      * Registers custom facades
      */
-    public function registerFacades()
+    public function registerFacades(): void
     {
         $this->app->singleton('flash', function ()
         {
@@ -90,8 +88,8 @@ class BiospexServiceProvider extends ServiceProvider
 
         $this->app->singleton('transcriptionmaphelper', function() {
             return new TranscriptionMapHelper(
-                $this->app['config']->get('config.reserved_encoded'),
-                $this->app['config']->get('config.mapped_transcription_fields')
+                $this->app['config']->get('zooniverse.reserved_encoded'),
+                $this->app['config']->get('zooniverse.mapped_transcription_fields')
             );
         });
     }

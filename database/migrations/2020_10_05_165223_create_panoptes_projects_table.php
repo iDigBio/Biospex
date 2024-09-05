@@ -14,9 +14,9 @@ class CreatePanoptesProjectsTable extends Migration
     public function up()
     {
         Schema::create('panoptes_projects', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('project_id')->nullable()->index('panoptes_projects_project_id_foreign');
-            $table->unsignedInteger('expedition_id')->nullable()->index('panoptes_projects_expedition_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('project_id')->nullable()->index('panoptes_projects_project_id_foreign');
+            $table->unsignedBigInteger('expedition_id')->nullable()->index('panoptes_projects_expedition_id_foreign');
             $table->integer('panoptes_project_id')->nullable();
             $table->integer('panoptes_workflow_id')->unique();
             $table->text('subject_sets')->nullable();

@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Facades\GeneralHelper;
-use App\Notifications\DarwinCoreImportError;
+use App\Notifications\Generic;
 use App\Repositories\ImportRepository;
 use App\Repositories\ProjectRepository;
 use Exception;
@@ -30,6 +30,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -71,7 +72,7 @@ class DwcUriImportJob implements ShouldQueue
     public function __construct($data)
     {
         $this->data = $data;
-        $this->onQueue(config('config.queues.import'));
+        $this->onQueue(config('config.queue.import'));
     }
 
     /**
@@ -81,11 +82,10 @@ class DwcUriImportJob implements ShouldQueue
      * @param \App\Repositories\ProjectRepository $projectRepo
      * @return void
      */
-    public function handle(
-        ImportRepository $importRepo,
-        ProjectRepository $projectRepo
-    )
-    {
+    public function handle(ImportRepository $importRepo, ProjectRepository $projectRepo): void {
+        $project = $projectRepo->getProjectForDarwinImportJob($this->data['id']);
+        $users = $project->group->users->push($project->group->owner);
+
         try
         {
             $fileName = basename($this->data['url']);
@@ -117,15 +117,19 @@ class DwcUriImportJob implements ShouldQueue
         }
         catch (Exception $e)
         {
-            $project = $projectRepo->findWith($this->data['id'], ['group.owner']);
-
-            $message = [
-                'File: ' . $e->getFile(),
-                'Line: ' . $e->getLine(),
-                'Message: ' . $e->getMessage()
+            $attributes = [
+                'subject' => 'DWC Uri Import Error',
+                'html'    => [
+                    t('An error occurred while importing the Darwin Core Archive using a uri.'),
+                    t('Project: %s', $project->title),
+                    t('ID: %s'.$project->id),
+                    t('File: %s', $e->getFile()),
+                    t('Line: %s', $e->getLine()),
+                    t('Message: %s', $e->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ],
             ];
-
-            $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $message));
+            Notification::send($users, new Generic($attributes, true));
         }
     }
 
@@ -135,7 +139,7 @@ class DwcUriImportJob implements ShouldQueue
      * @param $file
      * @return bool
      */
-    protected function checkFileType($file)
+    protected function checkFileType($file): bool
     {
         $finfo = new finfo(FILEINFO_MIME);
         [$mime] = explode(';', $finfo->buffer($file));

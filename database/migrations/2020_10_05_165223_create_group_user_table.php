@@ -14,9 +14,9 @@ class CreateGroupUserTable extends Migration
     public function up()
     {
         Schema::create('group_user', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('user_id')->index('users_groups_user_id_index');
-            $table->unsignedInteger('group_id')->index('users_groups_group_id_index');
+            $table->id();
+            $table->unsignedBigInteger('user_id')->index('users_groups_user_id_index');
+            $table->unsignedBigInteger('group_id')->index('users_groups_group_id_index');
         });
     }
 

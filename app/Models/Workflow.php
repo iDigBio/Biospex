@@ -41,14 +41,14 @@ class Workflow extends BaseEloquentModel
      */
     public function actors()
     {
-        return $this->belongsToMany(Actor::class)->withPivot('order')->orderBy('order');
+        return $this->belongsToMany(Actor::class)->using(ActorWorkflow::class)->withPivot('order');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function project()
+    public function expedition()
     {
-        return $this->hasMany(Project::class);
+        return $this->hasMany(Expedition::class);
     }
 }

@@ -41,7 +41,7 @@ class AjaxController extends Controller
      */
     public function poll()
     {
-        if (request()->ajax()) {
+        if (\Request::ajax()) {
             Artisan::call('ocr:poll');
             Artisan::call('export:poll');
         }
@@ -56,7 +56,7 @@ class AjaxController extends Controller
      */
     public function loadAmChart(AmChartRepository $amChartRepo, $projectId)
     {
-        if (! request()->ajax() || $projectId === null) {
+        if (! \Request::ajax() || $projectId === null) {
             return response()->json(['html' => 'hitting null']);
         }
 
@@ -74,11 +74,11 @@ class AjaxController extends Controller
     {
         $event = $eventRepo->getEventScoreboard($eventId, ['id']);
 
-        if (! request()->ajax() || is_null($event)) {
+        if (! \Request::ajax() || is_null($event)) {
             return response()->json(['html' => 'Error retrieving the Event']);
         }
 
-        return view('common.scoreboard-content', ['event' => $event]);
+        return \View::make('common.scoreboard-content', ['event' => $event]);
     }
 
     /**
@@ -104,7 +104,7 @@ class AjaxController extends Controller
      */
     public function bingoWinner(string $bingoId, string $mapId)
     {
-        if (request()->ajax()) {
+        if (\Request::ajax()) {
             BingoJob::dispatch($bingoId, $mapId);
         }
     }
@@ -118,13 +118,13 @@ class AjaxController extends Controller
      */
     public function weDigBioProgress(WeDigBioEventDateRepository $weDigBioEventDateRepository, string $dateId)
     {
-        if (! request()->ajax()) {
+        if (! \Request::ajax()) {
             return response()->json(['html' => 'Error retrieving the WeDigBio Event']);
         }
 
         $weDigBioDate = $weDigBioEventDateRepository->getWeDigBioEventTranscriptions((int) $dateId);
 
-        return view('common.wedigbio-progress-content', compact('weDigBioDate'));
+        return \View::make('common.wedigbio-progress-content', compact('weDigBioDate'));
     }
 
     /**
@@ -136,7 +136,7 @@ class AjaxController extends Controller
      */
     public function getProjectsForWeDigBioRateChart(WeDigBioEventDateRepository $weDigBioEventDateRepository, string $dateId)
     {
-        if (! request()->ajax()) {
+        if (! \Request::ajax()) {
             return response()->json(['html' => 'Request must be ajax.']);
         }
 

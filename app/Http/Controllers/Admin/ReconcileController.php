@@ -21,16 +21,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ExpertReconcileReviewPublishJob;
-use App\Jobs\ExpertReviewMigrateReconcilesJob;
-use App\Jobs\ExpertReviewProcessExplainedJob;
-use App\Jobs\ExpertReviewSetProblemsJob;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Api\ZooniverseTalkApiService;
-use App\Services\Reconcile\ExpertReconcileProcess;
+use App\Services\Reconcile\ExpertReconcileService;
+use App\Services\Reconcile\ReconcileService;
+use App\Traits\SkipZooniverse;
 use Flash;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Redirect;
+use Request;
 
 /**
  * Class ReconcileController
@@ -39,10 +40,12 @@ use Illuminate\Support\Facades\Bus;
  */
 class ReconcileController extends Controller
 {
+    use SkipZooniverse;
+
     /**
-     * @var \App\Services\Reconcile\ExpertReconcileProcess
+     * @var \App\Services\Reconcile\ExpertReconcileService
      */
-    private ExpertReconcileProcess $expertreconcileRepo;
+    private ExpertReconcileService $expertReconcileService;
 
     /**
      * @var \App\Repositories\ExpeditionRepository
@@ -50,108 +53,133 @@ class ReconcileController extends Controller
     private ExpeditionRepository $expeditionRepo;
 
     /**
+     * @var \App\Services\Reconcile\ReconcileService
+     */
+    private ReconcileService $reconcileService;
+
+    /**
      * ReconcileController constructor.
      *
-     * @param \App\Services\Reconcile\ExpertReconcileProcess $expertreconcileRepo
+     * @param \App\Services\Reconcile\ExpertReconcileService $expertReconcileService
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     * @param \App\Services\Reconcile\ReconcileService $reconcileService
      */
-    public function __construct(ExpertReconcileProcess $expertreconcileRepo, ExpeditionRepository $expeditionRepo)
+    public function __construct(
+        ExpertReconcileService $expertReconcileService,
+        ExpeditionRepository $expeditionRepo,
+        ReconcileService $reconcileService
+    )
     {
-        $this->expertreconcileRepo = $expertreconcileRepo;
+        $this->expertReconcileService = $expertReconcileService;
         $this->expeditionRepo = $expeditionRepo;
+        $this->reconcileService = $reconcileService;
     }
 
     /**
      * Show files needing reconciliation with pagination.
      *
-     * @param string $expeditionId
+     * @param int $expeditionId
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @param \App\Services\Api\ZooniverseTalkApiService $zooniverseTalkApiService
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function index(string $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService)
+    public function index(int $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService): View|RedirectResponse
     {
         $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner', 'panoptesProject']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
-            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
+            return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        $reconciles = $this->expertreconcileRepo->getPagination((int) $expedition->id);
+        $reconciles = $this->expertReconcileService->getPagination((int) $expedition->id);
 
         if ($reconciles->isEmpty()) {
             Flash::error(t('Reconcile data for processing is missing.'));
 
-            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
+            return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, 69205117);
+        $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, $reconciles->first()->subject_id);
 
         $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
-        $imgUrl = $this->expertreconcileRepo->getImageUrl($reconciles->first()->subject_imageName, $location);
+        $imgUrl = $this->expertReconcileService->getImageUrl($reconciles->first()->subject_imageName, $location);
         $columns = explode('|', $reconciles->first()->subject_columns);
 
-        return view('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
+        return \View::make('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
     }
 
     /**
-     * Set up data and redirect to index for processing.
+     * Start Expert Review set up by invoking explained via lambda labelReconciliations
+     * and redirect to index for processing.
      *
-     * @param string $expeditionId
+     * @param int $expeditionId
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
      */
-    public function create(string $expeditionId): RedirectResponse
+    public function create(int $expeditionId): RedirectResponse
     {
         $expedition = $this->expeditionRepo->findWith($expeditionId, ['project.group.owner']);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
-            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
+            return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        Bus::batch([
-            new ExpertReviewProcessExplainedJob($expeditionId),
-            new ExpertReviewMigrateReconcilesJob($expeditionId),
-            new ExpertReviewSetProblemsJob($expeditionId)
-        ])->name('Expert Reconcile ' . $expedition->id)->onQueue(config('config.queues.reconcile'))->dispatch();
+        if ($this->skipReconcile($expeditionId)) {
+            Flash::warning(t('Expert Review Process for Expedition (:id) was skipped. Please contact Biospex Administration', [':id' => $expeditionId]));
+
+            return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
+        }
+
+        $this->reconcileService->invokeLambdaExplained($expedition->id);
 
         Flash::success(t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
 
-        return redirect()->route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
+        return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expeditionId]);
     }
 
     /**
      * Update reconciled record.
      *
-     * @param string $expeditionId
+     * @param int $expeditionId
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function update(string $expeditionId): RedirectResponse
+    public function update(int $expeditionId): RedirectResponse
     {
-        if (! $this->expertreconcileRepo->updateRecord(request()->all())) {
+        if (! $this->expertReconcileService->updateRecord(Request::all())) {
             Flash::warning(t('Error while updating record.'));
 
-            return redirect()->back();
+            return back();
         }
 
         Flash::success(t('Record was updated successfully.'));
 
-        return redirect()->to(request()->get('page'));
+        return Redirect::to(Request::get('page'));
     }
 
     /**
      * Publish reconciled csv file.
      *
-     * @param string $projectId
-     * @param string $expeditionId
+     * @param int $projectId
+     * @param int $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function publish(string $projectId, string $expeditionId): RedirectResponse
+    public function publish(int $projectId, int $expeditionId): RedirectResponse
     {
         ExpertReconcileReviewPublishJob::dispatch($expeditionId);
         Flash::success(t('The Expert Review Publish job has been submitted. You will receive and email when it has completed.'));
 
-        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+    }
+
+    /**
+     * Upload reconciled qc file.
+     *
+     * @param int $projectId
+     * @param int $expeditionId
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
+     */
+    public function reconciledWithUser(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
+    {
+        return $this->reconcileService->reconciledWithUserFile($projectId, $expeditionId);
     }
 }

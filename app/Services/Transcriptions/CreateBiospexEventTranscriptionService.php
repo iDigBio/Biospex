@@ -25,7 +25,6 @@ use App\Repositories\EventTranscriptionRepository;
 use App\Repositories\EventUserRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
-use MongoDB\BSON\UTCDateTime;
 use Validator;
 
 /**
@@ -73,21 +72,21 @@ class CreateBiospexEventTranscriptionService
      * @param int $classification_id
      * @param int $projectId
      * @param string $userName
-     * @param \MongoDB\BSON\UTCDateTime|null $date
+     * @param \Illuminate\Support\Carbon|null $date
      */
     public function createEventTranscription(
         int $classification_id,
         int $projectId,
         string $userName,
-        UTCDateTime $date = null
-    ) {
+        Carbon $date = null
+    ): void {
         $user = $this->eventUserRepo->findBy('nfn_user', $userName, ['id']);
 
         if ($user === null) {
             return;
         }
 
-        $timestamp = $this->setDate($date);
+        $timestamp = ! isset($date) ? Carbon::now('UTC') : $date;
 
         $events = $this->eventRepo->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp->toDateTimeString());
 
@@ -131,16 +130,5 @@ class CreateBiospexEventTranscriptionService
 
         // returns true if records exists
         return $validator->fails();
-    }
-
-    /**
-     * Set date for creating event transcriptions.
-     *
-     * @param \MongoDB\BSON\UTCDateTime|null $date
-     * @return \Illuminate\Support\Carbon
-     */
-    private function setDate(UTCDateTime $date = null): Carbon
-    {
-        return ! isset($date) ? Carbon::now('UTC') : Carbon::createFromTimestampMsUTC($date);
     }
 }

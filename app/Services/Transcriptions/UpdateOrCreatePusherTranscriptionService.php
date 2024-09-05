@@ -79,11 +79,11 @@ class UpdateOrCreatePusherTranscriptionService
     /**
      * Get transcriptions.
      *
-     * @param $expeditionId
-     * @param $timestamp
+     * @param int $expeditionId
+     * @param null $timestamp
      * @return mixed
      */
-    public function getTranscriptions($expeditionId, $timestamp = null): mixed
+    public function getTranscriptions(int $expeditionId, $timestamp = null): mixed
     {
         return $this->panoptesTranscriptionRepo->getTranscriptionForDashboardJob($expeditionId, $timestamp);
     }

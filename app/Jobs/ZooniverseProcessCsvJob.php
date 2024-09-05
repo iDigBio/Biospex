@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Services\Csv\ZooniverseCsvService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -58,7 +58,7 @@ class ZooniverseProcessCsvJob implements ShouldQueue
      */
     public function __construct(int $expeditionId)
     {
-        $this->onQueue(config('config.queues.classification'));
+        $this->onQueue(config('config.queue.classification'));
         $this->expeditionId = $expeditionId;
     }
 
@@ -74,7 +74,7 @@ class ZooniverseProcessCsvJob implements ShouldQueue
         $result = $service->checkCsvRequest($this->expeditionId);
         if ($result['media'][0]['metadata']['state'] === 'creating') {
             if ($this->attempts() > 3) {
-                throw new \Exception(t('NfnPanoptes csv creation for Expedition Id %s exceeded number of tries.', $this->expeditionId));
+                throw new \Exception(t('Zooniverse csv creation for Expedition Id %s exceeded number of tries.', $this->expeditionId));
             }
 
             $this->release(1800);
@@ -84,15 +84,10 @@ class ZooniverseProcessCsvJob implements ShouldQueue
 
         $uri = $result['media'][0]['src'] ?? null;
         if ($uri === null) {
-            throw new \Exception(t('NfnPanoptes csv uri for Expedition Id %s is missing', $this->expeditionId));
+            throw new \Exception(t('Zooniverse csv uri for Expedition Id %s is missing', $this->expeditionId));
         }
 
-        ZooniverseCsvDownloadJob::withChain([
-            new ZooniverseReconcileJob($this->expeditionId),
-            new ZooniverseTranscriptionJob($this->expeditionId),
-            new ZooniversePusherJob($this->expeditionId),
-            new ZooniverseClassificationCountJob($this->expeditionId),
-        ])->dispatch($this->expeditionId, $uri);
+        ZooniverseCsvDownloadJob::dispatch($this->expeditionId, $uri);
     }
 
     /**
@@ -108,17 +103,21 @@ class ZooniverseProcessCsvJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable)
     {
-        $user = User::find(1);
-        $messages = [
-            t('Error: %s', $exception->getMessage()),
-            t('File: %s', $exception->getFile()),
-            t('Line: %s', $exception->getLine()),
+        $attributes = [
+            'subject' => t('Zooniverse Process CSV Failed'),
+            'html'    => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

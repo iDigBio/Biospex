@@ -54,7 +54,7 @@ class ResourceNameValidation implements Rule
     public function passes($attribute, $value)
     {
         $parts = explode('.', $attribute);
-        $resources = request()->get('resources');
+        $resources = \Request::get('resources');
 
         if ($resources[$parts[1]]['type'] === 'Website URL' || $resources[$parts[1]]['type'] === 'Video URL')
         {

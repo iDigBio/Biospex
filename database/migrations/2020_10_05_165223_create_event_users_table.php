@@ -14,7 +14,7 @@ class CreateEventUsersTable extends Migration
     public function up()
     {
         Schema::create('event_users', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('nfn_user')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrent();

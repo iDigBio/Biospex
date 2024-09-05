@@ -18,6 +18,7 @@
  */
 namespace App\Providers;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
 use Schema;
@@ -44,6 +45,9 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
 
         $this->setupBlade();
+
+        Model::preventLazyLoading(! $this->app->isProduction());
+        Model::preventAccessingMissingAttributes(! $this->app->isProduction());
     }
 
     /**

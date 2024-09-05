@@ -21,16 +21,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectFormRequest;
-use App\Jobs\DeleteProject;
+use App\Jobs\DeleteProjectJob;
 use App\Jobs\DeleteUnassignedSubjectsJob;
-use App\Jobs\OcrCreateJob;
+use App\Repositories\GroupRepository;
 use App\Repositories\ProjectRepository;
 use App\Services\Grid\JqGridEncoder;
-use App\Services\Process\ProjectProcess;
 use Auth;
 use CountHelper;
 use Exception;
-use Flash;
 use JavaScript;
 
 /**
@@ -43,40 +41,40 @@ class ProjectController extends Controller
     /**
      * @var \App\Repositories\ProjectRepository
      */
-    private $projectRepo;
+    private ProjectRepository $projectRepo;
 
     /**
-     * @var \App\Services\Process\ProjectProcess
+     * @var \App\Repositories\GroupRepository
      */
-    private $projectProcess;
+    private GroupRepository $groupRepo;
 
     /**
      * ProjectController constructor.
      *
      * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param \App\Services\Process\ProjectProcess $projectProcess
+     * @param \App\Repositories\GroupRepository $groupRepo
      */
     public function __construct(
         ProjectRepository $projectRepo,
-        ProjectProcess $projectProcess
+        GroupRepository $groupRepo,
     ) {
-        $this->projectProcess = $projectProcess;
         $this->projectRepo = $projectRepo;
+        $this->groupRepo = $groupRepo;
     }
 
     /**
      * Show projects list for admin page.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(): \Illuminate\Contracts\View\View
     {
         $user = Auth::user();
 
-        $groups = $this->projectProcess->getUserGroupCount($user->id);
+        $groups = $this->groupRepo->getUserGroupCount($user->id);
         $projects = $this->projectRepo->getAdminProjectIndex($user->id);
 
-        return $groups === 0 ? view('admin.welcome') : view('admin.project.index', compact('projects'));
+        return $groups === 0 ? \View::make('admin.welcome') : \View::make('admin.project.index', compact('projects'));
     }
 
     /**
@@ -84,35 +82,33 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function create()
+    public function create(): \Illuminate\View\View
     {
-        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectProcess->workflowSelectOptions();
-        $statusOptions = $this->projectProcess->statusSelectOptions();
+        $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(\Request::user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
-        $vars = compact('groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('groupOptions', 'resourceOptions', 'resourceCount');
 
-        return view('admin.project.create', $vars);
+        return \View::make('admin.project.create', $vars);
     }
 
     /**
      * Display the specified resource.
      *
      * @param $projectId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function show($projectId)
+    public function show($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepo->getProjectShow($projectId);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
-            return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
+            return $expedition->completed === 0;
         });
 
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
@@ -120,13 +116,14 @@ class ProjectController extends Controller
 
         $viewParams = [
             'project'              => $project,
+            'group'                => $project->group,
             'expeditions'          => $expeditions,
             'expeditionsCompleted' => $expeditionsCompleted,
             'transcriptionsCount'  => $transcriptionsCount,
             'transcribersCount'    => $transcribersCount,
         ];
 
-        return view('admin.project.show', $viewParams);
+        return \View::make('admin.project.show', $viewParams);
     }
 
     /**
@@ -135,55 +132,50 @@ class ProjectController extends Controller
      * @param ProjectFormRequest $request
      * @return mixed
      */
-    public function store(ProjectFormRequest $request)
+    public function store(ProjectFormRequest $request): mixed
     {
-        $group = $this->projectProcess->findGroup($request->get('group_id'));
+        $group = $this->groupRepo->find($request->get('group_id'));
 
         if (! $this->checkPermissions('createProject', $group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         $model = $this->projectRepo->create($request->all());
 
         if ($model) {
-            $project = $this->projectRepo->findWith($model->id, ['workflow.actors.contacts']);
-            $this->projectProcess->notifyActorContacts($project);
+            \Flash::success(t('Record was created successfully.'));
 
-            Flash::success(t('Record was created successfully.'));
-
-            return redirect()->route('admin.projects.show', [$project->id]);
+            return \Redirect::route('admin.projects.show', [$model->id]);
         }
 
-        Flash::error(t('An error occurred when saving record.'));
+        \Flash::error(t('An error occurred when saving record.'));
 
-        return redirect()->route('admin.projects.create')->withInput();
+        return \Redirect::route('admin.projects.create')->withInput();
     }
 
     /**
      * Create duplicate project
      *
      * @param $projectId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function clone($projectId)
+    public function clone($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectRepo->findWith($projectId, ['group', 'expeditions.workflowManager']);
+        $project = $this->projectRepo->findWith($projectId, ['group']);
 
         if (! $project) {
-            Flash::error(t('Error retrieving record from database'));
+            \Flash::error(t('Error retrieving record from database'));
 
-            return redirect()->route('admin.projects.show', [$projectId]);
+            return \Redirect::route('admin.projects.show', [$projectId]);
         }
 
-        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectProcess->workflowSelectOptions();
-        $statusOptions = $this->projectProcess->statusSelectOptions();
+        $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(\Request::user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
-        $vars = compact('project', 'groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('project', 'groupOptions', 'resourceOptions', 'resourceCount');
 
-        return view('admin.project.clone', $vars);
+        return \View::make('admin.project.clone', $vars);
     }
 
     /**
@@ -193,29 +185,25 @@ class ProjectController extends Controller
      * $model->relation()->count(); // int: number of related rows
      *
      * @param $projectId
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function edit($projectId)
+    public function edit($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepo->findWith($projectId, ['group', 'resources']);
         if (! $project) {
-            Flash::error(t('Error retrieving record from database'));
+            \Flash::error(t('Error retrieving record from database'));
 
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
-        $disableWorkflow = $project->panoptesProjects()->exists() ? 'disabled' : '';
-
-        $groupOptions = $this->projectProcess->userGroupSelectOptions(request()->user());
-        $workflowOptions = $this->projectProcess->workflowSelectOptions();
-        $statusOptions = $this->projectProcess->statusSelectOptions();
+        $groupOptions = ['' => '--Select--'] + $this->groupRepo->getUsersGroupsSelect(\Request::user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', $project->resources->count() ?: 1);
         $resources = $project->resources;
 
-        $vars = compact('project', 'resources', 'disableWorkflow', 'groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('project', 'resources', 'groupOptions', 'resourceOptions', 'resourceCount');
 
-        return view('admin.project.edit', $vars);
+        return \View::make('admin.project.edit', $vars);
     }
 
     /**
@@ -223,40 +211,40 @@ class ProjectController extends Controller
      *
      * @param ProjectFormRequest $request
      * @param $projectId
-     * @return $this|\Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(ProjectFormRequest $request, $projectId)
+    public function update(ProjectFormRequest $request, $projectId): \Illuminate\Http\RedirectResponse
     {
-        $group = $this->projectProcess->findGroup($request->get('group_id'));
+        $group = $this->groupRepo->find($request->get('group_id'));
 
         if (! $this->checkPermissions('updateProject', $group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         $project = $this->projectRepo->update($request->all(), $projectId);
 
-        $project ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
+        $project ? \Flash::success(t('Record was updated successfully.')) : \Flash::error(t('Error while updating record.'));
 
-        return redirect()->back();
+        return back();
     }
 
     /**
      * Admin Projects page sort and order.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|null
+     * @return \Illuminate\Contracts\View\View|null
      */
-    public function sort()
+    public function sort(): ?\Illuminate\Contracts\View\View
     {
-        if (! request()->ajax()) {
+        if (! \Request::ajax()) {
             return null;
         }
 
         $user = Auth::user();
-        $sort = request()->get('sort');
-        $order = request()->get('order');
+        $sort = \Request::get('sort');
+        $order = \Request::get('order');
         $projects = $this->projectRepo->getAdminProjectIndex($user->id, $sort, $order);
 
-        return view('admin.project.partials.project', compact('projects'));
+        return \View::make('admin.project.partials.project', compact('projects'));
     }
 
     /**
@@ -264,14 +252,14 @@ class ProjectController extends Controller
      *
      * @param $projectId
      * @param \App\Services\Grid\JqGridEncoder $grid
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function explore($projectId, JqGridEncoder $grid)
+    public function explore($projectId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepo->findWith($projectId, ['group']);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         $model = $grid->loadGridModel($projectId);
@@ -288,7 +276,7 @@ class ProjectController extends Controller
 
         $subjectAssignedCount = $this->projectRepo->find($projectId)->expeditionStats->sum('local_subject_count');
 
-        return view('admin.project.explore', compact('project', 'subjectAssignedCount'));
+        return \View::make('admin.project.explore', compact('project', 'subjectAssignedCount'));
     }
 
     /**
@@ -297,61 +285,40 @@ class ProjectController extends Controller
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($projectId)
+    public function delete($projectId): \Illuminate\Http\RedirectResponse
     {
         $project = $this->projectRepo->getProjectForDelete($projectId);
 
         if (! $this->checkPermissions('isOwner', $project->group)) {
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         try {
             if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+                \Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
-                redirect()->route('admin.projects.index');
+                \Redirect::route('admin.projects.index');
             }
 
-            DeleteProject::dispatch($project);
+            DeleteProjectJob::dispatch($project);
 
-            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
+            \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         } catch (Exception $e) {
-            Flash::error(t('An error occurred when deleting record.'));
+            \Flash::error(t('An error occurred when deleting record.'));
 
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
-    }
-
-    /**
-     * Reprocess OCR.
-     *
-     * @param $projectId
-     * @return mixed
-     */
-    public function ocr($projectId)
-    {
-        $project = $this->projectRepo->findWith($projectId, ['group']);
-
-        if (! $this->checkPermissions('updateProject', $project->group)) {
-            return redirect()->route('admin.projects.index');
-        }
-
-        OcrCreateJob::dispatch($projectId);
-
-        Flash::success(t('OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete.'));
-
-        return redirect()->route('admin.projects.show', [$projectId]);
     }
 
     /**
      * Project Stats.
      *
      * @param $projectId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View
      */
-    public function statistics($projectId)
+    public function statistics($projectId): \Illuminate\Contracts\View\View
     {
         $project = $this->projectRepo->findWith($projectId, ['group']);
 
@@ -360,27 +327,27 @@ class ProjectController extends Controller
 
         JavaScript::put(['transcriptions' => $transcriptions]);
 
-        return view('admin.project.statistics', compact('project', 'transcribers', 'transcriptions'));
+        return \View::make('admin.project.statistics', compact('project', 'transcribers', 'transcriptions'));
     }
 
     /**
      * Delete all unassigned subjects for project.
      *
-     * @param string $projectId
+     * @param int $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteSubjects(string $projectId)
+    public function deleteSubjects(int $projectId): \Illuminate\Http\RedirectResponse
     {
         try {
             DeleteUnassignedSubjectsJob::dispatch(Auth::user(), (int) $projectId);
 
-            Flash::success(t('Subjects have been set for deletion. You will be notified by email when complete.'));
+            \Flash::success(t('Subjects have been set for deletion. You will be notified by email when complete.'));
 
-            return redirect()->route('admin.projects.explore', [$projectId]);
+            return \Redirect::route('admin.projects.explore', [$projectId]);
         } catch (Exception $e) {
-            Flash::warning(t('There was an error setting the job to delete the Subjects.'));
+            \Flash::warning(t('There was an error setting the job to delete the Subjects.'));
 
-            return redirect()->route('admin.projects.explore', [$projectId]);
+            return \Redirect::route('admin.projects.explore', [$projectId]);
         }
     }
 }

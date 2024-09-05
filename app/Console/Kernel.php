@@ -30,13 +30,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('cache:prune-stale-tags')->hourly();
+
         $schedule->command('queue:prune-batches --hours=48 --unfinished=72')->daily();
 
-        // Run ocr every 15 minutes.
-        $schedule->command('ocrprocess:records')->everyFiveMinutes();
-
-        // Failed jobs report used to check ocr
-        $schedule->command('report:failed')->dailyAt('09:30');
+        // Run ocr every 2 minutes.
+        $schedule->command('export:queue')->everyTwoMinutes();
+        $schedule->command('tesseract:ocr-process')->everyTwoMinutes();
 
         // Clean bingo maps
         $schedule->command('bingo:clean')->dailyAt('10:05');

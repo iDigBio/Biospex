@@ -19,9 +19,9 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
-use App\Notifications\JobError;
-use App\Services\Reconcile\ExpertReconcilePublishProcess;
+use App\Notifications\Generic;
+use App\Repositories\ExpeditionRepository;
+use App\Services\Reconcile\ExpertReconcilePublishService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -40,38 +40,47 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var null
+     * @var int
      */
-    private $expeditionId;
+    private int $expeditionId;
 
     /**
      * ExpertReconcileReviewPublishJob constructor.
      *
-     * @param string $expeditionId
+     * @param int $expeditionId
      */
-    public function __construct(string $expeditionId)
+    public function __construct(int $expeditionId)
     {
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.queues.reconcile'));
+        $this->onQueue(config('config.queue.reconcile'));
     }
 
     /**
      * Handle Job.
      *
-     * @param \App\Services\Reconcile\ExpertReconcilePublishProcess $expertReconcilePublishProcess
+     * @param \App\Services\Reconcile\ExpertReconcilePublishService $expertReconcilePublishService
+     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
      */
-    public function handle(ExpertReconcilePublishProcess $expertReconcilePublishProcess)
-    {
+    public function handle(
+        ExpertReconcilePublishService $expertReconcilePublishService,
+        ExpeditionRepository $expeditionRepository
+    ): void {
+        $expedition = $expeditionRepository->findWith($this->expeditionId, ['project.group.owner']);
 
         try {
-            $expertReconcilePublishProcess->publishReconciled($this->expeditionId);
-        } catch (CannotInsertRecord | Exception $e) {
-            $user = User::find(1);
-            $messages = [
-                'Expedition Id: '.$this->expeditionId,
-                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
+            $expertReconcilePublishService->publishReconciled($this->expeditionId);
+        } catch (CannotInsertRecord|Exception $e) {
+            $attributes = [
+                'subject' => t('Expert Reconcile Publish Error'),
+                'html'    => [
+                    t('An error occurred while importing the Darwin Core Archive.'),
+                    t('File: %s', $e->getFile()),
+                    t('Line: %s', $e->getLine()),
+                    t('Message: %s', $e->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ],
             ];
-            $user->notify(new JobError(__FILE__, $messages));
+            $expedition->project->group->owner->notify(new Generic($attributes, true));
         }
 
         $this->delete();

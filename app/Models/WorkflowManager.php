@@ -46,16 +46,4 @@ class WorkflowManager extends BaseEloquentModel
     {
         return $this->belongsTo(Expedition::class);
     }
-
-    /**
-     * Scope
-     *
-     * @param $query
-     * @param $expeditionId
-     * @return mixed
-     */
-    public function scopeExpeditionId($query, $expeditionId)
-    {
-        return $query->where('expedition_id', '=', $expeditionId);
-    }
 }

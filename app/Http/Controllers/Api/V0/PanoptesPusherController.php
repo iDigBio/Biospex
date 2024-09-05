@@ -19,7 +19,6 @@
 
 namespace App\Http\Controllers\Api\V0;
 
-use App\Jobs\PanoptesPusherJob;
 use App\Jobs\ZooniversePusherHandlerJob;
 use Illuminate\Support\Facades\Response;
 
@@ -47,11 +46,11 @@ class PanoptesPusherController extends ApiController
      */
     public function create()
     {
-        if (! request()->isJson()) {
+        if (! \Request::isJson()) {
             return;
         }
 
-        $data = json_decode(request()->getContent(), true);
+        $data = json_decode(\Request::getContent(), true);
 
         if (! isset($data['workflow_id'])) {
             return;

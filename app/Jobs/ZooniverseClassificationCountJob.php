@@ -22,8 +22,7 @@ namespace App\Jobs;
 use App\Models\Actor;
 use App\Models\Expedition;
 use App\Models\User;
-use App\Notifications\JobError;
-use App\Notifications\NfnTranscriptionsComplete;
+use App\Notifications\Generic;
 use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use Illuminate\Bus\Queueable;
@@ -60,7 +59,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     public function __construct(int $expeditionId)
     {
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.queues.classification'));
+        $this->onQueue(config('config.queue.classification'));
     }
 
     /**
@@ -77,7 +76,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
         $expedition = $expeditionRepo->findWith($this->expeditionId, [
             'project.group.owner',
             'stat',
-            'nfnActor',
+            'zooniverseActor',
             'panoptesProject',
         ]);
 
@@ -122,22 +121,33 @@ class ZooniverseClassificationCountJob implements ShouldQueue
      * Check if finished_at date and set percentage.
      *
      * @param \App\Models\Expedition $expedition
-     * @param string/null $finishedAt
+     * @param string|null $finishedAt
+     * @return void
      */
-    protected function checkFinishedAt(Expedition $expedition, $finishedAt = null)
+    protected function checkFinishedAt(Expedition $expedition, string $finishedAt = null): void
     {
         if ($finishedAt === null) {
             return;
         }
 
+        /**
+         * State === 3 means Zooniverse actor completed.
+         * @see \App\Services\Actor\Zooniverse\Zooniverse::actor()
+         */
         $attributes = [
-            'state'     => $expedition->nfnActor->pivot->state++,
-            'completed' => 1,
+            'state' => 3,
         ];
 
-        $expedition->nfnActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+        $expedition->zooniverseActor()->updateExistingPivot($expedition->zooniverseActor->pivot->actor_id, $attributes);
 
-        $expedition->project->group->owner->notify(new NfnTranscriptionsComplete($expedition->title));
+        $attributes = [
+            'subject' => t('Zooniverse Transcriptions Completed'),
+            'html'    => [
+                t('The Zooniverse digitization process for "%s" has been completed.', $expedition->title)
+            ]
+        ];
+
+        $expedition->project->group->owner->notify(new Generic($attributes));
     }
 
     /**
@@ -153,17 +163,21 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable)
     {
-        $user = User::find(1);
-        $messages = [
-            t('Error: %s', $exception->getMessage()),
-            t('File: %s', $exception->getFile()),
-            t('Line: %s', $exception->getLine()),
+        $attributes = [
+            'subject' => t('Zooniverse Classification Count Job Failed'),
+            'html'    => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage())
+            ],
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

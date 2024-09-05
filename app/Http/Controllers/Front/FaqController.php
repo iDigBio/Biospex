@@ -54,6 +54,6 @@ class FaqController extends Controller
     {
         $categories = $this->faqCategoryRepo->getCategoriesWithFaqOrdered();
 
-        return view('front.faq.index', compact('categories'));
+        return \View::make('front.faq.index', compact('categories'));
     }
 }

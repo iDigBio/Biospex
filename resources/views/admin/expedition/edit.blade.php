@@ -7,7 +7,7 @@
 
 {{-- Content --}}
 @section('content')
-    @include('admin.expedition.partials.expedition-panel')
+    @include('admin.expedition.partials.panel')
     <form id="gridForm" method="post"
           action="{{ route('admin.expeditions.update', [$expedition->project->id, $expedition->id]) }}"
           role="form" enctype="multipart/form-data">
@@ -43,6 +43,7 @@
                                    value="{{ old('keywords', $expedition->keywords) }}" required>
                             <span class="invalid-feedback">{{ $errors->first('keywords') }}</span>
                         </div>
+
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
                                 <div class="custom-file">
@@ -57,8 +58,30 @@
                             <input type="hidden" name="current_logo" value="{{ $expedition->logo_file_name }}">
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
-                                     src="{{ $expedition->present()->show_medium_logo }}"/>
+                                     src="{{ $expedition->present()->show_medium_logo }}" alt="Expedition Logo"/>
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="workflow-id" class="col-form-label col-12 required">{{ t('Workflows') }}:
+                                <i class="fa fa-question-circle-o"
+                                   data-hover="tooltip"
+                                   title="{{ t("Workflow can only be set once. If a mistake is made, please contact administration via email.") }}"
+                                   aria-hidden="true"></i></label>
+                            <select name="workflow_id" id="workflow-idd"
+                                    class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
+                                    {{ $expedition->locked === 1 ? 'disabled' : '' }}
+                                    required>
+                                @foreach($workflowOptions as $key => $name)
+                                    <option value="{{ $key }}" {{ $key == old('workflow_id', $expedition->workflow_id) ? ' selected=selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            @if($expedition->locked === 1)
+                                <input type="hidden" name="workflow_id"
+                                       value="{{ old('workflow_id', $expedition->workflow_id) }}">
+                            @endif
+                            <input type="hidden" name="locked" value="1">
+                            <span class="invalid-feedback">{{ $errors->first('workflow_id') }}</span>
                         </div>
                     </div>
                 </div>
@@ -66,7 +89,7 @@
             @include('common.cancel-submit-buttons')
         </div>
     </form>
-    <div class="row">
+    <div id="jqGridDiv" class="row">
         <h3 class="mx-auto">{{ t('Subjects currently assigned') }}
             <span id="max">{{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}</span>:
             <span id="subject-count-html"></span></h3>
@@ -74,5 +97,4 @@
             <table class="table table-bordered" id="jqGridTable"></table>
         </div>
     </div>
-    @include('admin.partials.jqgrid-modal')
 @endsection

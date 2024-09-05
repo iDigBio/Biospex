@@ -45,7 +45,6 @@ class ProjectFormRequest extends Request
     {
         return [
             'group_id'                => 'required|integer|min:1',
-            'status'                  => 'required',
             'title'                   => 'required|between:6,140|unique:projects,title,'.$this->route('projects'),
             'contact'                 => 'required',
             'contact_email'           => 'required|min:4|max:32|email',
@@ -53,7 +52,6 @@ class ProjectFormRequest extends Request
             'description_short'       => 'required|between:6,140',
             'description_long'        => 'required',
             'keywords'                => 'required',
-            'workflow_id'             => 'required',
             'organization_website'    => 'nullable|url',
             'blog_url'                => 'nullable|url',
             'facebook'                => 'nullable|url',

@@ -20,8 +20,9 @@
 namespace App\Jobs;
 
 use App\Models\Actor;
-use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actor\NfnPanoptes\ZooniverseBuildQueue;
+use App\Models\User;
+use App\Notifications\Generic;
+use App\Services\Actor\Zooniverse\ZooniverseBuildQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -36,7 +37,7 @@ use Throwable;
  */
 class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, NfnErrorNotification;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * @var \App\Models\Actor
@@ -51,30 +52,41 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
     public function __construct(Actor $actor)
     {
         $this->actor = $actor;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\NfnPanoptes\ZooniverseBuildQueue $zooniverseBuildQueue
+     * @param \App\Services\Actor\Zooniverse\ZooniverseBuildQueue $zooniverseBuildQueue
      * @throws \Exception
      */
-    public function handle(ZooniverseBuildQueue $zooniverseBuildQueue)
+    public function handle(ZooniverseBuildQueue $zooniverseBuildQueue): void
     {
         $zooniverseBuildQueue->process($this->actor);
-
-        event('exportQueue.check');
     }
 
     /**
      * Handle a job failure.
      *
-     * @param  \Throwable  $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable): void
     {
-        $this->sendAdminError($exception);
+        $attributes = [
+            'subject' => t('Zooniverse Export Build Queue Job Failed'),
+            'html'    => [
+                t('An error occurred building the export queue.'),
+                t('Actor Id: %s', $this->actor->id),
+                t('Expedition Id: %s', $this->actor->pivot->id),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage())
+            ],
+        ];
+
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

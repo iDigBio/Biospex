@@ -14,8 +14,8 @@ class CreateBingoWordsTable extends Migration
     public function up()
     {
         Schema::create('bingo_words', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('bingo_id')->index('bingo_words_bingo_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('bingo_id')->index('bingo_words_bingo_id_foreign');
             $table->string('word', 30)->nullable();
             $table->string('definition', 255)->nullable();
             $table->timestamps();

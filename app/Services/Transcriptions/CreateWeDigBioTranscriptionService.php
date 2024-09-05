@@ -19,14 +19,12 @@
 
 namespace App\Services\Transcriptions;
 
-use App\Events\WeDigBioProgressEvent;
 use App\Jobs\WeDigBioEventProgressJob;
 use App\Models\WeDigBioEventDate;
 use App\Repositories\WeDigBioEventDateRepository;
 use App\Repositories\WeDigBioEventTranscriptionRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
-use MongoDB\BSON\UTCDateTime;
 use Validator;
 
 /**
@@ -66,16 +64,16 @@ class CreateWeDigBioTranscriptionService
      *
      * @param int $classification_id
      * @param int $projectId
-     * @param \MongoDB\BSON\UTCDateTime|null $date
+     * @param \Illuminate\Support\Carbon|null $date
      */
     public function createEventTranscription(
         int $classification_id,
         int $projectId,
-        UTCDateTime $date = null
+        Carbon $date = null
     ) {
         $wedigbioDate = $this->weDigBioEventDateRepository->findBy('active', 1);
 
-        $timestamp = $this->setDate($date);
+        $timestamp = ! isset($date) ? Carbon::now('UTC') : $date;
 
         if ($wedigbioDate === null || ! $this->checkDate($wedigbioDate, $timestamp)) {
             return;
@@ -117,17 +115,6 @@ class CreateWeDigBioTranscriptionService
         ]);
         // returns true if records exists
         return $validator->fails();
-    }
-
-    /**
-     * Set date for creating event transcriptions.
-     *
-     * @param \MongoDB\BSON\UTCDateTime|null $date
-     * @return \Illuminate\Support\Carbon
-     */
-    private function setDate(UTCDateTime $date = null): Carbon
-    {
-        return ! isset($date) ? Carbon::now('UTC') : Carbon::createFromTimestampMsUTC($date);
     }
 
     /**

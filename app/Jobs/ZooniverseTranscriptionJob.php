@@ -19,10 +19,10 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Services\Transcriptions\CreatePanoptesTranscriptionService;
+use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -39,7 +39,7 @@ use Throwable;
  */
 class ZooniverseTranscriptionJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipNfn;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -60,7 +60,7 @@ class ZooniverseTranscriptionJob implements ShouldQueue
      */
     public function __construct(int $expeditionId)
     {
-        $this->onQueue(config('config.queues.reconcile'));
+        $this->onQueue(config('config.queue.reconcile'));
         $this->expeditionId = $expeditionId;
     }
 
@@ -78,7 +78,7 @@ class ZooniverseTranscriptionJob implements ShouldQueue
             return;
         }
 
-        $csvFilePath = config('config.zooniverse_dir.transcript') . "/{$this->expeditionId}.csv";
+        $csvFilePath = config('zooniverse.directory.transcript') . "/{$this->expeditionId}.csv";
         if (! Storage::disk('s3')->exists($csvFilePath)) {
             $this->delete();
 
@@ -89,14 +89,16 @@ class ZooniverseTranscriptionJob implements ShouldQueue
 
         $fileName = $createPanoptesTranscriptionService->checkCsvError();
         if ($fileName !== null) {
-            $user = User::find(1);
-            $messages = [
-                t('Expedition Id: %s', $this->expeditionId),
-                t('Error: ', 'NfnPanoptes Transcription'),
-                t('File: %s', __FILE__),
-                t('Line: %s', 89),
+            $attributes = [
+                'subject' => t('Zooniverse Transcription Job Error'),
+                'html'    => [
+                    t('File: %s', __FILE__),
+                    t('Line: %s', 91)
+                ],
             ];
-            $user->notify(new JobError(__FILE__, $messages, $fileName));
+
+            $user = User::find(config('config.admin.user_id'));
+            $user->notify(new Generic($attributes));
         }
     }
 
@@ -113,17 +115,21 @@ class ZooniverseTranscriptionJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable): void
     {
-        $user = User::find(1);
-        $messages = [
-            t('Error: %s', $exception->getMessage()),
-            t('File: %s', $exception->getFile()),
-            t('Line: %s', $exception->getLine()),
+        $attributes = [
+            'subject' => t('Zooniverse Transcription Job Failed'),
+            'html'    => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

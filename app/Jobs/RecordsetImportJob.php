@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Notifications\DarwinCoreImportError;
+use App\Notifications\Generic;
 use App\Repositories\ImportRepository;
 use App\Repositories\ProjectRepository;
 use Exception;
@@ -29,6 +29,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Notification;
 use Storage;
 
 /**
@@ -38,7 +39,6 @@ use Storage;
  */
 class RecordsetImportJob implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -60,6 +60,7 @@ class RecordsetImportJob implements ShouldQueue
 
     /**
      * Curl response
+     *
      * @var
      */
     public $response;
@@ -72,7 +73,7 @@ class RecordsetImportJob implements ShouldQueue
     public function __construct($data)
     {
         $this->data = $data;
-        $this->onQueue(config('config.queues.import'));
+        $this->onQueue(config('config.queue.import'));
     }
 
     /**
@@ -80,70 +81,69 @@ class RecordsetImportJob implements ShouldQueue
      *
      * @param \App\Repositories\ImportRepository $importRepo
      * @param \App\Repositories\ProjectRepository $projectRepo
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(
-        ImportRepository $importRepo,
-        ProjectRepository $projectRepo
-    )
+    public function handle(ImportRepository $importRepo, ProjectRepository $projectRepo): void
     {
         $this->importRepo = $importRepo;
+        $project = $projectRepo->getProjectForDarwinImportJob($this->data['id']);
+        $users = $project->group->users->push($project->group->owner);
 
-        try
-        {
+        try {
             $url = $this->setUrl();
             $this->send($url);
-        }
-        catch (Exception $e)
-        {
-            $project = $projectRepo->findWith($this->data['project_id'], ['group.owner']);
+        } catch (Exception $e) {
 
-            $message = [
-                'File: ' . $e->getFile(),
-                'Line: ' . $e->getLine(),
-                'Message: ' . $e->getMessage()
+            $attributes = [
+                'subject' => 'DWC Record Set Import Error',
+                'html'    => [
+                    t('An error occurred while importing the Darwin Core Archive using a record set.'),
+                    t('Project: %s', $project->title),
+                    t('ID: %s'.$project->id),
+                    t('File: %s', $e->getFile()),
+                    t('Line: %s', $e->getLine()),
+                    t('Message: %s', $e->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ],
             ];
-
-            $project->group->owner->notify(new DarwinCoreImportError($project->title, $project->id, $message));
+            Notification::send($users, new Generic($attributes, true));
         }
     }
 
     /**
-     * Set url - recordset or download. iDigBio responds with status url if recordset already set.
+     * Set url for request.
      *
-     * @return mixed
+     * @return string
      */
-    private function setUrl()
+    private function setUrl(): string
     {
-        if (isset($this->data['url']))
-        {
+        if (isset($this->data['url'])) {
             return $this->data['url'];
         }
 
-        $this->data['url'] = str_replace('RECORDSET_ID', $this->data['id'], config('config.recordset_url'));
-
-        return $this->data['url'];
+        return str_replace('RECORDSET_ID', $this->data['id'], config('config.recordset_url'));
     }
 
     /**
      * Send request to url.
      *
      * @param $url
-     * @throws \Exception
+     * @throws \Exception|\GuzzleHttp\Exception\GuzzleException
      */
-    public function send($url)
+    public function send($url): void
     {
         $client = new Client();
         $response = $client->get($url, ['headers' => ['Accept' => 'application/json']]);
 
-        if ($response->getStatusCode() !== 200)
-        {
-            throw new Exception(t('Http call to :url returned status code :code', [':url' => $url, ':code' => $response->getStatusCode()]));
+        if ($response->getStatusCode() !== 200) {
+            throw new Exception(t('Http call to :url returned status code :code', [':url'  => $url,
+                                                                                   ':code' => $response->getStatusCode(),
+            ]));
         }
 
         $this->response = json_decode($response->getBody()->getContents());
 
-        if ($this->response->complete === true && $this->response->task_status === 'SUCCESS')
-        {
+        if ($this->response->complete === true && $this->response->task_status === 'SUCCESS') {
             $import = $this->download();
             DwcFileImportJob::dispatch($import)->delay(now()->addMinutes(5));
 
@@ -153,7 +153,6 @@ class RecordsetImportJob implements ShouldQueue
         RecordsetImportJob::dispatch($this->data)->delay(now()->addMinutes(5));
     }
 
-
     /**
      * Download zip file.
      *
@@ -162,19 +161,18 @@ class RecordsetImportJob implements ShouldQueue
      */
     public function download(): mixed
     {
-        $fileName = $this->data['id'] . '.zip';
+        $fileName = $this->data['id'].'.zip';
         $file = file_get_contents($this->response->download_url);
-        $filePath = config('config.import_dir') . '/' . $fileName;
+        $filePath = config('config.import_dir').'/'.$fileName;
 
-        if (Storage::disk('efs')->put($filePath, $file) === false)
-        {
+        if (Storage::disk('efs')->put($filePath, $file) === false) {
             throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
         }
 
         return $this->importRepo->create([
             'user_id'    => $this->data['user_id'],
             'project_id' => $this->data['project_id'],
-            'file'       => $filePath
+            'file'       => $filePath,
         ]);
     }
 }

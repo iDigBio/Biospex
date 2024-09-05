@@ -67,7 +67,7 @@ class WeDigBioDashboardController extends ApiController
      */
     public function index(): Response|WeDigBioDashboardCollection
     {
-        $request = request()->all();
+        $request = \Request::all();
         $this->weDigBioDashboardProcess->setDashboardQuery($request);
         $numFound = $this->weDigBioDashboardProcess->getTotalCount();
         $limit = $this->weDigBioDashboardProcess->setLimit($request);

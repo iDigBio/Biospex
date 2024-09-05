@@ -19,21 +19,21 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
-use App\Models\Header;
-use App\Notifications\GridCsvExport;
-use App\Notifications\GridCsvExportError;
-use App\Services\Process\AwsS3CsvService;
-use App\Services\Grid\JqGridEncoder;
 use App\Facades\GeneralHelper;
+use App\Models\Header;
+use App\Models\User;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
+use App\Services\Csv\AwsS3CsvService;
+use App\Services\Grid\JqGridEncoder;
 use Exception;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * Class GridExportCsvJob
@@ -42,7 +42,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
  */
 class GridExportCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -89,14 +89,14 @@ class GridExportCsvJob implements ShouldQueue
         $this->expeditionId = $data['expeditionId'];
         $this->postData = $data['postData'];
         $this->route = $data['route'];
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
      *
      * @param \App\Services\Grid\JqGridEncoder $jqGridEncoder
-     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
+     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      * @return void
      */
     public function handle(JqGridEncoder $jqGridEncoder, AwsS3CsvService $awsS3CsvService)
@@ -136,16 +136,35 @@ class GridExportCsvJob implements ShouldQueue
             }
 
             $route = route('admin.downloads.report', ['file' => base64_encode($csvName)]);
-            $this->user->notify(new GridCsvExport($route, $this->projectId, $this->expeditionId));
+            $btn = $this->createButton($route, t('Download CSV'));
+            $html = $this->expeditionId !== 0 ?
+                t('Your grid export for Expedition Id %s is complete. Click the button provided to download:', $this->expeditionId) :
+                t('Your grid export for Project Id %s is complete. Click the button provided to download:', $this->projectId);
+
+            $attributes = [
+                'subject' => t('Grid Export to CSV Complete'),
+                'html'    => [$html],
+                'buttons' => $btn
+            ];
+
+            $this->user->notify(new Generic($attributes));
 
         } catch (Exception $e) {
-            $message = [
-                'Project Id: ' . $this->projectId,
-                'Expedition Id: ' . $this->expeditionId,
-                'Error: ' . $e->getMessage(),
-                'Trace: ' . $e->getTraceAsString()
+
+            $idMessage = $this->expeditionId !== 0 ? t('Expedition Id: %s', $this->expeditionId) : t('Project Id: %s', $this->projectId);
+            $attributes = [
+                'subject' => t('Grid Export to CSV Error'),
+                'html'    => [
+                    t('An error occurred during csv export from the grid.'),
+                    $idMessage,
+                    t('File: %s', $e->getFile()),
+                    t('Line: %s', $e->getLine()),
+                    t('Message: %s', $e->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ],
             ];
-            $this->user->notify(new GridCsvExportError($message));
+
+            $this->user->notify(new Generic($attributes, true));
             Storage::disk('s3')->delete(config('config.report_dir').'/'.$csvName);
         }
     }

@@ -32,18 +32,21 @@ class PusherTranscription extends BaseMongoModel
     protected $collection = 'pusher_transcriptions';
 
     /**
-     * @inheritDoc
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $dates = ['created_at', 'updated_at', 'timestamp'];
-
-    /**
-     * @var string[]
-     */
-    protected $casts = [
-        'classification_id' => 'int',
-        'transcription_id' => 'string',
-        'expedition_id' => 'int'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'classification_id' => 'integer',
+            'transcription_id' => 'string',
+            'expedition_id' => 'integer',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'timestamp' => 'datetime',
+        ];
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -60,6 +63,4 @@ class PusherTranscription extends BaseMongoModel
     {
         return $this->belongsTo(PanoptesTranscription::class, 'classification_id', 'classification_id');
     }
-
-
 }

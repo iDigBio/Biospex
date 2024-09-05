@@ -172,7 +172,7 @@ class ApiController extends BaseController
      */
     protected function respondWithArray(array $array, array $headers = [])
     {
-        $response = Response::make(json_encode($array), $this->statusCode, $headers);
+        $response = \Response::make(json_encode($array), $this->statusCode, $headers);
         $response->header('Content-Type', 'application/json');
 
         return $response;

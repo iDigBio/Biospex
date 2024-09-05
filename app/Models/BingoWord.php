@@ -50,24 +50,4 @@ class BingoWord extends BaseEloquentModel
         return $this->belongsTo(Bingo::class);
     }
 
-    /**
-     * Accessor for ip.
-     *
-     * @param $value
-     * @return false|string
-     */
-    public function getIpAttribute($value)
-    {
-        return inet_ntop($value);
-    }
-
-    /**
-     * Mutator for ip.
-     *
-     * @param $value
-     */
-    public function setIpAttribute($value)
-    {
-        $this->attributes['ip_address'] = inet_pton($value);
-    }
 }

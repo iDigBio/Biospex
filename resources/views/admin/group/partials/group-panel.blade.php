@@ -5,7 +5,6 @@
             <div class="col-12">
                 <div class="d-flex justify-content-between mt-4 mb-4">
                     {!! $group->present()->group_invite_icon_lrg !!}
-                    {!! $group->present()->group_show_icon_lrg !!}
                     {!! $group->present()->group_edit_icon_lrg !!}
                     @can('isOwner', $group)
                         {!! $group->present()->group_delete_icon_lrg !!}

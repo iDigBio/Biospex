@@ -19,7 +19,6 @@
 
 namespace App\Repositories;
 
-use App\Models\Actor;
 use App\Models\ExportQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -50,10 +49,11 @@ class ExportQueueRepository extends BaseRepository
      */
     public function getAllExportQueueOrderByIdAsc(): Collection
     {
-        return $this->model->with('expedition.project.group')
-            ->where('error', 0)
-            ->orderBy('id', 'asc')
-            ->get();
+        return $this->model->withCount([
+            'files' => function ($q) {
+                $q->where('processed', 1);
+            },
+        ])->with('expedition.project.group')->where('error', 0)->orderBy('id', 'asc')->get();
     }
 
     /**
@@ -75,21 +75,19 @@ class ExportQueueRepository extends BaseRepository
         $queue->queued = 0;
         $queue->error = 0;
         $queue->stage = 0;
-        $queue->count = $total;
-        $queue->processed = 0;
+        $queue->total = $total;
         $queue->save();
 
         return $queue;
     }
 
     /**
-     * Get queue for retry using command.
+     * Get queue for Zooniverse export.
      *
-     * @return \App\Models\ExportQueue|null
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder|null
      */
-    public function getQueueForRetry(): ?ExportQueue
+    public function findExportQueueFirst(): Model|Builder|null
     {
-        return $this->model->where('queued', 1)->first();
+        return $this->model->with('expedition')->where('error', 0)->first();
     }
-
 }

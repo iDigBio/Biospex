@@ -19,18 +19,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
-
 /**
  * Class OcrQueue
  *
  * @package App\Models
  */
-class OcrQueue extends Model
+class OcrQueue extends BaseEloquentModel
 {
-    use LadaCacheTrait;
-
     /**
      * @inheritDoc
      */
@@ -43,17 +38,16 @@ class OcrQueue extends Model
         'project_id',
         'expedition_id',
         'total',
-        'processed',
         'status',
         'error'
     ];
 
     /**
-     * Project relation.
+     * Project relation
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function project()
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
@@ -66,5 +60,15 @@ class OcrQueue extends Model
     public function expedition()
     {
         return $this->belongsTo(Expedition::class);
+    }
+
+    /**
+     * OcrQueueFiles relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function files(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(OcrQueueFile::class, 'queue_id', 'id');
     }
 }

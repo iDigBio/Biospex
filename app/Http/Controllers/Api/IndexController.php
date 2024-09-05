@@ -31,6 +31,6 @@ class IndexController
      */
     public function index()
     {
-        return view('front.api-index');
+        return \View::make('front.api-index');
     }
 }

@@ -52,7 +52,7 @@ class MailController extends Controller
      */
     public function index()
     {
-        return view('admin.mail.index');
+        return \View::make('admin.mail.index');
     }
 
     /**
@@ -74,6 +74,6 @@ class MailController extends Controller
 
         \Flash::success(t('Your message has been sent.'));
 
-        return redirect()->route('admin.mail.index');
+        return \Redirect::route('admin.mail.index');
     }
 }

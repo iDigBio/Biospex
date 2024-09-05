@@ -60,7 +60,7 @@ class ProjectController extends Controller
     {
         $projects = $this->projectRepo->getPublicProjectIndex();
 
-        return view('front.project.index', compact('projects'));
+        return \View::make('front.project.index', compact('projects'));
     }
 
     /**
@@ -70,15 +70,15 @@ class ProjectController extends Controller
      */
     public function sort()
     {
-        if (! request()->ajax()) {
+        if (! \Request::ajax()) {
             return null;
         }
 
-        $sort = request()->get('sort');
-        $order = request()->get('order');
+        $sort = \Request::get('sort');
+        $order = \Request::get('order');
         $projects = $this->projectRepo->getPublicProjectIndex($sort, $order);
 
-        return view('front.project.partials.project', compact('projects'));
+        return \View::make('front.project.partials.project', compact('projects'));
     }
 
     /**
@@ -97,16 +97,16 @@ class ProjectController extends Controller
         $project = $this->projectRepo->getProjectPageBySlug($slug);
 
         if ($project === null) {
-            Flash::error(t('Unable to locate project. Please alert the Admin.'));
+            \Flash::error(t('Unable to locate project. Please alert the Admin.'));
 
-            return redirect()->route('front.projects.index');
+            return \Redirect::route('front.projects.index');
         }
 
         $expeditions = null;
         $expeditionsCompleted = null;
         if (isset($project->expeditions)) {
             [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
-                return $expedition->nfnActor->pivot->completed === 0;
+                return $expedition->completed === 0;
             });
         }
 
@@ -122,7 +122,8 @@ class ProjectController extends Controller
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
         $transcribersCount = CountHelper::projectTranscriberCount($project->id);
 
-        $years = $chartService->setYearsArray($project->id);
+        $years = !isset($project->amChart) || is_null($project->amChart->data) ?
+            null : array_keys($project->amChart->data);
 
         $states = $stateCountyRepo->getStateTranscriptCount($project->id);
         $max = abs(round(($states->max('value') + 500), -3));
@@ -130,10 +131,10 @@ class ProjectController extends Controller
         JavaScript::put([
             'max'     => $max,
             'states'  => $states->toJson(),
-            'years'   => $years === null ? null : $years->toArray(),
+            'years'   => $years,
             'project' => $project->id,
         ]);
 
-        return view('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
+        return \View::make('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
     }
 }

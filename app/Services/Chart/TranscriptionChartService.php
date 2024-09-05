@@ -27,8 +27,6 @@ use Carbon\CarbonPeriod;
 use File;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use function collect;
-use function config;
 
 /**
  * Class TranscriptionChartService
@@ -155,13 +153,24 @@ class TranscriptionChartService
      * @param $project
      * @param $year
      */
-    protected function buildCompleteChartData($project, $year)
+    protected function buildCompleteChartData($project, $year): void
     {
-        $project->expeditions->each(function ($expedition) use ($year) {
-            $completeDates = $this->processExpedition($expedition, $year);
+        $count = false;
+        $project->expeditions->each(function ($expedition) use ($year, &$count) {
+            $dateCount = $this->transcriptionCountPerDate($expedition->panoptesProject->panoptes_workflow_id);
+            if ($dateCount->isEmpty()) {
+                return;
+            }
+
+            $count = true;
+            $completeDates = $this->processExpedition($expedition, $year, $dateCount);
 
             $this->amChartData[$year] = $this->amChartData[$year]->mergeRecursive($completeDates);
         });
+
+        if (! $count) {
+            unset($this->amChartData[$year]);
+        }
     }
 
     /**
@@ -225,16 +234,11 @@ class TranscriptionChartService
      *
      * @param \App\Models\Expedition $expedition
      * @param int $year
-     * @return \Illuminate\Support\Collection|void
+     * @return \Illuminate\Support\Collection
      */
-    protected function processExpedition(Expedition $expedition, int $year)
+    protected function processExpedition(Expedition $expedition, int $year, mixed $dateCount = null): Collection
     {
         $record = 'expedition'.$expedition->id;
-
-        $dateCount = $this->transcriptionCountPerDate($expedition->panoptesProject->panoptes_workflow_id);
-        if ($dateCount->isEmpty()) {
-            return;
-        }
 
         $mappedDates = $this->mapDateCounts($dateCount, $record);
         $mergedDates = $this->yearDaysArray->mergeRecursive($mappedDates);
@@ -253,7 +257,7 @@ class TranscriptionChartService
      * @param int $workflowId
      * @return mixed
      */
-    protected function transcriptionCountPerDate(int $workflowId)
+    protected function transcriptionCountPerDate(int $workflowId): mixed
     {
         return $this->panoptesTranscriptionRepo->getTranscriptionCountPerDate($workflowId, $this->begin, $this->end);
     }

@@ -21,7 +21,6 @@ namespace App\Repositories;
 
 use App\Models\Project;
 use App\Models\ProjectResource;
-use function collect;
 
 /**
  * Class ProjectRepository
@@ -42,18 +41,20 @@ class ProjectRepository extends BaseRepository
     }
 
     /**
-     * @param array $attributes
-     * @return \App\Repositories\Eloquent\EloquentRepository|bool|\Illuminate\Database\Eloquent\Model
+     * Override create in base repository.
+     *
+     * @param array $data
+     * @return \App\Models\Project|\Illuminate\Database\Eloquent\Model|true
      */
-    public function create(array $attributes)
+    public function create(array $data): \Illuminate\Database\Eloquent\Model|bool|Project
     {
-        $project = $this->model->create($attributes);
+        $project = $this->model->create($data);
 
-        if (! isset($attributes['resources'])) {
+        if (! isset($data['resources'])) {
             return true;
         }
 
-        $resources = collect($attributes['resources'])->reject(function ($resource) {
+        $resources = collect($data['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
         })->map(function ($resource) {
             return new ProjectResource($resource);
@@ -68,25 +69,25 @@ class ProjectRepository extends BaseRepository
      * Override project update.
      *
      * TODO move resource code
-     * @param array $attributes
+     * @param array $data
      * @param $resourceId
      * @return bool|iterable
      */
-    public function update(array $attributes, $resourceId)
+    public function update(array $data, $resourceId)
     {
         $model = $this->model->find($resourceId);
 
-        $attributes['slug'] = null;
-        $model->fill($attributes)->save();
+        $data['slug'] = null;
+        $model->fill($data)->save();
 
-        if (! isset($attributes['resources'])) {
+        if (! isset($data['resources'])) {
             return true;
         }
 
-        $resources = collect($attributes['resources'])->reject(function ($resource) {
+        $resources = collect($data['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
         })->reject(function ($resource) {
-            return empty($resource['id']) ? false : $this->updateProjectResource($resource);
+            return ! empty($resource['id']) && $this->updateProjectResource($resource);
         })->map(function ($resource) {
             return new ProjectResource($resource);
         });
@@ -157,15 +158,15 @@ class ProjectRepository extends BaseRepository
      * Get project for show page.
      *
      * @param $projectId
-     * @return \App\Models\Project|\App\Models\Project[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     * @return \App\Models\Project|null
      */
-    public function getProjectShow($projectId)
+    public function getProjectShow($projectId): ?Project
     {
         return $this->model->withCount('expeditions')->with([
             'group',
             'ocrQueue',
             'expeditions' => function($q) {
-                $q->with(['stat', 'nfnActor', 'export']);
+                $q->with(['stat', 'zooniverseExport', 'panoptesProject', 'workflowManager']);
             }
         ])->find($projectId);
     }
@@ -179,14 +180,16 @@ class ProjectRepository extends BaseRepository
     public function getProjectPageBySlug($slug)
     {
         return $this->model->withCount('events')->withCount('expeditions')->with([
+            'amChart',
             'group.users.profile',
             'resources',
             'lastPanoptesProject',
             'bingos',
             'expeditions' => function($query){
-                $query->has('panoptesProject')->has('nfnActor')->with('panoptesProject', 'stat', 'nfnActor');
+                $query->has('panoptesProject')->has('zooniverseActor')->with('panoptesProject', 'stat', 'zooniverseActor');
             },
             'events' => function ($q) {
+                $q->with('teams');
                 $q->orderBy('start_date', 'desc');
             }])->where('slug', '=', $slug)->first();
     }
@@ -195,9 +198,9 @@ class ProjectRepository extends BaseRepository
      * Get project for deletion.
      *
      * @param $projectId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder[]
      */
-    public function getProjectForDelete($projectId)
+    public function getProjectForDelete($projectId): \Illuminate\Database\Eloquent\Builder|array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
     {
         return $this->model->with([
             'group',
@@ -303,9 +306,9 @@ class ProjectRepository extends BaseRepository
      * @param $projectId
      * @return mixed
      */
-    public function getProjectForDarwinImportJob($projectId)
+    public function getProjectForDarwinImportJob($projectId): mixed
     {
-        return $this->model->with(['workflow.actors', 'group' => function($q){
+        return $this->model->with(['group' => function($q){
             $q->with(['owner', 'users' => function($q){
                 $q->where('notification', 1);
             }]);

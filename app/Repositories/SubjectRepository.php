@@ -22,8 +22,6 @@ namespace App\Repositories;
 use App\Models\Subject;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
-use function collect;
-use function event;
 
 /**
  * Class SubjectRepository
@@ -75,9 +73,10 @@ class SubjectRepository extends BaseRepository
      * @param $expeditionId
      * @return \Illuminate\Support\LazyCollection
      */
-    public function getAssignedByExpeditionId($expeditionId): LazyCollection
+    public function getSubjectCursorForExport($expeditionId): LazyCollection
     {
-        return $this->model->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])->timeout(86400)->cursor();
+        return $this->model->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])
+            ->timeout(86400)->cursor();
     }
 
     /**
@@ -85,32 +84,16 @@ class SubjectRepository extends BaseRepository
      *
      * @param int $projectId
      * @param int|null $expeditionId
-     * @return \App\Models\Subject|\Illuminate\Database\Eloquent\Builder
-     */
-    public function getSubjectQueryForOcr(int $projectId, int $expeditionId = null)
-    {
-        $query = $this->model->where('project_id', $projectId);
-        $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = $query->where('ocr', '')->timeout(86400);
-
-        return $query;
-    }
-
-    /**
-     * Get subject cursor for OCR processing.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     *
      * @return \Illuminate\Support\LazyCollection
      */
-    public function getSubjectErrorCursorForOcr(int $projectId, int $expeditionId = null): LazyCollection
+    public function getSubjectCursorForOcr(int $projectId, int $expeditionId = null): LazyCollection
     {
         $query = $this->model->where('project_id', $projectId);
-        $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = $query->where('ocr', 'like', '%Error:%');
+        $query = null === $expeditionId ? $query : $query->where('expedition_ids', $expeditionId);
 
-        return $query->cursor();
+        return $query->where(function ($q) {
+            $q->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
+        })->options(['allowDiskUse' => true])->timeout(86400)->cursor();
     }
 
     /**
@@ -118,17 +101,18 @@ class SubjectRepository extends BaseRepository
      *
      * @param int $projectId
      * @param int|null $expeditionId
-     * @param bool $error
      * @return int
      */
-    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null, bool $error = false): int
+    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null): int
     {
         $query = $this->model->where('project_id', $projectId);
-        $query = null === $expeditionId ? $query : $query->where('expedition_id', $expeditionId);
-        $query = ! $error ? $query->where('ocr', '') : $query->where('ocr', 'like', '%Error:%');
+        $query = null === $expeditionId ? $query : $query->where('expedition_ids', $expeditionId);
 
-        return $query->count();
+        return $query->where(function ($query) {
+            $query->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
+        })->count();
     }
+
 
     /**
      * Detach subjects from expedition.

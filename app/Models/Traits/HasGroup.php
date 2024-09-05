@@ -65,7 +65,7 @@ trait HasGroup
      */
     public function isAdmin()
     {
-        return $this->hasGroup(config('config.admin_group'));
+        return $this->hasGroup(config('config.admin.group'));
     }
 
 }

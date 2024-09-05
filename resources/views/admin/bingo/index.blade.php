@@ -18,7 +18,9 @@
 
     <div class="row">
         @if($bingos->isNotEmpty())
-            @each('admin.bingo.partials.bingo-loop', $bingos, 'bingo')
+            @foreach($bingos as $bingo)
+                @include('admin.bingo.partials.bingo-loop')
+            @endforeach
         @else
             <h2 class="mx-auto pt-4">{{ t('No Bingo Games exist.') }}</h2>
         @endif

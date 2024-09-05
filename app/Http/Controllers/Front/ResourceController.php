@@ -41,7 +41,7 @@ class ResourceController extends Controller
     {
         $resources = $resourceRepo->getResourcesOrdered();
 
-        return view('front.resource.index', compact('resources'));
+        return \View::make('front.resource.index', compact('resources'));
     }
 
     /**
@@ -56,9 +56,9 @@ class ResourceController extends Controller
         $download = $resourceRepo->find($resourceId);
 
         if (! $download->document->exists() || ! file_exists(public_path('storage' . $download->document->path()))) {
-            Flash::error('File cannot be found.');
+            \Flash::error('File cannot be found.');
 
-            return redirect()->route('front.resources.index');
+            return \Redirect::route('front.resources.index');
         }
 
         return Storage::download('public/' . $download->document->path());

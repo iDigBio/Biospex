@@ -19,7 +19,7 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\HybridRelations;
+use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
  * Class EventTranscription
@@ -29,11 +29,6 @@ use Jenssegers\Mongodb\Eloquent\HybridRelations;
 class EventTranscription extends BaseEloquentModel
 {
     use HybridRelations;
-
-    /**
-     * @var string
-     */
-    protected $connection = 'mysql';
 
     /**
      * @inheritDoc
@@ -55,21 +50,27 @@ class EventTranscription extends BaseEloquentModel
     ];
 
     /**
-     * @var array
+     *
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'classification_id' => 'int',
-        'event_id' => 'int',
-        'team_id' => 'int',
-        'user_id' => 'int',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'classification_id' => 'int',
+            'event_id'          => 'int',
+            'team_id'           => 'int',
+            'user_id'           => 'int',
+        ];
+    }
 
     /**
      * Transcription relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function transcription()
+    public function transcription(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(PanoptesTranscription::class,'_id', 'classification_id');
     }
@@ -79,7 +80,7 @@ class EventTranscription extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function event()
+    public function event(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Event::class);
     }
@@ -89,7 +90,7 @@ class EventTranscription extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(EventTeam::class);
     }
@@ -99,7 +100,7 @@ class EventTranscription extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(EventUser::class);
     }

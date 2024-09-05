@@ -23,30 +23,28 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * Class Invite
- *
- * @package App\Models
  */
 class Invite extends BaseEloquentModel
 {
     use Notifiable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'invites';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'group_id',
         'email',
-        'code'
+        'code',
     ];
 
     /**
      * Group relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function group()

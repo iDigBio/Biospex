@@ -20,8 +20,9 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actor\NfnPanoptes\ZooniverseExportDeleteFiles;
+use App\Services\Actor\ActorDirectory;
+use App\Services\Actor\Traits\ZooniverseErrorNotification;
+use App\Services\Actor\Zooniverse\ZooniverseExportDeleteFiles;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -36,7 +37,7 @@ use Throwable;
  */
 class ZooniverseExportDeleteFilesJob implements ShouldQueue, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NfnErrorNotification;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
 
     /**
      * @var \App\Models\ExportQueue
@@ -49,42 +50,44 @@ class ZooniverseExportDeleteFilesJob implements ShouldQueue, ShouldBeUnique
     public int $timeout = 300;
 
     /**
-     * Indicate if the job should be marked as failed on timeout.
-     *
-     * @var bool
+     * @var \App\Services\Actor\ActorDirectory
      */
-    public bool $failOnTimeout = true;
+    private ActorDirectory $actorDirectory;
 
     /**
      * Create a new job instance.
      *
      * @param \App\Models\ExportQueue $exportQueue
+     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      */
-    public function __construct(ExportQueue $exportQueue)
+    public function __construct(ExportQueue $exportQueue, ActorDirectory $actorDirectory)
     {
         $this->exportQueue = $exportQueue;
-        $this->onQueue(config('config.queues.export'));
+        $this->actorDirectory = $actorDirectory;
+        $this->onQueue(config('config.queue.export'));
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\NfnPanoptes\ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles
+     * @param \App\Services\Actor\Zooniverse\ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles
      * @throws \Exception
      */
-    public function handle(ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles)
+    public function handle(ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles): void
     {
-        $zooniverseExportDeleteFiles->process($this->exportQueue);
+        $this->exportQueue->increment('stage');
+        \Artisan::call('export:poll');
+        $zooniverseExportDeleteFiles->process($this->exportQueue, $this->actorDirectory);
     }
 
     /**
      * Handle a job failure.
      *
-     * @param  \Throwable  $exception
+     * @param  \Throwable  $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable): void
     {
-        $this->sendErrorNotification($this->exportQueue, $exception);
+        $this->sendErrorNotification($this->exportQueue, $throwable);
     }
 }

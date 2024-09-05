@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-sm-8 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
-                <form id="gridForm" method="post"
+                <form method="post"
                       action="{{ route('admin.groups.update', [$group->id]) }}"
                       role="form" enctype="multipart/form-data">
                     {!! method_field('put') !!}

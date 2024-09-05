@@ -24,7 +24,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EditUserFormRequest;
 use App\Http\Requests\PasswordFormRequest;
 use App\Repositories\UserRepository;
-use Flash;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Hash;
 
@@ -40,7 +39,7 @@ class UserController extends Controller
     /**
      * @var \App\Repositories\UserRepository
      */
-    public $userContract;
+    public $userRepo;
 
     /**
      * UserController constructor.
@@ -57,7 +56,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return redirect()->route('admin.users.edit', [request()->user()->id]);
+        return \Redirect::route('admin.users.edit', [\Request::user()->id]);
     }
 
     /**
@@ -68,30 +67,30 @@ class UserController extends Controller
      */
     public function show($userId)
     {
-        return redirect()->route('admin.users.edit', [$userId]);
+        return \Redirect::route('admin.users.edit', [$userId]);
     }
 
     /**
      * Show the form for user edit.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function edit()
+    public function edit(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $user = $this->userRepo->findWith(request()->user()->id, ['profile']);
+        $user = $this->userRepo->findWith(\Request::user()->id, ['profile']);
 
         if ($user->cannot('update', $user))
         {
-            Flash::warning( t('You do not have sufficient permissions.'));
+            \Flash::warning( t('You do not have sufficient permissions.'));
 
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         $timezones = DateHelper::timeZoneSelect();
         $cancel = route('admin.projects.index');
 
-        return view('admin.user.edit', compact('user', 'timezones', 'cancel'));
+        return \View::make('admin.user.edit', compact('user', 'timezones', 'cancel'));
     }
 
     /**
@@ -106,9 +105,9 @@ class UserController extends Controller
 
         if ($user->cannot('update', $user))
         {
-            Flash::warning( t('You do not have sufficient permissions.'));
+            \Flash::warning( t('You do not have sufficient permissions.'));
 
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         $input = $request->all();
@@ -120,14 +119,14 @@ class UserController extends Controller
 
         if ($result)
         {
-            Flash::success(t('Record was updated successfully.'));
+            \Flash::success(t('Record was updated successfully.'));
         }
         else
         {
-            Flash::error(t('Error while updating record.'));
+            \Flash::error(t('Error while updating record.'));
         }
 
-        return redirect()->route('admin.users.edit', [$user->id]);
+        return \Redirect::route('admin.users.edit', [$user->id]);
     }
 
     /**
@@ -142,22 +141,22 @@ class UserController extends Controller
 
         if ( ! policy($user)->pass($user))
         {
-            Flash::warning( t('You do not have sufficient permissions.'));
+            \Flash::warning( t('You do not have sufficient permissions.'));
 
-            return redirect()->route('admin.projects.index');
+            return \Redirect::route('admin.projects.index');
         }
 
         if ( ! Hash::check($request->input('oldPassword'), $user->password))
         {
-            Flash::error(t('You did not provide the correct original password.'));
+            \Flash::error(t('You did not provide the correct original password.'));
 
-            return redirect()->route('admin.users.edit', [$user->id]);
+            return \Redirect::route('admin.users.edit', [$user->id]);
         }
 
         $this->resetPassword($user, $request->input('newPassword'));
 
-        Flash::success(t('Your password has been changed.'));
+        \Flash::success(t('Your password has been changed.'));
 
-        return redirect()->route('admin.users.edit', [$user->id]);
+        return \Redirect::route('admin.users.edit', [$user->id]);
     }
 }

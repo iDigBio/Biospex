@@ -19,11 +19,9 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ExportQueueRepository;
-use App\Services\Actor\Traits\ActorDirectory;
-use Aws\Lambda\LambdaClient;
+use App\Services\Api\AwsLambdaApiService;
 use Illuminate\Console\Command;
-use \Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AppCommand
@@ -32,12 +30,10 @@ use \Illuminate\Foundation\Bus\DispatchesJobs;
  */
 class AppLambdaCommand extends Command
 {
-    use DispatchesJobs, ActorDirectory;
-
     /**
      * The console command name.
      */
-    protected $signature = 'lambda:test';
+    protected $signature = 'lambda:test {method}';
 
     /**
      * The console command description.
@@ -45,18 +41,17 @@ class AppLambdaCommand extends Command
     protected $description = 'Used to test sqs lambda code';
 
     /**
-     * @var \App\Repositories\ExportQueueRepository
+     * @var \App\Services\Api\AwsLambdaApiService
      */
-    private ExportQueueRepository $exportQueueRepository;
+    private AwsLambdaApiService $awsLambdaApiService;
 
     /**
      * AppCommand constructor.
      */
-    public function __construct(
-        ExportQueueRepository $exportQueueRepository
-    ) {
+    public function __construct(AwsLambdaApiService $awsLambdaApiService)
+    {
         parent::__construct();
-        $this->exportQueueRepository = $exportQueueRepository;
+        $this->awsLambdaApiService = $awsLambdaApiService;
     }
 
     /**
@@ -66,99 +61,78 @@ class AppLambdaCommand extends Command
      */
     public function handle()
     {
-        $this->imageTar();
-        //$this->imageProcess();
+        if ($this->argument('method') === 'export') {
+            $this->exportTest();
+        } elseif ($this->argument('method') === 'explain') {
+            $this->explainTest();
+        } elseif ($this->argument('method') === 'reconcile') {
+            $this->reconcileTest();
+        } elseif ($this->argument('method') === 'delete') {
+            $this->deleteTestFiles();
+        } elseif ($this->argument('method') === 'tesseract') {
+            $this->tesseractTest();
+        }
     }
 
-    /**
-     * @return void
-     */
-    public function imageTar()
+    private function exportTest(): void
     {
-        $exportQueue = $this->exportQueueRepository->findWith(1, ['expedition']);
-        $this->setFolder($exportQueue->id, $exportQueue->actor_id, $exportQueue->expedition->uuid);
-        $this->setDirectories();
-
-
-        $client = $this->getLambdaClient();
-
-        $data = [
-            'queueId' => $exportQueue->id, //event.queueId;
-            'sourcePath' => $this->workingDir, //event.sourcePath;
-            'outputFilename' =>  md5($this->folderName) //event.outputFilename;
+        $workingDir = "scratch/folderName-queueId-actorId-expeditionUuid";
+        $attributes = [
+            'bucket'    => config('filesystems.disks.s3.bucket'),
+            'queueId'   => 999999,
+            'subjectId' => "615da36c65b16554e4781ed9",
+            'url'       => "https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg",
+            'dir'       => $workingDir,
         ];
 
-        $start_time = microtime(true);
+        Storage::disk('s3')->makeDirectory($workingDir);
 
-        $result = $client->invoke([
-            // The name your created Lamda function
-            'FunctionName'   => 'imageTarGz',
-            'Payload'        => json_encode($data),
-        ]);
+        //$result = $this->awsLambdaApiService->lambdaInvoke(config('config.aws.lambda_export_function'), $attributes);
+        //echo $result['Payload']->getContents();
 
-        echo $result['Payload'] . PHP_EOL;
-
-        // End clock time in seconds
-        $end_time = microtime(true);
-
-        // Calculate script execution time
-        $execution_time = ($end_time - $start_time);
-        echo " Execution time of script = ".$execution_time." sec" . PHP_EOL;
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_export_function'), $attributes);
     }
 
-    /**
-     * @return void
-     */
-    public function imageProcess()
+    private function explainTest(): void
     {
-        $client = $this->getLambdaClient();
+        $attributes = [
+            'bucket'       => 'biospex-dev',
+            'key'          => 'zooniverse/classification/999999.csv',
+            'explanations' => true,
+        ];
 
-        $data = $this->generateUrls(1);
+        //$result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
+        //echo $result['Payload']->getContents();
 
-        collect($data)->each(function($image) use($client) {
-            $result = $client->invoke([
-                // The name your created Lamda function
-                'FunctionName'   => 'imageProcessExport',
-                'Payload'        => json_encode($image),
-                'InvocationType' => 'Event',
-            ]);
-
-            echo $result['Payload'] . PHP_EOL;
-        });
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_reconciliation_function'), $attributes);
     }
 
-    /**
-     * Temp method to generate urls for testing.
-     *
-     * @param int $total
-     * @return array
-     */
-    public function generateUrls(int $total): array
+    private function reconcileTest(): void
     {
-        $files = $this->exportQueueFileRepository->findBy('queue_id', 10)->limit($total)->get();
-
-        return $files->map(function ($file) {
-            return [
-                'queueId' => $file->queue_id,
-                'subjectId'  => $file->subject_id,
-                'url' => $file->url,
-                'dir' => "scratch/testing-scratch",
-            ];
-        })->toArray();
+        $classification = config('zooniverse.directory.classification').'/999999.csv';
+        $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation').'/999999.csv';
+        \Storage::disk('s3')->copy($classification, $lambda_reconciliation);
     }
 
-    /**
-     * @return \Aws\Lambda\LambdaClient
-     */
-    private function getLambdaClient(): LambdaClient
+    private function deleteTestFiles()
     {
-        return new LambdaClient([
-            'credentials' => [
-                'key'    => config('config.aws_access_key'),
-                'secret' => config('config.aws_secret_key'),
-            ],
-            'version'     => '2015-03-31',
-            'region'      => config('config.aws_default_region'),
-        ]);
+        \Storage::disk('s3')->delete('zooniverse/transcript/999999.csv');
+        \Storage::disk('s3')->delete('zooniverse/summary/999999.html');
+        \Storage::disk('s3')->delete('zooniverse/reconciled/999999.csv');
+        \Storage::disk('s3')->delete('zooniverse/explained/999999.csv');
+    }
+
+    private function tesseractTest()
+    {
+        $attributes = [
+            'bucket' => config('filesystems.disks.s3.bucket'),
+            'key'    => config('zooniverse.directory.lambda-ocr').'/615da36c65b16554e4781ed9.txt',
+            'file'   => 999,
+            'uri'    => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
+        ]; //https://sernecportal.org/imglib/seinet/sernec/FTU/FTU0016/FTU0016693.jpg
+
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), $attributes);
+        //$result = $this->awsLambdaApiService->lambdaInvoke('tesseractOcr', $attributes);
+        //echo $result['Payload']->getContents();
     }
 }

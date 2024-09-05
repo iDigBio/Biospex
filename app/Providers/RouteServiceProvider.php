@@ -68,7 +68,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
-        Route::domain(config('config.api_domain'))->group(function () {
+        Route::domain(config('config.api.domain'))->group(function () {
             Route::middleware(['web'])->group(base_path('routes/api/index.php'));
 
             Route::middleware([
@@ -104,7 +104,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
                 $this->require_files('routes/admin');
                 Route::get('/', function () {
-                    return redirect()->route('admin.projects.index');
+                    return \Redirect::route('admin.projects.index');
                 });
             });
         });

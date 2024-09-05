@@ -14,11 +14,11 @@ class CreateEventTranscriptionsTable extends Migration
     public function up()
     {
         Schema::create('event_transcriptions', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->integer('classification_id');
-            $table->unsignedInteger('event_id')->index('event_transcriptions_event_id_foreign');
-            $table->unsignedInteger('team_id')->index('event_transcriptions_team_id_foreign');
-            $table->unsignedInteger('user_id')->index('event_transcriptions_user_id_foreign');
+            $table->unsignedBigInteger('event_id')->index('event_transcriptions_event_id_foreign');
+            $table->unsignedBigInteger('team_id')->index('event_transcriptions_team_id_foreign');
+            $table->unsignedBigInteger('user_id')->index('event_transcriptions_user_id_foreign');
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrent();
         });

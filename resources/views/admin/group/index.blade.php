@@ -18,6 +18,5 @@
             @include('admin.group.partials.group', ['groups' => $groups])
         </div>
     </div>
-    @include('admin.partials.invite-modal')
 @stop
 

@@ -21,12 +21,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
-use App\Jobs\DeleteGroup;
+use App\Jobs\DeleteGroupJob;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserRepository;
+use App\Services\Actor\GeoLocate\GeoLocateExportForm;
 use Auth;
 use Exception;
-use Flash;
 
 /**
  * Class GroupController
@@ -59,7 +59,7 @@ class GroupController extends Controller
     {
         $groups = $this->groupRepo->getGroupsByUserId(Auth::id());
 
-        return view('admin.group.index', compact('groups'));
+        return \View::make('admin.group.index', compact('groups'));
     }
 
     /**
@@ -69,7 +69,7 @@ class GroupController extends Controller
      */
     public function create()
     {
-        return view('admin.group.create');
+        return \View::make('admin.group.create');
     }
 
     /**
@@ -91,14 +91,14 @@ class GroupController extends Controller
 
             event('group.saved');
 
-            Flash::success(t('Record was created successfully.'));
+            \Flash::success(t('Record was created successfully.'));
 
-            return redirect()->route('admin.groups.index');
+            return \Redirect::route('admin.groups.index');
         }
 
-        Flash::warning(t('Login field required'));
+        \Flash::warning(t('Login field required'));
 
-        return redirect()->back();
+        return back();
     }
 
     /**
@@ -113,10 +113,10 @@ class GroupController extends Controller
         $group = $this->groupRepo->getGroupShow($groupId);
 
         if (! $this->checkPermissions('read', $group)) {
-            return redirect()->back();
+            return back();
         }
 
-        return view('admin.group.show', compact('group'));
+        return \View::make('admin.group.show', compact('group'));
     }
 
     /**
@@ -130,14 +130,14 @@ class GroupController extends Controller
         $group = $this->groupRepo->findWith($groupId, ['owner', 'users.profile']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return redirect()->back();
+            return back();
         }
 
         $users = $group->users->mapWithKeys(function ($user) {
             return [$user->id => $user->profile->full_name];
         });
 
-        return view('admin.group.edit', compact('group', 'users'));
+        return \View::make('admin.group.edit', compact('group', 'users'));
     }
 
     /**
@@ -152,12 +152,12 @@ class GroupController extends Controller
         $group = $this->groupRepo->find($groupId);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return redirect()->back();
+            return back();
         }
 
-        $this->groupRepo->update($request->all(), $groupId) ? Flash::success(t('Record was updated successfully.')) : Flash::error(t('Error while updating record.'));
+        $this->groupRepo->update($request->all(), $groupId) ? \Flash::success(t('Record was updated successfully.')) : \Flash::error(t('Error while updating record.'));
 
-        return redirect()->route('admin.groups.show', [$groupId]);
+        return \Redirect::route('admin.groups.show', [$groupId]);
     }
 
     /**
@@ -171,29 +171,29 @@ class GroupController extends Controller
         $group = $this->groupRepo->findWith($groupId, ['projects.panoptesProjects', 'projects.workflowManagers']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return redirect()->back();
+            return back();
         }
 
         try {
             foreach ($group->projects as $project) {
                 if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                    Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+                    \Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
-                    return redirect()->route('admin.groups.index');
+                    return \Redirect::route('admin.groups.index');
                 }
             }
 
-            DeleteGroup::dispatch($group);
+            DeleteGroupJob::dispatch($group);
 
             event('group.deleted', $group->id);
 
-            Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
+            \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
-            return redirect()->route('admin.groups.index');
+            return \Redirect::route('admin.groups.index');
         } catch (Exception $e) {
-            Flash::error(t('An error occurred when deleting record.'));
+            \Flash::error(t('An error occurred when deleting record.'));
 
-            return redirect()->route('admin.groups.index');
+            return \Redirect::route('admin.groups.index');
         }
     }
 
@@ -210,26 +210,63 @@ class GroupController extends Controller
         $group = $this->groupRepo->find($groupId);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return redirect()->route('admin.groups.index');
+            return \Redirect::route('admin.groups.index');
         }
 
         try {
             if ($group->user_id === (int) $userId) {
-                Flash::error(t('You cannot delete the owner until another owner is selected.'));
+                \Flash::error(t('You cannot delete the owner until another owner is selected.'));
 
-                return redirect()->route('admin.groups.show', [$groupId]);
+                return \Redirect::route('admin.groups.show', [$groupId]);
             }
 
             $user = $userRepo->find($userId);
             $user->detachGroup($group->id);
 
-            Flash::success(t('User was removed from the group'));
+            \Flash::success(t('User was removed from the group'));
 
-            return redirect()->route('admin.groups.show', [$groupId]);
+            return \Redirect::route('admin.groups.show', [$groupId]);
         } catch (Exception $e) {
-            Flash::error(t('There was an error removing user from the group'));
+            \Flash::error(t('There was an error removing user from the group'));
 
-            return redirect()->route('admin.groups.show', [$groupId]);
+            return \Redirect::route('admin.groups.show', [$groupId]);
+        }
+    }
+
+    /**
+     * Delete geolocate form.
+     *
+     * @param \App\Services\Actor\GeoLocate\GeoLocateExportForm $geoLocateExportForm
+     * @param int $groupId
+     * @param int $formId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteForm(GeoLocateExportForm $geoLocateExportForm, int $groupId, int $formId): \Illuminate\Http\RedirectResponse
+    {
+        try {
+            $group = $this->groupRepo->findWith($groupId);
+
+            if (! $this->checkPermissions('isOwner', $group)) {
+                return \Redirect::back();
+            }
+
+            $geoLocateForm = $geoLocateExportForm->findGeoLocateFormByIdWithExpeditionCount($formId);
+
+            if ($geoLocateForm->expeditions_count > 0) {
+                \Flash::error(t('GeoLocateExport Form cannot be deleted while still being used by Expeditions.'));
+
+                return \Redirect::route('admin.groups.show', [$groupId]);
+            }
+
+            $geoLocateForm->delete();
+
+            \Flash::success(t('GeoLocateExport Form was deleted.'));
+
+            return \Redirect::route('admin.groups.show', [$groupId]);
+        } catch (Exception $e) {
+            \Flash::error(t('There was an error deleteing the GeoLocateExport Form.'));
+
+            return \Redirect::route('admin.groups.show', [$groupId]);
         }
     }
 }

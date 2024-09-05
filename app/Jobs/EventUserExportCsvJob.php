@@ -20,8 +20,8 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Notifications\EventCsvExport;
-use App\Notifications\EventCsvExportError;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
 use App\Repositories\EventRepository;
 use App\Services\Process\CreateReportService;
 use Exception;
@@ -39,7 +39,7 @@ use Str;
  */
 class EventUserExportCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -68,7 +68,7 @@ class EventUserExportCsvJob implements ShouldQueue
     {
         $this->user = $user;
         $this->eventId = $eventId;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**
@@ -96,11 +96,34 @@ class EventUserExportCsvJob implements ShouldQueue
 
             $csvName = Str::random().'.csv';
             $fileName = $createReportService->createCsvReport($csvName, $rows);
+            $fileButton = [];
+            if ($fileName !== null) {
+                $fileRoute = route('admin.downloads.report', ['file' => $fileName]);
+                $fileButton = $this->createButton($fileRoute, t('Download CSV'));
+            }
 
-            $this->user->notify(new EventCsvExport($fileName));
+            $attributes = [
+                'subject' => t('Event User Export Complete'),
+                'html'    => [
+                    t('Your export is completed. If a report was generated, you may click the download button to download the file. If no button is included, it is due to no records being located for the export. Some records require overnight processing before they are available.'),
+                    t('If you believe this is an error, please contact the Administration.')
+                ],
+                'buttons' => $fileButton
+            ];
+
+            $this->user->notify(new Generic($attributes));
 
         } catch (Exception $e) {
-            $this->user->notify(new EventCsvExportError($e->getMessage()));
+            $attributes = [
+                'subject' => t('Event User Export Error'),
+                'html'    => [
+                    t('There was an error while exporting the csv file. The Administration has been copied on this error and will investigate.'),
+                    t('File: %s', $e->getFile()),
+                    t('Line: %s', $e->getLine()),
+                    t('Message: %s', $e->getMessage())
+                ]
+            ];
+            $this->user->notify(new Generic($attributes, true));
         }
     }
 }

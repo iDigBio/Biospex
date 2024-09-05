@@ -77,13 +77,18 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionToolsIconLrg()
     {
-        return '<a href="#" class="preventDefault" data-toggle="modal"
-                    data-target="#expedition-tools-modal" data-hover="tooltip" title="'. t('Expedition Tools').'">
-                    <i class="fas fa-tools fa-2x"></i></a>';
+        return '<a href="" class="prevent-default"
+                       data-dismiss="modal"
+                       data-toggle="modal"
+                       data-target="#global-modal"
+                       data-size="modal-lg"
+                       data-url="'.route('admin.expeditions.tools', [$this->model->project_id, $this->model->id]).'"
+                       data-hover="tooltip"
+                       data-title="'.t('Expedition Tools').'"><i class="fas fa-tools fa-2x"></i></a>';
     }
 
     /**
-     * Return return download icon lrg.
+     * Return download icon lrg.
      *
      * @return string
      */
@@ -94,9 +99,13 @@ class ExpeditionPresenter extends Presenter
             $this->model->id,
         ]);
 
-        return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
-                    data-target="#expedition-download-modal" data-hover="tooltip" title="'. t('Download Expedition Files').'">
-                    <i class="fas fa-file-download fa-2x"></i></a>';
+        return '<a href="#" class="prevent-default" 
+                data-toggle="modal" 
+                data-title="'. t('Download Expedition Files').'" 
+                data-url="'.$route.'"
+                data-dismiss="modal" data-toggle="modal" data-target="#global-modal" data-size="modal-xl" 
+                data-hover="tooltip" 
+                title="'. t('Download Expedition Files').'"><i class="fas fa-file-download fa-2x"></i></a>';
     }
 
     /**
@@ -200,7 +209,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.ocr', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" class="prevent-default btn btn-primary rounded-0 mb-1"
+            ]).'" class="prevent-default btn btn-primary rounded-0 mb-1 mt-1"
             data-method="post"
             data-confirm="confirmation"
             data-title="'. t('Reprocess Subject OCR').'?" 
@@ -208,73 +217,4 @@ class ExpeditionPresenter extends Presenter
             '. t('Reprocess Subject OCR').'</a>';
     }
 
-    /**
-     * Return lrg icon for expedition process.
-     *
-     * @return string
-     */
-    public function expeditionProcessStartBtn()
-    {
-        return '<a href="'.route('admin.expeditions.process', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" class="prevent-default btn btn-primary rounded-0 mb-1 green" 
-            data-method="post"
-            data-confirm="confirmation"
-            data-title="'. t('Start Expedition Processing').'?" 
-            data-content="'. t('This will begin processing the Expedition. After starting, Subjects cannot be added or removed. Do you wish to Continue?').'">
-            '. t('Start Expedition Processing').'</a>';
-    }
-
-    /**
-     * Return lrg icon for expedition process stop
-     *
-     * @return string
-     */
-    public function expeditionProcessStopBtn()
-    {
-        return '<a href="'.route('admin.expeditions.stop', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" class="prevent-default btn btn-primary rounded-0 mb-1"
-            data-method="delete"
-            data-confirm="confirmation"
-            data-title="'. t('Stop Processing').'" 
-            data-content="'. t('This will stop the Expedition Process. However, Subjects cannot be added since process was already started. Do you wish to Continue?').'">
-            '. t('Stop Expedition Processing').'</a>';
-    }
-
-    /**
-     * Return button and path for generating export file.
-     *
-     * @return string
-     */
-    public function expeditionExportBtn()
-    {
-        $route = route('admin.downloads.export', [
-            $this->model->project->id,
-            $this->model->id,
-        ]);
-
-        return '<a href="'.$route.'" class="prevent-default btn btn-primary rounded-0 mb-1"
-            data-method="get"
-            data-confirm="confirmation"
-            data-title="'. t('Generate Export File').'" 
-            data-content="'. t('This will generate a new export file. Any previous exports will be overwritten. Do you wish to Continue?').'">
-            '. t('Generate Export File').'</a>';
-    }
-
-    /**
-     * Return button and path for generating export file.
-     *
-     * @return string
-     */
-    public function expeditionWorkflowBtn()
-    {
-        return '<a href="" class="prevent-default btn btn-primary rounded-0 mb-1"
-            data-dismiss="modal"
-            data-toggle="modal"
-            data-target="#expedition-workflow-form-modal"
-            data-title="'. t('Edit Workflow Id').'">'.t('Edit Workflow Id').'</a>';
-    }
 }

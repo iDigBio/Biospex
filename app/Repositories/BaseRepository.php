@@ -19,6 +19,8 @@
 
 namespace App\Repositories;
 
+use MongoDB\Laravel\Eloquent\Model as MongoModel;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 /**
  * Class BaseRepository
  *
@@ -28,9 +30,9 @@ namespace App\Repositories;
 class BaseRepository
 {
     /**
-     * @var \Illuminate\Database\Eloquent\Model|\Jenssegers\Mongodb\Eloquent\Model
+     * @var \MongoDB\Laravel\Eloquent\Model|\Illuminate\Database\Eloquent\Model $model
      */
-    protected $model;
+    protected MongoModel|EloquentModel $model;
 
     /**
      * Override __get().
@@ -92,6 +94,20 @@ class BaseRepository
     }
 
     /**
+     * Find by field with relations.
+     *
+     * @param $attribute
+     * @param $value
+     * @param array $with
+     * @param array $columns
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function findByWith($attribute, $value, array $with = [], array $columns = ['*']): \Illuminate\Database\Eloquent\Collection|array
+    {
+        return $this->model->with($with)->where($attribute, '=', $value)->get($columns);
+    }
+
+    /**
      * Get all by attribute value.
      *
      * @param $attribute
@@ -100,7 +116,7 @@ class BaseRepository
      * @param array|string[] $columns
      * @return mixed
      */
-    public function getBy($attribute, $value, $op = '=', array $columns = ['*'])
+    public function getBy($attribute, $value, string $op = '=', array $columns = ['*'])
     {
         return $this->model->where($attribute, $op, $value)->get($columns);
     }
@@ -233,12 +249,29 @@ class BaseRepository
     }
 
     /**
-     * Truncate data in model.
+     * Find by id with relation count.
      *
+     * @param int $id
+     * @param string $relation
      * @return mixed
      */
-    public function truncate()
+    public function findByIdWithRelationCount(int $id, string $relation): mixed
     {
-        return $this->model->truncate();
+        return $this->model->withCount($relation)->find($id);
+    }
+
+    /**
+     * Truncate database table.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function truncate(): void
+    {
+        if (\App::isProduction()) {
+            throw new \Exception('Cannot truncate database table in production.');
+        }
+
+        $this->model->truncate();
     }
 }

@@ -38,38 +38,39 @@ class ExpeditionController extends Controller
     public function index(ExpeditionRepository $expeditionRepo)
     {
         $results = $expeditionRepo->getExpeditionPublicIndex();
+        //$project = $results->first()->project;
 
         [$expeditions, $expeditionsCompleted] = $results->partition(function($expedition) {
-            return $expedition->nfnActor->pivot->completed === 0;
+            return $expedition->completed === 0;
         });
 
-        return view('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
+        return \View::make('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
     }
 
     /**
      * Displays Completed Expeditions on public page.
      *
      * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function sort(ExpeditionRepository $expeditionRepo)
     {
-        if ( ! request()->ajax()) {
+        if ( ! \Request::ajax()) {
             return null;
         }
 
-        $type = request()->get('type');
-        $sort = request()->get('sort');
-        $order = request()->get('order');
-        $projectId = request()->get('id');
+        $type = \Request::get('type');
+        $sort = \Request::get('sort');
+        $order = \Request::get('order');
+        $projectId = \Request::get('id');
 
         [$active, $completed] = $expeditionRepo->getExpeditionPublicIndex($sort, $order, $projectId)
             ->partition(function($expedition) {
-                return $expedition->nfnActor->pivot->completed === 0;
+                return $expedition->completed === 0;
         });
 
         $expeditions = $type === 'active' ? $active : $completed;
+        $project = false;
 
-        return view('front.expedition.partials.expedition', compact('expeditions'));
+        return \View::make('front.expedition.partials.expedition', compact('expeditions', 'project'));
     }
 }

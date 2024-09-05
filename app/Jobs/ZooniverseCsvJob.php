@@ -19,10 +19,10 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Traits\SkipNfn;
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Services\Csv\ZooniverseCsvService;
+use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -37,7 +37,7 @@ use Throwable;
  */
 class ZooniverseCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SkipNfn;
+    use Dispatchable, InteractsWithQueue, Queueable, SkipZooniverse;
 
     /**
      * @var int
@@ -51,13 +51,14 @@ class ZooniverseCsvJob implements ShouldQueue
 
     /**
      * Create a new job instance.
+     * noDelay is used to skip the delay in the job.
      *
      * @param int $expeditionId
      * @param bool $noDelay
      */
     public function __construct(int $expeditionId, bool $noDelay = false)
     {
-        $this->onQueue(config('config.queues.classification'));
+        $this->onQueue(config('config.queue.classification'));
         $this->expeditionId = $expeditionId;
         $this->noDelay = $noDelay;
     }
@@ -89,7 +90,7 @@ class ZooniverseCsvJob implements ShouldQueue
             return;
         }
 
-        ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addMinutes(30));
+        ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addHours(3));
     }
 
     /**
@@ -105,17 +106,21 @@ class ZooniverseCsvJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param  \Throwable  $exception
+     * @param  \Throwable  $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(Throwable $throwable)
     {
-        $user = User::find(1);
-        $messages = [
-            t('Error: %s', $exception->getMessage()),
-            t('File: %s', $exception->getFile()),
-            t('Line: %s', $exception->getLine()),
+        $attributes = [
+            'subject' => t('Zooniverse CSV Job Failed'),
+            'html'    => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage())
+            ],
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

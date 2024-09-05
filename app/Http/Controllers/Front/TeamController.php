@@ -54,6 +54,6 @@ class TeamController extends Controller
     {
         $categories = $this->teamCategoryRepo->getTeamIndexPage();
 
-        return view('front.team.index', compact('categories'));
+        return \View::make('front.team.index', compact('categories'));
     }
 }

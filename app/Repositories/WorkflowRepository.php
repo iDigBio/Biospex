@@ -42,15 +42,13 @@ class WorkflowRepository extends BaseRepository
     /**
      * Get workflow select.
      *
-     * @return array|string[]
+     * @return array
      */
-    public function getWorkflowSelect()
+    public function getWorkflowSelect(): array
     {
-        $results = $this->model->where('enabled', '=',1)
-            ->orderBy('title', 'asc')
+        return $this->model->where('enabled', '=',1)
+            ->orderBy('id', 'asc')
             ->pluck('title', 'id')
             ->toArray();
-
-        return ['' => '--Select--'] + $results;
     }
 }

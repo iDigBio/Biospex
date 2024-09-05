@@ -14,8 +14,8 @@ class CreateThrottleTable extends Migration
     public function up()
     {
         Schema::create('throttle', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('user_id')->index();
+            $table->id();
+            $table->unsignedBigInteger('user_id')->index();
             $table->string('ip_address', 255)->nullable();
             $table->integer('attempts')->default(0);
             $table->boolean('suspended')->default(0);

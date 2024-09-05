@@ -28,6 +28,7 @@ mix.js("resources/js/front-app.js", "js/front.js")
     .extract([
         "jquery",
         "bootstrap",
+        "bootstrap-select/dist/js/bootstrap-select.min",
         "bootstrap-notify/bootstrap-notify",
         "confetti-js/dist/index.min",
         "jquery-ui/ui/widgets/dialog",

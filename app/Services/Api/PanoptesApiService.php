@@ -23,10 +23,7 @@ use App\Facades\CountHelper;
 use App\Services\Requests\HttpRequest;
 use Cache;
 use GuzzleHttp\Exception\GuzzleException;
-use JetBrains\PhpStorm\ArrayShape;
-use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Http\Message\RequestInterface;
-use Storage;
 
 /**
  * Class PanoptesApiService
@@ -78,7 +75,7 @@ class PanoptesApiService extends HttpRequest
      */
     public function __construct()
     {
-        $this->apiUri = config('config.panoptes.apiUri');
+        $this->apiUri = config('zooniverse.panoptes.api_uri');
     }
 
     /**
@@ -86,15 +83,14 @@ class PanoptesApiService extends HttpRequest
      *
      * @return array
      */
-    #[ArrayShape(self::CONFIG_SHAPE)]
     public function getConfig(): array
     {
         return [
-            'clientId'       => config('config.panoptes.clientId'),
-            'clientSecret'   => config('config.panoptes.clientSecret'),
-            'redirectUri'    => config('config.panoptes.redirectUri'),
-            'urlAccessToken' => config('config.panoptes.tokenUri'),
-            'scope'          => config('config.panoptes.scopes'),
+            'clientId'       => config('zooniverse.panoptes.client_id'),
+            'clientSecret'   => config('zooniverse.panoptes.client_secret'),
+            'redirectUri'    => config('zooniverse.panoptes.redirect_uri'),
+            'urlAccessToken' => config('zooniverse.panoptes.token_uri'),
+            'scope'          => config('zooniverse.panoptes.scopes'),
         ];
     }
 

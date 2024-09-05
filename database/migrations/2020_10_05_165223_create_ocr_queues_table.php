@@ -14,9 +14,9 @@ class CreateOcrQueuesTable extends Migration
     public function up()
     {
         Schema::create('ocr_queues', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('project_id')->index('ocr_queues_project_id_foreign');
-            $table->unsignedInteger('expedition_id')->nullable()->index('ocr_queues_expedition_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('project_id')->index('ocr_queues_project_id_foreign');
+            $table->unsignedBigInteger('expedition_id')->nullable()->index('ocr_queues_expedition_id_foreign');
             $table->integer('total')->default(0);
             $table->integer('processed')->default(0);
             $table->integer('status')->default(0);

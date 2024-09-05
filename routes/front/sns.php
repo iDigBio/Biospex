@@ -17,6 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use Rennokki\LaravelSnsEvents\Http\Controllers\SnsController;
+use App\Http\Controllers\Front\AwsSnsController;
 
-Route::any('/aws-sns-webhook', [SnsController::class, 'handle']);
+Route::post('/aws-sns-webhook', [AwsSnsController::class, 'handle']);

@@ -41,7 +41,7 @@ class ZooniversePusherCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Process expedition transcriptions from NfnPanoptes and adds them to pusher data.';
+    protected $description = 'Process expedition transcriptions from Zooniverse and adds them to pusher data.';
 
     /**
      * Create a new command instance.

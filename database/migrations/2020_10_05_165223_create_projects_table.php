@@ -14,9 +14,9 @@ class CreateProjectsTable extends Migration
     public function up()
     {
         Schema::create('projects', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->binary('uuid')->nullable();
-            $table->unsignedInteger('group_id')->index();
+            $table->unsignedBigInteger('group_id')->index();
             $table->string('title', 255)->nullable();
             $table->string('slug', 255)->nullable()->index();
             $table->string('contact', 255)->nullable();
@@ -38,7 +38,7 @@ class CreateProjectsTable extends Migration
             $table->string('twitter', 255)->nullable();
             $table->string('activities', 255)->nullable();
             $table->string('language_skills', 255)->nullable();
-            $table->unsignedInteger('workflow_id')->index('projects_workflow_id_foreign');
+            $table->unsignedBigInteger('workflow_id')->index('projects_workflow_id_foreign');
             $table->string('logo_file_name', 255)->nullable();
             $table->integer('logo_file_size')->nullable();
             $table->string('logo_content_type', 255)->nullable();

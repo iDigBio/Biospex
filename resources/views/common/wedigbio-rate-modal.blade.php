@@ -7,7 +7,7 @@
                 <div class="empty-icon"><i class="fa fa-fw"></i></div>
                 <div>
                     <h2 class="color-action">{{ t('WEDIGBIO RATE') }}</h2>
-                    <span class="need-review pl-2">{{ t('updates every 5 minutes') }}</span>
+                    <span class="text-danger pl-2">{{ t('updates every 5 minutes') }}</span>
                 </div>
                 <div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -21,10 +21,9 @@
                     <div id="weDigBioRateChartDiv" class="d-flex justify-content-center" style="width:100%; height: 500px"></div>
                 </div>
             </div>
-
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-outline-primary color-action align-self-center"
-                        data-dismiss="modal">EXIT
+                        data-dismiss="modal">{{ t('Exit') }}
                 </button>
             </div>
         </div>

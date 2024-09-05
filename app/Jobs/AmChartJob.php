@@ -20,14 +20,13 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Notifications\JobError;
+use App\Notifications\Generic;
 use App\Repositories\ProjectRepository;
 use App\Services\Chart\TranscriptionChartService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Throwable;
 
 /**
  * Class AmChartJob
@@ -58,7 +57,7 @@ class AmChartJob implements ShouldQueue
     public function __construct(int $projectId)
     {
         $this->projectId = $projectId;
-        $this->onQueue(config('config.queues.chart'));
+        $this->onQueue(config('config.queue.chart'));
     }
 
     /**
@@ -67,7 +66,7 @@ class AmChartJob implements ShouldQueue
      * @param \App\Repositories\ProjectRepository $projectRepo
      * @param \App\Services\Chart\TranscriptionChartService $service
      */
-    public function handle(ProjectRepository $projectRepo, TranscriptionChartService $service)
+    public function handle(ProjectRepository $projectRepo, TranscriptionChartService $service): void
     {
         $project = $projectRepo->getProjectForAmChartJob($this->projectId);
 
@@ -79,17 +78,21 @@ class AmChartJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $exception
+     * @param \Throwable $throwable
      * @return void
      */
-    public function failed(Throwable $exception)
+    public function failed(\Throwable $throwable): void
     {
-        $user = User::find(1);
-        $messages = [
-            t('Error: %s', $exception->getMessage()),
-            t('File: %s', $exception->getFile()),
-            t('Line: %s', $exception->getLine()),
+        $attributes = [
+            'subject' => t('AmChartJob failed'),
+            'html'    => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage())
+            ],
         ];
-        $user->notify(new JobError(__FILE__, $messages));
+
+        $user =User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

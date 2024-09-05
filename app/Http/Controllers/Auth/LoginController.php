@@ -20,6 +20,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Rules\ReCaptcha;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
@@ -49,7 +50,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/admin/projects';
+    protected string $redirectTo = '/admin/projects';
 
     /**
      * Create a new controller instance.
@@ -59,9 +60,9 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function showLoginForm()
+    public function showLoginForm(): \Illuminate\Contracts\View\View
     {
-        return view('auth.login');
+        return \View::make('auth.login');
     }
 
     /**
@@ -71,12 +72,12 @@ class LoginController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return void
      */
-    protected function validateLogin(Request $request)
+    protected function validateLogin(Request $request): void
     {
         $request->validate([
             $this->username() => 'required|string',
             'password' => 'required|string',
-            'g-recaptcha-response' => 'required|captcha'
+            'g-recaptcha-response' => ['required', new ReCaptcha],
         ]);
     }
 }

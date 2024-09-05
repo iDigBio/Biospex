@@ -55,7 +55,7 @@ class PollOcrEvent extends Event implements ShouldBroadcast
      */
     public function broadcastQueue(): string
     {
-        return config('config.queues.event');
+        return config('config.queue.event');
     }
 
     /**

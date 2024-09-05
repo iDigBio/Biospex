@@ -19,9 +19,9 @@
 
 namespace App\Jobs;
 
+use App\Notifications\Generic;
 use App\Repositories\DownloadRepository;
-use App\Services\Actor\NfnPanoptes\Traits\NfnErrorNotification;
-use App\Services\Actor\NfnPanoptes\ZooniverseExportBatch;
+use App\Services\Actor\Zooniverse\ZooniverseExportBatch;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,7 +35,7 @@ use Throwable;
  */
 class ExportDownloadBatchJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, NfnErrorNotification;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -57,26 +57,35 @@ class ExportDownloadBatchJob implements ShouldQueue
     public function __construct(int $downloadId)
     {
         $this->downloadId = $downloadId;
-        $this->onQueue(config('config.queues.export'));
+        $this->onQueue(config('config.queue.export'));
     }
 
     /**
      * Handle download batch job.
      *
      * @param \App\Repositories\DownloadRepository $downloadRepository
-     * @param \App\Services\Actor\NfnPanoptes\ZooniverseExportBatch $nfnPanoptesExportBatch
+     * @param \App\Services\Actor\Zooniverse\ZooniverseExportBatch $zooniverseExportBatch
      */
-    public function handle(
-        DownloadRepository $downloadRepository,
-        ZooniverseExportBatch $nfnPanoptesExportBatch)
+    public function handle(DownloadRepository $downloadRepository, ZooniverseExportBatch $zooniverseExportBatch): void
     {
         $download = $downloadRepository->findWith($this->downloadId, ['expedition.project.group.owner', 'actor']);
 
         try {
-            $nfnPanoptesExportBatch->process($download);
+            $zooniverseExportBatch->process($download);
         }
-        catch (Throwable $e) {
-            $this->sendAdminError($e);
+        catch (Throwable $throwable) {
+            $attributes = [
+                'subject' => t('Export Download Batch Error'),
+                'html'    => [
+                    t('The batch export for Expedition %s has failed.', $download->expedition->title),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                ]
+            ];
+
+            $download->expedition->project->group->owner->notify(new Generic($attributes, true));
             $this->delete();
         }
     }

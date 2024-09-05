@@ -14,7 +14,7 @@ class CreateStateCountiesTable extends Migration
     public function up()
     {
         Schema::create('state_counties', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('county_name', 255)->nullable();
             $table->string('state_county', 255)->nullable()->index();
             $table->string('state_abbr', 255)->nullable();

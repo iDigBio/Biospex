@@ -1,3 +1,6 @@
+/**
+ * Processes image for subject grid thumbnail
+ */
 const axios = require("axios"); //* importing the axios package
 const sharp = require("sharp"); //* importing the sharp package
 
@@ -19,7 +22,7 @@ axios.get(url, {responseType: 'arraybuffer'})
                 quality:93,
                 mozjpeg: true
             })
-            .toFile(`CURRENT_PATH/storage/app/public/thumbs/300_300/${filename}`)
+            .toFile(`APP_CURRENT_PATH/storage/app/public/thumbs/300_300/${filename}`)
             .then(() => {
                 console.log(true)
             })

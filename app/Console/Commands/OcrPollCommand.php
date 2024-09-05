@@ -80,12 +80,12 @@ class OcrPollCommand extends Command
         $data['payload'] = $records->map(function ($record) use (&$count) {
             $batches = $count === 0 ? '' : t(n(':batches_queued process remains in queue before processing begins', ':batches_queued processes remain in queue before processing begins', $count), [':batches_queued' => $count]);
 
-            $countNumbers = [':processed' => $record->processed, ':total' => $record->total];
-            $ocr = t(n(':processed record of :total completed.', ':processed records of :total completed.', $record->processed), $countNumbers);
+            $countNumbers = [':processed' => $record->files_count, ':total' => $record->total];
+            $ocr = t(n(':processed record of :total completed.', ':processed records of :total completed.', $record->files_count), $countNumbers);
 
             $title = $record->expedition !== null ? $record->expedition->title : $record->project->title;
 
-            $notice = view('common.ocr-process', compact('title', 'ocr', 'batches'))->render();
+            $notice = \View::make('common.ocr-process', compact('title', 'ocr', 'batches'))->render();
 
             $count++;
 

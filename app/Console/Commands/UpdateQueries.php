@@ -29,12 +29,10 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
  */
 class UpdateQueries extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The console command name.
      */
-    protected $signature = 'update:queries {step}';
+    protected $signature = 'update:queries {method?}';
 
     /**
      * The console command description.
@@ -44,7 +42,8 @@ class UpdateQueries extends Command
     /**
      * UpdateQueries constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -55,5 +54,4 @@ class UpdateQueries extends Command
     {
 
     }
-
 }

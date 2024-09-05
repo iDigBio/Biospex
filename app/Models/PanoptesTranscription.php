@@ -19,9 +19,6 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use MongoDB\BSON\UTCDateTime;
-
 /**
  * Class PanoptesTranscription
  *
@@ -29,23 +26,29 @@ use MongoDB\BSON\UTCDateTime;
  */
 class PanoptesTranscription extends BaseMongoModel
 {
-
     /**
      * Set Collection
      */
     protected $collection = 'panoptes_transcriptions';
 
     /**
-     * @var string[]
+     * The attributes that should be cast.
+     *
+     * @return string[]
      */
-    protected $casts = [
-        'subject_id' => 'int',
-        'classification_id' => 'int',
-        'workflow_id' => 'int',
-        'subject_expeditionId' => 'int',
-        'subject_projectId' => 'int',
-        'transcription_id' => 'string'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'subject_id'                 => 'integer',
+            'classification_id'          => 'integer',
+            'workflow_id'                => 'integer',
+            'subject_expeditionId'       => 'integer',
+            'subject_projectId'          => 'integer',
+            'transcription_id'           => 'string',
+            'classification_started_at'  => 'datetime',
+            'classification_finished_at' => 'datetime',
+        ];
+    }
 
     /**
      * OrderBy
@@ -53,11 +56,6 @@ class PanoptesTranscription extends BaseMongoModel
      * @var array
      */
     protected $orderBy = [[]];
-
-    protected static function boot()
-    {
-        parent::boot();
-    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -89,26 +87,5 @@ class PanoptesTranscription extends BaseMongoModel
     public function dashboard()
     {
         return $this->hasOne(PusherTranscription::class, 'classification_id', 'classification_id');
-    }
-
-    /**
-     * Mutate finished_at date for MongoDb
-     *
-     * @param  string  $value
-     */
-    public function setClassificationFinishedAtAttribute($value)
-    {
-        $this->attributes['classification_finished_at'] = new UTCDateTime(Carbon::parse($value)->timestamp * 1000);
-    }
-
-
-    /**
-     * Mutate started_at for MongoDb
-     *
-     * @param  string  $value
-     */
-    public function setClassificationStartedAtAttribute($value)
-    {
-        $this->attributes['classification_started_at'] = new UTCDateTime(Carbon::parse($value)->timestamp * 1000);
     }
 }

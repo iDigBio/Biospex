@@ -8,16 +8,20 @@
 {{-- Content --}}
 @section('content')
     @include('admin.project.partials.project-panel')
+        @foreach ($errors->all() as $error)
+            <div>{{ $error }}</div>
+        @endforeach
+
     <div class="row">
         <div class="col-sm-10 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Edit Project') }}</h2>
-                    <form method="post" action="{{ route('admin.projects.update', $project->id) }}" role="form"
+                    <form method="post" id="projectFrm" action="{{ route('admin.projects.update', $project->id) }}" role="form"
                           enctype="multipart/form-data">
                         {!! method_field('put') !!}
                         @csrf
-                        <input type="hidden" name="entries" value="{{ old('entries', $resourceCount) }}">
+                        <input type="hidden" id="entries" name="entries" value="{{ old('entries', $resourceCount) }}">
                         <input type="hidden" name="id" value="{{ $project->id }}">
                         <div class="form-row">
                             <div class="form-group col-sm-6">
@@ -33,19 +37,6 @@
                                     @endforeach
                                 </select>
                                 <span class="invalid-feedback">{{ $errors->first('group_id') }}</span>
-                            </div>
-
-                            <div class="form-group col-sm-6">
-                                <label for="status" class="col-form-label required">{{ t('Status') }}:</label>
-                                <select name="status" id="status"
-                                        class="form-control custom-select {{ ($errors->has('status')) ? 'is-invalid' : '' }}"
-                                        required>
-                                    @foreach($statusOptions as $key => $name)
-                                        <option value="{{ $key }}" {{ $key == old('status', $project->status) ?
-                                        ' selected=selected' : '' }}>{{ $name }}</option>
-                                    @endforeach
-                                </select>
-                                <span class="invalid-feedback">{{ $errors->first('status') }}</span>
                             </div>
                         </div>
 
@@ -106,17 +97,19 @@
 
                         <div class="form-group">
                             <label for="project_partners" class="col-form-label">{{ t('Project Partners') }}:</label>
-                            <textarea id="project_partners" name="project_partners"
-                                      class="form-control {{ ($errors->has('project_partners')) ? 'is-invalid' : '' }}">
-                                {{ old('project_partners', $project->project_partners) }}</textarea>
+                            <textarea id="project_partners"
+                                      name="project_partners"
+                                      class="form-control {{ ($errors->has('project_partners')) ? 'is-invalid' : '' }}"
+                            >{{ old('project_partners', $project->project_partners) }}</textarea>
                             <span class="invalid-feedback">{{ $errors->first('project_partners') }}</span>
                         </div>
 
                         <div class="form-group">
                             <label for="funding_source" class="col-form-label">{{ t('Funding Source') }}:</label>
-                            <textarea id="funding_source" name="funding_source"
-                                      class="form-control {{ ($errors->has('funding_source')) ? 'is-invalid' : '' }}">
-                                {{ old('funding_source', $project->funding_source) }}</textarea>
+                            <textarea id="funding_source"
+                                      name="funding_source"
+                                      class="form-control {{ ($errors->has('funding_source')) ? 'is-invalid' : '' }}"
+                            >{{ old('funding_source', $project->funding_source) }}</textarea>
                             <span class="invalid-feedback">{{ $errors->first('funding_source') }}</span>
                         </div>
 
@@ -142,8 +135,8 @@
                         <div class="form-group">
                             <label for="incentives" class="col-form-label">{{ t('Incentives') }}:</label>
                             <textarea id="incentives" name="incentives"
-                                      class="form-control {{ ($errors->has('incentives')) ? 'is-invalid' : '' }}">
-                                {{ old('incentives', $project->incentives) }}</textarea>
+                                      class="form-control {{ ($errors->has('incentives')) ? 'is-invalid' : '' }}"
+                            >{{ old('incentives', $project->incentives) }}</textarea>
                             <span class="invalid-feedback">{{ $errors->first('incentives') }}</span>
                         </div>
 
@@ -224,23 +217,6 @@
                             <span class="invalid-feedback">{{ $errors->first('language_skills') }}</span>
                         </div>
 
-                        <div class="form-group">
-                            <label for="workflow_id" class="col-form-label col-12 required">{{ t('Workflows') }}
-                                :</label>
-                            <select name="workflow_id" id="workflow_id"
-                                    class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
-                                    {{ $disableWorkflow }}
-                                    required>
-                                @foreach($workflowOptions as $key => $name)
-                                    <option value="{{ $key }}" {{ $key == old('workflow_id', $project->workflow_id) ? ' selected=selected' : '' }}>{{ $name }}</option>
-                                @endforeach
-                            </select>
-                            @if( ! empty($disableWorkflow))
-                                <input type="hidden" name="workflow_id" value="{{ old('workflow_id', $project->workflow_id) }}">
-                            @endif
-                            <span class="invalid-feedback">{{ $errors->first('workflow_id') }}</span>
-                        </div>
-
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
                                 <div class="custom-file">
@@ -254,14 +230,14 @@
                             </div>
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
-                                     src="{{ $project->present()->show_logo }}"/>
+                                     src="{{ $project->present()->show_logo }}" alt="Project Logo"/>
                             </div>
                         </div>
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6">
-                                <label for="banner_file" class="col-form-label">{{ t('Banner File') }}:</label>
-                                <input type="text" class="form-control" id="banner_file" name="banner_file"
+                                <label for="banner-file" class="col-form-label">{{ t('Banner File') }}:</label>
+                                <input type="text" class="form-control" id="banner-file" name="banner_file"
                                        value="{{ $project->present()->banner_file_name ?? 'banner-trees.jpg' }}"
                                        readonly>
                             </div>
@@ -270,7 +246,7 @@
                                    data-hover="tooltip" title="{{ t('Click to select banner.') }}">
                                     {{ t('Click to select banner.') }}
                                     <img class="img-fluid" id="banner-img"
-                                         src="{{ $project->present()->banner_file_url }}"/>
+                                         src="{{ $project->present()->banner_file_url }}" alt="Project Banner"/>
                                 </a>
                             </div>
                         </div>

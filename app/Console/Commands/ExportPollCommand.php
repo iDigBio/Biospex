@@ -20,7 +20,6 @@
 namespace App\Console\Commands;
 
 use App\Events\PollExportEvent;
-use App\Events\TestPoll;
 use App\Models\ExportQueue;
 use App\Repositories\ExportQueueRepository;
 use Illuminate\Console\Command;
@@ -49,12 +48,12 @@ class ExportPollCommand extends Command
     /**
      * @var \App\Repositories\ExportQueueRepository
      */
-    private $exportQueueRepo;
+    private ExportQueueRepository $exportQueueRepo;
 
     /**
      * @var array
      */
-    private $exportStages;
+    private mixed $exportStages;
 
     /**
      * ExportPollCommand constructor.
@@ -66,7 +65,7 @@ class ExportPollCommand extends Command
         parent::__construct();
 
         $this->exportQueueRepo = $exportQueueRepo;
-        $this->exportStages = config('config.export_stages');
+        $this->exportStages = config('zooniverse.export_stages');
     }
 
     /**
@@ -80,17 +79,13 @@ class ExportPollCommand extends Command
 
         if ($queues->isEmpty()) {
             PollExportEvent::dispatch($data);
-
             return;
         }
 
         $count = 0;
         $data['payload'] = $queues->map(function ($queue) use (&$count) {
-
             $notice = $queue->queued ? $this->setProcessNotice($queue) : $this->setQueuedNotice($queue, $count);
-
             $count++;
-
             return [
                 'groupId' => $queue->expedition->project->group->id,
                 'notice'  => $notice,
@@ -109,17 +104,16 @@ class ExportPollCommand extends Command
      */
     private function setProcessNotice(ExportQueue $queue): string
     {
-        $processed = $queue->processed === 0 ? 1 : $queue->processed;
+        $processed = $queue->files_count === 0 ? 1 : $queue->files_count;
         $stage = $this->exportStages[$queue->stage];
         $title = $queue->expedition->title;
 
-        $count = ($queue->stage === 1 || $queue->stage === 2);
-        $processedRecords = $count ? t(' :processed of :total completed.', [
+        $processedRecords = $queue->stage === 1 ? t(' :processed of :total completed.', [
             ':processed' => $processed,
-            ':total'     => $queue->count,
+            ':total'     => $queue->total,
         ]) : null;
 
-        return view('common.export-process', compact('stage', 'title', 'processedRecords'))->render();
+        return \View::make('common.export-process', compact('stage', 'title', 'processedRecords'))->render();
     }
 
     /**
@@ -133,8 +127,9 @@ class ExportPollCommand extends Command
     private function setQueuedNotice(ExportQueue $queue, int $count): string
     {
         $title =$queue->expedition->title;
-        $remainingCount = t(n(':count export remains in queue before processing begins.', ':count exports remain in queue before processing begins.', $count), [':count' => $count]);
+        $remainingCount = $count === 0 ? t('Next in queue.') :
+            t(n(':count export in queue before processing begins.', ':count exports in queue before processing begins.', $count), [':count' => $count]);
 
-        return view('common.export-process-queued', compact('title', 'remainingCount'))->render();
+        return \View::make('common.export-process-queued', compact('title', 'remainingCount'))->render();
     }
 }

@@ -19,14 +19,16 @@
 
 namespace App\Providers;
 
-use App\Listeners\ExportQueueEventSubscriber;
+use App\Events\ImageExportEvent;
+use App\Events\LabelReconciliationEvent;
+use App\Events\TesseractOcrEvent;
 use App\Listeners\GroupEventSubscriber;
-use App\Listeners\SnsNotificaitonListener;
+use App\Listeners\ImageExportListener;
+use App\Listeners\LabelReconciliationListener;
+use App\Listeners\TesseractOcrListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Rennokki\LaravelSnsEvents\Events\SnsNotification;
-use Rennokki\LaravelSnsEvents\Events\SnsSubscriptionConfirmation;
 
 /**
  * Class EventServiceProvider
@@ -41,15 +43,18 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        Registered::class                  => [
+        Registered::class               => [
             SendEmailVerificationNotification::class,
         ],
-        SnsNotification::class             => [
-            SnsNotificaitonListener::class,
+        LabelReconciliationEvent::class => [
+            LabelReconciliationListener::class,
         ],
-        SnsSubscriptionConfirmation::class => [
-
+        ImageExportEvent::class         => [
+            ImageExportListener::class,
         ],
+        TesseractOcrEvent::class        => [
+            TesseractOcrListener::class,
+        ]
     ];
 
     /**
@@ -59,7 +64,6 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $subscribe = [
         GroupEventSubscriber::class,
-        ExportQueueEventSubscriber::class,
     ];
 
     /**

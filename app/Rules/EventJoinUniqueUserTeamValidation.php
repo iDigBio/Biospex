@@ -45,8 +45,8 @@ class EventJoinUniqueUserTeamValidation implements Rule
      */
     public function passes($attribute, $value)
     {
-        $groupId = request()->get('team_id');
-        $nfnUser = request()->get('nfn_user');
+        $groupId = \Request::get('team_id');
+        $nfnUser = \Request::get('nfn_user');
 
         $result = Event::whereHas('teams', function($query) use ($groupId){
             $query->where('id', $groupId);

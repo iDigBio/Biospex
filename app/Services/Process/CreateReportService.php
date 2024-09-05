@@ -21,6 +21,7 @@ namespace App\Services\Process;
 
 use App\Models\ExportQueue;
 use App\Repositories\DownloadRepository;
+use App\Services\Csv\AwsS3CsvService;
 
 /**
  * Class CreateReportService
@@ -28,7 +29,7 @@ use App\Repositories\DownloadRepository;
 class CreateReportService
 {
     /**
-     * @var \App\Services\Process\AwsS3CsvService
+     * @var \App\Services\Csv\AwsS3CsvService
      */
     private AwsS3CsvService $awsS3CsvService;
 
@@ -40,7 +41,7 @@ class CreateReportService
     /**
      * Construct.
      *
-     * @param \App\Services\Process\AwsS3CsvService $awsS3CsvService
+     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      * @param \App\Repositories\DownloadRepository $downloadRepository
      */
     public function __construct(

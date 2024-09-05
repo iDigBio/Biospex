@@ -55,7 +55,7 @@ class ZooniverseBiospexEventJob implements ShouldQueue
     {
         $this->data = $data;
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.queues.biospex_event'));
+        $this->onQueue(config('config.queue.biospex_event'));
     }
 
     /**

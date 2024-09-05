@@ -24,7 +24,6 @@ use App\Jobs\ExportDownloadBatchJob;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\UserRepository;
 use Exception;
-use Flash;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
@@ -66,18 +65,18 @@ class DownloadController extends Controller
     /**
      * Index showing downloads for Expedition.
      *
-     * @param string $projectId
-     * @param string $expeditionId
+     * @param int $projectId
+     * @param int $expeditionId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(string $projectId, string $expeditionId): Factory|View
+    public function index(int $projectId, int $expeditionId): Factory|View
     {
-        $user = $this->userRepo->findWith(request()->user()->id, ['profile']);
+        $user = $this->userRepo->findWith(\Request::user()->id, ['profile']);
         $expedition = $this->expeditionRepo->expeditionDownloadsByActor($expeditionId);
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group);
 
-        return view('admin.expedition.partials.expedition-download-modal-body', compact('expedition', 'user', 'error'));
+        return \View::make('admin.expedition.partials.download-modal-body', compact('expedition', 'user', 'error'));
     }
 
     /**
@@ -96,38 +95,53 @@ class DownloadController extends Controller
     /**
      * Generate export download.
      *
-     * @param string $projectId
-     * @param string $expeditionId
+     * @see \App\Console\Commands\ExportQueueCommand
+     * @param int $projectId
+     * @param int $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function export(string $projectId, string $expeditionId): RedirectResponse
+    public function export(int $projectId, int $expeditionId): RedirectResponse
     {
         try {
             \Artisan::call('export:queue', ['expeditionId' => $expeditionId]);
 
-            Flash::success(t('Export generation has been added to the job queue. You will be notified when completed.'));
+            \Flash::success(t('Export generation has been added to the job queue. You will be notified when completed.'));
         } catch (Exception $e) {
-            ;
-            Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
+            \Flash::error(t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.'));
         }
 
-        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
      * Send request to have export split into batch downloads.
      *
-     * @param string $projectId
-     * @param string $expeditionId
+     * @param int $projectId
+     * @param int $expeditionId
      * @param string $downloadId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function batch(string $projectId, string $expeditionId, string $downloadId): RedirectResponse
+    public function batch(int $projectId, int $expeditionId, string $downloadId): RedirectResponse
     {
         ExportDownloadBatchJob::dispatch($downloadId);
 
-        Flash::success(t('Your batch request has been submitted. You will receive an email with download links when the process is complete.'));
+        \Flash::success(t('Your batch request has been submitted. You will receive an email with download links when the process is complete.'));
 
-        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
+    }
+
+    /**
+     * Download geolocate file.
+     *
+     * @param string $file
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function geoLocate(string $file)
+    {
+        // TODO: This is a temporary solution to download the file. It should be refactored to use a proper download method.
+        $fileString = explode('/', base64_decode($file));
+        $url = Storage::disk('s3')->temporaryUrl(base64_decode($file), now()->addMinutes(5), ['ResponseContentDisposition' => 'attachment;filename=geolocate-export-'.$fileString[2]]);
+
+        return redirect($url);
     }
 }

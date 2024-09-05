@@ -43,27 +43,15 @@ class DownloadRepository extends BaseRepository
     }
 
     /**
-     * Get downloads for cleaning.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function getDownloadsForCleaning(): Collection
-    {
-        return $this->model
-            ->where('type', 'export')
-            ->where('created_at', '<', Carbon::now()->subDays(90))
-            ->get();
-    }
-
-    /**
-     * Get export files.
+     * Get Zooniverse export files.
      *
      * @param string $expeditionId
      * @return \Illuminate\Support\Collection
      */
-    public function getExportFiles(string $expeditionId): Collection
+    public function getZooniverseExportFiles(string $expeditionId): Collection
     {
         return $this->model
+            ->where('actor_id', config('zooniverse.actor_id'))
             ->where('expedition_id', $expeditionId)
             ->where('type', 'export')
             ->get();

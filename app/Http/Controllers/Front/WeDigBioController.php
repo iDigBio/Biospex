@@ -44,6 +44,6 @@ class WeDigBioController extends Controller
             return $event->active;
         });
 
-        return view('front.wedigbio.index', compact('events', 'eventsCompleted'));
+        return \View::make('front.wedigbio.index', compact('events', 'eventsCompleted'));
     }
 }

@@ -173,8 +173,6 @@ h2.modal-number>small {
     color: white;
 }
 
-
-
 @media only screen and (max-width:768px) {
     .btn.btn-danger, .btn-outline-primary, .btn-group {
         margin: 8px auto;
@@ -911,7 +909,7 @@ li.nav-btn.show {
     font-family: 'Work Sans', sans-serif;
     font-size: .7rem;
     color: #e83f29;
-    content: ' required';
+    content: '*';
 }
 
 .project-banner {
@@ -994,6 +992,38 @@ li.nav-btn.show {
     cursor: help;
 }
 
+#downloadsTbl .table td, .table th {
+    border: none;
+}
+
+.bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary {
+    color: #ffffff;
+}
+.bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:hover {
+    color: #c83f29;
+}
+
+div.sort {
+    cursor: grab;
+    line-height: 1.5em;
+}
+
+.sort-highlight {
+    border: 1px solid #c83f29;
+    font-weight: bold;
+    font-size: 45px;
+    width: 200px;
+    background-color: #333333;
+}
+
+/* \f142 is ellipsis-v */
+/* \202F is thin unbreakable space */
+.fa.fa-grip:before {
+    content: "\f142";
+}
+.fa.fa-grip-large:before {
+    content: "\f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142";
+}
 .reviewed {
     color: green;
 }

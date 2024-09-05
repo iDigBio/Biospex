@@ -49,7 +49,8 @@ class ExpeditionFormRequest extends Request
             'logo'                    => [
                 'image',
                 new FileUploadNameValidation(),
-            ]
+            ],
+            'workflow_id' => 'required'
         ];
     }
 

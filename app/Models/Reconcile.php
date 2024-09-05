@@ -37,21 +37,22 @@ class Reconcile extends BaseMongoModel
     protected $collection = 'reconciles';
 
     /**
-     * @inheritDoc
-     */
-    protected $dates = ['created_at', 'updated_at', 'timestamp'];
-
-    /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @return string[]
      */
-    protected $casts = [
-        'subject_id' => 'integer',
-        'subject_projectId' => 'integer',
-        'subject_expeditionId' => 'integer',
-        'problem' => 'integer'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'subject_id'           => 'integer',
+            'subject_projectId'    => 'integer',
+            'subject_expeditionId' => 'integer',
+            'problem'              => 'integer',
+            'created_at'           => 'datetime',
+            'updated_at'           => 'datetime',
+            'timestamp'            => 'datetime',
+        ];
+    }
 
     /**
      * @var string
@@ -59,11 +60,11 @@ class Reconcile extends BaseMongoModel
     protected $presenter = ReconcilePresenter::class;
 
     /**
-     * Project relation.
+     * Subject relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function project()
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
@@ -79,13 +80,12 @@ class Reconcile extends BaseMongoModel
     }
 
     /**
-     * Panoptes Transcripition relation.
+     * Subject relation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
+     * @return \MongoDB\Laravel\Relations\HasMany
      */
-    public function transcriptions()
+    public function transcriptions(): \MongoDB\Laravel\Relations\HasMany
     {
         return $this->hasMany(PanoptesTranscription::class, 'subject_id', 'subject_id');
     }
-
 }

@@ -42,7 +42,7 @@ class ZooniverseDownloadCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Sends request for NfnPanoptes csv download if ';
+    protected $description = 'Sends request for Zooniverse csv download if ';
 
     /**
      * Create a new command instance.
@@ -58,7 +58,6 @@ class ZooniverseDownloadCommand extends Command
      * Execute the console command.
      *
      * @param \App\Services\Csv\ZooniverseCsvService $service
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle(ZooniverseCsvService $service)
     {
@@ -78,9 +77,9 @@ class ZooniverseDownloadCommand extends Command
 
             ZooniverseCsvDownloadJob::dispatch($expeditionId, $result['media'][0]['src']);
         }
-        catch (\Exception $e)
+        catch (\Throwable $throwable)
         {
-            echo $e->getMessage() . PHP_EOL;
+            echo $throwable->getMessage() . PHP_EOL;
         }
     }
 }

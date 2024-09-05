@@ -51,7 +51,7 @@ class SiteMailer extends Mailable
     {
         $this->subject = $subject;
         $this->message = $message;
-        $this->onQueue(config('config.queues.default'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     /**

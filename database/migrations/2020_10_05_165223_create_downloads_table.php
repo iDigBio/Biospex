@@ -14,10 +14,10 @@ class CreateDownloadsTable extends Migration
     public function up()
     {
         Schema::create('downloads', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->binary('uuid')->nullable();
-            $table->unsignedInteger('expedition_id')->index('downloads_expedition_id_foreign');
-            $table->unsignedInteger('actor_id')->index('downloads_actor_id_foreign');
+            $table->unsignedBigInteger('expedition_id')->index('downloads_expedition_id_foreign');
+            $table->unsignedBigInteger('actor_id')->index('downloads_actor_id_foreign');
             $table->string('file', 255)->nullable();
             $table->string('type');
             $table->timestamp('created_at')->nullable()->useCurrent();

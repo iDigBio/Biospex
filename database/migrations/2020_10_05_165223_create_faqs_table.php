@@ -14,8 +14,8 @@ class CreateFaqsTable extends Migration
     public function up()
     {
         Schema::create('faqs', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('faq_category_id')->index('faqs_faq_category_id_foreign');
+            $table->id();
+            $table->unsignedBigInteger('faq_category_id')->index('faqs_faq_category_id_foreign');
             $table->string('question', 500)->nullable();
             $table->string('answer', 5000)->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
