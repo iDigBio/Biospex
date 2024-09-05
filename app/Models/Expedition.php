@@ -33,14 +33,8 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 {
     use HybridRelations, PaperclipTrait, Presentable, UuidTrait;
 
-    /**
-     * {@inheritDoc}
-     */
     protected $table = 'expeditions';
 
-    /**
-     * {@inheritDoc}
-     */
     protected $fillable = [
         'uuid',
         'project_id',
@@ -54,15 +48,12 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
         'locked',
     ];
 
-    /**
-     * @var string
-     */
-    protected $presenter = ExpeditionPresenter::class;
+    protected string $presenter = ExpeditionPresenter::class;
 
     /**
      * Model Boot
      */
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
         static::bootUuidTrait();
