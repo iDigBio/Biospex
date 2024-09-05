@@ -40,6 +40,7 @@
     "barryvdh/laravel-ide-helper": "^v3.0.0",
     "fakerphp/faker": "^1.9.1",
     "kitloong/laravel-migrations-generator": "^v7.0.1",
+    "laravel/pint": "^1.17",
     "mockery/mockery": "^1.4.2",
     "nunomaduro/collision": "^v8.1.1",
     "pestphp/pest": "^v2.34.7",
