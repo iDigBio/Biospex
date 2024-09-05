@@ -28,10 +28,8 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Class CsvExportType
- *
- * @package App\Services\Export
  */
-readonly class GeoLocateExportService
+class GeoLocateExportService
 {
 
     /**
@@ -56,15 +54,14 @@ readonly class GeoLocateExportService
     /**
      * Process GeoLocate export.
      *
-     * @param \App\Models\Expedition $expedition
-     * @return void
      * @throws \Exception
      */
     public function process(Expedition $expedition): void
     {
+        $this->setCsvFilePath($expedition->id);
+
         try {
             $this->migrateRecords($expedition);
-            $this->setCsvFilePath($expedition->id);
             $this->build($expedition);
             $this->moveCsvFile();
             $this->createDownload($expedition);
@@ -77,8 +74,8 @@ readonly class GeoLocateExportService
 
             $csvFilePath = $this->getCsvFilePath();
 
-            if (Storage::disk('s3')->exists($csvFilePath)) {
-                Storage::disk('s3')->delete($csvFilePath);
+            if (Storage::disk('s3')->exists($this->csvFilePath)) {
+                Storage::disk('s3')->delete($this->csvFilePath);
             }
 
             if (Storage::disk('efs')->exists($csvFilePath)) {
@@ -92,8 +89,6 @@ readonly class GeoLocateExportService
     /**
      * Migrate records to MongoDb.
      *
-     * @param \App\Models\Expedition $expedition
-     * @return void
      * @throws \League\Csv\Exception
      */
     public function migrateRecords(Expedition $expedition): void
@@ -108,7 +103,7 @@ readonly class GeoLocateExportService
         $records = $this->awsS3CsvService->csv->getRecords($header);
 
         foreach ($records as $record) {
-            $this->geoLocateExport->updateOrCreate(['subject_id' => (int)$record['subject_id']], $record);
+            $this->geoLocateRepository->updateOrCreate(['subject_id' => (int) $record['subject_id']], $record);
         }
 
         $this->awsS3CsvService->closeBucketStream();
@@ -116,20 +111,14 @@ readonly class GeoLocateExportService
 
     /**
      * Set file source path according to source type.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return string
      */
     private function setSourceFile(Expedition $expedition): string
     {
-        return config('zooniverse.directory.' . $expedition->geoLocateForm->source) . '/' . $expedition->id . '.csv';
+        return config('zooniverse.directory.'.$expedition->geoLocateForm->source).'/'.$expedition->id.'.csv';
     }
 
     /**
      * Set csv file paths.
-     *
-     * @param int $expeditionId
-     * @return void
      */
     public function setCsvFilePath(int $expeditionId): void
     {
@@ -138,8 +127,6 @@ readonly class GeoLocateExportService
 
     /**
      * Get CSV file path.
-     *
-     * @return string
      */
     public function getCsvFilePath(): string
     {
@@ -149,8 +136,6 @@ readonly class GeoLocateExportService
     /**
      * Build Csv File for export inside efs directory.
      *
-     * @param \App\Models\Expedition $expedition
-     * @return void
      * @throws \League\Csv\CannotInsertRecord
      * @throws \Exception
      */
@@ -181,14 +166,10 @@ readonly class GeoLocateExportService
 
     /**
      * Set array for export fields.
-     *
-     * @param \App\Models\GeoLocateExport $record
-     * @param \App\Models\GeoLocateForm $form
-     * @return array
      */
     public function setDataArray(GeoLocateExport $record, GeoLocateForm $form): array
     {
-        $data = collect($form->fields)->mapWithKeys(function (array $field) use($record) {
+        $data = collect($form->fields)->mapWithKeys(function (array $field) use ($record) {
             return [$field['geo'] => $record->{$field['csv']}];
         })->toArray();
 
@@ -202,46 +183,44 @@ readonly class GeoLocateExportService
      *
      * @throws \Exception
      */
-    public function moveCsvFile(): string
+    public function moveCsvFile(): void
     {
         if (Storage::disk('efs')->exists($this->csvFilePath)) {
             Storage::disk('s3')->writeStream($this->csvFilePath, Storage::disk('efs')->readStream($this->csvFilePath));
 
-            if (!Storage::disk('s3')->exists($this->csvFilePath)) {
+            if (! Storage::disk('s3')->exists($this->csvFilePath)) {
                 throw new Exception(t('Could not move csv to AWS storage: %s', $this->csvFilePath));
             }
 
             Storage::disk('efs')->delete($this->csvFilePath);
         }
-
-        return $this->csvFilePath;
     }
 
     /**
      * Create or update download file.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return void
      */
     public function createDownload(Expedition $expedition): void
     {
         $values = [
             'expedition_id' => $expedition->id,
-            'actor_id'      => config('geolocate.actor_id'),
-            'file'          => $expedition->id . '.csv',
-            'type'          => 'export',
+            'actor_id' => config('geolocate.actor_id'),
+            'file' => $expedition->id.'.csv',
+            'type' => 'export',
         ];
         $attributes = [
             'expedition_id' => $expedition->id,
-            'actor_id'      => config('geolocate.actor_id'),
-            'file'          => $expedition->id . '.csv',
-            'type'          => 'export',
+            'actor_id' => config('geolocate.actor_id'),
+            'file' => $expedition->id.'.csv',
+            'type' => 'export',
         ];
 
-        $this->download->updateOrCreate($attributes, $values);
+        $this->downloadRepository->updateOrCreate($attributes, $values);
     }
 
-    public function updateActorExpeditionPivot(Expedition $expedition)
+    /**
+     * Update actor expedition pivot.
+     */
+    public function updateActorExpeditionPivot(Expedition $expedition): void
     {
         $expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
             'state' => 1,

@@ -126,7 +126,9 @@ class DownloadController extends Controller
      */
     public function geoLocate(string $file)
     {
-        $url = Storage::disk('s3')->temporaryUrl(base64_decode($file), now()->addMinutes(5), ['ResponseContentDisposition' => 'attachment;']);
+        // TODO: This is a temporary solution to download the file. It should be refactored to use a proper download method.
+        $fileString = explode('/', base64_decode($file));
+        $url = Storage::disk('s3')->temporaryUrl(base64_decode($file), now()->addMinutes(5), ['ResponseContentDisposition' => 'attachment;filename=geolocate-export-'.$fileString[2]]);
 
         return redirect($url);
     }

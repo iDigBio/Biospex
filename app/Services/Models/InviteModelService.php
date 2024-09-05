@@ -20,19 +20,17 @@
 namespace App\Services\Models;
 
 use App\Http\Requests\InviteFormRequest;
-use App\Models\Invite;
 use App\Models\Group;
 use App\Notifications\GroupInvite;
-use App\Services\Models\UserModelService;
+use App\Repositories\GroupRepository;
+use App\Repositories\InviteRepository;
+use App\Repositories\UserRepository;
 use Exception;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 /**
- * Class InviteModelService
- *
- * @package App\Services\Process
+ * Class InviteService
  */
 readonly class InviteModelService
 {
@@ -52,21 +50,17 @@ readonly class InviteModelService
 
     /**
      * Create and send invites to group.
-     *
-     * @param int $groupId
-     * @param \App\Http\Requests\InviteFormRequest $request
-     * @return bool
      */
     public function storeInvites(int $groupId, InviteFormRequest $request): bool
     {
         $group = $this->groupModelService->findWithRelations($groupId, ['invites']);
 
         try {
-            $requestInvites = collect($request->get('invites'))->reject(function($invite){
+            $requestInvites = collect($request->get('invites'))->reject(function ($invite) {
                 return empty($invite['email']);
             })->pluck('email')->diff($group->invites->pluck('email'));
 
-            $newInvites = $requestInvites->reject(function ($invite) use($group) {
+            $newInvites = $requestInvites->reject(function ($invite) use ($group) {
                 return $this->checkExistingUser($invite, $group);
             })->map(function ($invite) use ($group) {
                 return $this->createNewInvite($invite, $group);
@@ -89,22 +83,16 @@ readonly class InviteModelService
 
     /**
      * Check for existing users, if in group or need to be assigned.
-     *
-     * @param string $email
-     * @param \App\Models\Group $group
-     * @return bool
      */
     private function checkExistingUser(string $email, Group $group): bool
     {
         $user = $this->userModelService->getFirstBy('email',$email);
 
-        if ($user === null)
-        {
+        if ($user === null) {
             return false;
         }
 
-        if ($user->hasGroup($group))
-        {
+        if ($user->hasGroup($group)) {
             return true;
         }
 
@@ -115,17 +103,13 @@ readonly class InviteModelService
 
     /**
      * Create new invite.
-     *
-     * @param string $email
-     * @param \App\Models\Group $group
-     * @return \App\Models\Invite
      */
     private function createNewInvite(string $email, Group $group): \App\Models\Invite
     {
         $inviteData = [
             'group_id' => $group->id,
-            'email'    => trim($email),
-            'code'     => Str::random(10)
+            'email' => trim($email),
+            'code' => Str::random(10),
         ];
 
         return $this->invite->create($inviteData);

@@ -19,30 +19,22 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
-use App\Models\Traits\Presentable;
-use MongoDB\Laravel\Eloquent\HybridRelations;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
  * Class Expedition
- *
- * @package App\Models
  */
 class Expedition extends BaseEloquentModel implements AttachableInterface
 {
-    use UuidTrait, HybridRelations, Presentable, PaperclipTrait;
+    use HybridRelations, PaperclipTrait, Presentable, UuidTrait;
 
-    /**
-     * @inheritDoc
-     */
     protected $table = 'expeditions';
 
-    /**
-     * @inheritDoc
-     */
     protected $fillable = [
         'uuid',
         'project_id',
@@ -53,18 +45,15 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
         'workflow_id',
         'geo_locate_form_id',
         'completed',
-        'locked'
+        'locked',
     ];
 
-    /**
-     * @var string
-     */
     protected string $presenter = ExpeditionPresenter::class;
 
     /**
      * Model Boot
      */
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
         static::bootUuidTrait();
@@ -73,18 +62,16 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Expedition constructor.
-     *
-     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
         $this->hasAttachedFile('logo', [
             'variants' => [
                 'medium' => [
-                    'resize'      => ['dimensions' => '318x208'],
-                ]
+                    'resize' => ['dimensions' => '318x208'],
+                ],
             ],
-            'url'  => config('config.missing_expedition_logo'),
+            'url' => config('config.missing_expedition_logo'),
             'urls' => [
                 // This fallback URL is only given for the 'thumb' variant.
                 'medium' => config('config.missing_expedition_logo'),
@@ -97,8 +84,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Project relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -107,8 +92,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * ExpeditionStat relationship.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function stat(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -117,8 +100,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Return expedition stat transcriptions have started.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function statWithTranscriptions(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -128,8 +109,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * Subject relationship.
      *  $expedition->subjects()->attach($subject) adds expedition ids in subjects
-     *
-     * @return \MongoDB\Laravel\Relations\BelongsToMany
      */
     public function subjects(): \MongoDB\Laravel\Relations\BelongsToMany
     {
@@ -138,8 +117,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Workflow relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function workflow(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -148,17 +125,12 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * WorkflowManager relationship.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function workflowManager(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(WorkflowManager::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function downloads(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Download::class);
@@ -166,8 +138,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Download Zooniverse Export relation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function zooniverseExport(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -186,8 +156,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Ocr Queue relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function ocrQueue(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -196,8 +164,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Actors relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function actors(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -209,8 +175,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Return zooniverse actor relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function zooniverseActor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -222,7 +186,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
             'total',
             'error',
             'order',
-            'expert'
+            'expert',
         ];
 
         return $this->belongsToMany(Actor::class, 'actor_expedition')
@@ -243,7 +207,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * GeoLocate actor relation.
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function geoLocateActor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -255,7 +218,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
             'total',
             'error',
             'order',
-            'expert'
+            'expert',
         ];
 
         return $this->belongsToMany(Actor::class, 'actor_expedition')
@@ -285,8 +248,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * PanoptesProject
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function panoptesProject(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -295,8 +256,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * PanoptesTranscription relation.
-     *
-     * @return \MongoDB\Laravel\Relations\HasMany
      */
     public function panoptesTranscriptions(): \MongoDB\Laravel\Relations\HasMany
     {
@@ -305,8 +264,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Relation used for wedigbio dashboard.
-     *
-     * @return \MongoDB\Laravel\Relations\HasMany
      */
     public function dashboard(): \MongoDB\Laravel\Relations\HasMany
     {
@@ -315,8 +272,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * ExportQueue relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function exportQueue(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -325,8 +280,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * GeoLocateExport relation with mongodb
-     *
-     * @return \MongoDB\Laravel\Relations\HasMany
      */
     public function geoLocateExports(): \MongoDB\Laravel\Relations\HasMany
     {
@@ -335,8 +288,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * GeoLocateForm relation in mysql.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function geoLocateForm(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -345,8 +296,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * GeoLocateDataSource relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function geoLocateDataSource(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
