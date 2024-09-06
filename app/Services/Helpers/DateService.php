@@ -26,18 +26,11 @@ use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class DateService
- *
- * @package App\Services\Helpers
  */
 class DateService
 {
     /**
      * Format date using timezone and format.
-     *
-     * @param mixed $date
-     * @param string $format
-     * @param string $tz
-     * @return \Carbon\Carbon|string
      */
     public function formatDate(mixed $date, string $format = 'Y-m-d', string $tz = 'UTC'): Carbon|string
     {
@@ -50,11 +43,6 @@ class DateService
 
     /**
      * Return format for Mongo UTCDateTime.
-     *
-     * @param \MongoDB\BSON\UTCDateTime $date
-     * @param string $format
-     * @param string $tz
-     * @return \Carbon\Carbon|string
      */
     public function formatMongoDate(UTCDateTime $date, string $format = 'Y-m-d', string $tz = 'UTC'): Carbon|string
     {
@@ -67,9 +55,10 @@ class DateService
      * Return timezone array for select box.
      *
      * @return array
+     *
      * @throws \Exception
      */
-    public function timeZoneSelect()
+    public function timeZoneSelect(): array
     {
         $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
 
@@ -94,9 +83,6 @@ class DateService
 
     /**
      * Return timezone title for event rate chart.
-     *
-     * @param string $tz
-     * @return string
      */
     public function eventRateChartTimezone(string $tz): string
     {
@@ -105,12 +91,8 @@ class DateService
 
     /**
      * Check event is before start date.
-     *
-     * @param $event
-     * @param string|null $tz
-     * @return bool
      */
-    public function eventBefore($event, string $tz = null): bool
+    public function eventBefore($event, ?string $tz = null): bool
     {
         $timezone = $tz === null ? $event->timezone : 'UTC';
         $start_date = $event->start_date->setTimezone($timezone);
@@ -121,12 +103,8 @@ class DateService
 
     /**
      * Check if event is over.
-     *
-     * @param $event
-     * @param string|null $tz
-     * @return bool
      */
-    public function eventAfter($event, string $tz = null): bool
+    public function eventAfter($event, ?string $tz = null): bool
     {
         $timezone = $tz === null ? $event->timezone : 'UTC';
         $end_date = $event->end_date->setTimezone($timezone);
@@ -137,12 +115,8 @@ class DateService
 
     /**
      * Check event in progress.
-     *
-     * @param $event
-     * @param string|null $tz
-     * @return bool
      */
-    public function eventActive($event, string $tz = null): bool
+    public function eventActive($event, ?string $tz = null): bool
     {
         $timezone = $tz === null ? $event->timezone : 'UTC';
         $start_date = $event->start_date->setTimezone($timezone);
@@ -150,5 +124,19 @@ class DateService
         $now = Carbon::now($timezone);
 
         return $now->between($start_date, $end_date);
+    }
+
+    /**
+     * Set dates for event.
+     *
+     * @param array $data
+     * @return array
+     */
+    public function setEventDates(array $data): array
+    {
+        $data['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $data['start_date'].':00', $data['timezone']);
+        $data['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $data['end_date'].':00', $data['timezone']);
+
+        return $data;
     }
 }
