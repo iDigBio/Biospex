@@ -29,7 +29,7 @@ class PanoptesTranscription extends BaseMongoModel
     /**
      * Set Collection
      */
-    protected $collection = 'panoptes_transcriptions';
+    protected $table = 'panoptes_transcriptions';
 
     /**
      * The attributes that should be cast.

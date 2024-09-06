@@ -29,7 +29,7 @@ class PusherTranscription extends BaseMongoModel
     /**
      * Set Collection
      */
-    protected $collection = 'pusher_transcriptions';
+    protected $table = 'pusher_transcriptions';
 
     /**
      * The attributes that should be cast.

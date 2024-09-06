@@ -34,7 +34,7 @@ class Reconcile extends BaseMongoModel
     /**
      * Set Collection
      */
-    protected $collection = 'reconciles';
+    protected $table = 'reconciles';
 
     /**
      * The attributes that should be cast.
