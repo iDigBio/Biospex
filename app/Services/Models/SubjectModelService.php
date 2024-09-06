@@ -28,24 +28,24 @@ class SubjectModelService
     /**
      * @var bool $groupAnd
      */
-    private bool $groupAnd;
+    protected bool $groupAnd;
 
     /**
      * @var bool $groupOpProcessed
      */
-    private bool $groupOpProcessed;
+    protected bool $groupOpProcessed;
 
     /**
      * @var mixed
      */
-    private mixed $assignedRuleData;
+    protected mixed $assignedRuleData = null;
 
     /**
      * SubjectModelService constructor.
      *
      * @param Subject $model
      */
-    public function __construct(private readonly Subject $model)
+    public function __construct(protected Subject $model)
     {}
 
     /**
