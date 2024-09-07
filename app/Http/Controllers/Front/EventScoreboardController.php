@@ -20,36 +20,31 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Request;
+use App\Services\EventService;
 use App\Services\Models\EventModel;
-use Illuminate\Contracts\View\Factory as View;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\View;
 
 class EventScoreboardController extends Controller
 {
     /**
      * EventScoreboardController constructor.
-     *
-     * @param \App\Http\Requests\Request $request
-     * @param \Illuminate\Contracts\View\Factory $view
-     * @param \App\Services\Models\EventModel $eventModel
      */
-    public function __construct(protected Request $request, protected View $view, protected EventModel $eventModel)
-    {}
+    public function __construct(protected EventService $eventService, protected EventModel $eventModel) {}
 
     /**
      * Load event scoreboard.
      *
-     * @param int $eventId
      * @return \Illuminate\Contracts\View\View
      */
     public function show(int $eventId)
     {
-        $event = $this->eventModel->getEventScoreboard($eventId, ['id']);
+        $event = $this->eventService->getEventScoreboard($eventId, ['id']);
 
-        if (! $this->request->ajax() || is_null($event)) {
+        if (! Request::ajax() || is_null($event)) {
             $event = null;
         }
 
-        return $this->view->make('common.scoreboard-content', ['event' => $event]);
+        return View::make('common.scoreboard-content', ['event' => $event]);
     }
 }
