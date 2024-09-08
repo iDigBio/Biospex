@@ -32,13 +32,13 @@ class EventService
     /**
      * Get events for admin index.
      */
-    public function index(User $user, ?string $sort = null, ?string $order = null): Collection
+    public function getAdminIndex(User $user, array $request = []): Collection
     {
         $records = $user->isAdmin() ?
             $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
             $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('owner_id', $user->id)->get();
 
-        $sortedRecords = $this->sortRecords($records, $sort, $order);
+        $sortedRecords = $this->sortRecords($records, $request);
 
         return $this->partitionRecords($sortedRecords);
     }
@@ -46,20 +46,20 @@ class EventService
     /**
      * Sort results for index pages.
      */
-    protected function sortRecords(Collection $records, ?string $sort = null, ?string $order = null): Collection
+    protected function sortRecords(Collection $records, array $request = []): Collection
     {
-        if ($order === null) {
+        if (! isset($request['order'])) {
             return $records;
         }
 
-        return match ($sort) {
-            'title' => $order === 'desc' ? $records->sortByDesc('title') : $records->sortBy('title'),
-            'project' => $order === 'desc' ? $records->sortByDesc(function ($event) {
+        return match ($request['sort']) {
+            'title' => $request['order'] === 'desc' ? $records->sortByDesc('title') : $records->sortBy('title'),
+            'project' => $request['order'] === 'desc' ? $records->sortByDesc(function ($event) {
                 return $event->project->title;
             }) : $records->sortBy(function ($event) {
                 return $event->project->title;
             }),
-            'date' => $order === 'desc' ? $records->sortByDesc('start_date') : $records->sortBy('start_date'),
+            'date' => $request['order'] === 'desc' ? $records->sortByDesc('start_date') : $records->sortBy('start_date'),
             default => $records,
         };
     }
@@ -72,5 +72,120 @@ class EventService
         return $records->partition(function ($event) {
             return $this->dateService->eventBefore($event) || $this->dateService->eventActive($event);
         });
+    }
+
+    /**
+     * Get event for show page.
+     */
+    public function getAdminShow(Event &$event): void
+    {
+        $event->loadCount('transcriptions')->load([
+            'project:id,title,slug,logo_file_name',
+            'project.lastPanoptesProject:id,project_id,panoptes_project_id,panoptes_workflow_id',
+            'teams:id,uuid,event_id,title', 'teams.users' => function ($q) use ($event) {
+                $q->withcount([
+                    'transcriptions' => function ($q) use ($event) {
+                        $q->where('event_id', $event->id);
+                    },
+                ]);
+            },
+        ]);
+    }
+
+    /**
+     * Get event for show page.
+     */
+    public function edit(Event &$event): void
+    {
+        $event->loadCount('transcriptions')->loadCount('teams')->load('teams:id,uuid,event_id,title');
+    }
+
+    /**
+     * Create event.
+     */
+    public function store(array $attributes): Event
+    {
+        $this->setEventDates($attributes);
+        $event = $this->event->create($attributes);
+        $event->teams()->saveMany($this->makeTeams($attributes['teams']));
+
+        return $event;
+    }
+
+    /**
+     * Overwrite model update method.
+     */
+    public function update(array $attributes, int $resourceId): bool
+    {
+        $this->setEventDates($attributes);
+
+        $event = $this->event->find($resourceId);
+        $result = $event->fill($attributes)->save();
+
+        collect($attributes['teams'])->each(function ($team) use ($event) {
+            $this->updateTeam($team, $event);
+        });
+
+        return $result;
+    }
+
+    /**
+     * Set dates for event.
+     */
+    public function setEventDates(array &$data): void
+    {
+        $this->dateService->setEventDates($data);
+    }
+
+    /**
+     * Make teams.
+     */
+    public function makeTeams(array $teams)
+    {
+        return collect($teams)->map(function ($team) {
+            return $this->eventTeam->make($team);
+        });
+    }
+
+    /**
+     * Handle team updates from event.
+     */
+    protected function updateTeam(array $team, Event $event): void
+    {
+        $record = $this->eventTeam->where('id', $team['id'])->where('event_id', $event->id)->first();
+        if ($record && $team['title'] !== null) {
+            $record->fill($team)->save();
+
+            return;
+        }
+
+        if ($record && $team['title'] === null) {
+            $record->delete();
+
+            return;
+        }
+
+        if (! $record && $team['title'] !== null) {
+            $team = $this->eventTeam->make($team);
+            $event->teams()->save($team);
+        }
+    }
+
+    /**
+     * Get event scoreboard.
+     *
+     * @param  array|string[]  $columns
+     */
+    public function getEventScoreboard($eventId, array $columns = ['*']): mixed
+    {
+        return $this->event->withCount('transcriptions')->with([
+            'teams' => function ($q) use ($eventId) {
+                $q->withcount([
+                    'transcriptions' => function ($q) use ($eventId) {
+                        $q->where('event_id', $eventId);
+                    },
+                ])->orderBy('transcriptions_count', 'desc');
+            },
+        ])->find($eventId, $columns);
     }
 }

@@ -20,9 +20,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Request;
 use App\Jobs\EventTranscriptionExportCsvJob;
+use App\Models\Event;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class EventTranscriptionExportController extends Controller
 {
@@ -31,13 +32,13 @@ class EventTranscriptionExportController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index($eventId)
+    public function index(Event $event)
     {
         if (! Request::ajax()) {
             return response()->json(false);
         }
 
-        EventTranscriptionExportCsvJob::dispatch(Auth::user(), $eventId);
+        EventTranscriptionExportCsvJob::dispatch(Auth::user(), $event);
 
         return response()->json(true);
     }

@@ -21,14 +21,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
-use App\Jobs\EventTranscriptionExportCsvJob;
-use App\Jobs\EventUserExportCsvJob;
+use App\Models\Event;
 use App\Services\EventService;
-use App\Services\Models\EventModel;
-use App\Services\Models\EventTeamModel;
 use App\Services\Models\ProjectModelService;
-use Auth;
-use Date;
+use App\Services\Permission\CheckPermission;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Redirect;
 
@@ -42,9 +39,6 @@ class EventController extends Controller
      */
     public function __construct(
         protected EventService $eventService,
-
-        protected EventModel $eventModel,
-        protected EventTeamModel $eventTeamModel,
         protected ProjectModelService $projectModelService
     ) {}
 
@@ -54,7 +48,7 @@ class EventController extends Controller
     public function index()
     {
         try {
-            [$events, $eventsCompleted] = $this->eventService->index(Auth::user());
+            [$events, $eventsCompleted] = $this->eventService->getAdminIndex(Auth::user());
 
             return View::make('admin.event.index', compact('events', 'eventsCompleted'));
         } catch (\Throwable $throwable) {
@@ -64,39 +58,19 @@ class EventController extends Controller
     }
 
     /**
-     * Displays Completed Events on public page.
-     */
-    public function sort(): ?\Illuminate\Contracts\View\View
-    {
-        if (! \Request::ajax()) {
-            return null;
-        }
-
-        $results = $this->eventModel->getAdminIndex(Auth::user(), \Request::get('sort'), \Request::get('order'));
-
-        [$active, $completed] = $results->partition(function ($event) {
-            return Date::eventBefore($event) || Date::eventActive($event);
-        });
-
-        $events = \Request::get('type') === 'active' ? $active : $completed;
-
-        return \View::make('front.event.partials.event', compact('events'));
-    }
-
-    /**
      * Show event.
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function show($eventId)
+    public function show(Event $event)
     {
-        $event = $this->eventModel->getShow($eventId);
+        $this->eventService->getAdminShow($event);
 
-        if (! $this->checkPermissions('read', $event)) {
+        if (! CheckPermission::handle('read', $event)) {
             return Redirect::route('admin.events.index');
         }
 
-        return \View::make('admin.event.show', compact('event'));
+        return View::make('admin.event.show', compact('event'));
     }
 
     /**
@@ -109,10 +83,8 @@ class EventController extends Controller
     public function create()
     {
         $projects = $this->projectModelService->getProjectEventSelect();
-        $timezones = Date::timeZoneSelect();
-        $teamsCount = old('entries', 1);
 
-        return \View::make('admin.event.create', compact('projects', 'timezones', 'teamsCount'));
+        return View::make('admin.event.create', compact('projects'));
     }
 
     /**
@@ -141,19 +113,17 @@ class EventController extends Controller
      *
      * @throws \Exception
      */
-    public function edit(int $eventId)
+    public function edit(Event $event)
     {
-        $event = $this->eventModel->getShow($eventId);
+        $this->eventService->edit($event);
 
-        if (! $this->checkPermissions('update', $event)) {
+        if (! CheckPermission::handle('update', $event)) {
             return back();
         }
 
         $projects = $this->projectModelService->getProjectEventSelect();
-        $timezones = Date::timeZoneSelect();
-        $teamsCount = old('entries', $event->teams->count() ?: 1);
 
-        return \View::make('admin.event.edit', compact('event', 'projects', 'timezones', 'teamsCount'));
+        return View::make('admin.event.edit', compact('event', 'projects'));
     }
 
     /**
@@ -161,11 +131,9 @@ class EventController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update($eventId, EventFormRequest $request)
+    public function update(Event $event, EventFormRequest $request)
     {
-        $event = $this->eventModel->findWith($eventId, ['teams']);
-
-        if (! $this->checkPermissions('update', $event)) {
+        if (! CheckPermission::handle('update', $event)) {
             return Redirect::route('admin.events.index');
         }
 
@@ -183,11 +151,11 @@ class EventController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($eventId)
+    public function destroy($eventId)
     {
         $event = $this->eventModel->find($eventId);
 
-        if (! $this->checkPermissions('delete', $event)) {
+        if (! CheckPermission::handle('delete', $event)) {
             return Redirect::route('admin.events.index');
         }
 
@@ -198,37 +166,5 @@ class EventController extends Controller
         }
 
         return Redirect::route('admin.events.edit', [$eventId])->with('error', t('An error occurred when deleting record.'));
-    }
-
-    /**
-     * Export transcription csv from event.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function exportTranscriptions($eventId)
-    {
-        if (! \Request::ajax()) {
-            return response()->json(false);
-        }
-
-        EventTranscriptionExportCsvJob::dispatch(Auth::user(), $eventId);
-
-        return response()->json(true);
-    }
-
-    /**
-     * Export users csv from event.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function exportUsers($eventId)
-    {
-        if (! \Request::ajax()) {
-            return response()->json(false);
-        }
-
-        EventUserExportCsvJob::dispatch(Auth::user(), $eventId);
-
-        return response()->json(true);
     }
 }

@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Event;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
@@ -49,20 +50,22 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
 
     private User $user;
 
-    private int $eventId;
+    private Event $event;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(User $user, int $eventId)
+    public function __construct(User $user, Event $event)
     {
         $this->user = $user;
-        $this->eventId = $eventId;
+        $this->event = $event;
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
+     * TODO: Check if models have more than just id.
+     * TODO: Verify export is working.
      *
      * @return void
      */
@@ -72,7 +75,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
         CreateReportService $createReportService,
     ) {
         try {
-            $ids = $eventTranscriptionModelService->getEventClassificationIds($this->eventId);
+            $ids = $eventTranscriptionModelService->getEventClassificationIds($this->event->id);
 
             $transcriptions = $ids->map(function ($id) use ($panoptesTranscriptionModelService) {
                 $transcript = $panoptesTranscriptionModelService->getFirst('classification_id', $id);

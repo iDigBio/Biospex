@@ -24,14 +24,14 @@ use App\Http\Controllers\Admin\EventUserExportController;
 
 Route::get('events', [EventController::class, 'index'])->name('admin.events.index');
 Route::get('events/create', [EventController::class, 'create'])->name('admin.events.create');
-Route::get('events/{id}', [EventController::class, 'show'])->name('admin.events.show');
+Route::get('events/{event}', [EventController::class, 'show'])->name('admin.events.show');
 Route::post('events/store', [EventController::class, 'store'])->name('admin.events.store');
-Route::get('events/{id}/edit', [EventController::class, 'edit'])->name('admin.events.edit');
-Route::put('events/{id}', [EventController::class, 'update'])->name('admin.events.update');
-Route::delete('events/{id}', [EventController::class, 'delete'])->name('admin.events.delete');
+Route::get('events/{event}/edit', [EventController::class, 'edit'])->name('admin.events.edit');
+Route::put('events/{event}', [EventController::class, 'update'])->name('admin.events.update');
+Route::delete('events/{event}', [EventController::class, 'destroy'])->name('admin.events.destroy');
 
 Route::post('events/sort/', [EventSortController::class, 'index'])->name('admin.events_sort.index');
-Route::get('events/{events}/transcriptions', [EventTranscriptionExportController::class, 'index'])
+Route::get('events/{event}/transcriptions', [EventTranscriptionExportController::class, 'index'])
     ->name('admin.events_transcriptions.index');
-Route::get('events/{events}/users', [EventUserExportController::class, 'index'])
+Route::get('events/{event}/users', [EventUserExportController::class, 'index'])
     ->name('admin.events_users.index');

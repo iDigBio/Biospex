@@ -186,7 +186,7 @@ class EventPresenter extends Presenter
     public function eventAdminShowIcon()
     {
         return '<a href="'.route('admin.events.show', [
-            $this->model->id,
+            'event' => $this->model,
         ]).'" data-hover="tooltip" title="'.t('View Event').'">
                 <i class="fas fa-eye"></i></a>';
     }
@@ -199,7 +199,7 @@ class EventPresenter extends Presenter
     public function eventEditIcon()
     {
         return '<a href="'.route('admin.events.edit', [
-            $this->model->id,
+            'event' => $this->model,
         ]).'" data-hover="tooltip" title="'.t('Edit Event').'">
                 <i class="fas fa-edit"></i></a>';
     }
@@ -212,7 +212,7 @@ class EventPresenter extends Presenter
     public function eventEditIconLrg()
     {
         return '<a href="'.route('admin.events.edit', [
-            $this->model->id,
+            'event' => $this->model,
         ]).'" data-hover="tooltip" title="'.t('Edit Event').'"><i class="fas fa-edit fa-2x"></i></a>';
     }
 
@@ -223,8 +223,8 @@ class EventPresenter extends Presenter
      */
     public function eventDeleteIcon()
     {
-        return '<a href="'.route('admin.events.delete', [
-            $this->model->id,
+        return '<a href="'.route('admin.events.destroy', [
+            'event' => $this->model,
         ]).'" class="prevent-default"
             title="'.t('Delete Event').'" 
             data-hover="tooltip"        
@@ -241,8 +241,8 @@ class EventPresenter extends Presenter
      */
     public function eventDeleteIconLrg()
     {
-        return '<a href="'.route('admin.events.delete', [
-            $this->model->id,
+        return '<a href="'.route('admin.events.destroy', [
+            'event' => $this->model,
         ]).'" class="prevent-default"
             title="'.t('Delete Event').'" 
             data-hover="tooltip"        
@@ -260,7 +260,7 @@ class EventPresenter extends Presenter
     public function eventDownloadUsersIconLrg()
     {
         $route = route('admin.events_users.index', [
-            $this->model->id,
+            'event' => $this->model,
         ]);
 
         return '<a href="#" class="prevent-default event-export"
@@ -278,7 +278,7 @@ class EventPresenter extends Presenter
     public function eventDownloadDigitizationsIconLrg()
     {
         $route = route('admin.events_transcriptions.index', [
-            $this->model->id,
+            'event' => $this->model,
         ]);
 
         return '<a href="#" class="prevent-default event-export"

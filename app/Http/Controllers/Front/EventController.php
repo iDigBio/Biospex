@@ -19,13 +19,14 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Facades\DateHelper as Date;
+use App\Facades\GeneralHelper as General;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventJoinRequest;
 use App\Models\EventTeam;
+use App\Services\EventService;
 use App\Services\Models\EventModel;
 use App\Services\Models\EventUserModelService;
-use Date;
-use General;
 use Redirect;
 use Request;
 use Session;
@@ -36,7 +37,7 @@ use View;
  */
 class EventController extends Controller
 {
-    public function __construct(private readonly EventModel $eventModel) {}
+    public function __construct(protected EventService $eventService, protected EventModel $eventModel) {}
 
     /**
      * Displays Events on public page.

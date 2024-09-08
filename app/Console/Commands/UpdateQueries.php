@@ -212,11 +212,10 @@ class UpdateQueries extends Command
             $record->save();
         });
 
-        $bingos = \App\Models\Bingo::get(['id', 'uuid']);
+        $bingos = \App\Models\Bingo::get();
         $bingos->each(function ($bingo) {
-            $record = \App\Models\Bingo::find($bingo->id);
-            $record->uuid = \Str::uuid();
-            $record->save();
+            $bingo->uuid = \Str::uuid();
+            $bingo->save();
         });
 
         $bingoMaps = \App\Models\BingoMap::get(['id', 'uuid']);
@@ -230,11 +229,10 @@ class UpdateQueries extends Command
             $record->save();
         });
 
-        $events = \App\Models\Event::get(['id']);
+        $events = \App\Models\Event::get();
         $events->each(function ($event) {
-            $record = \App\Models\Event::find($event->id);
-            $record->uuid = \Str::uuid();
-            $record->save();
+            $event->uuid = \Str::uuid();
+            $event->save();
         });
 
         $teams = \App\Models\EventTeam::get(['id', 'uuid']);

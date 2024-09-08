@@ -36,7 +36,7 @@ class EventSortController extends Controller
             return null;
         }
 
-        [$eventsActive, $eventsCompleted] = $eventService->index(Auth::user(), Request::all());
+        [$eventsActive, $eventsCompleted] = $eventService->getAdminIndex(Auth::user(), Request::all());
 
         $events = Request::get('type') === 'active' ? $eventsActive : $eventsCompleted;
 

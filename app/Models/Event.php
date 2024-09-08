@@ -38,6 +38,8 @@ class Event extends BaseEloquentModel
      */
     protected $table = 'events';
 
+    protected string $presenter = EventPresenter::class;
+
     /**
      * The attributes that should be cast.
      *
@@ -77,7 +79,22 @@ class Event extends BaseEloquentModel
         'timezone',
     ];
 
-    protected string $presenter = EventPresenter::class;
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * Model Boot

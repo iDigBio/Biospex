@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Event;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
@@ -46,27 +47,23 @@ class EventUserExportCsvJob implements ShouldQueue
      */
     public $timeout = 1800;
 
-    /**
-     * @var User
-     */
-    private $user;
+    private User $user;
 
-    private $eventId;
+    private Event $event;
 
     /**
      * Create a new job instance.
-     *
-     * @param  null  $eventId
      */
-    public function __construct(User $user, $eventId)
+    public function __construct(User $user, Event $event)
     {
         $this->user = $user;
-        $this->eventId = $eventId;
+        $this->event = $event;
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
+     * TODO: Check if Event has other attributes besides id.
      *
      * @return void
      */
@@ -75,7 +72,7 @@ class EventUserExportCsvJob implements ShouldQueue
         CreateReportService $createReportService,
     ) {
         try {
-            $event = $eventModel->getShow($this->eventId);
+            $event = $eventModel->getShow($this->event->id);
             $rows = $event->teams->flatMap(function ($team) {
                 return $team->users->map(function ($user) use ($team) {
                     return [

@@ -22,6 +22,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Request;
 use App\Jobs\EventUserExportCsvJob;
+use App\Models\Event;
 use Illuminate\Support\Facades\Auth;
 
 class EventUserExportController extends Controller
@@ -31,13 +32,13 @@ class EventUserExportController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(int $eventId)
+    public function index(Event $event)
     {
         if (! Request::ajax()) {
             return response()->json(false);
         }
 
-        EventUserExportCsvJob::dispatch(Auth::user(), $eventId);
+        EventUserExportCsvJob::dispatch(Auth::user(), $event->id);
 
         return response()->json(true);
     }
