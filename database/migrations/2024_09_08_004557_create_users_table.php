@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->binary('uuid')->nullable();
+            $table->uuid('uuid')->nullable();
             $table->string('email', 255)->nullable()->unique();
             $table->string('password', 255)->nullable();
             $table->timestamp('email_verified_at')->nullable();

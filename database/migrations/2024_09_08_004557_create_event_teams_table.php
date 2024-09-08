@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('event_teams', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->binary('uuid')->nullable();
+            $table->uuid('uuid')->nullable();
             $table->unsignedBigInteger('event_id');
             $table->string('title')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
