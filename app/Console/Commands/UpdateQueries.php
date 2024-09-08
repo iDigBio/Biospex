@@ -52,7 +52,6 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        /*
         Schema::table('actor_contacts', function (Blueprint $table) {
             DB::statement('ALTER TABLE `actor_contacts` CHANGE `email` `email` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;');
         });
@@ -142,10 +141,6 @@ class UpdateQueries extends Command
         Schema::table('expeditions', function (Blueprint $table) {
             DB::statement('ALTER TABLE `expeditions` ADD `logo_created_at` TIMESTAMP NULL DEFAULT NULL AFTER `logo_updated_at`;');
         });
-
-        //$path = storage_path('app/migrations.sql');
-        //DB::unprepared(file_get_contents($path));
-        */
 
         /*
         users
