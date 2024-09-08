@@ -20,12 +20,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
  * Class UpdateQueries
- *
- * @package App\Console\Commands
  */
 class UpdateQueries extends Command
 {
@@ -50,8 +47,5 @@ class UpdateQueries extends Command
     /**
      * Fire command
      */
-    public function handle()
-    {
-
-    }
+    public function handle() {}
 }

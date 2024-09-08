@@ -23,15 +23,11 @@ use App\Models\PanoptesProject;
 
 /**
  * Class PanoptesProjectRepository
- *
- * @package App\Repositories
  */
 class PanoptesProjectRepository extends BaseRepository
 {
     /**
      * PanoptesProjectRepository constructor.
-     *
-     * @param \App\Models\PanoptesProject $panoptesProject
      */
     public function __construct(PanoptesProject $panoptesProject)
     {
@@ -42,8 +38,6 @@ class PanoptesProjectRepository extends BaseRepository
     /**
      * Find by project and workflow ids.
      *
-     * @param $projectId
-     * @param $workflowId
      * @return \App\Models\PanoptesProject|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
     public function findByProjectIdAndWorkflowId($projectId, $workflowId)

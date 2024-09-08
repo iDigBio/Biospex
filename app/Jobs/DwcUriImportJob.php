@@ -35,8 +35,6 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Class DwcUriImportJob
- *
- * @package App\Jobs
  */
 class DwcUriImportJob implements ShouldQueue
 {
@@ -49,9 +47,6 @@ class DwcUriImportJob implements ShouldQueue
      */
     public $timeout = 1800;
 
-    /**
-     * @var
-     */
     public $data;
 
     /**
@@ -66,8 +61,6 @@ class DwcUriImportJob implements ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @param $data
      */
     public function __construct($data)
     {
@@ -77,49 +70,40 @@ class DwcUriImportJob implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @param \App\Repositories\ImportRepository $importRepo
-     * @param \App\Repositories\ProjectRepository $projectRepo
-     * @return void
      */
-    public function handle(ImportRepository $importRepo, ProjectRepository $projectRepo): void {
+    public function handle(ImportRepository $importRepo, ProjectRepository $projectRepo): void
+    {
         $project = $projectRepo->getProjectForDarwinImportJob($this->data['id']);
         $users = $project->group->users->push($project->group->owner);
 
-        try
-        {
+        try {
             $fileName = basename($this->data['url']);
             $filePath = config('config.import_dir').'/'.$fileName;
 
             $file = file_get_contents(GeneralHelper::urlEncode($this->data['url']));
-            if ($file === false)
-            {
+            if ($file === false) {
                 throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
             }
 
-            if (!$this->checkFileType($file))
-            {
+            if (! $this->checkFileType($file)) {
                 throw new Exception(t('Wrong file type for zip download'));
             }
 
-            if (Storage::disk('efs')->put($filePath, $file) === false)
-            {
+            if (Storage::disk('efs')->put($filePath, $file) === false) {
                 throw new Exception(t('An error occurred while attempting to save file: %s', $filePath));
             }
 
             $import = $importRepo->create([
-                'user_id'    => $this->data['user_id'],
+                'user_id' => $this->data['user_id'],
                 'project_id' => $this->data['id'],
-                'file'       => $filePath
+                'file' => $filePath,
             ]);
 
             DwcFileImportJob::dispatch($import);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $attributes = [
                 'subject' => 'DWC Uri Import Error',
-                'html'    => [
+                'html' => [
                     t('An error occurred while importing the Darwin Core Archive using a uri.'),
                     t('Project: %s', $project->title),
                     t('ID: %s'.$project->id),
@@ -135,17 +119,13 @@ class DwcUriImportJob implements ShouldQueue
 
     /**
      * Check if file is zip.
-     *
-     * @param $file
-     * @return bool
      */
     protected function checkFileType($file): bool
     {
         $finfo = new finfo(FILEINFO_MIME);
         [$mime] = explode(';', $finfo->buffer($file));
         $types = ['application/zip', 'application/octet-stream'];
-        if (!in_array(trim($mime), $types))
-        {
+        if (! in_array(trim($mime), $types)) {
             return false;
         }
 

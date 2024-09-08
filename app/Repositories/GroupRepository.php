@@ -20,19 +20,14 @@
 namespace App\Repositories;
 
 use App\Models\Group;
-use PhpParser\Builder;
 
 /**
  * Class GroupRepository
- *
- * @package App\Repositories
  */
 class GroupRepository extends BaseRepository
 {
     /**
      * GroupRepository constructor.
-     *
-     * @param \App\Models\Group $group
      */
     public function __construct(Group $group)
     {
@@ -43,7 +38,6 @@ class GroupRepository extends BaseRepository
     /**
      * Get all groups by user id.
      *
-     * @param $userId
      * @return \App\Models\Group[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getGroupsByUserId($userId)
@@ -57,7 +51,6 @@ class GroupRepository extends BaseRepository
     /**
      * Get group for show page.
      *
-     * @param $groupId
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
      */
     public function getGroupShow($groupId)
@@ -74,7 +67,6 @@ class GroupRepository extends BaseRepository
     /**
      * Get group ids for user session.
      *
-     * @param $userId
      * @return \App\Models\Group[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
      */
     public function getUserGroupIds($userId)
@@ -88,9 +80,6 @@ class GroupRepository extends BaseRepository
 
     /**
      * Get group select for user.
-     *
-     * @param $user
-     * @return array
      */
     public function getUsersGroupsSelect($user): array
     {
@@ -101,13 +90,10 @@ class GroupRepository extends BaseRepository
 
     /**
      * Check group count for admin welcome/index page.
-     *
-     * @param $userId
-     * @return int
      */
     public function getUserGroupCount($userId): int
     {
-        return $this->model->withCount(['users' => function($q) use($userId) {
+        return $this->model->withCount(['users' => function ($q) use ($userId) {
             $q->where('user_id', $userId);
         }])->whereHas('users', function ($q) use ($userId) {
             $q->where('user_id', $userId);

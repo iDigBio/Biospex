@@ -2,13 +2,10 @@
 
 namespace App\Http\Resources;
 
-use App\Facades\DateHelper;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Class WeDigBioDashboard
- *
- * @package App\Http\Resources
  */
 class WeDigBioDashboard extends JsonResource
 {
@@ -25,10 +22,10 @@ class WeDigBioDashboard extends JsonResource
     /**
      * Add for building route.
      *
-     * @param string $resourceRoute
      * @return $this
      */
-    public function resourceRoute(string $resourceRoute){
+    public function resourceRoute(string $resourceRoute)
+    {
         $this->resourceRoute = $resourceRoute;
 
         return $this;
@@ -43,14 +40,14 @@ class WeDigBioDashboard extends JsonResource
     public function toArray($request)
     {
         return [
-            'project'              => $this->project,
-            'description'          => $this->description,
-            'guid'                 => $this->guid,
-            'timestamp'            => $this->timestamp,
-            'subject'              => $this->subject,
-            'contributor'          => $this->contributor,
+            'project' => $this->project,
+            'description' => $this->description,
+            'guid' => $this->guid,
+            'timestamp' => $this->timestamp,
+            'subject' => $this->subject,
+            'contributor' => $this->contributor,
             'transcriptionContent' => $this->transcriptionContent,
-            'discretionaryState'   => $this->discretionaryState,
+            'discretionaryState' => $this->discretionaryState,
             'links' => [
                 'self' => route($this->resourceRoute, ['wedigbio_dashboard' => $this->guid]),
             ],

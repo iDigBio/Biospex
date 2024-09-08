@@ -23,15 +23,11 @@ use App\Models\Resource;
 
 /**
  * Class ResourceRepository
- *
- * @package App\Repositories
  */
 class ResourceRepository extends BaseRepository
 {
     /**
      * ResourceRepository constructor.
-     *
-     * @param \App\Models\Resource $resource
      */
     public function __construct(Resource $resource)
     {

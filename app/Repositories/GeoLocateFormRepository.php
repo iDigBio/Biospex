@@ -23,15 +23,11 @@ use App\Models\GeoLocateForm;
 
 /**
  * Class ActorRepository
- *
- * @package App\Repositories
  */
 class GeoLocateFormRepository extends BaseRepository
 {
     /**
      * GeoLocateForm construct.
-     *
-     * @param \App\Models\GeoLocateForm $geoLocateForm
      */
     public function __construct(GeoLocateForm $geoLocateForm)
     {

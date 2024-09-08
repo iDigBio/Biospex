@@ -20,23 +20,21 @@
 namespace App\Models;
 
 use App\Facades\DateHelper;
+use App\Models\Traits\Presentable;
+use App\Models\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
-use MongoDB\Laravel\Eloquent\HybridRelations;
-use Illuminate\Support\Facades\Config;
+use Cviebrock\EloquentSluggable\Sluggable;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
-use Cviebrock\EloquentSluggable\Sluggable;
-use App\Models\Traits\UuidTrait;
-use App\Models\Traits\Presentable;
+use Illuminate\Support\Facades\Config;
+use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
  * Class Project
- *
- * @package App\Models
  */
 class Project extends BaseEloquentModel implements AttachableInterface
 {
-    use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, Presentable;
+    use HybridRelations, PaperclipTrait, Presentable, Sluggable, UuidTrait;
 
     /**
      * @var string
@@ -44,12 +42,12 @@ class Project extends BaseEloquentModel implements AttachableInterface
     protected $connection = 'mysql';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'projects';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'uuid',
@@ -80,7 +78,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
         'target_fields',
         'status',
         'advertise',
-        'geolocate_community'
+        'geolocate_community',
     ];
 
     /**
@@ -90,13 +88,11 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Project constructor.
-     *
-     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
         $this->hasAttachedFile('logo', [
-            'url'  => config('config.missing_project_logo')
+            'url' => config('config.missing_project_logo'),
         ]);
 
         parent::__construct($attributes);
@@ -122,15 +118,13 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Return the sluggable configuration array for this model test.
-     *
-     * @return array
      */
     public function sluggable(): array
     {
         return [
             'slug' => [
-                'source' => 'title'
-            ]
+                'source' => 'title',
+            ],
         ];
     }
 
@@ -186,8 +180,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * GeoLocateCommunity relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function geoLocateCommunity(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -266,8 +258,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Panoptes transcription relation.
-     *
-     * @return \MongoDB\Laravel\Relations\HasMany
      */
     public function panoptesTranscriptions(): \MongoDB\Laravel\Relations\HasMany
     {
@@ -284,11 +274,8 @@ class Project extends BaseEloquentModel implements AttachableInterface
         return $this->hasMany(ProjectResource::class);
     }
 
-
     /**
      * Subject relation.
-     *
-     * @return \MongoDB\Laravel\Relations\HasMany
      */
     public function subjects(): \MongoDB\Laravel\Relations\HasMany
     {
@@ -327,8 +314,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Mutator for target_fields.
-     *
-     * @param $input
      */
     public function setTargetFieldsAttribute($input)
     {
@@ -341,11 +326,11 @@ class Project extends BaseEloquentModel implements AttachableInterface
                 }
 
                 $fields = [
-                    'target_core'              => $input['target_core'][$i],
-                    'target_name'              => $input['target_name'][$i],
-                    'target_description'       => $input['target_description'][$i],
-                    'target_valid_response'    => $input['target_valid_response'][$i],
-                    'target_inference'         => $input['target_inference'][$i],
+                    'target_core' => $input['target_core'][$i],
+                    'target_name' => $input['target_name'][$i],
+                    'target_description' => $input['target_description'][$i],
+                    'target_valid_response' => $input['target_valid_response'][$i],
+                    'target_inference' => $input['target_inference'][$i],
                     'target_inference_example' => $input['target_inference_example'][$i],
                 ];
                 $target_fields[$i] = $fields;
@@ -363,7 +348,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
     /**
      * Accessor for target_fields.
      *
-     * @param $value
      * @return mixed
      */
     public function getTargetFieldsAttribute($value)
@@ -373,8 +357,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Set attribute for advertise.
-     *
-     * @param $input
      */
     public function setAdvertiseAttribute($input)
     {
@@ -395,31 +377,36 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
                 if ($type === 'column') {
                     $build[$field] = $input[$value];
+
                     continue;
                 }
 
                 if ($type === 'value') {
                     $build[$field] = $value;
+
                     continue;
                 }
 
                 if ($type === 'array') {
                     $combined = '';
                     foreach ($value as $col) {
-                        $combined .= $input[$col].", ";
+                        $combined .= $input[$col].', ';
                     }
                     $build[$field] = rtrim($combined, ', ');
+
                     continue;
                 }
 
                 if ($type === 'url') {
                     if ($value === 'slug') {
                         $build[$field] = env('APP_URL').'/'.$this->{$value};
+
                         continue;
                     }
 
                     if ($value === 'logo') {
                         $build[$field] = env('APP_URL').$this->{$value}->url();
+
                         continue;
                     }
                 }
@@ -434,7 +421,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
     /**
      * Advertise attribute.
      *
-     * @param $value
      * @return mixed
      */
     public function getAdvertiseAttribute($value)

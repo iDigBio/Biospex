@@ -23,15 +23,11 @@ use App\Models\Reconcile;
 
 /**
  * Class ReconcileRepository
- *
- * @package App\Repositories
  */
 class ReconcileRepository extends BaseRepository
 {
     /**
      * ReconcileRepository constructor.
-     *
-     * @param \App\Models\Reconcile $reconcile
      */
     public function __construct(Reconcile $reconcile)
     {
@@ -42,9 +38,6 @@ class ReconcileRepository extends BaseRepository
     /**
      * Get paging for reconcile records.
      * Encoding is used to match columns in reconcile collection.
-     *
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function paging(int $expeditionId): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {

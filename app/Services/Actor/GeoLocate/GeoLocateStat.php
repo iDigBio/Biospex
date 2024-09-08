@@ -25,32 +25,17 @@ use App\Services\Api\GeoLocateApi;
 
 /**
  * Class GeoLocateStat
- *
- * @package App\Services\Process
  */
 class GeoLocateStat
 {
-    /**
-     * @var \App\Repositories\GeoLocateCommunityRepository
-     */
     private GeoLocateCommunityRepository $geoLocateCommunityRepository;
 
-    /**
-     * @var \App\Repositories\GeoLocateDataSourceRepository
-     */
     private GeoLocateDataSourceRepository $geoLocateDataSourceRepository;
 
-    /**
-     * @var \App\Services\Api\GeoLocateApi
-     */
     private GeoLocateApi $geoLocateApi;
 
     /**
      * GeoLocateStat constructor.
-     *
-     * @param \App\Repositories\GeoLocateCommunityRepository $geoLocateCommunityRepository
-     * @param \App\Repositories\GeoLocateDataSourceRepository $geoLocateDataSourceRepository
-     * @param \App\Services\Api\GeoLocateApi $geoLocateApi
      */
     public function __construct(
         GeoLocateCommunityRepository $geoLocateCommunityRepository,
@@ -65,10 +50,6 @@ class GeoLocateStat
     /**
      * Save community and data source.
      *
-     * @param array $data
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function saveCommunityDataSource(array $data, int $projectId, int $expeditionId): void
@@ -89,20 +70,16 @@ class GeoLocateStat
 
     /**
      * Create or update community.
-     *
-     * @param int $projectId
-     * @param string $community
-     * @return \App\Models\GeoLocateCommunity
      */
     public function updateOrCreateCommunity(int $projectId, string $community): \App\Models\GeoLocateCommunity
     {
         $attributes = [
             'project_id' => $projectId,
-            'name' => $community
+            'name' => $community,
         ];
         $values = [
             'project_id' => $projectId,
-            'name' => $community
+            'name' => $community,
         ];
 
         return $this->geoLocateCommunityRepository->updateOrCreate($attributes, $values);
@@ -110,12 +87,6 @@ class GeoLocateStat
 
     /**
      * Update or Create GeoLocateDataSource.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @param int $communityId
-     * @param string $dataSource
-     * @return \App\Models\GeoLocateDataSource
      */
     public function updateOrCreateDataSource(int $projectId, int $expeditionId, int $communityId, string $dataSource): \App\Models\GeoLocateDataSource
     {
@@ -127,7 +98,7 @@ class GeoLocateStat
             'project_id' => $projectId,
             'expedition_id' => $expeditionId,
             'geo_locate_community_id' => $communityId,
-            'data_source' => $dataSource
+            'data_source' => $dataSource,
         ];
 
         return $this->geoLocateDataSourceRepository->updateOrCreate($attributes, $values);
@@ -135,9 +106,6 @@ class GeoLocateStat
 
     /**
      * Update community stat.
-     * @param int $id
-     * @param array $data
-     * @return void
      */
     public function updateGeoLocateCommunityStat(int $id, array $data): void
     {
@@ -146,8 +114,7 @@ class GeoLocateStat
 
     /**
      * Update data source stat.
-     * @param int $id
-     * @param array $data
+     *
      * @return void
      */
     public function updateGeoLocateDataSourceStat(int $id, array $data)
@@ -158,12 +125,9 @@ class GeoLocateStat
     /**
      * Get community and data source.
      *
-     * @param string $cname
-     * @param string|null $dname
-     * @return array
      * @throws \Exception|\GuzzleHttp\Exception\GuzzleException
      */
-    public function getCommunityDataSource(string $cname, string $dname = null): array
+    public function getCommunityDataSource(string $cname, ?string $dname = null): array
     {
         $uri = $this->geoLocateApi->buildStatsUri($cname, $dname);
         $this->geoLocateApi->setHttpProvider();
@@ -179,21 +143,14 @@ class GeoLocateStat
 
     /**
      * Get community and data source by expedition id.
-     *
-     * @param int $expeditionId
-     * @return \App\Models\GeoLocateDataSource
      */
     public function getCommunityAndDataSourceByExpeditionId(int $expeditionId): \App\Models\GeoLocateDataSource
     {
-        return $this->geoLocateDataSourceRepository->findByWith('expedition_id',$expeditionId, ['geoLocateCommunity'])->first();
+        return $this->geoLocateDataSourceRepository->findByWith('expedition_id', $expeditionId, ['geoLocateCommunity'])->first();
     }
 
     /**
      * Build datasource download file.
-     *
-     * @param string $cname
-     * @param string $dname
-     * @return string
      */
     public function buildDataSourceDownload(string $cname, string $dname): string
     {
@@ -203,9 +160,6 @@ class GeoLocateStat
     /**
      * Get DataSource download file.
      *
-     * @param string $uri
-     * @param int $expeditionId
-     * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getDataSourceDownload(string $uri, int $expeditionId): void

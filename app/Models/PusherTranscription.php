@@ -21,8 +21,6 @@ namespace App\Models;
 
 /**
  * Class PusherTranscription
- *
- * @package App\Models
  */
 class PusherTranscription extends BaseMongoModel
 {

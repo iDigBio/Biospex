@@ -19,22 +19,19 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
-use App\Models\Traits\Presentable;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class Profile
- *
- * @package App\Models
  */
 class Profile extends BaseEloquentModel implements AttachableInterface
 {
     use PaperclipTrait, Presentable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'profiles';
 
@@ -47,13 +44,13 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     {
         return [
             'avatar_updated_at' => 'datetime',
-            'created_at'        => 'datetime',
-            'updated_at'        => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'first_name',
@@ -64,19 +61,17 @@ class Profile extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Profile constructor.
-     *
-     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
         $this->hasAttachedFile('avatar', [
             'variants' => [
                 'medium' => '160x160',
-                'small'  => '25x25',
+                'small' => '25x25',
             ],
-            'url'      => config('config.missing_avatar_medium'),
-            'urls'     => [
-                'small'  => config('config.missing_avatar_small'),
+            'url' => config('config.missing_avatar_medium'),
+            'urls' => [
+                'small' => config('config.missing_avatar_small'),
                 'medium' => config('config.missing_avatar_medium'),
             ],
         ]);

@@ -23,21 +23,15 @@ use App\Models\Invite;
 
 /**
  * Class InviteRepository
- *
- * @package App\Repositories
  */
 class InviteRepository extends BaseRepository
 {
     /**
      * InviteRepository constructor.
-     *
-     * @param \App\Models\Invite $invite
      */
     public function __construct(Invite $invite)
     {
 
         $this->model = $invite;
     }
-
-
 }

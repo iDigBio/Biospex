@@ -26,9 +26,6 @@ use App\Repositories\SubjectRepository;
 
 class MapZooniverseCsvColumnsService
 {
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
     private SubjectRepository $subjectRepository;
 
     /**
@@ -36,13 +33,9 @@ class MapZooniverseCsvColumnsService
      */
     private mixed $zooniverseCsvMap;
 
-    /**
-     * @param \App\Repositories\SubjectRepository $subjectRepository
-     */
     public function __construct(
         SubjectRepository $subjectRepository
-    )
-    {
+    ) {
 
         $this->subjectRepository = $subjectRepository;
         $this->zooniverseCsvMap = config('zooniverse.csv_map');
@@ -50,10 +43,6 @@ class MapZooniverseCsvColumnsService
 
     /**
      * Map zooniverse csvExport values.
-     *
-     * @param \App\Models\ExportQueueFile $file
-     * @param \App\Models\ExportQueue $queue
-     * @return array
      */
     public function mapColumns(ExportQueueFile $file, ExportQueue $queue): array
     {
@@ -62,22 +51,24 @@ class MapZooniverseCsvColumnsService
         $csvArray = [];
         $presetValues = ['#expeditionId', '#expeditionTitle', 'imageName'];
 
-
         foreach ($this->zooniverseCsvMap as $key => $item) {
             if (in_array($key, $presetValues)) {
                 $this->setPresetValues($csvArray, $key, $file, $queue);
+
                 continue;
             }
 
             // If subject not found, add error column and message
             if ($subject === null) {
                 $csvArray['error'] = 'Could not retrieve subject '.$file->subject_id.' from database for export';
+
                 continue;
             }
 
             // If item is not array, direct translation
             if (! is_array($item)) {
                 $csvArray[$key] = $item === '' ? '' : $subject->{$item};
+
                 continue;
             }
 
@@ -96,10 +87,6 @@ class MapZooniverseCsvColumnsService
     /**
      * Set preset values needing special attention.
      *
-     * @param $csvArray
-     * @param $key
-     * @param \App\Models\ExportQueueFile $file
-     * @param \App\Models\ExportQueue $queue
      * @return void
      */
     private function setPresetValues(&$csvArray, $key, ExportQueueFile $file, ExportQueue $queue)
@@ -124,11 +111,6 @@ class MapZooniverseCsvColumnsService
     /**
      * Set values of document items if array.
      *
-     * @param array $csvArray
-     * @param string $key
-     * @param string $doc
-     * @param array $array
-     * @param \App\Models\Subject $subject
      * @return void
      */
     private function setArrayValues(array &$csvArray, string $key, string $doc, array $array, Subject $subject)
@@ -143,11 +125,6 @@ class MapZooniverseCsvColumnsService
     /**
      * Set values of document if value exists. Set special links.
      *
-     * @param array $csvArray
-     * @param string $key
-     * @param string $doc
-     * @param string $value
-     * @param \App\Models\Subject $subject
      * @return void
      */
     private function setValues(array &$csvArray, string $key, string $doc, string $value, Subject $subject)

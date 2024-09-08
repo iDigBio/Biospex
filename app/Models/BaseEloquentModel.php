@@ -27,18 +27,18 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
  * Class BaseEloquentModel
  *
  * @mixin Eloquent
- * @package App\Models
  */
 class BaseEloquentModel extends Model
 {
     use LadaCacheTrait;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $connection = 'mysql';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $primaryKey = 'id';
 }

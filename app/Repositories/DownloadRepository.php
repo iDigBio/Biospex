@@ -20,21 +20,15 @@
 namespace App\Repositories;
 
 use App\Models\Download;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
  * Class DownloadRepository
- *
- * @package App\Repositories
  */
 class DownloadRepository extends BaseRepository
 {
-
     /**
      * DownloadRepository constructor.
-     *
-     * @param \App\Models\Download $download
      */
     public function __construct(Download $download)
     {
@@ -44,9 +38,6 @@ class DownloadRepository extends BaseRepository
 
     /**
      * Get Zooniverse export files.
-     *
-     * @param string $expeditionId
-     * @return \Illuminate\Support\Collection
      */
     public function getZooniverseExportFiles(string $expeditionId): Collection
     {

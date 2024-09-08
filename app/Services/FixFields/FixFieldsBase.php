@@ -27,26 +27,12 @@ use Illuminate\Support\Facades\Storage;
 
 class FixFieldsBase
 {
-    /**
-     * @var \App\Services\MongoDbService
-     */
     public MongoDbService $mongoDbService;
 
-    /**
-     * @var \App\Repositories\HeaderRepository
-     */
     public HeaderRepository $headerRepository;
 
-    /**
-     * @var \App\Repositories\PropertyRepository
-     */
     public PropertyRepository $propertyRepository;
 
-    /**
-     * @param \App\Services\MongoDbService $mongoDbService
-     * @param \App\Repositories\HeaderRepository $headerRepository
-     * @param \App\Repositories\PropertyRepository $propertyRepository
-     */
     public function __construct(
         MongoDbService $mongoDbService,
         HeaderRepository $headerRepository,
@@ -61,8 +47,6 @@ class FixFieldsBase
     /**
      * Write contents to file.
      *
-     * @param string $fileName
-     * @param \Illuminate\Support\Collection $content
      * @return void
      */
     public function writeToFile(string $fileName, Collection $content)
@@ -72,9 +56,6 @@ class FixFieldsBase
 
     /**
      * Get properties file.
-     *
-     * @param string $filename
-     * @return array
      */
     public function getPropertiesFile(string $filename): array
     {
@@ -83,35 +64,32 @@ class FixFieldsBase
 
     /**
      * Set good name for updating.
-     *
-     * @param string $fieldName
-     * @return string
      */
     public function setGoodName(string $fieldName): string
     {
         $fields = [
             'associatedSequences' => 'associatedsequences',
-            'collID'              => 'collId',
-            'recordID'            => 'recordId',
+            'collID' => 'collId',
+            'recordID' => 'recordId',
         ];
 
         if (($newFieldName = array_search($fieldName, $fields)) !== false) {
             return $newFieldName;
         }
+
         return $fieldName;
     }
 
     /**
      * Update fields.
      *
-     * @param array $fields
-     * @param string $projectId
-     * @param string $type
      * @return void
      */
     public function updateFields(string $projectId, array $fields, string $type)
     {
-        if (empty($fields)) return;
+        if (empty($fields)) {
+            return;
+        }
 
         $this->updateMongoFields($projectId, $fields, $type);
         $this->removeAndSetHeader($projectId, $fields, $type);
@@ -120,18 +98,13 @@ class FixFieldsBase
 
     /**
      * Update multiple fields by renaming.
-     *
-     * @param string $id
-     * @param array $fields
-     * @param string $type
-     * @return bool
      */
     public function updateMongoFields(string $id, array $fields, string $type): bool
     {
         $this->mongoDbService->setCollection('subjects');
         $criteria = ['project_id' => (int) $id];
 
-        $renameFields = collect($fields)->mapWithKeys(function ($newField, $oldField) use($type) {
+        $renameFields = collect($fields)->mapWithKeys(function ($newField, $oldField) use ($type) {
             return $type === 'image' ?
                 [$oldField => $newField] :
                 ['occurrence.'.$oldField => 'occurrence.'.$newField];
@@ -145,9 +118,6 @@ class FixFieldsBase
     /**
      * Remove bad field name from header, add to header if it doesn't exist.
      *
-     * @param string $projectId
-     * @param array $fields
-     * @param string $type
      * @return void
      */
     public function removeAndSetHeader(string $projectId, array $fields, string $type)
@@ -175,7 +145,6 @@ class FixFieldsBase
     /**
      * Remove bad name and create new if it does not exist.
      *
-     * @param array $fields
      * @return void
      */
     public function removeAndSetProperty(array $fields)
@@ -193,10 +162,6 @@ class FixFieldsBase
 
     /**
      * Map image fields to project ids.
-     *
-     * @param \Illuminate\Support\Collection $properties
-     * @param string $headerType
-     * @return \Illuminate\Support\Collection
      */
     public function mapFieldsToProjectId(Collection $properties, string $headerType): Collection
     {
@@ -235,20 +200,18 @@ class FixFieldsBase
     /**
      * Compares strings. If matched but different case, set matched.
      *
-     * @param $array
-     * @param $setField
-     * @param $oldField
      * @return void
      */
     public function stringComparison(&$array, $setField, $oldField)
     {
         if (strcasecmp($setField, $oldField) !== 0) {
             $array = array_merge($array, [$oldField => $setField]);
+
             return;
         }
 
         if ($setField !== $oldField) {
-            !isset($array['matched']) ?
+            ! isset($array['matched']) ?
                 $array['matched'] = [$oldField => $setField] :
                 $array['matched'] = array_merge($array['matched'], [$oldField => $setField]);
         }

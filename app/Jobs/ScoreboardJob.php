@@ -29,22 +29,15 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Class ScoreboardJob
- *
- * @package App\Jobs
  */
 class ScoreboardJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * @var int
-     */
     private int $projectId;
 
     /**
      * ScoreBoardJob constructor.
-     *
-     * @param int $projectId
      */
     public function __construct(int $projectId)
     {
@@ -55,13 +48,12 @@ class ScoreboardJob implements ShouldQueue
     /**
      * Job handle.
      *
-     * @param \App\Repositories\EventRepository $eventRepo
      * @throws \Throwable
      */
     public function handle(EventRepository $eventRepo)
     {
         $events = $eventRepo->getEventsByProjectId($this->projectId);
-        $data = $events->mapWithKeys(function($event) {
+        $data = $events->mapWithKeys(function ($event) {
             return [$event->id => \View::make('common.scoreboard-content', ['event' => $event])->render()];
         });
 

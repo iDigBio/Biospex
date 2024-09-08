@@ -25,15 +25,11 @@ use Illuminate\Support\Collection;
 
 /**
  * Class EventTranscriptionRepository
- *
- * @package App\Repositories
  */
 class EventTranscriptionRepository extends BaseRepository
 {
     /**
      * EventTranscriptionRepository constructor.
-     *
-     * @param \App\Models\EventTranscription $eventTranscription
      */
     public function __construct(EventTranscription $eventTranscription)
     {
@@ -43,9 +39,6 @@ class EventTranscriptionRepository extends BaseRepository
 
     /**
      * Get event classification ids.
-     *
-     * @param $eventId
-     * @return mixed
      */
     public function getEventClassificationIds($eventId): mixed
     {
@@ -54,11 +47,6 @@ class EventTranscriptionRepository extends BaseRepository
 
     /**
      * Get transcriptions for event step chart.
-     *
-     * @param string $eventId
-     * @param \Illuminate\Support\Carbon $startLoad
-     * @param \Illuminate\Support\Carbon $endLoad
-     * @return \Illuminate\Support\Collection|null
      */
     public function getEventRateChartTranscriptions(string $eventId, Carbon $startLoad, Carbon $endLoad): ?Collection
     {

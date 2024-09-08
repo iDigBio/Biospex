@@ -30,8 +30,6 @@ use Exception;
 
 /**
  * Class GroupController
- *
- * @package App\Http\Controllers\Admin
  */
 class GroupController extends Controller
 {
@@ -42,8 +40,6 @@ class GroupController extends Controller
 
     /**
      * GroupController constructor.
-     *
-     * @param \App\Repositories\GroupRepository $groupRepo
      */
     public function __construct(GroupRepository $groupRepo)
     {
@@ -75,8 +71,6 @@ class GroupController extends Controller
     /**
      * Store a newly created group.
      *
-     * @param GroupFormRequest $request
-     * @param \App\Repositories\UserRepository $userRepo
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(GroupFormRequest $request, UserRepository $userRepo)
@@ -104,8 +98,8 @@ class GroupController extends Controller
     /**
      * how group page.
      *
-     * @param $groupId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     *
      * @throws \Exception
      */
     public function show($groupId)
@@ -122,7 +116,6 @@ class GroupController extends Controller
     /**
      * Show group edit form.
      *
-     * @param $groupId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function edit($groupId)
@@ -143,8 +136,6 @@ class GroupController extends Controller
     /**
      * Update group.
      *
-     * @param GroupFormRequest $request
-     * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(GroupFormRequest $request, $groupId)
@@ -163,7 +154,6 @@ class GroupController extends Controller
     /**
      * Soft delete the specified resource from storage.
      *
-     * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function delete($groupId)
@@ -200,9 +190,6 @@ class GroupController extends Controller
     /**
      * Delete user from group.
      *
-     * @param \App\Repositories\UserRepository $userRepo
-     * @param $groupId
-     * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteUser(UserRepository $userRepo, $groupId, $userId)
@@ -235,11 +222,6 @@ class GroupController extends Controller
 
     /**
      * Delete geolocate form.
-     *
-     * @param \App\Services\Actor\GeoLocate\GeoLocateExportForm $geoLocateExportForm
-     * @param int $groupId
-     * @param int $formId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteForm(GeoLocateExportForm $geoLocateExportForm, int $groupId, int $formId): \Illuminate\Http\RedirectResponse
     {

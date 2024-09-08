@@ -22,19 +22,14 @@ namespace App\Repositories;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
 use Illuminate\Support\Collection;
-use Illuminate\Support\LazyCollection;
 
 /**
  * Class ExportQueueFileRepository
- *
- * @package App\Repositories
  */
 class ExportQueueFileRepository extends BaseRepository
 {
     /**
      * ExportQueueFileRepository constructor.
-     *
-     * @param \App\Models\ExportQueueFile $exportQueueFile
      */
     public function __construct(ExportQueueFile $exportQueueFile)
     {
@@ -43,8 +38,6 @@ class ExportQueueFileRepository extends BaseRepository
 
     /**
      * Model for repository.
-     *
-     * @return \App\Models\ExportQueueFile
      */
     public function model(): ExportQueueFile
     {
@@ -53,15 +46,12 @@ class ExportQueueFileRepository extends BaseRepository
 
     /**
      * Create queue file for subject.
-     *
-     * @param \App\Models\ExportQueue $queue
-     * @param $subject
      */
     public function createQueueFile(ExportQueue $queue, $subject): void
     {
         $attributes = [
-            'queue_id'   => $queue->id,
-            'subject_id' => (string) $subject->_id
+            'queue_id' => $queue->id,
+            'subject_id' => (string) $subject->_id,
         ];
 
         $file = $this->model->firstOrNew($attributes);
@@ -73,10 +63,6 @@ class ExportQueueFileRepository extends BaseRepository
 
     /**
      * Get uncompleted export queue file count.
-     *
-     * @param int $queueId
-     * @param int $limit
-     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getUnprocessedExportQueueFiles(int $queueId, int $limit): \Illuminate\Database\Eloquent\Collection
     {
@@ -88,9 +74,6 @@ class ExportQueueFileRepository extends BaseRepository
 
     /**
      * Get queue files with errors for reporting.
-     *
-     * @param int $queueId
-     * @return \Illuminate\Support\Collection
      */
     public function getExportQueueFileWithErrors(int $queueId): Collection
     {

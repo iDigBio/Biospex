@@ -27,8 +27,6 @@ use Illuminate\Support\Facades\Mail;
 
 /**
  * Class MailController
- *
- * @package App\Http\Controllers\Admin
  */
 class MailController extends Controller
 {
@@ -39,8 +37,6 @@ class MailController extends Controller
 
     /**
      * UserController constructor.
-     *
-     * @param \App\Repositories\UserRepository $userRepo
      */
     public function __construct(UserRepository $userRepo)
     {
@@ -58,13 +54,12 @@ class MailController extends Controller
     /**
      * Show the form for user edit.
      *
-     * @param \App\Http\Requests\MailFormRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function send(MailFormRequest $request)
     {
         $users = $this->userRepo->getUsersForMailer($request->get('recipients'));
-        $recipients = $users->reject(function($user){
+        $recipients = $users->reject(function ($user) {
             return $user->email === config('mail.from.address');
         })->pluck('email');
 

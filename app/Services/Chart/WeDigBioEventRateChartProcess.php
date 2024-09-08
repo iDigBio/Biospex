@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -27,26 +29,15 @@ use Illuminate\Support\Collection;
 
 /**
  * Class WeDigBioEventRateChartProcess
- *
- * @package App\Services\Process
  */
 class WeDigBioEventRateChartProcess
 {
-    /**
-     * @var \App\Repositories\WeDigBioEventDateRepository
-     */
     private WeDigBioEventDateRepository $weDigBioEventDateRepository;
 
-    /**
-     * @var \App\Repositories\WeDigBioEventTranscriptionRepository
-     */
     private WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository;
 
     /**
      * AjaxService constructor.
-     *
-     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
-     * @param \App\Repositories\WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository
      */
     public function __construct(
         WeDigBioEventDateRepository $weDigBioEventDateRepository,
@@ -59,12 +50,8 @@ class WeDigBioEventRateChartProcess
 
     /**
      * Get wedigbio event transcription data for step chart.
-     *
-     * @param int $dateId
-     * @param string|null $timestamp
-     * @return array|null
      */
-    public function getWeDigBioEventRateChart(int $dateId, string $timestamp = null): ?array
+    public function getWeDigBioEventRateChart(int $dateId, ?string $timestamp = null): ?array
     {
         $weDigBioDate = $this->weDigBioEventDateRepository->getByActiveOrDateId($dateId);
 
@@ -82,7 +69,7 @@ class WeDigBioEventRateChartProcess
 
         $transcriptions = $this->weDigBioEventTranscriptionRepository->getWeDigBioRateChartTranscriptions($weDigBioDate->id, $startLoad, $endLoad);
 
-        $projects = $transcriptions->map(function($transcription){
+        $projects = $transcriptions->map(function ($transcription) {
             return $transcription->project->title;
         })->unique();
 
@@ -93,11 +80,6 @@ class WeDigBioEventRateChartProcess
 
     /**
      * Process an empty result set as this means it's very beginning.
-     *
-     * @param \Illuminate\Support\Carbon $end_date
-     * @param \Illuminate\Support\Collection $projects
-     * @param \Illuminate\Support\Collection $intervals
-     * @return array
      */
     public function processEmptyResult(Carbon $end_date, Collection $projects, Collection $intervals): array
     {
@@ -117,11 +99,6 @@ class WeDigBioEventRateChartProcess
 
     /**
      * Process query data for results.
-     *
-     * @param \Illuminate\Support\Collection $projects
-     * @param \Illuminate\Support\Collection $transcriptions
-     * @param \Illuminate\Support\Collection $intervals
-     * @return array
      */
     protected function processTranscriptionResult(
         Collection $projects,
@@ -140,9 +117,6 @@ class WeDigBioEventRateChartProcess
     /**
      * Map projects and data using keys.
      * Count is per hour (count * 12) for each 5 minutes.
-     *
-     * @param \Illuminate\Support\Collection $transcriptions
-     * @return \Illuminate\Support\Collection
      */
     protected function mapWithDateKeys(Collection $transcriptions): Collection
     {
@@ -157,10 +131,6 @@ class WeDigBioEventRateChartProcess
 
     /**
      * Merge mapped and intervals.
-     *
-     * @param \Illuminate\Support\Collection $mapped
-     * @param \Illuminate\Support\Collection $intervals
-     * @return \Illuminate\Support\Collection
      */
     protected function mergeIntervals(Collection $mapped, Collection $intervals): Collection
     {
@@ -171,15 +141,11 @@ class WeDigBioEventRateChartProcess
 
     /**
      * Add missing team counts. Set to 0.
-     *
-     * @param \Illuminate\Support\Collection $projects
-     * @param \Illuminate\Support\Collection $merged
-     * @return \Illuminate\Support\Collection
      */
     protected function addMissingProjectCount(Collection $projects, Collection $merged): Collection
     {
         return $merged->transform(function ($collection, $key) use ($projects) {
-            $projects->each(function ($project) use (&$collection, $key) {
+            $projects->each(function ($project) use (&$collection) {
                 if (! isset($collection[$project])) {
                     $collection[$project] = 0;
                 }
@@ -191,9 +157,6 @@ class WeDigBioEventRateChartProcess
 
     /**
      * Set the date in the array and keys to numeric.
-     *
-     * @param \Illuminate\Support\Collection $transformed
-     * @return array
      */
     protected function setDateInArray(Collection $transformed): array
     {
@@ -206,12 +169,8 @@ class WeDigBioEventRateChartProcess
 
     /**
      * Get the load time given.
-     *
-     * @param \App\Models\WeDigBioEventDate $weDigBioEventDate
-     * @param string|null $timestamp
-     * @return \Illuminate\Support\Carbon
      */
-    protected function getLoadTime(WeDigBioEventDate $weDigBioEventDate, string $timestamp = null): Carbon
+    protected function getLoadTime(WeDigBioEventDate $weDigBioEventDate, ?string $timestamp = null): Carbon
     {
         return $timestamp === null ?
             $weDigBioEventDate->start_date :
@@ -220,13 +179,8 @@ class WeDigBioEventRateChartProcess
 
     /**
      * Get end load time. If wedigbio event is over, it will display all points from beginning to end.
-     *
-     * @param \App\Models\WeDigBioEventDate $weDigBioEventDate
-     * @param \Illuminate\Support\Carbon $loadTime
-     * @param string|null $timestamp
-     * @return \Illuminate\Support\Carbon
      */
-    protected function getEndLoad(WeDigBioEventDate $weDigBioEventDate, Carbon $loadTime, string $timestamp = null): Carbon
+    protected function getEndLoad(WeDigBioEventDate $weDigBioEventDate, Carbon $loadTime, ?string $timestamp = null): Carbon
     {
         $now = Carbon::now('UTC');
         if ($now->gt($weDigBioEventDate->end_date)) {
@@ -239,13 +193,8 @@ class WeDigBioEventRateChartProcess
 
     /**
      * Get 5 minute time intervals.
-     *
-     * @param \Illuminate\Support\Carbon $startLoad
-     * @param \Illuminate\Support\Carbon $endLoad
-     * @param string|null $timestamp
-     * @return \Illuminate\Support\Collection
      */
-    protected function setTimeIntervals(Carbon $startLoad, Carbon $endLoad, string $timestamp = null): Collection
+    protected function setTimeIntervals(Carbon $startLoad, Carbon $endLoad, ?string $timestamp = null): Collection
     {
         $start = $startLoad->copy();
         $end = $endLoad->copy();

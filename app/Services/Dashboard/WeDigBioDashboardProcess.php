@@ -23,8 +23,6 @@ use App\Repositories\PusherTranscriptionRepository;
 
 /**
  * Class WeDigBioDashboardProcess
- *
- * @package App\Services\Process
  */
 class WeDigBioDashboardProcess
 {
@@ -35,8 +33,6 @@ class WeDigBioDashboardProcess
 
     /**
      * WeDigBioDashboardProcess constructor.
-     *
-     * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepo
      */
     public function __construct(PusherTranscriptionRepository $pusherTranscriptionRepo)
     {
@@ -46,8 +42,6 @@ class WeDigBioDashboardProcess
 
     /**
      * Set dashboard query
-     *
-     * @param array $request
      */
     public function setDashboardQuery(array $request)
     {
@@ -67,8 +61,6 @@ class WeDigBioDashboardProcess
     /**
      * Get dashboard items.
      *
-     * @param int $limit
-     * @param int $offset
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getItems(int $limit, int $offset)
@@ -78,9 +70,6 @@ class WeDigBioDashboardProcess
 
     /**
      * Set limit on rows returned.
-     *
-     * @param array $request
-     * @return int
      */
     public function setLimit(array $request): int
     {
@@ -90,7 +79,6 @@ class WeDigBioDashboardProcess
     /**
      * Set current page.
      *
-     * @param array $request
      * @return int
      */
     public function setOffset(array $request)
@@ -101,7 +89,6 @@ class WeDigBioDashboardProcess
     /**
      * Show single resource.
      *
-     * @param $guid
      * @return mixed
      */
     public function showApiDashboard($guid)

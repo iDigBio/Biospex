@@ -23,15 +23,11 @@ use App\Models\Actor;
 
 /**
  * Class ActorRepository
- *
- * @package App\Repositories
  */
 class ActorRepository extends BaseRepository
 {
     /**
      * ActorRepository constructor.
-     *
-     * @param \App\Models\Actor $actor
      */
     public function __construct(Actor $actor)
     {
@@ -41,8 +37,6 @@ class ActorRepository extends BaseRepository
 
     /**
      * Get active actors.
-     *
-     * @return mixed
      */
     public function getActiveActors(): mixed
     {

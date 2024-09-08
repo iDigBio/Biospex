@@ -35,7 +35,7 @@ return new class extends Migration
                 ->nullable();
             $table->foreign('geo_locate_form_id')
                 ->references('id')
-                ->on('geo_locate_forms')->onDelete('set null');;
+                ->on('geo_locate_forms')->onDelete('set null');
         });
     }
 

@@ -30,8 +30,6 @@ use Illuminate\Support\ServiceProvider;
 
 /**
  * Class BiospexServiceProvider
- *
- * @package App\Providers
  */
 class BiospexServiceProvider extends ServiceProvider
 {
@@ -46,7 +44,8 @@ class BiospexServiceProvider extends ServiceProvider
 
         Collection::macro('shuffleWords', function () {
             $keys = $this->keys()->shuffle();
-            return $keys->map(function($key) {
+
+            return $keys->map(function ($key) {
                 return [$key, $this[$key]];
             });
         });
@@ -69,24 +68,23 @@ class BiospexServiceProvider extends ServiceProvider
      */
     public function registerFacades(): void
     {
-        $this->app->singleton('flash', function ()
-        {
-            return new FlashHelper();
+        $this->app->singleton('flash', function () {
+            return new FlashHelper;
         });
 
-        $this->app->singleton('datehelper', function(){
-            return new DateHelper();
+        $this->app->singleton('datehelper', function () {
+            return new DateHelper;
         });
 
-        $this->app->singleton('generalhelper', function(){
-            return new GeneralHelper();
+        $this->app->singleton('generalhelper', function () {
+            return new GeneralHelper;
         });
 
-        $this->app->singleton('counthelper', function(){
+        $this->app->singleton('counthelper', function () {
             return new CountHelper(app(PanoptesTranscriptionRepository::class));
         });
 
-        $this->app->singleton('transcriptionmaphelper', function() {
+        $this->app->singleton('transcriptionmaphelper', function () {
             return new TranscriptionMapHelper(
                 $this->app['config']->get('zooniverse.reserved_encoded'),
                 $this->app['config']->get('zooniverse.mapped_transcription_fields')

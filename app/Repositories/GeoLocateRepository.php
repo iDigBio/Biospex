@@ -24,15 +24,11 @@ use Illuminate\Support\LazyCollection;
 
 /**
  * Class ActorRepository
- *
- * @package App\Repositories
  */
 class GeoLocateRepository extends BaseRepository
 {
     /**
      * GeoLocateForm construct.
-     *
-     * @param \App\Models\GeoLocateExport $geoLocate
      */
     public function __construct(GeoLocateExport $geoLocate)
     {
@@ -41,9 +37,6 @@ class GeoLocateRepository extends BaseRepository
 
     /**
      * Get geolocate records by expedition id.
-     *
-     * @param int $expeditionId
-     * @return \Illuminate\Support\LazyCollection
      */
     public function getByExpeditionId(int $expeditionId): LazyCollection
     {

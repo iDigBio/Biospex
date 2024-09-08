@@ -27,24 +27,16 @@ use App\Jobs\EventUserExportCsvJob;
 use App\Repositories\EventRepository;
 use App\Repositories\ProjectRepository;
 use Auth;
-use Flash;
 
 /**
  * Class EventController
- *
- * @package App\Http\Controllers\Admin
  */
 class EventController extends Controller
 {
-    /**
-     * @var \App\Repositories\EventRepository
-     */
     private EventRepository $eventRepo;
 
     /**
      * EventController constructor.
-     *
-     * @param \App\Repositories\EventRepository $eventRepo
      */
     public function __construct(EventRepository $eventRepo)
     {
@@ -53,8 +45,6 @@ class EventController extends Controller
 
     /**
      * Displays Events on public page.
-     *
-     * @return \Illuminate\View\View
      */
     public function index(): \Illuminate\View\View
     {
@@ -70,13 +60,12 @@ class EventController extends Controller
     /**
      * Displays Completed Events on public page.
      *
-     * @return \Illuminate\Contracts\View\View|null
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function sort(): ?\Illuminate\Contracts\View\View
     {
-        if ( ! \Request::ajax()) {
+        if (! \Request::ajax()) {
             return null;
         }
 
@@ -94,15 +83,13 @@ class EventController extends Controller
     /**
      * Show event.
      *
-     * @param $eventId
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show($eventId)
     {
         $event = $this->eventRepo->getEventShow($eventId);
 
-        if ( ! $this->checkPermissions('read', $event))
-        {
+        if (! $this->checkPermissions('read', $event)) {
             return \Redirect::route('admin.events.index');
         }
 
@@ -112,8 +99,8 @@ class EventController extends Controller
     /**
      * Create event.
      *
-     * @param \App\Repositories\ProjectRepository $projectRepo
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
      * @throws \Exception
      */
     public function create(ProjectRepository $projectRepo)
@@ -128,7 +115,6 @@ class EventController extends Controller
     /**
      * Store Event.
      *
-     * @param \App\Http\Requests\EventFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(EventFormRequest $request)
@@ -149,17 +135,15 @@ class EventController extends Controller
     /**
      * Edit event.
      *
-     * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param $eventId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     *
      * @throws \Exception
      */
     public function edit(ProjectRepository $projectRepo, $eventId)
     {
         $event = $this->eventRepo->getEventShow($eventId);
 
-        if ( ! $this->checkPermissions('update', $event))
-        {
+        if (! $this->checkPermissions('update', $event)) {
             return back();
         }
 
@@ -173,16 +157,13 @@ class EventController extends Controller
     /**
      * Update Event.
      *
-     * @param $eventId
-     * @param \App\Http\Requests\EventFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update($eventId, EventFormRequest $request)
     {
         $event = $this->eventRepo->findWith($eventId, ['teams']);
 
-        if ( ! $this->checkPermissions('update', $event))
-        {
+        if (! $this->checkPermissions('update', $event)) {
             return \Redirect::route('admin.events.index');
         }
 
@@ -202,22 +183,19 @@ class EventController extends Controller
     /**
      * Delete Event.
      *
-     * @param $eventId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function delete($eventId)
     {
         $event = $this->eventRepo->find($eventId);
 
-        if ( ! $this->checkPermissions('delete', $event))
-        {
+        if (! $this->checkPermissions('delete', $event)) {
             return \Redirect::route('admin.events.index');
         }
 
         $result = $event->delete();
 
-        if ($result)
-        {
+        if ($result) {
             \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
             return \Redirect::route('admin.events.index');
@@ -231,12 +209,11 @@ class EventController extends Controller
     /**
      * Export transcription csv from event.
      *
-     * @param $eventId
      * @return \Illuminate\Http\JsonResponse
      */
     public function exportTranscriptions($eventId)
     {
-        if ( ! \Request::ajax()) {
+        if (! \Request::ajax()) {
             return response()->json(false);
         }
 
@@ -248,12 +225,11 @@ class EventController extends Controller
     /**
      * Export users csv from event.
      *
-     * @param $eventId
      * @return \Illuminate\Http\JsonResponse
      */
     public function exportUsers($eventId)
     {
-        if ( ! \Request::ajax()) {
+        if (! \Request::ajax()) {
             return response()->json(false);
         }
 

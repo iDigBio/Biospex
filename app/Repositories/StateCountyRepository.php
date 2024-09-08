@@ -23,15 +23,11 @@ use App\Models\StateCounty;
 
 /**
  * Class StateCountyRepository
- *
- * @package App\Repositories
  */
 class StateCountyRepository extends BaseRepository
 {
     /**
      * StateCountyRepository constructor.
-     *
-     * @param \App\Models\StateCounty $stateCounty
      */
     public function __construct(StateCounty $stateCounty)
     {
@@ -42,12 +38,11 @@ class StateCountyRepository extends BaseRepository
     /**
      * Get state transcript count for project.
      *
-     * @param $projectId
      * @return mixed
      */
     public function getStateTranscriptCount($projectId)
     {
-        $results = $this->model->withCount(['transcriptionLocations' => function($q) use($projectId) {
+        $results = $this->model->withCount(['transcriptionLocations' => function ($q) use ($projectId) {
             $q->where('project_id', $projectId);
         }])->get();
 
@@ -66,25 +61,22 @@ class StateCountyRepository extends BaseRepository
     /**
      * Get county transcription count for project.
      *
-     * @param $projectId
-     * @param $stateId
      * @return mixed
      */
     public function getCountyTranscriptionCount($projectId, $stateId)
     {
-        return $this->model->withCount(['transcriptionLocations' => function($q) use($projectId) {
+        return $this->model->withCount(['transcriptionLocations' => function ($q) use ($projectId) {
             $q->where('project_id', $projectId);
         }])->where('state_num', $stateId)->get();
     }
 
     /**
      * Find by county, state.
-     * @param $county
-     * @param $stateAbbr
+     *
      * @return mixed
      */
     public function findByCountyState($county, $stateAbbr)
     {
-        return $this->model->where('county_name','like', '%'.$county.'%')->where('state_abbr', $stateAbbr)->first();
+        return $this->model->where('county_name', 'like', '%'.$county.'%')->where('state_abbr', $stateAbbr)->first();
     }
 }

@@ -25,12 +25,9 @@ use Illuminate\Console\Command;
 
 /**
  * Class DarwinCoreFileImportCommand
- *
- * @package App\Console\Commands
  */
 class DarwinCoreFileImportCommand extends Command
 {
-
     /**
      * @var \App\Repositories\ImportRepository
      */
@@ -48,12 +45,10 @@ class DarwinCoreFileImportCommand extends Command
      *
      * @var string
      */
-    protected $description = "Command to re-queue dwc import after a failure.";
+    protected $description = 'Command to re-queue dwc import after a failure.';
 
     /**
      * DarwinCoreFileImportCommand constructor.
-     * 
-     * @param \App\Repositories\ImportRepository $importRepo
      */
     public function __construct(ImportRepository $importRepo)
     {
@@ -71,12 +66,13 @@ class DarwinCoreFileImportCommand extends Command
     {
         $import = $this->importRepo->findBy('error', 0);
 
-        if ($import === null)
+        if ($import === null) {
             return;
+        }
 
         DwcFileImportJob::dispatch($import);
 
-        echo "Import added to Queue." . PHP_EOL;
+        echo 'Import added to Queue.'.PHP_EOL;
 
     }
 }

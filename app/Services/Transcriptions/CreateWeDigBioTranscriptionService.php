@@ -29,26 +29,15 @@ use Validator;
 
 /**
  * Class CreateWeDigBioTranscriptionService
- *
- * @package App\Services\Transcriptions
  */
 class CreateWeDigBioTranscriptionService
 {
-    /**
-     * @var \App\Repositories\WeDigBioEventDateRepository
-     */
     private WeDigBioEventDateRepository $weDigBioEventDateRepository;
 
-    /**
-     * @var \App\Repositories\WeDigBioEventTranscriptionRepository
-     */
     private WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository;
 
     /**
      * CreateBiospexEventTranscriptionService constructor.
-     *
-     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
-     * @param \App\Repositories\WeDigBioEventTranscriptionRepository $weDigBioEventTranscriptionRepository
      */
     public function __construct(
         WeDigBioEventDateRepository $weDigBioEventDateRepository,
@@ -61,15 +50,11 @@ class CreateWeDigBioTranscriptionService
 
     /**
      * Create event transcription for user.
-     *
-     * @param int $classification_id
-     * @param int $projectId
-     * @param \Illuminate\Support\Carbon|null $date
      */
     public function createEventTranscription(
         int $classification_id,
         int $projectId,
-        Carbon $date = null
+        ?Carbon $date = null
     ) {
         $wedigbioDate = $this->weDigBioEventDateRepository->findBy('active', 1);
 
@@ -81,8 +66,8 @@ class CreateWeDigBioTranscriptionService
 
         $attributes = [
             'classification_id' => $classification_id,
-            'project_id'        => $projectId,
-            'date_id'           => $wedigbioDate->id
+            'project_id' => $projectId,
+            'date_id' => $wedigbioDate->id,
         ];
 
         if ($this->validateClassification($attributes)) {
@@ -99,9 +84,6 @@ class CreateWeDigBioTranscriptionService
 
     /**
      * Validate classification.
-     *
-     * @param $attributes
-     * @return bool
      */
     private function validateClassification($attributes): bool
     {
@@ -113,16 +95,13 @@ class CreateWeDigBioTranscriptionService
                     ->where('date_id', $attributes['date_id']);
             }),
         ]);
+
         // returns true if records exists
         return $validator->fails();
     }
 
     /**
      * Check date is between active WeDigbio Event Date.
-     *
-     * @param \App\Models\WeDigBioEventDate $weDigBioEventDate
-     * @param \Illuminate\Support\Carbon $timestamp
-     * @return bool
      */
     private function checkDate(WeDigBioEventDate $weDigBioEventDate, Carbon $timestamp): bool
     {

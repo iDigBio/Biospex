@@ -25,15 +25,12 @@ use App\Repositories\GroupRepository;
 use App\Repositories\InviteRepository;
 use App\Repositories\UserRepository;
 use DateHelper;
-use Flash;
 use Hash;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
 /**
  * Class RegisterController
- *
- * @package App\Http\Controllers\Auth
  */
 class RegisterController extends Controller
 {
@@ -69,8 +66,6 @@ class RegisterController extends Controller
 
     /**
      * Create a new controller instance.
-     *
-     * @param \App\Repositories\InviteRepository $inviteRepo
      */
     public function __construct(InviteRepository $inviteRepo)
     {
@@ -81,12 +76,11 @@ class RegisterController extends Controller
     /**
      * Show registration form. Overrides trait so Invite code can be checked.
      *
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
     public function showRegistrationForm(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        if ( ! config('config.app_registration')) {
+        if (! config('config.app_registration')) {
             return \Redirect::route('home')->with('error', t('Registration is not available at this time.'));
         }
 
@@ -94,9 +88,8 @@ class RegisterController extends Controller
 
         $invite = $this->inviteRepo->findBy('code', $code);
 
-        if ( ! empty($code) && ! $invite)
-        {
-            \Flash::warning( t('Your invite was unable to be found. Please contact the administration.'));
+        if (! empty($code) && ! $invite) {
+            \Flash::warning(t('Your invite was unable to be found. Please contact the administration.'));
         }
 
         $code = $invite->code ?? null;
@@ -108,11 +101,6 @@ class RegisterController extends Controller
 
     /**
      * Register the user. Overrides trait so invite is checked.
-     *
-     * @param \App\Http\Requests\RegisterFormRequest $request
-     * @param \App\Repositories\UserRepository $userRepo
-     * @param \App\Repositories\GroupRepository $groupRepo
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function register(RegisterFormRequest $request, UserRepository $userRepo, GroupRepository $groupRepo): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
@@ -120,11 +108,9 @@ class RegisterController extends Controller
         $input['password'] = Hash::make($input['password']);
         $user = $userRepo->create($input);
 
-        if ( ! empty($input['invite']))
-        {
+        if (! empty($input['invite'])) {
             $invite = $this->inviteRepo->findBy('code', $input['invite']);
-            if ($invite->email === $user->email)
-            {
+            if ($invite->email === $user->email) {
                 $group = $groupRepo->find($invite->group_id);
                 $user->assignGroup($group);
                 $invite->delete();

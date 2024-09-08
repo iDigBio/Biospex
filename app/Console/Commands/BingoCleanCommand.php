@@ -24,12 +24,9 @@ use Illuminate\Console\Command;
 
 /**
  * Class BingoCleanCommand
- *
- * @package App\Console\Commands
  */
 class BingoCleanCommand extends Command
 {
-
     /**
      * The console command name.
      *
@@ -42,7 +39,7 @@ class BingoCleanCommand extends Command
      *
      * @var string
      */
-    protected $description = "Remove expired bingo maps.";
+    protected $description = 'Remove expired bingo maps.';
 
     /**
      * @var \App\Repositories\BingoMapRepository
@@ -51,8 +48,6 @@ class BingoCleanCommand extends Command
 
     /**
      * BingoCleanCommand constructor.
-     *
-     * @param \App\Repositories\BingoMapRepository $bingoMapRepo
      */
     public function __construct(BingoMapRepository $bingoMapRepo)
     {
@@ -69,11 +64,8 @@ class BingoCleanCommand extends Command
     {
         $records = $this->bingoMapRepo->getBingoMapForCleaning();
 
-        $records->each(function($record){
+        $records->each(function ($record) {
             $record->delete();
         });
     }
 }
-
-
-

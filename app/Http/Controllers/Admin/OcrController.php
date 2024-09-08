@@ -26,21 +26,12 @@ use App\Repositories\ProjectRepository;
 
 class OcrController extends Controller
 {
-    /**
-     * @var \App\Repositories\ProjectRepository
-     */
     private ProjectRepository $projectRepository;
 
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
     private ExpeditionRepository $expeditionRepository;
 
     /**
      * OcrController constructor.
-     *
-     * @param \App\Repositories\ProjectRepository $projectRepository
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
      */
     public function __construct(ProjectRepository $projectRepository, ExpeditionRepository $expeditionRepository)
     {
@@ -50,12 +41,8 @@ class OcrController extends Controller
 
     /**
      * Reprocess OCR.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function index(int $projectId, int $expeditionId = null): \Illuminate\Http\RedirectResponse
+    public function index(int $projectId, ?int $expeditionId = null): \Illuminate\Http\RedirectResponse
     {
         $group = $expeditionId === null ?
             $this->projectRepository->findWith($projectId, ['group'])->group :
@@ -70,6 +57,7 @@ class OcrController extends Controller
         \Flash::success(t('OCR processing has been submitted. It may take some time before appearing in the Processes modal. You will be notified by email when the process is complete.'));
 
         $route = $expeditionId === null ? 'admin.projects.show' : 'admin.expeditions.show';
+
         return \Redirect::route($route, [$projectId, $expeditionId]);
     }
 }

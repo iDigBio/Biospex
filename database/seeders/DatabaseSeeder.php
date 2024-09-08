@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use App\Models\WeDigBioEventTranscription;
@@ -6,8 +7,6 @@ use Illuminate\Database\Seeder;
 
 /**
  * Class DatabaseSeeder
- *
- * @package Database\Seeders
  */
 class DatabaseSeeder extends Seeder
 {

@@ -23,20 +23,18 @@ use App\Models\Traits\UuidTrait;
 
 /**
  * Class BingoMap
- *
- * @package App\Models
  */
 class BingoMap extends BaseEloquentModel
 {
     use UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'bingo_maps';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'bingo_id',
@@ -45,7 +43,7 @@ class BingoMap extends BaseEloquentModel
         'latitude',
         'longitude',
         'city',
-        'winner'
+        'winner',
     ];
 
     /**

@@ -21,32 +21,23 @@ namespace App\Services\Helpers;
 
 /**
  * Class FlashHelper
- *
- * @package App\Services\Helpers
  */
 class FlashHelper
 {
-
     /**
      * Private function used to create flash messages.
-     *
-     * @param $message
-     * @param $type
-     * @param $icon
      */
     private function create($message, $type, $icon)
     {
         session()->flash('flash_message', [
-            'type'    => $type,
+            'type' => $type,
             'message' => $message,
-            'icon'    => $icon
+            'icon' => $icon,
         ]);
     }
 
     /**
      * Create success message.
-     *
-     * @param $message
      */
     public function success($message)
     {
@@ -55,8 +46,6 @@ class FlashHelper
 
     /**
      * Create info message.
-     *
-     * @param $message
      */
     public function info($message)
     {
@@ -65,8 +54,6 @@ class FlashHelper
 
     /**
      * Create warning message.
-     *
-     * @param $message
      */
     public function warning($message)
     {
@@ -75,8 +62,6 @@ class FlashHelper
 
     /**
      * Create danger message.
-     *
-     * @param $message
      */
     public function error($message)
     {

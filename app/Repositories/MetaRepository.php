@@ -23,15 +23,11 @@ use App\Models\Meta;
 
 /**
  * Class MetaRepository
- *
- * @package App\Repositories
  */
 class MetaRepository extends BaseRepository
 {
     /**
      * MetaRepository constructor.
-     *
-     * @param \App\Models\Meta $meta
      */
     public function __construct(Meta $meta)
     {

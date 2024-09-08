@@ -35,12 +35,10 @@ use Str;
 
 /**
  * Class EventTranscriptionExportCsvJob
- *
- * @package App\Jobs
  */
 class EventTranscriptionExportCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
+    use ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -49,21 +47,12 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
      */
     public $timeout = 1800;
 
-    /**
-     * @var User
-     */
     private User $user;
 
-    /**
-     * @var
-     */
     private int $eventId;
 
     /**
      * Create a new job instance.
-     *
-     * @param User $user
-     * @param int $eventId
      */
     public function __construct(User $user, int $eventId)
     {
@@ -75,30 +64,26 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-     * @param \App\Services\Process\CreateReportService $createReportService
      * @return void
      */
     public function handle(
         EventTranscriptionRepository $eventTranscriptionRepo,
         PanoptesTranscriptionRepository $panoptesTranscriptionRepo,
         CreateReportService $createReportService,
-    )
-    {
-        try
-        {
+    ) {
+        try {
             $ids = $eventTranscriptionRepo->getEventClassificationIds($this->eventId);
 
-            $transcriptions = $ids->map(function($id) use($panoptesTranscriptionRepo) {
+            $transcriptions = $ids->map(function ($id) use ($panoptesTranscriptionRepo) {
                 $transcript = $panoptesTranscriptionRepo->findBy('classification_id', $id);
                 unset($transcript['_id']);
+
                 return $transcript;
-            })->reject(function($transcription){
+            })->reject(function ($transcription) {
                 return $transcription === null;
             });
 
-            $csvFileName = Str::random() . '.csv';
+            $csvFileName = Str::random().'.csv';
             $fileName = $createReportService->createCsvReport($csvFileName, $transcriptions->toArray());
             $fileButton = [];
             if ($fileName !== null) {
@@ -108,25 +93,23 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
 
             $attributes = [
                 'subject' => t('Event Transcription Export Complete'),
-                'html'    => [
+                'html' => [
                     t('Your export is completed. If a report was generated, you may click the download button to download the file. If no button is included, it is due to no records being located for the export. Some records require overnight processing before they are available.'),
-                    t('If you believe this is an error, please contact the Administration.')
+                    t('If you believe this is an error, please contact the Administration.'),
                 ],
-                'buttons' => $fileButton
+                'buttons' => $fileButton,
             ];
 
             $this->user->notify(new Generic($attributes));
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $attributes = [
                 'subject' => t('Event Transcription Export Error'),
-                'html'    => [
+                'html' => [
                     t('There was an error while exporting the csv file. The Administration has been copied on this error and will investigate.'),
                     t('File: %s', $e->getFile()),
                     t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage())
-                ]
+                    t('Message: %s', $e->getMessage()),
+                ],
             ];
             $this->user->notify(new Generic($attributes, true));
         }

@@ -21,15 +21,12 @@ namespace App\Policies;
 
 /**
  * Class GroupPolicy
- *
- * @package App\Policies
  */
 class GroupPolicy
 {
     /**
      * Allow admins.
      *
-     * @param $user
      * @return bool|null
      */
     public function before($user)
@@ -40,8 +37,6 @@ class GroupPolicy
     /**
      * Is group owner.
      *
-     * @param $user
-     * @param $group
      * @return bool
      */
     public function isOwner($user, $group)
@@ -52,7 +47,6 @@ class GroupPolicy
     /**
      * Check if user can create group
      *
-     * @param $user
      * @return bool
      */
     public function create($user)
@@ -63,7 +57,6 @@ class GroupPolicy
     /**
      * Check if user can store group
      *
-     * @param $user
      * @return bool
      */
     public function store($user)
@@ -74,8 +67,6 @@ class GroupPolicy
     /**
      * Check if user can read group.
      *
-     * @param $user
-     * @param $group
      * @return bool|string
      */
     public function read($user, $group)
@@ -86,8 +77,6 @@ class GroupPolicy
     /**
      * Check if user can read project for this group.
      *
-     * @param $user
-     * @param $group
      * @return bool|null
      */
     public function readProject($user, $group)
@@ -98,8 +87,6 @@ class GroupPolicy
     /**
      * Check if user can create project in group.
      *
-     * @param $user
-     * @param $group
      * @return bool|null
      */
     public function createProject($user, $group)
@@ -110,8 +97,6 @@ class GroupPolicy
     /**
      * Check if user can create project in group.
      *
-     * @param $user
-     * @param $group
      * @return bool|null
      */
     public function updateProject($user, $group)

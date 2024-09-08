@@ -28,7 +28,7 @@ class FixFieldsStepThree extends FixFieldsBase
      */
     public function start()
     {
-        echo "Starting to remove unused fields on properties" . PHP_EOL;
+        echo 'Starting to remove unused fields on properties'.PHP_EOL;
 
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
@@ -40,15 +40,16 @@ class FixFieldsStepThree extends FixFieldsBase
 
     /**
      * Step 3: remove unused fields data from properties table
+     *
      * @return void
      */
     private function removeUnusedFieldDataFromProperties()
     {
         $properties = collect($this->getPropertiesFile('step2-properties.json'));
 
-        $propertiesRefreshed = $properties->mapWithKeys(function ($property, $key){
+        $propertiesRefreshed = $properties->mapWithKeys(function ($property, $key) {
             foreach ($property['fields'] as $field => $object) {
-                if(empty($object['imageHeaderIds']) && empty($object['occurrenceHeaderIds'])) {
+                if (empty($object['imageHeaderIds']) && empty($object['occurrenceHeaderIds'])) {
                     $record = $this->propertyRepository->findBy('short', $field);
                     $record?->delete();
                     unset($property['fields'][$field]);

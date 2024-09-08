@@ -24,15 +24,12 @@ use App\Repositories\ExpeditionRepository;
 
 /**
  * Class ExpeditionController
- *
- * @package App\Http\Controllers\Front
  */
 class ExpeditionController extends Controller
 {
     /**
      * Displays Expeditions on public page.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(ExpeditionRepository $expeditionRepo)
@@ -40,7 +37,7 @@ class ExpeditionController extends Controller
         $results = $expeditionRepo->getExpeditionPublicIndex();
         //$project = $results->first()->project;
 
-        [$expeditions, $expeditionsCompleted] = $results->partition(function($expedition) {
+        [$expeditions, $expeditionsCompleted] = $results->partition(function ($expedition) {
             return $expedition->completed === 0;
         });
 
@@ -49,12 +46,10 @@ class ExpeditionController extends Controller
 
     /**
      * Displays Completed Expeditions on public page.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      */
     public function sort(ExpeditionRepository $expeditionRepo)
     {
-        if ( ! \Request::ajax()) {
+        if (! \Request::ajax()) {
             return null;
         }
 
@@ -64,9 +59,9 @@ class ExpeditionController extends Controller
         $projectId = \Request::get('id');
 
         [$active, $completed] = $expeditionRepo->getExpeditionPublicIndex($sort, $order, $projectId)
-            ->partition(function($expedition) {
+            ->partition(function ($expedition) {
                 return $expedition->completed === 0;
-        });
+            });
 
         $expeditions = $type === 'active' ? $active : $completed;
         $project = false;

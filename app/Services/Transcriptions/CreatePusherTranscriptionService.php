@@ -26,25 +26,13 @@ use Validator;
 
 /**
  * Class CreatePusherTranscriptionService
- *
- * @package App\Services\Transcriptions
  */
 class CreatePusherTranscriptionService
 {
-    /**
-     * @var \App\Repositories\PusherClassificationRepository
-     */
     private PusherClassificationRepository $pusherClassificationRepo;
 
-    /**
-     * @var \App\Repositories\PusherTranscriptionRepository
-     */
     private PusherTranscriptionRepository $pusherTranscriptionRepository;
 
-    /**
-     * @param \App\Repositories\PusherClassificationRepository $pusherClassificationRepo
-     * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepository
-     */
     public function __construct(
         PusherClassificationRepository $pusherClassificationRepo,
         PusherTranscriptionRepository $pusherTranscriptionRepository)
@@ -58,6 +46,7 @@ class CreatePusherTranscriptionService
      * Method called to start processing pusher classifications held in the MySql database to MongoDb
      *
      * @see \App\Jobs\PusherTranscriptionJob
+     *
      * @return void
      */
     public function process()
@@ -73,8 +62,6 @@ class CreatePusherTranscriptionService
     /**
      * Create dashboard item.
      * Uses classifications stored in database to relieve traffic on MongoDB.
-     *
-     * @param \App\Models\PusherClassification $pusherClassification
      */
     public function createDashboardRecord(PusherClassification $pusherClassification)
     {
@@ -88,9 +75,6 @@ class CreatePusherTranscriptionService
 
     /**
      * Validate transcription to prevent duplicates.
-     *
-     * @param $classification_id
-     * @return mixed
      */
     public function validateTranscription($classification_id): mixed
     {

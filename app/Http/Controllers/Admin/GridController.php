@@ -30,19 +30,11 @@ use Exception;
 
 /**
  * Class GridController
- *
- * @package App\Http\Controllers\Admin
  */
 class GridController extends Controller
 {
-    /**
-     * @var
-     */
     public $grid;
 
-    /**
-     * @var
-     */
     public $fields;
 
     /**
@@ -67,9 +59,6 @@ class GridController extends Controller
 
     /**
      * GridController constructor.
-     *
-     * @param JqGridEncoder $grid
-     * @param Csv $csv
      */
     public function __construct(JqGridEncoder $grid, Csv $csv)
     {
@@ -88,7 +77,6 @@ class GridController extends Controller
     /**
      * Load grid data.
      *
-     * @param int $projectId
      * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function explore(int $projectId)
@@ -103,8 +91,6 @@ class GridController extends Controller
     /**
      * Show grid in expeditions.
      *
-     * @param int $projectId
-     * @param int $expeditionId
      * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function expeditionsShow(int $projectId, int $expeditionId)
@@ -119,8 +105,6 @@ class GridController extends Controller
     /**
      * Show grid in expeditions edit.
      *
-     * @param int $projectId
-     * @param int $expeditionId
      * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function expeditionsEdit(int $projectId, int $expeditionId)
@@ -135,7 +119,6 @@ class GridController extends Controller
     /**
      * Show grid in expeditions create.
      *
-     * @param int $projectId
      * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function expeditionsCreate(int $projectId)
@@ -150,17 +133,16 @@ class GridController extends Controller
     /**
      * Export csv from grid button.
      *
-     * @param int $projectId
-     * @param string|null $expeditionId
+     * @param  string|null  $expeditionId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function export(int $projectId, int $expeditionId = null)
+    public function export(int $projectId, ?int $expeditionId = null)
     {
         $attributes = [
             'projectId' => (int) $projectId,
             'expeditionId' => (int) $expeditionId,
             'postData' => ['filters' => \Request::exists('filters') ? \Request::get('filters') : null],
-            'route' => \Request::get('route')
+            'route' => \Request::get('route'),
         ];
 
         GridExportCsvJob::dispatch(Auth::user(), $attributes);
@@ -172,8 +154,7 @@ class GridController extends Controller
      * Delete subject if not part of expedition process.
      *
      * @note Removed from jqGrid but keep code in case we need it again.
-     * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function delete(SubjectRepository $subjectRepo, ExpeditionRepository $expeditionRepo)
@@ -190,7 +171,7 @@ class GridController extends Controller
 
         $subjects = $subjectRepo->whereIn('_id', $subjectIds);
 
-        $subjects->reject(function ($subject) use($expeditionRepo) {
+        $subjects->reject(function ($subject) use ($expeditionRepo) {
             foreach ($subject->expedition_ids as $expeditionId) {
                 $expedition = $expeditionRepo->findExpeditionHavingWorkflowManager($expeditionId);
                 if ($expedition !== null) {
@@ -199,12 +180,10 @@ class GridController extends Controller
             }
 
             return false;
-        })->each(function ($subject) use ($subjectRepo) {
+        })->each(function ($subject) {
             $subject->delete();
         });
 
         return response()->json(['success']);
     }
 }
-
-

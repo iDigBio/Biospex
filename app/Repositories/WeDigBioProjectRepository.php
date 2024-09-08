@@ -23,8 +23,6 @@ use App\Models\WeDigBioProject;
 
 /**
  * Class WeDigBioProjectRepository
- *
- * @package App\Repositories
  */
 class WeDigBioProjectRepository extends BaseRepository
 {
@@ -42,8 +40,6 @@ class WeDigBioProjectRepository extends BaseRepository
     /**
      * Find by project and workflow ids.
      *
-     * @param $projectId
-     * @param $workflowId
      * @return \App\Models\PanoptesProject|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
     public function findByProjectIdAndWorkflowId($projectId, $workflowId)

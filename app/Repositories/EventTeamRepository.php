@@ -24,16 +24,11 @@ use App\Models\EventTeam;
 
 /**
  * Class EventTeamRepository
- *
- * @package App\Repositories
  */
 class EventTeamRepository extends BaseRepository
 {
-
     /**
      * EventTeamRepository constructor.
-     *
-     * @param \App\Models\EventTeam $eventTeam
      */
     public function __construct(EventTeam $eventTeam)
     {
@@ -44,8 +39,8 @@ class EventTeamRepository extends BaseRepository
     /**
      * Get team by uuid.
      *
-     * @param $uuid
      * @return \Illuminate\Database\Eloquent\Model|null|object|static
+     *
      * @throws \Exception
      */
     public function getTeamByUuid($uuid)

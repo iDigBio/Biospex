@@ -23,20 +23,15 @@ use App\Models\EventUser;
 
 /**
  * Class EventUserRepository
- *
- * @package App\Repositories
  */
 class EventUserRepository extends BaseRepository
 {
     /**
      * EventUserRepository constructor.
-     *
-     * @param \App\Models\EventUser $eventUser
      */
     public function __construct(EventUser $eventUser)
     {
 
         $this->model = $eventUser;
     }
-
 }

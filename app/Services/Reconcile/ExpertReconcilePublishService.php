@@ -28,46 +28,26 @@ use App\Services\Csv\AwsS3CsvService;
 
 /**
  * Class ExpertReconcilePublishService
- *
- * @package App\Services\Process
  */
 class ExpertReconcilePublishService
 {
-    /**
-     * @var \App\Repositories\ReconcileRepository
-     */
     private ReconcileRepository $reconcileRepo;
 
-    /**
-     * @var \App\Repositories\DownloadRepository
-     */
     private DownloadRepository $downloadRepo;
 
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
     private ExpeditionRepository $expeditionRepo;
 
-    /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
     private AwsS3CsvService $awsS3CsvService;
 
     /**
      * ExpertReconcilePublishService constructor.
-     *
-     * @param \App\Repositories\ReconcileRepository $reconcileRepo
-     * @param \App\Repositories\DownloadRepository $downloadRepo
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         ReconcileRepository $reconcileRepo,
         DownloadRepository $downloadRepo,
         ExpeditionRepository $expeditionRepo,
         AwsS3CsvService $awsS3CsvService
-    )
-    {
+    ) {
         $this->reconcileRepo = $reconcileRepo;
         $this->downloadRepo = $downloadRepo;
         $this->expeditionRepo = $expeditionRepo;
@@ -76,9 +56,9 @@ class ExpertReconcilePublishService
 
     /**
      * Publish reconciled file.
+     *
      * @see \App\Jobs\ExpertReconcileReviewPublishJob
      *
-     * @param string $expeditionId
      * @throws \League\Csv\CannotInsertRecord
      */
     public function publishReconciled(string $expeditionId): void
@@ -91,7 +71,6 @@ class ExpertReconcilePublishService
     /**
      * Create csv file for reconciled.
      *
-     * @param string $expeditionId
      * @throws \League\Csv\CannotInsertRecord|\Exception
      */
     private function createReconcileCsv(string $expeditionId): void
@@ -99,6 +78,7 @@ class ExpertReconcilePublishService
         $results = $this->reconcileRepo->getBy('subject_expeditionId', (int) $expeditionId);
         $mapped = $results->map(function ($record) {
             unset($record->_id, $record->subject_columns, $record->subject_problem, $record->updated_at, $record->created_at, $record->reviewed);
+
             return $record;
         });
 
@@ -107,12 +87,12 @@ class ExpertReconcilePublishService
         }
 
         $header = array_keys($mapped->first()->toArray());
-        $decodedHeader  = [];
+        $decodedHeader = [];
         foreach ($header as $value) {
             $decodedHeader[] = TranscriptionMapHelper::decodeTranscriptionField($value);
         }
 
-        $file = config('zooniverse.directory.reconciled-with-expert') . '/' . $expeditionId.'.csv';
+        $file = config('zooniverse.directory.reconciled-with-expert').'/'.$expeditionId.'.csv';
         $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $file, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();
         $this->awsS3CsvService->csv->insertOne($decodedHeader);
@@ -121,22 +101,20 @@ class ExpertReconcilePublishService
 
     /**
      * Create download file.
-     *
-     * @param string $expeditionId
      */
     private function createDownload(string $expeditionId): void
     {
         $values = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => 2,
-            'file'          => $expeditionId.'.csv',
-            'type'          => 'reconciled-with-expert',
+            'actor_id' => 2,
+            'file' => $expeditionId.'.csv',
+            'type' => 'reconciled-with-expert',
         ];
         $attributes = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => 2,
-            'file'          => $expeditionId.'.csv',
-            'type'          => 'reconciled-with-expert',
+            'actor_id' => 2,
+            'file' => $expeditionId.'.csv',
+            'type' => 'reconciled-with-expert',
         ];
 
         $this->downloadRepo->updateOrCreate($attributes, $values);
@@ -144,8 +122,6 @@ class ExpertReconcilePublishService
 
     /**
      * Send email to project owner.
-     *
-     * @param string $expeditionId
      */
     private function sendEmail(string $expeditionId): void
     {
@@ -153,10 +129,10 @@ class ExpertReconcilePublishService
 
         $attributes = [
             'subject' => t('Reconciled Expert Review Published'),
-            'html'    => [
+            'html' => [
                 t('The Expert Reviewed Reconciled CSV file has been published for %s.', $expedition->title),
                 t('The file can be downloaded in the Downloads section of the Expedition page.'),
-            ]
+            ],
         ];
 
         $expedition->project->group->owner->notify(new Generic($attributes));

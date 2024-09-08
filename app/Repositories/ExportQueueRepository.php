@@ -26,15 +26,11 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class ExportQueueRepository
- *
- * @package App\Repositories
  */
 class ExportQueueRepository extends BaseRepository
 {
     /**
      * ExportQueueRepository constructor.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
      */
     public function __construct(ExportQueue $exportQueue)
     {
@@ -44,8 +40,6 @@ class ExportQueueRepository extends BaseRepository
 
     /**
      * Get exports for poll command.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllExportQueueOrderByIdAsc(): Collection
     {
@@ -58,17 +52,12 @@ class ExportQueueRepository extends BaseRepository
 
     /**
      * Create queue for export.
-     *
-     * @param int $expeditionId
-     * @param int $actorId
-     * @param int $total
-     * @return \App\Models\ExportQueue
      */
     public function createQueue(int $expeditionId, int $actorId, int $total): ExportQueue
     {
         $attributes = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => $actorId,
+            'actor_id' => $actorId,
         ];
 
         $queue = $this->model->firstOrNew($attributes);
@@ -83,8 +72,6 @@ class ExportQueueRepository extends BaseRepository
 
     /**
      * Get queue for Zooniverse export.
-     *
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder|null
      */
     public function findExportQueueFirst(): Model|Builder|null
     {

@@ -25,19 +25,11 @@ use Illuminate\Support\LazyCollection;
 
 /**
  * Class SubjectRepository
- *
- * @package App\Repositories
  */
 class SubjectRepository extends BaseRepository
 {
-    /**
-     * @var
-     */
     private $groupAnd;
 
-    /**
-     * @var
-     */
     private $groupOpProcessed;
 
     /**
@@ -47,8 +39,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * SubjectRepository constructor.
-     *
-     * @param \App\Models\Subject $subject
      */
     public function __construct(Subject $subject)
     {
@@ -58,8 +48,7 @@ class SubjectRepository extends BaseRepository
     /**
      * Find by expedition id.
      *
-     * @param $expeditionId
-     * @param array|string[] $attributes
+     * @param  array|string[]  $attributes
      * @return array|mixed
      */
     public function findByExpeditionId($expeditionId, array $attributes = ['*']): mixed
@@ -69,9 +58,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Get subjects by expedition id and return using lazycollection.
-     *
-     * @param $expeditionId
-     * @return \Illuminate\Support\LazyCollection
      */
     public function getSubjectCursorForExport($expeditionId): LazyCollection
     {
@@ -81,15 +67,11 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Return query for processing subjects in ocr.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @return \Illuminate\Support\LazyCollection
      */
-    public function getSubjectCursorForOcr(int $projectId, int $expeditionId = null): LazyCollection
+    public function getSubjectCursorForOcr(int $projectId, ?int $expeditionId = null): LazyCollection
     {
         $query = $this->model->where('project_id', $projectId);
-        $query = null === $expeditionId ? $query : $query->where('expedition_ids', $expeditionId);
+        $query = $expeditionId === null ? $query : $query->where('expedition_ids', $expeditionId);
 
         return $query->where(function ($q) {
             $q->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
@@ -98,27 +80,19 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Get subject cursor for OCR processing.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @return int
      */
-    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null): int
+    public function getSubjectCountForOcr(int $projectId, ?int $expeditionId = null): int
     {
         $query = $this->model->where('project_id', $projectId);
-        $query = null === $expeditionId ? $query : $query->where('expedition_ids', $expeditionId);
+        $query = $expeditionId === null ? $query : $query->where('expedition_ids', $expeditionId);
 
         return $query->where(function ($query) {
             $query->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
         })->count();
     }
 
-
     /**
      * Detach subjects from expedition.
-     *
-     * @param \Illuminate\Support\Collection $subjectIds
-     * @param int $expeditionId
      */
     public function detachSubjects(Collection $subjectIds, int $expeditionId)
     {
@@ -134,9 +108,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Attach subjects to expedition.
-     *
-     * @param \Illuminate\Support\Collection $subjectIds
-     * @param int $expeditionId
      */
     public function attachSubjects(Collection $subjectIds, int $expeditionId)
     {
@@ -150,7 +121,6 @@ class SubjectRepository extends BaseRepository
     /**
      * Cursor to delete unassigned by project id.
      *
-     * @param int $projectId
      * @return \Illuminate\Support\LazyCollection
      */
     public function deleteUnassignedByProject(int $projectId)
@@ -161,23 +131,23 @@ class SubjectRepository extends BaseRepository
     /**
      * Calculate the number of rows. It's used for paging the result.
      *
-     * @param array $vars
-     * page
-     * limit
-     * count
-     * sidx
-     * sord
-     * filters
-     * projectId
-     * expeditionId
+     * @param  array  $vars
+     *                       page
+     *                       limit
+     *                       count
+     *                       sidx
+     *                       sord
+     *                       filters
+     *                       projectId
+     *                       expeditionId
      *
      *  Filters is an array: example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
      *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
      *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
      *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
      *  The 'data' key will contain the string searched by the user.
-     *
      * @return int Total number of rows
+     *
      * @throws \Exception
      */
     public function getGridTotalRowCount(array $vars = [])
@@ -190,20 +160,20 @@ class SubjectRepository extends BaseRepository
     }
 
     /**
-     *
      * Get the rows data to be shown in the grid.
      *
-     * @param $vars
-     *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
-     *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
-     *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
-     *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
-     *  The 'data' key will contain the string searched by the user.
+     * @param  $vars
+     *               An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
+     *               The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
+     *               The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
+     *               when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
+     *               The 'data' key will contain the string searched by the user.
      * @return array
-     *  An array of array, each array will have the data of a row.
-     *  Example: array(array('row 1 col 1','row 1 col 2'), array('row 2 col 1','row 2 col 2'))
+     *               An array of array, each array will have the data of a row.
+     *               Example: array(array('row 1 col 1','row 1 col 2'), array('row 2 col 1','row 2 col 2'))
      *
      * $limit, $start, $sidx, $sord, $filters
+     *
      * @throws \Exception
      */
     public function getGridRows(array $vars = [])
@@ -229,9 +199,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Return query used to chunk rows for export.
-     *
-     * @param array $vars
-     * @return \Illuminate\Support\LazyCollection
      */
     public function exportGridRows(array $vars): LazyCollection
     {
@@ -248,9 +215,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Build query for search.
-     *
-     * @param $query
-     * @param $vars
      */
     protected function buildQuery(&$query, $vars)
     {
@@ -270,9 +234,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Set where for expedition ids depending on route.
-     *
-     * @param $query
-     * @param $vars
      */
     protected function setExpeditionWhere(&$query, $vars)
     {
@@ -291,15 +252,13 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Handle the passed filters.
-     *
-     * @param $query
-     * @param $rules
      */
     protected function handleRules(&$query, $rules)
     {
         foreach ($rules as $rule) {
             if ($rule['field'] === 'assigned') {
                 $this->assignedRule($query, $rule);
+
                 continue;
             }
 
@@ -338,9 +297,6 @@ class SubjectRepository extends BaseRepository
      * ni: is not in
      *
      * 'eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'
-     *
-     * @param $rule
-     * @param $query
      */
     protected function buildWhere(&$query, $rule)
     {
@@ -399,10 +355,6 @@ class SubjectRepository extends BaseRepository
     /**
      * Filter for if subject is assigned to an expedition.
      * data = all, true, false
-     *
-     * @param $rule
-     * @param $query
-     *
      */
     protected function assignedRule(&$query, $rule)
     {
@@ -415,10 +367,6 @@ class SubjectRepository extends BaseRepository
         $this->setWhereForAssigned($query, $rule);
     }
 
-    /**
-     * @param $query
-     * @param $rule
-     */
     protected function setWhereForAssigned(&$query, $rule)
     {
         if ($rule['data'] === 'true') {
@@ -429,8 +377,6 @@ class SubjectRepository extends BaseRepository
     }
 
     /**
-     * @param $orderBy
-     * @param $sord
      * @return array
      */
     public function setOrderBy($orderBy, $sord)
@@ -441,7 +387,7 @@ class SubjectRepository extends BaseRepository
             foreach ($orderBys as $order) {
                 $order = trim($order);
                 [$field, $sort] = array_pad(explode(' ', $order, 2), 2, $sord);
-                $orderByRaw [trim($field)] = trim($sort);
+                $orderByRaw[trim($field)] = trim($sort);
             }
         }
 
@@ -450,8 +396,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * If row has expeditionId, mark as checked
-     *
-     * @param $rows
      */
     protected function setRowCheckbox(&$rows)
     {
@@ -463,7 +407,6 @@ class SubjectRepository extends BaseRepository
     /**
      * Set group operator.
      *
-     * @param $filters
      * @internal param $groupOp
      */
     protected function setGroupOp($filters)
@@ -477,8 +420,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Set groupOp process
-     *
-     * @param $bool
      */
     protected function setGroupOpProcessed($bool = false)
     {
@@ -487,11 +428,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Set where/orWhere clause for query
-     *
-     * @param $query
-     * @param $field
-     * @param $operation
-     * @param $data
      */
     protected function setWhere(&$query, $field, $operation, $data)
     {
@@ -502,10 +438,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Set whereRaw/orWhereRaw for query
-     *
-     * @param $query
-     * @param $field
-     * @param $data
      */
     protected function setWhereRaw(&$query, $field, $data)
     {
@@ -516,10 +448,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Set whereIn/orWhereIn for query
-     *
-     * @param $query
-     * @param $field
-     * @param $data
      */
     protected function setWhereIn(&$query, $field, $data)
     {
@@ -530,10 +458,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Set whereIn/orWhereIn for query
-     *
-     * @param $query
-     * @param $field
-     * @param $data
      */
     protected function setWhereNotIn(&$query, $field, $data)
     {
@@ -544,9 +468,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Set whereNull/orWhereNull for query
-     *
-     * @param $query
-     * @param $field
      */
     protected function setWhereNull(&$query, $field)
     {
@@ -557,9 +478,6 @@ class SubjectRepository extends BaseRepository
 
     /**
      * Set whereNotNull/orWhereNotNull for query
-     *
-     * @param $query
-     * @param $field
      */
     protected function setWhereNotNull(&$query, $field)
     {

@@ -27,32 +27,20 @@ use Ramsey\Uuid\Uuid;
 
 /**
  * Class CreatePusherClassificationService
- *
- * @package App\Services\Transcriptions
  */
 class CreatePusherClassificationService
 {
-    /**
-     * @var \App\Services\Api\PanoptesApiService
-     */
     private PanoptesApiService $apiService;
 
-    /**
-     * @var \App\Repositories\PusherClassificationRepository
-     */
     private PusherClassificationRepository $pusherClassificationRepo;
 
     /**
      * CreatePusherClassificationService constructor.
-     *
-     * @param \App\Services\Api\PanoptesApiService $apiService
-     * @param \App\Repositories\PusherClassificationRepository $pusherClassificationRepo
      */
     public function __construct(
         PanoptesApiService $apiService,
         PusherClassificationRepository $pusherClassificationRepo
-    )
-    {
+    ) {
         $this->apiService = $apiService;
         $this->pusherClassificationRepo = $pusherClassificationRepo;
     }
@@ -63,8 +51,6 @@ class CreatePusherClassificationService
      *
      * @see \App\Jobs\PusherTranscriptionJob
      *
-     * @param array $data
-     * @param string $title
      * @throws \Exception
      */
     public function process(array $data, string $title)
@@ -86,64 +72,62 @@ class CreatePusherClassificationService
      * This is built during the posted data from Pusher
      * $this->buildItem($data, $workflow, $subject, $expedition);
      */
-    #[ArrayShape(['classification_id'    => "int",
-                  'project'              => "string",
-                  'description'          => "string",
-                  'guid'                 => "string",
-                  'timestamp'            => "\Carbon\Carbon",
-                  'subject'              => "array",
-                  'contributor'          => "array",
-                  'transcriptionContent' => "array",
-                  'discretionaryState'   => "string"
-    ])] private function setDashboardData(string $title, array $data, array $subject, array $user = null): array
+    #[ArrayShape(['classification_id' => 'int',
+        'project' => 'string',
+        'description' => 'string',
+        'guid' => 'string',
+        'timestamp' => "\Carbon\Carbon",
+        'subject' => 'array',
+        'contributor' => 'array',
+        'transcriptionContent' => 'array',
+        'discretionaryState' => 'string',
+    ])]
+    private function setDashboardData(string $title, array $data, array $subject, ?array $user = null): array
     {
 
         $thumbnailUri = $this->setPusherThumbnailUri($data);
 
         return [
-            'classification_id'    => (int) $data['classification_id'],
-            'project'              => $title,
-            'description'          => 'Classification Id ' . $data['classification_id'],
-            'guid'                 => Uuid::uuid4()->toString(),
-            'timestamp'            => Carbon::now(),
-            'subject'              => [
-                'link'         => $subject['metadata']['references'] ?? '',
+            'classification_id' => (int) $data['classification_id'],
+            'project' => $title,
+            'description' => 'Classification Id '.$data['classification_id'],
+            'guid' => Uuid::uuid4()->toString(),
+            'timestamp' => Carbon::now(),
+            'subject' => [
+                'link' => $subject['metadata']['references'] ?? '',
                 'thumbnailUri' => $thumbnailUri,
             ],
-            'contributor'          => [
-                'decimalLatitude'  => $data['geo']['latitude'],
+            'contributor' => [
+                'decimalLatitude' => $data['geo']['latitude'],
                 'decimalLongitude' => $data['geo']['longitude'],
-                'ipAddress'        => '',
-                'transcriber'      => $user === null ? '' : $user['login'],
+                'ipAddress' => '',
+                'transcriber' => $user === null ? '' : $user['login'],
                 'physicalLocation' => [
-                    'country'      => $data['geo']['country_name'],
-                    'province'     => '',
-                    'county'       => '',
+                    'country' => $data['geo']['country_name'],
+                    'province' => '',
+                    'county' => '',
                     'municipality' => $data['geo']['city_name'],
-                    'locality'     => '',
+                    'locality' => '',
                 ],
             ],
             'transcriptionContent' => [
-                'lat'          => '',
-                'long'         => '',
-                'country'      => $subject['metadata']['country'] ?? '',
-                'province'     => $subject['metadata']['stateProvince'] ?? '',
-                'county'       => $subject['metadata']['county'] ?? '',
+                'lat' => '',
+                'long' => '',
+                'country' => $subject['metadata']['country'] ?? '',
+                'province' => $subject['metadata']['stateProvince'] ?? '',
+                'county' => $subject['metadata']['county'] ?? '',
                 'municipality' => '',
-                'locality'     => '',
-                'date'         => '', // which date to use? transcription date is messy
-                'collector'    => '',
-                'taxon'        => $subject['metadata']['scientificName'] ?? '',
+                'locality' => '',
+                'date' => '', // which date to use? transcription date is messy
+                'collector' => '',
+                'taxon' => $subject['metadata']['scientificName'] ?? '',
             ],
-            'discretionaryState'   => 'Transcribed',
+            'discretionaryState' => 'Transcribed',
         ];
     }
 
     /**
      * Determine image url.
-     *
-     * @param array $data
-     * @return mixed
      */
     public function setPusherThumbnailUri(array $data): mixed
     {

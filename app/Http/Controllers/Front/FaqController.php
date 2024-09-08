@@ -24,12 +24,9 @@ use App\Repositories\FaqCategoryRepository;
 
 /**
  * Class FaqController
- *
- * @package App\Http\Controllers\Front
  */
 class FaqController extends Controller
 {
-
     /**
      * @var \App\Repositories\FaqCategoryRepository
      */
@@ -37,8 +34,6 @@ class FaqController extends Controller
 
     /**
      * FaqController constructor.
-     *
-     * @param \App\Repositories\FaqCategoryRepository $faqCategoryRepo
      */
     public function __construct(FaqCategoryRepository $faqCategoryRepo)
     {
@@ -47,7 +42,7 @@ class FaqController extends Controller
 
     /**
      * Show categories.
-     * 
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()

@@ -31,15 +31,10 @@ class WeDigBioEventProgressJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * @var int
-     */
     private int $dateId;
 
     /**
      * Create a new job instance.
-     *
-     * @param int $dateId
      */
     public function __construct(int $dateId)
     {
@@ -50,7 +45,6 @@ class WeDigBioEventProgressJob implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
      * @return void
      */
     public function handle(WeDigBioEventDateRepository $weDigBioEventDateRepository)

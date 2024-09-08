@@ -27,34 +27,19 @@ use App\Repositories\SubjectRepository;
 
 /**
  * Class OcrService
- *
- * @package App\Services\Process
  */
 class TesseractOcrBuild
 {
     use ButtonTrait;
 
-    /**
-     * @var \App\Repositories\OcrQueueRepository
-     */
     private OcrQueueRepository $ocrQueueRepo;
 
-    /**
-     * @var \App\Repositories\OcrQueueFileRepository
-     */
     private OcrQueueFileRepository $ocrQueueFileRepo;
 
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
     private SubjectRepository $subjectRepo;
 
     /**
      * Ocr constructor.
-     *
-     * @param \App\Repositories\OcrQueueRepository $ocrQueueRepo
-     * @param \App\Repositories\OcrQueueFileRepository $ocrQueueFileRepo
-     * @param \App\Repositories\SubjectRepository $subjectRepo
      */
     public function __construct(
         OcrQueueRepository $ocrQueueRepo,
@@ -68,46 +53,33 @@ class TesseractOcrBuild
 
     /**
      * Get subject count for ocr process.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @return int
      */
-    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null): int
+    public function getSubjectCountForOcr(int $projectId, ?int $expeditionId = null): int
     {
         return $this->subjectRepo->getSubjectCountForOcr($projectId, $expeditionId);
     }
 
     /**
      * Create ocr queue record.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @param array $data
-     * @return \App\Models\OcrQueue
      */
-    public function createOcrQueue(int $projectId, int $expeditionId = null, array $data = []): OcrQueue
+    public function createOcrQueue(int $projectId, ?int $expeditionId = null, array $data = []): OcrQueue
     {
         return $this->ocrQueueRepo->firstOrCreate([
-            'project_id'    => $projectId,
+            'project_id' => $projectId,
             'expedition_id' => $expeditionId,
         ], $data);
     }
 
     /**
      * Create ocr queue files.
-     *
-     * @param int $queueId
-     * @param int $projectId
-     * @param int|null $expeditionId
      */
-    public function createOcrQueueFiles(int $queueId, int $projectId, int $expeditionId = null): void
+    public function createOcrQueueFiles(int $queueId, int $projectId, ?int $expeditionId = null): void
     {
         $cursor = $this->subjectRepo->getSubjectCursorForOcr($projectId, $expeditionId);
 
         $cursor->each(function ($subject) use ($queueId) {
             $attributes = [
-                'queue_id'   => $queueId,
+                'queue_id' => $queueId,
                 'subject_id' => (string) $subject->_id,
                 'access_uri' => $subject->accessURI,
             ];

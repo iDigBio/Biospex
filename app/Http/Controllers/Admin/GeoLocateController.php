@@ -33,38 +33,24 @@ use Illuminate\Support\Facades\Auth;
 
 class GeoLocateController extends Controller
 {
-    /**
-     * @var \App\Services\Actor\GeoLocate\GeoLocateExportForm
-     */
     private GeoLocateExportForm $geoLocateExportForm;
 
-    /**
-     * @var \App\Services\Actor\GeoLocate\GeoLocateStat
-     */
     private GeoLocateStat $geoLocateStat;
 
     /**
      * GeoLocateController constructor.
-     *
-     * @param \App\Services\Actor\GeoLocate\GeoLocateExportForm $geoLocateExportForm
-     * @param \App\Services\Actor\GeoLocate\GeoLocateStat $geoLocateStat
      */
     public function __construct(
         GeoLocateExportForm $geoLocateExportForm,
         GeoLocateStat $geoLocateStat
 
-    )
-    {
+    ) {
         $this->geoLocateExportForm = $geoLocateExportForm;
         $this->geoLocateStat = $geoLocateStat;
     }
 
     /**
      * Display stats in modal.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function index(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {
@@ -88,10 +74,6 @@ class GeoLocateController extends Controller
 
     /**
      * Show export form in modal.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function show(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {
@@ -108,7 +90,7 @@ class GeoLocateController extends Controller
             }
 
             $form = $this->geoLocateExportForm->getForm($expedition, ['formId' => $expedition->geo_locate_form_id]);
-            $disabled= $form['exported'] && GeneralHelper::downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
+            $disabled = $form['exported'] && GeneralHelper::downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
 
             $formFields = \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'))->render();
 
@@ -116,16 +98,12 @@ class GeoLocateController extends Controller
 
             return \View::make('admin.geolocate.partials.form-show', compact('expedition', 'route', 'formFields'));
         } catch (\Exception $e) {
-            return \Response::json(['message' => $e->getMessage() . $e->getFile() . $e->getLine()], 500);
+            return \Response::json(['message' => $e->getMessage().$e->getFile().$e->getLine()], 500);
         }
     }
 
     /**
      * Display export form when select is changed.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function form(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {
@@ -142,7 +120,7 @@ class GeoLocateController extends Controller
             }
 
             $form = $this->geoLocateExportForm->getForm($expedition, \Request::all());
-            $disabled= $form['exported'] && GeneralHelper::downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
+            $disabled = $form['exported'] && GeneralHelper::downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
 
             return \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'));
         } catch (\Exception $e) {
@@ -152,10 +130,6 @@ class GeoLocateController extends Controller
 
     /**
      * Retrieve form fields for selected form.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse|string
      */
     public function fields(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|string
     {
@@ -173,22 +147,18 @@ class GeoLocateController extends Controller
 
             $form = $this->geoLocateExportForm->getForm($expedition, [
                 'formId' => $expedition->geo_locate_form_id,
-                'source' => \Request::input('source')
+                'source' => \Request::input('source'),
             ]);
 
             return \View::make('admin.geolocate.partials.geolocate-fields', compact('expedition', 'form'))->render();
 
         } catch (\Exception $e) {
-            return \Response::json(['message' => $e->getMessage() . $e->getFile() . $e->getLine()], 500);
+            return \Response::json(['message' => $e->getMessage().$e->getFile().$e->getLine()], 500);
         }
     }
 
     /**
      * Store form data.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse
     {
@@ -215,10 +185,6 @@ class GeoLocateController extends Controller
 
     /**
      * Export form selections to csv.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function export(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|RedirectResponse
     {
@@ -246,10 +212,6 @@ class GeoLocateController extends Controller
 
     /**
      * Refresh Geo Locate stats at user request.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function refresh(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|RedirectResponse
     {
@@ -264,20 +226,18 @@ class GeoLocateController extends Controller
             GeoLocateStatsJob::dispatch($expedition->geoLocateActor, true);
 
             \Flash::success(t('Geo Locate stats job is scheduled for processing. You will receive an email when the process is complete.'));
+
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
 
         } catch (Exception $e) {
             \Flash::error(t('An error occurred while processing job.'));
+
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
     }
 
     /**
      * Delete GeoLocateForm and associated data and file.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function delete(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|RedirectResponse
     {
@@ -309,14 +269,10 @@ class GeoLocateController extends Controller
 
     /**
      * Show community and datasource form in modal.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function communityForm(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse|RedirectResponse
     {
-        if (!\Request::ajax()) {
+        if (! \Request::ajax()) {
             return \Response::json(['message' => t('You do not have permission.')], 400);
         }
 
@@ -332,11 +288,6 @@ class GeoLocateController extends Controller
 
     /**
      * Store community and datasource form.
-     *
-     * @param \App\Http\Requests\GeoLocateCommunityRequest $request
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse
      */
     public function community(
         GeoLocateCommunityRequest $request,
@@ -365,7 +316,7 @@ class GeoLocateController extends Controller
             return \Response::json(['message' => t('Community and data source added.')]);
 
         } catch (\Throwable $throwable) {
-            return \Response::json(['message' => t($throwable->getMessage())],400 );
+            return \Response::json(['message' => t($throwable->getMessage())], 400);
         }
     }
 }

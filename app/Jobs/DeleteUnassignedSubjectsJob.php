@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Jobs;
 
 use App\Models\User;
@@ -30,28 +31,17 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Class DeleteUnassignedSubjectsJob
- *
- * @package App\Jobs
  */
 class DeleteUnassignedSubjectsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * @var int
-     */
     private int $projectId;
 
-    /**
-     * @var \App\Models\User
-     */
     private User $user;
 
     /**
      * Create a new job instance.
-     *
-     * @param \App\Models\User $user
-     * @param int $projectId
      */
     public function __construct(User $user, int $projectId)
     {
@@ -62,33 +52,29 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @return void
      */
     public function handle(SubjectRepository $subjectRepo): void
     {
         try {
             $cursor = $subjectRepo->deleteUnassignedByProject($this->projectId);
-            $cursor->each(function($subject) {
+            $cursor->each(function ($subject) {
                 $subject->delete();
             });
 
             $attributes = [
                 'subject' => t('Delete Unassigned Subjects Complete'),
-                'html'    => [
-                    t('All unassigned subjects for Project Id %s have been deleted.', $this->projectId)
-                ]
+                'html' => [
+                    t('All unassigned subjects for Project Id %s have been deleted.', $this->projectId),
+                ],
             ];
 
             $this->user->notify(new Generic($attributes));
 
             $this->delete();
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $attributes = [
                 'subject' => t('Delete Unassigned Subjects Error'),
-                'html'    => [
+                'html' => [
                     t('Error: Could not delete unassigned subjects for Project Id %s.', $this->projectId),
                     t('An error occurred while importing the Darwin Core Archive.'),
                     t('File: %s', $e->getFile()),

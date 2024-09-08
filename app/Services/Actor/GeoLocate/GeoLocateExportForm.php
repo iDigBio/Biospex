@@ -31,45 +31,20 @@ use Storage;
 
 class GeoLocateExportForm
 {
-    /**
-     * @var \App\Services\Models\ExpeditionService
-     */
     private ExpeditionService $expeditionService;
 
-    /**
-     * @var \App\Repositories\GeoLocateFormRepository
-     */
     private GeoLocateFormRepository $geoLocateFormRepository;
 
-    /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
     private AwsS3CsvService $awsS3CsvService;
 
-    /**
-     * @var \App\Repositories\GeoLocateRepository
-     */
     private GeoLocateRepository $geoLocateRepository;
 
-
-    /**
-     * @var string
-     */
     private string $source;
 
-    /**
-     * @var bool
-     */
     private bool $userReconciledFileExists;
 
-    /**
-     * @var bool
-     */
     private bool $expertReconciledFileExists;
 
-    /**
-     * @var bool
-     */
     private bool $expertReviewExists;
 
     /**
@@ -79,11 +54,6 @@ class GeoLocateExportForm
 
     /**
      * Construct.
-     *
-     * @param \App\Services\Models\ExpeditionService $expeditionService
-     * @param \App\Repositories\GeoLocateFormRepository $geoLocateFormRepository
-     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
-     * @param \App\Repositories\GeoLocateRepository $geoLocateRepository
      */
     public function __construct(
         ExpeditionService $expeditionService,
@@ -100,10 +70,6 @@ class GeoLocateExportForm
 
     /**
      * Find project with relations.
-     *
-     * @param int $expeditionId
-     * @param array $relations
-     * @return \App\Models\Expedition
      */
     public function findExpeditionWithRelations(int $expeditionId, array $relations = []): Expedition
     {
@@ -113,9 +79,6 @@ class GeoLocateExportForm
     /**
      * Get the form based on new or existing.
      *
-     * @param \App\Models\Expedition $expedition
-     * @param array $request
-     * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getForm(Expedition $expedition, array $request): array
@@ -134,35 +97,30 @@ class GeoLocateExportForm
     /**
      * Return form for selected destination.
      *
-     * @param \App\Models\Expedition $expedition
-     * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function newForm(Expedition $expedition): array
     {
         return [
-            'group_id'          => $expedition->project->group->id,
-            'name'              => '',
-            'source'            => $this->source,
-            'entries'           => old('entries', 1),
-            'fields'            => null,
-            'user_reconciled'   => $this->userReconciledFileExists,
+            'group_id' => $expedition->project->group->id,
+            'name' => '',
+            'source' => $this->source,
+            'entries' => old('entries', 1),
+            'fields' => null,
+            'user_reconciled' => $this->userReconciledFileExists,
             'expert_reconciled' => $this->expertReconciledFileExists,
-            'expert_review'     => $this->expertReviewExists,
-            'exported'          => ! empty($expedition->geoLocateActor->pivot->state),
-            'geo'               => $this->getGeoLocateFields(),
-            'csv'               => $this->getCsvHeader($expedition),
-            'mismatch_source'   => $this->mismatchSource,
-            'created_at'        => '',
+            'expert_review' => $this->expertReviewExists,
+            'exported' => ! empty($expedition->geoLocateActor->pivot->state),
+            'geo' => $this->getGeoLocateFields(),
+            'csv' => $this->getCsvHeader($expedition),
+            'mismatch_source' => $this->mismatchSource,
+            'created_at' => '',
         ];
     }
 
     /**
      * Return form from existing form.
      *
-     * @param \App\Models\GeoLocateForm $record
-     * @param \App\Models\Expedition $expedition
-     * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function existingForm(GeoLocateForm $record, Expedition $expedition): array
@@ -176,28 +134,24 @@ class GeoLocateExportForm
         $entries = count($record->fields);
 
         return [
-            'group_id'          => $record->group_id,
-            'name'              => $record->name,
-            'source'            => $this->source,
-            'entries'           => $entries,
-            'fields'            => $record->fields,
-            'user_reconciled'   => $this->userReconciledFileExists,
+            'group_id' => $record->group_id,
+            'name' => $record->name,
+            'source' => $this->source,
+            'entries' => $entries,
+            'fields' => $record->fields,
+            'user_reconciled' => $this->userReconciledFileExists,
             'expert_reconciled' => $this->expertReconciledFileExists,
-            'expert_review'     => $this->expertReviewExists,
-            'exported'          => ! empty($expedition->geoLocateActor->pivot->state),
-            'geo'               => $this->getGeoLocateFields(),
-            'csv'               => $this->getCsvHeader($expedition),
-            'mismatch_source'   => $this->mismatchSource,
-            'created_at'        => $record->created_at,
+            'expert_review' => $this->expertReviewExists,
+            'exported' => ! empty($expedition->geoLocateActor->pivot->state),
+            'geo' => $this->getGeoLocateFields(),
+            'csv' => $this->getCsvHeader($expedition),
+            'mismatch_source' => $this->mismatchSource,
+            'created_at' => $record->created_at,
         ];
     }
 
     /**
      * Save the export form data.
-     *
-     * @param array $request
-     * @param \App\Models\Expedition $expedition
-     * @return void
      */
     public function saveForm(array $request, Expedition $expedition): void
     {
@@ -206,16 +160,16 @@ class GeoLocateExportForm
 
         $attributes = [
             'group_id' => $request['group_id'],
-            'name'     => $request['name'],
-            'source'   => $request['source'],
-            'hash'     => $hash,
+            'name' => $request['name'],
+            'source' => $request['source'],
+            'hash' => $hash,
         ];
         $values = [
             'group_id' => $request['group_id'],
-            'name'     => $request['name'],
-            'source'   => $request['source'],
-            'hash'     => $hash,
-            'fields'   => $request['fields'],
+            'name' => $request['name'],
+            'source' => $request['source'],
+            'hash' => $hash,
+            'fields' => $request['fields'],
         ];
 
         $geoLocateForm = $this->geoLocateFormRepository->updateOrCreate($attributes, $values);
@@ -225,7 +179,6 @@ class GeoLocateExportForm
     /**
      * Get GeoLocateExport fields from file.
      *
-     * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     private function getGeoLocateFields(): array
@@ -235,17 +188,14 @@ class GeoLocateExportForm
 
     /**
      * Set source by using formData.
-     *
-     * @param array $request
-     * @param \App\Models\GeoLocateForm|null $record
      */
-    public function setSource(array $request = [], GeoLocateForm $record = null): void
+    public function setSource(array $request = [], ?GeoLocateForm $record = null): void
     {
         if (isset($record->source)) {
             $this->source = match ($record->source) {
                 'reconciled-with-user' => $this->userReconciledFileExists ? 'reconciled-with-user' : 'reconciled',
-                'reconciled-with-expert' => ($this->expertReconciledFileExists && $this->expertReviewExists) ? "reconciled-with-expert" : "reconciled",
-                default => "reconciled",
+                'reconciled-with-expert' => ($this->expertReconciledFileExists && $this->expertReviewExists) ? 'reconciled-with-expert' : 'reconciled',
+                default => 'reconciled',
             };
 
             return;
@@ -259,14 +209,11 @@ class GeoLocateExportForm
 
         $this->source =
             $this->userReconciledFileExists ? 'reconciled-with-user' :
-                (($this->expertReconciledFileExists && $this->expertReviewExists) ? "reconciled-with-expert" : "reconciled");
+                (($this->expertReconciledFileExists && $this->expertReviewExists) ? 'reconciled-with-expert' : 'reconciled');
     }
 
     /**
      * Set var for if user reconciled exists.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return void
      */
     public function setUserReconciledVar(Expedition $expedition): void
     {
@@ -275,9 +222,6 @@ class GeoLocateExportForm
 
     /**
      * Set vars for if expert review exists.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return void
      */
     public function setExpertExistVars(Expedition $expedition): void
     {
@@ -287,9 +231,6 @@ class GeoLocateExportForm
 
     /**
      * Find project header for subjects.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return array
      */
     private function getCsvHeader(Expedition $expedition): array
     {
@@ -308,16 +249,13 @@ class GeoLocateExportForm
             $array = $this->awsS3CsvService->csv->getHeader();
 
             return array_values(array_filter($array, function ($e) {
-                return ($e !== 'subject_id');
+                return $e !== 'subject_id';
             }));
         });
     }
 
     /**
      * Find GeoLocateForm by id.
-     *
-     * @param int $id
-     * @return GeoLocateForm
      */
     public function findGeoLocateFormById(int $id): GeoLocateForm
     {
@@ -326,9 +264,6 @@ class GeoLocateExportForm
 
     /**
      * Find form with expedition count. Used in Groups for deleting.
-     *
-     * @param int $formId
-     * @return mixed
      */
     public function findGeoLocateFormByIdWithExpeditionCount(int $formId): mixed
     {
@@ -337,9 +272,6 @@ class GeoLocateExportForm
 
     /**
      * Delete all geolocate records for expedition.
-     *
-     * @param int $expeditionId
-     * @return void
      */
     public function deleteGeoLocate(int $expeditionId): void
     {
@@ -350,9 +282,6 @@ class GeoLocateExportForm
 
     /**
      * Delete GeoLocateExport csv file.
-     *
-     * @param int $expeditionId
-     * @return void
      */
     public function deleteGeoLocateFile(int $expeditionId): void
     {

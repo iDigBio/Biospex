@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -28,25 +30,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use JavaScript;
 use Session;
+
 use function collect;
 use function config;
 use function route;
 
 /**
  * Class BingoProcess
- *
- * @package App\Services\Process
  */
 class BingoProcess
 {
-    /**
-     * @var \App\Repositories\BingoRepository
-     */
     private BingoRepository $bingoRepo;
 
-    /**
-     * @var \App\Repositories\BingoMapRepository
-     */
     private BingoMapRepository $bingoMapRepo;
 
     /**
@@ -56,10 +51,6 @@ class BingoProcess
 
     /**
      * BingoRepository constructor.
-     *
-     * @param \App\Repositories\BingoRepository $bingoRepo
-     * @param \App\Repositories\BingoMapRepository $bingoMapRepo
-     * @param \App\Services\Api\GeoPlugin $location
      */
     public function __construct(BingoRepository $bingoRepo, BingoMapRepository $bingoMapRepo, GeoPlugin $location)
     {
@@ -70,8 +61,6 @@ class BingoProcess
 
     /**
      * Get all bingo games.
-     *
-     * @return \Illuminate\Support\Collection
      */
     public function getAllBingos(): Collection
     {
@@ -81,8 +70,6 @@ class BingoProcess
     /**
      * Find bingo resource.
      *
-     * @param string $id
-     * @param array $with
      * @return mixed
      */
     public function findBingoWith(string $id, array $with = [])
@@ -92,10 +79,6 @@ class BingoProcess
 
     /**
      * Find bingo map by uuid.
-     *
-     * @param \App\Models\Bingo $bingo
-     * @param string $uuid
-     * @return \Illuminate\Database\Eloquent\Model
      */
     private function findBingoMapByUuid(Bingo $bingo, string $uuid): Model
     {
@@ -110,9 +93,6 @@ class BingoProcess
 
     /**
      * Create bingo map. Default Tallahassee if lat/long empty.
-     *
-     * @param \App\Models\Bingo $bingo
-     * @return \Illuminate\Database\Eloquent\Model
      */
     private function createBingoMap(Bingo $bingo): Model
     {
@@ -121,7 +101,7 @@ class BingoProcess
             'ip' => $this->location->ip,
             'latitude' => $this->location->latitude == null ? '30.43826' : $this->location->latitude,
             'longitude' => $this->location->longitude == null ? '-84.28073' : $this->location->longitude,
-            'city' => $this->location->city == null ? 'Tallahassee' : $this->location->city
+            'city' => $this->location->city == null ? 'Tallahassee' : $this->location->city,
         ];
 
         return $bingo->maps()->create($values);
@@ -129,9 +109,6 @@ class BingoProcess
 
     /**
      * Show bingo page.
-     *
-     * @param string $bingoId
-     * @return array
      */
     public function showBingo(string $bingoId): array
     {
@@ -144,9 +121,6 @@ class BingoProcess
 
     /**
      * Generate bingo card.
-     *
-     * @param \App\Models\Bingo $bingo
-     * @return \Illuminate\Support\Collection
      */
     public function generateBingoCard(Bingo $bingo): Collection
     {
@@ -159,16 +133,17 @@ class BingoProcess
         Session::put('bingoUuid', $map->uuid);
 
         JavaScript::put([
-            'channel' => config('config.poll_bingo_channel') . '.' . $bingo->id,
+            'channel' => config('config.poll_bingo_channel').'.'.$bingo->id,
             'winnerUrl' => route('ajax.get.bingoWinner', ['bingo' => 1, 'map' => $map->id]),
-            'mapUuid' => $map->uuid
+            'mapUuid' => $map->uuid,
         ]);
 
         $words = $bingo->words->pluck('definition', 'word')->shuffleWords();
         $words->splice(12, 0, [['logo', '']]);
 
         $i = 1;
-        return $words->chunk(5)->map(function($row) use (&$i) {
+
+        return $words->chunk(5)->map(function ($row) use (&$i) {
             $collection = collect(['a'.$i, 'b'.$i, 'c'.$i, 'd'.$i, 'e'.$i]);
             $i++;
 

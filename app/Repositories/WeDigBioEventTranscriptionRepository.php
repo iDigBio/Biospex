@@ -25,15 +25,11 @@ use Illuminate\Support\Collection;
 
 /**
  * Class WeDigBioEventTranscriptionRepository
- *
- * @package App\Repositories
  */
 class WeDigBioEventTranscriptionRepository extends BaseRepository
 {
     /**
      * WeDigBioEventTranscriptionRepository constructor.
-     *
-     * @param \App\Models\WeDigBioEventTranscription $weDigBioEventTranscription
      */
     public function __construct(WeDigBioEventTranscription $weDigBioEventTranscription)
     {
@@ -42,11 +38,6 @@ class WeDigBioEventTranscriptionRepository extends BaseRepository
 
     /**
      * Get transcriptions for WeDigBio project event step chart.
-     *
-     * @param int $dateId
-     * @param \Illuminate\Support\Carbon $startLoad
-     * @param \Illuminate\Support\Carbon $endLoad
-     * @return \Illuminate\Support\Collection|null
      */
     public function getWeDigBioRateChartTranscriptions(int $dateId, Carbon $startLoad, Carbon $endLoad): ?Collection
     {

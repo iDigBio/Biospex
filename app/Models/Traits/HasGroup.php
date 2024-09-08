@@ -23,8 +23,7 @@ trait HasGroup
 {
     /**
      * Assign the given group to the user.
-     * 
-     * @param $group
+     *
      * @return \Illuminate\Database\Eloquent\Model
      */
     public function assignGroup($group)
@@ -35,7 +34,6 @@ trait HasGroup
     /**
      * Detach Group.
      *
-     * @param $groupId
      * @return int
      */
     public function detachGroup($groupId)
@@ -46,8 +44,8 @@ trait HasGroup
     /**
      * Determine if the user has the given group.
      *
-     * @param  mixed $group
-     * @return boolean
+     * @param  mixed  $group
+     * @return bool
      */
     public function hasGroup($group)
     {
@@ -55,7 +53,7 @@ trait HasGroup
             return $this->groups->contains('title', $group);
         }
 
-        return !! $this->groups->intersect(collect([$group]))->count();
+        return (bool) $this->groups->intersect(collect([$group]))->count();
     }
 
     /**
@@ -67,5 +65,4 @@ trait HasGroup
     {
         return $this->hasGroup(config('config.admin.group'));
     }
-
 }

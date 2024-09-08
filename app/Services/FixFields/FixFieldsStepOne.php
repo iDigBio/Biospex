@@ -23,15 +23,8 @@ use Illuminate\Support\Collection;
 
 class FixFieldsStepOne extends FixFieldsBase
 {
-
-    /**
-     * @var \Illuminate\Support\Collection
-     */
     private Collection $headers;
 
-    /**
-     * @var \Illuminate\Support\Collection
-     */
     private Collection $properties;
 
     /**
@@ -41,7 +34,7 @@ class FixFieldsStepOne extends FixFieldsBase
      */
     public function start()
     {
-        echo "Starting to set counts on properties." . PHP_EOL;
+        echo 'Starting to set counts on properties.'.PHP_EOL;
 
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
@@ -57,11 +50,8 @@ class FixFieldsStepOne extends FixFieldsBase
         \Artisan::call('lada-cache:enable');
     }
 
-
     /**
      * Sets the counts for properties.
-     *
-     * @return \Illuminate\Support\Collection
      */
     private function setPropertyCounts(): Collection
     {
@@ -71,7 +61,6 @@ class FixFieldsStepOne extends FixFieldsBase
             $property['imageHeaderCount'] = $imageHeaderCount;
             $property['imageHeaderIds'] = $imageHeaderIds;
             $property['imageHeaderProjectIds'] = $imageHeaderProjectIds;
-
 
             $property['occurrenceFieldCount'] = $this->lookUpOccurrenceFieldCount($key);
             [$occurrenceHeaderCount, $occurrenceHeaderIds, $occurrenceHeaderProjectIds] = $this->lookUpOccurrenceHeaderCount($key);
@@ -101,9 +90,6 @@ class FixFieldsStepOne extends FixFieldsBase
 
     /**
      * Look up occurrence field count.
-     *
-     * @param string $value
-     * @return int
      */
     public function lookUpOccurrenceFieldCount(string $value): int
     {
@@ -116,9 +102,6 @@ class FixFieldsStepOne extends FixFieldsBase
 
     /**
      * Look up count of value used in project headers.
-     *
-     * @param string $value
-     * @return array
      */
     public function lookUpOccurrenceHeaderCount(string $value): array
     {
@@ -140,9 +123,6 @@ class FixFieldsStepOne extends FixFieldsBase
 
     /**
      * Look up image field count in mongodb.
-     *
-     * @param string $value
-     * @return int
      */
     public function lookUpImageFieldCount(string $value): int
     {
@@ -155,9 +135,6 @@ class FixFieldsStepOne extends FixFieldsBase
 
     /**
      * Look up count of value used in project headers.
-     *
-     * @param string $value
-     * @return array
      */
     public function lookUpImageHeaderCount(string $value): array
     {
@@ -176,5 +153,4 @@ class FixFieldsStepOne extends FixFieldsBase
 
         return [$count, $headerIds, $projectIds];
     }
-
 }

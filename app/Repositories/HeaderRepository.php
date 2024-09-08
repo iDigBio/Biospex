@@ -23,15 +23,11 @@ use App\Models\Header;
 
 /**
  * Class HeaderRepository
- *
- * @package App\Repositories
  */
 class HeaderRepository extends BaseRepository
 {
     /**
      * HeaderRepository constructor.
-     *
-     * @param \App\Models\Header $header
      */
     public function __construct(Header $header)
     {

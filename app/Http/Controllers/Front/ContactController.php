@@ -19,16 +19,13 @@
 
 namespace App\Http\Controllers\Front;
 
-use Flash;
 use App\Http\Controllers\Controller;
-use App\Mail\ContactForm;
 use App\Http\Requests\ContactFormRequest;
+use App\Mail\ContactForm;
 use Mail;
 
 /**
  * Class ContactController
- *
- * @package App\Http\Controllers\Front
  */
 class ContactController extends Controller
 {
@@ -44,9 +41,6 @@ class ContactController extends Controller
 
     /**
      * Send contact form.
-     *
-     * @param ContactFormRequest $request
-     * @return mixed
      */
     public function create(ContactFormRequest $request): mixed
     {

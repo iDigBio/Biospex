@@ -29,31 +29,14 @@ use Illuminate\Support\Facades\Notification;
 
 class ExpeditionService
 {
-    /**
-     * @var Collection
-     */
     private Collection $subjectIds;
 
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
     private ExpeditionRepository $expeditionRepository;
 
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
     private SubjectRepository $subjectRepository;
 
-    /**
-     * @var \App\Repositories\WorkflowRepository
-     */
     private WorkflowRepository $workflowRepository;
 
-    /**
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
-     * @param \App\Repositories\SubjectRepository $subjectRepository
-     * @param \App\Repositories\WorkflowRepository $workflowRepository
-     */
     public function __construct(
         ExpeditionRepository $expeditionRepository,
         SubjectRepository $subjectRepository,
@@ -66,9 +49,6 @@ class ExpeditionService
 
     /**
      * Create Expedition and return.
-     *
-     * @param array $request
-     * @return mixed
      */
     public function createExpedition(array $request): mixed
     {
@@ -78,10 +58,6 @@ class ExpeditionService
     /**
      * Find Expedition with relations.
      * Used for Expedition panel on multiple pages. Keeping it cached prevents overloading.
-     *
-     * @param int $expeditionId
-     * @param array $relations
-     * @return mixed
      */
     public function findExpeditionWithRelations(int $expeditionId, array $relations = []): mixed
     {
@@ -90,9 +66,6 @@ class ExpeditionService
 
     /**
      * Get subject ids assigned to expedition.
-     *
-     * @param int $expeditionId
-     * @return \Illuminate\Support\Collection
      */
     public function getSubjectIdsByExpeditionId(int $expeditionId): Collection
     {
@@ -101,10 +74,6 @@ class ExpeditionService
 
     /**
      * Update for new GeoLocateExport actor.
-     *
-     * @param int $expeditionId
-     * @param \App\Http\Requests\ExpeditionFormRequest $request
-     * @return Expedition
      */
     public function updateForGeoLocate(int $expeditionId, ExpeditionFormRequest $request): Expedition
     {
@@ -121,10 +90,6 @@ class ExpeditionService
 
     /**
      * Reset Expedition completed according to workflow chosen.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @param int $workflow_id
-     * @return int
      */
     private function setExpeditionCompleted(Expedition $expedition, int $workflow_id): int
     {
@@ -133,8 +98,6 @@ class ExpeditionService
 
     /**
      * Get subject id count.
-     *
-     * @return int
      */
     public function getSubjectCount(): int
     {
@@ -143,19 +106,14 @@ class ExpeditionService
 
     /**
      * Set subject ids.
-     *
-     * @param string|null $subjectIds
-     * @return void
      */
-    public function setSubjectIds(string $subjectIds = null): void
+    public function setSubjectIds(?string $subjectIds = null): void
     {
         $this->subjectIds = $subjectIds === null ? collect([]) : collect(explode(',', $subjectIds));
     }
 
     /**
      * Sync the actors depending on workflow chosen.
-     *
-     * @param \App\Models\Expedition $expedition
      */
     public function syncActors(Expedition $expedition): void
     {
@@ -174,9 +132,6 @@ class ExpeditionService
 
     /**
      * Update subjects for expedition if changed and if workflow manager does not exist.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return void
      */
     public function updateSubjects(Expedition $expedition): void
     {
@@ -198,10 +153,6 @@ class ExpeditionService
 
     /**
      * Detach subjects from expedition.
-     *
-     * @param int $expeditionId
-     * @param \Illuminate\Support\Collection $detachIds
-     * @return void
      */
     public function detachSubjects(int $expeditionId, Collection $detachIds): void
     {
@@ -210,12 +161,8 @@ class ExpeditionService
 
     /**
      * Attach subjects to expedition.
-     *
-     * @param int $expeditionId
-     * @param \Illuminate\Support\Collection|null $attachIds
-     * @return void
      */
-    public function attachSubjects(int $expeditionId, Collection $attachIds = null): void
+    public function attachSubjects(int $expeditionId, ?Collection $attachIds = null): void
     {
         $attachIds = $attachIds === null ? $this->subjectIds : $attachIds;
 
@@ -224,11 +171,8 @@ class ExpeditionService
 
     /**
      * Update or create expedition stat.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return void
      */
-    public function syncStat(Expedition $expedition,): void
+    public function syncStat(Expedition $expedition): void
     {
         $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], ['local_subject_count' => $this->getSubjectCount()]);
     }
@@ -237,9 +181,6 @@ class ExpeditionService
      * Send notifications for new projects and actors.
      *
      * @see \App\Notifications\ZooniverseNewExpedition
-     * @param $expedition
-     * @param $project
-     * @return void
      */
     public function notifyActorContacts($expedition, $project): void
     {
@@ -269,14 +210,8 @@ class ExpeditionService
 
     /**
      * Get expeditions for admin index page.
-     *
-     * @param int|null $userId
-     * @param $sort
-     * @param $order
-     * @param $projectId
-     * @return mixed
      */
-    public function getAdminIndex(int $userId = null, $sort = null, $order = null, $projectId = null): mixed
+    public function getAdminIndex(?int $userId = null, $sort = null, $order = null, $projectId = null): mixed
     {
         return $this->expeditionRepository->getExpeditionAdminIndex($userId, $sort, $order, $projectId);
     }

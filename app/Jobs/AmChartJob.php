@@ -30,8 +30,6 @@ use Illuminate\Queue\InteractsWithQueue;
 
 /**
  * Class AmChartJob
- *
- * @package App\Jobs
  */
 class AmChartJob implements ShouldQueue
 {
@@ -39,20 +37,13 @@ class AmChartJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 3600;
 
-    /**
-     * @var int
-     */
     protected int $projectId;
 
     /**
      * AmChartJob constructor.
-     *
-     * @param int $projectId
      */
     public function __construct(int $projectId)
     {
@@ -62,9 +53,6 @@ class AmChartJob implements ShouldQueue
 
     /**
      * Handle job.
-     *
-     * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param \App\Services\Chart\TranscriptionChartService $service
      */
     public function handle(ProjectRepository $projectRepo, TranscriptionChartService $service): void
     {
@@ -77,22 +65,19 @@ class AmChartJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
     public function failed(\Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('AmChartJob failed'),
-            'html'    => [
+            'html' => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage())
+                t('Message: %s', $throwable->getMessage()),
             ],
         ];
 
-        $user =User::find(config('config.admin.user_id'));
+        $user = User::find(config('config.admin.user_id'));
         $user->notify(new Generic($attributes));
     }
 }

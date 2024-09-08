@@ -24,12 +24,9 @@ use Illuminate\Contracts\View\View;
 
 /**
  * Class NoticesComposer
- *
- * @package App\Http\ViewComposers
  */
 class NoticesComposer
 {
-
     /**
      * @var \App\Repositories\NoticeRepository
      */
@@ -37,8 +34,6 @@ class NoticesComposer
 
     /**
      * Create a new profile composer.
-     *
-     * @param \App\Repositories\NoticeRepository $noticeRepo
      */
     public function __construct(NoticeRepository $noticeRepo)
     {
@@ -48,7 +43,6 @@ class NoticesComposer
     /**
      * Bind data to the view.
      *
-     * @param  View  $view
      * @return void
      */
     public function compose(View $view)

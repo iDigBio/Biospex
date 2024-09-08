@@ -27,5 +27,3 @@ Route::get('bingos/{bingo}/winner/{map}', [AjaxController::class, 'bingoWinner']
 Route::get('ajax/wedigbio-progress/{dateId}', [AjaxController::class, 'weDigBioProgress'])->name('ajax.get.wedigbio-progress');
 Route::get('ajax/wedigbio-rate/{dateId}', [AjaxController::class, 'weDigBioRate'])->name('ajax.get.wedigbio-rate');
 Route::get('ajax/wedigbio-projects/{dateId}', [AjaxController::class, 'getProjectsForWeDigBioRateChart'])->name('ajax.get.wedigbio-projects');
-
-

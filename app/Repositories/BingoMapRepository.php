@@ -26,15 +26,11 @@ use Illuminate\Support\Collection;
 
 /**
  * Class BingoMapRepository
- *
- * @package App\Repositories
  */
 class BingoMapRepository extends BaseRepository
 {
     /**
      * BingoMapRepository constructor.
-     *
-     * @param \App\Models\BingoMap $bingoMap
      */
     public function __construct(BingoMap $bingoMap)
     {
@@ -44,10 +40,6 @@ class BingoMapRepository extends BaseRepository
 
     /**
      * Get bingo map by id and uuid.
-     *
-     * @param int $bingoId
-     * @param string $uuid
-     * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function getBingoMapByBingoIdUuid(int $bingoId, string $uuid): ?Model
     {
@@ -56,8 +48,6 @@ class BingoMapRepository extends BaseRepository
 
     /**
      * Get bingo map for cleaning.
-     *
-     * @return \Illuminate\Support\Collection
      */
     public function getBingoMapForCleaning(): Collection
     {

@@ -36,15 +36,13 @@ class GeoLocateExport extends BaseMongoModel
     protected function casts(): array
     {
         return [
-            'subject_id'           => 'integer',
+            'subject_id' => 'integer',
             'subject_expeditionId' => 'integer',
         ];
     }
 
     /**
      * Expedition relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

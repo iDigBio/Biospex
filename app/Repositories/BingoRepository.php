@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -23,19 +25,16 @@ use App\Models\Bingo;
 use App\Models\BingoWord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+
 use function collect;
 
 /**
  * Class BingoRepository
- *
- * @package App\Repositories
  */
 class BingoRepository extends BaseRepository
 {
     /**
      * BingoRepository constructor.
-     *
-     * @param \App\Models\Bingo $bingo
      */
     public function __construct(Bingo $bingo)
     {
@@ -45,9 +44,6 @@ class BingoRepository extends BaseRepository
 
     /**
      * Get bingo admin index.
-     *
-     * @param int $userId
-     * @return \Illuminate\Support\Collection
      */
     public function getAdminIndex(int $userId): Collection
     {
@@ -57,9 +53,6 @@ class BingoRepository extends BaseRepository
 
     /**
      * Created bingo.
-     *
-     * @param array $attributes
-     * @return \Illuminate\Database\Eloquent\Model
      */
     public function createBingo(array $attributes): Model
     {
@@ -68,8 +61,9 @@ class BingoRepository extends BaseRepository
         $words = collect($attributes['words'])->map(function ($word) {
             $values = [
                 'word' => $word['word'],
-                'definition' => $word['definition']
+                'definition' => $word['definition'],
             ];
+
             return new BingoWord($values);
         });
 
@@ -81,8 +75,6 @@ class BingoRepository extends BaseRepository
     /**
      * Update bingo.
      *
-     * @param array $attributes
-     * @param string $resourceId
      * @return false
      */
     public function updateBingo(array $attributes, string $resourceId)

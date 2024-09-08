@@ -22,12 +22,11 @@ namespace App\Services\Transcriptions;
 use App\Repositories\StateCountyRepository;
 use App\Repositories\TranscriptionLocationRepository;
 use GeneralHelper;
+
 use function config;
 
 /**
  * Class CreateTranscriptionLocationService
- *
- * @package App\Services\Transcriptions
  */
 class CreateTranscriptionLocationService
 {
@@ -53,31 +52,25 @@ class CreateTranscriptionLocationService
 
     /**
      * CreateTranscriptionLocationService constructor.
-     *
-     * @param \App\Repositories\TranscriptionLocationRepository $transcriptionLocationRepo
-     * @param \App\Repositories\StateCountyRepository $stateCountyRepo
      */
     public function __construct(
         TranscriptionLocationRepository $transcriptionLocationRepo,
         StateCountyRepository $stateCountyRepo
-    )
-    {
+    ) {
 
         $this->transcriptionLocationRepo = $transcriptionLocationRepo;
         $this->stateCountyRepo = $stateCountyRepo;
-        $this->dwcTranscriptFields =  config('config.dwcTranscriptFields');
+        $this->dwcTranscriptFields = config('config.dwcTranscriptFields');
         $this->dwcOccurrenceFields = config('config.dwcOccurrenceFields');
     }
 
     /**
      * Build and create transcription location.
      *
-     * @param $transcription
-     * @param $subject
+     * @param  $subject
      *
      * Transcripts: StateProvince, County
      * Subject: stateProvince, county
-     * @param $expeditionId
      */
     public function buildTranscriptionLocation($transcription, $subject, $expeditionId)
     {
@@ -111,11 +104,6 @@ class CreateTranscriptionLocationService
 
     /**
      * Check locality fields from transcription.
-     *
-     * @param $transcription
-     * @param $subject
-     * @param $data
-     * @return array
      */
     private function setDwcLocalityFields($transcription, $subject, &$data): array
     {
@@ -128,9 +116,6 @@ class CreateTranscriptionLocationService
 
     /**
      * Set the dwc locality fields using transcript.
-     *
-     * @param $transcription
-     * @param $data
      */
     private function setDwcLocalityFromTranscript($transcription, &$data)
     {
@@ -143,9 +128,6 @@ class CreateTranscriptionLocationService
 
     /**
      * Set the dwc locality fields using occurrence.
-     *
-     * @param $subject
-     * @param $data
      */
     private function setDwcLocalityFromOccurrence($subject, &$data)
     {
@@ -163,7 +145,6 @@ class CreateTranscriptionLocationService
     /**
      * Check if state and county exist.
      *
-     * @param $data
      * @return bool
      */
     private function checkRequiredStateCounty($data)
@@ -181,12 +162,10 @@ class CreateTranscriptionLocationService
 
     /**
      * Prep County for searching database.
-     *
-     * @param $data
      */
     private function prepCounty(&$data)
     {
-        $county = trim(preg_replace("/[^ \w-]/", "", $data['county']));
+        $county = trim(preg_replace("/[^ \w-]/", '', $data['county']));
         $search = ['Saint', 'Sainte', 'Miami Dade', 'De Soto', 'De Kalb', 'county', 'City', 'Not Shown'];
         $replace = ['St.', 'Ste.', 'Miami-Dade', 'DeSoto', 'DeKalb', '', '', ''];
         $county = trim(str_ireplace($search, $replace, $county));

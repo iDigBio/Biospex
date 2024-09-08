@@ -23,21 +23,15 @@ use App\Models\Import;
 
 /**
  * Class ImportRepository
- *
- * @package App\Repositories
  */
 class ImportRepository extends BaseRepository
 {
     /**
      * ImportRepository constructor.
-     *
-     * @param \App\Models\Import $import
      */
     public function __construct(Import $import)
     {
 
         $this->model = $import;
     }
-
-
 }

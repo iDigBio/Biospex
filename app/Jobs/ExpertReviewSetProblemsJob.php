@@ -33,29 +33,19 @@ use Illuminate\Queue\SerializesModels;
 
 class ExpertReviewSetProblemsJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse, ButtonTrait;
+    use Batchable, ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
-    /**
-     * @var int
-     */
     private int $expeditionId;
 
-    /**
-     * @var int
-     */
     public int $timeout = 1800;
 
     /**
      * Indicate if the job should be marked as failed on timeout.
-     *
-     * @var bool
      */
     public bool $failOnTimeout = true;
 
     /**
      * Create a new job instance.
-     *
-     * @param int $expeditionId
      */
     public function __construct(int $expeditionId)
     {
@@ -71,8 +61,7 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
     public function handle(
         ExpeditionRepository $expeditionRepo,
         ExpertReconcileService $expertReconcileService
-    )
-    {
+    ) {
         $expedition = $expeditionRepo->findExpeditionForExpertReview($this->expeditionId);
 
         try {
@@ -90,11 +79,11 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
 
             $attributes = [
                 'subject' => t('Expert Review Job Complete'),
-                'html'    => [
+                'html' => [
                     t('The Expert Review job for %s is complete and you may start reviewing the reconciled records.', $expedition->title),
-                    t('You may access the page by going to the Expedition Download modal and clicking the green button or click the button below and be taken to the page directly.')
+                    t('You may access the page by going to the Expedition Download modal and clicking the green button or click the button below and be taken to the page directly.'),
                 ],
-                'buttons' => $btn
+                'buttons' => $btn,
             ];
 
             $expedition->project->group->owner->notify(new Generic($attributes));
@@ -104,7 +93,7 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
         } catch (\Throwable $throwable) {
             $attributes = [
                 'subject' => t('Expert Review Job Error'),
-                'html'    => [
+                'html' => [
                     t('An error occurred while setting the problems for Expedition %s.', $expedition->title),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),

@@ -27,8 +27,6 @@ use App\Services\Models\InviteService;
 
 /**
  * Class InviteController
- *
- * @package App\Http\Controllers\Admin
  */
 class InviteController extends Controller
 {
@@ -49,10 +47,6 @@ class InviteController extends Controller
 
     /**
      * InviteController constructor.
-     *
-     * @param \App\Services\Models\InviteService $inviteService
-     * @param \App\Repositories\GroupRepository $groupRepo
-     * @param \App\Repositories\UserRepository $userRepo
      */
     public function __construct(
         InviteService $inviteService,
@@ -66,9 +60,6 @@ class InviteController extends Controller
 
     /**
      * Show invite form
-     *
-     * @param int $groupId
-     * @return \Illuminate\View\View
      */
     public function index(int $groupId): \Illuminate\View\View
     {
@@ -82,10 +73,6 @@ class InviteController extends Controller
 
     /**
      * Send invites to emails
-     *
-     * @param InviteFormRequest $request
-     * @param int $groupId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(InviteFormRequest $request, int $groupId): \Illuminate\Http\RedirectResponse
     {

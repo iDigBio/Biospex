@@ -25,32 +25,25 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 
 /**
  * Class AdvertiseController
- *
- * @package App\Http\Controllers\Admin
  */
 class AdvertiseController extends Controller
 {
-
     /**
      * Show advertise page.
      *
-     * @param \Illuminate\Contracts\Routing\ResponseFactory $response
-     * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
     public function index(ResponseFactory $response, ProjectRepository $projectRepo, $projectId)
     {
         $project = $projectRepo->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('readProject', $project->group))
-        {
+        if (! $this->checkPermissions('readProject', $project->group)) {
             return \Redirect::route('webauth.projects.index');
         }
 
         return $response->make(json_encode($project->advertise, JSON_UNESCAPED_SLASHES), '200', [
-            'Content-Type'        => 'application/json',
-            'Content-Disposition' => 'attachment; filename="' . $project->uuid . '.json"'
+            'Content-Type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="'.$project->uuid.'.json"',
         ]);
     }
 }

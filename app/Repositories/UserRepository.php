@@ -23,15 +23,11 @@ use App\Models\User;
 
 /**
  * Class UserRepository
- *
- * @package App\Repositories
  */
 class UserRepository extends BaseRepository
 {
     /**
      * UserRepository constructor.
-     *
-     * @param \App\Models\User $user
      */
     public function __construct(User $user)
     {
@@ -42,7 +38,6 @@ class UserRepository extends BaseRepository
     /**
      * Get users for site mailer.
      *
-     * @param string $type
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getUsersForMailer(string $type)

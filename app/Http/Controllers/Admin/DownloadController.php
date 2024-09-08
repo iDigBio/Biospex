@@ -33,26 +33,15 @@ use Illuminate\View\View;
 
 /**
  * Class DownloadController
- *
- * @package App\Http\Controllers\Admin
  */
 class DownloadController extends Controller
 {
-    /**
-     * @var \App\Repositories\UserRepository
-     */
     private UserRepository $userRepo;
 
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
     private ExpeditionRepository $expeditionRepo;
 
     /**
      * DownloadController constructor.
-     *
-     * @param \App\Repositories\UserRepository $userRepo
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
      */
     public function __construct(
         UserRepository $userRepo,
@@ -64,10 +53,6 @@ class DownloadController extends Controller
 
     /**
      * Index showing downloads for Expedition.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(int $projectId, int $expeditionId): Factory|View
     {
@@ -81,9 +66,6 @@ class DownloadController extends Controller
 
     /**
      * Download report.
-     *
-     * @param string $fileName
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function report(string $fileName): Redirector|RedirectResponse|Application
     {
@@ -96,9 +78,6 @@ class DownloadController extends Controller
      * Generate export download.
      *
      * @see \App\Console\Commands\ExportQueueCommand
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function export(int $projectId, int $expeditionId): RedirectResponse
     {
@@ -115,11 +94,6 @@ class DownloadController extends Controller
 
     /**
      * Send request to have export split into batch downloads.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @param string $downloadId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function batch(int $projectId, int $expeditionId, string $downloadId): RedirectResponse
     {
@@ -133,7 +107,6 @@ class DownloadController extends Controller
     /**
      * Download geolocate file.
      *
-     * @param string $file
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function geoLocate(string $file)

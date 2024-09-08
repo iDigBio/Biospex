@@ -34,20 +34,12 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
-    /**
-     * @var int
-     */
     private int $expeditionId;
 
-    /**
-     * @var int
-     */
     public int $timeout = 1800;
 
     /**
      * Indicate if the job should be marked as failed on timeout.
-     *
-     * @var bool
      */
     public bool $failOnTimeout = true;
 
@@ -70,8 +62,7 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
     public function handle(
         ExpeditionRepository $expeditionRepo,
         ExpertReconcileService $expertReconcileService
-    )
-    {
+    ) {
         $expedition = $expeditionRepo->findWith($this->expeditionId, ['project.group.owner']);
 
         try {
@@ -84,12 +75,12 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
         } catch (\Throwable $throwable) {
             $attributes = [
                 'subject' => t('Expert Review Migration Failed'),
-                'html'    => [
+                'html' => [
                     t('Expedition %s', $expedition->title),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),
                     t('Message: %s', $throwable->getMessage()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.')
+                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
                 ],
             ];
 

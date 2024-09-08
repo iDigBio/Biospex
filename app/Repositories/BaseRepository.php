@@ -19,25 +19,21 @@
 
 namespace App\Repositories;
 
-use MongoDB\Laravel\Eloquent\Model as MongoModel;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use MongoDB\Laravel\Eloquent\Model as MongoModel;
+
 /**
  * Class BaseRepository
  *
  * @mixin \Eloquent
- * @package App\Repositories
  */
 class BaseRepository
 {
-    /**
-     * @var \MongoDB\Laravel\Eloquent\Model|\Illuminate\Database\Eloquent\Model $model
-     */
     protected MongoModel|EloquentModel $model;
 
     /**
      * Override __get().
      *
-     * @param $key
      * @return mixed
      */
     public function __get($key)
@@ -48,7 +44,7 @@ class BaseRepository
     /**
      * Get all.
      *
-     * @param array|string[] $columns
+     * @param  array|string[]  $columns
      * @return mixed
      */
     public function all(array $columns = ['*'])
@@ -59,8 +55,7 @@ class BaseRepository
     /**
      * Get all with relations.
      *
-     * @param array $with
-     * @param array|string[] $columns
+     * @param  array|string[]  $columns
      * @return mixed
      */
     public function allWith(array $with = [], array $columns = ['*'])
@@ -71,8 +66,7 @@ class BaseRepository
     /**
      * Find by id.
      *
-     * @param $resourceId
-     * @param array|string[] $columns
+     * @param  array|string[]  $columns
      * @return mixed
      */
     public function find($resourceId, array $columns = ['*'])
@@ -83,9 +77,7 @@ class BaseRepository
     /**
      * Find by field.
      *
-     * @param $attribute
-     * @param $value
-     * @param array|string[] $columns
+     * @param  array|string[]  $columns
      * @return mixed
      */
     public function findBy($attribute, $value, array $columns = ['*'])
@@ -96,10 +88,6 @@ class BaseRepository
     /**
      * Find by field with relations.
      *
-     * @param $attribute
-     * @param $value
-     * @param array $with
-     * @param array $columns
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function findByWith($attribute, $value, array $with = [], array $columns = ['*']): \Illuminate\Database\Eloquent\Collection|array
@@ -110,10 +98,7 @@ class BaseRepository
     /**
      * Get all by attribute value.
      *
-     * @param $attribute
-     * @param $value
-     * @param string $op
-     * @param array|string[] $columns
+     * @param  array|string[]  $columns
      * @return mixed
      */
     public function getBy($attribute, $value, string $op = '=', array $columns = ['*'])
@@ -124,8 +109,6 @@ class BaseRepository
     /**
      * Find with relations.
      *
-     * @param $resourceId
-     * @param array $with
      * @return mixed
      */
     public function findWith($resourceId, array $with = [])
@@ -136,9 +119,7 @@ class BaseRepository
     /**
      * Find whereIn.
      *
-     * @param $field
-     * @param array $values
-     * @param array|string[] $columns
+     * @param  array|string[]  $columns
      * @return mixed
      */
     public function whereIn($field, array $values, array $columns = ['*'])
@@ -149,7 +130,6 @@ class BaseRepository
     /**
      * Create.
      *
-     * @param array $data
      * @return mixed
      */
     public function create(array $data)
@@ -160,8 +140,6 @@ class BaseRepository
     /**
      * First or create.
      *
-     * @param array $attributes
-     * @param array $data
      * @return mixed
      */
     public function firstOrCreate(array $attributes, array $data = [])
@@ -172,8 +150,6 @@ class BaseRepository
     /**
      * First or new returning instance.
      *
-     * @param array $attributes
-     * @param array $data
      * @return mixed
      */
     public function firstOrNew(array $attributes, array $data = [])
@@ -184,8 +160,6 @@ class BaseRepository
     /**
      * Update.
      *
-     * @param array $data
-     * @param $resourceId
      * @return false
      */
     public function update(array $data, $resourceId)
@@ -199,9 +173,6 @@ class BaseRepository
     /**
      * Update record using attribute and value.
      *
-     * @param array $data
-     * @param string $attribute
-     * @param string $value
      * @return false
      */
     public function updateBy(array $data, string $attribute, string $value)
@@ -215,8 +186,6 @@ class BaseRepository
     /**
      * Update or Create.
      *
-     * @param array $attributes
-     * @param array $values
      * @return mixed
      */
     public function updateOrCreate(array $attributes, array $values)
@@ -227,9 +196,6 @@ class BaseRepository
     /**
      * Update many.
      *
-     * @param array $attributes
-     * @param string $column
-     * @param string $value
      * @return mixed
      */
     public function updateMany(array $attributes, string $column, string $value)
@@ -240,7 +206,6 @@ class BaseRepository
     /**
      * Count.
      *
-     * @param array $attributes
      * @return mixed
      */
     public function count(array $attributes = [])
@@ -250,10 +215,6 @@ class BaseRepository
 
     /**
      * Find by id with relation count.
-     *
-     * @param int $id
-     * @param string $relation
-     * @return mixed
      */
     public function findByIdWithRelationCount(int $id, string $relation): mixed
     {
@@ -263,7 +224,6 @@ class BaseRepository
     /**
      * Truncate database table.
      *
-     * @return void
      * @throws \Exception
      */
     public function truncate(): void

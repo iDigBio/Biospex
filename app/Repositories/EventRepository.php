@@ -24,20 +24,16 @@ use App\Models\EventTeam;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+
 use function collect;
 
 /**
  * Class EventRepository
- *
- * @package App\Repositories
  */
 class EventRepository extends BaseRepository
 {
-
     /**
      * EventRepository constructor.
-     *
-     * @param \App\Models\Event $event
      */
     public function __construct(Event $event)
     {
@@ -48,10 +44,8 @@ class EventRepository extends BaseRepository
     /**
      * Get events for admin index.
      *
-     * @param \App\Models\User $user
-     * @param null $sort
-     * @param null $order
-     * @return \Illuminate\Support\Collection
+     * @param  null  $sort
+     * @param  null  $order
      */
     public function getEventAdminIndex(User $user, $sort = null, $order = null): Collection
     {
@@ -65,10 +59,9 @@ class EventRepository extends BaseRepository
     /**
      * Get events for public index.
      *
-     * @param null $sort
-     * @param null $order
-     * @param null $projectId
-     * @return \Illuminate\Support\Collection
+     * @param  null  $sort
+     * @param  null  $order
+     * @param  null  $projectId
      */
     public function getEventPublicIndex($sort = null, $order = null, $projectId = null): Collection
     {
@@ -81,7 +74,6 @@ class EventRepository extends BaseRepository
     /**
      * Get event for show page.
      *
-     * @param $eventId
      * @return mixed
      */
     public function getEventShow($eventId)
@@ -101,7 +93,6 @@ class EventRepository extends BaseRepository
     /**
      * Created event.
      *
-     * @param array $attributes
      * @return mixed
      */
     public function createEvent(array $attributes)
@@ -125,8 +116,6 @@ class EventRepository extends BaseRepository
     /**
      * Update event.
      *
-     * @param array $attributes
-     * @param $resourceId
      * @return false
      */
     public function updateEvent(array $attributes, $resourceId)
@@ -146,8 +135,7 @@ class EventRepository extends BaseRepository
     /**
      * Get event scoreboard.
      *
-     * @param $eventId
-     * @param array|string[] $columns
+     * @param  array|string[]  $columns
      * @return mixed
      */
     public function getEventScoreboard($eventId, array $columns = ['*'])
@@ -165,9 +153,6 @@ class EventRepository extends BaseRepository
 
     /**
      * Get events by project id.
-     *
-     * @param $projectId
-     * @return \Illuminate\Support\Collection
      */
     public function getEventsByProjectId($projectId): Collection
     {
@@ -180,19 +165,14 @@ class EventRepository extends BaseRepository
 
     /**
      * Get any ongoing events for user using project id and dates.
-     *
-     * @param int $projectId
-     * @param int $userId
-     * @param string $date
-     * @return \Illuminate\Database\Eloquent\Collection|array
      */
     public function getAnyEventsForUserByProjectIdAndDate(int $projectId, int $userId, string $date): \Illuminate\Database\Eloquent\Collection|array
     {
-        $callback = function ($q) use($userId){
+        $callback = function ($q) use ($userId) {
             $q->where('user_id', $userId);
         };
 
-        return $this->model->with(['teams' => function($q) use($callback) {
+        return $this->model->with(['teams' => function ($q) use ($callback) {
             $q->whereHas('users', $callback);
             $q->with(['users' => $callback]);
         }])
@@ -203,9 +183,6 @@ class EventRepository extends BaseRepository
 
     /**
      * Handle team create, update, delete.
-     *
-     * @param $team
-     * @param $event
      */
     protected function handleTeam($team, $event)
     {
@@ -231,11 +208,6 @@ class EventRepository extends BaseRepository
 
     /**
      * Sort results for index pages.
-     *
-     * @param $order
-     * @param $results
-     * @param $sort
-     * @return \Illuminate\Support\Collection
      */
     protected function sortResults($order, $results, $sort): Collection
     {

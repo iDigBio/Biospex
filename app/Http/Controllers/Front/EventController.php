@@ -28,16 +28,11 @@ use App\Repositories\EventUserRepository;
 
 /**
  * Class EventController
- *
- * @package App\Http\Controllers\Front
  */
 class EventController extends Controller
 {
     /**
      * Displays Events on public page.
-     *
-     * @param \App\Repositories\EventRepository $eventRepo
-     * @return \Illuminate\Contracts\View\View
      */
     public function index(EventRepository $eventRepo): \Illuminate\Contracts\View\View
     {
@@ -53,9 +48,6 @@ class EventController extends Controller
 
     /**
      * Displays Completed Events on public page.
-     *
-     * @param \App\Repositories\EventRepository $eventRepo
-     * @return \Illuminate\Contracts\View\View|null
      */
     public function sort(EventRepository $eventRepo): ?\Illuminate\Contracts\View\View
     {
@@ -80,10 +72,6 @@ class EventController extends Controller
 
     /**
      * Display the show page for an event.
-     *
-     * @param \App\Repositories\EventRepository $eventRepo
-     * @param $eventId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function read(EventRepository $eventRepo, $eventId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
@@ -101,9 +89,6 @@ class EventController extends Controller
     /**
      * Group join page for events.
      *
-     * @param \App\Repositories\EventTeamRepository $eventTeamRepo
-     * @param $uuid
-     * @return \Illuminate\Contracts\View\View
      * @throws \Exception
      */
     public function signup(EventTeamRepository $eventTeamRepo, $uuid): \Illuminate\Contracts\View\View
@@ -122,10 +107,6 @@ class EventController extends Controller
     /**
      * Store user for event group.
      *
-     * @param \App\Repositories\EventUserRepository $eventUserRepo
-     * @param \App\Repositories\EventTeamRepository $eventTeamRepo
-     * @param \App\Http\Requests\EventJoinRequest $request
-     * @param $uuid
      * @return \Illuminate\Http\RedirectResponse
      */
     public function join(

@@ -27,22 +27,15 @@ use App\Repositories\ImportRepository;
 use App\Repositories\ProjectRepository;
 use Auth;
 use Exception;
-use Flash;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 
 /**
  * Class ImportController
- *
- * @package App\Http\Controllers\Admin
  */
 class ImportController extends Controller
 {
     /**
      * Add data to project
      *
-     * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param $projectId
      * @return \Illuminate\View\View
      */
     public function index(ProjectRepository $projectRepo, $projectId)
@@ -55,7 +48,6 @@ class ImportController extends Controller
     /**
      * Upload DWC file.
      *
-     * @param \App\Repositories\ImportRepository $importRepo
      * @return \Illuminate\Http\RedirectResponse
      */
     public function dwcFile(ImportRepository $importRepo)
@@ -65,9 +57,9 @@ class ImportController extends Controller
             $path = \Request::file('dwc-file')->store(config('config.import_dir'), 'efs');
 
             $import = $importRepo->create([
-                'user_id'    => Auth::user()->id,
+                'user_id' => Auth::user()->id,
                 'project_id' => $projectId,
-                'file'       => $path
+                'file' => $path,
             ]);
 
             DwcFileImportJob::dispatch($import);
@@ -75,9 +67,7 @@ class ImportController extends Controller
             \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
 
             return back();
-        }
-        catch(\Throwable $throwable)
-        {
+        } catch (\Throwable $throwable) {
             \Flash::error(t('Error uploading file. %', $throwable->getMessage()));
 
             return back();
@@ -91,14 +81,13 @@ class ImportController extends Controller
      */
     public function recordSet()
     {
-        try
-        {
+        try {
             $projectId = \Request::input('project_id');
 
             $data = [
-                'id'         => \Request::input('recordset'),
-                'user_id'    => Auth::user()->id,
-                'project_id' => $projectId
+                'id' => \Request::input('recordset'),
+                'user_id' => Auth::user()->id,
+                'project_id' => $projectId,
             ];
 
             RecordsetImportJob::dispatch($data);
@@ -106,9 +95,7 @@ class ImportController extends Controller
             \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
 
             return back();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             \Flash::error(t('Error uploading file'));
 
             return back();
@@ -122,14 +109,13 @@ class ImportController extends Controller
      */
     public function dwcUri()
     {
-        try
-        {
+        try {
             $projectId = \Request::input('project_id');
 
             $data = [
-                'id'      => $projectId,
+                'id' => $projectId,
                 'user_id' => Auth::user()->id,
-                'url'     => \Request::input('dwc-url')
+                'url' => \Request::input('dwc-url'),
             ];
 
             DwcUriImportJob::dispatch($data);
@@ -137,9 +123,7 @@ class ImportController extends Controller
             \Flash::success(t('Upload was successful. You will receive an email when your import data have been processed.'));
 
             return back();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             \Flash::error(t('Error uploading file'));
 
             return back();

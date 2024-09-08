@@ -25,17 +25,11 @@ use App\Repositories\PanoptesTranscriptionRepository;
 
 /**
  * Class HomeController
- *
- * @package App\Http\Controllers\Front
  */
 class HomeController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-     * @return \Illuminate\Contracts\View\View
      */
     public function index(ExpeditionRepository $expeditionRepo, PanoptesTranscriptionRepository $panoptesTranscriptionRepo): \Illuminate\Contracts\View\View
     {
@@ -49,22 +43,24 @@ class HomeController extends Controller
     /**
      * Get tmp images for fossil project.
      * TODO remove after project 115 completed.
-     * @param string $name
+     *
      * @return \Illuminate\Http\Response|void
+     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function tmpimage(string $name)
     {
         $exists = \Storage::disk('public')->exists('tmpimage/'.$name);
 
-        if($exists) {
+        if ($exists) {
             //get content of image
             $content = \Storage::get('public/tmpimage/'.$name);
 
             //get mime type of image
             $mime = \Storage::mimeType('public/tmpimage/'.$name);      //prepare response with image content and response code
             $response = \Response::make($content, 200);      //set header
-            $response->header("Content-Type", $mime);      // return response
+            $response->header('Content-Type', $mime);      // return response
+
             return $response;
         } else {
             abort(404);

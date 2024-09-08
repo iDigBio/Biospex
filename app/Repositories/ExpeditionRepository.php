@@ -24,15 +24,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Class ExpeditionRepository
- *
- * @package App\Repositories
  */
 class ExpeditionRepository extends BaseRepository
 {
     /**
      * ExpeditionRepository constructor.
-     *
-     * @param \App\Models\Expedition $expedition
      */
     public function __construct(Expedition $expedition)
     {
@@ -42,8 +38,6 @@ class ExpeditionRepository extends BaseRepository
 
     /**
      * Get expeditions for Zooniverse processing.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getExpeditionsForZooniverseProcess(): \Illuminate\Database\Eloquent\Collection
     {
@@ -58,9 +52,6 @@ class ExpeditionRepository extends BaseRepository
 
     /**
      * Get expedition download by actor.
-     *
-     * @param $expeditionId
-     * @return \Illuminate\Database\Eloquent\Model
      */
     public function expeditionDownloadsByActor($expeditionId): \Illuminate\Database\Eloquent\Model
     {
@@ -75,10 +66,6 @@ class ExpeditionRepository extends BaseRepository
     /**
      * Get expeditions for admin index.
      *
-     * @param $userId
-     * @param $sort
-     * @param $order
-     * @param $projectId
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getExpeditionAdminIndex($userId = null, $sort = null, $order = null, $projectId = null): \Illuminate\Database\Eloquent\Collection|array
@@ -88,7 +75,7 @@ class ExpeditionRepository extends BaseRepository
             'stat',
             'panoptesProject',
             'workflowManager',
-            'zooniverseExport'
+            'zooniverseExport',
         ])->whereHas('project.group.users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         });
@@ -98,8 +85,6 @@ class ExpeditionRepository extends BaseRepository
 
     /**
      * Get expedition for home page visuals.
-     *
-     * @return \Illuminate\Database\Eloquent\Model
      */
     public function getHomePageProjectExpedition(): \Illuminate\Database\Eloquent\Model
     {
@@ -119,9 +104,6 @@ class ExpeditionRepository extends BaseRepository
 
     /**
      * Find expedition having workflow manager by id.
-     *
-     * @param $expeditionId
-     * @return \Illuminate\Database\Eloquent\Model
      */
     public function findExpeditionHavingWorkflowManager($expeditionId): \Illuminate\Database\Eloquent\Model
     {
@@ -131,10 +113,9 @@ class ExpeditionRepository extends BaseRepository
     /**
      * Get expeditions for public index.
      *
-     * @param null $sort
-     * @param null $order
-     * @param null $projectId
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @param  null  $sort
+     * @param  null  $order
+     * @param  null  $projectId
      */
     public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null): \Illuminate\Database\Eloquent\Collection
     {
@@ -145,10 +126,8 @@ class ExpeditionRepository extends BaseRepository
 
     /**
      * Find expedition for expert review.
-     * @see ExpertReviewSetProblemsJob
      *
-     * @param int $expeditionId
-     * @return \Illuminate\Database\Eloquent\Model
+     * @see ExpertReviewSetProblemsJob
      */
     public function findExpeditionForExpertReview(int $expeditionId): \Illuminate\Database\Eloquent\Model
     {
@@ -166,10 +145,8 @@ class ExpeditionRepository extends BaseRepository
 
     /**
      * Get expedition for Zooniverse process.
-     * @see ZooniverseCsvService::getExpedition()
      *
-     * @param int $expeditionId
-     * @return \Illuminate\Database\Eloquent\Model
+     * @see ZooniverseCsvService::getExpedition()
      */
     public function getExpeditionForZooniverseProcess(int $expeditionId): \Illuminate\Database\Eloquent\Model
     {
@@ -181,12 +158,6 @@ class ExpeditionRepository extends BaseRepository
 
     /**
      * Sort results for expedition indexes.
-     *
-     * @param $projectId
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param $order
-     * @param $sort
-     * @return \Illuminate\Database\Eloquent\Collection
      */
     protected function sortResults($projectId, Builder $query, $order, $sort): \Illuminate\Database\Eloquent\Collection
     {

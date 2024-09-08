@@ -19,20 +19,15 @@
 
 namespace App\Repositories;
 
-
 use App\Models\GeoLocateDataSource;
 
 /**
  * Class ActorRepository
- *
- * @package App\Repositories
  */
 class GeoLocateDataSourceRepository extends BaseRepository
 {
     /**
      * GeoLocateForm construct.
-     *
-     * @param \App\Models\GeoLocateDataSource $geoLocateDataSource
      */
     public function __construct(GeoLocateDataSource $geoLocateDataSource)
     {

@@ -25,8 +25,6 @@ use Illuminate\Console\Command;
 
 /**
  * Class AmChartUpdate
- *
- * @package App\Console\Commands
  */
 class AmChartUpdate extends Command
 {
@@ -44,20 +42,14 @@ class AmChartUpdate extends Command
      */
     protected $description = 'Update AmChart data for projects.';
 
-    /**
-     * @var \App\Repositories\AmChartRepository
-     */
     private AmChartRepository $amChartRepo;
 
     /**
      * AmChartNew constructor.
-     *
-     * @param \App\Repositories\AmChartRepository $amChartRepo
      */
     public function __construct(
         AmChartRepository $amChartRepo
-    )
-    {
+    ) {
         parent::__construct();
 
         $this->amChartRepo = $amChartRepo;
@@ -71,7 +63,7 @@ class AmChartUpdate extends Command
         $projectIds = empty($this->argument('projectIds')) ?
             $this->amChartRepo->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
 
-        $projectIds->each(function($projectId) {
+        $projectIds->each(function ($projectId) {
             AmChartJob::dispatch((int) $projectId);
         });
     }

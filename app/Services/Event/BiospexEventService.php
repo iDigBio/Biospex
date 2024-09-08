@@ -25,32 +25,17 @@ use App\Services\Transcriptions\CreateBiospexEventTranscriptionService;
 
 /**
  * Class BiospexEventService
- *
- * @package App\Services\Process
  */
 class BiospexEventService
 {
-    /**
-     * @var \App\Services\Transcriptions\CreateBiospexEventTranscriptionService
-     */
     private CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService;
 
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
     private ExpeditionRepository $expeditionRepo;
 
-    /**
-     * @var \App\Services\Api\PanoptesApiService
-     */
     private PanoptesApiService $apiService;
 
     /**
      * BiospexEventService constructor.
-     *
-     * @param \App\Services\Transcriptions\CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Services\Api\PanoptesApiService $apiService
      */
     public function __construct(
         CreateBiospexEventTranscriptionService $createBiospexEventTranscriptionService,
@@ -66,10 +51,7 @@ class BiospexEventService
     /**
      * Adds transcription to event for particular user.
      *
-     * @param array $data
-     * @param int $expeditionId
      * @see \App\Jobs\PanoptesPusherJob
-     *
      */
     public function process(array $data, int $expeditionId)
     {

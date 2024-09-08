@@ -23,15 +23,11 @@ use App\Models\Update;
 
 /**
  * Class NoticeRepository
- *
- * @package App\Repositories
  */
 class UpdateRepository extends BaseRepository
 {
     /**
      * NoticeRepository constructor.
-     *
-     * @param \App\Models\Update $update
      */
     public function __construct(Update $update)
     {

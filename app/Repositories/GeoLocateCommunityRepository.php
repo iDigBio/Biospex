@@ -23,15 +23,11 @@ use App\Models\GeoLocateCommunity;
 
 /**
  * Class ActorRepository
- *
- * @package App\Repositories
  */
 class GeoLocateCommunityRepository extends BaseRepository
 {
     /**
      * Construct.
-     *
-     * @param \App\Models\GeoLocateCommunity $geoLocateCommunity
      */
     public function __construct(GeoLocateCommunity $geoLocateCommunity)
     {

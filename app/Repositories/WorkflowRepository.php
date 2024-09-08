@@ -23,15 +23,11 @@ use App\Models\Workflow;
 
 /**
  * Class WorkflowRepository
- *
- * @package App\Repositories
  */
 class WorkflowRepository extends BaseRepository
 {
     /**
      * WorkflowRepository constructor.
-     *
-     * @param \App\Models\Workflow $workflow
      */
     public function __construct(Workflow $workflow)
     {
@@ -41,12 +37,10 @@ class WorkflowRepository extends BaseRepository
 
     /**
      * Get workflow select.
-     *
-     * @return array
      */
     public function getWorkflowSelect(): array
     {
-        return $this->model->where('enabled', '=',1)
+        return $this->model->where('enabled', '=', 1)
             ->orderBy('id', 'asc')
             ->pluck('title', 'id')
             ->toArray();

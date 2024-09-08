@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -25,30 +27,20 @@ use App\Repositories\EventRepository;
 use App\Repositories\EventTranscriptionRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+
 use function collect;
 
 /**
  * Class BiospexEventRateChartProcess
- *
- * @package App\Services\Process
  */
 class BiospexEventRateChartProcess
 {
-    /**
-     * @var \App\Repositories\EventRepository
-     */
     private EventRepository $eventRepo;
 
-    /**
-     * @var \App\Repositories\EventTranscriptionRepository
-     */
     private EventTranscriptionRepository $eventTranscriptionRepo;
 
     /**
      * AjaxService constructor.
-     *
-     * @param \App\Repositories\EventRepository $eventRepo
-     * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
      */
     public function __construct(
         EventRepository $eventRepo,
@@ -60,12 +52,8 @@ class BiospexEventRateChartProcess
 
     /**
      * Get event transcription data for step chart.
-     *
-     * @param string $eventId
-     * @param string|null $timestamp
-     * @return array
      */
-    public function eventStepChart(string $eventId, string $timestamp = null): ?array
+    public function eventStepChart(string $eventId, ?string $timestamp = null): ?array
     {
         $event = $this->eventRepo->findWith($eventId, ['teams']);
         if ($event === null) {
@@ -87,10 +75,6 @@ class BiospexEventRateChartProcess
 
     /**
      * Process an empty result set as this means it's very beginning.
-     *
-     * @param \App\Models\Event $event
-     * @param \Illuminate\Support\Collection $intervals
-     * @return array
      */
     public function processEmptyResult(Event $event, Collection $intervals): array
     {
@@ -113,9 +97,6 @@ class BiospexEventRateChartProcess
     /**
      * Process query data for results.
      *
-     * @param \App\Models\Event $event
-     * @param \Illuminate\Support\Collection $transcriptions
-     * @param \Illuminate\Support\Collection $intervals
      * @return array
      */
     protected function processTranscriptionResult(
@@ -135,10 +116,6 @@ class BiospexEventRateChartProcess
     /**
      * Map teams and data using keys.
      * Count is per hour (count * 12) for each 5 minutes.
-     *
-     * @param \Illuminate\Support\Collection $transcriptions
-     * @param \App\Models\Event $event
-     * @return \Illuminate\Support\Collection
      */
     protected function mapWithDateKeys(Collection $transcriptions, Event $event): Collection
     {
@@ -153,10 +130,6 @@ class BiospexEventRateChartProcess
 
     /**
      * Merge mapped and intervals.
-     *
-     * @param \Illuminate\Support\Collection $mapped
-     * @param \Illuminate\Support\Collection $intervals
-     * @return \Illuminate\Support\Collection
      */
     protected function mergeIntervals(Collection $mapped, Collection $intervals): Collection
     {
@@ -167,17 +140,13 @@ class BiospexEventRateChartProcess
 
     /**
      * Add missing team counts. Set to 0.
-     *
-     * @param \App\Models\Event $event
-     * @param \Illuminate\Support\Collection $merged
-     * @return \Illuminate\Support\Collection
      */
     protected function addMissingTeamCount(Event $event, Collection $merged): Collection
     {
         $teams = collect($event->teams->pluck('title'));
 
         return $merged->transform(function ($collection, $key) use ($teams) {
-            $teams->each(function ($team) use (&$collection, $key) {
+            $teams->each(function ($team) use (&$collection) {
                 if (! isset($collection[$team])) {
                     $collection[$team] = 0;
                 }
@@ -189,9 +158,6 @@ class BiospexEventRateChartProcess
 
     /**
      * Set the date in the array and keys to numeric.
-     *
-     * @param \Illuminate\Support\Collection $transformed
-     * @return array
      */
     protected function setDateInArray(Collection $transformed): array
     {
@@ -205,11 +171,9 @@ class BiospexEventRateChartProcess
     /**
      * Get the load time given.
      *
-     * @param \App\Models\Event $event
-     * @param string|null $timestamp
      * @return \Illuminate\Support\Carbon
      */
-    protected function getLoadTime(Event $event, string $timestamp = null): \Carbon\Carbon
+    protected function getLoadTime(Event $event, ?string $timestamp = null): \Carbon\Carbon
     {
         return $timestamp === null ?
             $event->start_date :
@@ -218,13 +182,8 @@ class BiospexEventRateChartProcess
 
     /**
      * Get end load time. If event is over, it will display all points from beginning to end.
-     *
-     * @param \App\Models\Event $event
-     * @param \Illuminate\Support\Carbon $loadTime
-     * @param string|null $timestamp
-     * @return \Illuminate\Support\Carbon
      */
-    protected function getEndLoad(Event $event, Carbon $loadTime, string $timestamp = null): Carbon
+    protected function getEndLoad(Event $event, Carbon $loadTime, ?string $timestamp = null): Carbon
     {
         if (DateHelper::eventAfter($event)) {
             return $event->end_date;
@@ -236,13 +195,8 @@ class BiospexEventRateChartProcess
 
     /**
      * Get 5 minute time intervals.
-     *
-     * @param \Illuminate\Support\Carbon $startLoad
-     * @param \Illuminate\Support\Carbon $endLoad
-     * @param string|null $timestamp
-     * @return \Illuminate\Support\Collection
      */
-    protected function setTimeIntervals(Carbon $startLoad, Carbon $endLoad, string $timestamp = null): Collection
+    protected function setTimeIntervals(Carbon $startLoad, Carbon $endLoad, ?string $timestamp = null): Collection
     {
         $start = $startLoad->copy();
         $end = $endLoad->copy();

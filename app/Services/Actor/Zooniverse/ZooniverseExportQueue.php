@@ -31,33 +31,16 @@ use Illuminate\Support\Facades\Storage;
 
 class ZooniverseExportQueue
 {
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
     private ExpeditionRepository $expeditionRepository;
 
-    /**
-     * @var \App\Repositories\DownloadRepository
-     */
     private DownloadRepository $downloadRepository;
 
-    /**
-     * @var \App\Repositories\ExportQueueRepository
-     */
     private ExportQueueRepository $exportQueueRepository;
 
-    /**
-     * @var \App\Services\Actor\ActorDirectory
-     */
     private ActorDirectory $actorDirectory;
 
     /**
      * ExportQueueCommand constructor.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
-     * @param \App\Repositories\DownloadRepository $downloadRepository
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      */
     public function __construct(
         ExpeditionRepository $expeditionRepository,
@@ -93,9 +76,6 @@ class ZooniverseExportQueue
 
     /**
      * Get export queue for stage command.
-     *
-     * @param int $queueId
-     * @return \App\Models\ExportQueue
      */
     public function getExportQueueForStageCommand(int $queueId): ExportQueue
     {
@@ -104,23 +84,20 @@ class ZooniverseExportQueue
 
     /**
      * Handles resetting Expedition attributes from command line.
-     *
-     * @param int $expeditionId
-     * @return void
      */
     public function resetExpeditionExport(int $expeditionId): void
     {
         $expedition = $this->getExpedition($expeditionId);
 
-        if (!is_null($expedition->exportQueue)) $expedition->exportQueue->delete();
+        if (! is_null($expedition->exportQueue)) {
+            $expedition->exportQueue->delete();
+        }
 
         $this->resetExpeditionData($expedition);
     }
 
     /**
      * Reset data for expedition when regenerating export.
-     *
-     * @param \App\Models\Expedition $expedition
      */
     public function resetExpeditionData(Expedition $expedition): void
     {
@@ -143,8 +120,6 @@ class ZooniverseExportQueue
 
     /**
      * Delete existing exports files for expedition.
-     *
-     * @param string $expeditionId
      */
     public function deleteExportFiles(string $expeditionId): void
     {
@@ -165,9 +140,6 @@ class ZooniverseExportQueue
 
     /**
      * Get expedition with zooniverseActor and stat.
-     *
-     * @param int $expeditionId
-     * @return \App\Models\Expedition
      */
     private function getExpedition(int $expeditionId): Expedition
     {

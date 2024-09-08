@@ -23,15 +23,11 @@ use App\Models\AmChart;
 
 /**
  * Class AmChartRepository
- *
- * @package App\Repositories
  */
 class AmChartRepository extends BaseRepository
 {
     /**
      * AmChartRepository constructor.
-     *
-     * @param \App\Models\AmChart $amChart
      */
     public function __construct(AmChart $amChart)
     {

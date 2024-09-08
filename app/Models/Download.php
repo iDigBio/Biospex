@@ -25,20 +25,18 @@ use App\Presenters\DownloadPresenter;
 
 /**
  * Class Download
- *
- * @package App\Models
  */
 class Download extends BaseEloquentModel
 {
-    use UuidTrait, Presentable;
+    use Presentable, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'downloads';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'uuid',
@@ -46,7 +44,7 @@ class Download extends BaseEloquentModel
         'actor_id',
         'file',
         'type',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -56,7 +54,7 @@ class Download extends BaseEloquentModel
 
     /**
      * Expedition relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition()
@@ -66,7 +64,7 @@ class Download extends BaseEloquentModel
 
     /**
      * Actor relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function actor()

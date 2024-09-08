@@ -30,7 +30,6 @@ class WeDigBioEventTranscriptionFactory extends Factory
         $fVal = mt_rand($fMin, $fMax);
         $dateTime = Carbon::parse($fVal, 'UTC');
 
-
         return [
             'classification_id' => fake()->randomNumber(6, true),
             'project_id' => $projectIds->random(),

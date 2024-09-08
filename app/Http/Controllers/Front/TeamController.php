@@ -24,12 +24,9 @@ use App\Repositories\TeamCategoryRepository;
 
 /**
  * Class TeamController
- *
- * @package App\Http\Controllers\Front
  */
 class TeamController extends Controller
 {
-
     /**
      * @var \App\Repositories\TeamCategoryRepository
      */
@@ -37,8 +34,6 @@ class TeamController extends Controller
 
     /**
      * TeamController constructor.
-     * 
-     * @param \App\Repositories\TeamCategoryRepository $teamCategoryRepo
      */
     public function __construct(TeamCategoryRepository $teamCategoryRepo)
     {
@@ -47,7 +42,7 @@ class TeamController extends Controller
 
     /**
      * Show categories.
-     * 
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()

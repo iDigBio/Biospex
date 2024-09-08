@@ -34,27 +34,17 @@ use Throwable;
 
 /**
  * Class ZooniverseClassificationCountJob
- *
- * @package App\Jobs
  */
 class ZooniverseClassificationCountJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
-    /**
-     * @var int
-     */
     private int $expeditionId;
 
-    /**
-     * @var \App\Models\Actor|null
-     */
     private ?Actor $actor;
 
     /**
      * Create a new job instance.
-     *
-     * @param int $expeditionId
      */
     public function __construct(int $expeditionId)
     {
@@ -65,8 +55,6 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @return void
      */
     public function handle(
@@ -104,9 +92,6 @@ class ZooniverseClassificationCountJob implements ShouldQueue
 
     /**
      * Check if workflow id exists.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return bool
      */
     protected function workflowIdDoesNotExist(Expedition $expedition): bool
     {
@@ -119,12 +104,8 @@ class ZooniverseClassificationCountJob implements ShouldQueue
 
     /**
      * Check if finished_at date and set percentage.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @param string|null $finishedAt
-     * @return void
      */
-    protected function checkFinishedAt(Expedition $expedition, string $finishedAt = null): void
+    protected function checkFinishedAt(Expedition $expedition, ?string $finishedAt = null): void
     {
         if ($finishedAt === null) {
             return;
@@ -132,6 +113,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
 
         /**
          * State === 3 means Zooniverse actor completed.
+         *
          * @see \App\Services\Actor\Zooniverse\Zooniverse::actor()
          */
         $attributes = [
@@ -142,9 +124,9 @@ class ZooniverseClassificationCountJob implements ShouldQueue
 
         $attributes = [
             'subject' => t('Zooniverse Transcriptions Completed'),
-            'html'    => [
-                t('The Zooniverse digitization process for "%s" has been completed.', $expedition->title)
-            ]
+            'html' => [
+                t('The Zooniverse digitization process for "%s" has been completed.', $expedition->title),
+            ],
         ];
 
         $expedition->project->group->owner->notify(new Generic($attributes));
@@ -163,17 +145,16 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $throwable
      * @return void
      */
     public function failed(Throwable $throwable)
     {
         $attributes = [
             'subject' => t('Zooniverse Classification Count Job Failed'),
-            'html'    => [
+            'html' => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage())
+                t('Message: %s', $throwable->getMessage()),
             ],
         ];
 

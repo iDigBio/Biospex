@@ -27,32 +27,17 @@ use App\Repositories\SubjectRepository;
 
 /**
  * Class ZooniverseBuildQueue
- *
- * @package App\Services\Actor
  */
 class ZooniverseBuildQueue
 {
-    /**
-     * @var \App\Repositories\ExportQueueRepository
-     */
     private ExportQueueRepository $exportQueueRepository;
 
-    /**
-     * @var \App\Repositories\ExportQueueFileRepository
-     */
     private ExportQueueFileRepository $exportQueueFileRepository;
 
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
     private SubjectRepository $subjectRepository;
 
     /**
      * Construct.
-     *
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
-     * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
-     * @param \App\Repositories\SubjectRepository $subjectRepository
      */
     public function __construct(
         ExportQueueRepository $exportQueueRepository,
@@ -67,7 +52,6 @@ class ZooniverseBuildQueue
     /**
      * Process actor.
      *
-     * @param \App\Models\Actor $actor
      * @throws \Exception
      */
     public function process(Actor $actor): void
@@ -78,9 +62,6 @@ class ZooniverseBuildQueue
 
     /**
      * Build queue files table.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @return void
      */
     public function buildFiles(ExportQueue $exportQueue): void
     {

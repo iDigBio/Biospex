@@ -23,15 +23,11 @@ use App\Models\PusherClassification;
 
 /**
  * Class PusherClassificationRepository
- *
- * @package App\Repositories
  */
 class PusherClassificationRepository extends BaseRepository
 {
     /**
      * PusherClassificationRepository constructor.
-     *
-     * @param \App\Models\PusherClassification $pusher_classification
      */
     public function __construct(PusherClassification $pusher_classification)
     {

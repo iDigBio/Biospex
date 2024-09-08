@@ -23,15 +23,11 @@ use App\Models\TeamCategory;
 
 /**
  * Class TeamCategoryRepository
- *
- * @package App\Repositories
  */
 class TeamCategoryRepository extends BaseRepository
 {
     /**
      * TeamCategoryRepository constructor.
-     *
-     * @param \App\Models\TeamCategory $teamCategory
      */
     public function __construct(TeamCategory $teamCategory)
     {

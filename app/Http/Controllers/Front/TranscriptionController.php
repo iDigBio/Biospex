@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -26,18 +28,12 @@ use File;
 
 /**
  * Class TranscriptionController
- *
- * @package App\Http\Controllers\Front
  */
 class TranscriptionController extends Controller
 {
     /**
      * Return json data for transcription charts.
      *
-     * @param \App\Repositories\AmChartRepository $amChartRepo
-     * @param int $projectId
-     * @param string $year
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function transcriptions(AmChartRepository $amChartRepo, int $projectId, string $year): \Illuminate\Http\JsonResponse
@@ -54,9 +50,6 @@ class TranscriptionController extends Controller
     /**
      * State counties for project map.
      *
-     * @param $projectId
-     * @param $stateId
-     * @param \App\Repositories\StateCountyRepository $stateCountyRepo
      * @return array|\Illuminate\Http\JsonResponse
      */
     public function state($projectId, $stateId, StateCountyRepository $stateCountyRepo)
@@ -67,14 +60,14 @@ class TranscriptionController extends Controller
 
         $counties = $stateCountyRepo->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
             return [
-                'id'    => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
+                'id' => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
                 'value' => $item->transcription_locations_count,
-                'name'  => $item->state_county,
+                'name' => $item->state_county,
             ];
         });
 
         return [
-            'max'      => abs(round(($counties->max('value') + 500), -3)),
+            'max' => abs(round(($counties->max('value') + 500), -3)),
             'counties' => $counties->toJson(),
         ];
     }

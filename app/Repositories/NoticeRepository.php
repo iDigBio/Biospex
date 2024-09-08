@@ -23,15 +23,11 @@ use App\Models\Notice;
 
 /**
  * Class NoticeRepository
- *
- * @package App\Repositories
  */
 class NoticeRepository extends BaseRepository
 {
     /**
      * NoticeRepository constructor.
-     *
-     * @param \App\Models\Notice $notice
      */
     public function __construct(Notice $notice)
     {

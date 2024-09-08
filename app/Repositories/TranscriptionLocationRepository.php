@@ -23,21 +23,15 @@ use App\Models\TranscriptionLocation;
 
 /**
  * Class TranscriptionLocationRepository
- *
- * @package App\Repositories
  */
 class TranscriptionLocationRepository extends BaseRepository
 {
     /**
      * TranscriptionLocationRepository constructor.
-     *
-     * @param \App\Models\TranscriptionLocation $transcriptionLocation
      */
     public function __construct(TranscriptionLocation $transcriptionLocation)
     {
 
         $this->model = $transcriptionLocation;
     }
-
-
 }

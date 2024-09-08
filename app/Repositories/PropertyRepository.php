@@ -23,22 +23,15 @@ use App\Models\Property;
 
 /**
  * Class PropertyRepository
- *
- * @package App\Repositories
  */
 class PropertyRepository extends BaseRepository
 {
-
     /**
      * PropertyRepository constructor.
-     *
-     * @param \App\Models\Property $property
      */
     public function __construct(Property $property)
     {
 
         $this->model = $property;
     }
-
-
 }

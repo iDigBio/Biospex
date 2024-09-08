@@ -24,8 +24,6 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
  * Class ExportQueueFile
- *
- * @package App\Models
  */
 class ExportQueueFile extends BaseEloquentModel
 {
@@ -42,7 +40,7 @@ class ExportQueueFile extends BaseEloquentModel
     protected $table = 'export_queue_files';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'queue_id',
@@ -50,7 +48,7 @@ class ExportQueueFile extends BaseEloquentModel
         'access_uri',
         'message',
         'processed',
-        'tries'
+        'tries',
     ];
 
     /**
@@ -65,6 +63,7 @@ class ExportQueueFile extends BaseEloquentModel
 
     /**
      * Subject relation
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function subject()
@@ -74,13 +73,11 @@ class ExportQueueFile extends BaseEloquentModel
 
     /**
      * Define the message attribute.
-     *
-     * @return Attribute
      */
     protected function message(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => $value === '' ? NULL : $value,
+            set: fn ($value) => $value === '' ? null : $value,
         );
     }
 }

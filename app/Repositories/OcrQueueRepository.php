@@ -26,15 +26,11 @@ use Illuminate\Support\Collection;
 
 /**
  * Class OcrQueueRepository
- *
- * @package App\Repositories
  */
 class OcrQueueRepository extends BaseRepository
 {
     /**
      * OcrQueueRepository constructor.
-     *
-     * @param \App\Models\OcrQueue $ocrQueue
      */
     public function __construct(OcrQueue $ocrQueue)
     {
@@ -44,8 +40,6 @@ class OcrQueueRepository extends BaseRepository
 
     /**
      * Get ocr queue for poll command.
-     *
-     * @return \Illuminate\Support\Collection
      */
     public function getOcrQueuesForPollCommand(): Collection
     {
@@ -58,9 +52,6 @@ class OcrQueueRepository extends BaseRepository
 
     /**
      * Get ocr queue for process command.
-     *
-     * @param bool $reset
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null
      */
     public function getFirstQueue(bool $reset = false): Model|Builder|null
     {

@@ -23,15 +23,11 @@ use App\Models\ExpeditionStat;
 
 /**
  * Class ExpeditionStatRepository
- *
- * @package App\Repositories
  */
 class ExpeditionStatRepository extends BaseRepository
 {
     /**
      * ExpeditionStatRepository constructor.
-     *
-     * @param \App\Models\ExpeditionStat $expeditionStat
      */
     public function __construct(ExpeditionStat $expeditionStat)
     {

@@ -33,28 +33,17 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Class DeleteExpeditionJob
- *
- * @package App\Jobs
  */
 class DeleteExpeditionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * @var \App\Models\User
-     */
     private User $user;
 
-    /**
-     * @var \App\Models\Expedition
-     */
     private Expedition $expedition;
 
     /**
      * Create a new job instance.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Expedition $expedition
      */
     public function __construct(User $user, Expedition $expedition)
     {
@@ -65,10 +54,6 @@ class DeleteExpeditionJob implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Services\MongoDbService $mongoDbService
-     * @return void
      */
     public function handle(
         SubjectRepository $subjectRepo,
@@ -97,9 +82,9 @@ class DeleteExpeditionJob implements ShouldQueue
 
         $attributes = [
             'subject' => t('Records Deleted'),
-            'html'    => [
-                t('Expedition `%s` and all corresponding records have been deleted.', $this->expedition->title)
-            ]
+            'html' => [
+                t('Expedition `%s` and all corresponding records have been deleted.', $this->expedition->title),
+            ],
         ];
 
         $this->user->notify(new Generic($attributes));
@@ -107,15 +92,12 @@ class DeleteExpeditionJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
     public function failed(\Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Delete Expedition Job Failed'),
-            'html'    => [
+            'html' => [
                 t('Error: Could not delete Expedition %s', $this->expedition->title),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),

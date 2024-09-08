@@ -24,8 +24,6 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * Class CountHelper
- *
- * @package App\Services\Helpers
  */
 class CountHelper
 {
@@ -36,8 +34,6 @@ class CountHelper
 
     /**
      * CountHelper constructor.
-     *
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      */
     public function __construct(PanoptesTranscriptionRepository $panoptesTranscriptionRepo)
     {
@@ -48,7 +44,7 @@ class CountHelper
      * Return project transcription count.
      *
      * @TODO Change to get project total from expedition_stat
-     * @param int $projectId
+     *
      * @return mixed
      */
     public function projectTranscriptionCount(int $projectId)
@@ -59,7 +55,6 @@ class CountHelper
     /**
      * Return expedition transcription count.
      *
-     * @param int $expeditionId
      * @return mixed
      */
     public function expeditionTranscriptionCount(int $expeditionId)
@@ -70,7 +65,6 @@ class CountHelper
     /**
      * Return unique transcriber count for project.
      *
-     * @param int $projectId
      * @return mixed
      */
     public function projectTranscriberCount(int $projectId)
@@ -81,7 +75,6 @@ class CountHelper
     /**
      * Return user transcription count for stats.
      *
-     * @param int $projectId
      * @return mixed
      */
     public function getTranscribersTranscriptionCount(int $projectId)
@@ -92,9 +85,8 @@ class CountHelper
     /**
      * Return transcriptions per transcribers
      *
-     * @param int $projectId
-     * @param $transcribers
      * @return mixed
+     *
      * @static
      */
     public function getTranscriptionsPerTranscribers(int $projectId, $transcribers)
@@ -112,8 +104,6 @@ class CountHelper
     /**
      * Return transcription count per transcriber
      *
-     * @param int $projectId
-     * @param string $transcriber
      * @return mixed
      */
     public function getTranscriptionCountForTranscriber(int $projectId, string $transcriber)

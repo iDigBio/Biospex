@@ -23,15 +23,11 @@ use App\Models\FaqCategory;
 
 /**
  * Class FaqCategoryRepository
- *
- * @package App\Repositories
  */
 class FaqCategoryRepository extends BaseRepository
 {
     /**
      * FaqCategoryRepository constructor.
-     *
-     * @param \App\Models\FaqCategory $faqCategory
      */
     public function __construct(FaqCategory $faqCategory)
     {

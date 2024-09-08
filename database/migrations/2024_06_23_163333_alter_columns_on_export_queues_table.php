@@ -17,7 +17,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('export_queues', function(Blueprint $table) {
+        Schema::table('export_queues', function (Blueprint $table) {
             $table->dropColumn('processed');
             $table->renameColumn('count', 'total');
         });
@@ -28,7 +28,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('export_queues', function(Blueprint $table) {
+        Schema::table('export_queues', function (Blueprint $table) {
             $table->tinyInteger('processed')->default(0)->after('total');
             $table->renameColumn('total', 'count');
             $table->renameColumn('access_uri', 'url');

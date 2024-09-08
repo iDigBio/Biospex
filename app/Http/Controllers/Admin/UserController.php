@@ -29,13 +29,11 @@ use Illuminate\Support\Facades\Hash;
 
 /**
  * Class UserController
- *
- * @package App\Http\Controllers\Admin
  */
 class UserController extends Controller
 {
     use ResetsPasswords;
-    
+
     /**
      * @var \App\Repositories\UserRepository
      */
@@ -43,8 +41,6 @@ class UserController extends Controller
 
     /**
      * UserController constructor.
-     *
-     * @param \App\Repositories\UserRepository $userRepo
      */
     public function __construct(UserRepository $userRepo)
     {
@@ -62,7 +58,6 @@ class UserController extends Controller
     /**
      * Redirect to edit page.
      *
-     * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function show($userId)
@@ -73,16 +68,14 @@ class UserController extends Controller
     /**
      * Show the form for user edit.
      *
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
     public function edit(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $user = $this->userRepo->findWith(\Request::user()->id, ['profile']);
 
-        if ($user->cannot('update', $user))
-        {
-            \Flash::warning( t('You do not have sufficient permissions.'));
+        if ($user->cannot('update', $user)) {
+            \Flash::warning(t('You do not have sufficient permissions.'));
 
             return \Redirect::route('admin.projects.index');
         }
@@ -95,17 +88,15 @@ class UserController extends Controller
 
     /**
      * Update the specified resource in storage
-     * @param EditUserFormRequest $request
-     * @param $userId
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(EditUserFormRequest $request, $userId)
     {
         $user = $this->userRepo->findWith($userId, ['profile']);
 
-        if ($user->cannot('update', $user))
-        {
-            \Flash::warning( t('You do not have sufficient permissions.'));
+        if ($user->cannot('update', $user)) {
+            \Flash::warning(t('You do not have sufficient permissions.'));
 
             return \Redirect::route('admin.projects.index');
         }
@@ -117,12 +108,9 @@ class UserController extends Controller
         $user->profile->fill($request->all());
         $user->profile()->save($user->profile);
 
-        if ($result)
-        {
+        if ($result) {
             \Flash::success(t('Record was updated successfully.'));
-        }
-        else
-        {
+        } else {
             \Flash::error(t('Error while updating record.'));
         }
 
@@ -132,22 +120,19 @@ class UserController extends Controller
     /**
      * Process a password change request.
      *
-     * @param PasswordFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function pass(PasswordFormRequest $request)
     {
         $user = $this->userRepo->find($request->route('id'));
 
-        if ( ! policy($user)->pass($user))
-        {
-            \Flash::warning( t('You do not have sufficient permissions.'));
+        if (! policy($user)->pass($user)) {
+            \Flash::warning(t('You do not have sufficient permissions.'));
 
             return \Redirect::route('admin.projects.index');
         }
 
-        if ( ! Hash::check($request->input('oldPassword'), $user->password))
-        {
+        if (! Hash::check($request->input('oldPassword'), $user->password)) {
             \Flash::error(t('You did not provide the correct original password.'));
 
             return \Redirect::route('admin.users.edit', [$user->id]);

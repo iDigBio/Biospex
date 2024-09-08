@@ -29,32 +29,17 @@ use Validator;
 
 /**
  * Class CreateBiospexEventTranscriptionService
- *
- * @package App\Services\Transcriptions
  */
 class CreateBiospexEventTranscriptionService
 {
-    /**
-     * @var \App\Repositories\EventRepository
-     */
     private EventRepository $eventRepo;
 
-    /**
-     * @var \App\Repositories\EventTranscriptionRepository
-     */
     private EventTranscriptionRepository $eventTranscriptionRepo;
 
-    /**
-     * @var \App\Repositories\EventUserRepository
-     */
     private EventUserRepository $eventUserRepo;
 
     /**
      * CreateBiospexEventTranscriptionService constructor.
-     *
-     * @param \App\Repositories\EventRepository $eventRepo
-     * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
-     * @param \App\Repositories\EventUserRepository $eventUserRepo
      */
     public function __construct(
         EventRepository $eventRepo,
@@ -68,17 +53,12 @@ class CreateBiospexEventTranscriptionService
 
     /**
      * Create event transcription for user.
-     *
-     * @param int $classification_id
-     * @param int $projectId
-     * @param string $userName
-     * @param \Illuminate\Support\Carbon|null $date
      */
     public function createEventTranscription(
         int $classification_id,
         int $projectId,
         string $userName,
-        Carbon $date = null
+        ?Carbon $date = null
     ): void {
         $user = $this->eventUserRepo->findBy('nfn_user', $userName, ['id']);
 
@@ -94,9 +74,9 @@ class CreateBiospexEventTranscriptionService
             $event->teams->each(function ($team) use ($event, $classification_id, $user, $timestamp) {
                 $attributes = [
                     'classification_id' => $classification_id,
-                    'event_id'          => $event->id,
-                    'team_id'           => $team->id,
-                    'user_id'           => $user->id,
+                    'event_id' => $event->id,
+                    'team_id' => $team->id,
+                    'user_id' => $user->id,
                 ];
 
                 if ($this->validateClassification($attributes)) {
@@ -109,16 +89,13 @@ class CreateBiospexEventTranscriptionService
             });
         });
 
-        if ($events->isNotEmpty() && !isset($date)) {
+        if ($events->isNotEmpty() && ! isset($date)) {
             ScoreboardJob::dispatch($projectId);
         }
     }
 
     /**
      * Validate classification.
-     *
-     * @param array $attributes
-     * @return bool
      */
     private function validateClassification(array $attributes): bool
     {

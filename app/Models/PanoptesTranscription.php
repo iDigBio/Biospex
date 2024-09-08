@@ -21,8 +21,6 @@ namespace App\Models;
 
 /**
  * Class PanoptesTranscription
- *
- * @package App\Models
  */
 class PanoptesTranscription extends BaseMongoModel
 {
@@ -39,13 +37,13 @@ class PanoptesTranscription extends BaseMongoModel
     protected function casts(): array
     {
         return [
-            'subject_id'                 => 'integer',
-            'classification_id'          => 'integer',
-            'workflow_id'                => 'integer',
-            'subject_expeditionId'       => 'integer',
-            'subject_projectId'          => 'integer',
-            'transcription_id'           => 'string',
-            'classification_started_at'  => 'datetime',
+            'subject_id' => 'integer',
+            'classification_id' => 'integer',
+            'workflow_id' => 'integer',
+            'subject_expeditionId' => 'integer',
+            'subject_projectId' => 'integer',
+            'transcription_id' => 'string',
+            'classification_started_at' => 'datetime',
             'classification_finished_at' => 'datetime',
         ];
     }

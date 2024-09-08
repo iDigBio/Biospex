@@ -24,8 +24,6 @@ use Carbon\Carbon;
 
 /**
  * Class PusherTranscriptionRepository
- *
- * @package App\Repositories
  */
 class PusherTranscriptionRepository extends BaseRepository
 {
@@ -36,8 +34,6 @@ class PusherTranscriptionRepository extends BaseRepository
 
     /**
      * PusherTranscriptionRepository constructor.
-     *
-     * @param \App\Models\PusherTranscription $pusherTranscription
      */
     public function __construct(PusherTranscription $pusherTranscription)
     {
@@ -58,8 +54,6 @@ class PusherTranscriptionRepository extends BaseRepository
     /**
      * Get dashboard items.
      *
-     * @param int $limit
-     * @param int $offset
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getWeDigBioDashboardItems(int $limit, int $offset)
@@ -69,15 +63,13 @@ class PusherTranscriptionRepository extends BaseRepository
 
     /**
      * Set query for dashboard.
-     *
-     * @param array $request
      */
     public function setQueryForDashboard(array $request)
     {
         $timestampStart = $this->setTimestampStart($request);
         $timestampEnd = $this->setTimestampEnd($request);
 
-        $this->dashboardQuery = $this->model->where(function($query) use($timestampStart, $timestampEnd){
+        $this->dashboardQuery = $this->model->where(function ($query) use ($timestampStart, $timestampEnd) {
             $query->where('timestamp', '<=', $timestampStart);
             isset($date_end) ? $query->where('timestamp', '>=', $timestampEnd) : null;
         });
@@ -85,19 +77,12 @@ class PusherTranscriptionRepository extends BaseRepository
 
     /**
      * Set the date_start with default to now.
-     *
-     * @param array $request
-     * @return \Carbon\Carbon
      */
     private function setTimestampStart(array $request): Carbon
     {
         return isset($request['timestampStart']) ? Carbon::parse($request['timestampStart'], 'UTC') : Carbon::now('UTC');
     }
 
-    /**
-     * @param array $request
-     * @return \Carbon\Carbon|null
-     */
     private function setTimestampEnd(array $request): ?Carbon
     {
         return isset($request['timestampEnd']) ? Carbon::parse($request['timestampEnd'], 'UTC') : null;

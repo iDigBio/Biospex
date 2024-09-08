@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('export_queue_files', function(Blueprint $table) {
+        Schema::table('export_queue_files', function (Blueprint $table) {
             $table->dropColumn('completed');
             $table->tinyInteger('tries')->default(0)->after('error_message');
             $table->boolean('processed')->default(false)->after('error_message');
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('export_queue_files', function(Blueprint $table) {
+        Schema::table('export_queue_files', function (Blueprint $table) {
             $table->tinyInteger('completed')->default(0)->after('message');
             $table->renameColumn('access_uri', 'url');
             $table->renameColumn('message', 'error_message');

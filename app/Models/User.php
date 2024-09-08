@@ -20,37 +20,35 @@
 namespace App\Models;
 
 use App\Models\Traits\HasGroup;
+use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\UserPresenter;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Traits\Presentable;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 use Laravel\Sanctum\HasApiTokens;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class User
- *
- * @package App\Models
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasGroup, UuidTrait, Notifiable, Presentable, LadaCacheTrait, HasApiTokens;
+    use HasApiTokens, HasGroup, LadaCacheTrait, Notifiable, Presentable, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'users';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'uuid',
         'email',
         'password',
-        'notification'
+        'notification',
     ];
 
     /**
@@ -61,12 +59,12 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime'
+            'email_verified_at' => 'datetime',
         ];
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $hidden = ['password', 'remember_token'];
 

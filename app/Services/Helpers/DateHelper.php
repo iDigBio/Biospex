@@ -19,25 +19,20 @@
 
 namespace App\Services\Helpers;
 
-use Illuminate\Support\Carbon;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Carbon;
 
 /**
  * Class DateHelper
- *
- * @package App\Services\Helpers
  */
 class DateHelper
 {
-
     /**
      * Format date using timezone and format.
      *
-     * @param $date
-     * @param null $format
-     * @param null $tz
-     * @return \Illuminate\Support\Carbon|string
+     * @param  null  $format
+     * @param  null  $tz
      */
     public function formatDate($date, $format = null, $tz = null): Carbon|string
     {
@@ -45,7 +40,7 @@ class DateHelper
             return Carbon::now();
         }
 
-        if (!$date instanceof Carbon) {
+        if (! $date instanceof Carbon) {
             return Carbon::parse($date, $tz)->format($format);
         }
 
@@ -56,6 +51,7 @@ class DateHelper
      * Return timezone array for select box.
      *
      * @return array
+     *
      * @throws \Exception
      */
     public function timeZoneSelect()
@@ -83,23 +79,16 @@ class DateHelper
 
     /**
      * Return timezone title for event rate chart.
-     *
-     * @param $timezone
-     * @return string
      */
     public function eventRateChartTimezone($timezone): string
     {
-        return str_replace('_', ' ', $timezone) . ' Timezone';
+        return str_replace('_', ' ', $timezone).' Timezone';
     }
 
     /**
      * Check event is before start date.
-     *
-     * @param $event
-     * @param string|null $tz
-     * @return bool
      */
-    public function eventBefore($event, string $tz = null): bool
+    public function eventBefore($event, ?string $tz = null): bool
     {
         $timezone = $tz === null ? $event->timezone : 'UTC';
         $start_date = $event->start_date->setTimezone($timezone);
@@ -110,12 +99,8 @@ class DateHelper
 
     /**
      * Check event in progress.
-     *
-     * @param $event
-     * @param string|null $tz
-     * @return bool
      */
-    public function eventActive($event, string $tz = null): bool
+    public function eventActive($event, ?string $tz = null): bool
     {
         $timezone = $tz === null ? $event->timezone : 'UTC';
         $start_date = $event->start_date->setTimezone($timezone);
@@ -127,12 +112,8 @@ class DateHelper
 
     /**
      * Check if event is over.
-     *
-     * @param $event
-     * @param string|null $tz
-     * @return bool
      */
-    public function eventAfter($event, string $tz = null): bool
+    public function eventAfter($event, ?string $tz = null): bool
     {
         $timezone = $tz === null ? $event->timezone : 'UTC';
         $end_date = $event->end_date->setTimezone($timezone);

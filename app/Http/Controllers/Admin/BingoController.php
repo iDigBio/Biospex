@@ -23,19 +23,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BingoFormRequest;
 use App\Repositories\BingoRepository;
 use App\Repositories\ProjectRepository;
-use Flash;
 use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BingoController
- *
- * @package App\Http\Controllers\Admin
  */
 class BingoController extends Controller
 {
-    /**
-     * @var \App\Repositories\BingoRepository
-     */
     private BingoRepository $bingoRepo;
 
     /**
@@ -45,9 +39,6 @@ class BingoController extends Controller
 
     /**
      * BingoController constructor.
-     *
-     * @param \App\Repositories\BingoRepository $bingoRepo
-     * @param \App\Repositories\ProjectRepository $projectRepo
      */
     public function __construct(BingoRepository $bingoRepo, ProjectRepository $projectRepo)
     {
@@ -82,7 +73,6 @@ class BingoController extends Controller
     /**
      * Store bingo.
      *
-     * @param \App\Http\Requests\BingoFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(BingoFormRequest $request)
@@ -103,15 +93,13 @@ class BingoController extends Controller
     /**
      * Bingo show.
      *
-     * @param string $bingoId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show(string $bingoId)
     {
         $bingo = $this->bingoRepo->findWith($bingoId, ['words']);
 
-        if ( ! $this->checkPermissions('read', $bingo))
-        {
+        if (! $this->checkPermissions('read', $bingo)) {
             return \Redirect::route('admin.bingos.index');
         }
 
@@ -121,7 +109,6 @@ class BingoController extends Controller
     /**
      * Edit bingo.
      *
-     * @param string $bingoId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(string $bingoId)
@@ -135,16 +122,13 @@ class BingoController extends Controller
     /**
      * Update bingo.
      *
-     * @param \App\Http\Requests\BingoFormRequest $request
-     * @param string $bingoId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(BingoFormRequest $request, string $bingoId)
     {
         $bingo = $this->bingoRepo->findWith($bingoId, ['words']);
 
-        if ( ! $this->checkPermissions('update', $bingo))
-        {
+        if (! $this->checkPermissions('update', $bingo)) {
             return \Redirect::route('admin.bingos.index');
         }
 
@@ -164,22 +148,19 @@ class BingoController extends Controller
     /**
      * Delete bingo.
      *
-     * @param string $bingoId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function delete(string $bingoId)
     {
         $bingo = $this->bingoRepo->find($bingoId);
 
-        if ( ! $this->checkPermissions('delete', $bingo))
-        {
+        if (! $this->checkPermissions('delete', $bingo)) {
             return \Redirect::route('admin.bingos.index');
         }
 
         $result = $bingo->delete();
 
-        if ($result)
-        {
+        if ($result) {
             \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
             return \Redirect::route('admin.bingos.index');

@@ -24,15 +24,11 @@ use App\Models\ProjectResource;
 
 /**
  * Class ProjectRepository
- *
- * @package App\Repositories
  */
 class ProjectRepository extends BaseRepository
 {
     /**
      * ProjectRepository constructor.
-     *
-     * @param \App\Models\Project $project
      */
     public function __construct(Project $project)
     {
@@ -43,7 +39,6 @@ class ProjectRepository extends BaseRepository
     /**
      * Override create in base repository.
      *
-     * @param array $data
      * @return \App\Models\Project|\Illuminate\Database\Eloquent\Model|true
      */
     public function create(array $data): \Illuminate\Database\Eloquent\Model|bool|Project
@@ -69,8 +64,7 @@ class ProjectRepository extends BaseRepository
      * Override project update.
      *
      * TODO move resource code
-     * @param array $data
-     * @param $resourceId
+     *
      * @return bool|iterable
      */
     public function update(array $data, $resourceId)
@@ -117,9 +111,8 @@ class ProjectRepository extends BaseRepository
     /**
      * Get projects for admin index page.
      *
-     * @param $userId
-     * @param null $sort
-     * @param null $order
+     * @param  null  $sort
+     * @param  null  $order
      * @return mixed
      */
     public function getAdminProjectIndex($userId, $sort = null, $order = null)
@@ -142,8 +135,8 @@ class ProjectRepository extends BaseRepository
     /**
      * Get public project index page.
      *
-     * @param null $sort
-     * @param null $order
+     * @param  null  $sort
+     * @param  null  $order
      * @return mixed
      */
     public function getPublicProjectIndex($sort = null, $order = null)
@@ -156,25 +149,21 @@ class ProjectRepository extends BaseRepository
 
     /**
      * Get project for show page.
-     *
-     * @param $projectId
-     * @return \App\Models\Project|null
      */
     public function getProjectShow($projectId): ?Project
     {
         return $this->model->withCount('expeditions')->with([
             'group',
             'ocrQueue',
-            'expeditions' => function($q) {
+            'expeditions' => function ($q) {
                 $q->with(['stat', 'zooniverseExport', 'panoptesProject', 'workflowManager']);
-            }
+            },
         ])->find($projectId);
     }
 
     /**
      * Get project page by slug.
      *
-     * @param $slug
      * @return \App\Models\Project|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
     public function getProjectPageBySlug($slug)
@@ -185,7 +174,7 @@ class ProjectRepository extends BaseRepository
             'resources',
             'lastPanoptesProject',
             'bingos',
-            'expeditions' => function($query){
+            'expeditions' => function ($query) {
                 $query->has('panoptesProject')->has('zooniverseActor')->with('panoptesProject', 'stat', 'zooniverseActor');
             },
             'events' => function ($q) {
@@ -197,7 +186,6 @@ class ProjectRepository extends BaseRepository
     /**
      * Get project for deletion.
      *
-     * @param $projectId
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder[]
      */
     public function getProjectForDelete($projectId): \Illuminate\Database\Eloquent\Builder|array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
@@ -213,7 +201,6 @@ class ProjectRepository extends BaseRepository
     /**
      * Filter or delete resource.
      *
-     * @param $resource
      * @return bool
      */
     public function filterOrDeleteResources($resource)
@@ -234,7 +221,6 @@ class ProjectRepository extends BaseRepository
     /**
      * Update project resource.
      *
-     * @param $resource
      * @return bool
      */
     public function updateProjectResource($resource)
@@ -255,9 +241,6 @@ class ProjectRepository extends BaseRepository
     /**
      * Sort results from index pages.
      *
-     * @param $order
-     * @param $results
-     * @param $sort
      * @return mixed
      */
     protected function sortResults($order, $results, $sort)
@@ -288,7 +271,6 @@ class ProjectRepository extends BaseRepository
     /**
      * Get project for amChart.
      *
-     * @param $projectId
      * @return mixed
      */
     public function getProjectForAmChartJob($projectId)
@@ -302,14 +284,10 @@ class ProjectRepository extends BaseRepository
         ])->find($projectId);
     }
 
-    /**
-     * @param $projectId
-     * @return mixed
-     */
     public function getProjectForDarwinImportJob($projectId): mixed
     {
-        return $this->model->with(['group' => function($q){
-            $q->with(['owner', 'users' => function($q){
+        return $this->model->with(['group' => function ($q) {
+            $q->with(['owner', 'users' => function ($q) {
                 $q->where('notification', 1);
             }]);
         }])->find($projectId);

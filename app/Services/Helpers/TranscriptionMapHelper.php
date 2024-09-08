@@ -24,26 +24,15 @@ use App\Models\PusherTranscription;
 
 /**
  * Class TranscriptionMapHelper
- *
- * @package App\Services\Helpers
  */
 class TranscriptionMapHelper
 {
-    /**
-     * @var array
-     */
     private array $reservedEncoded;
 
-    /**
-     * @var array
-     */
     private array $mappedTranscriptionFields;
 
     /**
      * TranscriptionMapHelper construct
-     *
-     * @param array $reservedEncoded
-     * @param array $mappedTranscriptionFields
      */
     public function __construct(array $reservedEncoded, array $mappedTranscriptionFields)
     {
@@ -54,15 +43,12 @@ class TranscriptionMapHelper
     /**
      * Map transcription fields that are varied in database.
      *
-     * @param string $type
-     * @param \App\Models\PanoptesTranscription $panoptesTranscription
-     * @param \App\Models\PusherTranscription|null $pusherTranscription
      * @return mixed|string
      */
     public function mapTranscriptionField(
         string $type,
         PanoptesTranscription $panoptesTranscription,
-        PusherTranscription $pusherTranscription = null
+        ?PusherTranscription $pusherTranscription = null
     ): mixed {
         foreach ($this->mappedTranscriptionFields[$type] as $value) {
             $encodedValue = $this->decodeTranscriptionField($value);
@@ -80,9 +66,6 @@ class TranscriptionMapHelper
 
     /**
      * Encode transcription an reconcile fields.
-     *
-     * @param string $field
-     * @return string
      */
     public function encodeTranscriptionField(string $field): string
     {
@@ -95,9 +78,6 @@ class TranscriptionMapHelper
 
     /**
      * Base encode string.
-     *
-     * @param string $bin
-     * @return string
      */
     public function base64UrlEncode(string $bin): string
     {
@@ -106,9 +86,6 @@ class TranscriptionMapHelper
 
     /**
      * Decode transcription an reconcile fields.
-     *
-     * @param string $field
-     * @return string
      */
     public function decodeTranscriptionField(string $field): string
     {
@@ -121,9 +98,6 @@ class TranscriptionMapHelper
 
     /**
      * Base decode string.
-     *
-     * @param string $str
-     * @return string
      */
     public function base64UrlDecode(string $str): string
     {

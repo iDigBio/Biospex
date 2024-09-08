@@ -19,17 +19,12 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Repositories\WeDigBioEventDateRepository;
 
 class WeDigBioController extends Controller
 {
-
-    public function __construct()
-    {
-        
-    }
+    public function __construct() {}
 
     /**
      * Index page.

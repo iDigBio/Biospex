@@ -25,13 +25,10 @@ use App\Repositories\ProjectRepository;
 use App\Repositories\StateCountyRepository;
 use App\Services\Chart\TranscriptionChartService;
 use CountHelper;
-use Flash;
 use JavaScript;
 
 /**
  * Class ProjectController
- *
- * @package App\Http\Controllers\Front
  */
 class ProjectController extends Controller
 {
@@ -42,8 +39,6 @@ class ProjectController extends Controller
 
     /**
      * ProjectController constructor.
-     *
-     * @param \App\Repositories\ProjectRepository $projectRepo
      */
     public function __construct(ProjectRepository $projectRepo)
     {
@@ -84,9 +79,6 @@ class ProjectController extends Controller
     /**
      * Show public project page.
      *
-     * @param \App\Services\Chart\TranscriptionChartService $chartService
-     * @param \App\Repositories\StateCountyRepository $stateCountyRepo
-     * @param $slug
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function project(
@@ -122,16 +114,16 @@ class ProjectController extends Controller
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
         $transcribersCount = CountHelper::projectTranscriberCount($project->id);
 
-        $years = !isset($project->amChart) || is_null($project->amChart->data) ?
+        $years = ! isset($project->amChart) || is_null($project->amChart->data) ?
             null : array_keys($project->amChart->data);
 
         $states = $stateCountyRepo->getStateTranscriptCount($project->id);
         $max = abs(round(($states->max('value') + 500), -3));
 
         JavaScript::put([
-            'max'     => $max,
-            'states'  => $states->toJson(),
-            'years'   => $years,
+            'max' => $max,
+            'states' => $states->toJson(),
+            'years' => $years,
             'project' => $project->id,
         ]);
 

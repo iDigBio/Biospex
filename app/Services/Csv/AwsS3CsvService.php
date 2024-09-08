@@ -23,14 +23,8 @@ use App\Services\Api\AwsS3ApiService;
 
 class AwsS3CsvService
 {
-    /**
-     * @var \App\Services\Api\AwsS3ApiService
-     */
     public AwsS3ApiService $awsS3ApiService;
 
-    /**
-     * @var \App\Services\Csv\Csv
-     */
     public Csv $csv;
 
     /**
@@ -39,8 +33,6 @@ class AwsS3CsvService
     private $stream;
 
     /**
-     * @param \App\Services\Api\AwsS3ApiService $awsS3ApiService
-     * @param \App\Services\Csv\Csv $csv
      * @return void
      */
     public function __construct(AwsS3ApiService $awsS3ApiService, Csv $csv)
@@ -51,11 +43,6 @@ class AwsS3CsvService
 
     /**
      * Create bucket stream.
-     *
-     * @param string $bucket
-     * @param string $path
-     * @param string $mode
-     * @return void
      */
     public function createBucketStream(string $bucket, string $path, string $mode): void
     {
@@ -64,8 +51,6 @@ class AwsS3CsvService
 
     /**
      * Close bucket stream.
-     *
-     * @return bool
      */
     public function closeBucketStream(): bool
     {
@@ -74,8 +59,6 @@ class AwsS3CsvService
 
     /**
      * Create csv write from s3 bucket stream.
-     *
-     * @return void
      */
     public function createCsvWriterFromStream(): void
     {
@@ -84,8 +67,6 @@ class AwsS3CsvService
 
     /**
      * Create csv read from s3 bucket stream.
-     *
-     * @return void
      */
     public function createCsvReaderFromStream(): void
     {
@@ -94,9 +75,6 @@ class AwsS3CsvService
 
     /**
      * Get csv row count.
-     *
-     * @param string $dir
-     * @return int
      */
     public function getCsvRowCount(string $dir): int
     {

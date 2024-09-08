@@ -25,24 +25,22 @@ use App\Presenters\EventTeamPresenter;
 
 /**
  * Class EventTeam
- *
- * @package App\Models
  */
 class EventTeam extends BaseEloquentModel
 {
-    use UuidTrait, Presentable;
+    use Presentable, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'event_teams';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'title',
-        'users'
+        'users',
     ];
 
     /**
