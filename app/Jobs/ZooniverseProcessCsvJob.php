@@ -69,7 +69,7 @@ class ZooniverseProcessCsvJob implements ShouldQueue
                 throw new \Exception(t('Zooniverse csv creation for Expedition Id %s exceeded number of tries.', $this->expeditionId));
             }
 
-            $this->release(1800);
+            $this->release(7200);
 
             return;
         }

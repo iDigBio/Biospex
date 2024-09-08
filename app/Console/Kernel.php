@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
-    protected $commands = [
+    protected $commands = [//
     ];
 
     /**
@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
 
         if ($this->app->environment('production')) {
             // Trigger workflow manager to handle csv creation and updating expedition/project
-            $schedule->command('workflow:manage')->at('05:00')->before(function () {
+            $schedule->command('workflow:manage')->days([0, 2, 4])->before(function () {
                 Cache::flush();
                 Artisan::call('lada-cache:flush');
             });
