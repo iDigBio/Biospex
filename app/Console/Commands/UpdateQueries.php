@@ -191,7 +191,7 @@ class UpdateQueries extends Command
         $expeditions = \App\Models\Expedition::get(['id', 'uuid']);
         Schema::table('groups', function (Blueprint $table) {
             DB::statement('ALTER TABLE `expeditions` DROP COLUMN `uuid`;');
-            DB::statement('ALTER TABLE `expeditions` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `groups_uuid_index` (`uuid`);');
+            DB::statement('ALTER TABLE `expeditions` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `expeditions_uuid_index` (`uuid`);');
         });
         $expeditions->each(function ($expedition) {
             $record = \App\Models\Expedition::find($expedition->id);
