@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('downloads', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->uuid('uuid')->nullable();
+            $table->uuid('uuid')->index();
             $table->unsignedBigInteger('expedition_id')->index('downloads_expedition_id_foreign');
             $table->unsignedBigInteger('actor_id')->index('downloads_actor_id_foreign');
             $table->string('file', 255)->nullable();

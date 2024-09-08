@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bingo_maps', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('bingo_id')->index('bingo_maps_bingo_id_foreign');
-            $table->uuid('uuid');
+            $table->uuid('uuid')->index();
             $table->string('ip', 30);
             $table->double('latitude');
             $table->double('longitude');

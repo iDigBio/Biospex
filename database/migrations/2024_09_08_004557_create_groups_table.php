@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('groups', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->uuid('uuid')->nullable();
+            $table->uuid('uuid')->index();
             $table->unsignedBigInteger('user_id')->index('groups_user_id_foreign');
             $table->string('title', 255)->nullable()->unique('groups_name_unique');
             $table->timestamp('created_at')->nullable()->useCurrent();

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('expeditions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->uuid('uuid')->nullable();
+            $table->uuid('uuid')->index();
             $table->unsignedBigInteger('project_id')->index('expeditions_project_id_foreign');
             $table->string('title', 255)->nullable();
             $table->text('description')->nullable();
