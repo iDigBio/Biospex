@@ -22,24 +22,22 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Presenters\PanoptesProjectPresenter;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class PanoptesProject
- *
- * @package App\Models
  */
 class PanoptesProject extends BaseEloquentModel
 {
-
-    use Presentable;
+    use HasFactory, Presentable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'panoptes_projects';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'project_id',
@@ -48,14 +46,13 @@ class PanoptesProject extends BaseEloquentModel
         'panoptes_workflow_id',
         'subject_sets',
         'slug',
-        'title'
+        'title',
     ];
 
     /**
      * @var string
      */
     protected $presenter = PanoptesProjectPresenter::class;
-
 
     /**
      * Project relationship.
@@ -80,8 +77,8 @@ class PanoptesProject extends BaseEloquentModel
     protected function subjectSets(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => json_decode($value),
-            set: fn($value) => json_encode($value)
+            get: fn ($value) => json_decode($value),
+            set: fn ($value) => json_encode($value)
         );
     }
 }

@@ -19,21 +19,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class Property
- *
- * @package App\Models
  */
 class Property extends BaseEloquentModel
 {
+    use HasFactory;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'properties';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = ['short'];
 }

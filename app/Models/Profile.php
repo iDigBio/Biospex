@@ -22,13 +22,14 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Profile
  */
 class Profile extends BaseEloquentModel implements AttachableInterface
 {
-    use PaperclipTrait, Presentable;
+    use HasFactory, PaperclipTrait, Presentable;
 
     /**
      * {@inheritDoc}

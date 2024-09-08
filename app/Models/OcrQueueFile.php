@@ -19,33 +19,33 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class OcrQueue
- *
- * @package App\Models
  */
 class OcrQueueFile extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'ocr_queue_files';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'queue_id',
         'subject_id',
         'access_uri',
         'processed',
-        'tries'
+        'tries',
     ];
 
     /**
      * Queue relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function ocrQueue(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

@@ -24,13 +24,14 @@ use App\Models\Traits\UuidTrait;
 use App\Presenters\EventPresenter;
 use DateTimeZone;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Event
  */
 class Event extends BaseEloquentModel
 {
-    use Presentable, UuidTrait;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}

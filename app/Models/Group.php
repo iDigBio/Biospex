@@ -22,13 +22,14 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\GroupPresenter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Group
  */
 class Group extends BaseEloquentModel
 {
-    use Presentable, UuidTrait;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}

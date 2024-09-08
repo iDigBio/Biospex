@@ -19,11 +19,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class EventUser
  */
 class EventUser extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
      * {@inheritDoc}
      */

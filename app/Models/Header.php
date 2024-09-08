@@ -20,30 +20,31 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Header
- *
- * @package App\Models
  */
 class Header extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'headers';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'project_id',
-        'header'
+        'header',
     ];
 
     /**
      * Project relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()
@@ -53,14 +54,12 @@ class Header extends BaseEloquentModel
 
     /**
      * Define the header attribute.
-     *
-     * @return Attribute
      */
     protected function header(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => unserialize($value),
-            set: fn($value) => serialize($value)
+            get: fn ($value) => unserialize($value),
+            set: fn ($value) => serialize($value)
         );
     }
 }

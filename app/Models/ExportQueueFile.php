@@ -20,6 +20,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
@@ -27,7 +28,7 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
  */
 class ExportQueueFile extends BaseEloquentModel
 {
-    use HybridRelations;
+    use HasFactory, HybridRelations;
 
     /**
      * @ineritDoc

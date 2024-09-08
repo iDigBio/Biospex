@@ -19,6 +19,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
 /**
@@ -26,7 +27,7 @@ use Illuminate\Notifications\Notifiable;
  */
 class Invite extends BaseEloquentModel
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * {@inheritDoc}

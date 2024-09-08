@@ -24,6 +24,7 @@ use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
@@ -31,7 +32,7 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
  */
 class Expedition extends BaseEloquentModel implements AttachableInterface
 {
-    use HybridRelations, PaperclipTrait, Presentable, UuidTrait;
+    use HasFactory, HybridRelations, PaperclipTrait, Presentable, UuidTrait;
 
     protected $table = 'expeditions';
 

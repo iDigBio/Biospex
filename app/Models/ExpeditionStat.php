@@ -19,11 +19,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class ExpeditionStat
  */
 class ExpeditionStat extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
      * {@inheritDoc}
      */

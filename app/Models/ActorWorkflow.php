@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\Concerns\AsPivot;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -12,7 +13,7 @@ use Spatie\EloquentSortable\SortableTrait;
  */
 class ActorWorkflow extends BaseEloquentModel implements Sortable
 {
-    use AsPivot, SortableTrait;
+    use AsPivot, HasFactory, SortableTrait;
 
     /**
      * @var string
@@ -39,9 +40,6 @@ class ActorWorkflow extends BaseEloquentModel implements Sortable
      */
     public $timestamps = false;
 
-    /**
-     * @var array
-     */
     public array $sortable = [
         'order_column_name' => 'order',
         'sort_when_creating' => true,

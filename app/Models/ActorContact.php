@@ -19,24 +19,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
 /**
  * Class ActorContact
- *
- * @package App\Models
  */
 class ActorContact extends BaseEloquentModel
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'actor_contacts';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'email',

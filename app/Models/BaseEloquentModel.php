@@ -30,7 +30,7 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
  */
 class BaseEloquentModel extends Model
 {
-    use HasFactory, LadaCacheTrait;
+    use LadaCacheTrait;
 
     /**
      * {@inheritDoc}

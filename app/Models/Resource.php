@@ -23,29 +23,28 @@ use App\Models\Traits\Presentable;
 use App\Presenters\ResourcePresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Resource
- *
- * @package App\Models
  */
 class Resource extends BaseEloquentModel implements AttachableInterface
 {
-    use PaperclipTrait, Presentable;
+    use HasFactory, PaperclipTrait, Presentable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'resources';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'title',
         'description',
         'document',
-        'order'
+        'order',
     ];
 
     /**
@@ -55,8 +54,6 @@ class Resource extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Resource constructor.
-     *
-     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -64,5 +61,4 @@ class Resource extends BaseEloquentModel implements AttachableInterface
 
         parent::__construct($attributes);
     }
-
 }

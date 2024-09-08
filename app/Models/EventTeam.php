@@ -22,13 +22,14 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\EventTeamPresenter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class EventTeam
  */
 class EventTeam extends BaseEloquentModel
 {
-    use Presentable, UuidTrait;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}

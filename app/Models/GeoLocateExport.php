@@ -19,8 +19,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class GeoLocateExport extends BaseMongoModel
 {
+    use HasFactory;
+
     /**
      * Set Collection
      */

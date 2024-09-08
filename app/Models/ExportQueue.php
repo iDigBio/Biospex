@@ -20,21 +20,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class ExportQueue
- *
- * @package App\Models
  */
 class ExportQueue extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
      * @ineritDoc
      */
     protected $table = 'export_queues';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'expedition_id',
@@ -42,20 +43,14 @@ class ExportQueue extends BaseEloquentModel
         'stage',
         'queued',
         'total',
-        'error'
+        'error',
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function actor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Actor::class);
@@ -63,8 +58,6 @@ class ExportQueue extends BaseEloquentModel
 
     /**
      * ExportQueueFiles relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function files(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -73,14 +66,12 @@ class ExportQueue extends BaseEloquentModel
 
     /**
      * Define the missing attribute.
-     *
-     * @return Attribute
      */
     protected function missing(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => empty($value) ? [] : unserialize($value),
-            set: fn($value) => serialize($value)
+            get: fn ($value) => empty($value) ? [] : unserialize($value),
+            set: fn ($value) => serialize($value)
         );
     }
 }

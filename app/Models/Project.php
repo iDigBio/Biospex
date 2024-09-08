@@ -22,10 +22,11 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
+use App\Services\Helpers\DateService as Date;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
-use Date;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Config;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
@@ -34,7 +35,7 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
  */
 class Project extends BaseEloquentModel implements AttachableInterface
 {
-    use HybridRelations, PaperclipTrait, Presentable, Sluggable, UuidTrait;
+    use HasFactory, HybridRelations, PaperclipTrait, Presentable, Sluggable, UuidTrait;
 
     /**
      * @var string
@@ -407,13 +408,13 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
                 if ($type === 'url') {
                     if ($value === 'slug') {
-                        $build[$field] = env('APP_URL').'/'.$this->{$value};
+                        $build[$field] = config('app.url').'/'.$this->{$value};
 
                         continue;
                     }
 
                     if ($value === 'logo') {
-                        $build[$field] = env('APP_URL').$this->{$value}->url();
+                        $build[$field] = config('app.url').$this->{$value}->url();
 
                         continue;
                     }

@@ -20,13 +20,14 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class BingoMap
  */
 class BingoMap extends BaseEloquentModel
 {
-    use UuidTrait;
+    use HasFactory, UuidTrait;
 
     /**
      * {@inheritDoc}
