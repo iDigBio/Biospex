@@ -25,23 +25,17 @@ use Illuminate\Support\LazyCollection;
 
 /**
  * Class GridData
- *
- * @package App\Services\Grid
  */
 class GridData
 {
     /**
      * GridData constructor.
-     *
-     * @param \App\Services\Models\SubjectModelService $subjectModelService
      */
-    public function __construct(private readonly SubjectModelService $subjectModelService)
-    {}
+    public function __construct(private readonly SubjectModelService $subjectModelService) {}
 
     /**
      * Get total rows and assign to vars count.
      *
-     * @param array $vars
      * @throws \Exception
      */
     public function getTotalRows(array &$vars)
@@ -56,8 +50,8 @@ class GridData
     /**
      * Get rows using set variables.
      *
-     * @param array $vars
      * @return array
+     *
      * @throws \Exception
      */
     public function getDataRows(array $vars)
@@ -67,9 +61,6 @@ class GridData
 
     /**
      * Return query so chunk export can be performed.
-     *
-     * @param array $vars
-     * @return \Illuminate\Support\LazyCollection
      */
     public function getQueryForExport(array $vars): LazyCollection
     {
@@ -79,12 +70,11 @@ class GridData
     /**
      * Prefix occurrence fields.
      *
-     * @param array|null $rows
      * @throws \Exception
      */
-    public function prefixOccurrence(array &$rows = null)
+    public function prefixOccurrence(?array &$rows = null)
     {
-        if (! is_array($rows) || (isset($rows[0]) && !is_array($rows[0]))) {
+        if (! is_array($rows) || (isset($rows[0]) && ! is_array($rows[0]))) {
             throw new Exception('The method getGridRows must return an array of arrays, example: array(array("column1"  =>  "1-1", "column2" => "1-2"), array("column1" => "2-1", "column2" => "2-2"))');
         }
 
@@ -101,34 +91,25 @@ class GridData
 
     /**
      * build variables array for querying.
-     *
-     * @param array $postedData
-     * @param string $route
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @return array
      */
-    public function buildVariables(array $postedData, string $route, int $projectId, int $expeditionId = null): array
+    public function buildVariables(array $postedData, string $route, int $projectId, ?int $expeditionId = null): array
     {
         return [
-            'page'         => isset($postedData['page']) ? (int) $postedData['page'] : 1,
-            'limit'        => isset($postedData['rows']) ? (int) $postedData['rows'] : 25,
-            'count'        => null,
-            'offset'       => null,
-            'sidx'         => isset($postedData['sidx']) ? $postedData['sidx'] : '_id',
-            'sord'         => isset($postedData['sord']) ? $postedData['sord'] : 'desc',
-            'filters'      => $this->setFilters($postedData),
-            'route'        => $route,
-            'projectId'    => $projectId,
-            'expeditionId' => $expeditionId
+            'page' => isset($postedData['page']) ? (int) $postedData['page'] : 1,
+            'limit' => isset($postedData['rows']) ? (int) $postedData['rows'] : 25,
+            'count' => null,
+            'offset' => null,
+            'sidx' => isset($postedData['sidx']) ? $postedData['sidx'] : '_id',
+            'sord' => isset($postedData['sord']) ? $postedData['sord'] : 'desc',
+            'filters' => $this->setFilters($postedData),
+            'route' => $route,
+            'projectId' => $projectId,
+            'expeditionId' => $expeditionId,
         ];
     }
 
     /**
      * Set vars filter.
-     *
-     * @param $postedData
-     * @return array
      */
     public function setFilters($postedData): array
     {
@@ -138,12 +119,10 @@ class GridData
 
     /**
      * Set paging.
-     *
-     * @param array $vars
      */
     public function setPaging(array &$vars)
     {
-        $vars['total'] = $vars['count'] > 0 ? ceil($vars['count']/$vars['limit']) : 0;
+        $vars['total'] = $vars['count'] > 0 ? ceil($vars['count'] / $vars['limit']) : 0;
 
         $vars['page'] = $vars['page'] > $vars['total'] ? $vars['total'] : $vars['page'];
 
@@ -152,8 +131,6 @@ class GridData
 
     /**
      * Set order by.
-     *
-     * @param array $vars
      */
     public function setOrderBy(array &$vars)
     {
@@ -163,7 +140,7 @@ class GridData
             foreach ($orderBys as $order) {
                 $order = trim($order);
                 [$field, $sort] = array_pad(explode(' ', $order, 2), 2, $vars['sord']);
-                $vars['orderBy'] [trim($field)] = trim($sort);
+                $vars['orderBy'][trim($field)] = trim($sort);
             }
         }
     }

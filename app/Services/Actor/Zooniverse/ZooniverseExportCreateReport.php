@@ -21,17 +21,15 @@ namespace App\Services\Actor\Zooniverse;
 
 use App\Jobs\ZooniverseExportDeleteFilesJob;
 use App\Models\ExportQueue;
+use App\Models\ExportQueueFile;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Models\ExportQueueFile;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Process\CreateReportService;
 use Notification;
 
 /**
  * Class ZooniverseExportCreateReport
- *
- * @package App\Services\Actor
  */
 class ZooniverseExportCreateReport
 {
@@ -39,32 +37,25 @@ class ZooniverseExportCreateReport
 
     /**
      * Construct.
-     *
-     * @param \App\Models\ExportQueueFile $exportQueueFile
-     * @param \App\Services\Process\CreateReportService $createReportService
      */
     public function __construct(
         private ExportQueueFile $exportQueueFile,
         private CreateReportService $createReportService
-    )
-    {}
+    ) {}
 
     /**
      * Process actor.
      *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
-     * @return void
      * @throws \League\Csv\CannotInsertRecord
      */
     public function process(ExportQueue $exportQueue, ActorDirectory $actorDirectory): void
     {
         $exportQueue->load([
-            'expedition.project.group' => function($q) {
-                $q->with(['owner', 'users' => function($q){
+            'expedition.project.group' => function ($q) {
+                $q->with(['owner', 'users' => function ($q) {
                     $q->where('notification', 1);
                 }]);
-            }
+            },
         ]);
 
         $data = $this->exportQueueFile->where('queue_id', $exportQueue->id)
@@ -82,11 +73,11 @@ class ZooniverseExportCreateReport
 
         $attributes = [
             'subject' => t('Zooniverse Export Completed'),
-            'html'    => [
+            'html' => [
                 t('The export process for "%s" has been completed successfully.', $exportQueue->expedition->title),
-                t('If a download file was created during this process, you may access the link on the Expedition view page.')
+                t('If a download file was created during this process, you may access the link on the Expedition view page.'),
             ],
-            'buttons' => $button
+            'buttons' => $button,
         ];
 
         $users = $exportQueue->expedition->project->group->users->push($exportQueue->expedition->project->group->owner);

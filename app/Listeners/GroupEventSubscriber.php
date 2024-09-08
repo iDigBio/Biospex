@@ -27,22 +27,16 @@ use Illuminate\Support\Facades\Session;
 
 /**
  * Class GroupEventSubscriber
- *
- * @package App\Listeners
  */
 readonly class GroupEventSubscriber
 {
     /**
      * GroupSessionEventListener constructor.
-     *
      */
-    public function __construct(private GroupModelService $groupModelService)
-    {}
+    public function __construct(private GroupModelService $groupModelService) {}
 
     /**
      * Register the listeners for the subscriber.
-     *
-     * @param $events
      */
     public function subscribe($events)
     {
@@ -70,8 +64,6 @@ readonly class GroupEventSubscriber
 
     /**
      * Handle user login events.
-     *
-     * @param $event
      */
     public function onUserLogin($event)
     {
@@ -80,8 +72,6 @@ readonly class GroupEventSubscriber
 
     /**
      * Handle user logout.
-     *
-     * @param $event
      */
     public function onUserLogout($event)
     {
@@ -91,7 +81,7 @@ readonly class GroupEventSubscriber
     /**
      * Set the user groups inside a session variable.
      *
-     * @param null $groupId
+     * @param  null  $groupId
      */
     public function setUserGroupSession($groupId = null): void
     {

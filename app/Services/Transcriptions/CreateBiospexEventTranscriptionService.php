@@ -29,17 +29,11 @@ use Validator;
 
 /**
  * Class CreateBiospexEventTranscriptionService
- *
- * @package App\Services\Transcriptions
  */
 readonly class CreateBiospexEventTranscriptionService
 {
     /**
      * CreateBiospexEventTranscriptionService constructor.
-     *
-     * @param \App\Services\Models\EventModel $eventModel
-     * @param \App\Services\Models\EventTranscriptionModelService $eventTranscriptionModelService
-     * @param \App\Services\Models\EventUserModelService $eventUserModelService
      */
     public function __construct(
         private EventModel $eventModel,
@@ -49,17 +43,12 @@ readonly class CreateBiospexEventTranscriptionService
 
     /**
      * Create event transcription for user.
-     *
-     * @param int $classification_id
-     * @param int $projectId
-     * @param string $userName
-     * @param \Illuminate\Support\Carbon|null $date
      */
     public function createEventTranscription(
         int $classification_id,
         int $projectId,
         string $userName,
-        Carbon $date = null
+        ?Carbon $date = null
     ): void {
         $user = $this->eventUserModelService->findByNfnUser($userName, ['id']);
 
@@ -75,9 +64,9 @@ readonly class CreateBiospexEventTranscriptionService
             $event->teams->each(function ($team) use ($event, $classification_id, $user, $timestamp) {
                 $attributes = [
                     'classification_id' => $classification_id,
-                    'event_id'          => $event->id,
-                    'team_id'           => $team->id,
-                    'user_id'           => $user->id,
+                    'event_id' => $event->id,
+                    'team_id' => $team->id,
+                    'user_id' => $user->id,
                 ];
 
                 if ($this->validateClassification($attributes)) {
@@ -90,16 +79,13 @@ readonly class CreateBiospexEventTranscriptionService
             });
         });
 
-        if ($events->isNotEmpty() && !isset($date)) {
+        if ($events->isNotEmpty() && ! isset($date)) {
             ScoreboardJob::dispatch($projectId);
         }
     }
 
     /**
      * Validate classification.
-     *
-     * @param array $attributes
-     * @return bool
      */
     private function validateClassification(array $attributes): bool
     {

@@ -11,12 +11,11 @@ abstract class TestCase extends BaseTestCase
     /**
      * Creates the application.
      *
-     * @return \Illuminate\Foundation\Application
      * @throws \Exception
      */
     public function createApplication(): \Illuminate\Foundation\Application
     {
-        $app = require __DIR__ . '/../bootstrap/app.php';
+        $app = require __DIR__.'/../bootstrap/app.php';
 
         $app->make(Kernel::class)->bootstrap();
 
@@ -28,15 +27,14 @@ abstract class TestCase extends BaseTestCase
     /**
      * Clear the configuration cache.
      *
-     * @param \Illuminate\Contracts\Foundation\Application $app
-     * @return void
      * @throws \Exception
      */
     protected function clearCache(Application $app): void
     {
         // We don't have a cached config, so continue running the test suite.
-        if (!$app->configurationIsCached()) {
+        if (! $app->configurationIsCached()) {
             \Artisan::call('lada-cache:flush');
+
             return;
         }
 

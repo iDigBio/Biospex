@@ -19,8 +19,8 @@
 
 namespace App\Jobs;
 
-use App\Models\PanoptesProject;
 use App\Models\ExpeditionStat;
+use App\Models\PanoptesProject;
 use App\Services\Api\PanoptesApiService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -31,8 +31,6 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Class PanoptesProjectUpdateJob
- *
- * @package App\Jobs
  */
 class PanoptesProjectUpdateJob implements ShouldQueue
 {
@@ -45,8 +43,6 @@ class PanoptesProjectUpdateJob implements ShouldQueue
 
     /**
      * PanoptesProjectUpdateJob constructor.
-     *
-     * @param \App\Models\PanoptesProject $panoptesProject
      */
     public function __construct(PanoptesProject $panoptesProject)
     {
@@ -56,9 +52,6 @@ class PanoptesProjectUpdateJob implements ShouldQueue
 
     /**
      * Execute job.
-     *
-     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @param \App\Models\ExpeditionStat $expeditionStat
      */
     public function handle(PanoptesApiService $panoptesApiService, ExpeditionStat $expeditionStat)
     {
@@ -81,9 +74,9 @@ class PanoptesProjectUpdateJob implements ShouldQueue
             $project = $panoptesApiService->getPanoptesProject($panoptes_project_id);
 
             $values = [
-                'panoptes_project_id'      => $panoptes_project_id,
+                'panoptes_project_id' => $panoptes_project_id,
                 'subject_sets' => $subject_sets,
-                'slug'         => $project['slug'],
+                'slug' => $project['slug'],
             ];
 
             $this->panoptesProject->fill($values);

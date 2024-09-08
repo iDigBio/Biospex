@@ -29,20 +29,16 @@ use View;
 
 /**
  * Class BingoController
- *
- * @package App\Http\Controllers\Admin
  */
 class BingoController extends Controller
 {
     /**
      * BingoController constructor.
-     *
      */
     public function __construct(
         private readonly BingoModelService $bingoModelService,
         private readonly ProjectModelService $projectModelService
-    ) {
-    }
+    ) {}
 
     /**
      * Display admin index for bingo games created by user.
@@ -71,7 +67,6 @@ class BingoController extends Controller
     /**
      * Store bingo.
      *
-     * @param \App\Http\Requests\BingoFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(BingoFormRequest $request)
@@ -88,7 +83,6 @@ class BingoController extends Controller
     /**
      * Bingo show.
      *
-     * @param string $bingoId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show(string $bingoId)
@@ -105,7 +99,6 @@ class BingoController extends Controller
     /**
      * Edit bingo.
      *
-     * @param string $bingoId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(string $bingoId)
@@ -119,8 +112,6 @@ class BingoController extends Controller
     /**
      * Update bingo.
      *
-     * @param \App\Http\Requests\BingoFormRequest $request
-     * @param string $bingoId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(BingoFormRequest $request, string $bingoId)
@@ -139,7 +130,6 @@ class BingoController extends Controller
     /**
      * Delete bingo.
      *
-     * @param string $bingoId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function delete(string $bingoId)
@@ -155,7 +145,6 @@ class BingoController extends Controller
         if ($result) {
             return Redirect::route('admin.bingos.index')->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
         }
-
 
         return Redirect::route('admin.bingos.edit', [$bingoId])->with('error', t('An error occurred when deleting record.'));
     }

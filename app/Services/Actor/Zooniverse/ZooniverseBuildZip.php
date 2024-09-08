@@ -32,17 +32,14 @@ readonly class ZooniverseBuildZip
 {
     /**
      * Construct.
-     *
      */
-    public function __construct(private Download $download)
-    {}
+    public function __construct(private Download $download) {}
 
     /**
      * Process the actor.
      *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      * @return void
+     *
      * @throws \Exception
      */
     public function process(ExportQueue $exportQueue, ActorDirectory $actorDirectory)
@@ -65,13 +62,11 @@ readonly class ZooniverseBuildZip
     /**
      * Copy exported files from s3 to efs.
      *
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
-     * @return void
      * @throws \Exception
      */
     private function copyFilesToEfs(ActorDirectory $actorDirectory): void
     {
-        $bucketPath = $actorDirectory->bucketPath . '/' . $actorDirectory->workingDir;
+        $bucketPath = $actorDirectory->bucketPath.'/'.$actorDirectory->workingDir;
         $efsPath = Storage::disk('efs')->path($actorDirectory->efsExportDirFolder);
         exec("aws s3 cp $bucketPath $efsPath --recursive", $out, $ret);
         if ($ret !== 0) {
@@ -82,8 +77,6 @@ readonly class ZooniverseBuildZip
     /**
      * Create zip file from efs directory.
      *
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
-     * @return void
      * @throws \Exception
      */
     private function zipDirectory(ActorDirectory $actorDirectory): void
@@ -91,7 +84,7 @@ readonly class ZooniverseBuildZip
         $efsExportDirFolder = Storage::disk('efs')->path($actorDirectory->efsExportDirFolder);
         $efsExportDir = Storage::disk('efs')->path($actorDirectory->efsExportDir);
 
-        exec("zip -r -j $efsExportDir/{$actorDirectory->exportArchiveFile} $efsExportDirFolder" , $output, $retval);
+        exec("zip -r -j $efsExportDir/{$actorDirectory->exportArchiveFile} $efsExportDirFolder", $output, $retval);
 
         if ($retval !== 0) {
             throw new \Exception(t("Could not create zip file $efsExportDir/{$actorDirectory->exportArchiveFile} from $efsExportDirFolder"));
@@ -101,13 +94,11 @@ readonly class ZooniverseBuildZip
     /**
      * Move zip file to s3 bucket.
      *
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
-     * @return void
      * @throws \Exception
      */
     private function moveZipFile(ActorDirectory $actorDirectory): void
     {
-        $bucketPathZip = $actorDirectory->bucketPath . '/' . $actorDirectory->exportDirectory . '/' . $actorDirectory->exportArchiveFile;
+        $bucketPathZip = $actorDirectory->bucketPath.'/'.$actorDirectory->exportDirectory.'/'.$actorDirectory->exportArchiveFile;
         $efsZipFle = Storage::disk('efs')->path("{$actorDirectory->efsExportDir}/{$actorDirectory->exportArchiveFile}");
 
         exec("aws s3 mv $efsZipFle $bucketPathZip", $out, $ret);
@@ -118,24 +109,20 @@ readonly class ZooniverseBuildZip
 
     /**
      * Create download file.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param string $exportArchiveFile
-     * @return void
      */
     private function createDownload(ExportQueue $exportQueue, string $exportArchiveFile): void
     {
         $values = [
             'expedition_id' => $exportQueue->expedition_id,
-            'actor_id'      => $exportQueue->actor_id,
-            'file'          => $exportArchiveFile,
-            'type'          => 'export',
+            'actor_id' => $exportQueue->actor_id,
+            'file' => $exportArchiveFile,
+            'type' => 'export',
         ];
         $attributes = [
             'expedition_id' => $exportQueue->expedition_id,
-            'actor_id'      => $exportQueue->actor_id,
-            'file'          => $exportArchiveFile,
-            'type'          => 'export',
+            'actor_id' => $exportQueue->actor_id,
+            'file' => $exportArchiveFile,
+            'type' => 'export',
         ];
 
         $this->download->updateOrCreate($attributes, $values);

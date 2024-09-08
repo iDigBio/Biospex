@@ -25,39 +25,30 @@ use App\Models\Group;
 use App\Models\User;
 use App\Services\Permission\CheckPermission;
 use Exception;
-use Flash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
 
 readonly class GroupModelService
 {
-    public function __construct(private Group $model)
-    {
-    }
+    public function __construct(private Group $model) {}
 
     /**
      * Get group ids for user session.
-     *
-     * @param int $id
-     * @param array $relations
-     * @return \App\Models\Group|null
      */
-    public function findWithRelations(int $id, array $relations = []): \App\Models\Group|null
+    public function findWithRelations(int $id, array $relations = []): ?\App\Models\Group
     {
         return $this->model->with($relations)->find($id);
     }
 
     /**
      * Display groups.
-     *
-     * @return \Illuminate\View\View
      */
     public function getAdminIndex(): \Illuminate\View\View
     {
         $groups = $this->model->withCount(['projects', 'expeditions', 'users'])->whereHas('users', function ($q) {
-                $q->where('user_id', Auth::id());
-            })->get();
+            $q->where('user_id', Auth::id());
+        })->get();
 
         return View::make('admin.group.index', compact('groups'));
     }
@@ -65,7 +56,6 @@ readonly class GroupModelService
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\RedirectResponse
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -88,9 +78,6 @@ readonly class GroupModelService
 
     /**
      * Show group.
-     *
-     * @param int $groupId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function showGroup(int $groupId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
@@ -111,9 +98,6 @@ readonly class GroupModelService
 
     /**
      * Show group edit form.
-     *
-     * @param int $groupId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function editGroup(int $groupId
     ): \Illuminate\Contracts\View\Factory|\Illuminate\View\View|\Illuminate\Http\RedirectResponse {
@@ -143,9 +127,6 @@ readonly class GroupModelService
 
     /**
      * Delete the specified resource from storage.
-     *
-     * @param int $groupId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteGroup(int $groupId): \Illuminate\Http\RedirectResponse
     {
@@ -178,10 +159,6 @@ readonly class GroupModelService
 
     /**
      * Delete user from group.
-     *
-     * @param int $groupId
-     * @param int $userId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteUserFromGroup(int $groupId, int $userId): \Illuminate\Http\RedirectResponse
     {
@@ -209,10 +186,6 @@ readonly class GroupModelService
 
     /**
      * Delete GeoLocateExport Form.
-     *
-     * @param int $groupId
-     * @param int $formId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteGeoLocateForm(int $groupId, int $formId): \Illuminate\Http\RedirectResponse
     {
@@ -242,9 +215,6 @@ readonly class GroupModelService
 
     /**
      * Check group count for admin welcome/index page.
-     *
-     * @param $userId
-     * @return int
      */
     public function getUserGroupCount($userId): int
     {
@@ -259,9 +229,6 @@ readonly class GroupModelService
 
     /**
      * Get group select for user.
-     *
-     * @param $user
-     * @return array
      */
     public function getUsersGroupsSelect($user): array
     {
@@ -272,9 +239,6 @@ readonly class GroupModelService
 
     /**
      * Get group ids for user session.
-     *
-     * @param $userId
-     * @return \Illuminate\Support\Collection
      */
     public function getUserGroupIds($userId): \Illuminate\Support\Collection
     {

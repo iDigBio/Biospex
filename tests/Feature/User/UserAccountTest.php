@@ -59,17 +59,17 @@ it('can update profile for authorized user', function () {
 
     $response = $this->actingAs($user)->put(route('admin.users.update', ['users' => $user->id]), [
         'first_name' => $firstName,
-        'last_name'  => $lastName,
-        'email'      => $email,
-        'timezone'   => $timezone,
+        'last_name' => $lastName,
+        'email' => $email,
+        'timezone' => $timezone,
     ]);
 
     $response->assertRedirect('/admin/users/'.$user->id.'/edit');
 
     $this->assertDatabaseHas('profiles', [
         'first_name' => $firstName,
-        'last_name'  => $lastName,
-        'timezone'   => $timezone,
+        'last_name' => $lastName,
+        'timezone' => $timezone,
     ]);
 
     $this->assertDatabaseHas('users', [
@@ -88,10 +88,10 @@ it('can update password for authorized user', function () {
     $password = bcrypt(fake()->password);
 
     $this->actingAs($user)->put(route('admin.users.password', ['users' => $user->id]), [
-        'current_password'      => $current_password,
-        'password'              => $password,
+        'current_password' => $current_password,
+        'password' => $password,
         'password_confirmation' => $password,
     ])->assertRedirect('/admin/users/'.$user->id.'/edit');
 
-    $this->assertTrue(\Hash::check($password,$user->password));
+    $this->assertTrue(\Hash::check($password, $user->password));
 });

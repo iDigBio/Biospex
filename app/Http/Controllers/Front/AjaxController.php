@@ -21,25 +21,20 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Services\Models\WeDigBioEventDateModelService;
 use App\Services\Chart\BiospexEventRateChartProcess;
 use App\Services\Chart\WeDigBioEventRateChartProcess;
 use App\Services\Models\EventModel;
-use Artisan;
+use App\Services\Models\WeDigBioEventDateModelService;
 use Illuminate\Http\JsonResponse;
 
 /**
  * Class AjaxController
- *
- * @package App\Http\Controllers\Front
  */
 class AjaxController extends Controller
 {
     /**
      * Load event scoreboard.
      *
-     * @param \App\Services\Models\EventModel $eventModel
-     * @param string $eventId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
     public function scoreboard(EventModel $eventModel, string $eventId)
@@ -55,13 +50,8 @@ class AjaxController extends Controller
 
     /**
      * Display for event step charts.
-     *
-     * @param \App\Services\Chart\BiospexEventRateChartProcess $service
-     * @param string $eventId
-     * @param string|null $timestamp
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function eventStepChart(BiospexEventRateChartProcess $service, string $eventId, string $timestamp = null): JsonResponse
+    public function eventStepChart(BiospexEventRateChartProcess $service, string $eventId, ?string $timestamp = null): JsonResponse
     {
         $result = $service->eventStepChart($eventId, $timestamp);
 
@@ -70,9 +60,6 @@ class AjaxController extends Controller
 
     /**
      * Trigger bingo winner.
-     *
-     * @param string $bingoId
-     * @param string $mapId
      */
     public function bingoWinner(string $bingoId, string $mapId)
     {
@@ -84,8 +71,6 @@ class AjaxController extends Controller
     /**
      * Show progress for wedigbio events.
      *
-     * @param \App\Services\Models\WeDigBioEventDateModelService $weDigBioEventDateModelService
-     * @param string $dateId
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function weDigBioProgress(WeDigBioEventDateModelService $weDigBioEventDateModelService, string $dateId)
@@ -102,8 +87,6 @@ class AjaxController extends Controller
     /**
      * Returns titles of projects that have transcriptions from WeDigBio.
      *
-     * @param \App\Services\Models\WeDigBioEventDateModelService $weDigBioEventDateModelService
-     * @param string $dateId
      * @return \Illuminate\Http\JsonResponse|null
      */
     public function getProjectsForWeDigBioRateChart(WeDigBioEventDateModelService $weDigBioEventDateModelService, string $dateId)
@@ -116,8 +99,6 @@ class AjaxController extends Controller
     }
 
     /**
-     * @param \App\Services\Chart\WeDigBioEventRateChartProcess $weDigBioEventRateChartProcess
-     * @param string $dateId
      * @return \Illuminate\Http\JsonResponse
      */
     public function weDigBioRate(WeDigBioEventRateChartProcess $weDigBioEventRateChartProcess, string $dateId)
@@ -130,5 +111,4 @@ class AjaxController extends Controller
 
         return response()->json($result);
     }
-
 }

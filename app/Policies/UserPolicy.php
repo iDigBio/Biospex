@@ -23,63 +23,34 @@ use App\Models\User;
 
 /**
  * Class UserPolicy
- *
- * @package App\Policies
  */
 class UserPolicy
 {
-    /**
-     * @param \App\Models\User $loggedInUser
-     * @return bool|null
-     */
     public function before(User $loggedInUser): ?bool
     {
         return $loggedInUser->isAdmin() ? true : null;
     }
 
-    /**
-     * @param \App\Models\User $loggedInUser
-     * @return bool|null
-     */
     public function isAdmin(User $loggedInUser): ?bool
     {
         return $loggedInUser->isAdmin() ? true : null;
     }
 
-    /**
-     * @param \App\Models\User $loggedInUser
-     * @param \App\Models\User $user
-     * @return bool
-     */
     public function edit(User $loggedInUser, User $user): bool
     {
         return $loggedInUser->id === $user->id;
     }
 
-    /**
-     * @param \App\Models\User $loggedInUser
-     * @param \App\Models\User $user
-     * @return bool
-     */
     public function update(User $loggedInUser, User $user): bool
     {
         return $loggedInUser->id === $user->id;
     }
 
-    /**
-     * @param \App\Models\User $loggedInUser
-     * @param \App\Models\User $user
-     * @return bool
-     */
     public function password(User $loggedInUser, User $user): bool
     {
         return $loggedInUser->id === $user->id;
     }
 
-    /**
-     * @param \App\Models\User $loggedInUser
-     * @return bool|null
-     */
     public function delete(User $loggedInUser): ?bool
     {
         return $loggedInUser->isAdmin() ? false : null;

@@ -45,7 +45,7 @@ it('has register form', function () {
 // create test where user regisatraion fails
 it('can not register new user with invalid recaptcha', function () {
     Illuminate\Support\Facades\Http::fake([
-        config('services.recaptcha.url') => Illuminate\Support\Facades\Http::response(['success' => false])
+        config('services.recaptcha.url') => Illuminate\Support\Facades\Http::response(['success' => false]),
     ]);
 
     $firstName = fake()->firstName;
@@ -55,25 +55,24 @@ it('can not register new user with invalid recaptcha', function () {
     $timezone = fake()->timezone;
 
     $response = $this->post('/register', [
-        'first_name'            => $firstName,
-        'last_name'             => $lastName,
-        'email'                 => $email,
-        'password'              => $password,
+        'first_name' => $firstName,
+        'last_name' => $lastName,
+        'email' => $email,
+        'password' => $password,
         'password_confirmation' => $password,
-        'timezone'              => $timezone,
-        'g-recaptcha-response'  => 'VALID_RESPONSE',
+        'timezone' => $timezone,
+        'g-recaptcha-response' => 'VALID_RESPONSE',
     ])->assertRedirect('/');
-        //->assertSessionHasErrors('g-recaptcha-response');
+    //->assertSessionHasErrors('g-recaptcha-response');
 
     $this->assertDatabaseMissing('users', [
-        'email' => 'test@yahoo.com'
+        'email' => 'test@yahoo.com',
     ]);
 });
 
-
 it('can register new user', function () {
     Illuminate\Support\Facades\Http::fake([
-        config('services.recaptcha.url') => Illuminate\Support\Facades\Http::response(['success' => true])
+        config('services.recaptcha.url') => Illuminate\Support\Facades\Http::response(['success' => true]),
     ]);
 
     $firstName = fake()->firstName;
@@ -83,23 +82,23 @@ it('can register new user', function () {
     $timezone = fake()->timezone;
 
     $response = $this->post('/register', [
-        'first_name'            => $firstName,
-        'last_name'             => $lastName,
-        'email'                 => $email,
-        'password'              => $password,
+        'first_name' => $firstName,
+        'last_name' => $lastName,
+        'email' => $email,
+        'password' => $password,
         'password_confirmation' => $password,
-        'timezone'              => $timezone,
-        'g-recaptcha-response'  => 'VALID_RESPONSE',
+        'timezone' => $timezone,
+        'g-recaptcha-response' => 'VALID_RESPONSE',
     ])->assertRedirect('email/verify');
 
     $this->assertDatabaseHas('users', [
-        'email'      => $email,
+        'email' => $email,
     ]);
 
     $this->assertDatabaseHas('profiles', [
-        'first_name'            => $firstName,
-        'last_name'             => $lastName,
-        'timezone'              => $timezone,
+        'first_name' => $firstName,
+        'last_name' => $lastName,
+        'timezone' => $timezone,
     ]);
 
     $this->assertAuthenticated();

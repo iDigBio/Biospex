@@ -47,7 +47,7 @@ it('shows list of projects', function () {
 it('can sort projects in asc order by title', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'title',
-        'order' => 'asc'
+        'order' => 'asc',
     ]);
 
     $response->assertSuccessful();
@@ -56,7 +56,7 @@ it('can sort projects in asc order by title', function () {
 it('can sort projects in desc order by title', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'title',
-        'order' => 'desc'
+        'order' => 'desc',
     ]);
 
     $response->assertSuccessful();
@@ -65,7 +65,7 @@ it('can sort projects in desc order by title', function () {
 it('can sort projects in asc order by group', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'group',
-        'order' => 'asc'
+        'order' => 'asc',
     ]);
 
     $response->assertSuccessful();
@@ -74,7 +74,7 @@ it('can sort projects in asc order by group', function () {
 it('can sort projects in desc order by group', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'group',
-        'order' => 'desc'
+        'order' => 'desc',
     ]);
 
     $response->assertSuccessful();
@@ -83,7 +83,7 @@ it('can sort projects in desc order by group', function () {
 it('can sort projects in asc order by date', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'date',
-        'order' => 'asc'
+        'order' => 'asc',
     ]);
 
     $response->assertSuccessful();
@@ -92,7 +92,7 @@ it('can sort projects in asc order by date', function () {
 it('can sort projects in desc order by date', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'date',
-        'order' => 'desc'
+        'order' => 'desc',
     ]);
 
     $response->assertSuccessful();

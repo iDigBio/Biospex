@@ -27,16 +27,10 @@ use Illuminate\Support\Collection;
 
 class EventModel extends ModelService
 {
-    /**
-     * @var \App\Services\Models\EventTeamModel
-     */
     private EventTeamModel $eventTeamModel;
 
     /**
      * EventModel constructor.
-     *
-     * @param \App\Models\Event $model
-     * @param \App\Services\Models\EventTeamModel $eventTeamModel
      */
     public function __construct(Event $model, EventTeamModel $eventTeamModel)
     {
@@ -47,10 +41,8 @@ class EventModel extends ModelService
     /**
      * Get events for admin index.
      *
-     * @param \App\Models\User $user
-     * @param null $sort
-     * @param null $order
-     * @return \Illuminate\Support\Collection
+     * @param  null  $sort
+     * @param  null  $order
      */
     public function getAdminIndex(User $user, $sort = null, $order = null): Collection
     {
@@ -64,10 +56,9 @@ class EventModel extends ModelService
     /**
      * Get events for public index.
      *
-     * @param null $sort
-     * @param null $order
-     * @param null $projectId
-     * @return \Illuminate\Support\Collection
+     * @param  null  $sort
+     * @param  null  $order
+     * @param  null  $projectId
      */
     public function getPublicIndex($sort = null, $order = null, $projectId = null): Collection
     {
@@ -80,9 +71,6 @@ class EventModel extends ModelService
 
     /**
      * Get event for show page.
-     *
-     * @param $eventId
-     * @return mixed
      */
     public function getShow($eventId): mixed
     {
@@ -100,10 +88,6 @@ class EventModel extends ModelService
 
     /**
      * Overwrite model update method.
-     *
-     * @param array $data
-     * @param $resourceId
-     * @return false
      */
     public function update(array $data, $resourceId): false
     {
@@ -121,11 +105,6 @@ class EventModel extends ModelService
 
     /**
      * Sort results for index pages.
-     *
-     * @param $order
-     * @param $results
-     * @param $sort
-     * @return \Illuminate\Support\Collection
      */
     protected function sortResults($order, $results, $sort): Collection
     {
@@ -154,9 +133,6 @@ class EventModel extends ModelService
 
     /**
      * Handle team create, update, delete.
-     *
-     * @param $team
-     * @param $event
      */
     protected function handleTeam($team, $event)
     {
@@ -183,9 +159,7 @@ class EventModel extends ModelService
     /**
      * Get event scoreboard.
      *
-     * @param $eventId
-     * @param array|string[] $columns
-     * @return mixed
+     * @param  array|string[]  $columns
      */
     public function getEventScoreboard($eventId, array $columns = ['*']): mixed
     {
@@ -202,9 +176,6 @@ class EventModel extends ModelService
 
     /**
      * Get events by project id.
-     *
-     * @param $projectId
-     * @return \Illuminate\Support\Collection
      */
     public function getEventsByProjectId($projectId): Collection
     {
@@ -217,19 +188,14 @@ class EventModel extends ModelService
 
     /**
      * Get any ongoing events for user using project id and dates.
-     *
-     * @param int $projectId
-     * @param int $userId
-     * @param string $date
-     * @return \Illuminate\Database\Eloquent\Collection|array
      */
     public function getAnyEventsForUserByProjectIdAndDate(int $projectId, int $userId, string $date): \Illuminate\Database\Eloquent\Collection|array
     {
-        $callback = function ($q) use($userId){
+        $callback = function ($q) use ($userId) {
             $q->where('user_id', $userId);
         };
 
-        return $this->model->with(['teams' => function($q) use($callback) {
+        return $this->model->with(['teams' => function ($q) use ($callback) {
             $q->whereHas('users', $callback);
             $q->with(['users' => $callback]);
         }])
@@ -240,9 +206,6 @@ class EventModel extends ModelService
 
     /**
      * Set dates for event.
-     *
-     * @param array $data
-     * @return array
      */
     public function setDates(array $data): array
     {

@@ -19,41 +19,33 @@
 
 namespace App\Services\Reconcile;
 
-use App\Services\Models\ExpeditionModelService;
-use TranscriptionMap;
-use App\Notifications\Generic;
 use App\Models\Download;
 use App\Models\Reconcile;
+use App\Notifications\Generic;
 use App\Services\Csv\AwsS3CsvService;
+use App\Services\Models\ExpeditionModelService;
+use TranscriptionMap;
 
 /**
  * Class ExpertReconcilePublishService
- *
- * @package App\Services\Process
  */
 readonly class ExpertReconcilePublishService
 {
     /**
      * ExpertReconcilePublishService constructor.
-     *
-     * @param \App\Models\Reconcile $reconcile
-     * @param \App\Models\Download $download
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         private Reconcile $reconcile,
         private Download $download,
         private ExpeditionModelService $expeditionModelService,
         private AwsS3CsvService $awsS3CsvService
-    )
-    {}
+    ) {}
 
     /**
      * Publish reconciled file.
+     *
      * @see \App\Jobs\ExpertReconcileReviewPublishJob
      *
-     * @param string $expeditionId
      * @throws \League\Csv\CannotInsertRecord
      */
     public function publishReconciled(string $expeditionId): void
@@ -66,7 +58,6 @@ readonly class ExpertReconcilePublishService
     /**
      * Create csv file for reconciled.
      *
-     * @param string $expeditionId
      * @throws \League\Csv\CannotInsertRecord|\Exception
      */
     private function createReconcileCsv(string $expeditionId): void
@@ -74,6 +65,7 @@ readonly class ExpertReconcilePublishService
         $results = $this->reconcile->where('subject_expeditionId', (int) $expeditionId)->get();
         $mapped = $results->map(function ($record) {
             unset($record->_id, $record->subject_columns, $record->subject_problem, $record->updated_at, $record->created_at, $record->reviewed);
+
             return $record;
         });
 
@@ -82,12 +74,12 @@ readonly class ExpertReconcilePublishService
         }
 
         $header = array_keys($mapped->first()->toArray());
-        $decodedHeader  = [];
+        $decodedHeader = [];
         foreach ($header as $value) {
             $decodedHeader[] = TranscriptionMap::decodeTranscriptionField($value);
         }
 
-        $file = config('zooniverse.directory.reconciled-with-expert') . '/' . $expeditionId.'.csv';
+        $file = config('zooniverse.directory.reconciled-with-expert').'/'.$expeditionId.'.csv';
         $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $file, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();
         $this->awsS3CsvService->csv->insertOne($decodedHeader);
@@ -96,22 +88,20 @@ readonly class ExpertReconcilePublishService
 
     /**
      * Create download file.
-     *
-     * @param string $expeditionId
      */
     private function createDownload(string $expeditionId): void
     {
         $values = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => 2,
-            'file'          => $expeditionId.'.csv',
-            'type'          => 'reconciled-with-expert',
+            'actor_id' => 2,
+            'file' => $expeditionId.'.csv',
+            'type' => 'reconciled-with-expert',
         ];
         $attributes = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => 2,
-            'file'          => $expeditionId.'.csv',
-            'type'          => 'reconciled-with-expert',
+            'actor_id' => 2,
+            'file' => $expeditionId.'.csv',
+            'type' => 'reconciled-with-expert',
         ];
 
         $this->download->updateOrCreate($attributes, $values);
@@ -119,8 +109,6 @@ readonly class ExpertReconcilePublishService
 
     /**
      * Send email to project owner.
-     *
-     * @param string $expeditionId
      */
     private function sendEmail(string $expeditionId): void
     {
@@ -128,10 +116,10 @@ readonly class ExpertReconcilePublishService
 
         $attributes = [
             'subject' => t('Reconciled Expert Review Published'),
-            'html'    => [
+            'html' => [
                 t('The Expert Reviewed Reconciled CSV file has been published for %s.', $expedition->title),
                 t('The file can be downloaded in the Downloads section of the Expedition page.'),
-            ]
+            ],
         ];
 
         $expedition->project->group->owner->notify(new Generic($attributes));

@@ -24,8 +24,6 @@ use App\Presenters\ReconcilePresenter;
 
 /**
  * Class Reconcile
- *
- * @package App\Models
  */
 class Reconcile extends BaseMongoModel
 {
@@ -44,13 +42,13 @@ class Reconcile extends BaseMongoModel
     protected function casts(): array
     {
         return [
-            'subject_id'           => 'integer',
-            'subject_projectId'    => 'integer',
+            'subject_id' => 'integer',
+            'subject_projectId' => 'integer',
             'subject_expeditionId' => 'integer',
-            'problem'              => 'integer',
-            'created_at'           => 'datetime',
-            'updated_at'           => 'datetime',
-            'timestamp'            => 'datetime',
+            'problem' => 'integer',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'timestamp' => 'datetime',
         ];
     }
 
@@ -61,8 +59,6 @@ class Reconcile extends BaseMongoModel
 
     /**
      * Subject relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -81,8 +77,6 @@ class Reconcile extends BaseMongoModel
 
     /**
      * Subject relation.
-     *
-     * @return \MongoDB\Laravel\Relations\HasMany
      */
     public function transcriptions(): \MongoDB\Laravel\Relations\HasMany
     {

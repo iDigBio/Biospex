@@ -26,8 +26,6 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Class UpdateQueries
- *
- * @package App\Console\Commands
  */
 class UpdateQueries extends Command
 {

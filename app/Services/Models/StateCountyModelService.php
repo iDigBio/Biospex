@@ -23,13 +23,11 @@ use App\Models\StateCounty;
 
 readonly class StateCountyModelService
 {
-    public function __construct(private StateCounty $model)
-    {}
+    public function __construct(private StateCounty $model) {}
 
     /**
      * Create.
      *
-     * @param array $data
      * @return mixed
      */
     public function create(array $data)
@@ -40,12 +38,11 @@ readonly class StateCountyModelService
     /**
      * Get state transcript count for project.
      *
-     * @param $projectId
      * @return mixed
      */
     public function getStateTranscriptCount($projectId)
     {
-        $results = $this->model->withCount(['transcriptionLocations' => function($q) use($projectId) {
+        $results = $this->model->withCount(['transcriptionLocations' => function ($q) use ($projectId) {
             $q->where('project_id', $projectId);
         }])->get();
 
@@ -64,32 +61,28 @@ readonly class StateCountyModelService
     /**
      * Get county transcription count for project.
      *
-     * @param $projectId
-     * @param $stateId
      * @return mixed
      */
     public function getCountyTranscriptionCount($projectId, $stateId)
     {
-        return $this->model->withCount(['transcriptionLocations' => function($q) use($projectId) {
+        return $this->model->withCount(['transcriptionLocations' => function ($q) use ($projectId) {
             $q->where('project_id', $projectId);
         }])->where('state_num', $stateId)->get();
     }
 
     /**
      * Find by county, state.
-     * @param $county
-     * @param $stateAbbr
+     *
      * @return mixed
      */
     public function findByCountyState($county, $stateAbbr)
     {
-        return $this->model->where('county_name','like', '%'.$county.'%')->where('state_abbr', $stateAbbr)->first();
+        return $this->model->where('county_name', 'like', '%'.$county.'%')->where('state_abbr', $stateAbbr)->first();
     }
 
     /**
      * Truncate database table.
      *
-     * @return void
      * @throws \Exception
      */
     public function truncate(): void

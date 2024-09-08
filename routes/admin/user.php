@@ -17,11 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-Route::get('users', function (){
+Route::get('users', function () {
     return redirect()->route('admin.users.edit', [\Auth::user()->id]);
 })->name('admin.users.index');
 
-Route::get('users/{users}',function(){
+Route::get('users/{users}', function () {
     return redirect()->route('admin.users.edit', [\Auth::user()->id]);
 })->name('admin.users.show');
 

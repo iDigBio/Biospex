@@ -35,10 +35,6 @@ class ZooniverseBuildCsv
 {
     /**
      * Construct.
-     *
-     * @param \App\Models\ExportQueueFile $exportQueueFile
-     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
-     * @param \App\Services\Process\MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService
      */
     public function __construct(
         private ExportQueueFile $exportQueueFile,
@@ -49,9 +45,6 @@ class ZooniverseBuildCsv
     /**
      * Process actor.
      *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
-     * @return void
      * @throws \League\Csv\CannotInsertRecord
      * @throws \Exception
      */
@@ -64,8 +57,7 @@ class ZooniverseBuildCsv
         $this->awsS3CsvService->csv->addEncodingFormatter();
 
         $first = true;
-        $this->exportQueueFile->chunk(config('config.aws.lambda_export_count'), function ($chunk) use
-        (
+        $this->exportQueueFile->chunk(config('config.aws.lambda_export_count'), function ($chunk) use (
             $exportQueue,
             $actorDirectory,
             &$first
@@ -95,8 +87,6 @@ class ZooniverseBuildCsv
      * Create csv file.
      *=
      *
-     * @param \Illuminate\Support\Collection $data
-     * @param bool $first
      * @throws \League\Csv\CannotInsertRecord
      */
     private function buildCsv(Collection $data, bool $first = false): void
@@ -111,9 +101,6 @@ class ZooniverseBuildCsv
     /**
      * Check csv row count to image count.
      * Do not set csv header offset. Since csv is in same dir as image, it will add 1 to the count.
-     *
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
-     * @return bool
      */
     private function checkCsvImageCount(ActorDirectory $actorDirectory): bool
     {

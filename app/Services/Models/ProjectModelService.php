@@ -24,8 +24,7 @@ use App\Models\ProjectResource;
 
 readonly class ProjectModelService
 {
-    public function __construct(private Project $model)
-    {}
+    public function __construct(private Project $model) {}
 
     /**
      * Get all.
@@ -39,10 +38,6 @@ readonly class ProjectModelService
 
     /**
      * Get all with relations.
-     *
-     * @param int $id
-     * @param array $relations
-     * @return mixed
      */
     public function findWithRelations(int $id, array $relations = []): mixed
     {
@@ -67,7 +62,6 @@ readonly class ProjectModelService
     /**
      * Override create in base repository.
      *
-     * @param array $data
      * @return \App\Models\Project|\Illuminate\Database\Eloquent\Model|true
      */
     public function create(array $data): \Illuminate\Database\Eloquent\Model|bool|Project
@@ -93,8 +87,7 @@ readonly class ProjectModelService
      * Override project update.
      *
      * TODO move resource code
-     * @param array $data
-     * @param $resourceId
+     *
      * @return bool|iterable
      */
     public function update(array $data, $resourceId)
@@ -126,9 +119,8 @@ readonly class ProjectModelService
     /**
      * Get projects for admin index page.
      *
-     * @param $userId
-     * @param null $sort
-     * @param null $order
+     * @param  null  $sort
+     * @param  null  $order
      * @return mixed
      */
     public function getAdminProjectIndex($userId, $sort = null, $order = null)
@@ -151,8 +143,8 @@ readonly class ProjectModelService
     /**
      * Get public project index page.
      *
-     * @param null $sort
-     * @param null $order
+     * @param  null  $sort
+     * @param  null  $order
      * @return mixed
      */
     public function getPublicProjectIndex($sort = null, $order = null)
@@ -165,25 +157,21 @@ readonly class ProjectModelService
 
     /**
      * Get project for show page.
-     *
-     * @param $projectId
-     * @return \App\Models\Project|null
      */
     public function getProjectShow($projectId): ?Project
     {
         return $this->model->withCount('expeditions')->with([
             'group',
             'ocrQueue',
-            'expeditions' => function($q) {
+            'expeditions' => function ($q) {
                 $q->with(['stat', 'zooniverseExport', 'panoptesProject', 'workflowManager']);
-            }
+            },
         ])->find($projectId);
     }
 
     /**
      * Get project page by slug.
      *
-     * @param $slug
      * @return \App\Models\Project|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
     public function getProjectPageBySlug($slug)
@@ -194,7 +182,7 @@ readonly class ProjectModelService
             'resources',
             'lastPanoptesProject',
             'bingos',
-            'expeditions' => function($query){
+            'expeditions' => function ($query) {
                 $query->has('panoptesProject')->has('zooniverseActor')->with('panoptesProject', 'stat', 'zooniverseActor');
             },
             'events' => function ($q) {
@@ -205,9 +193,6 @@ readonly class ProjectModelService
 
     /**
      * Get project for deletion.
-     *
-     * @param $projectId
-     * @return \App\Models\Project|null
      */
     public function getProjectForDelete($projectId): ?Project
     {
@@ -222,7 +207,6 @@ readonly class ProjectModelService
     /**
      * Filter or delete resource.
      *
-     * @param $resource
      * @return bool
      */
     public function filterOrDeleteResources($resource)
@@ -243,7 +227,6 @@ readonly class ProjectModelService
     /**
      * Update project resource.
      *
-     * @param $resource
      * @return bool
      */
     public function updateProjectResource($resource)
@@ -264,9 +247,6 @@ readonly class ProjectModelService
     /**
      * Sort results from index pages.
      *
-     * @param $order
-     * @param $results
-     * @param $sort
      * @return mixed
      */
     protected function sortResults($order, $results, $sort)
@@ -297,7 +277,6 @@ readonly class ProjectModelService
     /**
      * Get project for amChart.
      *
-     * @param $projectId
      * @return mixed
      */
     public function getProjectForAmChartJob($projectId)
@@ -311,14 +290,10 @@ readonly class ProjectModelService
         ])->find($projectId);
     }
 
-    /**
-     * @param $projectId
-     * @return mixed
-     */
     public function getProjectForDarwinImportJob($projectId): mixed
     {
-        return $this->model->with(['group' => function($q){
-            $q->with(['owner', 'users' => function($q){
+        return $this->model->with(['group' => function ($q) {
+            $q->with(['owner', 'users' => function ($q) {
                 $q->where('notification', 1);
             }]);
         }])->find($projectId);

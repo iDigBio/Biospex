@@ -33,18 +33,13 @@ use View;
 
 /**
  * Class EventController
- *
- * @package App\Http\Controllers\Front
  */
 class EventController extends Controller
 {
-    public function __construct(private readonly EventModel $eventModel)
-    {}
+    public function __construct(private readonly EventModel $eventModel) {}
 
     /**
      * Displays Events on public page.
-     *
-     * @return \Illuminate\Contracts\View\View
      */
     public function index(): \Illuminate\Contracts\View\View
     {
@@ -59,8 +54,6 @@ class EventController extends Controller
 
     /**
      * Displays Completed Events on public page.
-     *
-     * @return \Illuminate\Contracts\View\View|null
      */
     public function sort(): ?\Illuminate\Contracts\View\View
     {
@@ -85,9 +78,6 @@ class EventController extends Controller
 
     /**
      * Display the show page for an event.
-     *
-     * @param int $eventId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function read(int $eventId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
@@ -103,10 +93,6 @@ class EventController extends Controller
 
     /**
      * Group join page for events.
-     *
-     * @param \App\Models\EventTeam $eventTeam
-     * @param $uuid
-     * @return \Illuminate\Contracts\View\View
      */
     public function signup(EventTeam $eventTeam, $uuid): \Illuminate\Contracts\View\View
     {
@@ -124,10 +110,6 @@ class EventController extends Controller
     /**
      * Store user for event group.
      *
-     * @param \App\Services\Models\EventUserModelService $eventUserModelService
-     * @param \App\Models\EventTeam $eventTeam
-     * @param \App\Http\Requests\EventJoinRequest $request
-     * @param $uuid
      * @return \Illuminate\Http\RedirectResponse
      */
     public function join(

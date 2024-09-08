@@ -19,28 +19,23 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Services\Models\ProjectModelService;
-use Date;
 use App\Http\Controllers\Controller;
-use App\Services\Models\StateCountyModelService;
 use App\Services\Chart\TranscriptionChartService;
+use App\Services\Models\ProjectModelService;
+use App\Services\Models\StateCountyModelService;
 use Count;
+use Date;
 use JavaScript;
 
 /**
  * Class ProjectController
- *
- * @package App\Http\Controllers\Front
  */
 class ProjectController extends Controller
 {
     /**
      * ProjectController constructor.
-     *
-     * @param \App\Services\Models\ProjectModelService $projectModelService
      */
-    public function __construct(private readonly ProjectModelService $projectModelService)
-    {}
+    public function __construct(private readonly ProjectModelService $projectModelService) {}
 
     /**
      * Public Projects page.
@@ -75,9 +70,6 @@ class ProjectController extends Controller
     /**
      * Show public project page.
      *
-     * @param \App\Services\Chart\TranscriptionChartService $chartService
-     * @param \App\Services\Models\StateCountyModelService $stateCountyModelService
-     * @param $slug
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function project(
@@ -112,16 +104,16 @@ class ProjectController extends Controller
         $transcriptionsCount = Count::projectTranscriptionCount($project->id);
         $transcribersCount = Count::projectTranscriberCount($project->id);
 
-        $years = !isset($project->amChart) || is_null($project->amChart->data) ?
+        $years = ! isset($project->amChart) || is_null($project->amChart->data) ?
             null : array_keys($project->amChart->data);
 
         $states = $stateCountyModelService->getStateTranscriptCount($project->id);
         $max = abs(round(($states->max('value') + 500), -3));
 
         JavaScript::put([
-            'max'     => $max,
-            'states'  => $states->toJson(),
-            'years'   => $years,
+            'max' => $max,
+            'states' => $states->toJson(),
+            'years' => $years,
             'project' => $project->id,
         ]);
 

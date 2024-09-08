@@ -19,10 +19,10 @@
 
 namespace App\Services\Csv;
 
+use App\Models\Download;
 use App\Models\Expedition;
 use App\Models\GeoLocateExport;
 use App\Models\GeoLocateForm;
-use App\Models\Download;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,25 +31,16 @@ use Illuminate\Support\Facades\Storage;
  */
 class GeoLocateExportService
 {
-
-    /**
-     * @var string
-     */
     private string $csvFilePath;
 
     /**
      * Construct
-     *
-     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
-     * @param \App\Models\GeoLocateExport $geoLocateExport
-     * @param \App\Models\Download $download
      */
     public function __construct(
         private AwsS3CsvService $awsS3CsvService,
         private GeoLocateExport $geoLocateExport,
         private Download $download,
-    )
-    {}
+    ) {}
 
     /**
      * Process GeoLocate export.

@@ -27,16 +27,10 @@ use Illuminate\Support\Collection;
 
 class EventService
 {
-    public function __construct(protected Event $event, protected EventTeam $eventTeam, protected DateService $dateService)
-    {}
+    public function __construct(protected Event $event, protected EventTeam $eventTeam, protected DateService $dateService) {}
 
     /**
      * Get events for admin index.
-     *
-     * @param User $user
-     * @param string|null $sort
-     * @param string|null $order
-     * @return Collection
      */
     public function index(User $user, ?string $sort = null, ?string $order = null): Collection
     {
@@ -51,11 +45,6 @@ class EventService
 
     /**
      * Sort results for index pages.
-     *
-     * @param \Illuminate\Support\Collection $records
-     * @param string|null $sort
-     * @param string|null $order
-     * @return \Illuminate\Support\Collection
      */
     protected function sortRecords(Collection $records, ?string $sort = null, ?string $order = null): Collection
     {
@@ -77,9 +66,6 @@ class EventService
 
     /**
      * Partition records into incomplete and complete.
-     *
-     * @param \Illuminate\Support\Collection $records
-     * @return \Illuminate\Support\Collection
      */
     protected function partitionRecords(Collection $records): Collection
     {

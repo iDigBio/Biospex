@@ -21,24 +21,18 @@ namespace App\Services\Transcriptions;
 
 use App\Services\Models\ExpeditionModelService;
 use App\Services\Models\PanoptesTranscriptionModelService;
-use TranscriptionMap;
 use App\Services\Models\PusherTranscriptionModelService;
 use Ramsey\Uuid\Uuid;
+use TranscriptionMap;
 use Validator;
 
 /**
  * Class UpdateOrCreatePusherTranscriptionService
- *
- * @package App\Services\Transcriptions
  */
-readonly  class UpdateOrCreatePusherTranscriptionService
+readonly class UpdateOrCreatePusherTranscriptionService
 {
     /**
      * UpdateOrCreatePusherTranscriptionService constructor.
-     *
-     * @param \App\Services\Models\PusherTranscriptionModelService $pusherTranscriptionModelService
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
      */
     public function __construct(
         private PusherTranscriptionModelService $pusherTranscriptionModelService,
@@ -49,7 +43,6 @@ readonly  class UpdateOrCreatePusherTranscriptionService
     /**
      * Get expedition.
      *
-     * @param $expeditionId
      * @return \App\Models\Expedition|null
      */
     public function getExpedition($expeditionId)
@@ -60,9 +53,7 @@ readonly  class UpdateOrCreatePusherTranscriptionService
     /**
      * Get transcriptions.
      *
-     * @param int $expeditionId
-     * @param null $timestamp
-     * @return mixed
+     * @param  null  $timestamp
      */
     public function getTranscriptions(int $expeditionId, $timestamp = null): mixed
     {
@@ -74,8 +65,6 @@ readonly  class UpdateOrCreatePusherTranscriptionService
      * Uses transcriptions from overnight job to update any existing,
      * or create new, pusher transcriptions.
      *
-     * @param $transcription
-     * @param $expedition
      * @throws \Exception
      */
     public function processTranscripts($transcription, $expedition)
@@ -89,8 +78,6 @@ readonly  class UpdateOrCreatePusherTranscriptionService
     /**
      * Create classification if it doesn't exist.
      *
-     * @param $transcription
-     * @param $expedition
      * @throws \Exception
      */
     private function createClassification($transcription, $expedition)
@@ -104,42 +91,42 @@ readonly  class UpdateOrCreatePusherTranscriptionService
         }
 
         $item = [
-            'classification_id'    => $classification_id,
-            'expedition_uuid'      => $expedition->uuid,
-            'project'              => $expedition->panoptesProject->title,
-            'description'          => $expedition->description,
-            'guid'                 => Uuid::uuid4()->toString(),
-            'timestamp'            => $transcription->classification_finished_at,
-            'subject'              => [
-                'link'         => $transcription->subject_references,
+            'classification_id' => $classification_id,
+            'expedition_uuid' => $expedition->uuid,
+            'project' => $expedition->panoptesProject->title,
+            'description' => $expedition->description,
+            'guid' => Uuid::uuid4()->toString(),
+            'timestamp' => $transcription->classification_finished_at,
+            'subject' => [
+                'link' => $transcription->subject_references,
                 'thumbnailUri' => $thumbnailUri,
             ],
-            'contributor'          => [
-                'decimalLatitude'  => '',
+            'contributor' => [
+                'decimalLatitude' => '',
                 'decimalLongitude' => '',
-                'ipAddress'        => '',
-                'transcriber'      => $transcription->user_name,
+                'ipAddress' => '',
+                'transcriber' => $transcription->user_name,
                 'physicalLocation' => [
-                    'country'      => '',
-                    'province'     => '',
-                    'county'       => '',
+                    'country' => '',
+                    'province' => '',
+                    'county' => '',
                     'municipality' => '',
-                    'locality'     => '',
+                    'locality' => '',
                 ],
             ],
             'transcriptionContent' => [
-                'lat'          => '',
-                'long'         => '',
-                'country'      => $transcription->Country,
-                'province'     => TranscriptionMap::mapTranscriptionField('province', $transcription),
-                'county'       => $transcription->County,
+                'lat' => '',
+                'long' => '',
+                'country' => $transcription->Country,
+                'province' => TranscriptionMap::mapTranscriptionField('province', $transcription),
+                'county' => $transcription->County,
                 'municipality' => '',
-                'locality'     => $transcription->Location,
-                'date'         => '', // which date to use? transcription date is messy
-                'collector'    => TranscriptionMap::mapTranscriptionField('collector', $transcription),
-                'taxon'        => TranscriptionMap::mapTranscriptionField('taxon', $transcription),
+                'locality' => $transcription->Location,
+                'date' => '', // which date to use? transcription date is messy
+                'collector' => TranscriptionMap::mapTranscriptionField('collector', $transcription),
+                'taxon' => TranscriptionMap::mapTranscriptionField('taxon', $transcription),
             ],
-            'discretionaryState'   => 'Transcribed',
+            'discretionaryState' => 'Transcribed',
         ];
 
         $this->pusherTranscriptionModelService->create($item);
@@ -147,34 +134,30 @@ readonly  class UpdateOrCreatePusherTranscriptionService
 
     /**
      * Update Classification.
-     *
-     * @param $transcription
-     * @param $classification
-     * @param $expedition
      */
     private function updateClassification($transcription, $classification, $expedition)
     {
         $thumbnailUri = $this->setThumbnailUri($transcription);
 
         $subject = [
-            'link'         => ! empty ($transcription->subject_references) ? $transcription->subject_references : $classification->subject['link'],
-            'thumbnailUri' => ! empty ($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri'],
+            'link' => ! empty($transcription->subject_references) ? $transcription->subject_references : $classification->subject['link'],
+            'thumbnailUri' => ! empty($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri'],
         ];
 
         $transcriptionContent = [
-            'country'   => ! empty($transcription->Country) ? $transcription->Country : $classification->country,
-            'province'  => TranscriptionMap::mapTranscriptionField('province', $transcription, $classification),
-            'county'    => ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'],
-            'locality'  => ! empty($transcription->Location) ? $transcription->Location : '',
+            'country' => ! empty($transcription->Country) ? $transcription->Country : $classification->country,
+            'province' => TranscriptionMap::mapTranscriptionField('province', $transcription, $classification),
+            'county' => ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'],
+            'locality' => ! empty($transcription->Location) ? $transcription->Location : '',
             'collector' => TranscriptionMap::mapTranscriptionField('collector', $transcription, $classification),
-            'taxon'     => TranscriptionMap::mapTranscriptionField('taxon', $transcription, $classification),
+            'taxon' => TranscriptionMap::mapTranscriptionField('taxon', $transcription, $classification),
         ];
 
         $attributes = [
-            'expedition_uuid'      => $expedition->uuid,
-            'timestamp'            => $transcription->classification_finished_at,
-            'subject'              => array_merge($classification->subject, $subject),
-            'contributor'          => array_merge($classification->contributor, ['transcriber' => $transcription->user_name]),
+            'expedition_uuid' => $expedition->uuid,
+            'timestamp' => $transcription->classification_finished_at,
+            'subject' => array_merge($classification->subject, $subject),
+            'contributor' => array_merge($classification->contributor, ['transcriber' => $transcription->user_name]),
             'transcriptionContent' => array_merge($classification->transcriptionContent, $transcriptionContent),
         ];
 
@@ -183,9 +166,6 @@ readonly  class UpdateOrCreatePusherTranscriptionService
 
     /**
      * Determine image url.
-     *
-     * @param $transcription
-     * @return mixed
      */
     private function setThumbnailUri($transcription): mixed
     {
@@ -194,9 +174,6 @@ readonly  class UpdateOrCreatePusherTranscriptionService
 
     /**
      * Validate transcription to prevent duplicates.
-     *
-     * @param $classification_id
-     * @return mixed
      */
     public function validateTranscription($classification_id): mixed
     {

@@ -27,18 +27,13 @@ use Illuminate\Support\Facades\Mail;
 
 /**
  * Class MailController
- *
- * @package App\Http\Controllers\Admin
  */
 class MailController extends Controller
 {
     /**
      * UserAccountController constructor.
-     *
-     * @param \App\Services\Models\UserModelService $userModelService
      */
-    public function __construct(private readonly UserModelService $userModelService)
-    {}
+    public function __construct(private readonly UserModelService $userModelService) {}
 
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -51,13 +46,12 @@ class MailController extends Controller
     /**
      * Show the form for user edit.
      *
-     * @param \App\Http\Requests\MailFormRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function send(MailFormRequest $request)
     {
         $users = $this->userModelService->getUsersForMailer($request->get('recipients'));
-        $recipients = $users->reject(function($user){
+        $recipients = $users->reject(function ($user) {
             return $user->email === config('mail.from.address');
         })->pluck('email');
 

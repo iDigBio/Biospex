@@ -26,20 +26,17 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class Event
- *
- * @package App\Models
  */
 class Event extends BaseEloquentModel
 {
     use Presentable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'events';
 
     /**
-     *
      * The attributes that should be cast.
      *
      * @return string[]
@@ -47,23 +44,23 @@ class Event extends BaseEloquentModel
     protected function casts(): array
     {
         return [
-            'project_id'    => 'integer',
-            'owner_id'      => 'integer',
-            'title'         => 'string',
-            'description'   => 'string',
-            'hashtag'       => 'string',
-            'contact'       => 'string',
+            'project_id' => 'integer',
+            'owner_id' => 'integer',
+            'title' => 'string',
+            'description' => 'string',
+            'hashtag' => 'string',
+            'contact' => 'string',
             'contact_email' => 'string',
-            'start_date'    => 'datetime',
-            'end_date'      => 'datetime',
-            'timezone'      => 'string',
-            'created_at'    => 'datetime',
-            'updated_at'    => 'datetime',
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
+            'timezone' => 'string',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'project_id',
@@ -75,18 +72,13 @@ class Event extends BaseEloquentModel
         'contact_email',
         'start_date',
         'end_date',
-        'timezone'
+        'timezone',
     ];
 
-    /**
-     * @var string $presenter
-     */
     protected string $presenter = EventPresenter::class;
 
     /**
      * Project relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -95,8 +87,6 @@ class Event extends BaseEloquentModel
 
     /**
      * Owner relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function owner(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -105,8 +95,6 @@ class Event extends BaseEloquentModel
 
     /**
      * EventTeam relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function teams(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -115,8 +103,6 @@ class Event extends BaseEloquentModel
 
     /**
      * Event transcription relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function transcriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -125,21 +111,17 @@ class Event extends BaseEloquentModel
 
     /**
      * Define the start date attribute.
-     *
-     * @return Attribute
      */
     protected function startDate(): Attribute
     {
-        return Attribute::make(set: fn($value) => $value->setTimezone(new DateTimeZone('UTC')));
+        return Attribute::make(set: fn ($value) => $value->setTimezone(new DateTimeZone('UTC')));
     }
 
     /**
      * Define the end date attribute.
-     *
-     * @return Attribute
      */
     protected function endDate(): Attribute
     {
-        return Attribute::make(set: fn($value) => $value->setTimezone(new DateTimeZone('UTC')));
+        return Attribute::make(set: fn ($value) => $value->setTimezone(new DateTimeZone('UTC')));
     }
 }

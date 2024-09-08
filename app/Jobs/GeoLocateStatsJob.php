@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Jobs;
 
 use App\Models\Actor;
@@ -33,26 +34,14 @@ class GeoLocateStatsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
-    /**
-     * @var \App\Models\Actor $actor
-     */
     private Actor $actor;
 
-    /**
-     * @var \App\Models\Expedition $expedition
-     */
     private Expedition $expedition;
 
-    /**
-     * @var bool $refresh
-     */
     private bool $refresh;
 
     /**
      * Create a new job instance.
-     *
-     * @param \App\Models\Actor $actor
-     * @param bool $refresh
      */
     public function __construct(Actor $actor, bool $refresh = false)
     {
@@ -70,7 +59,7 @@ class GeoLocateStatsJob implements ShouldQueue
         $this->expedition = $expeditionModelService->findExpeditionWithRelations($this->actor->pivot->expedition_id, ['project.group.owner']);
         $geoLocateDataSource = $geoLocateStat->getCommunityAndDataSourceByExpeditionId($this->actor->pivot->expedition_id);
 
-        if (!$this->refresh && $geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
+        if (! $this->refresh && $geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
             return;
         }
 
@@ -97,12 +86,11 @@ class GeoLocateStatsJob implements ShouldQueue
 
             $attributes = [
                 'subject' => t('GeoLocate stats for %s is complete.', $this->expedition->title),
-                'html'    => [
+                'html' => [
                     t('The GeoLocate Stat process is complete and the KML file is ready for download.'),
-                    t('You can download the file from the Downloads button of the Expedition.')
-                ]
+                    t('You can download the file from the Downloads button of the Expedition.'),
+                ],
             ];
-
 
             $this->expedition->project->group->owner->notify(new Generic($attributes));
         }
@@ -110,16 +98,13 @@ class GeoLocateStatsJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @param  \Throwable  $throwable
-     * @return void
      */
     public function failed(Throwable $throwable): void
     {
         $subject = t('GeoLocate stats for %s failed.', $this->expedition->title);
         $attributes = [
             'subject' => $subject,
-            'html'    => [
+            'html' => [
                 t('Error: %s', $subject),
                 t('Error: %s', $throwable->getMessage()),
                 t('File: %s', $throwable->getFile()),

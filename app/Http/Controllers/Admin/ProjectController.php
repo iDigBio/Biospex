@@ -23,29 +23,23 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectFormRequest;
 use App\Jobs\DeleteProjectJob;
 use App\Jobs\DeleteUnassignedSubjectsJob;
-use App\Services\Models\GroupModelService;
 use App\Services\Grid\JqGridEncoder;
+use App\Services\Models\GroupModelService;
 use App\Services\Models\ProjectModelService;
 use Auth;
 use Count;
 use Exception;
-use Flash;
 use JavaScript;
 use Redirect;
 use View;
 
 /**
  * Class ProjectController
- *
- * @package App\Http\Controllers\Admin
  */
 class ProjectController extends Controller
 {
     /**
      * ProjectController constructor.
-     *
-     * @param \App\Services\Models\ProjectModelService $projectModelService
-     * @param \App\Services\Models\GroupModelService $groupModelService
      */
     public function __construct(
         private readonly ProjectModelService $projectModelService,
@@ -54,8 +48,6 @@ class ProjectController extends Controller
 
     /**
      * Show projects list for admin page.
-     *
-     * @return \Illuminate\Contracts\View\View
      */
     public function index(): \Illuminate\Contracts\View\View
     {
@@ -69,8 +61,6 @@ class ProjectController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\View\View
      */
     public function create(): \Illuminate\View\View
     {
@@ -85,9 +75,6 @@ class ProjectController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param $projectId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function show($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
@@ -105,12 +92,12 @@ class ProjectController extends Controller
         $transcribersCount = Count::projectTranscriberCount($project->id);
 
         $viewParams = [
-            'project'              => $project,
-            'group'                => $project->group,
-            'expeditions'          => $expeditions,
+            'project' => $project,
+            'group' => $project->group,
+            'expeditions' => $expeditions,
             'expeditionsCompleted' => $expeditionsCompleted,
-            'transcriptionsCount'  => $transcriptionsCount,
-            'transcribersCount'    => $transcribersCount,
+            'transcriptionsCount' => $transcriptionsCount,
+            'transcribersCount' => $transcribersCount,
         ];
 
         return View::make('admin.project.show', $viewParams);
@@ -118,9 +105,6 @@ class ProjectController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param ProjectFormRequest $request
-     * @return mixed
      */
     public function store(ProjectFormRequest $request): mixed
     {
@@ -142,9 +126,6 @@ class ProjectController extends Controller
 
     /**
      * Create duplicate project
-     *
-     * @param $projectId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function clone($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
@@ -169,9 +150,6 @@ class ProjectController extends Controller
      *
      * $model->relation()->exists(); // bool: true if there is at least one row
      * $model->relation()->count(); // int: number of related rows
-     *
-     * @param $projectId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function edit($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
@@ -194,10 +172,6 @@ class ProjectController extends Controller
 
     /**
      * Update project.
-     *
-     * @param ProjectFormRequest $request
-     * @param $projectId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(ProjectFormRequest $request, $projectId): \Illuminate\Http\RedirectResponse
     {
@@ -216,8 +190,6 @@ class ProjectController extends Controller
 
     /**
      * Admin Projects page sort and order.
-     *
-     * @return \Illuminate\Contracts\View\View|null
      */
     public function sort(): ?\Illuminate\Contracts\View\View
     {
@@ -235,10 +207,6 @@ class ProjectController extends Controller
 
     /**
      * Display project explore page.
-     *
-     * @param $projectId
-     * @param \App\Services\Grid\JqGridEncoder $grid
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function explore($projectId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
@@ -251,13 +219,13 @@ class ProjectController extends Controller
         $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
-            'model'      => $model,
+            'model' => $model,
             'subjectIds' => [],
-            'maxCount'   => config('config.expedition_size'),
-            'dataUrl'    => route('admin.grids.explore', [$projectId]),
-            'exportUrl'  => route('admin.grids.export', [$projectId]),
-            'checkbox'   => false,
-            'route'      => 'explore', // used for export
+            'maxCount' => config('config.expedition_size'),
+            'dataUrl' => route('admin.grids.explore', [$projectId]),
+            'exportUrl' => route('admin.grids.export', [$projectId]),
+            'checkbox' => false,
+            'route' => 'explore', // used for export
         ]);
 
         $subjectAssignedCount = $this->projectModelService->findWithRelations($projectId)->expeditionStats->sum('local_subject_count');
@@ -267,9 +235,6 @@ class ProjectController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param $projectId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function delete($projectId): \Illuminate\Http\RedirectResponse
     {
@@ -298,9 +263,6 @@ class ProjectController extends Controller
 
     /**
      * Project Stats.
-     *
-     * @param $projectId
-     * @return \Illuminate\Contracts\View\View
      */
     public function statistics($projectId): \Illuminate\Contracts\View\View
     {
@@ -316,9 +278,6 @@ class ProjectController extends Controller
 
     /**
      * Delete all unassigned subjects for project.
-     *
-     * @param int $projectId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteSubjects(int $projectId): \Illuminate\Http\RedirectResponse
     {

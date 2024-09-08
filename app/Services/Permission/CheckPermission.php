@@ -27,7 +27,6 @@ class CheckPermission
     //use AuthorizesRequests;
     /**
      * Check if the user can update the user.
-     *
      */
     public static function handle(string $ability, $object): bool
     {

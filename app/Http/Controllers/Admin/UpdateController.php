@@ -27,6 +27,7 @@ class UpdateController extends Controller
     public function index(Update $update)
     {
         $updates = $update->all()->sortByDesc('created_at');
+
         return \View::make('admin.update.index', compact('updates'));
     }
 }

@@ -24,8 +24,7 @@ use Illuminate\Http\Request;
 
 class PollController
 {
-    public function __construct(protected Artisan $artisan, protected Request $request)
-    {}
+    public function __construct(protected Artisan $artisan, protected Request $request) {}
 
     /**
      * Call polling command when process modal opened. Trigger inside biospex.js

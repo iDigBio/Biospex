@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Console\Commands;
 
 use App\Services\Models\ExpeditionModelService;
@@ -28,7 +29,6 @@ use Illuminate\Console\Command;
  * Runs lambda labelReconciliation for single or multiple expeditions.
  * LabelReconciliationListener will handle the reconciliation process after it's complete
  * by running ZooniverseTranscriptionJob() and ZooniversePusherJob().
- *
  */
 class ZooniverseReconcileChainedCommand extends Command
 {
@@ -62,10 +62,7 @@ class ZooniverseReconcileChainedCommand extends Command
      * Execute the console command.
      * Copies classification csv to lambda-reconciliation on S3 and triggers lambda labelReconciliation function.
      *
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @return void
      * @see \App\Listeners\LabelReconciliationListener for result processing.
-     *
      */
     public function handle(ExpeditionModelService $expeditionModelService): void
     {
@@ -77,17 +74,14 @@ class ZooniverseReconcileChainedCommand extends Command
                 continue;
             }
 
-            $classification = config('zooniverse.directory.classification') . '/' . $expeditionId . '.csv';
-            $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation') . '/' . $expeditionId . '.csv';
+            $classification = config('zooniverse.directory.classification').'/'.$expeditionId.'.csv';
+            $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation').'/'.$expeditionId.'.csv';
             \Storage::disk('s3')->copy($classification, $lambda_reconciliation);
         }
     }
 
     /**
      * Get all expeditions for process if no ids are passed.
-     *
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @return array
      */
     private function getExpeditionIds(ExpeditionModelService $expeditionModelService): array
     {

@@ -27,16 +27,12 @@ class WeDigBioEventTranscriptionModelService
 {
     /**
      * WeDigBioEventTranscriptionRepository constructor.
-     *
-     * @param \App\Models\WeDigBioEventTranscription $model
      */
-    public function __construct(private readonly WeDigBioEventTranscription $model)
-    {}
+    public function __construct(private readonly WeDigBioEventTranscription $model) {}
 
     /**
      * Create.
      *
-     * @param array $data
      * @return mixed
      */
     public function create(array $data)
@@ -46,11 +42,6 @@ class WeDigBioEventTranscriptionModelService
 
     /**
      * Get transcriptions for WeDigBio project event step chart.
-     *
-     * @param int $dateId
-     * @param \Illuminate\Support\Carbon $startLoad
-     * @param \Illuminate\Support\Carbon $endLoad
-     * @return \Illuminate\Support\Collection|null
      */
     public function getWeDigBioRateChartTranscriptions(int $dateId, Carbon $startLoad, Carbon $endLoad): ?Collection
     {

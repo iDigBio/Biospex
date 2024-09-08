@@ -23,6 +23,5 @@ use App\Models\BingoMap;
 
 readonly class BingoMapModelService
 {
-    public function __construct(private BingoMap $bingoMap)
-    {}
+    public function __construct(private BingoMap $bingoMap) {}
 }

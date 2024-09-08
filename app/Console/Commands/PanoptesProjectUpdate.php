@@ -25,8 +25,6 @@ use Illuminate\Console\Command;
 
 /**
  * Class PanoptesProjectUpdate
- *
- * @package App\Console\Commands
  */
 class PanoptesProjectUpdate extends Command
 {
@@ -44,9 +42,6 @@ class PanoptesProjectUpdate extends Command
      */
     protected $description = 'Update expedition panoptes_projects. Accepts comma separated ids or empty.';
 
-    /**
-     * @var
-     */
     private $expeditionIds;
 
     /**
@@ -59,8 +54,6 @@ class PanoptesProjectUpdate extends Command
 
     /**
      * Execute the console command.
-     *
-     * @param \App\Models\PanoptesProject $panoptesProject
      */
     public function handle(PanoptesProject $panoptesProject)
     {
@@ -70,7 +63,7 @@ class PanoptesProjectUpdate extends Command
             $panoptesProject->all() :
             $panoptesProject->whereIn('expedition_id', $this->expeditionIds)->get();
 
-        $projects->each(function($project){
+        $projects->each(function ($project) {
             PanoptesProjectUpdateJob::dispatch($project);
         });
     }
@@ -80,7 +73,7 @@ class PanoptesProjectUpdate extends Command
      */
     private function setIds()
     {
-        $this->expeditionIds = null ===  $this->argument('expeditionIds') ? null :
+        $this->expeditionIds = $this->argument('expeditionIds') === null ? null :
             explode(',', $this->argument('expeditionIds'));
     }
 }

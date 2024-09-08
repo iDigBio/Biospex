@@ -20,23 +20,15 @@
 namespace App\Services\Helpers;
 
 use App\Models\Expedition;
-use Carbon\Carbon;
-use Exception;
-use Schema;
 use Storage;
 
 /**
  * Class GeneralService
- *
- * @package App\Services\Helpers
  */
 class GeneralService
 {
     /**
      * Encode a full url.
-     *
-     * @param $url
-     * @return string
      */
     public function urlEncode($url): string
     {
@@ -47,63 +39,62 @@ class GeneralService
     }
 
     /**
-     * @param $input
      * @return mixed|null
      */
     public function getState($input): mixed
     {
         $states = [
-            'Alabama'              => 'AL',
-            'Alaska'               => 'AK',
-            'Arizona'              => 'AZ',
-            'Arkansas'             => 'AR',
-            'California'           => 'CA',
-            'Colorado'             => 'CO',
-            'Connecticut'          => 'CT',
-            'Delaware'             => 'DE',
+            'Alabama' => 'AL',
+            'Alaska' => 'AK',
+            'Arizona' => 'AZ',
+            'Arkansas' => 'AR',
+            'California' => 'CA',
+            'Colorado' => 'CO',
+            'Connecticut' => 'CT',
+            'Delaware' => 'DE',
             'District Of Columbia' => 'DC',
-            'Florida'              => 'FL',
-            'Georgia'              => 'GA',
-            'Hawaii'               => 'HI',
-            'Idaho'                => 'ID',
-            'Illinois'             => 'IL',
-            'Indiana'              => 'IN',
-            'Iowa'                 => 'IA',
-            'Kansas'               => 'KS',
-            'Kentucky'             => 'KY',
-            'Louisiana'            => 'LA',
-            'Maine'                => 'ME',
-            'Maryland'             => 'MD',
-            'Massachusetts'        => 'MA',
-            'Michigan'             => 'MI',
-            'Minnesota'            => 'MN',
-            'Mississippi'          => 'MS',
-            'Missouri'             => 'MO',
-            'Montana'              => 'MT',
-            'Nebraska'             => 'NE',
-            'Nevada'               => 'NV',
-            'New Hampshire'        => 'NH',
-            'New Jersey'           => 'NJ',
-            'New Mexico'           => 'NM',
-            'New York'             => 'NY',
-            'North Carolina'       => 'NC',
-            'North Dakota'         => 'ND',
-            'Ohio'                 => 'OH',
-            'Oklahoma'             => 'OK',
-            'Oregon'               => 'OR',
-            'Pennsylvania'         => 'PA',
-            'Rhode Island'         => 'RI',
-            'South Carolina'       => 'SC',
-            'South Dakota'         => 'SD',
-            'Tennessee'            => 'TN',
-            'Texas'                => 'TX',
-            'Utah'                 => 'UT',
-            'Vermont'              => 'VT',
-            'Virginia'             => 'VA',
-            'Washington'           => 'WA',
-            'West Virginia'        => 'WV',
-            'Wisconsin'            => 'WI',
-            'Wyoming'              => 'WY',
+            'Florida' => 'FL',
+            'Georgia' => 'GA',
+            'Hawaii' => 'HI',
+            'Idaho' => 'ID',
+            'Illinois' => 'IL',
+            'Indiana' => 'IN',
+            'Iowa' => 'IA',
+            'Kansas' => 'KS',
+            'Kentucky' => 'KY',
+            'Louisiana' => 'LA',
+            'Maine' => 'ME',
+            'Maryland' => 'MD',
+            'Massachusetts' => 'MA',
+            'Michigan' => 'MI',
+            'Minnesota' => 'MN',
+            'Mississippi' => 'MS',
+            'Missouri' => 'MO',
+            'Montana' => 'MT',
+            'Nebraska' => 'NE',
+            'Nevada' => 'NV',
+            'New Hampshire' => 'NH',
+            'New Jersey' => 'NJ',
+            'New Mexico' => 'NM',
+            'New York' => 'NY',
+            'North Carolina' => 'NC',
+            'North Dakota' => 'ND',
+            'Ohio' => 'OH',
+            'Oklahoma' => 'OK',
+            'Oregon' => 'OR',
+            'Pennsylvania' => 'PA',
+            'Rhode Island' => 'RI',
+            'South Carolina' => 'SC',
+            'South Dakota' => 'SD',
+            'Tennessee' => 'TN',
+            'Texas' => 'TX',
+            'Utah' => 'UT',
+            'Vermont' => 'VT',
+            'Virginia' => 'VA',
+            'Washington' => 'WA',
+            'West Virginia' => 'WV',
+            'Wisconsin' => 'WI',
+            'Wyoming' => 'WY',
         ];
 
         foreach ($states as $name => $abbr) {
@@ -119,10 +110,10 @@ class GeneralService
      * Check for UTF-8 compatibility
      *
      * Regex from Martin Dürst
+     *
      * @source http://www.w3.org/International/questions/qa-forms-utf-8.en.php
      *
-     * @param string $str String to check
-     * @return boolean
+     * @param  string  $str  String to check
      */
     public function isUtf8($str): bool
     {
@@ -142,15 +133,14 @@ class GeneralService
      * Try to convert a string to UTF-8.
      *
      * @author Thomas Scholz <http://toscho.de>
-     * @param string $str String to encode
-     * @param string $inputEnc Maybe the source encoding.
-     *               Set to NULL if you are not sure. iconv() will fail then.
-     * @return string
+     *
+     * @param  string  $str  String to encode
+     * @param  string  $inputEnc  Maybe the source encoding.
+     *                            Set to NULL if you are not sure. iconv() will fail then.
      */
     public function forceUtf8($str, $inputEnc = 'WINDOWS-1252'): string
     {
-        if ($this->isUtf8($str)) // nothing to do
-        {
+        if ($this->isUtf8($str)) { // nothing to do
             return $str;
         }
 
@@ -173,9 +163,7 @@ class GeneralService
     /**
      * Give file size in human-readable form.
      *
-     * @param $bytes
-     * @param int $decimals
-     * @return string
+     * @param  int  $decimals
      */
     public function humanFileSize($bytes, $decimals = 2): string
     {
@@ -188,7 +176,6 @@ class GeneralService
     /**
      * Convert uuid value to bin for lookup.
      *
-     * @param $value
      * @return string|void
      */
     public function uuidToBin($value)
@@ -203,8 +190,7 @@ class GeneralService
     /**
      * Return banner file name if exists.
      *
-     * @param null $name
-     * @return mixed
+     * @param  null  $name
      */
     public function projectBannerFileName($name = null): mixed
     {
@@ -212,8 +198,7 @@ class GeneralService
     }
 
     /**
-     * @param null $name
-     * @return mixed
+     * @param  null  $name
      */
     public function projectBannerFileUrl($name = null): mixed
     {
@@ -224,8 +209,6 @@ class GeneralService
 
     /**
      * Return default logo for projects.
-     *
-     * @return mixed
      */
     public function projectDefaultLogo(): mixed
     {
@@ -234,8 +217,6 @@ class GeneralService
 
     /**
      * Return default logo for expeditions.
-     *
-     * @return mixed
      */
     public function expeditionDefaultLogo(): mixed
     {
@@ -245,12 +226,8 @@ class GeneralService
     /**
      * Check if download file exists.
      * TODO: Refactor this after changing and moving download file storage.
-     * @param string $file
-     * @param string $type
-     * @param int|null $actorId
-     * @return bool
      */
-    public function downloadFileExists(string $file, string $type, int $actorId = null): bool
+    public function downloadFileExists(string $file, string $type, ?int $actorId = null): bool
     {
         if ($actorId == config('zooniverse.actor_id')) {
             return $this->checkZooniverseFile($type, $file);
@@ -265,28 +242,20 @@ class GeneralService
 
     /**
      * Check if download file exists.
-     *
-     * @param string $type
-     * @param string $file
-     * @return bool
      */
     private function checkZooniverseFile(string $type, string $file): bool
     {
         if ($type === 'export') {
             return Storage::disk('s3')->exists(config('config.export_dir').'/'.$file);
-        }elseif ($type === 'report') {
+        } elseif ($type === 'report') {
             return Storage::disk('s3')->exists(config('config.report_dir').'/'.$file);
-        }else{
+        } else {
             return Storage::disk('s3')->exists(config('zooniverse.directory.parent').'/'.$type.'/'.$file);
         }
     }
 
     /**
      * Check if download file exists.
-     *
-     * @param string $type
-     * @param string $file
-     * @return bool
      */
     private function checkGeoLocateFile(string $type, string $file): bool
     {
@@ -295,13 +264,8 @@ class GeneralService
 
     /**
      * Get file size of download file.
-     *
-     * @param string $file
-     * @param string $type
-     * @param int|null $actorId
-     * @return int
      */
-    public function downloadFileSize(string $file, string $type, int  $actorId = null): int
+    public function downloadFileSize(string $file, string $type, ?int $actorId = null): int
     {
 
         if ($actorId == config('zooniverse.actor_id')) {
@@ -317,28 +281,20 @@ class GeneralService
 
     /**
      * Get file size of download file.
-     *
-     * @param string $file
-     * @param string $type
-     * @return int
      */
     private function checkZooniverseFileSize(string $file, string $type): int
     {
         if ($type === 'export') {
             return Storage::disk('s3')->size(config('config.export_dir').'/'.$file);
-        }elseif ($type === 'report') {
+        } elseif ($type === 'report') {
             return Storage::disk('s3')->size(config('config.report_dir').'/'.$file);
-        }else{
+        } else {
             return Storage::disk('s3')->size(config('zooniverse.directory.parent').'/'.$type.'/'.$file);
         }
     }
 
     /**
      * Get file size of download file.
-     *
-     * @param string $file
-     * @param string $type
-     * @return int
      */
     private function checkGeoLocateFileSize(string $file, string $type): int
     {
@@ -347,9 +303,6 @@ class GeneralService
 
     /**
      * Check subjects and export file existence.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return bool
      */
     public function zooniverseExportFileCheck(Expedition $expedition): bool
     {
@@ -358,9 +311,6 @@ class GeneralService
 
     /**
      * Check panoptes workflow and project set.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return bool
      */
     public function checkPanoptesWorkflow(Expedition $expedition): bool
     {

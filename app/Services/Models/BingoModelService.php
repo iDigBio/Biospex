@@ -24,8 +24,7 @@ use Illuminate\Support\Collection;
 
 readonly class BingoModelService
 {
-    public function __construct(private Bingo $bingo, private BingoWordModelService $bingoWordModelService)
-    {}
+    public function __construct(private Bingo $bingo, private BingoWordModelService $bingoWordModelService) {}
 
     public function findBingoWithRelations(int $id, array $relations = []): mixed
     {
@@ -34,10 +33,6 @@ readonly class BingoModelService
 
     /**
      * Get bingo with relations by user id.
-     *
-     * @param int $userId
-     * @param array $relations
-     * @return Collection
      */
     public function getBingoByUserIdWithRelations(int $userId, array $relations = []): Collection
     {
@@ -46,9 +41,6 @@ readonly class BingoModelService
 
     /**
      * Create bingo.
-     *
-     * @param array $attributes
-     * @return mixed
      */
     public function createBingo(array $attributes): mixed
     {
@@ -57,8 +49,9 @@ readonly class BingoModelService
         $words = collect($attributes['words'])->map(function ($word) {
             $values = [
                 'word' => $word['word'],
-                'definition' => $word['definition']
+                'definition' => $word['definition'],
             ];
+
             return $this->bingoWordModelService->makeBingoWord($values);
         });
 
@@ -69,10 +62,6 @@ readonly class BingoModelService
 
     /**
      * Update bingo.
-     *
-     * @param array $attributes
-     * @param string $resourceId
-     * @return Bingo
      */
     public function updateBingo(array $attributes, string $resourceId): Bingo
     {

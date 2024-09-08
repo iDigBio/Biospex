@@ -20,17 +20,15 @@
 namespace App\Services\Actor\TesseractOcr;
 
 use App\Models\OcrQueue;
+use App\Models\OcrQueueFile;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Models\OcrQueueFile;
 use App\Services\Models\SubjectModelService;
 use App\Services\Process\CreateReportService;
 use Str;
 
 /**
  * Class OcrService
- *
- * @package App\Services\Process
  */
 class TesseractOcrComplete
 {
@@ -38,10 +36,6 @@ class TesseractOcrComplete
 
     /**
      * Ocr constructor.
-     *
-     * @param \App\Services\Models\SubjectModelService $subjectModelService
-     * @param \App\Models\OcrQueueFile $ocrQueueFile
-     * @param \App\Services\Process\CreateReportService $createReportService
      */
     public function __construct(
         private SubjectModelService $subjectModelService,
@@ -52,8 +46,6 @@ class TesseractOcrComplete
     /**
      * Ocr process completed.
      *
-     * @param \App\Models\OcrQueue $ocrQueue
-     * @return void
      * @throws \League\Csv\CannotInsertRecord
      */
     public function ocrCompleted(OcrQueue $ocrQueue): void
@@ -70,16 +62,13 @@ class TesseractOcrComplete
 
     /**
      * Update subjects with ocr result.
-     *
-     * @param int $queueId
-     * @return void
      */
     public function updateSubjects(int $queueId): void
     {
         $cursor = $this->ocrQueueFile->where('queue_id', $queueId)->cursor();
 
-        $cursor->each(function ($file) use ($queueId) {
-            $filePath = config('zooniverse.directory.lambda-ocr') . '/' . $file->subject_id . '.txt';
+        $cursor->each(function ($file) {
+            $filePath = config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt';
             $content = \Storage::disk('s3')->get($filePath);
             $ocrText = trim(preg_replace('/\s+/', ' ', trim($content)));
             $this->subjectModelService->update(['ocr' => $ocrText], $file->subject_id);
@@ -89,8 +78,6 @@ class TesseractOcrComplete
     /**
      * Send notification for completed ocr process.
      *
-     * @param \App\Models\OcrQueue $queue
-     * @return void
      * @throws \League\Csv\CannotInsertRecord
      */
     public function sendNotify(OcrQueue $queue): void
@@ -101,8 +88,8 @@ class TesseractOcrComplete
         $subjects = $cursor->map(function ($subject) {
             return [
                 'subject_id' => $subject->_id,
-                'url'        => $subject->accessURI,
-                'ocr'        => $subject->ocr,
+                'url' => $subject->accessURI,
+                'ocr' => $subject->ocr,
             ];
         });
 
@@ -116,7 +103,7 @@ class TesseractOcrComplete
 
         $attributes = [
             'subject' => t('Ocr Process Complete'),
-            'html'    => [
+            'html' => [
                 t('The OCR processing of your data is complete for %s.', $queue->project->title),
             ],
             'buttons' => $button,
@@ -124,5 +111,4 @@ class TesseractOcrComplete
 
         $queue->project->group->owner->notify(new Generic($attributes));
     }
-
 }

@@ -25,13 +25,11 @@ use MongoDB\BSON\UTCDateTime;
 
 class PanoptesTranscriptionModelService
 {
-    public function __construct(private PanoptesTranscription $model)
-    {}
+    public function __construct(private PanoptesTranscription $model) {}
 
     /**
      * Create.
      *
-     * @param array $data
      * @return mixed
      */
     public function create(array $data)
@@ -51,7 +49,6 @@ class PanoptesTranscriptionModelService
 
     /**
      * Get contributor count for all transcriptions.
-     * @return mixed
      */
     public function getContributorCount(): mixed
     {
@@ -67,6 +64,7 @@ class PanoptesTranscriptionModelService
      * Get total transcriptions for site.
      *
      * @TODO Use expedition_stat table to get sum
+     *
      * @return mixed
      */
     public function getTotalTranscriptions()
@@ -80,8 +78,6 @@ class PanoptesTranscriptionModelService
      * Get project transcription count.
      *
      * TODO Change to sum expedition stat table
-     * @param $projectId
-     * @return int
      */
     public function getProjectTranscriptionCount(int $projectId): int
     {
@@ -100,7 +96,6 @@ class PanoptesTranscriptionModelService
     /**
      * Get expedition transcription count.
      *
-     * @param int $expeditionId
      * @return int
      */
     public function getExpeditionTranscriptionCount(int $expeditionId)
@@ -120,7 +115,6 @@ class PanoptesTranscriptionModelService
     /**
      * Get transcriber count for project.
      *
-     * @param int $projectId
      * @return int
      */
     public function getProjectTranscriberCount(int $projectId)
@@ -145,7 +139,6 @@ class PanoptesTranscriptionModelService
     /**
      * Get transcribers transcription count.
      *
-     * @param int $projectId
      * @return mixed
      */
     public function getTranscribersTranscriptionCount(int $projectId)
@@ -165,27 +158,27 @@ class PanoptesTranscriptionModelService
                     ],
                     [
                         '$group' => [
-                            '_id'                => '$user_name',
+                            '_id' => '$user_name',
                             'transcriptionCount' => [
                                 '$sum' => 1,
                             ],
-                            'expedition'         => [
+                            'expedition' => [
                                 '$addToSet' => '$subject_expeditionId',
                             ],
-                            'last_date'          => [
+                            'last_date' => [
                                 '$max' => '$classification_finished_at',
                             ],
                         ],
                     ],
                     [
                         '$project' => [
-                            '_id'                => 0,
-                            'user_name'          => '$_id',
+                            '_id' => 0,
+                            'user_name' => '$_id',
                             'transcriptionCount' => 1,
-                            'expeditionCount'    => [
+                            'expeditionCount' => [
                                 '$size' => '$expedition',
                             ],
-                            'last_date'          => 1,
+                            'last_date' => 1,
                         ],
                     ],
                 ]);
@@ -196,8 +189,7 @@ class PanoptesTranscriptionModelService
     /**
      * Get transcription for dashboard.
      *
-     * @param int $expeditionId
-     * @param null $timestamp
+     * @param  null  $timestamp
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getTranscriptionForDashboardJob(int $expeditionId, $timestamp = null)
@@ -218,7 +210,6 @@ class PanoptesTranscriptionModelService
     /**
      * Get minimum finish date of transcriptions for project.
      *
-     * @param int $projectId
      * @return mixed|null
      */
     public function getMinFinishedAtDateByProjectId(int $projectId)
@@ -239,7 +230,7 @@ class PanoptesTranscriptionModelService
     /**
      * Get maximum finish date of transcriptions for project.
      * TODO check query because it gave error (projectId 62) could not send aggregate
-     * @param $projectId
+     *
      * @return mixed|null
      */
     public function getMaxFinishedAtDateByProjectId(int $projectId)
@@ -259,25 +250,20 @@ class PanoptesTranscriptionModelService
 
     /**
      * Get transcription count and group by date.
-     *
-     * @param int $workflowId
-     * @param $begin
-     * @param $end
-     * @return mixed
      */
     public function getTranscriptionCountPerDate(int $workflowId, $begin, $end): mixed
     {
-        $key = $workflowId . $begin->__toString() . $end->__toString();
+        $key = $workflowId.$begin->__toString().$end->__toString();
 
         return Cache::rememberForever(md5(__METHOD__.$key), function () use ($workflowId, $begin, $end) {
             return $this->model->raw(function ($collection) use ($workflowId, $begin, $end) {
                 return $collection->aggregate([
                     [
                         '$match' => [
-                            'workflow_id'                => $workflowId,
+                            'workflow_id' => $workflowId,
                             'classification_finished_at' => [
                                 '$gte' => new UTCDateTime($begin),
-                                '$lt'  => new UTCDateTime($end),
+                                '$lt' => new UTCDateTime($end),
                             ],
                         ],
                     ],
@@ -286,7 +272,7 @@ class PanoptesTranscriptionModelService
                             'yearMonthDay' => [
                                 '$dateToString' => [
                                     'format' => '%Y-%m-%d',
-                                    'date'   => '$classification_finished_at',
+                                    'date' => '$classification_finished_at',
                                 ],
                             ],
                         ],
@@ -300,10 +286,6 @@ class PanoptesTranscriptionModelService
 
     /**
      * Return count for transcriber.
-     *
-     * @param int $projectId
-     * @param string $transcriber
-     * @return int
      */
     public function getTranscriptionCountForTranscriber(int $projectId, string $transcriber): int
     {

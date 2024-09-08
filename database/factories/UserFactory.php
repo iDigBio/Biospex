@@ -22,8 +22,8 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<\App\Models\User>
@@ -31,17 +31,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 final class UserFactory extends Factory
 {
     /**
-    * The name of the factory's corresponding model.
-    *
-    * @var string
-    */
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
     protected $model = User::class;
 
     /**
-    * Define the model's default state.
-    *
-    * @return array
-    */
+     * Define the model's default state.
+     */
     public function definition(): array
     {
         return [
@@ -56,7 +54,6 @@ final class UserFactory extends Factory
 
     /**
      * Indicate user is verified.
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
     public function verified(): Factory
     {

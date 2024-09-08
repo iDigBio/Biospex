@@ -20,9 +20,9 @@
 /**
  * Format date using timezone and format.
  *
- * @param mixed $date
- * @param string $format
- * @param string $tz
+ * @param  mixed  $date
+ * @param  string  $format
+ * @param  string  $tz
  * @return \Carbon\Carbon|string
  */
 if (! function_exists('format_date')) {
@@ -38,9 +38,9 @@ if (! function_exists('format_date')) {
 /**
  * Return format for Mongo UTCDateTime milliseconds.
  *
- * @param \MongoDB\BSON\UTCDateTime $date
- * @param string $format
- * @param string $tz
+ * @param  \MongoDB\BSON\UTCDateTime  $date
+ * @param  string  $format
+ * @param  string  $tz
  * @return \Carbon\Carbon|string
  */
 if (! function_exists('format_mongo_date')) {
@@ -53,12 +53,11 @@ if (! function_exists('format_mongo_date')) {
     }
 }
 
-
-
 /**
  * Return timezone array for select box.
  *
  * @return array
+ *
  * @throws \Exception
  */
 if (! function_exists('time_zone_select')) {
@@ -74,7 +73,7 @@ if (! function_exists('time_zone_select')) {
 /**
  * Return timezone title for event rate chart.
  *
- * @param string $tz
+ * @param  string  $tz
  * @return string
  */
 if (! function_exists('event_rate_chart_timezone')) {
@@ -90,13 +89,13 @@ if (! function_exists('event_rate_chart_timezone')) {
 /**
  * Check event is before start date.
  *
- * @param $event
- * @param string|null $tz
+ * @param  $event
+ * @param  string|null  $tz
  * @return bool
  */
 if (! function_exists('event_before')) {
 
-    function event_before(mixed $event, string $tz = null)
+    function event_before(mixed $event, ?string $tz = null)
     {
         $dateHelper = app(\App\Services\Helpers\DateService::class);
 
@@ -107,13 +106,13 @@ if (! function_exists('event_before')) {
 /**
  * Check if event is over.
  *
- * @param $event
- * @param string|null $tz
+ * @param  $event
+ * @param  string|null  $tz
  * @return bool
  */
 if (! function_exists('event_after')) {
 
-    function event_after(mixed $event, string $tz = null)
+    function event_after(mixed $event, ?string $tz = null)
     {
         $dateHelper = app(\App\Services\Helpers\DateService::class);
 
@@ -124,17 +123,16 @@ if (! function_exists('event_after')) {
 /**
  * Check event in progress.
  *
- * @param mixed $event
- * @param string|null $tz
+ * @param  mixed  $event
+ * @param  string|null  $tz
  * @return bool
  */
 if (! function_exists('event_active')) {
 
-    function event_active(mixed $event, string $tz = null)
+    function event_active(mixed $event, ?string $tz = null)
     {
         $dateHelper = app(\App\Services\Helpers\DateService::class);
 
         return $dateHelper->eventActive($event, $tz);
     }
 }
-

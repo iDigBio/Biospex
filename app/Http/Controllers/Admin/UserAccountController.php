@@ -27,16 +27,11 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 
 /**
  * Class UserAccountController
- *
- * @package App\Http\Controllers\Admin
  */
 class UserAccountController extends Controller
 {
     use ResetsPasswords;
 
-    /**
-     * @var \App\Services\User\UserAccountService
-     */
     private UserAccountService $userAccountService;
 
     public function __construct(UserAccountService $userAccountService)
@@ -44,11 +39,11 @@ class UserAccountController extends Controller
         $this->userAccountService = $userAccountService;
     }
 
-
     /**
      * Show the form for user edit.
      *
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     *
      * @throws \Exception
      */
     public function edit(int $userId)
@@ -59,7 +54,6 @@ class UserAccountController extends Controller
     /**
      * Update the specified resource in storage
      *
-     * @param \App\Http\Requests\EditUserFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(EditUserFormRequest $request)
@@ -70,7 +64,6 @@ class UserAccountController extends Controller
     /**
      * Update the user password.
      *
-     * @param \App\Http\Requests\PasswordFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function password(PasswordFormRequest $request)

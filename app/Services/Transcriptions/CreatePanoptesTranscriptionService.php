@@ -19,41 +19,27 @@
 
 namespace App\Services\Transcriptions;
 
-use TranscriptionMap;
+use App\Services\Csv\AwsS3CsvService;
 use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Services\Models\SubjectModelService;
-use App\Services\Csv\AwsS3CsvService;
 use App\Services\Process\CreateReportService;
 use Exception;
 use Str;
+use TranscriptionMap;
 use Validator;
 
 /**
  * Class CreatePanoptesTranscriptionService
- *
- * @package App\Services\Transcriptions
  */
 class CreatePanoptesTranscriptionService
 {
-    /**
-     * @var mixed
-     */
     protected mixed $collection;
 
-    /**
-     * @var array
-     */
     protected array $csvError = [];
 
     /**
      * CreatePanoptesTranscriptionService constructor.
      * Used in overnight scripts to create transcriptions from csv to mongodb.
-     *
-     * @param \App\Services\Models\SubjectModelService $subjectModelService
-     * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
-     * @param \App\Services\Transcriptions\CreateTranscriptionLocationService $createTranscriptionLocationService
-     * @param \App\Services\Process\CreateReportService $createReportService
-     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         private SubjectModelService $subjectModelService,
@@ -65,9 +51,6 @@ class CreatePanoptesTranscriptionService
 
     /**
      * Process transcription csv file and enter into MongoDB.
-     *
-     * @param $file
-     * @param $expeditionId
      */
     public function process($file, $expeditionId)
     {
@@ -89,7 +72,7 @@ class CreatePanoptesTranscriptionService
             return;
         } catch (Exception $e) {
 
-            $this->csvError[] = ['error' => $file . ': ' . $e->getMessage() . ', Line: ' . $e->getLine()];
+            $this->csvError[] = ['error' => $file.': '.$e->getMessage().', Line: '.$e->getLine()];
 
             return;
         }
@@ -98,9 +81,6 @@ class CreatePanoptesTranscriptionService
     /**
      * Prepare header
      * Replace created_at column with create_date to avoid DB issues.
-     *
-     * @param $header
-     * @return array
      */
     protected function prepareHeader($header): array
     {
@@ -109,18 +89,13 @@ class CreatePanoptesTranscriptionService
 
     /**
      * Process an individual row
-     *
-     * @param $header
-     * @param $row
-     * @param $expeditionId
      */
     public function processRow($header, $row, $expeditionId)
     {
-        if (count($header) !== count($row))
-        {
+        if (count($header) !== count($row)) {
             $message = t('Header column count does not match row count. :headers headers / :rows rows', [
                 ':headers' => count($header),
-                ':rows'    => count($row)
+                ':rows' => count($row),
             ]);
 
             $this->csvError[] = ['error' => $message];
@@ -134,6 +109,7 @@ class CreatePanoptesTranscriptionService
 
         if (trim($row['subject_subjectId'] === null)) {
             $this->csvError[] = array_merge(['error' => 'Transcript missing subject id'], $row);
+
             return;
         }
 
@@ -141,6 +117,7 @@ class CreatePanoptesTranscriptionService
 
         if ($subject === null) {
             $this->csvError[] = array_merge(['error' => 'Could not find subject id for classification'], $row);
+
             return;
         }
 
@@ -148,8 +125,9 @@ class CreatePanoptesTranscriptionService
 
         $row = array_merge($row, ['subject_projectId' => $subject->project_id]);
 
-        $rowWithEncodeHeaders = collect($row)->mapWithKeys(function($value, $field){
+        $rowWithEncodeHeaders = collect($row)->mapWithKeys(function ($value, $field) {
             $newField = TranscriptionMap::encodeTranscriptionField($field);
+
             return [$newField => $value];
         })->toArray();
 
@@ -159,7 +137,6 @@ class CreatePanoptesTranscriptionService
     /**
      * Validate transcription to prevent duplicates.
      *
-     * @param $classification_id
      * @return mixed
      */
     public function validateTranscription($classification_id)
@@ -176,7 +153,6 @@ class CreatePanoptesTranscriptionService
     /**
      * Check errors.
      *
-     * @return string|null
      * @throws \League\Csv\CannotInsertRecord
      */
     public function checkCsvError(): ?string
@@ -189,5 +165,4 @@ class CreatePanoptesTranscriptionService
 
         return $this->createReportService->createCsvReport($csvName, $this->csvError);
     }
-
 }

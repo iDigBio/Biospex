@@ -20,22 +20,16 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Services\Models\ExpeditionModelService;
+use App\Services\Models\PanoptesTranscriptionModelService;
 
 /**
  * Class HomeController
- *
- * @package App\Http\Controllers\Front
  */
 class HomeController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
-     * @return \Illuminate\Contracts\View\View
      */
     public function index(ExpeditionModelService $expeditionModelService, PanoptesTranscriptionModelService $panoptesTranscriptionModelService): \Illuminate\Contracts\View\View
     {
@@ -49,21 +43,22 @@ class HomeController extends Controller
     /**
      * Get tmp images for fossil project.
      * TODO remove after project 115 completed.
-     * @param string $name
+     *
      * @return \Illuminate\Http\Response|void
      */
     public function tmpimage(string $name)
     {
         $exists = \Storage::disk('public')->exists('tmpimage/'.$name);
 
-        if($exists) {
+        if ($exists) {
             //get content of image
             $content = \Storage::get('public/tmpimage/'.$name);
 
             //get mime type of image
             $mime = \Storage::mimeType('public/tmpimage/'.$name);      //prepare response with image content and response code
             $response = \Response::make($content, 200);      //set header
-            $response->header("Content-Type", $mime);      // return response
+            $response->header('Content-Type', $mime);      // return response
+
             return $response;
         } else {
             abort(404);

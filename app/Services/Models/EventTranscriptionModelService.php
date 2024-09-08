@@ -25,14 +25,10 @@ use Illuminate\Support\Collection;
 
 class EventTranscriptionModelService
 {
-    public function __construct(private readonly EventTranscription $eventTranscription)
-    {}
+    public function __construct(private readonly EventTranscription $eventTranscription) {}
 
     /**
      * Create.
-     *
-     * @param array $data
-     * @return mixed
      */
     public function create(array $data): mixed
     {
@@ -41,9 +37,6 @@ class EventTranscriptionModelService
 
     /**
      * Get event classification ids.
-     *
-     * @param $eventId
-     * @return mixed
      */
     public function getEventClassificationIds($eventId): mixed
     {
@@ -52,11 +45,6 @@ class EventTranscriptionModelService
 
     /**
      * Get transcriptions for event step chart.
-     *
-     * @param int $eventId
-     * @param \Illuminate\Support\Carbon $startLoad
-     * @param \Illuminate\Support\Carbon $endLoad
-     * @return \Illuminate\Support\Collection|null
      */
     public function getEventRateChartTranscriptions(int $eventId, Carbon $startLoad, Carbon $endLoad): ?Collection
     {

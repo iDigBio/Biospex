@@ -24,12 +24,9 @@ use Exception;
 
 /**
  * Class MetaFile
- *
- * @package App\Services\Process
  */
 class MetaFile
 {
-
     /**
      * @var null
      */
@@ -41,65 +38,35 @@ class MetaFile
     protected $extension;
 
     /**
-     * @var array $dwcRequiredRowTypes
+     * @var array
      */
     protected $dwcRequiredRowTypes;
 
-    /**
-     * @var
-     */
     protected $mediaIsCore;
 
-    /**
-     * @var
-     */
     protected $coreFile;
 
-    /**
-     * @var
-     */
     protected $extensionFile;
 
-    /**
-     * @var
-     */
     protected $coreDelimiter;
 
-    /**
-     * @var
-     */
     protected $coreEnclosure;
 
-    /**
-     * @var
-     */
     protected $extDelimiter;
 
-    /**
-     * @var
-     */
     protected $extEnclosure;
 
-    /**
-     * @var
-     */
     protected $metaFields;
 
-    /**
-     * @var
-     */
     protected $file;
 
     /**
-     * @var array $dwcRequiredFields
+     * @var array
      */
     protected $dwcRequiredFields;
 
     /**
      * Constructor
-     *
-     * @param \App\Models\Meta $meta
-     * @param Xml $xml
      */
     public function __construct(protected Meta $meta, protected Xml $xml)
     {
@@ -110,8 +77,8 @@ class MetaFile
     /**
      * Process meta file.
      *
-     * @param $file
      * @return string
+     *
      * @throws \Exception
      */
     public function process($file)
@@ -136,15 +103,12 @@ class MetaFile
 
     /**
      * Save meta data for this upload.
-     *
-     * @param $projectId
-     * @param $meta
      */
     public function saveMetaFile($projectId, $meta)
     {
         $this->meta->create([
             'project_id' => $projectId,
-            'xml'        => $meta,
+            'xml' => $meta,
         ]);
     }
 
@@ -166,8 +130,7 @@ class MetaFile
     {
         $extensions = $this->xml->xpathQuery('//ns:archive/ns:extension');
 
-        if ($this->loopExtensions($extensions))
-        {
+        if ($this->loopExtensions($extensions)) {
             return true;
         }
 
@@ -177,17 +140,15 @@ class MetaFile
     /**
      * Loop through extensions found using xpath query.
      *
-     * @param array $extensions
+     * @param  array  $extensions
      * @return bool
      */
     protected function loopExtensions($extensions)
     {
-        foreach ($extensions as $extension)
-        {
+        foreach ($extensions as $extension) {
             $matches = $this->loopExtension($extension);
 
-            if ($matches >= count($this->dwcRequiredFields['extension']))
-            {
+            if ($matches >= count($this->dwcRequiredFields['extension'])) {
                 $this->extension = $extension;
 
                 return true;
@@ -200,16 +161,13 @@ class MetaFile
     /**
      * Loop through extension.
      *
-     * @param $extension
      * @return int
      */
     protected function loopExtension($extension)
     {
         $matches = 0;
-        foreach ($this->dwcRequiredFields['extension'] as $field => $terms)
-        {
-            if (count($terms) === 0 && count($extension->getElementsByTagName($field)) > 0)
-            {
+        foreach ($this->dwcRequiredFields['extension'] as $field => $terms) {
+            if (count($terms) === 0 && count($extension->getElementsByTagName($field)) > 0) {
                 $matches++;
 
                 continue;
@@ -223,17 +181,11 @@ class MetaFile
 
     /**
      * Check terms in extension node.
-     *
-     * @param $extension
-     * @param $terms
-     * @param $matches
      */
     protected function checkExtensionTerms($extension, $terms, &$matches)
     {
-        foreach ($terms as $value)
-        {
-            if ((int) $this->xml->evaluate('count(ns:field[@term=\'' . $value . '\'])', $extension))
-            {
+        foreach ($terms as $value) {
+            if ((int) $this->xml->evaluate('count(ns:field[@term=\''.$value.'\'])', $extension)) {
                 $matches++;
 
                 break;
@@ -243,13 +195,13 @@ class MetaFile
 
     /**
      * Check row type against file given and send warning if mismatch occurs
+     *
      * @throws \Exception
      */
     private function checkExtensionRowType()
     {
         $rowType = strtolower($this->extension->attributes->getNamedItem('rowType')->nodeValue);
-        if (in_array($rowType, $this->dwcRequiredRowTypes, true))
-        {
+        if (in_array($rowType, $this->dwcRequiredRowTypes, true)) {
             return;
         }
 
@@ -264,7 +216,7 @@ class MetaFile
     private function setMediaIsCore()
     {
         $rowType = $this->core->attributes->getNamedItem('rowType')->nodeValue;
-        $this->mediaIsCore = false === stripos($rowType, 'occurrence');
+        $this->mediaIsCore = stripos($rowType, 'occurrence') === false;
 
     }
 
@@ -276,21 +228,20 @@ class MetaFile
     private function setCoreFile()
     {
         $this->coreFile = $this->core->nodeValue;
-        if ($this->coreFile === '')
-        {
+        if ($this->coreFile === '') {
             throw new Exception(t('Core node missing from xml meta file.'));
         }
     }
 
     /**
      * Set extension file.
+     *
      * @throws \Exception
      */
     private function setExtensionFile()
     {
         $this->extensionFile = $this->extension->nodeValue;
-        if ($this->extensionFile === '')
-        {
+        if ($this->extensionFile === '') {
             throw new Exception(t('Extension node missing from xml meta file'));
         }
     }
@@ -303,12 +254,11 @@ class MetaFile
     private function setCoreCsvSettings()
     {
         $delimiter = $this->core->attributes->getNamedItem('fieldsTerminatedBy')->nodeValue;
-        $this->coreDelimiter = ($delimiter === "\\t") ? "\t" : $delimiter;
+        $this->coreDelimiter = ($delimiter === '\\t') ? "\t" : $delimiter;
         $enclosure = $this->core->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
         $this->coreEnclosure = $enclosure === '' ? '"' : $enclosure;
 
-        if ($this->coreDelimiter === '')
-        {
+        if ($this->coreDelimiter === '') {
             throw new Exception(t('CSV core delimiter is empty.'));
         }
     }
@@ -321,35 +271,30 @@ class MetaFile
     private function setExtensionCsvSettings()
     {
         $delimiter = $this->extension->attributes->getNamedItem('fieldsTerminatedBy')->nodeValue;
-        $this->extDelimiter = ($delimiter === "\\t") ? "\t" : $delimiter;
+        $this->extDelimiter = ($delimiter === '\\t') ? "\t" : $delimiter;
         $enclosure = $this->extension->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
         $this->extEnclosure = $enclosure === '' ? '"' : $enclosure;
 
-        if ($this->extDelimiter === '')
-        {
+        if ($this->extDelimiter === '') {
             throw new Exception(t('CSV extension delimiter is empty.'));
         }
     }
 
     /**
      * Set meta fields.
-     *
-     * @param $type
      */
     private function setMetaFields($type)
     {
-        foreach ($this->{$type}->childNodes as $child)
-        {
-            if ($child->tagName === 'files')
-            {
+        foreach ($this->{$type}->childNodes as $child) {
+            if ($child->tagName === 'files') {
                 continue;
             }
 
             $index = $child->attributes->getNamedItem('index')->nodeValue;
 
-            if ($child->tagName === 'id' || $child->tagName === 'coreid')
-            {
+            if ($child->tagName === 'id' || $child->tagName === 'coreid') {
                 $this->metaFields[$type][$index] = $child->tagName;
+
                 continue;
             }
 

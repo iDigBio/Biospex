@@ -25,25 +25,23 @@ use App\Presenters\GroupPresenter;
 
 /**
  * Class Group
- *
- * @package App\Models
  */
 class Group extends BaseEloquentModel
 {
-    use UuidTrait, Presentable;
+    use Presentable, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'groups';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'uuid',
         'user_id',
-        'title'
+        'title',
     ];
 
     /**
@@ -73,7 +71,7 @@ class Group extends BaseEloquentModel
 
     /**
      * Users relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users()
@@ -103,6 +101,7 @@ class Group extends BaseEloquentModel
 
     /**
      * Expeditions relationship
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function expeditions()
@@ -112,7 +111,7 @@ class Group extends BaseEloquentModel
 
     /**
      * Invites relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function invites()

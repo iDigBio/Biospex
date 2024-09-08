@@ -24,21 +24,15 @@ use App\Models\User;
 
 /**
  * Class GroupPolicy
- *
- * @package App\Policies
  */
 class GroupPolicy
 {
     /**
      * Allow admins.
-     *
-     * @param \App\Models\User $user
-     * @param string $ability
-     * @return bool|null
      */
-    public function before(User $user, string $ability): bool|null
+    public function before(User $user, string $ability): ?bool
     {
-        if ($user->isAdmin()){
+        if ($user->isAdmin()) {
             return true;
         }
 
@@ -47,23 +41,16 @@ class GroupPolicy
 
     /**
      * Is group owner.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Group $group
-     * @return bool
      */
     public function isOwner(User $user, Group $group): bool
     {
         dd($user);
+
         return $user->id === $group->user_id;
     }
 
     /**
      * Check if user can create group
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Group $group
-     * @return bool
      */
     public function create(User $user, Group $group): bool
     {
@@ -72,10 +59,6 @@ class GroupPolicy
 
     /**
      * Check if user can store group
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Group $group
-     * @return bool
      */
     public function store(User $user, Group $group): bool
     {
@@ -84,10 +67,6 @@ class GroupPolicy
 
     /**
      * Check if user can read group.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Group $group
-     * @return true|null
      */
     public function read(User $user, Group $group): ?true
     {
@@ -96,10 +75,6 @@ class GroupPolicy
 
     /**
      * Check if user can read project for this group.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Group $group
-     * @return bool
      */
     public function readProject(User $user, Group $group): bool
     {
@@ -108,10 +83,6 @@ class GroupPolicy
 
     /**
      * Check if user can create project in group.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Group $group
-     * @return bool
      */
     public function createProject(User $user, Group $group): bool
     {
@@ -120,10 +91,6 @@ class GroupPolicy
 
     /**
      * Check if user can create project in group.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Group $group
-     * @return bool
      */
     public function updateProject(User $user, Group $group): bool
     {

@@ -23,8 +23,7 @@ use App\Models\BingoWord;
 
 class BingoWordModelService
 {
-    public function __construct(private BingoWord $bingoWord)
-    {}
+    public function __construct(private BingoWord $bingoWord) {}
 
     public function findBingoWordWithRelations(int $id, array $relations = []): mixed
     {
@@ -34,7 +33,6 @@ class BingoWordModelService
     /**
      * Create bingo word.
      *
-     * @param array $attributes
      * @return mixed
      */
     public function makeBingoWord(array $attributes): BingoWord

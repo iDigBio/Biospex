@@ -27,7 +27,6 @@ use App\Services\Models\ExpeditionModelService;
 use App\Services\Reconcile\ExpertReconcileService;
 use App\Services\Reconcile\ReconcileService;
 use App\Traits\SkipZooniverse;
-use Flash;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
@@ -35,8 +34,6 @@ use Request;
 
 /**
  * Class ReconcileController
- *
- * @package App\Http\Controllers\Admin
  */
 class ReconcileController extends Controller
 {
@@ -44,25 +41,15 @@ class ReconcileController extends Controller
 
     /**
      * ReconcileController constructor.
-     *
-     * @param \App\Services\Reconcile\ExpertReconcileService $expertReconcileService
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @param \App\Services\Reconcile\ReconcileService $reconcileService
      */
     public function __construct(
         private ExpertReconcileService $expertReconcileService,
         private ExpeditionModelService $expeditionModelService,
         private ReconcileService $reconcileService
-    )
-    {}
+    ) {}
 
     /**
      * Show files needing reconciliation with pagination.
-     *
-     * @param int $expeditionId
-     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @param \App\Services\Api\ZooniverseTalkApiService $zooniverseTalkApiService
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function index(int $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService): View|RedirectResponse
     {
@@ -93,8 +80,6 @@ class ReconcileController extends Controller
      * Start Expert Review set up by invoking explained via lambda labelReconciliations
      * and redirect to index for processing.
      *
-     * @param int $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
      * @throws \Throwable
      */
     public function create(int $expeditionId): RedirectResponse
@@ -119,9 +104,6 @@ class ReconcileController extends Controller
 
     /**
      * Update reconciled record.
-     *
-     * @param int $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(int $expeditionId): RedirectResponse
     {
@@ -135,10 +117,6 @@ class ReconcileController extends Controller
 
     /**
      * Publish reconciled csv file.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function publish(int $projectId, int $expeditionId): RedirectResponse
     {
@@ -150,10 +128,6 @@ class ReconcileController extends Controller
 
     /**
      * Upload reconciled qc file.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function reconciledWithUser(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {

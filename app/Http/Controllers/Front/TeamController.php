@@ -24,15 +24,12 @@ use App\Models\TeamCategory;
 
 /**
  * Class TeamController
- *
- * @package App\Http\Controllers\Front
  */
 class TeamController extends Controller
 {
-
     /**
      * Show categories.
-     * 
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(TeamCategory $teamCategory)

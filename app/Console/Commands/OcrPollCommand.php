@@ -25,8 +25,6 @@ use Illuminate\Console\Command;
 
 /**
  * Class OcrPollCommand
- *
- * @package App\Console\Commands
  */
 class OcrPollCommand extends Command
 {
@@ -46,8 +44,6 @@ class OcrPollCommand extends Command
 
     /**
      * OcrPollCommand constructor.
-     *
-     * @param \App\Models\OcrQueue $ocrQueue
      */
     public function __construct(private OcrQueue $ocrQueue)
     {
@@ -88,7 +84,7 @@ class OcrPollCommand extends Command
 
             return [
                 'groupId' => $record->project->group->id,
-                'notice'  => $notice,
+                'notice' => $notice,
             ];
         })->toArray();
 

@@ -43,7 +43,7 @@ class ProjectPageTestSeeder extends Seeder
         $expeditions = Expedition::all();
         $expeditions->each(function ($expedition) {
             PanoptesProject::factory()->create([
-                'project_id'    => $expedition->project_id,
+                'project_id' => $expedition->project_id,
                 'expedition_id' => $expedition->id,
             ]);
         });

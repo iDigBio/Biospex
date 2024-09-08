@@ -27,11 +27,8 @@ class WeDigBioEventDateModelService
 {
     /**
      * WeDigBioEventDateRepository constructor.
-     *
-     * @param \App\Models\WeDigBioEventDate $model
      */
-    public function __construct(private readonly WeDigBioEventDate $model)
-    {}
+    public function __construct(private readonly WeDigBioEventDate $model) {}
 
     /**
      * Get all.
@@ -45,10 +42,6 @@ class WeDigBioEventDateModelService
 
     /**
      * Get first by given column and value.
-     *
-     * @param string $column
-     * @param mixed $value
-     * @return mixed
      */
     public function getFirstBy(string $column, mixed $value): mixed
     {
@@ -56,7 +49,6 @@ class WeDigBioEventDateModelService
     }
 
     /**
-     * @param int $dateId
      * @return mixed|null
      */
     public function getWeDigBioEventTranscriptions(int $dateId): mixed
@@ -71,7 +63,7 @@ class WeDigBioEventDateModelService
             return $this->model->withCount('transcriptions')->with([
                 'transcriptions' => function ($q) {
                     $q->select('*', DB::raw('count(project_id) as total'))
-                        ->with(['project' => function($query){
+                        ->with(['project' => function ($query) {
                             $query->select('id', 'title');
                         }])->groupBy('project_id')
                         ->orderBy('total', 'desc');
@@ -83,10 +75,9 @@ class WeDigBioEventDateModelService
     /**
      * Return project titles for WeDigBio Rate chart.
      *
-     * @param int|null $dateId
      * @return null
      */
-    public function getProjectsForWeDigBioRateChart(int $dateId = null)
+    public function getProjectsForWeDigBioRateChart(?int $dateId = null)
     {
         $activeEvent = $this->getByActiveOrDateId($dateId);
 
@@ -94,22 +85,19 @@ class WeDigBioEventDateModelService
             return null;
         }
 
-        $result = $this->model->with(['transcriptions' => function($q){
-            $q->with(['project' => function($q2){
+        $result = $this->model->with(['transcriptions' => function ($q) {
+            $q->with(['project' => function ($q2) {
                 $q2->select('id', 'title');
             }])->groupBy('project_id');
         }])->find($activeEvent->id);
 
-        return $result->transcriptions->map(function($transcription) {
+        return $result->transcriptions->map(function ($transcription) {
             return $transcription->project->title;
         })->toArray();
     }
 
     /**
      * Get WeDigBioDate by date or active.
-     *
-     * @param int $dateId
-     * @return mixed
      */
     public function getByActiveOrDateId(int $dateId): mixed
     {

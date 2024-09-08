@@ -54,7 +54,6 @@ class DateService
     /**
      * Return timezone array for select box.
      *
-     * @return array
      *
      * @throws \Exception
      */
@@ -128,9 +127,6 @@ class DateService
 
     /**
      * Set dates for event.
-     *
-     * @param array $data
-     * @return array
      */
     public function setEventDates(array $data): array
     {

@@ -25,33 +25,20 @@ use Illuminate\Support\LazyCollection;
 
 class SubjectModelService
 {
-    /**
-     * @var bool $groupAnd
-     */
     protected bool $groupAnd;
 
-    /**
-     * @var bool $groupOpProcessed
-     */
     protected bool $groupOpProcessed;
 
-    /**
-     * @var mixed
-     */
     protected mixed $assignedRuleData = null;
 
     /**
      * SubjectModelService constructor.
-     *
-     * @param Subject $model
      */
-    public function __construct(protected Subject $model)
-    {}
+    public function __construct(protected Subject $model) {}
 
     /**
      * Create.
      *
-     * @param array $data
      * @return mixed
      */
     public function create(array $data)
@@ -62,8 +49,6 @@ class SubjectModelService
     /**
      * Update.
      *
-     * @param array $data
-     * @param $resourceId
      * @return \App\Models\Subject|bool
      */
     public function update(array $data, $resourceId)
@@ -77,7 +62,6 @@ class SubjectModelService
     /**
      * Find.
      *
-     * @param string $id
      * @return mixed
      */
     public function find(string $id)
@@ -88,7 +72,7 @@ class SubjectModelService
     /**
      * Get subjects where values are whereIn.
      *
-     * @param array|string[] $columns
+     * @param  array|string[]  $columns
      * @return mixed
      */
     public function getWhereIn(string $field, array $values, array $columns = ['*'])
@@ -99,8 +83,7 @@ class SubjectModelService
     /**
      * Find by expedition id.
      *
-     * @param $expeditionId
-     * @param array|string[] $attributes
+     * @param  array|string[]  $attributes
      * @return array|mixed
      */
     public function findByExpeditionId($expeditionId, array $attributes = ['*']): mixed
@@ -110,9 +93,6 @@ class SubjectModelService
 
     /**
      * Get subjects by expedition id and return using lazycollection.
-     *
-     * @param $expeditionId
-     * @return \Illuminate\Support\LazyCollection
      */
     public function getSubjectCursorForExport($expeditionId): LazyCollection
     {
@@ -122,15 +102,11 @@ class SubjectModelService
 
     /**
      * Return query for processing subjects in ocr.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @return \Illuminate\Support\LazyCollection
      */
-    public function getSubjectCursorForOcr(int $projectId, int $expeditionId = null): LazyCollection
+    public function getSubjectCursorForOcr(int $projectId, ?int $expeditionId = null): LazyCollection
     {
         $query = $this->model->where('project_id', $projectId);
-        $query = null === $expeditionId ? $query : $query->where('expedition_ids', $expeditionId);
+        $query = $expeditionId === null ? $query : $query->where('expedition_ids', $expeditionId);
 
         return $query->where(function ($q) {
             $q->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
@@ -139,27 +115,19 @@ class SubjectModelService
 
     /**
      * Get subject cursor for OCR processing.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @return int
      */
-    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null): int
+    public function getSubjectCountForOcr(int $projectId, ?int $expeditionId = null): int
     {
         $query = $this->model->where('project_id', $projectId);
-        $query = null === $expeditionId ? $query : $query->where('expedition_ids', $expeditionId);
+        $query = $expeditionId === null ? $query : $query->where('expedition_ids', $expeditionId);
 
         return $query->where(function ($query) {
             $query->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
         })->count();
     }
 
-
     /**
      * Detach subjects from expedition.
-     *
-     * @param \Illuminate\Support\Collection $subjectIds
-     * @param int $expeditionId
      */
     public function detachSubjects(Collection $subjectIds, int $expeditionId)
     {
@@ -175,9 +143,6 @@ class SubjectModelService
 
     /**
      * Attach subjects to expedition.
-     *
-     * @param \Illuminate\Support\Collection $subjectIds
-     * @param int $expeditionId
      */
     public function attachSubjects(Collection $subjectIds, int $expeditionId)
     {
@@ -191,7 +156,6 @@ class SubjectModelService
     /**
      * Cursor to delete unassigned by project id.
      *
-     * @param int $projectId
      * @return \Illuminate\Support\LazyCollection
      */
     public function deleteUnassignedByProject(int $projectId)
@@ -202,23 +166,23 @@ class SubjectModelService
     /**
      * Calculate the number of rows. It's used for paging the result.
      *
-     * @param array $vars
-     * page
-     * limit
-     * count
-     * sidx
-     * sord
-     * filters
-     * projectId
-     * expeditionId
+     * @param  array  $vars
+     *                       page
+     *                       limit
+     *                       count
+     *                       sidx
+     *                       sord
+     *                       filters
+     *                       projectId
+     *                       expeditionId
      *
      *  Filters is an array: example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
      *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
      *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
      *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
      *  The 'data' key will contain the string searched by the user.
-     *
      * @return int Total number of rows
+     *
      * @throws \Exception
      */
     public function getGridTotalRowCount(array $vars = [])
@@ -231,20 +195,20 @@ class SubjectModelService
     }
 
     /**
-     *
      * Get the rows data to be shown in the grid.
      *
-     * @param $vars
-     *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
-     *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
-     *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
-     *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
-     *  The 'data' key will contain the string searched by the user.
+     * @param  $vars
+     *               An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
+     *               The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
+     *               The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
+     *               when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
+     *               The 'data' key will contain the string searched by the user.
      * @return array
-     *  An array of array, each array will have the data of a row.
-     *  Example: array(array('row 1 col 1','row 1 col 2'), array('row 2 col 1','row 2 col 2'))
+     *               An array of array, each array will have the data of a row.
+     *               Example: array(array('row 1 col 1','row 1 col 2'), array('row 2 col 1','row 2 col 2'))
      *
      * $limit, $start, $sidx, $sord, $filters
+     *
      * @throws \Exception
      */
     public function getGridRows(array $vars = [])
@@ -270,9 +234,6 @@ class SubjectModelService
 
     /**
      * Return query used to chunk rows for export.
-     *
-     * @param array $vars
-     * @return \Illuminate\Support\LazyCollection
      */
     public function exportGridRows(array $vars): LazyCollection
     {
@@ -289,9 +250,6 @@ class SubjectModelService
 
     /**
      * Build query for search.
-     *
-     * @param $query
-     * @param $vars
      */
     protected function buildQuery(&$query, $vars)
     {
@@ -311,9 +269,6 @@ class SubjectModelService
 
     /**
      * Set where for expedition ids depending on route.
-     *
-     * @param $query
-     * @param $vars
      */
     protected function setExpeditionWhere(&$query, $vars)
     {
@@ -332,15 +287,13 @@ class SubjectModelService
 
     /**
      * Handle the passed filters.
-     *
-     * @param $query
-     * @param $rules
      */
     protected function handleRules(&$query, $rules)
     {
         foreach ($rules as $rule) {
             if ($rule['field'] === 'assigned') {
                 $this->assignedRule($query, $rule);
+
                 continue;
             }
 
@@ -379,9 +332,6 @@ class SubjectModelService
      * ni: is not in
      *
      * 'eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'
-     *
-     * @param $rule
-     * @param $query
      */
     protected function buildWhere(&$query, $rule)
     {
@@ -440,10 +390,6 @@ class SubjectModelService
     /**
      * Filter for if subject is assigned to an expedition.
      * data = all, true, false
-     *
-     * @param $rule
-     * @param $query
-     *
      */
     protected function assignedRule(&$query, $rule)
     {
@@ -456,10 +402,6 @@ class SubjectModelService
         $this->setWhereForAssigned($query, $rule);
     }
 
-    /**
-     * @param $query
-     * @param $rule
-     */
     protected function setWhereForAssigned(&$query, $rule)
     {
         if ($rule['data'] === 'true') {
@@ -470,8 +412,6 @@ class SubjectModelService
     }
 
     /**
-     * @param $orderBy
-     * @param $sord
      * @return array
      */
     public function setOrderBy($orderBy, $sord)
@@ -482,7 +422,7 @@ class SubjectModelService
             foreach ($orderBys as $order) {
                 $order = trim($order);
                 [$field, $sort] = array_pad(explode(' ', $order, 2), 2, $sord);
-                $orderByRaw [trim($field)] = trim($sort);
+                $orderByRaw[trim($field)] = trim($sort);
             }
         }
 
@@ -491,8 +431,6 @@ class SubjectModelService
 
     /**
      * If row has expeditionId, mark as checked
-     *
-     * @param $rows
      */
     protected function setRowCheckbox(&$rows)
     {
@@ -504,7 +442,6 @@ class SubjectModelService
     /**
      * Set group operator.
      *
-     * @param $filters
      * @internal param $groupOp
      */
     protected function setGroupOp($filters)
@@ -518,8 +455,6 @@ class SubjectModelService
 
     /**
      * Set groupOp process
-     *
-     * @param $bool
      */
     protected function setGroupOpProcessed($bool = false)
     {
@@ -528,11 +463,6 @@ class SubjectModelService
 
     /**
      * Set where/orWhere clause for query
-     *
-     * @param $query
-     * @param $field
-     * @param $operation
-     * @param $data
      */
     protected function setWhere(&$query, $field, $operation, $data)
     {
@@ -543,10 +473,6 @@ class SubjectModelService
 
     /**
      * Set whereRaw/orWhereRaw for query
-     *
-     * @param $query
-     * @param $field
-     * @param $data
      */
     protected function setWhereRaw(&$query, $field, $data)
     {
@@ -557,10 +483,6 @@ class SubjectModelService
 
     /**
      * Set whereIn/orWhereIn for query
-     *
-     * @param $query
-     * @param $field
-     * @param $data
      */
     protected function setWhereIn(&$query, $field, $data)
     {
@@ -571,10 +493,6 @@ class SubjectModelService
 
     /**
      * Set whereIn/orWhereIn for query
-     *
-     * @param $query
-     * @param $field
-     * @param $data
      */
     protected function setWhereNotIn(&$query, $field, $data)
     {
@@ -585,9 +503,6 @@ class SubjectModelService
 
     /**
      * Set whereNull/orWhereNull for query
-     *
-     * @param $query
-     * @param $field
      */
     protected function setWhereNull(&$query, $field)
     {
@@ -598,9 +513,6 @@ class SubjectModelService
 
     /**
      * Set whereNotNull/orWhereNotNull for query
-     *
-     * @param $query
-     * @param $field
      */
     protected function setWhereNotNull(&$query, $field)
     {

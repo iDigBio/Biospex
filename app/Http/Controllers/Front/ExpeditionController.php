@@ -24,22 +24,19 @@ use App\Services\Models\ExpeditionModelService;
 
 /**
  * Class ExpeditionController
- *
- * @package App\Http\Controllers\Front
  */
 class ExpeditionController extends Controller
 {
     /**
      * Displays Expeditions on public page.
      *
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      * @return \Illuminate\Contracts\View\View
      */
     public function index(ExpeditionModelService $expeditionModelService)
     {
         $results = $expeditionModelService->getExpeditionPublicIndex();
 
-        [$expeditions, $expeditionsCompleted] = $results->partition(function($expedition) {
+        [$expeditions, $expeditionsCompleted] = $results->partition(function ($expedition) {
             return $expedition->completed === 0;
         });
 
@@ -48,13 +45,10 @@ class ExpeditionController extends Controller
 
     /**
      * Displays Completed Expeditions on public page.
-     *
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @return \Illuminate\Contracts\View\View|null
      */
     public function sort(ExpeditionModelService $expeditionModelService): ?\Illuminate\Contracts\View\View
     {
-        if ( ! \Request::ajax()) {
+        if (! \Request::ajax()) {
             return null;
         }
 
@@ -64,9 +58,9 @@ class ExpeditionController extends Controller
         $projectId = \Request::get('id');
 
         [$active, $completed] = $expeditionModelService->getExpeditionPublicIndex($sort, $order, $projectId)
-            ->partition(function($expedition) {
+            ->partition(function ($expedition) {
                 return $expedition->completed;
-        });
+            });
 
         $expeditions = $type === 'active' ? $active : $completed;
 

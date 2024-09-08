@@ -25,29 +25,26 @@ use League\Fractal\TransformerAbstract;
 
 /**
  * Class PusherTranscriptionTransformer
- *
- * @package App\Transformers
  */
 class PusherTranscriptionTransformer extends TransformerAbstract
 {
-
     public function transform(Model $model)
     {
         return [
-            'project'              => $model->project,
-            'description'          => $model->description,
-            'guid'                 => $model->guid,
-            'timestamp'            => $model->timestamp,
-            'subject'              => $model->subject,
-            'contributor'          => $model->contributor,
+            'project' => $model->project,
+            'description' => $model->description,
+            'guid' => $model->guid,
+            'timestamp' => $model->timestamp,
+            'subject' => $model->subject,
+            'contributor' => $model->contributor,
             'transcriptionContent' => $model->transcriptionContent,
-            'discretionaryState'   => $model->discretionaryState,
-            'links'                => [
+            'discretionaryState' => $model->discretionaryState,
+            'links' => [
                 [
                     'rel' => 'self',
-                    'uri' => 'https://' . Config::get('api.domain') . '/wedigbiodashboards/' . $model->guid,
-                ]
-            ]
+                    'uri' => 'https://'.Config::get('api.domain').'/wedigbiodashboards/'.$model->guid,
+                ],
+            ],
         ];
     }
 }

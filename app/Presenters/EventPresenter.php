@@ -24,8 +24,6 @@ use DateTimeZone;
 
 /**
  * Class EventPresenter
- *
- * @package App\Presenters
  */
 class EventPresenter extends Presenter
 {
@@ -117,6 +115,7 @@ class EventPresenter extends Presenter
      * <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fbiospex.org%2Fevents%2F13&text=Event%20to%20show&hashtags=biospex%2Ceventname" target="_blank">
      * <i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span>
      * </a>
+     *
      * @return string
      */
     public function twitterIcon()
@@ -124,12 +123,12 @@ class EventPresenter extends Presenter
         $id = $this->model->id;
         $title = $this->model->title;
         $hashtag = $this->model->hashtag;
-        $url = config('app.url') . '/events/' . $id . '&text=' . $title . '&hashtags=' . $hashtag;
+        $url = config('app.url').'/events/'.$id.'&text='.$title.'&hashtags='.$hashtag;
 
         return '<a href="https://twitter.com/intent/tweet?url='.$url.'" 
             target="_blank" 
             data-hover="tooltip" 
-            title="'. t('Share on Twitter').'">
+            title="'.t('Share on Twitter').'">
             <i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -142,13 +141,13 @@ class EventPresenter extends Presenter
      */
     public function facebookIcon()
     {
-        $url = urlencode(config('app.url') . '/events/' . $this->model->id);
+        $url = urlencode(config('app.url').'/events/'.$this->model->id);
         $title = urlencode($this->model->title);
 
         return '<a href="http://www.facebook.com/share.php?u='.$url.'&title='.$title.'" 
             target="_blank" 
             data-hover="tooltip" 
-            title="'. t('Share on Facebook').'">
+            title="'.t('Share on Facebook').'">
             <i class="fab fa-facebook"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -162,7 +161,7 @@ class EventPresenter extends Presenter
         return $this->model->contact_email === null ? '' :
             '<a href="mailto:'.$this->model->contact_email.'" 
             data-hover="tooltip" 
-            title="'. t('Contact').'">
+            title="'.t('Contact').'">
             <i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -174,8 +173,8 @@ class EventPresenter extends Presenter
     public function eventShowIcon()
     {
         return '<a href="'.route('front.events.read', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('View Event').'">
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('View Event').'">
                 <i class="fas fa-eye"></i></a>';
     }
 
@@ -187,8 +186,8 @@ class EventPresenter extends Presenter
     public function eventAdminShowIcon()
     {
         return '<a href="'.route('admin.events.show', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('View Event').'">
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('View Event').'">
                 <i class="fas fa-eye"></i></a>';
     }
 
@@ -200,8 +199,8 @@ class EventPresenter extends Presenter
     public function eventEditIcon()
     {
         return '<a href="'.route('admin.events.edit', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Edit Event').'">
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('Edit Event').'">
                 <i class="fas fa-edit"></i></a>';
     }
 
@@ -213,8 +212,8 @@ class EventPresenter extends Presenter
     public function eventEditIconLrg()
     {
         return '<a href="'.route('admin.events.edit', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Edit Event').'"><i class="fas fa-edit fa-2x"></i></a>';
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('Edit Event').'"><i class="fas fa-edit fa-2x"></i></a>';
     }
 
     /**
@@ -225,13 +224,13 @@ class EventPresenter extends Presenter
     public function eventDeleteIcon()
     {
         return '<a href="'.route('admin.events.delete', [
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Delete Event').'" 
+            $this->model->id,
+        ]).'" class="prevent-default"
+            title="'.t('Delete Event').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Delete Event').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
+            data-title="'.t('Delete Event').'?" data-content="'.t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -243,13 +242,13 @@ class EventPresenter extends Presenter
     public function eventDeleteIconLrg()
     {
         return '<a href="'.route('admin.events.delete', [
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Delete Event').'" 
+            $this->model->id,
+        ]).'" class="prevent-default"
+            title="'.t('Delete Event').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Delete Event').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
+            data-title="'.t('Delete Event').'?" data-content="'.t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -268,7 +267,7 @@ class EventPresenter extends Presenter
         data-href="'.$route.'"
         data-success="An email with attached export will be sent."
         data-error="There was an error while exporting. Please inform the Administration"
-        data-hover="tooltip" title="'. t('Download Participants File').'"><i class="fas fa-users fa-2x"></i></a>';
+        data-hover="tooltip" title="'.t('Download Participants File').'"><i class="fas fa-users fa-2x"></i></a>';
     }
 
     /**
@@ -286,7 +285,7 @@ class EventPresenter extends Presenter
         data-href="'.$route.'"
         data-success="An email with attached export will be sent."
         data-error="There was an error while exporting. Please inform the Administration"
-        data-hover="tooltip" title="'. t('Download Digitizations File').'">
+        data-hover="tooltip" title="'.t('Download Digitizations File').'">
         <i class="fas fa-file-download fa-2x"></i></a>';
     }
 }

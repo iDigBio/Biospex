@@ -25,17 +25,12 @@ class TesseractOcrResponse
 {
     /**
      * Create a new instance.
-     *
-     * @param \App\Models\OcrQueueFile $ocrQueueFile
      */
-    public function __construct(private OcrQueueFile $ocrQueueFile)
-    {}
+    public function __construct(private OcrQueueFile $ocrQueueFile) {}
 
     /**
      * Process ocr payload.
      *
-     * @param array $payload
-     * @return void
      * @see \App\Listeners\TesseractOcrListener
      */
     public function process(array $payload): void
@@ -52,14 +47,10 @@ class TesseractOcrResponse
     /**
      * Handle error message.
      * $requestPayload['id'] is the ocr_queue_files id.
-     *
-     * @param array $requestPayload
-     * @param string $errorMessage
-     * @return void
      */
     public function handleErrorMessage(array $requestPayload, string $errorMessage): void
     {
-        $message = empty($errorMessage) ? 'Error: Unable to complete OCR.' : 'Error: ' . $errorMessage;
+        $message = empty($errorMessage) ? 'Error: Unable to complete OCR.' : 'Error: '.$errorMessage;
         \Storage::disk('s3')->put($requestPayload['key'], $message);
 
         $file = $this->ocrQueueFile->find($requestPayload['file']);
@@ -70,9 +61,6 @@ class TesseractOcrResponse
     /**
      * Handle response for success or failure.
      * $body['id'] is the ocr_queue_files id.
-     *
-     * @param array $body
-     * @return void
      */
     public function handleResponse(array $body): void
     {

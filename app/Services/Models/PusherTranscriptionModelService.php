@@ -31,17 +31,12 @@ class PusherTranscriptionModelService
 
     /**
      * PusherTranscriptionModelService constructor.
-     *
-     * @param \App\Models\PusherTranscription $model
      */
-    public function __construct(private readonly PusherTranscription $model)
-    {}
+    public function __construct(private readonly PusherTranscription $model) {}
 
     /**
      * Find by column and value.
      *
-     * @param string $column
-     * @param string $value
      * @return mixed
      */
     public function findBy(string $column, string $value)
@@ -52,7 +47,6 @@ class PusherTranscriptionModelService
     /**
      * Create.
      *
-     * @param array $data
      * @return mixed
      */
     public function create(array $data)
@@ -63,8 +57,6 @@ class PusherTranscriptionModelService
     /**
      * Update.
      *
-     * @param array $data
-     * @param $resourceId
      * @return \App\Models\PusherTranscription|bool
      */
     public function update(array $data, $resourceId): \App\Models\PusherTranscription|false
@@ -88,8 +80,6 @@ class PusherTranscriptionModelService
     /**
      * Get dashboard items.
      *
-     * @param int $limit
-     * @param int $offset
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getWeDigBioDashboardItems(int $limit, int $offset)
@@ -99,15 +89,13 @@ class PusherTranscriptionModelService
 
     /**
      * Set query for dashboard.
-     *
-     * @param array $request
      */
     public function setQueryForDashboard(array $request)
     {
         $timestampStart = $this->setTimestampStart($request);
         $timestampEnd = $this->setTimestampEnd($request);
 
-        $this->dashboardQuery = $this->model->where(function($query) use($timestampStart, $timestampEnd){
+        $this->dashboardQuery = $this->model->where(function ($query) use ($timestampStart, $timestampEnd) {
             $query->where('timestamp', '<=', $timestampStart);
             isset($date_end) ? $query->where('timestamp', '>=', $timestampEnd) : null;
         });
@@ -115,19 +103,12 @@ class PusherTranscriptionModelService
 
     /**
      * Set the date_start with default to now.
-     *
-     * @param array $request
-     * @return \Carbon\Carbon
      */
     private function setTimestampStart(array $request): Carbon
     {
         return isset($request['timestampStart']) ? Carbon::parse($request['timestampStart'], 'UTC') : Carbon::now('UTC');
     }
 
-    /**
-     * @param array $request
-     * @return \Carbon\Carbon|null
-     */
     private function setTimestampEnd(array $request): ?Carbon
     {
         return isset($request['timestampEnd']) ? Carbon::parse($request['timestampEnd'], 'UTC') : null;

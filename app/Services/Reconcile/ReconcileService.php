@@ -45,17 +45,12 @@ readonly class ReconcileService
 
     /**
      * ReconcileService constructor.
-     *
-     * @param \App\Models\Download $download
-     * @param \App\Services\Api\AwsLambdaApiService $awsLambdaApiService
      */
-    public function __construct(private Download $download, private AwsLambdaApiService $awsLambdaApiService)
-    {}
+    public function __construct(private Download $download, private AwsLambdaApiService $awsLambdaApiService) {}
 
     /**
      * Process payload from lambda function.
      *
-     * @param array $payload
      * @throws \Throwable
      */
     public function process(array $payload): void
@@ -68,7 +63,7 @@ readonly class ReconcileService
         }
 
         if ($responsePayload['statusCode'] !== 200) {
-            throw new \Exception('Invalid response status code: ' . $responsePayload['body']['message']);
+            throw new \Exception('Invalid response status code: '.$responsePayload['body']['message']);
         }
 
         $expeditionId = (int) $responsePayload['body']['expeditionId'];
@@ -85,33 +80,32 @@ readonly class ReconcileService
 
     /**
      * After lambda creation of explained file, process expedition:
+     *
      * @see ExpertReviewMigrateReconcilesJob
      * @see ExpertReviewSetProblemsJob
      *
-     * @param int $expeditionId
      * @throws \Throwable
      */
     public function processExplained(int $expeditionId): void
     {
         Bus::batch([
             new ExpertReviewMigrateReconcilesJob($expeditionId),
-            new ExpertReviewSetProblemsJob($expeditionId)
-        ])->name('Expert Reconcile ' . $expeditionId)->onQueue(config('config.queue.reconcile'))->dispatch();
+            new ExpertReviewSetProblemsJob($expeditionId),
+        ])->name('Expert Reconcile '.$expeditionId)->onQueue(config('config.queue.reconcile'))->dispatch();
     }
 
     /**
      * Process explained file via lambda labelReconciliations.
+     *
      * @see \App\Http\Controllers\Admin\ReconcileController::create
      * @see \App\Console\Commands\ZooniverseExpertReviewCommand::handle
-     *
-     * @param int $expeditionId
      */
     public function invokeLambdaExplained(int $expeditionId): void
     {
         $attributes = [
             'bucket' => config('filesystems.disks.s3.bucket'),
             'key' => config('zooniverse.directory.classification').'/'.$expeditionId.'.csv',
-            'explanations' => true
+            'explanations' => true,
         ];
 
         $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_reconciliation_function'), $attributes);
@@ -123,8 +117,6 @@ readonly class ReconcileService
      * @see ZooniverseTranscriptionJob
      * @see ZooniversePusherJob
      * @see ZooniverseClassificationCountJob
-     *
-     * @param int $expeditionId
      */
     public function processReconcile(int $expeditionId): void
     {
@@ -132,30 +124,28 @@ readonly class ReconcileService
 
         ZooniverseTranscriptionJob::withChain([
             new ZooniversePusherJob($expeditionId),
-            new ZooniverseClassificationCountJob($expeditionId)
+            new ZooniverseClassificationCountJob($expeditionId),
         ])->dispatch($expeditionId);
     }
 
     /**
      * Update or create downloads for reconcile files produced.
-     *
-     * @param $expeditionId
      */
     protected function updateOrCreateDownloads($expeditionId): void
     {
         collect(config('zooniverse.file_types'))->each(function ($type) use ($expeditionId) {
             $values = [
                 'expedition_id' => $expeditionId,
-                'actor_id'      => config('zooniverse.actor_id'),
-                'file'          => $type !== 'summary' ? $expeditionId.'.csv' : $expeditionId.'.html',
-                'type'          => $type,
-                'updated_at'    => Carbon::now()->format('Y-m-d H:i:s'),
+                'actor_id' => config('zooniverse.actor_id'),
+                'file' => $type !== 'summary' ? $expeditionId.'.csv' : $expeditionId.'.html',
+                'type' => $type,
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ];
             $attributes = [
                 'expedition_id' => $expeditionId,
-                'actor_id'      => config('zooniverse.actor_id'),
-                'file'          => $type !== 'summary' ? $expeditionId.'.csv' : $expeditionId.'.html',
-                'type'          => $type,
+                'actor_id' => config('zooniverse.actor_id'),
+                'file' => $type !== 'summary' ? $expeditionId.'.csv' : $expeditionId.'.html',
+                'type' => $type,
             ];
 
             $this->download->updateOrCreate($attributes, $values);
@@ -164,25 +154,21 @@ readonly class ReconcileService
 
     /**
      * Update or create review download.
-     *
-     * @param string $expeditionId
-     * @param string $type
-     * @return void
      */
     public function updateOrCreateReviewDownload(string $expeditionId, string $type): void
     {
         $values = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => config('zooniverse.actor_id'),
-            'file'          => $expeditionId.'.csv',
-            'type'          => $type,
-            'updated_at'    => Carbon::now()->format('Y-m-d H:i:s'),
+            'actor_id' => config('zooniverse.actor_id'),
+            'file' => $expeditionId.'.csv',
+            'type' => $type,
+            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ];
         $attributes = [
             'expedition_id' => $expeditionId,
-            'actor_id'      => config('zooniverse.actor_id'),
-            'file'          => $expeditionId.'.csv',
-            'type'          => $type,
+            'actor_id' => config('zooniverse.actor_id'),
+            'file' => $expeditionId.'.csv',
+            'type' => $type,
         ];
 
         $this->download->updateOrCreate($attributes, $values);
@@ -190,10 +176,6 @@ readonly class ReconcileService
 
     /**
      * Upload reconciled with user file.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function reconciledWithUserFile(int $projectId, int $expeditionId): View|JsonResponse
     {
@@ -211,6 +193,7 @@ readonly class ReconcileService
 
         if (\Storage::disk('s3')->put(config('zooniverse.directory.reconciled-with-user').'/'.$expeditionId.'.csv', file_get_contents(request()->file('file')->getRealPath()))) {
             $this->updateOrCreateReviewDownload($expeditionId, 'reconciled-with-user');
+
             return \Response::json(['message' => t('File upload was successful. It will now be listed in your downloads section of the Expedition.')]);
         }
 

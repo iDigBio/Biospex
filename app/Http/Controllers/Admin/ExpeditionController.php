@@ -22,36 +22,28 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpeditionJob;
-use App\Services\Models\ProjectModelService;
 use App\Services\Grid\JqGridEncoder;
 use App\Services\Models\ExpeditionService;
+use App\Services\Models\ProjectModelService;
 use Auth;
 use Exception;
 use JavaScript;
 
 /**
  * Class ExpeditionController
- *
- * @package App\Http\Controllers\Admin
  */
 class ExpeditionController extends Controller
 {
     /**
      * ExpeditionController constructor.
-     *
-     * @param \App\Services\Models\ProjectModelService $projectModelService
-     * @param \App\Services\Models\ExpeditionService $expeditionService
      */
     public function __construct(
         private ProjectModelService $projectModelService,
         private ExpeditionService $expeditionService
-    ) {
-    }
+    ) {}
 
     /**
      * Display all expeditions for user.
-     *
-     * @return \Illuminate\View\View
      */
     public function index(): \Illuminate\View\View
     {
@@ -67,8 +59,6 @@ class ExpeditionController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param $projectId
-     * @param \App\Services\Grid\JqGridEncoder $grid
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function create($projectId, JqGridEncoder $grid)
@@ -84,13 +74,13 @@ class ExpeditionController extends Controller
         $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
-            'model'      => $model,
+            'model' => $model,
             'subjectIds' => [],
-            'maxCount'   => config('config.expedition_size'),
-            'dataUrl'    => route('admin.grids.create', [$project->id]),
-            'exportUrl'  => route('admin.grids.export', [$projectId]),
-            'checkbox'   => true,
-            'route'      => 'create', // used for export
+            'maxCount' => config('config.expedition_size'),
+            'dataUrl' => route('admin.grids.create', [$project->id]),
+            'exportUrl' => route('admin.grids.export', [$projectId]),
+            'checkbox' => true,
+            'route' => 'create', // used for export
         ]);
 
         return \View::make('admin.expedition.create', compact('project', 'workflowOptions'));
@@ -98,10 +88,6 @@ class ExpeditionController extends Controller
 
     /**
      * Store new expedition.
-     *
-     * @param \App\Http\Requests\ExpeditionFormRequest $request
-     * @param $projectId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(ExpeditionFormRequest $request, $projectId): \Illuminate\Http\RedirectResponse
     {
@@ -117,7 +103,7 @@ class ExpeditionController extends Controller
         }
         $expedition->load('workflow.actors.contacts');
 
-        $this->expeditionService->setSubjectIds($request->get('subject-ids'));;
+        $this->expeditionService->setSubjectIds($request->get('subject-ids'));
         $this->expeditionService->attachSubjects($expedition->id);
         $this->expeditionService->syncActors($expedition);
         $this->expeditionService->syncStat($expedition);
@@ -132,11 +118,6 @@ class ExpeditionController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param $projectId
-     * @param $expeditionId
-     * @param \App\Services\Grid\JqGridEncoder $grid
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function show(
         $projectId,
@@ -153,13 +134,13 @@ class ExpeditionController extends Controller
         $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
-            'model'      => $model,
+            'model' => $model,
             'subjectIds' => [],
-            'maxCount'   => config('config.expedition_size'),
-            'dataUrl'    => route('admin.grids.show', [$expedition->project->id, $expedition->id]),
-            'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'checkbox'   => false,
-            'route'      => 'show', // used for export
+            'maxCount' => config('config.expedition_size'),
+            'dataUrl' => route('admin.grids.show', [$expedition->project->id, $expedition->id]),
+            'exportUrl' => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'checkbox' => false,
+            'route' => 'show', // used for export
         ]);
 
         return \View::make('admin.expedition.show', compact('expedition'));
@@ -167,11 +148,6 @@ class ExpeditionController extends Controller
 
     /**
      * Clone an existing expedition
-     *
-     * @param $projectId
-     * @param $expeditionId
-     * @param \App\Services\Grid\JqGridEncoder $grid
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function clone(
         $projectId,
@@ -190,24 +166,18 @@ class ExpeditionController extends Controller
         $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
-            'model'      => $model,
+            'model' => $model,
             'subjectIds' => [],
-            'maxCount'   => config('config.expedition_size'),
-            'dataUrl'    => route('admin.grids.create', [$expedition->project->id]),
-            'exportUrl'  => route('admin.grids.export', [$projectId]),
-            'checkbox'   => true,
-            'route'      => 'create', // used for export
+            'maxCount' => config('config.expedition_size'),
+            'dataUrl' => route('admin.grids.create', [$expedition->project->id]),
+            'exportUrl' => route('admin.grids.export', [$projectId]),
+            'checkbox' => true,
+            'route' => 'create', // used for export
         ]);
 
         return \View::make('admin.expedition.clone', compact('expedition', 'workflowOptions'));
     }
 
-    /**
-     * @param $projectId
-     * @param $expeditionId
-     * @param \App\Services\Grid\JqGridEncoder $grid
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
-     */
     public function edit(
         $projectId,
         $expeditionId,
@@ -227,13 +197,13 @@ class ExpeditionController extends Controller
         $model = $grid->loadGridModel($projectId);
 
         JavaScript::put([
-            'model'      => $model,
+            'model' => $model,
             'subjectIds' => $subjectIds,
-            'maxCount'   => config('config.expedition_size'),
-            'dataUrl'    => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
-            'exportUrl'  => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'checkbox'   => $expedition->workflowManager === null,
-            'route'      => 'edit', // used for export
+            'maxCount' => config('config.expedition_size'),
+            'dataUrl' => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
+            'exportUrl' => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'checkbox' => $expedition->workflowManager === null,
+            'route' => 'edit', // used for export
         ]);
 
         return \View::make('admin.expedition.edit', compact('expedition', 'workflowOptions'));
@@ -241,11 +211,6 @@ class ExpeditionController extends Controller
 
     /**
      * Update expedition.
-     *
-     * @param ExpeditionFormRequest $request
-     * @param $projectId
-     * @param $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(ExpeditionFormRequest $request, $projectId, $expeditionId): \Illuminate\Http\RedirectResponse
     {
@@ -277,10 +242,6 @@ class ExpeditionController extends Controller
 
     /**
      * Soft delete the specified resource from storage.
-     *
-     * @param $projectId
-     * @param $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function delete($projectId, $expeditionId): \Illuminate\Http\RedirectResponse
     {
@@ -313,7 +274,6 @@ class ExpeditionController extends Controller
     /**
      * Sort expedition admin page.
      *
-     * @return \Illuminate\Contracts\View\View|null
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -346,10 +306,6 @@ class ExpeditionController extends Controller
 
     /**
      * Display expedition tools.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function tools(
         int $projectId,

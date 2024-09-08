@@ -23,8 +23,6 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Class PasswordFormRequest
- *
- * @package App\Http\Requests
  */
 class PasswordFormRequest extends Request
 {
@@ -46,8 +44,8 @@ class PasswordFormRequest extends Request
     public function rules()
     {
         return [
-            'current_password'      => 'required|min:6',
-            'password'              => 'required|min:6|confirmed',
+            'current_password' => 'required|min:6',
+            'password' => 'required|min:6|confirmed',
             'password_confirmation' => 'required',
         ];
     }

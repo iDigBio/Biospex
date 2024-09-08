@@ -1,4 +1,6 @@
-<?php namespace App\Models\Traits;
+<?php
+
+namespace App\Models\Traits;
 
 use Ramsey\Uuid\Uuid;
 
@@ -18,8 +20,6 @@ trait UuidTrait
 
     /**
      * Set uuid for binary storage.
-     *
-     * @param $value
      */
     public function setUuidAttribute($value)
     {
@@ -29,7 +29,6 @@ trait UuidTrait
     /**
      * Return uuid in normal format.
      *
-     * @param $value
      * @return string
      */
     public function getUuidAttribute($value)
@@ -39,7 +38,8 @@ trait UuidTrait
         }
 
         $uuid = bin2hex($value);
-        return substr($uuid, 0, 8) . '-' . substr($uuid, 8, 4) . '-' . substr($uuid, 12, 4) . '-' . substr($uuid, 16, 4) . '-' . substr($uuid, 20);
+
+        return substr($uuid, 0, 8).'-'.substr($uuid, 8, 4).'-'.substr($uuid, 12, 4).'-'.substr($uuid, 16, 4).'-'.substr($uuid, 20);
     }
 }
 /**
@@ -59,5 +59,3 @@ trait UuidTrait
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-

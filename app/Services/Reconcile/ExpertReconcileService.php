@@ -19,21 +19,19 @@
 
 namespace App\Services\Reconcile;
 
-use TranscriptionMap;
 use App\Models\Reconcile;
-use App\Services\Models\SubjectModelService;
 use App\Services\Csv\AwsS3CsvService;
+use App\Services\Models\SubjectModelService;
 use Exception;
 use File;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Storage;
+use TranscriptionMap;
 use Validator;
 
 /**
  * Class ExpertReconcileService
- *
- * @package App\Services\Process
  */
 class ExpertReconcileService
 {
@@ -44,10 +42,6 @@ class ExpertReconcileService
 
     /**
      * ExpertReconcileService constructor.
-     *
-     * @param \App\Models\Reconcile $reconcile
-     * @param \App\Services\Models\SubjectModelService $subjectModelService
-     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
         private readonly Reconcile $reconcile,
@@ -61,7 +55,7 @@ class ExpertReconcileService
      * Migrate reconcile csv to mongodb using first or create.
      *
      * Transcription fields are encoded to prevent field name errors while saving to db.
-     * @param string $expeditionId
+     *
      * @throws \League\Csv\Exception|\Exception
      */
     public function migrateReconcileCsv(string $expeditionId)
@@ -93,8 +87,6 @@ class ExpertReconcileService
     /**
      * Get csv rows from file.
      *
-     * @param string $file
-     * @return \Illuminate\Support\Collection
      * @throws \League\Csv\Exception
      */
     public function getCsvRows(string $file): Collection
@@ -108,9 +100,6 @@ class ExpertReconcileService
 
     /**
      * Get pagination results.
-     *
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function getPagination(int $expeditionId): LengthAwarePaginator
     {
@@ -123,21 +112,14 @@ class ExpertReconcileService
 
     /**
      * Get image url from api or accessURI.
-     *
-     * @param string $imageName
-     * @param string|null $location
-     * @return mixed
      */
-    public function getImageUrl(string $imageName, string $location = null): mixed
+    public function getImageUrl(string $imageName, ?string $location = null): mixed
     {
         return $location !== null ? $location : $this->getAccessUri($imageName);
     }
 
     /**
      * Get image from accessURI.
-     *
-     * @param $imageName
-     * @return mixed
      */
     public function getAccessUri($imageName): mixed
     {
@@ -151,9 +133,6 @@ class ExpertReconcileService
      * Update reconciled record.
      *
      * Unset unneeded variables and decode columns. Use str_place for some columns with spaces.
-     *
-     * @param array $request
-     * @return mixed
      */
     public function updateRecord(array $request): mixed
     {
@@ -175,7 +154,6 @@ class ExpertReconcileService
     /**
      * Set problem columns in reconcile documents.
      *
-     * @param int $expeditionId
      * @throws \League\Csv\Exception|\Exception
      */
     public function setReconcileProblems(int $expeditionId)
@@ -221,10 +199,6 @@ class ExpertReconcileService
      * Check columns for problems.
      *
      * Regex match = /No (?:select|text) match on|Only 1 transcript in|There was 1 number in/i
-     *
-     * @param string $value
-     * @param string $field
-     * @return bool
      */
     private function checkForProblem(string $value, string $field): bool
     {
@@ -233,9 +207,6 @@ class ExpertReconcileService
 
     /**
      * Validate transcription to prevent duplicates.
-     *
-     * @param $subject_id
-     * @return bool
      */
     private function validateReconcile($subject_id): bool
     {

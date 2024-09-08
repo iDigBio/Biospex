@@ -19,12 +19,11 @@
 
 namespace App\Services\User;
 
-use Date;
 use App\Http\Requests\PasswordFormRequest;
 use App\Http\Requests\Request;
 use App\Models\User;
 use App\Services\Permission\CheckPermission;
-use Flash;
+use Date;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
@@ -36,15 +35,13 @@ class UserAccountService
     /**
      * Handle the user edit form.
      *
-     * @param int $userId
-     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
     public function editUserProfile(int $userId): \Illuminate\View\View|\Illuminate\Http\RedirectResponse
     {
         $user = User::find($userId);
 
-        if (!CheckPermission::handle('edit', $user)) {
+        if (! CheckPermission::handle('edit', $user)) {
             return Redirect::back();
         }
 
@@ -56,15 +53,12 @@ class UserAccountService
 
     /**
      * Update the user profile.
-     *
-     * @param \App\Http\Requests\Request $request
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function updateUserProfile(Request $request): \Illuminate\Http\RedirectResponse
     {
         $user = User::find($request->route('users'));
 
-        if (!CheckPermission::handle('update', $user)) {
+        if (! CheckPermission::handle('update', $user)) {
             return Redirect::back();
         }
 
@@ -81,15 +75,12 @@ class UserAccountService
 
     /**
      * Update the user password.
-     *
-     * @param \App\Http\Requests\PasswordFormRequest $request
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function updateUserPassword(PasswordFormRequest $request): \Illuminate\Http\RedirectResponse
     {
         $user = User::find($request->route('users'));
 
-        if (!CheckPermission::handle('password', $user)) {
+        if (! CheckPermission::handle('password', $user)) {
             return Redirect::back();
         }
 

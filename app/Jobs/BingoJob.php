@@ -31,30 +31,19 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Class BingoJob
- *
- * @package App\Jobs
  */
 class BingoJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * @var string
-     */
     private string $bingoId;
 
-    /**
-     * @var string|null
-     */
     private ?string $mapId;
 
     /**
      * BingoJob constructor.
-     *
-     * @param string $bingoId
-     * @param string|null $mapId
      */
-    public function __construct(string $bingoId, string $mapId = null)
+    public function __construct(string $bingoId, ?string $mapId = null)
     {
         $this->bingoId = $bingoId;
         $this->mapId = $mapId;
@@ -63,18 +52,15 @@ class BingoJob implements ShouldQueue
 
     /**
      * Job handle.
-     *
-     * @param \App\Models\BingoMap $bingoMap
-     * @param \App\Events\BingoEvent $bingoEvent
      */
     public function handle(BingoMap $bingoMap, BingoEvent $bingoEvent): void
     {
         $locations = $bingoMap->where('bingo_id', $this->bingoId)->get();
-        $data['markers'] = $locations->map(function($location) {
+        $data['markers'] = $locations->map(function ($location) {
             return [
                 'latitude' => $location->latitude,
                 'longitude' => $location->longitude,
-                'city' => $location->city
+                'city' => $location->city,
             ];
         })->toArray();
 
@@ -85,24 +71,20 @@ class BingoJob implements ShouldQueue
             $data['winner']['uuid'] = $map->uuid;
         }
 
-
         $bingoEvent::dispatch($this->bingoId, $data);
     }
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
     public function failed(\Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Bingo Job Failed'),
-            'html'    => [
+            'html' => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage())
+                t('Message: %s', $throwable->getMessage()),
             ],
         ];
 

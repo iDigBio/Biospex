@@ -24,22 +24,17 @@ use App\Models\FaqCategory;
 
 /**
  * Class FaqController
- *
- * @package App\Http\Controllers\Front
  */
 class FaqController extends Controller
 {
     /**
      * FaqController constructor.
-     *
-     * @param \App\Models\FaqCategory $faqCategory
      */
-    public function __construct(private readonly FaqCategory $faqCategory)
-    {}
+    public function __construct(private readonly FaqCategory $faqCategory) {}
 
     /**
      * Show categories.
-     * 
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
@@ -47,7 +42,7 @@ class FaqController extends Controller
         $categories = $this->faqCategory->with('faqs')
             ->groupBy('id')
             ->orderBy('id', 'asc')
-            ->get();;
+            ->get();
 
         return \View::make('front.faq.index', compact('categories'));
     }

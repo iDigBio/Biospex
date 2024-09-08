@@ -25,18 +25,11 @@ readonly class HeaderModelService
 {
     /**
      * HeaderModelService constructor.
-     *
-     * @param \App\Models\Header $model
      */
-    public function __construct(private Header $model)
-    {}
+    public function __construct(private Header $model) {}
 
     /**
      * Find with relations.
-     *
-     * @param int $id
-     * @param array $relations
-     * @return \App\Models\Header|null
      */
     public function findWithRelations(int $id, array $relations = []): ?Header
     {
@@ -45,8 +38,6 @@ readonly class HeaderModelService
 
     /**
      * Get all.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAll(): \Illuminate\Database\Eloquent\Collection
     {
@@ -55,10 +46,6 @@ readonly class HeaderModelService
 
     /**
      * Get first by column.
-     *
-     * @param string $column
-     * @param string $value
-     * @return \App\Models\Header|null
      */
     public function getFirst(string $column, string $value): ?Header
     {
@@ -67,9 +54,6 @@ readonly class HeaderModelService
 
     /**
      * Create a new header.
-     *
-     * @param array $data
-     * @return \App\Models\Header
      */
     public function create(array $data): Header
     {

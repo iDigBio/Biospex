@@ -26,18 +26,11 @@ readonly class UserModelService
 {
     /**
      * UserModelService constructor.
-     *
-     * @param \App\Models\User $model
      */
-    public function __construct(private User $model)
-    {}
+    public function __construct(private User $model) {}
 
     /**
      * Find user with relations.
-     *
-     * @param int $id
-     * @param array $relations
-     * @return \App\Models\User|null
      */
     public function findWithRelations(int $id, array $relations = []): ?User
     {
@@ -46,10 +39,6 @@ readonly class UserModelService
 
     /**
      * Get user by column.
-     *
-     * @param string $column
-     * @param string $value
-     * @return \App\Models\User|null
      */
     public function getFirstBy(string $column, string $value): ?User
     {
@@ -58,9 +47,6 @@ readonly class UserModelService
 
     /**
      * Get users for site mailer.
-     *
-     * @param string $type
-     * @return \Illuminate\Support\Collection
      */
     public function getUsersForMailer(string $type): Collection
     {
@@ -73,8 +59,6 @@ readonly class UserModelService
 
     /**
      * Get all users and order by date.
-     *
-     * @return \Illuminate\Support\Collection
      */
     public function getAllUsersOrderByDate(): Collection
     {

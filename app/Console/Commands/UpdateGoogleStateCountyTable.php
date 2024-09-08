@@ -19,16 +19,14 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Models\StateCountyModelService;
 use App\Services\Csv\Csv;
+use App\Services\Models\StateCountyModelService;
 use App\Services\Requests\HttpRequest;
 use Illuminate\Console\Command;
 use Storage;
 
 /**
  * Class UpdateGoogleStateCountyTable
- *
- * @package App\Console\Commands
  */
 class UpdateGoogleStateCountyTable extends Command
 {
@@ -57,8 +55,6 @@ class UpdateGoogleStateCountyTable extends Command
     /**
      * Execute the console command.
      *
-     * @param \App\Services\Requests\HttpRequest $httpRequest
-     * @param \App\Services\Csv\Csv $csv
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\Csv\Exception
      */
@@ -79,8 +75,7 @@ class UpdateGoogleStateCountyTable extends Command
 
         $stateCountyModelService->truncate();
 
-        foreach ($rows as $row)
-        {
+        foreach ($rows as $row) {
             $attributes = [
                 'county_name' => $row[0],
                 'state_county' => $row[1],

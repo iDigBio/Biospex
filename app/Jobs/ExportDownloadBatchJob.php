@@ -30,8 +30,6 @@ use Throwable;
 
 /**
  * Class ExportDownloadBatchJob
- *
- * @package App\Jobs
  */
 class ExportDownloadBatchJob implements ShouldQueue
 {
@@ -39,20 +37,13 @@ class ExportDownloadBatchJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 3600;
 
-    /**
-     * @var int
-     */
     private int $downloadId;
 
     /**
      * ExportDownloadBatchJob constructor.
-     *
-     * @param int $downloadId
      */
     public function __construct(int $downloadId)
     {
@@ -62,8 +53,6 @@ class ExportDownloadBatchJob implements ShouldQueue
 
     /**
      * Handle download batch job.
-     *
-     * @param \App\Services\Actor\Zooniverse\ZooniverseExportBatch $zooniverseExportBatch
      */
     public function handle(Download $download, ZooniverseExportBatch $zooniverseExportBatch): void
     {
@@ -71,17 +60,16 @@ class ExportDownloadBatchJob implements ShouldQueue
 
         try {
             $zooniverseExportBatch->process($download);
-        }
-        catch (Throwable $throwable) {
+        } catch (Throwable $throwable) {
             $attributes = [
                 'subject' => t('Export Download Batch Error'),
-                'html'    => [
+                'html' => [
                     t('The batch export for Expedition %s has failed.', $download->expedition->title),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),
                     t('Message: %s', $throwable->getMessage()),
                     t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ]
+                ],
             ];
 
             $download->expedition->project->group->owner->notify(new Generic($attributes, true));

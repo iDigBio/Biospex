@@ -19,29 +19,26 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Services\EventService;
-use App\Services\Models\EventTeamModel;
-use Date;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
 use App\Jobs\EventUserExportCsvJob;
+use App\Services\EventService;
 use App\Services\Models\EventModel;
+use App\Services\Models\EventTeamModel;
 use App\Services\Models\ProjectModelService;
 use Auth;
+use Date;
 use Illuminate\Support\Facades\View;
 use Redirect;
 
 /**
  * Class EventController
- *
- * @package App\Http\Controllers\Admin
  */
 class EventController extends Controller
 {
     /**
      * EventController constructor.
-     *
      */
     public function __construct(
         protected EventService $eventService,
@@ -49,8 +46,7 @@ class EventController extends Controller
         protected EventModel $eventModel,
         protected EventTeamModel $eventTeamModel,
         protected ProjectModelService $projectModelService
-    ) {
-    }
+    ) {}
 
     /**
      * Display events.
@@ -61,8 +57,7 @@ class EventController extends Controller
             [$events, $eventsCompleted] = $this->eventService->index(Auth::user());
 
             return View::make('admin.event.index', compact('events', 'eventsCompleted'));
-        }
-        catch (\Throwable $throwable) {
+        } catch (\Throwable $throwable) {
 
             return Redirect::route('admin.projects.index')->with('error', t('An error occurred when retrieving Event records.'));
         }
@@ -70,8 +65,6 @@ class EventController extends Controller
 
     /**
      * Displays Completed Events on public page.
-     *
-     * @return \Illuminate\Contracts\View\View|null
      */
     public function sort(): ?\Illuminate\Contracts\View\View
     {
@@ -93,7 +86,6 @@ class EventController extends Controller
     /**
      * Show event.
      *
-     * @param $eventId
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show($eventId)
@@ -111,6 +103,7 @@ class EventController extends Controller
      * Create event.
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
      * @throws \Exception
      */
     public function create()
@@ -125,7 +118,6 @@ class EventController extends Controller
     /**
      * Store Event.
      *
-     * @param \App\Http\Requests\EventFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(EventFormRequest $request)
@@ -145,8 +137,8 @@ class EventController extends Controller
     /**
      * Edit event.
      *
-     * @param int $eventId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     *
      * @throws \Exception
      */
     public function edit(int $eventId)
@@ -167,8 +159,6 @@ class EventController extends Controller
     /**
      * Update Event.
      *
-     * @param $eventId
-     * @param \App\Http\Requests\EventFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update($eventId, EventFormRequest $request)
@@ -191,7 +181,6 @@ class EventController extends Controller
     /**
      * Delete Event.
      *
-     * @param $eventId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function delete($eventId)
@@ -214,7 +203,6 @@ class EventController extends Controller
     /**
      * Export transcription csv from event.
      *
-     * @param $eventId
      * @return \Illuminate\Http\JsonResponse
      */
     public function exportTranscriptions($eventId)
@@ -231,7 +219,6 @@ class EventController extends Controller
     /**
      * Export users csv from event.
      *
-     * @param $eventId
      * @return \Illuminate\Http\JsonResponse
      */
     public function exportUsers($eventId)

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -30,8 +32,6 @@ use Illuminate\Support\Collection;
 
 /**
  * Class TranscriptionChartService
- *
- * @package App\Services\Process
  */
 class TranscriptionChartService
 {
@@ -50,33 +50,20 @@ class TranscriptionChartService
      */
     private $projectChartSeriesFile;
 
-    /**
-     * @var
-     */
     private $begin;
 
-    /**
-     * @var
-     */
     private $end;
 
-    /**
-     * @var
-     */
     private $yearDaysArray;
 
     /**
      * TranscriptionChartService constructor.
-     *
-     * @param \App\Services\Models\PanoptesTranscriptionModelService $panoptesTranscriptionModelService
      */
     public function __construct(private PanoptesTranscriptionModelService $panoptesTranscriptionModelService
     ) {}
 
     /**
      * Process project for amchart.
-     *
-     * @param \App\Models\Project $project
      */
     public function process(Project $project)
     {
@@ -114,13 +101,11 @@ class TranscriptionChartService
 
     /**
      * Check if this is a new chart. Create and load if new.
-     *
-     * @param \App\Models\Project $project
      */
     protected function checkNewChart(Project &$project)
     {
         if ($project->amChart === null) {
-            $amChart = new AmChart();
+            $amChart = new AmChart;
             $amChart->data = [];
             $amChart->series = [];
             $project->amChart()->save($amChart);
@@ -141,9 +126,6 @@ class TranscriptionChartService
 
     /**
      * Build complete series and data for chart for year.
-     *
-     * @param $project
-     * @param $year
      */
     protected function buildCompleteChartData($project, $year): void
     {
@@ -169,7 +151,6 @@ class TranscriptionChartService
      * Set years array.
      * Carbon::parse('first day of January next year')->subSecond();
      *
-     * @param int $projectId
      * @return \Illuminate\Support\Collection|null
      */
     public function setYearsArray(int $projectId)
@@ -177,7 +158,7 @@ class TranscriptionChartService
         $earliest_date = $this->panoptesTranscriptionModelService->getMinFinishedAtDateByProjectId($projectId);
         $latest_date = $this->panoptesTranscriptionModelService->getMaxFinishedAtDateByProjectId($projectId);
 
-        if (null === $earliest_date || null === $latest_date) {
+        if ($earliest_date === null || $latest_date === null) {
             return null;
         }
 
@@ -189,8 +170,6 @@ class TranscriptionChartService
 
     /**
      * Return first day and last day of given year, or if current year, get today.
-     *
-     * @param int $year
      */
     protected function setBeginEndOfYear(int $year)
     {
@@ -200,8 +179,6 @@ class TranscriptionChartService
 
     /**
      * Builds the amChartData for all years and days.
-     *
-     * @param int $year
      */
     protected function setAmChartData(int $year)
     {
@@ -213,8 +190,6 @@ class TranscriptionChartService
 
     /**
      * Set yearDaysArray for merging expedition dates and counts.
-     *
-     * @param $year
      */
     protected function setYearDaysArray(int $year)
     {
@@ -223,10 +198,6 @@ class TranscriptionChartService
 
     /**
      * Process expedition and return completed date collections.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @param int $year
-     * @return \Illuminate\Support\Collection
      */
     protected function processExpedition(Expedition $expedition, int $year, mixed $dateCount = null): Collection
     {
@@ -245,9 +216,6 @@ class TranscriptionChartService
 
     /**
      * Get transcriptions per workflow for the given year.
-     *
-     * @param int $workflowId
-     * @return mixed
      */
     protected function transcriptionCountPerDate(int $workflowId): mixed
     {
@@ -257,8 +225,6 @@ class TranscriptionChartService
     /**
      * Map date counts for expedition transcriptions.
      *
-     * @param \Illuminate\Support\Collection $dateCount
-     * @param string $record
      * @return \Illuminate\Support\Collection
      */
     protected function mapDateCounts(Collection $dateCount, string $record)
@@ -273,8 +239,6 @@ class TranscriptionChartService
     /**
      * Add empty values for missing date fields for expedition.
      *
-     * @param \Illuminate\Support\Collection $mergedDates
-     * @param string $record
      * @return \Illuminate\Support\Collection
      */
     protected function addEmptyDateCounts(Collection $mergedDates, string $record)
@@ -290,9 +254,6 @@ class TranscriptionChartService
 
     /**
      * Calculate the count totals per date for Expeditioni.
-     *
-     * @param \Illuminate\Support\Collection $completeDates
-     * @param string $record
      */
     protected function calculateCountTotals(Collection &$completeDates, string $record)
     {
@@ -306,9 +267,6 @@ class TranscriptionChartService
 
     /**
      * Build expedition series and add to chart series.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @param int $year
      */
     public function buildExpeditionSeries(Expedition $expedition, int $year)
     {

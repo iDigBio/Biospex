@@ -19,10 +19,10 @@
 
 namespace App\Jobs;
 
-use App\Services\Models\ProjectModelService;
 use App\Models\Import;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
+use App\Services\Models\ProjectModelService;
 use App\Services\Process\CreateReportService;
 use App\Services\Process\DarwinCore;
 use Exception;
@@ -37,29 +37,20 @@ use Notification;
 
 /**
  * Class DwcFileImportJob
- *
- * @package App\Jobs
  */
 class DwcFileImportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
+    use ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 1800;
 
-    /**
-     * @var Import
-     */
     public Import $import;
 
     /**
      * Create a new job instance.
-     *
-     * @param Import $import
      */
     public function __construct(Import $import)
     {
@@ -67,11 +58,6 @@ class DwcFileImportJob implements ShouldQueue
         $this->onQueue(config('config.queue.import'));
     }
 
-    /**
-     * @param \App\Services\Models\ProjectModelService $projectModelService
-     * @param \App\Services\Process\DarwinCore $dwcProcess
-     * @param \App\Services\Process\CreateReportService $createReportService
-     */
     public function handle(
         ProjectModelService $projectModelService,
         DarwinCore $dwcProcess,
@@ -110,11 +96,11 @@ class DwcFileImportJob implements ShouldQueue
 
             $attributes = [
                 'subject' => t('DWC File Import Complete'),
-                'html'    => [
+                'html' => [
                     t('The subject import for %s has been completed.', $project->title),
-                    t('OCR processing may take longer and you will receive an email when it is complete.')
+                    t('OCR processing may take longer and you will receive an email when it is complete.'),
                 ],
-                'buttons' => $buttons
+                'buttons' => $buttons,
             ];
 
             Notification::send($users, new Generic($attributes));
@@ -134,7 +120,7 @@ class DwcFileImportJob implements ShouldQueue
 
             $attributes = [
                 'subject' => t('DWC File Import Error'),
-                'html'    => [
+                'html' => [
                     t('An error occurred while importing the Darwin Core Archive.'),
                     t('Project: %s', $project->title),
                     t('ID: %s'.$project->id),
@@ -151,7 +137,6 @@ class DwcFileImportJob implements ShouldQueue
     }
 
     /**
-     * @param $dir
      * @throws \Exception
      */
     private function makeDirectory($dir)
@@ -167,9 +152,6 @@ class DwcFileImportJob implements ShouldQueue
 
     /**
      * Unzip file in directory.
-     *
-     * @param $zipFile
-     * @param $dir
      */
     private function unzip($zipFile, $dir)
     {

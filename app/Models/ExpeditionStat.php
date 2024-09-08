@@ -21,19 +21,16 @@ namespace App\Models;
 
 /**
  * Class ExpeditionStat
- *
- * @package App\Models
  */
 class ExpeditionStat extends BaseEloquentModel
 {
-
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'expedition_stats';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'expedition_id',
@@ -42,12 +39,9 @@ class ExpeditionStat extends BaseEloquentModel
         'transcriptions_goal',
         'local_transcriptions_completed',
         'transcriptions_completed',
-        'percentage_completed'
+        'percentage_completed',
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class);

@@ -32,11 +32,6 @@ readonly class ZooniverseExportQueue
 {
     /**
      * ExportQueueCommand constructor.
-     *
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
-     * @param \App\Models\Download $download
      */
     public function __construct(
         private ExpeditionModelService $expeditionModelService,
@@ -67,9 +62,6 @@ readonly class ZooniverseExportQueue
 
     /**
      * Get export queue for stage command.
-     *
-     * @param int $queueId
-     * @return \App\Models\ExportQueue
      */
     public function getExportQueueForStageCommand(int $queueId): ExportQueue
     {
@@ -78,23 +70,20 @@ readonly class ZooniverseExportQueue
 
     /**
      * Handles resetting Expedition attributes from command line.
-     *
-     * @param int $expeditionId
-     * @return void
      */
     public function resetExpeditionExport(int $expeditionId): void
     {
         $expedition = $this->getExpedition($expeditionId);
 
-        if (!is_null($expedition->exportQueue)) $expedition->exportQueue->delete();
+        if (! is_null($expedition->exportQueue)) {
+            $expedition->exportQueue->delete();
+        }
 
         $this->resetExpeditionData($expedition);
     }
 
     /**
      * Reset data for expedition when regenerating export.
-     *
-     * @param \App\Models\Expedition $expedition
      */
     public function resetExpeditionData(Expedition $expedition): void
     {
@@ -117,8 +106,6 @@ readonly class ZooniverseExportQueue
 
     /**
      * Delete existing exports files for expedition.
-     *
-     * @param string $expeditionId
      */
     public function deleteExportFiles(string $expeditionId): void
     {
@@ -139,9 +126,6 @@ readonly class ZooniverseExportQueue
 
     /**
      * Get expedition with zooniverseActor and stat.
-     *
-     * @param int $expeditionId
-     * @return \App\Models\Expedition
      */
     private function getExpedition(int $expeditionId): Expedition
     {

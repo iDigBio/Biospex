@@ -25,23 +25,16 @@ use App\Services\Models\GroupModelService;
 
 /**
  * Class GroupController
- *
- * @package App\Http\Controllers\Admin
  */
 class GroupController extends Controller
 {
     /**
      * GroupController constructor.
-     *
-     * @param \App\Services\Models\GroupModelService $groupModelService
      */
-    public function __construct(private readonly GroupModelService $groupModelService)
-    {}
+    public function __construct(private readonly GroupModelService $groupModelService) {}
 
     /**
      * Display groups.
-     *
-     * @return \Illuminate\View\View
      */
     public function index(): \Illuminate\View\View
     {
@@ -50,8 +43,6 @@ class GroupController extends Controller
 
     /**
      * Show create group form.
-     *
-     * @return \Illuminate\View\View
      */
     public function create(): \Illuminate\View\View
     {
@@ -61,8 +52,6 @@ class GroupController extends Controller
     /**
      * Store a newly created group.
      *
-     * @param \App\Http\Requests\GroupFormRequest $request
-     * @return \Illuminate\Http\RedirectResponse
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -74,7 +63,6 @@ class GroupController extends Controller
     /**
      * Show a group.
      *
-     * @param int $groupId
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function show(int $groupId)
@@ -85,7 +73,6 @@ class GroupController extends Controller
     /**
      * Show group edit form.
      *
-     * @param int $groupId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function edit(int $groupId)
@@ -95,10 +82,6 @@ class GroupController extends Controller
 
     /**
      * Update group.
-     *
-     * @param \App\Http\Requests\GroupFormRequest $request
-     * @param int $groupId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(GroupFormRequest $request, int $groupId): \Illuminate\Http\RedirectResponse
     {
@@ -107,9 +90,6 @@ class GroupController extends Controller
 
     /**
      * Delete group.
-     *
-     * @param int $groupId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function delete(int $groupId): \Illuminate\Http\RedirectResponse
     {
@@ -119,8 +99,6 @@ class GroupController extends Controller
     /**
      * Delete user from group.
      *
-     * @param int $groupId
-     * @param int $userId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteGroupUser(int $groupId, int $userId)
@@ -131,8 +109,6 @@ class GroupController extends Controller
     /**
      * Delete geolocate form.
      *
-     * @param int $groupId
-     * @param int $formId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteGeoLocateForm(int $groupId, int $formId)

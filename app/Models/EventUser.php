@@ -21,21 +21,19 @@ namespace App\Models;
 
 /**
  * Class EventUser
- *
- * @package App\Models
  */
 class EventUser extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'event_users';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
-        'nfn_user'
+        'nfn_user',
     ];
 
     /**

@@ -19,14 +19,12 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Models\WorkflowManagerModelService;
 use App\Services\Actor\ActorFactory;
+use App\Services\Models\WorkflowManagerModelService;
 use Illuminate\Console\Command;
 
 /**
  * Class WorkFlowManagerCommand
- *
- * @package App\Console\Commands
  */
 class WorkFlowManagerCommand extends Command
 {
@@ -42,17 +40,12 @@ class WorkFlowManagerCommand extends Command
      *
      * @var string
      */
-    protected $description = "Workflow manager";
+    protected $description = 'Workflow manager';
 
-    /**
-     * @var mixed
-     */
     public mixed $tube;
 
     /**
      * WorkFlowManagerCommand constructor.
-     *
-     * @param \App\Services\Models\WorkflowManagerModelService $workflowManagerModelService
      */
     public function __construct(private readonly WorkflowManagerModelService $workflowManagerModelService)
     {
@@ -64,7 +57,9 @@ class WorkFlowManagerCommand extends Command
      * Execute the console command.
      *
      * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
+     *
      * @return void
+     *
      * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
      */
     public function handle()
@@ -73,21 +68,17 @@ class WorkFlowManagerCommand extends Command
 
         $managers = $this->workflowManagerModelService->getWorkflowManagersForProcessing($expeditionId);
 
-        if ($managers->isEmpty())
-        {
+        if ($managers->isEmpty()) {
             return;
         }
 
-        $managers->each(function ($manager)
-        {
+        $managers->each(function ($manager) {
             $this->processActors($manager->expedition);
         });
     }
 
     /**
      * Decide what actor to include in the array and being processed.
-     *
-     * @param $expedition
      */
     protected function processActors($expedition): void
     {

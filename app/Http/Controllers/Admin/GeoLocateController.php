@@ -19,7 +19,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use General;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GeoLocateCommunityRequest;
 use App\Jobs\GeoLocateExportJob;
@@ -27,27 +26,19 @@ use App\Jobs\GeoLocateStatsJob;
 use App\Services\Actor\GeoLocate\GeoLocateExportForm;
 use App\Services\Actor\GeoLocate\GeoLocateStat;
 use Exception;
+use General;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 class GeoLocateController extends Controller
 {
-    /**
-     * @var \App\Services\Actor\GeoLocate\GeoLocateExportForm
-     */
     private GeoLocateExportForm $geoLocateExportForm;
 
-    /**
-     * @var \App\Services\Actor\GeoLocate\GeoLocateStat
-     */
     private GeoLocateStat $geoLocateStat;
 
     /**
      * GeoLocateController constructor.
-     *
-     * @param \App\Services\Actor\GeoLocate\GeoLocateExportForm $geoLocateExportForm
-     * @param \App\Services\Actor\GeoLocate\GeoLocateStat $geoLocateStat
      */
     public function __construct(
         GeoLocateExportForm $geoLocateExportForm,
@@ -60,10 +51,6 @@ class GeoLocateController extends Controller
 
     /**
      * Display stats in modal.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function index(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {
@@ -87,10 +74,6 @@ class GeoLocateController extends Controller
 
     /**
      * Show export form in modal.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function show(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {
@@ -121,10 +104,6 @@ class GeoLocateController extends Controller
 
     /**
      * Display export form when select is changed.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function form(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
     {
@@ -151,10 +130,6 @@ class GeoLocateController extends Controller
 
     /**
      * Retrieve form fields for selected form.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse|string
      */
     public function fields(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|string
     {
@@ -183,10 +158,6 @@ class GeoLocateController extends Controller
 
     /**
      * Store form data.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse
     {
@@ -212,10 +183,6 @@ class GeoLocateController extends Controller
 
     /**
      * Export form selections to csv.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function export(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|RedirectResponse
     {
@@ -242,10 +209,6 @@ class GeoLocateController extends Controller
 
     /**
      * Refresh Geo Locate stats at user request.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function refresh(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|RedirectResponse
     {
@@ -273,10 +236,6 @@ class GeoLocateController extends Controller
 
     /**
      * Delete GeoLocateForm and associated data and file.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function delete(int $projectId, int $expeditionId): \Illuminate\Http\JsonResponse|RedirectResponse
     {
@@ -305,10 +264,6 @@ class GeoLocateController extends Controller
 
     /**
      * Show community and datasource form in modal.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function communityForm(
         int $projectId,
@@ -330,11 +285,6 @@ class GeoLocateController extends Controller
 
     /**
      * Store community and datasource form.
-     *
-     * @param \App\Http\Requests\GeoLocateCommunityRequest $request
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse
      */
     public function community(
         GeoLocateCommunityRequest $request,

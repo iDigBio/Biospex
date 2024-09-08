@@ -28,18 +28,11 @@ readonly class EventUserModelService
 {
     /**
      * EventUserModelService constructor.
-     *
-     * @param \App\Models\EventUser $model
      */
-    public function __construct(private EventUser $model)
-    {}
+    public function __construct(private EventUser $model) {}
 
     /**
      * Update or Create.
-     *
-     * @param array $attributes
-     * @param array $values
-     * @return mixed
      */
     public function updateOrCreate(array $attributes, array $values): mixed
     {
@@ -48,12 +41,8 @@ readonly class EventUserModelService
 
     /**
      * Find user by nfn_user name.
-     *
-     * @param string $userName
-     * @param array $columns
-     * @return \App\Models\EventUser|null
      */
-    public function findByNfnUser(string $userName, array $columns = ['*']): EventUser|null
+    public function findByNfnUser(string $userName, array $columns = ['*']): ?EventUser
     {
         return $this->model->where('nfn_user', $userName)->first($columns);
     }

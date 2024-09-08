@@ -32,22 +32,15 @@ use League\Csv\CannotInsertRecord;
 
 /**
  * Class ExpertReconcileReviewPublishJob
- *
- * @package App\Jobs
  */
 class ExpertReconcileReviewPublishJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * @var int
-     */
     private int $expeditionId;
 
     /**
      * ExpertReconcileReviewPublishJob constructor.
-     *
-     * @param int $expeditionId
      */
     public function __construct(int $expeditionId)
     {
@@ -57,9 +50,6 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
 
     /**
      * Handle Job.
-     *
-     * @param \App\Services\Reconcile\ExpertReconcilePublishService $expertReconcilePublishService
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
      */
     public function handle(
         ExpertReconcilePublishService $expertReconcilePublishService,
@@ -72,7 +62,7 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
         } catch (CannotInsertRecord|Exception $e) {
             $attributes = [
                 'subject' => t('Expert Reconcile Publish Error'),
-                'html'    => [
+                'html' => [
                     t('An error occurred while importing the Darwin Core Archive.'),
                     t('File: %s', $e->getFile()),
                     t('Line: %s', $e->getLine()),

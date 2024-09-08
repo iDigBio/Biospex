@@ -26,8 +26,6 @@ use App\Services\Models\SubjectModelService;
 
 /**
  * Class OcrService
- *
- * @package App\Services\Process
  */
 readonly class TesseractOcrBuild
 {
@@ -35,10 +33,6 @@ readonly class TesseractOcrBuild
 
     /**
      * Ocr constructor.
-     *
-     * @param \App\Models\OcrQueue $ocrQueue
-     * @param \App\Models\OcrQueueFile $ocrQueueFile
-     * @param \App\Services\Models\SubjectModelService $subjectModelService
      */
     public function __construct(
         private OcrQueue $ocrQueue,
@@ -48,46 +42,33 @@ readonly class TesseractOcrBuild
 
     /**
      * Get subject count for ocr process.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @return int
      */
-    public function getSubjectCountForOcr(int $projectId, int $expeditionId = null): int
+    public function getSubjectCountForOcr(int $projectId, ?int $expeditionId = null): int
     {
         return $this->subjectModelService->getSubjectCountForOcr($projectId, $expeditionId);
     }
 
     /**
      * Create ocr queue record.
-     *
-     * @param int $projectId
-     * @param int|null $expeditionId
-     * @param array $data
-     * @return \App\Models\OcrQueue
      */
-    public function createOcrQueue(int $projectId, int $expeditionId = null, array $data = []): OcrQueue
+    public function createOcrQueue(int $projectId, ?int $expeditionId = null, array $data = []): OcrQueue
     {
         return $this->ocrQueue->firstOrCreate([
-            'project_id'    => $projectId,
+            'project_id' => $projectId,
             'expedition_id' => $expeditionId,
         ], $data);
     }
 
     /**
      * Create ocr queue files.
-     *
-     * @param int $queueId
-     * @param int $projectId
-     * @param int|null $expeditionId
      */
-    public function createOcrQueueFiles(int $queueId, int $projectId, int $expeditionId = null): void
+    public function createOcrQueueFiles(int $queueId, int $projectId, ?int $expeditionId = null): void
     {
         $cursor = $this->subjectModelService->getSubjectCursorForOcr($projectId, $expeditionId);
 
         $cursor->each(function ($subject) use ($queueId) {
             $attributes = [
-                'queue_id'   => $queueId,
+                'queue_id' => $queueId,
                 'subject_id' => (string) $subject->_id,
                 'access_uri' => $subject->accessURI,
             ];

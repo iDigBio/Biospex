@@ -25,16 +25,12 @@ readonly class WorkflowManagerModelService
 {
     /**
      * WorkflowManagerRepository constructor.
-     *
-     * @param \App\Models\WorkflowManager $model
      */
-    public function __construct(private WorkflowManager $model)
-    {}
+    public function __construct(private WorkflowManager $model) {}
 
     /**
      * Create.
      *
-     * @param array $data
      * @return mixed
      */
     public function create(array $data)
@@ -45,8 +41,6 @@ readonly class WorkflowManagerModelService
     /**
      * Update.
      *
-     * @param array $data
-     * @param $resourceId
      * @return WorkflowManager|bool
      */
     public function update(array $data, $resourceId)
@@ -59,10 +53,6 @@ readonly class WorkflowManagerModelService
 
     /**
      * Get first by column.
-     *
-     * @param string $column
-     * @param string $value
-     * @return \App\Models\WorkflowManager|null
      */
     public function getFirstBy(string $column, string $value): ?WorkflowManager
     {
@@ -72,16 +62,14 @@ readonly class WorkflowManagerModelService
     /**
      * Get workflow managers for overnight process.
      *
-     * @param $expeditionId
-     * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getWorkflowManagersForProcessing($expeditionId = null, array $attributes = ['*']): \Illuminate\Database\Eloquent\Collection|array
     {
         // TODO query selects state => 1. Need to remove this and get all records and determine action by state in actor class.
-        $model =$this->model->with(['expedition.stat', 'expedition.actors' => function($query){
+        $model = $this->model->with(['expedition.stat', 'expedition.actors' => function ($query) {
             $query->where('state', '>', 0)->where('error', 0);
-        }])->where('stopped',0);
+        }])->where('stopped', 0);
 
         return $expeditionId === null ?
             $model->get($attributes) :

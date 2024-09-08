@@ -24,30 +24,21 @@ use App\Services\Transcriptions\CreateWeDigBioTranscriptionService;
 
 /**
  * Class WeDigBioEventService
- *
- * @package App\Services\Process
  */
 class WeDigBioEventService
 {
     /**
      * BiospexEventService constructor.
-     *
-     * @param \App\Services\Transcriptions\CreateWeDigBioTranscriptionService $createWeDigBioTranscriptionService
-     * @param \App\Services\Models\ProjectModelService $projectModelService
      */
     public function __construct(
         private readonly CreateWeDigBioTranscriptionService $createWeDigBioTranscriptionService,
         private readonly ProjectModelService $projectModelService
-    )
-    {}
+    ) {}
 
     /**
      * Adds transcription to event for particular user.
      *
-     * @param array $data
-     * @param int $projectId
      * @see \App\Jobs\PanoptesPusherJob
-     *
      */
     public function process(array $data, int $projectId)
     {

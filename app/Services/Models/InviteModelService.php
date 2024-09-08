@@ -22,9 +22,6 @@ namespace App\Services\Models;
 use App\Http\Requests\InviteFormRequest;
 use App\Models\Group;
 use App\Notifications\GroupInvite;
-use App\Repositories\GroupRepository;
-use App\Repositories\InviteRepository;
-use App\Repositories\UserRepository;
 use Exception;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -37,16 +34,13 @@ readonly class InviteModelService
     /**
      * InviteModelService constructor.
      *
-     * @param \App\Services\Models\UserModelService $userModelService
-     * @param \App\Models\Invite $invite
-     * @param \App\Services\Models\GroupModelService $groupModelService
+     * @param  \App\Models\Invite  $invite
      */
     public function __construct(
         private UserModelService $userModelService,
         private Invite $invite,
         private GroupModelService $groupModelService
-    )
-    {}
+    ) {}
 
     /**
      * Create and send invites to group.
@@ -72,9 +66,7 @@ readonly class InviteModelService
             Session::flash('success', t('Invites to %s sent successfully.', $group->title));
 
             return true;
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             Session::flash('error', t('Unable to sent invites for %s. Please contact the administration.', $group->title));
 
             return false;
@@ -86,7 +78,7 @@ readonly class InviteModelService
      */
     private function checkExistingUser(string $email, Group $group): bool
     {
-        $user = $this->userModelService->getFirstBy('email',$email);
+        $user = $this->userModelService->getFirstBy('email', $email);
 
         if ($user === null) {
             return false;

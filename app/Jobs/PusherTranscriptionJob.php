@@ -29,8 +29,6 @@ use Illuminate\Queue\InteractsWithQueue;
 
 /**
  * Class PusherTranscriptionJob
- *
- * @package App\Jobs
  */
 class PusherTranscriptionJob implements ShouldQueue
 {
@@ -59,7 +57,8 @@ class PusherTranscriptionJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle(CreatePusherTranscriptionService $createPusherTranscriptionService) {
+    public function handle(CreatePusherTranscriptionService $createPusherTranscriptionService)
+    {
         try {
 
             $createPusherTranscriptionService->process();
@@ -69,7 +68,7 @@ class PusherTranscriptionJob implements ShouldQueue
         } catch (\Throwable $throwable) {
             $attributes = [
                 'subject' => t('Pusher Transcription Job Error'),
-                'html'    => [
+                'html' => [
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),
                     t('Message: %s', $throwable->getMessage()),

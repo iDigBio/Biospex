@@ -26,17 +26,11 @@ use App\Services\Models\SubjectModelService;
 
 /**
  * Class ZooniverseBuildQueue
- *
- * @package App\Services\Actor
  */
 class ZooniverseBuildQueue
 {
     /**
      * Construct.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \App\Models\ExportQueueFile $exportQueueFile
-     * @param \App\Services\Models\SubjectModelService $subjectModelService
      */
     public function __construct(
         private ExportQueue $exportQueue,
@@ -47,14 +41,13 @@ class ZooniverseBuildQueue
     /**
      * Process actor.
      *
-     * @param \App\Models\Actor $actor
      * @throws \Exception
      */
     public function process(Actor $actor): void
     {
         $attributes = [
             'expedition_id' => $actor->pivot->expedition_id,
-            'actor_id'      => $actor->id,
+            'actor_id' => $actor->id,
         ];
 
         $queue = $this->exportQueue->firstOrNew($attributes);
@@ -69,9 +62,6 @@ class ZooniverseBuildQueue
 
     /**
      * Build queue files table.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @return void
      */
     public function buildFiles(ExportQueue $exportQueue): void
     {
@@ -79,8 +69,8 @@ class ZooniverseBuildQueue
 
         $subjects->each(function ($subject) use ($exportQueue) {
             $attributes = [
-                'queue_id'   => $exportQueue->id,
-                'subject_id' => (string) $subject->_id
+                'queue_id' => $exportQueue->id,
+                'subject_id' => (string) $subject->_id,
             ];
 
             $file = $this->exportQueueFile->firstOrNew($attributes);

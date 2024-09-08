@@ -25,12 +25,9 @@ use Illuminate\Support\Carbon;
 
 /**
  * Class BingoCleanCommand
- *
- * @package App\Console\Commands
  */
 class BingoCleanCommand extends Command
 {
-
     /**
      * The console command name.
      *
@@ -43,12 +40,13 @@ class BingoCleanCommand extends Command
      *
      * @var string
      */
-    protected $description = "Remove expired bingo maps.";
+    protected $description = 'Remove expired bingo maps.';
 
     public function __construct(private readonly BingoMap $bingoMap)
     {
         parent::__construct();
     }
+
     /**
      * Handle job
      *
@@ -58,11 +56,8 @@ class BingoCleanCommand extends Command
     {
         $records = $this->bingoMap->where('created_at', '<', Carbon::now()->subDays(1))->get();
 
-        $records->each(function($record){
+        $records->each(function ($record) {
             $record->delete();
         });
     }
 }
-
-
-

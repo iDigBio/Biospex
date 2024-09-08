@@ -19,16 +19,14 @@
 
 namespace App\Services\Actor\TesseractOcr;
 
-use App\Notifications\Traits\ButtonTrait;
-use App\Models\OcrQueueFile;
 use App\Models\OcrQueue;
+use App\Models\OcrQueueFile;
+use App\Notifications\Traits\ButtonTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class OcrService
- *
- * @package App\Services\Process
  */
 readonly class TesseractOcrProcess
 {
@@ -36,7 +34,6 @@ readonly class TesseractOcrProcess
 
     /**
      * Ocr constructor.
-     *
      */
     public function __construct(
         private OcrQueue $ocrQueue,
@@ -45,9 +42,6 @@ readonly class TesseractOcrProcess
 
     /**
      * Return ocr queue for command process.
-     *
-     * @param bool $reset
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null
      */
     public function getFirstQueue(bool $reset = false): Model|Builder|null
     {
@@ -59,15 +53,9 @@ readonly class TesseractOcrProcess
     /**
      * Get unprocessed ocr queue files.
      * Limited return depending on config.
-     *
-     * @param int $queueId
-     * @param int $take
-     * @return \Illuminate\Database\Eloquent\Collection|array
      */
     public function getUnprocessedOcrQueueFiles(int $queueId, int $take = 50): \Illuminate\Database\Eloquent\Collection|array
     {
         return $this->ocrQueueFile->where('queue_id', $queueId)->where('processed', 0)->take($take)->get();
     }
-
-
 }

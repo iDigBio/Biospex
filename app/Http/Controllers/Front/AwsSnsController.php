@@ -21,13 +21,13 @@ namespace App\Http\Controllers\Front;
 
 use App\Events\ImageExportEvent;
 use App\Events\LabelReconciliationEvent;
+use App\Events\SnsTopicSubscriptionEvent;
 use App\Events\TesseractOcrEvent;
 use Aws\Sns\Exception\InvalidSnsMessageException;
 use Aws\Sns\Message;
 use Aws\Sns\MessageValidator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use App\Events\SnsTopicSubscriptionEvent;
 
 class AwsSnsController
 {
@@ -37,8 +37,6 @@ class AwsSnsController
      *
      * @see ImageExportEvent
      * @see LabelReconciliationEvent
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(): \Illuminate\Http\Response
     {
@@ -86,4 +84,3 @@ class AwsSnsController
         return response('OK', 200);
     }
 }
-

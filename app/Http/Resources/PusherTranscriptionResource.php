@@ -19,31 +19,28 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource ;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Class PusherTranscriptionResource
- *
- * @package App\Http\Resources
  */
 class PusherTranscriptionResource extends JsonResource
 {
-
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function toArray($request)
     {
         return [
-            'project'              => $this->project,
-            'description'          => $this->description,
-            'guid'                 => $this->guid,
-            'timestamp'            => $this->timestamp,
-            'subject'              => $this->subject,
-            'contributor'          => $this->contributor,
+            'project' => $this->project,
+            'description' => $this->description,
+            'guid' => $this->guid,
+            'timestamp' => $this->timestamp,
+            'subject' => $this->subject,
+            'contributor' => $this->contributor,
             'transcriptionContent' => $this->transcriptionContent,
             'links' => [
                 'self' => route('wedigbiodashboards.show', ['guid' => $this->guid]),

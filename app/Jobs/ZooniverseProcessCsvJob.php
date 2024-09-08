@@ -32,8 +32,6 @@ use Throwable;
 
 /**
  * Class ZooniverseProcessCsvJob
- *
- * @package App\Jobs
  */
 class ZooniverseProcessCsvJob implements ShouldQueue
 {
@@ -41,14 +39,9 @@ class ZooniverseProcessCsvJob implements ShouldQueue
 
     /**
      * The number of times the job may be attempted.
-     *
-     * @var int
      */
     public int $tries = 4;
 
-    /**
-     * @var int
-     */
     private int $expeditionId;
 
     /**
@@ -65,7 +58,6 @@ class ZooniverseProcessCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Csv\ZooniverseCsvService $service
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      * @throws \Exception
      */
@@ -103,14 +95,13 @@ class ZooniverseProcessCsvJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $throwable
      * @return void
      */
     public function failed(Throwable $throwable)
     {
         $attributes = [
             'subject' => t('Zooniverse Process CSV Failed'),
-            'html'    => [
+            'html' => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),

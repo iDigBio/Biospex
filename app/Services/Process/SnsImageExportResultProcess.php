@@ -28,19 +28,12 @@ readonly class SnsImageExportResultProcess
 {
     /**
      * Construct.
-     *
-     * @param \App\Models\ExportQueueFile $exportQueueFile
      */
-    public function __construct(private ExportQueueFile $exportQueueFile)
-    {}
+    public function __construct(private ExportQueueFile $exportQueueFile) {}
 
     /**
      * Handle hard failure of lambda function.
      * Do not update queue if hard error.
-     *
-     * @param array $requestPayload
-     * @param string $errorMessage
-     * @return void
      */
     public function handleErrorMessage(array $requestPayload, string $errorMessage): void
     {
@@ -49,10 +42,6 @@ readonly class SnsImageExportResultProcess
 
     /**
      * Handle response for success or failure.
-     *
-     * @param int $statusCode
-     * @param array $body
-     * @return void
      */
     public function handleResponse(int $statusCode, array $body): void
     {
@@ -62,17 +51,13 @@ readonly class SnsImageExportResultProcess
     /**
      * Update queue file with result.
      * Response status can be 200 or 500. If 200, message is blank. If 500, there is an error message.
-     *
-     * @param string $subjectId
-     * @param string|null $message
-     * @return void
      */
-    private function updateQueueFile(string $subjectId, string $message = null): void
+    private function updateQueueFile(string $subjectId, ?string $message = null): void
     {
         $attributes = [
             'subject_id' => $subjectId,
-            'processed'  => 1,
-            'message'    => $message,
+            'processed' => 1,
+            'message' => $message,
         ];
 
         $exportQueueFile = $this->exportQueueFile->where('subject_id', $subjectId)->first();

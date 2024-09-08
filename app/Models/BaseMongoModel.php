@@ -26,34 +26,33 @@ use MongoDB\Laravel\Eloquent\Model;
  * Class BaseMongoModel
  *
  * @mixin \Eloquent
- * @package App\Models
  */
 class BaseMongoModel extends Model
 {
     use HasFactory;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $connection = 'mongodb';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $primaryKey = '_id';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $guarded = [];
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public $incrementing = false;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function __construct(array $attributes = [])
     {
@@ -63,8 +62,8 @@ class BaseMongoModel extends Model
     /**
      * Enable casts in models.
      *
-     * @param string $key
-     * @param mixed $value
+     * @param  string  $key
+     * @param  mixed  $value
      * @return \MongoDB\Laravel\Eloquent\Model|mixed|void
      */
     public function setAttribute($key, $value)

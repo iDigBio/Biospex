@@ -28,7 +28,7 @@ class FixFieldsStepTwo extends FixFieldsBase
      */
     public function start()
     {
-        echo "Starting to zero headers in properties." . PHP_EOL;
+        echo 'Starting to zero headers in properties.'.PHP_EOL;
 
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
@@ -49,7 +49,7 @@ class FixFieldsStepTwo extends FixFieldsBase
 
         $mappedProperties = $properties->map(function ($property, $key) {
             return $this->fixImageZeroHeaders($property, $key);
-        })->map(function ($property, $key){
+        })->map(function ($property, $key) {
             return $this->fixOccurrenceZeroHeaders($property, $key);
         });
 
@@ -58,10 +58,6 @@ class FixFieldsStepTwo extends FixFieldsBase
 
     /**
      * Step 2: Set correct image header if field not used.
-     *
-     * @param $property
-     * @param $key
-     * @return mixed
      */
     private function fixImageZeroHeaders($property, $key): mixed
     {
@@ -85,10 +81,6 @@ class FixFieldsStepTwo extends FixFieldsBase
 
     /**
      * Step 2: remove occurrence headers where not used.
-     *
-     * @param $property
-     * @param $key
-     * @return mixed
      */
     private function fixOccurrenceZeroHeaders($property, $key): mixed
     {
@@ -96,7 +88,7 @@ class FixFieldsStepTwo extends FixFieldsBase
             $occurrenceHeaderProjectIds = $property['occurrenceHeaderProjectIds'];
             $occurrenceHeaderIds = $property['occurrenceHeaderIds'];
             foreach ($occurrenceHeaderIds as $index => $id) {
-                $project_id = $this->updateHeader($id, $key,'occurrence');
+                $project_id = $this->updateHeader($id, $key, 'occurrence');
                 if (($idKey = array_search($project_id, $occurrenceHeaderProjectIds)) !== false) {
                     unset($occurrenceHeaderProjectIds[$idKey]);
                 }
@@ -112,9 +104,6 @@ class FixFieldsStepTwo extends FixFieldsBase
 
     /**
      * Step 2: fix field image headers where not used.
-     *
-     * @param $property
-     * @return mixed
      */
     private function fixFieldImageZeroHeaders($property): mixed
     {
@@ -140,9 +129,6 @@ class FixFieldsStepTwo extends FixFieldsBase
 
     /**
      * Step 2: fix occurrence fields headers where not used.
-     *
-     * @param $property
-     * @return mixed
      */
     private function fixFieldOccurrenceZeroHeaders($property): mixed
     {
@@ -169,9 +155,6 @@ class FixFieldsStepTwo extends FixFieldsBase
     /**
      * find record and update.
      *
-     * @param string $id
-     * @param mixed $key
-     * @param string $type
      * @return null
      */
     private function updateHeader(string $id, mixed $key, string $type)

@@ -32,12 +32,11 @@ class RegisterUserService
     /**
      * Show the registration form.
      *
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
     public function showForm(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        if ( ! config('config.app_registration')) {
+        if (! config('config.app_registration')) {
             return \Redirect::route('home')->with('error', t('Registration is not available at this time.'));
         }
 
@@ -45,8 +44,7 @@ class RegisterUserService
 
         $invite = Invite::where('code', $code)->first();
 
-        if ( ! empty($code) && ! $invite)
-        {
+        if (! empty($code) && ! $invite) {
             Session::flash('warning', t('Your invite was unable to be found. Please contact the administration.'));
         }
 
@@ -59,8 +57,6 @@ class RegisterUserService
 
     /**
      * Register a new user.
-     *
-     * @return \App\Models\User
      */
     public function registerUser(): User
     {
@@ -69,11 +65,9 @@ class RegisterUserService
         $user = User::create($input);
         $user->profile()->create($input);
 
-        if ( ! empty($input['invite']))
-        {
+        if (! empty($input['invite'])) {
             $invite = Invite::where('code', $input['invite'])->first();
-            if ($invite->email === $user->email)
-            {
+            if ($invite->email === $user->email) {
                 $group = Group::find($invite->group_id);
                 $user->assignGroup($group);
                 $invite->delete();

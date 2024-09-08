@@ -25,15 +25,12 @@ use Storage;
 
 /**
  * Class ResourceController
- *
- * @package App\Http\Controllers\Front
  */
 class ResourceController extends Controller
 {
     /**
      * Show resources.
      *
-     * @param \App\Models\Resource $resource
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(Resource $resource)
@@ -46,19 +43,17 @@ class ResourceController extends Controller
     /**
      * Download resource file.
      *
-     * @param \App\Models\Resource $resource
-     * @param $resourceId
      * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function download(Resource $resource, $resourceId)
     {
         $download = $resource->find($resourceId);
 
-        if (! $download->document->exists() || ! file_exists(public_path('storage' . $download->document->path()))) {
+        if (! $download->document->exists() || ! file_exists(public_path('storage'.$download->document->path()))) {
 
             return \Redirect::route('front.resources.index')->with('error', t('File cannot be found.'));
         }
 
-        return Storage::download('public/' . $download->document->path());
+        return Storage::download('public/'.$download->document->path());
     }
 }

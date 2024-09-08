@@ -26,8 +26,6 @@ use Illuminate\Console\Command;
 
 /**
  * Class ExportPollCommand
- *
- * @package App\Console\Commands
  */
 class ExportPollCommand extends Command
 {
@@ -86,7 +84,7 @@ class ExportPollCommand extends Command
 
             return [
                 'groupId' => $queue->expedition->project->group->id,
-                'notice'  => $notice,
+                'notice' => $notice,
             ];
         })->values();
 
@@ -95,9 +93,6 @@ class ExportPollCommand extends Command
 
     /**
      * Set notice if process is occurring.
-     *
-     * @param \App\Models\BaseEloquentModel $queue
-     * @return string
      */
     private function setProcessNotice(BaseEloquentModel $queue): string
     {
@@ -107,7 +102,7 @@ class ExportPollCommand extends Command
 
         $processedRecords = $queue->stage === 1 ? t(' :processed of :total completed.', [
             ':processed' => $processed,
-            ':total'     => $queue->total,
+            ':total' => $queue->total,
         ]) : null;
 
         return \View::make('common.export-process', compact('stage', 'title', 'processedRecords'))->render();
@@ -116,9 +111,6 @@ class ExportPollCommand extends Command
     /**
      * Set notice message for remaining exports.
      *
-     * @param \App\Models\BaseEloquentModel $queue
-     * @param int $count
-     * @return string
      * @throws \Throwable
      */
     private function setQueuedNotice(BaseEloquentModel $queue, int $count): string

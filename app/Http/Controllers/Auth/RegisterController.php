@@ -27,8 +27,6 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 
 /**
  * Class RegisterController
- *
- * @package App\Http\Controllers\Auth
  */
 class RegisterController extends Controller
 {
@@ -57,9 +55,6 @@ class RegisterController extends Controller
      */
     public $loginView = 'auth.login';
 
-    /**
-     * @var \App\Services\Auth\RegisterUserService
-     */
     private RegisterUserService $registerUserService;
 
     /**
@@ -74,8 +69,6 @@ class RegisterController extends Controller
     /**
      * Show registration form. Overrides trait so Invite code can be checked.
      *
-     * @param \App\Services\Auth\RegisterUserService $registerUserService
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
     public function showRegistrationForm(RegisterUserService $registerUserService): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
@@ -85,9 +78,6 @@ class RegisterController extends Controller
 
     /**
      * Register the user. Overrides trait so invite is checked.
-     *
-     * @param \App\Http\Requests\RegisterFormRequest $request
-     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
      */
     public function register(RegisterFormRequest $request): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {

@@ -24,8 +24,6 @@ use Illuminate\Support\Facades\Route;
 
 /**
  * Class RouteServiceProvider
- *
- * @package App\Providers
  */
 class RouteServiceProvider extends ServiceProvider
 {
@@ -81,7 +79,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('v1')->middleware([
                 'api',
                 'auth:sanctum',
-                'ability:panoptes-pusher:read,panoptes-pusher:create,wedigbio-dashboard:read,lambda:update'
+                'ability:panoptes-pusher:read,panoptes-pusher:create,wedigbio-dashboard:read,lambda:update',
             ])->group(function () {
                 $this->require_files('routes/api/v1');
             });
@@ -112,8 +110,6 @@ class RouteServiceProvider extends ServiceProvider
 
     /**
      * Load required files.
-     *
-     * @param $dir
      */
     protected function require_files($dir)
     {

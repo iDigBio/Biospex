@@ -16,24 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkflowIdFormRequest;
 use App\Jobs\PanoptesProjectUpdateJob;
 use App\Models\PanoptesProject;
+use App\Services\Models\ExpeditionModelService;
 use App\Services\Models\ProjectModelService;
 use App\Services\Models\WorkflowManagerModelService;
-use App\Services\Models\ExpeditionModelService;
 use Exception;
 
 class ZooniverseController extends Controller
 {
     /**
      * Construct
-     *
-     * @param \App\Services\Models\ProjectModelService $projectModelService
-     * @param \App\Services\Models\WorkflowManagerModelService $workflowManagerModelService
      */
     public function __construct(
         private ProjectModelService $projectModelService,
@@ -42,11 +40,6 @@ class ZooniverseController extends Controller
 
     /**
      * Start processing expedition actors
-     *
-     * @param \App\Services\Models\ExpeditionModelService $expeditionModelService
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function process(ExpeditionModelService $expeditionModelService, int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
     {
@@ -64,11 +57,11 @@ class ZooniverseController extends Controller
                 'stat',
             ]);
 
-            if (null === $expedition->panoptesProject) {
+            if ($expedition->panoptesProject === null) {
                 throw new Exception(t('Zooniverse Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
             }
 
-            if (null !== $expedition->workflowManager) {
+            if ($expedition->workflowManager !== null) {
                 $expedition->workflowManager->stopped = 0;
                 $expedition->workflowManager->save();
                 $message = t('The expedition has been removed from the process queue.');
@@ -100,10 +93,6 @@ class ZooniverseController extends Controller
 
     /**
      * Stop a expedition process.
-     *
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function stop(int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
     {
@@ -130,11 +119,6 @@ class ZooniverseController extends Controller
 
     /**
      * Return workflow id form.
-     *
-     * @param \App\Models\PanoptesProject $panoptesProjectModel
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function workflowShowForm(PanoptesProject $panoptesProjectModel, int $projectId, int $expeditionId): \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
     {
@@ -149,12 +133,6 @@ class ZooniverseController extends Controller
 
     /**
      * Update or create the workflow id.
-     *
-     * @param \App\Http\Requests\WorkflowIdFormRequest $request
-     * @param \App\Models\PanoptesProject $panoptesProjectModel
-     * @param int $projectId
-     * @param int $expeditionId
-     * @return \Illuminate\Http\JsonResponse
      */
     public function workflowUpdateForm(
         WorkflowIdFormRequest $request,
@@ -175,13 +153,13 @@ class ZooniverseController extends Controller
 
         if (! empty($request->input('panoptes_workflow_id'))) {
             $attributes = [
-                'project_id'    => $projectId,
+                'project_id' => $projectId,
                 'expedition_id' => $expeditionId,
             ];
 
             $values = [
-                'project_id'           => $project->id,
-                'expedition_id'        => $expeditionId,
+                'project_id' => $project->id,
+                'expedition_id' => $expeditionId,
                 'panoptes_workflow_id' => $request->input('panoptes_workflow_id'),
             ];
 

@@ -8,20 +8,15 @@ use JavaScript;
 
 class FlashHelperMessage
 {
-
     /**
      * Handle an incoming request.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param  \Closure $next
-     * @return mixed
      */
     public function handle(Request $request, Closure $next): mixed
     {
         $message = [
-            'flashType'    => '',
+            'flashType' => '',
             'flashMessage' => '',
-            'flashIcon'    => ''
+            'flashIcon' => '',
         ];
 
         $status = ['success', 'info', 'warning', 'danger'];
@@ -32,9 +27,9 @@ class FlashHelperMessage
                     $message['flashMessage'] = session($type);
                     $message['flashIcon'] = match ($type) {
                         'success' => 'check-circle',
-                        'info'    => 'info-circle',
+                        'info' => 'info-circle',
                         'warning' => 'exclamation-circle',
-                        'danger'  => 'times-circle',
+                        'danger' => 'times-circle',
                     };
                     break;
                 }
@@ -49,16 +44,14 @@ class FlashHelperMessage
     private function create($message, $type, $icon)
     {
         session()->flash('flash_message', [
-            'type'    => $type,
+            'type' => $type,
             'message' => $message,
-            'icon'    => $icon
+            'icon' => $icon,
         ]);
     }
 
     /**
      * Create success message.
-     *
-     * @param $message
      */
     public function success($message)
     {
@@ -67,8 +60,6 @@ class FlashHelperMessage
 
     /**
      * Create info message.
-     *
-     * @param $message
      */
     public function info($message)
     {
@@ -77,8 +68,6 @@ class FlashHelperMessage
 
     /**
      * Create warning message.
-     *
-     * @param $message
      */
     public function warning($message)
     {
@@ -87,8 +76,6 @@ class FlashHelperMessage
 
     /**
      * Create danger message.
-     *
-     * @param $message
      */
     public function error($message)
     {
