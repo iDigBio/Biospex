@@ -19,10 +19,10 @@
 
 namespace App\Models;
 
+use App\Facades\DateHelper as Date;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
-use App\Services\Helpers\DateService as Date;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
