@@ -122,23 +122,15 @@ class ZooniverseCsvService
     }
 
     /**
-     * Check for errors field on zooniverse classification.
-     */
-    public function checkErrors(array $result): bool
-    {
-        return isset($result['errors']);
-    }
-
-    /**
-     * Calculate time difference.
-     * If errors, csv doesn't exist yet.
+     * Check if enough time has passed to create or update CSV files.
      * Hours must be greater than 24 hours for Zooniverse to create CSV.
+     * Job is set to run every 48 hours.
      */
     public function checkDateTime(array $result): bool
     {
-        return empty($result['media'][0]['updated_at']) ?
-            $this->parseTime($result['media'][0]['created_at']) > 32 :
-            $this->parseTime($result['media'][0]['updated_at']) > 32;
+        return empty($result['media'][0]['created_at']) ||
+            empty($result['media'][0]['updated_at']) ||
+            $this->parseTime($result['media'][0]['updated_at']) > 47;
     }
 
     /**
