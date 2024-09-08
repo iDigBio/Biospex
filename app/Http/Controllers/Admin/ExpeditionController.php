@@ -99,7 +99,7 @@ class ExpeditionController extends Controller
 
         $expedition = $this->expeditionService->createExpedition($request->all());
         if (! $expedition) {
-            return \Redirect::route('admin.projects.show', [$project->id])->with('error', t('An error occurred when saving record.'));
+            return \Redirect::route('admin.projects.show', [$project->id])->with('danger', t('An error occurred when saving record.'));
         }
         $expedition->load('workflow.actors.contacts');
 
@@ -236,7 +236,7 @@ class ExpeditionController extends Controller
             return \Redirect::route('admin.expeditions.edit', [
                 $projectId,
                 $expeditionId,
-            ])->with('error', t('An error occurred when saving record.'));
+            ])->with('danger', t('An error occurred when saving record.'));
         }
     }
 
@@ -259,7 +259,7 @@ class ExpeditionController extends Controller
                 return \Redirect::route('admin.expeditions.show', [
                     $projectId,
                     $expeditionId,
-                ])->with('error', t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+                ])->with('danger', t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
             }
 
             DeleteExpeditionJob::dispatch(Auth::user(), $expedition);
@@ -267,7 +267,7 @@ class ExpeditionController extends Controller
             return \Redirect::route('admin.projects.show', [$projectId])->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete.'));
         } catch (Exception $e) {
 
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('error', t('An error occurred when deleting record.'));
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('danger', t('An error occurred when deleting record.'));
         }
     }
 

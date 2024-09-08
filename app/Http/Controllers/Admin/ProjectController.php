@@ -76,7 +76,7 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function show(int $projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         $project = $this->projectModelService->getProjectShow($projectId);
 
@@ -121,7 +121,7 @@ class ProjectController extends Controller
                 ->with('success', t('Record was created successfully.'));
         }
 
-        return Redirect::route('admin.projects.create')->withInput()->with('error', t('An error occurred when saving record.'));
+        return Redirect::route('admin.projects.create')->withInput()->with('danger', t('An error occurred when saving record.'));
     }
 
     /**
@@ -133,7 +133,7 @@ class ProjectController extends Controller
 
         if (! $project) {
             return Redirect::route('admin.projects.show', [$projectId])
-                ->with('error', t('Error retrieving record from database'));
+                ->with('danger', t('Error retrieving record from database'));
         }
 
         $groupOptions = ['' => '--Select--'] + $this->groupModelService->getUsersGroupsSelect(\Request::user());
@@ -157,7 +157,7 @@ class ProjectController extends Controller
         if (! $project) {
 
             return Redirect::route('admin.projects.index')
-                ->with('error', t('Error retrieving record from database'));
+                ->with('danger', t('Error retrieving record from database'));
         }
 
         $groupOptions = ['' => '--Select--'] + $this->groupModelService->getUsersGroupsSelect(\Request::user());
@@ -185,7 +185,7 @@ class ProjectController extends Controller
 
         return $project ?
             Redirect::back()->with('success', t('Record was updated successfully.')) :
-            Redirect::back()->with('error', t('Error while updating record.'));
+            Redirect::back()->with('danger', t('Error while updating record.'));
     }
 
     /**
@@ -248,7 +248,7 @@ class ProjectController extends Controller
             if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
 
                 Redirect::route('admin.projects.index')
-                    ->with('error', t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+                    ->with('danger', t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
             }
 
             DeleteProjectJob::dispatch($project);
@@ -257,7 +257,7 @@ class ProjectController extends Controller
                 ->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
         } catch (Exception $e) {
 
-            return Redirect::route('admin.projects.index')->with('error', t('An error occurred when deleting record.'));
+            return Redirect::route('admin.projects.index')->with('danger', t('An error occurred when deleting record.'));
         }
     }
 
@@ -289,7 +289,7 @@ class ProjectController extends Controller
         } catch (Exception $e) {
 
             return Redirect::route('admin.projects.explore', [$projectId])
-                ->with('error', t('An error occurred when deleting Subjects.'));
+                ->with('danger', t('An error occurred when deleting Subjects.'));
         }
     }
 }

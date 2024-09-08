@@ -85,7 +85,7 @@ class EventController extends Controller
 
         if ($event === null) {
 
-            return Redirect::route('front.events.index')->with('error', t('Error retrieving record from database'));
+            return Redirect::route('front.events.index')->with('danger', t('Error retrieving record from database'));
         }
 
         return View::make('front.event.show', compact('event'));
@@ -129,6 +129,6 @@ class EventController extends Controller
         }
 
         return Redirect::route('front.events.signup', [$uuid])
-            ->with('error', t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
+            ->with('danger', t('The event team could not be found. Please check you are using the correct link or contact event coordinator.'));
     }
 }

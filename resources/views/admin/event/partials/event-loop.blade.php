@@ -36,25 +36,25 @@
             </h5>
         </div>
         @if( ! event_before($event))
-        <div class="text-center">
-            <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
-                    data-remote="false"
-                    data-target="#scoreboard-modal"
-                    data-channel="{{ config('config.poll_board_channel') .'.'. $event->project_id }}"
-                    data-event="{{ $event->id }}"
-                    data-href="{{ route('event.get.scoreboard', [$event->id]) }}">{{ t('Scoreboard') }}
-            </button>
-            @if($event->teams->isNotEmpty())
+            <div class="text-center">
                 <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
                         data-remote="false"
-                        data-target="#step-chart-modal"
+                        data-target="#scoreboard-modal"
+                        data-channel="{{ config('config.poll_board_channel') .'.'. $event->project_id }}"
                         data-event="{{ $event->id }}"
-                        data-teams="{{ $event->teams->pluck('title')->implode(',') }}"
-                        data-timezone="{{ event_rate_chart_timezone(($event->timezone)) }}"
-                        data-href="{{ route('ajax.get.step', [$event->id]) }}">{{ t('Rate Chart') }}
+                        data-href="{{ route('event.get.scoreboard', [$event->id]) }}">{{ t('Scoreboard') }}
                 </button>
-            @endif
-        </div>
+                @if($event->teams->isNotEmpty())
+                    <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
+                            data-remote="false"
+                            data-target="#step-chart-modal"
+                            data-event="{{ $event->id }}"
+                            data-teams="{{ $event->teams->pluck('title')->implode(',') }}"
+                            data-timezone="{{ event_rate_chart_timezone(($event->timezone)) }}"
+                            data-href="{{ route('event.rate.index', [$event->id]) }}">{{ t('Rate Chart') }}
+                    </button>
+                @endif
+            </div>
         @endif
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">

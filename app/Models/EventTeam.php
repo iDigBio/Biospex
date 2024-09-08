@@ -49,6 +49,16 @@ class EventTeam extends BaseEloquentModel
     protected $presenter = EventTeamPresenter::class;
 
     /**
+     * Model Boot
+     */
+    public static function boot(): void
+    {
+        parent::boot();
+        static::bootUuidTrait();
+
+    }
+
+    /**
      * Event relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

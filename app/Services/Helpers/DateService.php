@@ -128,11 +128,9 @@ class DateService
     /**
      * Set dates for event.
      */
-    public function setEventDates(array $data): array
+    public function setEventDates(array &$data): void
     {
         $data['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $data['start_date'].':00', $data['timezone']);
         $data['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $data['end_date'].':00', $data['timezone']);
-
-        return $data;
     }
 }

@@ -77,7 +77,7 @@ class BingoController extends Controller
             return Redirect::route('admin.bingos.show', [$bingo->id])->with('success', t('Record was created successfully.'));
         }
 
-        return Redirect::route('admin.bingos.index')->with('error', t('An error occurred when saving record.'));
+        return Redirect::route('admin.bingos.index')->with('danger', t('An error occurred when saving record.'));
     }
 
     /**
@@ -146,6 +146,6 @@ class BingoController extends Controller
             return Redirect::route('admin.bingos.index')->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
         }
 
-        return Redirect::route('admin.bingos.edit', [$bingoId])->with('error', t('An error occurred when deleting record.'));
+        return Redirect::route('admin.bingos.edit', [$bingoId])->with('danger', t('An error occurred when deleting record.'));
     }
 }

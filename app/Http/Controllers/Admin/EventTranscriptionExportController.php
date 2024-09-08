@@ -11,46 +11,34 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+namespace App\Http\Controllers\Admin;
 
-use Eloquent;
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Request;
+use App\Jobs\EventTranscriptionExportCsvJob;
+use Illuminate\Support\Facades\Auth;
 
-/**
- * Class BaseEloquentModel
- *
- * @mixin Eloquent
- */
-class BaseEloquentModel extends Model
+class EventTranscriptionExportController extends Controller
 {
-    use HasFactory, LadaCacheTrait;
-
     /**
-     * {@inheritDoc}
+     * Export transcription csv from event.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    protected $connection = 'mysql';
-
-    /**
-     * {@inheritDoc}
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * {@inheritDoc}
-     */
-    public function __construct(array $attributes = [])
+    public function index($eventId)
     {
-        if (\App::environment('testing')) {
-            $this->connection = 'sqlite';
+        if (! Request::ajax()) {
+            return response()->json(false);
         }
 
-        parent::__construct($attributes);
+        EventTranscriptionExportCsvJob::dispatch(Auth::user(), $eventId);
+
+        return response()->json(true);
     }
 }

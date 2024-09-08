@@ -53,6 +53,16 @@ class Download extends BaseEloquentModel
     protected $presenter = DownloadPresenter::class;
 
     /**
+     * Model Boot
+     */
+    public static function boot(): void
+    {
+        parent::boot();
+        static::bootUuidTrait();
+
+    }
+
+    /**
      * Expedition relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

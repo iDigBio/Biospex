@@ -230,7 +230,7 @@ class GeoLocateController extends Controller
             return \Redirect::route('admin.expeditions.show', [
                 $projectId,
                 $expeditionId,
-            ])->with('error', t('An error occurred while processing job.'));
+            ])->with('danger', t('An error occurred while processing job.'));
         }
     }
 
@@ -258,7 +258,7 @@ class GeoLocateController extends Controller
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('success', t('GeoLocateExport form data and file deleted.'));
         } catch (Exception $exception) {
 
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('error', t('Error %s.', $exception->getMessage()));
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('danger', t('Error %s.', $exception->getMessage()));
         }
     }
 

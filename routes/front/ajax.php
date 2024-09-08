@@ -21,9 +21,6 @@ use App\Http\Controllers\Front\AjaxController;
 
 Route::get('poll', [\App\Http\Controllers\Front\PollController::class, 'index']);
 
-Route::get('ajax/scoreboard/{event}', [\App\Http\Controllers\Front\EventScoreboardController::class, 'show'])->name('event.get.scoreboard');
-Route::get('ajax/step/{event}/{load?}', [AjaxController::class, 'eventStepChart'])->name('ajax.get.step');
-
 Route::get('bingos/{bingo}/winner/{map}', [AjaxController::class, 'bingoWinner'])->name('ajax.get.bingoWinner');
 
 Route::get('ajax/wedigbio-progress/{dateId}', [AjaxController::class, 'weDigBioProgress'])->name('ajax.get.wedigbio-progress');

@@ -51,7 +51,7 @@ class ResourceController extends Controller
 
         if (! $download->document->exists() || ! file_exists(public_path('storage'.$download->document->path()))) {
 
-            return \Redirect::route('front.resources.index')->with('error', t('File cannot be found.'));
+            return \Redirect::route('front.resources.index')->with('danger', t('File cannot be found.'));
         }
 
         return Storage::download('public/'.$download->document->path());

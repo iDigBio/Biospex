@@ -46,14 +46,14 @@
                 </button>
 
                 @if($event->teams->isNotEmpty())
-                <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
-                        data-remote="false"
-                        data-target="#step-chart-modal"
-                        data-event="{{ $event->id }}"
-                        data-teams="{{ $event->teams->pluck('title')->implode(',') }}"
-                        data-timezone="{{ event_rate_chart_timezone($event->timezone) }}"
-                        data-href="{{ route('ajax.get.step', [$event->id]) }}">{{ t('Rate Chart') }}
-                </button>
+                    <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
+                            data-remote="false"
+                            data-target="#step-chart-modal"
+                            data-event="{{ $event->id }}"
+                            data-teams="{{ $event->teams->pluck('title')->implode(',') }}"
+                            data-timezone="{{ event_rate_chart_timezone($event->timezone) }}"
+                            data-href="{{ route('event.rate.index', [$event->id]) }}">{{ t('Rate Chart') }}
+                    </button>
                 @endif
             </div>
         @endif

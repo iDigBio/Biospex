@@ -20,6 +20,7 @@
 namespace App\Models;
 
 use App\Models\Traits\Presentable;
+use App\Models\Traits\UuidTrait;
 use App\Presenters\EventPresenter;
 use DateTimeZone;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -29,7 +30,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
  */
 class Event extends BaseEloquentModel
 {
-    use Presentable;
+    use Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -76,6 +77,16 @@ class Event extends BaseEloquentModel
     ];
 
     protected string $presenter = EventPresenter::class;
+
+    /**
+     * Model Boot
+     */
+    public static function boot(): void
+    {
+        parent::boot();
+        static::bootUuidTrait();
+
+    }
 
     /**
      * Project relationship.

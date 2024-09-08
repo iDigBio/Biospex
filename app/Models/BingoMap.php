@@ -47,6 +47,16 @@ class BingoMap extends BaseEloquentModel
     ];
 
     /**
+     * Model Boot
+     */
+    public static function boot(): void
+    {
+        parent::boot();
+        static::bootUuidTrait();
+
+    }
+
+    /**
      * Bingo relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

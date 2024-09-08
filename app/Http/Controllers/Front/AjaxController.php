@@ -21,11 +21,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Services\Chart\BiospexEventRateChartProcess;
 use App\Services\Chart\WeDigBioEventRateChartProcess;
 use App\Services\Models\EventModel;
 use App\Services\Models\WeDigBioEventDateModelService;
-use Illuminate\Http\JsonResponse;
 
 /**
  * Class AjaxController
@@ -46,16 +44,6 @@ class AjaxController extends Controller
         }
 
         return \View::make('common.scoreboard-content', ['event' => $event]);
-    }
-
-    /**
-     * Display for event step charts.
-     */
-    public function eventStepChart(BiospexEventRateChartProcess $service, string $eventId, ?string $timestamp = null): JsonResponse
-    {
-        $result = $service->eventStepChart($eventId, $timestamp);
-
-        return response()->json($result);
     }
 
     /**

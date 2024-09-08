@@ -259,7 +259,7 @@ class EventPresenter extends Presenter
      */
     public function eventDownloadUsersIconLrg()
     {
-        $route = route('admin.events.exportUsers', [
+        $route = route('admin.events_users.index', [
             $this->model->id,
         ]);
 
@@ -277,7 +277,7 @@ class EventPresenter extends Presenter
      */
     public function eventDownloadDigitizationsIconLrg()
     {
-        $route = route('admin.events.exportTranscriptions', [
+        $route = route('admin.events_transcriptions.index', [
             $this->model->id,
         ]);
 

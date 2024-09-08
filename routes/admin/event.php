@@ -19,19 +19,19 @@
 
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\EventSortController;
-use App\Http\Controllers\Admin\EventTranscritionExportController;
+use App\Http\Controllers\Admin\EventTranscriptionExportController;
 use App\Http\Controllers\Admin\EventUserExportController;
 
 Route::get('events', [EventController::class, 'index'])->name('admin.events.index');
-Route::get('events/{events}', [EventController::class, 'show'])->name('admin.events.show');
 Route::get('events/create', [EventController::class, 'create'])->name('admin.events.create');
-Route::post('events/create', [EventController::class, 'store'])->name('admin.events.store');
-Route::get('events/{events}/edit', [EventController::class, 'edit'])->name('admin.events.edit');
-Route::put('events/{events}', [EventController::class, 'update'])->name('admin.events.update');
-Route::delete('events/{events}', [EventController::class, 'delete'])->name('admin.events.delete');
+Route::get('events/{id}', [EventController::class, 'show'])->name('admin.events.show');
+Route::post('events/store', [EventController::class, 'store'])->name('admin.events.store');
+Route::get('events/{id}/edit', [EventController::class, 'edit'])->name('admin.events.edit');
+Route::put('events/{id}', [EventController::class, 'update'])->name('admin.events.update');
+Route::delete('events/{id}', [EventController::class, 'delete'])->name('admin.events.delete');
 
-Route::post('events/sort/', [EventSortController::class, 'index'])->name('admin.events.sort_index');
-Route::get('events/{events}/transcriptions', [EventTranscritionExportController::class, 'index'])
-    ->name('admin.events.transcriptions_export');
+Route::post('events/sort/', [EventSortController::class, 'index'])->name('admin.events_sort.index');
+Route::get('events/{events}/transcriptions', [EventTranscriptionExportController::class, 'index'])
+    ->name('admin.events_transcriptions.index');
 Route::get('events/{events}/users', [EventUserExportController::class, 'index'])
-    ->name('admin.events.users_export');
+    ->name('admin.events_users.index');

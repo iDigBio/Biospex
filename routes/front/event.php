@@ -18,9 +18,16 @@
  */
 
 use App\Http\Controllers\Front\EventController;
+use App\Http\Controllers\Front\EventRateChartController;
+use App\Http\Controllers\Front\EventScoreboardController;
 
+// Event routes for front pages and signup
 Route::get('events', [EventController::class, 'index'])->name('front.events.index');
 Route::post('events/sort/', [EventController::class, 'sort'])->name('front.events.sort');
 Route::get('events/{event}', [EventController::class, 'read'])->name('front.events.read');
 Route::get('events/{uuid}/signup', [EventController::class, 'signup'])->name('front.events.signup');
 Route::post('events/{uuid}/join', [EventController::class, 'join'])->name('front.events.join');
+
+// Event scoreboard and rate chart
+Route::get('ajax/scoreboard/{event}', [EventScoreboardController::class, 'show'])->name('event.get.scoreboard');
+Route::get('ajax/rate/{event}/{timestamp?}', [EventRateChartController::class, 'index'])->name('event.rate.index');

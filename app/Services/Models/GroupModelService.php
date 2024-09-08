@@ -73,7 +73,7 @@ readonly class GroupModelService
             return Redirect::route('admin.groups.index')->with('success', t('Group successfully created.'));
         }
 
-        return Redirect::back()->with('error', t('Failed to create Group.'));
+        return Redirect::back()->with('danger', t('Failed to create Group.'));
     }
 
     /**
@@ -122,7 +122,7 @@ readonly class GroupModelService
             return Redirect::back();
         }
 
-        return $group->fill(request()->all())->save() ? Redirect::route('admin.groups.show', [$group->id])->with('success', t('Record was updated successfully.')) : Redirect::route('admin.groups.show', [$group->id])->with('error', t('Error while updating record.'));
+        return $group->fill(request()->all())->save() ? Redirect::route('admin.groups.show', [$group->id])->with('success', t('Record was updated successfully.')) : Redirect::route('admin.groups.show', [$group->id])->with('danger', t('Error while updating record.'));
     }
 
     /**
@@ -143,7 +143,7 @@ readonly class GroupModelService
         try {
             if ($group->panoptes_projects_count > 0 || $group->projects->sum('id') > 0) {
 
-                return Redirect::route('admin.groups.index')->with('error', t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
+                return Redirect::route('admin.groups.index')->with('danger', t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
             }
 
             DeleteGroupJob::dispatch($group);
@@ -153,7 +153,7 @@ readonly class GroupModelService
             return Redirect::route('admin.groups.index')->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
         } catch (Exception $e) {
 
-            return Redirect::route('admin.groups.index')->with('error', t('An error occurred when deleting record.'));
+            return Redirect::route('admin.groups.index')->with('danger', t('An error occurred when deleting record.'));
         }
     }
 
@@ -171,7 +171,7 @@ readonly class GroupModelService
         try {
             if ($group->user_id === $userId) {
 
-                return Redirect::route('admin.groups.show', [$groupId])->with('error', t('You cannot delete the owner until another owner is selected.'));
+                return Redirect::route('admin.groups.show', [$groupId])->with('danger', t('You cannot delete the owner until another owner is selected.'));
             }
 
             $user = User::find($userId);
@@ -180,7 +180,7 @@ readonly class GroupModelService
             return Redirect::route('admin.groups.show', [$groupId])->with('success', t('User was removed from the group.'));
         } catch (Exception $e) {
 
-            return Redirect::route('admin.groups.show', [$groupId])->with('error', t('An error occurred when deleting record.'));
+            return Redirect::route('admin.groups.show', [$groupId])->with('danger', t('An error occurred when deleting record.'));
         }
     }
 
@@ -201,7 +201,7 @@ readonly class GroupModelService
             if ($geoLocateForm->expeditions_count > 0) {
 
                 return Redirect::route('admin.groups.show', [$groupId])
-                    ->with('error', t('GeoLocateExport Form cannot be deleted while still being used by Expeditions.'));
+                    ->with('danger', t('GeoLocateExport Form cannot be deleted while still being used by Expeditions.'));
             }
 
             $geoLocateForm->delete();
@@ -209,7 +209,7 @@ readonly class GroupModelService
             return Redirect::route('admin.groups.show', [$groupId])->with('success', t('GeoLocateExport Form was deleted.'));
         } catch (Exception $e) {
 
-            return Redirect::route('admin.groups.show', [$groupId])->with('error', t('There was an error deleteing the GeoLocateExport Form.'));
+            return Redirect::route('admin.groups.show', [$groupId])->with('danger', t('There was an error deleteing the GeoLocateExport Form.'));
         }
     }
 

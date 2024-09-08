@@ -136,3 +136,19 @@ if (! function_exists('event_active')) {
         return $dateHelper->eventActive($event, $tz);
     }
 }
+
+/**
+ * Set dates for event.
+ *
+ * @param  array  $data
+ * @return array
+ */
+if (! function_exists('set_event_dates')) {
+
+    function set_event_dates(array &$data): void
+    {
+        $dateHelper = app(\App\Services\Helpers\DateService::class);
+
+        $dateHelper->setEventDates($data);
+    }
+}

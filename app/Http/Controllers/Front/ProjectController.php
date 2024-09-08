@@ -81,7 +81,7 @@ class ProjectController extends Controller
 
         if ($project === null) {
 
-            return \Redirect::route('front.projects.index')->with('error', t('Unable to locate project. Please alert the Admin.'));
+            return \Redirect::route('front.projects.index')->with('danger', t('Unable to locate project. Please alert the Admin.'));
         }
 
         $expeditions = null;

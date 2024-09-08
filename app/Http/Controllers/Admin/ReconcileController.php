@@ -64,7 +64,7 @@ class ReconcileController extends Controller
         if ($reconciles->isEmpty()) {
 
             return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id])
-                ->with('error', t('Reconcile data for processing is missing.'));
+                ->with('danger', t('Reconcile data for processing is missing.'));
         }
 
         $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, $reconciles->first()->subject_id);
@@ -109,7 +109,7 @@ class ReconcileController extends Controller
     {
         if (! $this->expertReconcileService->updateRecord(Request::all())) {
 
-            return Redirect::back()->with('error', t('Error while updating record.'));
+            return Redirect::back()->with('danger', t('Error while updating record.'));
         }
 
         return Redirect::to(Request::get('page'))->with('success', t('Record was updated successfully.'));

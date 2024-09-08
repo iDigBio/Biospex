@@ -87,7 +87,7 @@ class ZooniverseController extends Controller
         } catch (Exception $e) {
 
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
-                ->with('error', t('An error occurred when trying to process the expedition: %s', $e->getMessage()));
+                ->with('danger', t('An error occurred when trying to process the expedition: %s', $e->getMessage()));
         }
     }
 
@@ -107,7 +107,7 @@ class ZooniverseController extends Controller
         if ($workflow === null) {
 
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
-                ->with('error', t('Expedition has no processes at this time.'));
+                ->with('danger', t('Expedition has no processes at this time.'));
         }
 
         $workflow->stopped = 1;
