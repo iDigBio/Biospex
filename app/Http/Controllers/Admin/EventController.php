@@ -95,11 +95,9 @@ class EventController extends Controller
     public function store(EventFormRequest $request)
     {
         try {
-            $data = $this->eventModel->setDates($request->all());
-            $event = $this->eventModel->create($data);
-            $event->teams()->saveMany($this->eventTeamModel->makeTeams($request->get('teams')));
+            $event = $this->eventService->store($request->all());
 
-            return Redirect::route('admin.events.show', [$event->id])->with('success', t('Record was created successfully.'));
+            return Redirect::route('admin.events.show', [$event])->with('success', t('Record was created successfully.'));
         } catch (\Throwable $throwable) {
 
             return Redirect::route('admin.events.index')->with('error', t('An error occurred when saving record.'));
@@ -137,13 +135,13 @@ class EventController extends Controller
             return Redirect::route('admin.events.index');
         }
 
-        $result = $this->eventModel->updateEvent($request->all(), $eventId);
+        $result = $this->eventService->update($request->all(), $event);
 
         if ($result) {
-            return Redirect::route('admin.events.show', [$eventId])->with('success', t('Record was updated successfully.'));
+            return Redirect::route('admin.events.show', [$event])->with('success', t('Record was updated successfully.'));
         }
 
-        return Redirect::route('admin.events.edit', [$eventId])->with('error', t('Error while updating record.'));
+        return Redirect::route('admin.events.edit', [$event])->with('error', t('Error while updating record.'));
     }
 
     /**
@@ -151,20 +149,16 @@ class EventController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($eventId)
+    public function destroy(Event $event)
     {
-        $event = $this->eventModel->find($eventId);
-
         if (! CheckPermission::handle('delete', $event)) {
             return Redirect::route('admin.events.index');
         }
 
-        $result = $event->delete();
-
-        if ($result) {
-            return Redirect::route('admin.events.index')->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
-        }
-
-        return Redirect::route('admin.events.edit', [$eventId])->with('error', t('An error occurred when deleting record.'));
+        return $event->delete() ?
+            Redirect::route('admin.events.index')
+                ->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.')) :
+            Redirect::route('admin.events.edit', [$event])
+                ->with('error', t('An error occurred when deleting record.'));
     }
 }
