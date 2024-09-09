@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Event;
 use Illuminate\Console\Command;
 
 /**
@@ -40,30 +39,13 @@ class AppCommand extends Command
     /**
      * Create a new command instance.
      */
-    public function __construct()
-    {
+    public function __construct(
+    ) {
         parent::__construct();
     }
 
     /**
      * @return void
      */
-    public function handle()
-    {
-        $event = Event::find(3);
-
-        $event->loadCount('transcriptions')->load([
-            'project:id,title,slug,logo_file_name',
-            'project.lastPanoptesProject:id,project_id,panoptes_project_id,panoptes_workflow_id',
-            'teams:id,uuid,event_id,title', 'teams.users' => function ($q) use ($event) {
-                $q->withcount([
-                    'transcriptions' => function ($q) use ($event) {
-                        $q->where('event_id', $event->id);
-                    },
-                ]);
-            },
-        ]);
-
-        dd($event);
-    }
+    public function handle() {}
 }

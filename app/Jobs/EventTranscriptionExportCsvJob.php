@@ -66,14 +66,13 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
      * Execute the job.
      * TODO: Check if models have more than just id.
      * TODO: Verify export is working.
-     *
-     * @return void
      */
     public function handle(
         EventTranscriptionModelService $eventTranscriptionModelService,
         PanoptesTranscriptionModelService $panoptesTranscriptionModelService,
         CreateReportService $createReportService,
-    ) {
+    ): void {
+
         try {
             $ids = $eventTranscriptionModelService->getEventClassificationIds($this->event->id);
 
@@ -83,7 +82,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
 
                 return $transcript;
             })->reject(function ($transcription) {
-                return $transcription === null;
+                return empty($transcription);
             });
 
             $csvFileName = Str::random().'.csv';

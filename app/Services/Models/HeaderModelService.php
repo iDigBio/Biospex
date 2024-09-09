@@ -47,7 +47,7 @@ readonly class HeaderModelService
     /**
      * Get first by column.
      */
-    public function getFirst(string $column, string $value): ?Header
+    public function getFirst(string $column, $value): ?Header
     {
         return $this->model->where($column, $value)->first();
     }

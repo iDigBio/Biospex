@@ -25,7 +25,7 @@ use Illuminate\Support\Collection;
 
 class EventTranscriptionModelService
 {
-    public function __construct(private readonly EventTranscription $eventTranscription) {}
+    public function __construct(protected EventTranscription $eventTranscription) {}
 
     /**
      * Create.
