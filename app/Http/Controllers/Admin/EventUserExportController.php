@@ -20,10 +20,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Request;
 use App\Jobs\EventUserExportCsvJob;
 use App\Models\Event;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class EventUserExportController extends Controller
 {
@@ -38,7 +38,7 @@ class EventUserExportController extends Controller
             return response()->json(false);
         }
 
-        EventUserExportCsvJob::dispatch(Auth::user(), $event->id);
+        EventUserExportCsvJob::dispatch(Auth::user(), $event);
 
         return response()->json(true);
     }
