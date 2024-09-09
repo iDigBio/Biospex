@@ -120,10 +120,10 @@ class EventPresenter extends Presenter
      */
     public function twitterIcon()
     {
-        $id = $this->model->id;
+        $uuid = $this->model->uuid;
         $title = $this->model->title;
         $hashtag = $this->model->hashtag;
-        $url = config('app.url').'/events/'.$id.'&text='.$title.'&hashtags='.$hashtag;
+        $url = config('app.url').'/events/'.$uuid.'&text='.$title.'&hashtags='.$hashtag;
 
         return '<a href="https://twitter.com/intent/tweet?url='.$url.'" 
             target="_blank" 
@@ -141,7 +141,7 @@ class EventPresenter extends Presenter
      */
     public function facebookIcon()
     {
-        $url = urlencode(config('app.url').'/events/'.$this->model->id);
+        $url = urlencode(config('app.url').'/events/'.$this->model->uuid);
         $title = urlencode($this->model->title);
 
         return '<a href="http://www.facebook.com/share.php?u='.$url.'&title='.$title.'" 
@@ -172,8 +172,8 @@ class EventPresenter extends Presenter
      */
     public function eventShowIcon()
     {
-        return '<a href="'.route('front.events.read', [
-            $this->model->id,
+        return '<a href="'.route('front.events.show', [
+            $this->model,
         ]).'" data-hover="tooltip" title="'.t('View Event').'">
                 <i class="fas fa-eye"></i></a>';
     }
