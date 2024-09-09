@@ -15,7 +15,7 @@
                     <h2 class="text-center content-header text-uppercase mb-4">{{ t('Edit Event') }}</h2>
 
                     <form method="post"
-                          action="{{ route('admin.events.update', [$event->id]) }}"
+                          action="{{ route('admin.events.update', [$event]) }}"
                           role="form" enctype="multipart/form-data">
                         {!! method_field('put') !!}
                         @csrf

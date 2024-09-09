@@ -115,18 +115,15 @@ class EventService
     /**
      * Overwrite model update method.
      */
-    public function update(array $attributes, int $resourceId): bool
+    public function update(array $attributes, Event $event): bool
     {
         $this->setEventDates($attributes);
-
-        $event = $this->event->find($resourceId);
-        $result = $event->fill($attributes)->save();
 
         collect($attributes['teams'])->each(function ($team) use ($event) {
             $this->updateTeam($team, $event);
         });
 
-        return $result;
+        return $event->fill($attributes)->save();
     }
 
     /**
