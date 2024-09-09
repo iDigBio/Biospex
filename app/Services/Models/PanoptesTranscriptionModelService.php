@@ -25,24 +25,20 @@ use MongoDB\BSON\UTCDateTime;
 
 class PanoptesTranscriptionModelService
 {
-    public function __construct(private PanoptesTranscription $model) {}
+    public function __construct(protected PanoptesTranscription $model) {}
 
     /**
      * Create.
-     *
-     * @return mixed
      */
-    public function create(array $data)
+    public function create(array $data): mixed
     {
         return $this->model->create($data);
     }
 
     /**
      * Get first transcription by column value.
-     *
-     * @return mixed
      */
-    public function getFirst(string $column, string $value)
+    public function getFirst(string $column, $value): mixed
     {
         return $this->model->where($column, $value)->first();
     }
