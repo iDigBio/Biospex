@@ -58,22 +58,6 @@ class EventController extends Controller
     }
 
     /**
-     * Show event.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     */
-    public function show(Event $event)
-    {
-        $this->eventService->getAdminShow($event);
-
-        if (! CheckPermission::handle('read', $event)) {
-            return Redirect::route('admin.events.index');
-        }
-
-        return View::make('admin.event.show', compact('event'));
-    }
-
-    /**
      * Create event.
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -102,6 +86,22 @@ class EventController extends Controller
 
             return Redirect::route('admin.events.index')->with('error', t('An error occurred when saving record.'));
         }
+    }
+
+    /**
+     * Show event.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function show(Event $event)
+    {
+        $this->eventService->getAdminShow($event);
+
+        if (! CheckPermission::handle('read', $event)) {
+            return Redirect::route('admin.events.index');
+        }
+
+        return View::make('admin.event.show', compact('event'));
     }
 
     /**

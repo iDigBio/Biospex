@@ -50,6 +50,23 @@ class EventTeam extends BaseEloquentModel
     protected $presenter = EventTeamPresenter::class;
 
     /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    /**
      * Model Boot
      */
     public static function boot(): void

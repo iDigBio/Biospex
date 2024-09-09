@@ -11,7 +11,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -20,35 +20,30 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Models\Event;
 use App\Services\EventService;
-use App\Services\Models\EventModel;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\View;
 
-/**
- * Class EventController
- */
-class EventController extends Controller
+class EventSortController extends Controller
 {
-    public function __construct(protected EventService $eventService, protected EventModel $eventModel) {}
+    /**
+     * EventSortController constructor.
+     */
+    public function __construct(protected EventService $eventService) {}
 
     /**
-     * Displays Events on public page.
+     * Sort events for public index.
      */
-    public function index(): \Illuminate\Contracts\View\View
+    public function __invoke()
     {
-        [$events, $eventsCompleted] = $this->eventService->getPublicIndex();
+        if (! Request::ajax()) {
+            return null;
+        }
 
-        return View::make('front.event.index', compact('events', 'eventsCompleted'));
-    }
+        [$active, $completed] = $this->eventService->getPublicIndex(Request::all());
 
-    /**
-     * Display the show page for an event.
-     */
-    public function show(Event $event): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
-    {
-        $event->load(['project.lastPanoptesProject', 'teams:id,title,event_id']);
+        $events = Request::get('type') === 'active' ? $active : $completed;
 
-        return View::make('front.event.show', compact('event'));
+        return View::make('front.event.partials.event', compact('events'));
     }
 }

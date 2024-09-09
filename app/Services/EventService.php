@@ -44,6 +44,21 @@ class EventService
     }
 
     /**
+     * Get events for public index.
+     */
+    public function getPublicIndex(array $request = []): Collection
+    {
+        $records = isset($request['$projectId']) ?
+            $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])
+                ->where('project_id', $request['$projectId'])->get() :
+            $this->event->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get();
+
+        $sortedRecords = $this->sortRecords($records, $request);
+
+        return $this->partitionRecords($sortedRecords);
+    }
+
+    /**
      * Sort results for index pages.
      */
     protected function sortRecords(Collection $records, array $request = []): Collection
@@ -137,7 +152,7 @@ class EventService
     /**
      * Make teams.
      */
-    public function makeTeams(array $teams)
+    public function makeTeams(array $teams): Collection
     {
         return collect($teams)->map(function ($team) {
             return $this->eventTeam->make($team);
