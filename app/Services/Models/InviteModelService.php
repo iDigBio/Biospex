@@ -21,9 +21,11 @@ namespace App\Services\Models;
 
 use App\Http\Requests\InviteFormRequest;
 use App\Models\Group;
+use App\Models\Invite;
 use App\Notifications\GroupInvite;
 use Exception;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 /**
@@ -33,8 +35,6 @@ readonly class InviteModelService
 {
     /**
      * InviteModelService constructor.
-     *
-     * @param  \App\Models\Invite  $invite
      */
     public function __construct(
         private UserModelService $userModelService,
