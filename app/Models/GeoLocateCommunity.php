@@ -21,19 +21,18 @@ namespace App\Models;
 
 class GeoLocateCommunity extends BaseEloquentModel
 {
-
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'geo_locate_communities';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'project_id',
         'name',
-        'data'
+        'data',
     ];
 
     /**
@@ -44,14 +43,12 @@ class GeoLocateCommunity extends BaseEloquentModel
     protected function casts(): array
     {
         return [
-            'data' => 'array'
+            'data' => 'array',
         ];
     }
 
     /**
      * Project relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

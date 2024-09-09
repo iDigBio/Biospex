@@ -23,24 +23,19 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class AmChart
- *
- * @package App\Models
  */
 class AmChart extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'amcharts';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = ['project_id', 'series', 'data'];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class);
@@ -48,27 +43,23 @@ class AmChart extends BaseEloquentModel
 
     /**
      * Define the data attribute.
-     *
-     * @return Attribute
      */
     protected function data(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => json_decode($value, true),
-            set: fn($value) => json_encode($value)
+            get: fn ($value) => json_decode($value, true),
+            set: fn ($value) => json_encode($value)
         );
     }
 
     /**
      * Define the series attribute.
-     *
-     * @return Attribute
      */
     protected function series(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => json_decode($value, true),
-            set: fn($value) => json_encode($value)
+            get: fn ($value) => json_decode($value, true),
+            set: fn ($value) => json_encode($value)
         );
     }
 }

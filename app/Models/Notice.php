@@ -21,18 +21,16 @@ namespace App\Models;
 
 /**
  * Class Notice
- *
- * @package App\Models
  */
 class Notice extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'notices';
 
     protected $fillable = [
         'message',
-        'enabled'
+        'enabled',
     ];
 }

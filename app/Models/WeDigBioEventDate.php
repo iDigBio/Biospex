@@ -28,17 +28,17 @@ class WeDigBioEventDate extends BaseEloquentModel
     use Presentable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'wedigbio_event_dates';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'start_date',
         'end_date',
-        'active'
+        'active',
     ];
 
     /**
@@ -51,19 +51,14 @@ class WeDigBioEventDate extends BaseEloquentModel
         return [
             'start_date' => 'datetime',
             'end_date' => 'datetime',
-            'active' => 'int'
+            'active' => 'int',
         ];
     }
 
-    /**
-     * @var string
-     */
     protected string $presenter = WeDigBioDatePresenter::class;
 
     /**
      * Transcriptions relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function transcriptions(): HasMany
     {
@@ -72,9 +67,6 @@ class WeDigBioEventDate extends BaseEloquentModel
 
     /**
      * Scope for active.
-     *
-     * @param $query
-     * @return mixed
      */
     public function scopeActive($query): mixed
     {

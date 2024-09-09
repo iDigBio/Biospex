@@ -21,25 +21,22 @@ namespace App\Models;
 
 /**
  * Class TranscriptionLocation
- *
- * @package App\Models
  */
 class TranscriptionLocation extends BaseEloquentModel
 {
-
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'transcription_locations';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'classification_id',
         'project_id',
         'expedition_id',
-        'state_county_id'
+        'state_county_id',
     ];
 
     /**
@@ -53,7 +50,7 @@ class TranscriptionLocation extends BaseEloquentModel
             'classification_id' => 'int',
             'project_id' => 'int',
             'expedition_id' => 'int',
-            'state_county_id' => 'int'
+            'state_county_id' => 'int',
         ];
     }
 

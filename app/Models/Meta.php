@@ -21,27 +21,25 @@ namespace App\Models;
 
 /**
  * Class Meta
- *
- * @package App\Models
  */
 class Meta extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'metas';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'project_id',
-        'xml'
+        'xml',
     ];
 
     /**
      * Project relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()

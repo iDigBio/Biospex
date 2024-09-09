@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,19 +25,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class GeoLocateForm extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'geo_locate_forms';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'group_id',
         'name',
         'source',
         'hash',
-        'fields'
+        'fields',
     ];
 
     /**
@@ -54,17 +55,12 @@ class GeoLocateForm extends BaseEloquentModel
 
     /**
      * Group relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function expeditions(): HasMany
     {
         return $this->hasMany(Expedition::class);

@@ -21,14 +21,11 @@ namespace App\Models;
 
 /**
  * Class TeamCategory
- *
- * @package App\Models
  */
 class TeamCategory extends BaseEloquentModel
 {
-
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'team_categories';
 
@@ -39,7 +36,7 @@ class TeamCategory extends BaseEloquentModel
 
     /**
      * Faq relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function teams()

@@ -21,30 +21,25 @@ namespace App\Models;
 
 /**
  * Class Actor
- *
- * @package App\Models
  */
 class Actor extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'actors';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'title',
         'url',
-        'class'
+        'class',
     ];
 
     /**
      * Scope for active.
-     *
-     * @param $query
-     * @return mixed
      */
     public function scopeActive($query): mixed
     {
@@ -53,7 +48,6 @@ class Actor extends BaseEloquentModel
 
     /**
      * Workflows relationship.
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function workflows(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -62,17 +56,12 @@ class Actor extends BaseEloquentModel
 
     /**
      * Download relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function downloads(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Download::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function contacts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ActorContact::class);
@@ -80,8 +69,6 @@ class Actor extends BaseEloquentModel
 
     /**
      * Expedition relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function expeditions(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {

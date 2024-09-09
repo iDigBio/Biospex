@@ -21,22 +21,20 @@ namespace App\Models;
 
 /**
  * Class WorkflowManager
- *
- * @package App\Models
  */
 class WorkflowManager extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'workflow_managers';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'expedition_id',
-        'stopped'
+        'stopped',
     ];
 
     /**

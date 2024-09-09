@@ -39,9 +39,6 @@ class ActorWorkflow extends BaseEloquentModel implements Sortable
      */
     public $timestamps = false;
 
-    /**
-     * @var array
-     */
     public array $sortable = [
         'order_column_name' => 'order',
         'sort_when_creating' => true,

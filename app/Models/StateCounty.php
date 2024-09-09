@@ -21,18 +21,16 @@ namespace App\Models;
 
 /**
  * Class StateCounty
- *
- * @package App\Models
  */
 class StateCounty extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'state_counties';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'county_name',

@@ -23,20 +23,18 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * Class ActorContact
- *
- * @package App\Models
  */
 class ActorContact extends BaseEloquentModel
 {
     use Notifiable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'actor_contacts';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'email',

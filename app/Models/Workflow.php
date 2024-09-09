@@ -21,18 +21,16 @@ namespace App\Models;
 
 /**
  * Class Workflow
- *
- * @package App\Models
  */
 class Workflow extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'workflows';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = ['title', 'enabled'];
 

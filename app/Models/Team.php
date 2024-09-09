@@ -25,21 +25,18 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * Class Team
- *
- * @package App\Models
  */
 class Team extends BaseEloquentModel
 {
-
     use Presentable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'teams';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'team_category_id',
@@ -47,7 +44,7 @@ class Team extends BaseEloquentModel
         'last_name',
         'title',
         'department',
-        'institution'
+        'institution',
     ];
 
     /**
@@ -57,7 +54,7 @@ class Team extends BaseEloquentModel
 
     /**
      * TeamCategory relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function teamCategory()
@@ -67,13 +64,11 @@ class Team extends BaseEloquentModel
 
     /**
      * Define the full name attribute.
-     *
-     * @return Attribute
      */
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->first_name . ' ' . $this->last_name,
+            get: fn () => $this->first_name.' '.$this->last_name,
         );
     }
 }

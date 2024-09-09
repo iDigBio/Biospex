@@ -24,27 +24,25 @@ use App\Presenters\BingoPresenter;
 
 /**
  * Class Bingo
- *
- * @package App\Models
  */
 class Bingo extends BaseEloquentModel
 {
     use Presentable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'bingos';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'user_id',
         'project_id',
         'title',
         'directions',
-        'contact'
+        'contact',
     ];
 
     /**
@@ -54,8 +52,6 @@ class Bingo extends BaseEloquentModel
 
     /**
      * User relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -64,8 +60,6 @@ class Bingo extends BaseEloquentModel
 
     /**
      * Project relation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

@@ -21,23 +21,21 @@ namespace App\Models;
 
 /**
  * Class BingoWord
- *
- * @package App\Models
  */
 class BingoWord extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'bingo_words';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'bingo_id',
         'word',
-        'definition'
+        'definition',
     ];
 
     /**
@@ -49,5 +47,4 @@ class BingoWord extends BaseEloquentModel
     {
         return $this->belongsTo(Bingo::class);
     }
-
 }

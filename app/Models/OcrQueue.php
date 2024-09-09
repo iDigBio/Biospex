@@ -21,31 +21,27 @@ namespace App\Models;
 
 /**
  * Class OcrQueue
- *
- * @package App\Models
  */
 class OcrQueue extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'ocr_queues';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'project_id',
         'expedition_id',
         'total',
         'status',
-        'error'
+        'error',
     ];
 
     /**
      * Project relation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -64,8 +60,6 @@ class OcrQueue extends BaseEloquentModel
 
     /**
      * OcrQueueFiles relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function files(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

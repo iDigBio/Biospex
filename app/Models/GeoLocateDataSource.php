@@ -16,24 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Models;
 
 class GeoLocateDataSource extends BaseEloquentModel
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'geo_locate_data_sources';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'project_id',
         'expedition_id',
         'geo_locate_community_id',
         'data_source',
-        'data'
+        'data',
     ];
 
     /**
@@ -44,13 +45,12 @@ class GeoLocateDataSource extends BaseEloquentModel
     protected function casts(): array
     {
         return [
-            'data' => 'array'
+            'data' => 'array',
         ];
     }
 
     /**
      * Project relation
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -59,8 +59,6 @@ class GeoLocateDataSource extends BaseEloquentModel
 
     /**
      * Expedition relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -69,8 +67,6 @@ class GeoLocateDataSource extends BaseEloquentModel
 
     /**
      * Geo Locate community relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function geoLocateCommunity(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
