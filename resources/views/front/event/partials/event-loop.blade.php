@@ -62,7 +62,9 @@
                 {!! isset($project) ? $project->present()->project_page_icon : $event->project->present()->project_page_icon !!}
                 {!! $event->present()->event_show_icon !!}
                 @if(event_before($event) || event_active($event))
-                    {!! $project->lastPanoptesProject->present()->project_icon !!}
+                    {!! isset($project) ?
+                            $project->lastPanoptesProject->present()->project_icon :
+                            $event->project->lastPanoptesProject->present()->project_icon !!}
                 @endif
                 {!! $event->present()->twitter_icon !!}
                 {!! $event->present()->facebook_icon !!}
