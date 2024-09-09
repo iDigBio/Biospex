@@ -96,7 +96,7 @@ class EventService
     {
         $event->loadCount('transcriptions')->load([
             'project:id,title,slug,logo_file_name',
-            'project.lastPanoptesProject:id,project_id,panoptes_project_id,panoptes_workflow_id',
+            'project.lastPanoptesProject:id,project_id,panoptes_project_id,panoptes_workflow_id,slug',
             'teams:id,uuid,event_id,title', 'teams.users' => function ($q) use ($event) {
                 $q->withcount([
                     'transcriptions' => function ($q) use ($event) {
