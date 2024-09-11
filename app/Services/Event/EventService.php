@@ -108,23 +108,27 @@ class EventService
     }
 
     /**
-     * Get event for show page.
-     */
-    public function edit(Event &$event): void
-    {
-        $event->loadCount('transcriptions')->loadCount('teams')->load('teams:id,uuid,event_id,title');
-    }
-
-    /**
      * Create event.
      */
     public function store(array $attributes): Event
     {
         $this->setEventDates($attributes);
         $event = $this->event->create($attributes);
-        $event->teams()->saveMany($this->makeTeams($attributes['teams']));
+
+        foreach ($attributes['teams'] as $team) {
+            $team = $this->eventTeam->make($team);
+            $event->teams()->save($team);
+        }
 
         return $event;
+    }
+
+    /**
+     * Get event for show page.
+     */
+    public function edit(Event &$event): void
+    {
+        $event->loadCount('transcriptions')->loadCount('teams')->load('teams:id,uuid,event_id,title');
     }
 
     /**
@@ -147,16 +151,6 @@ class EventService
     public function setEventDates(array &$data): void
     {
         $this->dateService->setEventDates($data);
-    }
-
-    /**
-     * Make teams.
-     */
-    public function makeTeams(array $teams): array
-    {
-        return collect($teams)->map(function ($team) {
-            return $this->eventTeam->make($team);
-        })->toArray();
     }
 
     /**
