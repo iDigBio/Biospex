@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Services\EventService;
+use App\Services\Event\EventService;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\View;
 

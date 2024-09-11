@@ -25,30 +25,23 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 
-class ZooniverseWeDigBioEventJob implements ShouldQueue
+class WeDigBioEventTranscriptionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 60;
 
-    /**
-     * @var array
-     */
     private array $data;
 
-    /**
-     * @var int
-     */
     private int $projectId;
 
     /**
      * Create a new job instance.
      * Handles WeDigBio even transcriptions
+     *
      * @see \App\Jobs\ZooniversePusherHandlerJob
      *
      * @return void

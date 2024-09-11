@@ -28,9 +28,9 @@ Route::resource('events', EventController::class)->only(['index', 'show'])->name
     'show' => 'front.events.show',
 ]);
 
-// Event sort routes
-Route::post('events/sort/', [EventSortController::class])->name('front.events.sort');
+// Event sort route
+Route::post('events/sort/', EventSortController::class)->name('front.events.sort');
 
-// Event scoreboard and rate chart
-Route::get('ajax/scoreboard/{event}', [EventScoreboardController::class, 'show'])->name('event.get.scoreboard');
-Route::get('ajax/rate/{event}/{timestamp?}', [EventRateChartController::class, 'index'])->name('event.rate.index');
+// Event scoreboard and rate chart used for both front and admin
+Route::get('event/{event}/scoreboard', EventScoreboardController::class)->name('event.get.scoreboard');
+Route::get('event/{event}/rate/{timestamp?}', EventRateChartController::class)->name('event.get.rate');

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services;
+namespace App\Services\Event;
 
 use App\Models\Event;
 use App\Models\EventTeam;
@@ -152,11 +152,11 @@ class EventService
     /**
      * Make teams.
      */
-    public function makeTeams(array $teams): Collection
+    public function makeTeams(array $teams): array
     {
         return collect($teams)->map(function ($team) {
             return $this->eventTeam->make($team);
-        });
+        })->toArray();
     }
 
     /**
@@ -181,23 +181,5 @@ class EventService
             $team = $this->eventTeam->make($team);
             $event->teams()->save($team);
         }
-    }
-
-    /**
-     * Get event scoreboard.
-     *
-     * @param  array|string[]  $columns
-     */
-    public function getEventScoreboard($eventId, array $columns = ['*']): mixed
-    {
-        return $this->event->withCount('transcriptions')->with([
-            'teams' => function ($q) use ($eventId) {
-                $q->withcount([
-                    'transcriptions' => function ($q) use ($eventId) {
-                        $q->where('event_id', $eventId);
-                    },
-                ])->orderBy('transcriptions_count', 'desc');
-            },
-        ])->find($eventId, $columns);
     }
 }

@@ -50,11 +50,11 @@ class ScoreboardJob implements ShouldQueue
      *
      * @throws \Throwable
      */
-    public function handle(EventModel $eventModel)
+    public function handle(EventModel $eventModel): void
     {
         $events = $eventModel->getEventsByProjectId($this->projectId);
         $data = $events->mapWithKeys(function ($event) {
-            return [$event->id => \View::make('common.scoreboard-content', ['event' => $event])->render()];
+            return [$event->uuid => \View::make('common.scoreboard-content', ['event' => $event])->render()];
         });
 
         ScoreboardEvent::dispatch($this->projectId, $data->toArray());

@@ -20,7 +20,7 @@
 namespace App\Services\Models;
 
 use App\Models\EventTranscription;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class EventTranscriptionModelService

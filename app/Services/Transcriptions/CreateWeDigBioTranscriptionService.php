@@ -33,7 +33,7 @@ use Validator;
 class CreateWeDigBioTranscriptionService
 {
     /**
-     * CreateBiospexEventTranscriptionService constructor.
+     * EventTranscriptionService constructor.
      */
     public function __construct(
         private readonly WeDigBioEventDateModelService $weDigBioEventDateModelService,

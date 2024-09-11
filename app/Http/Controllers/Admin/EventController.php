@@ -22,7 +22,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Models\Event;
-use App\Services\EventService;
+use App\Services\Event\EventService;
 use App\Services\Models\ProjectModelService;
 use App\Services\Permission\CheckPermission;
 use Illuminate\Support\Facades\Auth;

@@ -1,6 +1,4 @@
 <?php
-
-declare(strict_types=1);
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -19,38 +17,34 @@ declare(strict_types=1);
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Chart;
+namespace App\Services\Event;
 
-use App\Facades\DateHelper;
 use App\Models\Event;
-use App\Services\Models\EventModel;
+use App\Services\Helpers\DateService;
 use App\Services\Models\EventTranscriptionModelService;
-use Date;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 /**
- * Class BiospexEventRateChartProcess
+ * Class EventRateService
  */
-readonly class BiospexEventRateChartProcess
+readonly class EventRateService
 {
     /**
      * AjaxService constructor.
      */
     public function __construct(
-        private EventModel $eventModel,
-        private EventTranscriptionModelService $eventTranscriptionModelService
+        protected EventTranscriptionModelService $eventTranscriptionModelService,
+        protected DateService $dateService,
+        protected Carbon $carbon
     ) {}
 
     /**
      * Get event transcription data for step chart.
      */
-    public function eventStepChart(int $eventId, ?string $timestamp = null): ?array
+    public function eventStepChart(Event $event, ?string $timestamp = null): ?array
     {
-        $event = $this->eventModel->findEventWi($eventId, ['teams']);
-        if ($event === null) {
-            return null;
-        }
+        $event->load('teams');
 
         $loadTime = $this->getLoadTime($event, $timestamp);
 
@@ -60,7 +54,7 @@ readonly class BiospexEventRateChartProcess
 
         $intervals = $this->setTimeIntervals($startLoad, $endLoad, $timestamp);
 
-        $transcriptions = $this->eventTranscriptionModelService->getEventRateChartTranscriptions($eventId, $startLoad, $endLoad);
+        $transcriptions = $this->eventTranscriptionModelService->getEventRateChartTranscriptions($event->id, $startLoad, $endLoad);
 
         return $transcriptions->isEmpty() ? $this->processEmptyResult($event, $intervals) : $this->processTranscriptionResult($event, $transcriptions, $intervals);
     }
@@ -70,7 +64,7 @@ readonly class BiospexEventRateChartProcess
      */
     public function processEmptyResult(Event $event, Collection $intervals): array
     {
-        if (Date::eventAfter($event)) {
+        if ($this->dateService->eventAfter($event)) {
             return [];
         }
 
@@ -88,14 +82,12 @@ readonly class BiospexEventRateChartProcess
 
     /**
      * Process query data for results.
-     *
-     * @return array
      */
     protected function processTranscriptionResult(
         Event $event,
         Collection $transcriptions,
         Collection $intervals
-    ) {
+    ): array {
         $mapped = $this->mapWithDateKeys($transcriptions, $event);
 
         $merged = $this->mergeIntervals($mapped, $intervals);
@@ -113,7 +105,7 @@ readonly class BiospexEventRateChartProcess
     {
         $data = [];
         $transcriptions->each(function ($transcription) use (&$data, $event) {
-            $date = Carbon::parse($transcription->time)->timezone($event->timezone)->format('Y-m-d H:i:s');
+            $date = $this->carbon::parse($transcription->time)->timezone($event->timezone)->format('Y-m-d H:i:s');
             $data[$date][$transcription->team->title] = $transcription->count * 12;
         });
 
@@ -162,14 +154,12 @@ readonly class BiospexEventRateChartProcess
 
     /**
      * Get the load time given.
-     *
-     * @return \Illuminate\Support\Carbon
      */
     protected function getLoadTime(Event $event, ?string $timestamp = null): \Carbon\Carbon
     {
         return $timestamp === null ?
             $event->start_date :
-            Carbon::createFromTimestampMs($timestamp)->floorMinutes(5);
+            $this->carbon::createFromTimestampMs($timestamp)->floorMinutes(5);
     }
 
     /**
@@ -177,12 +167,12 @@ readonly class BiospexEventRateChartProcess
      */
     protected function getEndLoad(Event $event, Carbon $loadTime, ?string $timestamp = null): Carbon
     {
-        if (DateHelper::eventAfter($event)) {
+        if ($this->dateService->eventAfter($event)) {
             return $event->end_date;
         }
 
         return $timestamp === null ?
-            Carbon::now()->floorMinutes(5) : $loadTime->addMinutes(5);
+            $this->carbon::now()->floorMinutes(5) : $loadTime->addMinutes(5);
     }
 
     /**

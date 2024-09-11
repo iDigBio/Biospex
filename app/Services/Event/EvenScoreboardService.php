@@ -17,32 +17,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Database\Factories;
+namespace App\Services\Event;
 
-use App\Models\WeDigBioEventTranscription;
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Event;
 
-/**
- * @extends Factory<\App\Models\WeDigBioEventTranscription>
- */
-final class WeDigBioEventTranscriptionFactory extends Factory
+class EvenScoreboardService
 {
     /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
+     * Get event scoreboard.
      */
-    protected $model = WeDigBioEventTranscription::class;
-
-    /**
-     * Define the model's default state.
-     */
-    public function definition(): array
+    public function getEventScoreboard(Event &$event): void
     {
-        return [
-            'classification_id' => fake()->randomNumber(),
-            'project_id' => \App\Models\Project::factory(),
-            'date_id' => \App\Models\WeDigBioEventDate::factory(),
-        ];
+        $event->loadCount('transcriptions')->load([
+            'teams' => function ($q) use ($event) {
+                $q->withcount([
+                    'transcriptions' => function ($q) use ($event) {
+                        $q->where('event_id', $event->id);
+                    },
+                ])->orderBy('transcriptions_count', 'desc');
+            },
+        ]);
     }
 }

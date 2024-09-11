@@ -11,34 +11,37 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Transcriptions;
+namespace App\Services\Event;
 
 use App\Jobs\ScoreboardJob;
 use App\Services\Models\EventModel;
 use App\Services\Models\EventTranscriptionModelService;
 use App\Services\Models\EventUserModelService;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Validator;
 
 /**
- * Class CreateBiospexEventTranscriptionService
+ * Class EventTranscriptionService
+ * TODO: Try to break into smaller classes to avoid DI count.
  */
-readonly class CreateBiospexEventTranscriptionService
+readonly class EventTranscriptionService
 {
     /**
-     * CreateBiospexEventTranscriptionService constructor.
+     * EventTranscriptionService constructor.
      */
     public function __construct(
-        private EventModel $eventModel,
-        private EventTranscriptionModelService $eventTranscriptionModelService,
-        private EventUserModelService $eventUserModelService
+        protected EventModel $eventModel,
+        protected EventTranscriptionModelService $eventTranscriptionModelService,
+        protected EventUserModelService $eventUserModelService,
+        protected Carbon $carbon,
+        protected ScoreboardJob $scoreboardJob
     ) {}
 
     /**
@@ -56,7 +59,7 @@ readonly class CreateBiospexEventTranscriptionService
             return;
         }
 
-        $timestamp = ! isset($date) ? Carbon::now('UTC') : $date;
+        $timestamp = ! isset($date) ? $this->carbon::now('UTC') : $date;
 
         $events = $this->eventModel->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp->toDateTimeString());
 
@@ -80,7 +83,7 @@ readonly class CreateBiospexEventTranscriptionService
         });
 
         if ($events->isNotEmpty() && ! isset($date)) {
-            ScoreboardJob::dispatch($projectId);
+            $this->scoreboardJob::dispatch($projectId);
         }
     }
 

@@ -22,7 +22,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventJoinRequest;
 use App\Models\EventTeam;
-use App\Services\EventTeamUserService;
+use App\Services\Event\EventTeamUserService;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;

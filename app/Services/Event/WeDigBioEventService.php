@@ -28,7 +28,7 @@ use App\Services\Transcriptions\CreateWeDigBioTranscriptionService;
 class WeDigBioEventService
 {
     /**
-     * BiospexEventService constructor.
+     * EventTranscriptionService constructor.
      */
     public function __construct(
         private readonly CreateWeDigBioTranscriptionService $createWeDigBioTranscriptionService,

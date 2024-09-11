@@ -23,14 +23,14 @@ Broadcast::channel(config('config.poll_export_channel'), function () {
     return true;
 });
 
-Broadcast::channel(config('config.poll_board_channel') . '.{project}', function () {
+Broadcast::channel(config('config.poll_scoreboard_channel').'.{project}', function () {
     return true;
 });
 
-Broadcast::channel(config('config.poll_bingo_channel') . '.{bingo}', function () {
+Broadcast::channel(config('config.poll_bingo_channel').'.{bingo}', function () {
     return true;
 });
 
-Broadcast::channel(config('config.poll_wedigbio_progress_channel') . '.{date}', function () {
+Broadcast::channel(config('config.poll_wedigbio_progress_channel').'.{date}', function () {
     return true;
 });

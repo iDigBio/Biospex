@@ -19,52 +19,47 @@
 
 namespace App\Jobs;
 
-use App\Services\Event\BiospexEventService;
+use App\Models\Expedition;
+use App\Services\Api\PanoptesApiService;
+use App\Services\Event\EventTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 
-class ZooniverseBiospexEventJob implements ShouldQueue
+class EventTranscriptionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 60;
-
-    /**
-     * @var array
-     */
-    private array $data;
-
-    /**
-     * @var int
-     */
-    private int $expeditionId;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(array $data, int $expeditionId)
+    public function __construct(public array $data, public int $expeditionId)
     {
-        $this->data = $data;
-        $this->expeditionId = $expeditionId;
         $this->onQueue(config('config.queue.biospex_event'));
     }
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle(BiospexEventService $biospexEventService)
+    public function handle(Expedition $expedition, PanoptesApiService $apiService, EventTranscriptionService $eventTranscriptionService): void
     {
-        $biospexEventService->process($this->data, $this->expeditionId);
+        $expedition = $expedition->find($this->expeditionId);
+        $user = $this->data['user_id'] !== null ? $apiService->getPanoptesUser($this->data['user_id']) : null;
+
+        if ($expedition === null || $user === null) {
+            $this->delete();
+
+            return;
+        }
+
+        $eventTranscriptionService->createEventTranscription((int) $this->data['classification_id'], $expedition->project_id, $user['login']);
     }
 }

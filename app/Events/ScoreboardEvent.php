@@ -53,10 +53,8 @@ class ScoreboardEvent extends Event implements ShouldBroadcast
 
     /**
      * Get the channels the event should be broadcast on.
-     *
-     * @return Channel
      */
-    public function broadcastOn()
+    public function broadcastOn(): Channel
     {
         return new Channel(config('config.poll_scoreboard_channel').'.'.$this->projectId);
     }

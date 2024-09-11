@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Services\EventService;
+use App\Services\Event\EventService;
 use App\Services\Models\EventModel;
 use Illuminate\Support\Facades\View;
 
