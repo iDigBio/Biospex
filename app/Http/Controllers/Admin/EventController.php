@@ -91,7 +91,7 @@ class EventController extends Controller
     /**
      * Show event.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show(Event $event)
     {
@@ -107,7 +107,7 @@ class EventController extends Controller
     /**
      * Edit event.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      *
      * @throws \Exception
      */
