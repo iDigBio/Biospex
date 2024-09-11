@@ -74,11 +74,11 @@ class ZooniversePusherHandlerJob implements ShouldQueue
         ZooniverseClassificationJob::dispatch($this->data, $title);
 
         if (isset($panoptesProject->expedition_id)) {
-            ZooniverseBiospexEventJob::dispatch($this->data, $panoptesProject->expedition_id);
+            EventTranscriptionJob::dispatch($this->data, $panoptesProject->expedition_id);
         }
 
         if (isset($panoptesProject->project_id)) {
-            ZooniverseWeDigBioEventJob::dispatch($this->data, $panoptesProject->project_id);
+            WeDigBioEventTranscriptionJob::dispatch($this->data, $panoptesProject->project_id);
         }
     }
 }
