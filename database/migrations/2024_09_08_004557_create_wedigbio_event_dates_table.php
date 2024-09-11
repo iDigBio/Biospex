@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('wedigbio_event_dates', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->uuid('uuid')->index();
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->boolean('active')->default(false);
