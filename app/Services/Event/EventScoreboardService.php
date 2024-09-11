@@ -21,7 +21,7 @@ namespace App\Services\Event;
 
 use App\Models\Event;
 
-class EvenScoreboardService
+class EventScoreboardService
 {
     /**
      * Get event scoreboard.

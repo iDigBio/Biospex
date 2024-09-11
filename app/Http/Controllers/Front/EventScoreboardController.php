@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Services\Event\EvenScoreboardService;
+use App\Services\Event\EventScoreboardService;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\View;
 
@@ -30,7 +30,7 @@ class EventScoreboardController extends Controller
     /**
      * EventScoreboardController constructor.
      */
-    public function __construct(protected EvenScoreboardService $evenScoreboardService) {}
+    public function __construct(protected EventScoreboardService $eventScoreboardService) {}
 
     /**
      * Load event scoreboard.
@@ -43,7 +43,7 @@ class EventScoreboardController extends Controller
             $event = null;
         }
 
-        $this->evenScoreboardService->getEventScoreboard($event);
+        $this->eventScoreboardService->getEventScoreboard($event);
 
         return View::make('common.scoreboard-content', ['event' => $event]);
     }
