@@ -204,7 +204,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="language_skills" class="col-form-label">{{ t('Language Skills Required') }}:</label>
+                            <label for="language_skills" class="col-form-label">{{ t('Language Skills Required') }}
+                                :</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('language_skills')) ? 'is-invalid' : '' }}"
                                    id="language_skills" name="language_skills"
@@ -224,7 +225,8 @@
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
-                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;" src="{{ General::projectDefaultLogo() }}" alt="Project Logo"/>
+                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
+                                     src="{{ project_default_logo() }}" alt="Project Logo"/>
                             </div>
                         </div>
 
@@ -232,7 +234,7 @@
                             <div class="form-group col-sm-6">
                                 <label for="banner-file" class="col-form-label">{{ t('Banner File') }}:</label>
                                 <input type="text" class="form-control" id="banner-file" name="banner_file"
-                                       value="{{ old('banner_file', General::projectBannerFileName()) }}"
+                                       value="{{ old('banner_file', project_banner_file_name()) }}"
                                        readonly>
                             </div>
                             <div class="form-group col-sm-4 pt-3">
@@ -240,7 +242,7 @@
                                    data-hover="tooltip" title="{{ t('Click to select banner.') }}">
                                     {{ t('Click to select banner.') }}
                                     <img class="img-fluid" id="banner-img"
-                                         src="{{ old('banner_file', General::projectBannerFileUrl()) }}" alt="Project Banner"/>
+                                         src="{{ old('banner_file', project_banner_file_url() }}" alt="Project Banner"/>
                                 </a>
                             </div>
                         </div>

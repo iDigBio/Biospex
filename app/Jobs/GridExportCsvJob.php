@@ -25,8 +25,8 @@ use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Grid\JqGridEncoder;
+use App\Services\Helpers\GeneralService;
 use Exception;
-use General;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -49,41 +49,13 @@ class GridExportCsvJob implements ShouldQueue
      */
     public $timeout = 1800;
 
-    /**
-     * @var User
-     */
-    private $user;
-
-    /**
-     * @var int
-     */
-    private $projectId;
-
-    /**
-     * @var int|null
-     */
-    private $expeditionId;
-
-    /**
-     * @var array
-     */
-    private $postData;
-
-    /**
-     * @var string
-     */
-    private $route;
+    protected GeneralService $generalService;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(User $user, array $data)
+    public function __construct(public User $user, public array $data)
     {
-        $this->user = $user;
-        $this->projectId = $data['projectId'];
-        $this->expeditionId = $data['expeditionId'];
-        $this->postData = $data['postData'];
-        $this->route = $data['route'];
         $this->onQueue(config('config.queue.default'));
     }
 
@@ -92,13 +64,16 @@ class GridExportCsvJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle(JqGridEncoder $jqGridEncoder, AwsS3CsvService $awsS3CsvService)
+    public function handle(
+        JqGridEncoder $jqGridEncoder,
+        AwsS3CsvService $awsS3CsvService,
+        GeneralService $generalService)
     {
         $csvName = Str::random().'.csv';
 
         try {
 
-            $cursor = $jqGridEncoder->encodeGridExportData($this->postData, $this->route, $this->projectId, $this->expeditionId);
+            $cursor = $jqGridEncoder->encodeGridExportData($this->data['postData'], $this->data['route'], $this->data['projectId'], $this->data['expeditionId']);
 
             $header = $this->buildHeader();
 
@@ -109,13 +84,13 @@ class GridExportCsvJob implements ShouldQueue
             $awsS3CsvService->createCsvWriterFromStream();
             $awsS3CsvService->csv->insertOne($header->keys()->toArray());
 
-            $cursor->each(function ($subject) use ($header, $awsS3CsvService) {
+            $cursor->each(function ($subject) use ($header, $awsS3CsvService, $generalService) {
                 $subjectArray = $subject->getAttributes();
                 $subjectArray['_id'] = (string) $subject->_id;
                 $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
                 $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
                 $subjectArray['created_at'] = $subject->created_at->toDateTimeString();
-                $subjectArray['ocr'] = General::forceUtf8($subject->ocr);
+                $subjectArray['ocr'] = $generalService->forceUtf8($subject->ocr);
                 $subjectArray['occurrence'] = $this->decodeAndEncode($subject->occurrence->getAttributes());
 
                 $merged = $header->merge($subjectArray);
@@ -130,9 +105,9 @@ class GridExportCsvJob implements ShouldQueue
 
             $route = route('admin.downloads.report', ['file' => base64_encode($csvName)]);
             $btn = $this->createButton($route, t('Download CSV'));
-            $html = $this->expeditionId !== 0 ?
-                t('Your grid export for Expedition Id %s is complete. Click the button provided to download:', $this->expeditionId) :
-                t('Your grid export for Project Id %s is complete. Click the button provided to download:', $this->projectId);
+            $html = $this->data['expeditionId'] !== 0 ?
+                t('Your grid export for Expedition Id %s is complete. Click the button provided to download:', $this->data['expeditionId']) :
+                t('Your grid export for Project Id %s is complete. Click the button provided to download:', $this->data['projectId']);
 
             $attributes = [
                 'subject' => t('Grid Export to CSV Complete'),
@@ -144,7 +119,7 @@ class GridExportCsvJob implements ShouldQueue
 
         } catch (Exception $e) {
 
-            $idMessage = $this->expeditionId !== 0 ? t('Expedition Id: %s', $this->expeditionId) : t('Project Id: %s', $this->projectId);
+            $idMessage = $this->data['expeditionId'] !== 0 ? t('Expedition Id: %s', $this->data['expeditionId']) : t('Project Id: %s', $this->data['projectId']);
             $attributes = [
                 'subject' => t('Grid Export to CSV Error'),
                 'html' => [
@@ -169,7 +144,7 @@ class GridExportCsvJob implements ShouldQueue
      */
     private function buildHeader()
     {
-        $header = Header::where('project_id', $this->projectId)->first()->header['image'];
+        $header = Header::where('project_id', $this->data['projectId'])->first()->header['image'];
         array_unshift($header, '_id', 'project_id', 'id', 'expedition_ids', 'exported');
         array_push($header, 'ocr', 'occurrence', 'updated_at', 'created_at');
 

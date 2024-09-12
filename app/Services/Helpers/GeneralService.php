@@ -118,29 +118,6 @@ class GeneralService
     }
 
     /**
-     * Check for UTF-8 compatibility
-     *
-     * Regex from Martin Dürst
-     *
-     * @source http://www.w3.org/International/questions/qa-forms-utf-8.en.php
-     *
-     * @param  string  $str  String to check
-     */
-    public function isUtf8($str): bool
-    {
-        return preg_match("/^(
-         [\x09\x0A\x0D\x20-\x7E]            # ASCII
-       | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
-       |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
-       | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
-       |  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates
-       |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
-       | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
-       |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
-      )*$/x", $str);
-    }
-
-    /**
      * Try to convert a string to UTF-8.
      *
      * @author Thomas Scholz <http://toscho.de>
@@ -172,6 +149,29 @@ class GeneralService
     }
 
     /**
+     * Check for UTF-8 compatibility
+     *
+     * Regex from Martin Dürst
+     *
+     * @source http://www.w3.org/International/questions/qa-forms-utf-8.en.php
+     *
+     * @param  string  $str  String to check
+     */
+    private function isUtf8($str): bool
+    {
+        return preg_match("/^(
+         [\x09\x0A\x0D\x20-\x7E]            # ASCII
+       | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
+       |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
+       | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
+       |  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates
+       |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
+       | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
+       |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
+      )*$/x", $str);
+    }
+
+    /**
      * Give file size in human-readable form.
      *
      * @param  int  $decimals
@@ -185,33 +185,17 @@ class GeneralService
     }
 
     /**
-     * Convert uuid value to bin for lookup.
-     *
-     * @return string|void
-     */
-    public function uuidToBin($value)
-    {
-        if ($value === null) {
-            return;
-        }
-
-        return pack('H*', str_replace('-', '', $value));
-    }
-
-    /**
      * Return banner file name if exists.
-     *
-     * @param  null  $name
      */
-    public function projectBannerFileName($name = null): mixed
+    public function projectBannerFileName(?string $name = null): ?string
     {
         return $name ?? 'banner-trees.jpg';
     }
 
     /**
-     * @param  null  $name
+     * Return banner file url if exists.
      */
-    public function projectBannerFileUrl($name = null): mixed
+    public function projectBannerFileUrl(?string $name = null): ?string
     {
         return $name === null ?
             '/images/habitat-banners/banner-trees.jpg' :
@@ -221,7 +205,7 @@ class GeneralService
     /**
      * Return default logo for projects.
      */
-    public function projectDefaultLogo(): mixed
+    public function projectDefaultLogo(): string
     {
         return '/images/placeholders/project.png';
     }
@@ -229,7 +213,7 @@ class GeneralService
     /**
      * Return default logo for expeditions.
      */
-    public function expeditionDefaultLogo(): mixed
+    public function expeditionDefaultLogo(): string
     {
         return '/images/placeholders/card-image-place-holder02.jpg';
     }

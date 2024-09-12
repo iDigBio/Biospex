@@ -25,29 +25,22 @@ use App\Jobs\GeoLocateExportJob;
 use App\Jobs\GeoLocateStatsJob;
 use App\Services\Actor\GeoLocate\GeoLocateExportForm;
 use App\Services\Actor\GeoLocate\GeoLocateStat;
+use App\Services\Helpers\GeneralService;
 use Exception;
-use General;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 class GeoLocateController extends Controller
 {
-    private GeoLocateExportForm $geoLocateExportForm;
-
-    private GeoLocateStat $geoLocateStat;
-
     /**
      * GeoLocateController constructor.
      */
     public function __construct(
-        GeoLocateExportForm $geoLocateExportForm,
-        GeoLocateStat $geoLocateStat
-
-    ) {
-        $this->geoLocateExportForm = $geoLocateExportForm;
-        $this->geoLocateStat = $geoLocateStat;
-    }
+        protected GeoLocateExportForm $geoLocateExportForm,
+        protected GeoLocateStat $geoLocateStat,
+        protected GeneralService $generalService
+    ) {}
 
     /**
      * Display stats in modal.
@@ -90,7 +83,7 @@ class GeoLocateController extends Controller
             }
 
             $form = $this->geoLocateExportForm->getForm($expedition, ['formId' => $expedition->geo_locate_form_id]);
-            $disabled = $form['exported'] && General::downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
+            $disabled = $form['exported'] && $this->generalService->downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
 
             $formFields = \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'))->render();
 
@@ -120,7 +113,7 @@ class GeoLocateController extends Controller
             }
 
             $form = $this->geoLocateExportForm->getForm($expedition, \Request::all());
-            $disabled = $form['exported'] && General::downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
+            $disabled = $form['exported'] && $this->generalService->downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
 
             return \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'));
         } catch (\Exception $e) {

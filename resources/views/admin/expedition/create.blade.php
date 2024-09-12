@@ -56,11 +56,13 @@
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
-                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;" src="{{ General::expeditionDefaultLogo() }}" alt="logo"/>
+                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
+                                     src="{{ expedition_default_logo() }}" alt="logo"/>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="workflow-id" class="col-form-label col-12 required">{{ t('Workflows') }}:</label>
+                            <label for="workflow-id" class="col-form-label col-12 required">{{ t('Workflows') }}
+                                :</label>
                             <select name="workflow_id" id="workflow-id"
                                     class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
                                     required>

@@ -23,7 +23,7 @@ namespace App\Services\Games;
 use App\Models\Bingo;
 use App\Models\BingoMap;
 use App\Services\Api\GeoPlugin;
-use General;
+use App\Services\Helpers\GeneralService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use JavaScript;
@@ -37,7 +37,11 @@ readonly class BingoProcess
     /**
      * BingoProcess constructor.
      */
-    public function __construct(private Bingo $bingo, private BingoMap $bingoMap, private GeoPlugin $location) {}
+    public function __construct(
+        protected Bingo $bingo,
+        protected BingoMap $bingoMap,
+        protected GeoPlugin $location,
+        protected GeneralService $generalService) {}
 
     /**
      * Get all bingo games.
@@ -104,7 +108,7 @@ readonly class BingoProcess
     {
         $this->location->locate();
 
-        $uuid = General::uuidToBin(Session::get('bingoUuid'));
+        $uuid = Session::get('bingoUuid');
 
         $map = $uuid === null ? $this->createBingoMap($bingo) : $this->findBingoMapByUuid($bingo, $uuid);
 

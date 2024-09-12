@@ -1,7 +1,8 @@
 <hr class="header mx-auto" style="width:300px;">
 <h4>{{ $actor->title }}</h4>
 @if($expedition->stat->local_subject_count > 0)
-    <a href="{{ route('admin.downloads.export', [$expedition->project->id, $expedition->id]) }}" class="prevent-default btn btn-primary rounded-0 mb-1"
+    <a href="{{ route('admin.downloads.export', [$expedition->project->id, $expedition->id]) }}"
+       class="prevent-default btn btn-primary rounded-0 mb-1"
        data-method="get"
        data-confirm="confirmation"
        data-title="{{ t('Generate Export File') }}"
@@ -15,8 +16,8 @@
    data-size="modal-lg"
    data-url="{{ route('admin.zooniverse.workflowShowForm', [$expedition->project->id, $expedition->id]) }}"
    data-title="{{ t('Edit Workflow Id') }}"> {{ t('Edit Workflow Id') }}</a>
-@if(General::zooniverseExportFileCheck($expedition))
-    @if(General::checkPanoptesWorkflow($expedition))
+@if(zooniverse_export_file_check($expedition))
+    @if(check_panoptes_workflow($expedition))
         @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
             @unless($expedition->stat->local_subject_count === 0)
                 <a href="{{ route('admin.zooniverse.process', [$expedition->project_id, $expedition->id]) }}"

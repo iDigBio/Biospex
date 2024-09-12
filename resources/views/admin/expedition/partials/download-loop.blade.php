@@ -1,13 +1,9 @@
-@if (General::downloadFileExists($download->file, $download->type, $download->actor_id))
+@if (download_file_exists($download->file, $download->type, $download->actor_id))
     <tr>
         <td>{{ $download->present()->file_type }}</td>
         <td>{{ $download->present()->file_type . '-' . $download->file }}</td>
         <td>
-            @if (General::downloadFileExists($download->file, $download->type, $download->actor_id))
-                {{ General::humanFileSize(General::downloadFileSize($download->file, $download->type, $download->actor_id)) }}
-            @else
-                {{ General::humanFileSize(mb_strlen($download->data, '8bit')) }}
-            @endif
+            {{ human_file_size(download_file_size($download->file, $download->type, $download->actor_id)) }}
         </td>
         <td>{{ format_date($download->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
         <td>{{ format_date($download->updated_at, 'Y-m-d', $user->profile->timezone) }}</td>

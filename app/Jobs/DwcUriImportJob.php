@@ -21,10 +21,10 @@ namespace App\Jobs;
 
 use App\Models\Import;
 use App\Notifications\Generic;
+use App\Services\Helpers\GeneralService;
 use App\Services\Models\ProjectModelService;
 use Exception;
 use finfo;
-use General;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -61,8 +61,11 @@ class DwcUriImportJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(Import $import, ProjectModelService $projectModelService): void
-    {
+    public function handle(
+        Import $import,
+        ProjectModelService $projectModelService,
+        GeneralService $generalService
+    ): void {
         $project = $projectModelService->getProjectForDarwinImportJob($this->data['id']);
         $users = $project->group->users->push($project->group->owner);
 
@@ -70,7 +73,7 @@ class DwcUriImportJob implements ShouldQueue
             $fileName = basename($this->data['url']);
             $filePath = config('config.import_dir').'/'.$fileName;
 
-            $file = file_get_contents(General::urlEncode($this->data['url']));
+            $file = file_get_contents($generalService->urlEncode($this->data['url']));
             if ($file === false) {
                 throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
             }
