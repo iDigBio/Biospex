@@ -20,8 +20,8 @@
 namespace App\Services\Transcriptions;
 
 use App\Models\TranscriptionLocation;
+use App\Services\Helpers\GeneralService;
 use App\Services\Models\StateCountyModelService;
-use General;
 
 use function config;
 
@@ -44,8 +44,9 @@ class CreateTranscriptionLocationService
      * CreateTranscriptionLocationService constructor.
      */
     public function __construct(
-        private TranscriptionLocation $transcriptionLocation,
-        private StateCountyModelService $stateCountyModelService
+        protected TranscriptionLocation $transcriptionLocation,
+        protected StateCountyModelService $stateCountyModelService,
+        protected GeneralService $generalService
     ) {
         $this->dwcTranscriptFields = config('config.dwcTranscriptFields');
         $this->dwcOccurrenceFields = config('config.dwcOccurrenceFields');
@@ -73,7 +74,7 @@ class CreateTranscriptionLocationService
         }
 
         $this->prepCounty($data);
-        $stateAbbr = General::getState($data['state_province']);
+        $stateAbbr = $this->generalService->getState($data['state_province']);
         $stateResult = $this->stateCountyModelService->findByCountyState($data['county'], $stateAbbr);
 
         if ($stateResult === null) {
