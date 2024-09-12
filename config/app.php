@@ -2,7 +2,6 @@
 
 use App\Facades\CountHelper;
 use App\Facades\DateHelper;
-use App\Facades\GeneralHelper;
 use App\Facades\TranscriptionMapHelper;
 
 return [
@@ -231,7 +230,6 @@ return [
         //### Packages
         'Count' => CountHelper::class,
         'Date' => DateHelper::class,
-        'General' => GeneralHelper::class,
         'TranscriptionMap' => TranscriptionMapHelper::class,
     ],
 
