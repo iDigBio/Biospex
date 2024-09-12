@@ -22,8 +22,9 @@ namespace App\Services\Bingo;
 
 use App\Models\Bingo;
 use App\Models\BingoMap;
+use App\Models\BingoWord;
+use App\Models\User;
 use App\Services\Api\GeoPlugin;
-use App\Services\Helpers\GeneralService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use JavaScript;
@@ -40,21 +41,56 @@ class BingoService
     public function __construct(
         public Bingo $bingo,
         public BingoMap $bingoMap,
-        public GeoPlugin $location,
-        public GeneralService $generalService) {}
+        public BingoWord $bingoWord,
+        public GeoPlugin $location
+    ) {}
 
     /**
-     * Find bingo map by uuid.
+     * Get bingo with relations by user id.
      */
-    private function findBingoMapByUuid(Bingo $bingo, string $uuid): BingoMap
+    public function getAdminIndex(User $user): Collection
     {
-        $map = $this->bingoMap->where('bingo_id', $bingo->id)->where('uuid', $uuid)->first();
+        return $user->isAdmin() ?
+            $this->bingo->with(['user', 'project', 'words'])->orderBy('created_at', 'desc')->get() :
+            $this->bingo->with(['user', 'project', 'words'])->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+    }
 
-        if ($map === null) {
-            $map = $this->createBingoMap($bingo);
-        }
+    /**
+     * Create bingo.
+     */
+    public function createBingo(array $attributes): mixed
+    {
+        $bingo = $this->bingo->create($attributes);
 
-        return $map;
+        $words = collect($attributes['words'])->map(function ($word) {
+            $values = [
+                'word' => $word['word'],
+                'definition' => $word['definition'],
+            ];
+
+            return $this->bingoWord->make($values);
+        });
+
+        $bingo->words()->saveMany($words->all());
+
+        return $bingo;
+    }
+
+    /**
+     * Update bingo.
+     */
+    public function updateBingo(Bingo $bingo, array $attributes): Bingo
+    {
+        $bingo->fill($attributes)->save();
+
+        collect($attributes['words'])->each(function ($word) {
+            $record = $this->bingoWord->find($word['id']);
+            $record->word = $word['word'];
+            $record->definition = $word['definition'];
+            $record->save();
+        });
+
+        return $bingo;
     }
 
     /**
@@ -76,7 +112,7 @@ class BingoService
     /**
      * Show bingo page.
      */
-    public function showBingo(Bingo $bingo): array
+    public function showPublicBingo(Bingo $bingo): array
     {
         $bingo->load(['words', 'user', 'project']);
 
@@ -92,11 +128,7 @@ class BingoService
     {
         $this->location->locate();
 
-        $uuid = Session::get('bingoUuid');
-
-        $bingoMap = $uuid === null ? $this->createBingoMap($bingo) : $this->findBingoMapByUuid($bingo, $uuid);
-
-        Session::put('bingoUuid', $bingoMap->uuid);
+        $bingoMap = $this->buildOrReturnMap($bingo);
 
         JavaScript::put([
             'channel' => config('config.poll_bingo_channel').'.'.$bingo->uuid,
@@ -115,5 +147,19 @@ class BingoService
 
             return $collection->combine($row)->toArray();
         });
+    }
+
+    /**
+     * Find bingo map by uuid.
+     */
+    private function buildOrReturnMap(Bingo $bingo): BingoMap
+    {
+        $bingoMap = Session::get('bingoUuid') === null ?
+            $this->createBingoMap($bingo) :
+            $this->bingoMap->where('uuid', Session::get('bingoUuid'))->first();
+
+        Session::put('bingoUuid', $bingoMap->uuid);
+
+        return $bingoMap;
     }
 }

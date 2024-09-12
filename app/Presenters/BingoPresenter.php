@@ -93,7 +93,7 @@ class BingoPresenter extends Presenter
      */
     public function deleteIcon()
     {
-        return '<a href="'.route('admin.bingos.delete', [
+        return '<a href="'.route('admin.bingos.destroy', [
             $this->model->id,
         ]).'" class="prevent-default"
             title="'.t('Delete Bingo').'" 
@@ -111,7 +111,7 @@ class BingoPresenter extends Presenter
      */
     public function deleteIconLrg()
     {
-        return '<a href="'.route('admin.bingos.delete', [
+        return '<a href="'.route('admin.bingos.destroy', [
             $this->model->id,
         ]).'" class="prevent-default"
             title="'.t('Delete Bingo').'" 

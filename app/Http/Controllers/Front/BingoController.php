@@ -70,7 +70,7 @@ class BingoController extends Controller
      */
     public function show(Bingo $bingo)
     {
-        [$bingo, $words] = $this->bingoService->showBingo($bingo);
+        [$bingo, $words] = $this->bingoService->showPublicBingo($bingo);
 
         return View::make('front.bingo.show', compact('bingo', 'words'));
     }

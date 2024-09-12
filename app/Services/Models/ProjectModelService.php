@@ -39,7 +39,7 @@ readonly class ProjectModelService
      *
      * @return array|string[]
      */
-    public function getProjectEventSelect()
+    public function getProjectEventSelect(): array
     {
         $results = $this->project->has('panoptesProjects')
             ->orderBy('title')
