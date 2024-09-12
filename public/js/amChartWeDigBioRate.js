@@ -7,9 +7,6 @@ am4core.ready(function () {
         let projectsUrl = $(e.relatedTarget).data('projects');
         let url = $(e.relatedTarget).data('href');
 
-        console.log('projectsUrl: ' + projectsUrl);
-        console.log('url: ' + url);
-
         let createChart = function () {
             am4core.disposeAllCharts();
             $.get(projectsUrl).fail(function () {
@@ -23,6 +20,9 @@ am4core.ready(function () {
             });
         }
         createChart();
+        // Refresh chart every 5 minutes. TODO: can this be handled by amCharts?
+        // https://www.amcharts.com/docs/v4/concepts/data/loading-external-data/
+        // chart.dataSource.reloadFrequency = 300000;
         setInterval(createChart, 300000);
     }).on('hidden.bs.modal', function () {
         am4core.disposeAllCharts();

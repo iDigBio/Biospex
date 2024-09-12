@@ -33,10 +33,6 @@ class WeDigBioRateController extends Controller
      */
     public function __invoke(?WeDigBioEventDate $event = null)
     {
-        if (! \Request::ajax()) {
-            return response()->json(['html' => 'Request must be ajax.']);
-        }
-
         $result = $this->weDigBioEventRateChartProcess->getWeDigBioEventRateChart($event);
 
         return Response::json($result);
