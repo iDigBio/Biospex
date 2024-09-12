@@ -19,12 +19,12 @@
 
 namespace App\Services\Reconcile;
 
+use App\Facades\TranscriptionMapHelper;
 use App\Models\Download;
 use App\Models\Reconcile;
 use App\Notifications\Generic;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Models\ExpeditionModelService;
-use TranscriptionMap;
 
 /**
  * Class ExpertReconcilePublishService
@@ -76,7 +76,7 @@ readonly class ExpertReconcilePublishService
         $header = array_keys($mapped->first()->toArray());
         $decodedHeader = [];
         foreach ($header as $value) {
-            $decodedHeader[] = TranscriptionMap::decodeTranscriptionField($value);
+            $decodedHeader[] = TranscriptionMapHelper::decodeTranscriptionField($value);
         }
 
         $file = config('zooniverse.directory.reconciled-with-expert').'/'.$expeditionId.'.csv';

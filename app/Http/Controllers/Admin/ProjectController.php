@@ -19,6 +19,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Facades\CountHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectFormRequest;
 use App\Jobs\DeleteProjectJob;
@@ -27,7 +28,6 @@ use App\Services\Grid\JqGridEncoder;
 use App\Services\Models\GroupModelService;
 use App\Services\Models\ProjectModelService;
 use Auth;
-use Count;
 use Exception;
 use JavaScript;
 use Redirect;
@@ -88,8 +88,8 @@ class ProjectController extends Controller
             return $expedition->completed === 0;
         });
 
-        $transcriptionsCount = Count::projectTranscriptionCount($project->id);
-        $transcribersCount = Count::projectTranscriberCount($project->id);
+        $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
+        $transcribersCount = CountHelper::projectTranscriberCount($project->id);
 
         $viewParams = [
             'project' => $project,
@@ -268,8 +268,8 @@ class ProjectController extends Controller
     {
         $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
-        $transcribers = Count::getTranscribersTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
-        $transcriptions = Count::getTranscriptionsPerTranscribers($projectId, $transcribers);
+        $transcribers = CountHelper::getTranscribersTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
+        $transcriptions = CountHelper::getTranscriptionsPerTranscribers($projectId, $transcribers);
 
         JavaScript::put(['transcriptions' => $transcriptions]);
 

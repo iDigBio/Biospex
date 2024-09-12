@@ -19,7 +19,7 @@
 
 namespace App\Models;
 
-use App\Facades\DateHelper as Date;
+use App\Facades\DateHelper;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
@@ -381,7 +381,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
                 }
 
                 if ($type === 'date') {
-                    $build[$field] = isset($this->{$value}) ? Date::formatDate($this->{$value}, 'Y-m-d m:d:s') : Date::formatDate(null);
+                    $build[$field] = isset($this->{$value}) ? DateHelper::formatDate($this->{$value}, 'Y-m-d m:d:s') : DateHelper::formatDate(null);
                 }
 
                 if ($type === 'column') {

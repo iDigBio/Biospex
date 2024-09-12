@@ -1,9 +1,5 @@
 <?php
 
-use App\Facades\CountHelper;
-use App\Facades\DateHelper;
-use App\Facades\TranscriptionMapHelper;
-
 return [
 
     /*
@@ -226,11 +222,6 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
-        //### Packages
-        'Count' => CountHelper::class,
-        'Date' => DateHelper::class,
-        'TranscriptionMap' => TranscriptionMapHelper::class,
     ],
 
 ];

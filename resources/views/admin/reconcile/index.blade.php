@@ -47,30 +47,33 @@
                 </div>
                 @foreach($columns as $encodedColumn)
                     @php
-                        $decodedColumn = TranscriptionMap::decodeTranscriptionField($encodedColumn);
+                        $decodedColumn = TranscriptionMapHelper::decodeTranscriptionField($encodedColumn);
                     @endphp
                     <div class="row">
                         <div class="input-group mt-5">
                             <div class="col-7">
-                                <label for="{{ $encodedColumn }}" class="col-form-label">{{ t('Your expert opinion of') }}
+                                <label for="{{ $encodedColumn }}"
+                                       class="col-form-label">{{ t('Your expert opinion of') }}
                                     <br> {{ $decodedColumn }}:</label>
                                 <textarea class="form-control" rows="3"
                                           id="{{ $encodedColumn }}"
                                           name="{{ $encodedColumn }}">{{ $reconciles->first()->{$encodedColumn} }}</textarea>
                             </div>
                             <div class="col-5">
-                                <label class="col-form-label">{{ t('Participants entered for') }} {{ $decodedColumn }}:</label>
+                                <label class="col-form-label">{{ t('Participants entered for') }} {{ $decodedColumn }}
+                                    :</label>
                                 @foreach($reconciles->first()->transcriptions as $transcription)
                                     @php
-                                        $count = Count::getTranscriptionCountForTranscriber($transcription->subject_projectId, $transcription->user_name);
+                                        $count = CountHelper::getTranscriptionCountForTranscriber($transcription->subject_projectId, $transcription->user_name);
                                     @endphp
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="radio"
                                                data-column="{{ $encodedColumn }}"
                                                value="{{ $transcription->{$encodedColumn} }}">
                                         <label class="form-check-label" for="{{ $transcription->_id }}">
-                                                <i class="fa fa-flag {{ $count < 500 ? 'fa-flag-grey' : 'fa-flag-green' }}" aria-hidden="true" data-hover="tooltip"
-                                                   title="{{ $transcription->user_name }} has {{ $count }} transcriptions"></i>
+                                            <i class="fa fa-flag {{ $count < 500 ? 'fa-flag-grey' : 'fa-flag-green' }}"
+                                               aria-hidden="true" data-hover="tooltip"
+                                               title="{{ $transcription->user_name }} has {{ $count }} transcriptions"></i>
                                             {!! $transcription->{$encodedColumn} ?: '<i>'.t('participant left blank').'</i>' !!}
                                         </label>
                                     </div>

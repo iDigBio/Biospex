@@ -19,11 +19,11 @@
 
 namespace App\Services\User;
 
+use App\Facades\DateHelper;
 use App\Http\Requests\PasswordFormRequest;
 use App\Http\Requests\Request;
 use App\Models\User;
 use App\Services\Permission\CheckPermission;
-use Date;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
@@ -45,7 +45,7 @@ class UserAccountService
             return Redirect::back();
         }
 
-        $timezones = Date::timeZoneSelect();
+        $timezones = DateHelper::timeZoneSelect();
         $cancel = URL::route('admin.projects.index');
 
         return view('admin.user.edit', compact('user', 'timezones', 'cancel'));

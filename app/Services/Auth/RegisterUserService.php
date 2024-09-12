@@ -19,10 +19,10 @@
 
 namespace App\Services\Auth;
 
+use App\Facades\DateHelper;
 use App\Models\Group;
 use App\Models\Invite;
 use App\Models\User;
-use Date;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use View;
@@ -50,7 +50,7 @@ class RegisterUserService
 
         $code = $invite->code ?? null;
         $email = $invite->email ?? null;
-        $timezones = Date::timeZoneSelect();
+        $timezones = DateHelper::timeZoneSelect();
 
         return View::make('auth.register', compact('code', 'email', 'timezones'));
     }

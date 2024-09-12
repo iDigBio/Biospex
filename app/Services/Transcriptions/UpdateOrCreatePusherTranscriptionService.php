@@ -19,11 +19,11 @@
 
 namespace App\Services\Transcriptions;
 
+use App\Facades\TranscriptionMapHelper;
 use App\Services\Models\ExpeditionModelService;
 use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Services\Models\PusherTranscriptionModelService;
 use Ramsey\Uuid\Uuid;
-use TranscriptionMap;
 use Validator;
 
 /**
@@ -118,13 +118,13 @@ readonly class UpdateOrCreatePusherTranscriptionService
                 'lat' => '',
                 'long' => '',
                 'country' => $transcription->Country,
-                'province' => TranscriptionMap::mapTranscriptionField('province', $transcription),
+                'province' => TranscriptionMapHelper::mapTranscriptionField('province', $transcription),
                 'county' => $transcription->County,
                 'municipality' => '',
                 'locality' => $transcription->Location,
                 'date' => '', // which date to use? transcription date is messy
-                'collector' => TranscriptionMap::mapTranscriptionField('collector', $transcription),
-                'taxon' => TranscriptionMap::mapTranscriptionField('taxon', $transcription),
+                'collector' => TranscriptionMapHelper::mapTranscriptionField('collector', $transcription),
+                'taxon' => TranscriptionMapHelper::mapTranscriptionField('taxon', $transcription),
             ],
             'discretionaryState' => 'Transcribed',
         ];
@@ -146,11 +146,11 @@ readonly class UpdateOrCreatePusherTranscriptionService
 
         $transcriptionContent = [
             'country' => ! empty($transcription->Country) ? $transcription->Country : $classification->country,
-            'province' => TranscriptionMap::mapTranscriptionField('province', $transcription, $classification),
+            'province' => TranscriptionMapHelper::mapTranscriptionField('province', $transcription, $classification),
             'county' => ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'],
             'locality' => ! empty($transcription->Location) ? $transcription->Location : '',
-            'collector' => TranscriptionMap::mapTranscriptionField('collector', $transcription, $classification),
-            'taxon' => TranscriptionMap::mapTranscriptionField('taxon', $transcription, $classification),
+            'collector' => TranscriptionMapHelper::mapTranscriptionField('collector', $transcription, $classification),
+            'taxon' => TranscriptionMapHelper::mapTranscriptionField('taxon', $transcription, $classification),
         ];
 
         $attributes = [
