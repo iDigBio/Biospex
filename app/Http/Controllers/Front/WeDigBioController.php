@@ -21,22 +21,31 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Services\Models\WeDigBioEventDateModelService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 class WeDigBioController extends Controller
 {
+    public function __construct(protected WeDigBioEventDateModelService $weDigBioEventDateModelService) {}
+
     /**
      * Index page.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Contracts\View\View
      */
-    public function index(WeDigBioEventDateModelService $weDigBioEventDateModelService)
+    public function __invoke(): mixed
     {
-        $results = $weDigBioEventDateModelService->all()->sortBy('created_at');
+        if (! Auth::check()) {
+            return Redirect::route('front.projects.index')->with('info', 'You must be logged in to access this page.');
+        }
+
+        $results = $this->weDigBioEventDateModelService->all()->sortBy('created_at');
 
         [$events, $eventsCompleted] = $results->partition(function ($event) {
             return $event->active;
         });
 
-        return \View::make('front.wedigbio.index', compact('events', 'eventsCompleted'));
+        return View::make('front.wedigbio.index', compact('events', 'eventsCompleted'));
     }
 }
