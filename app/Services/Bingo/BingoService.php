@@ -12,13 +12,13 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Games;
+namespace App\Services\Bingo;
 
 use App\Models\Bingo;
 use App\Models\BingoMap;
@@ -30,34 +30,18 @@ use JavaScript;
 use Session;
 
 /**
- * Class BingoProcess
+ * Class BingoService
  */
-readonly class BingoProcess
+class BingoService
 {
     /**
-     * BingoProcess constructor.
+     * BingoService constructor.
      */
     public function __construct(
-        protected Bingo $bingo,
-        protected BingoMap $bingoMap,
-        protected GeoPlugin $location,
-        protected GeneralService $generalService) {}
-
-    /**
-     * Get all bingo games.
-     */
-    public function getAllBingos(): Collection
-    {
-        return $this->bingo->with(['user', 'project'])->get();
-    }
-
-    /**
-     * Find bingo resource.
-     */
-    public function findBingoWith(string $id, array $with = []): Bingo
-    {
-        return $this->bingo->with($with)->find($id);
-    }
+        public Bingo $bingo,
+        public BingoMap $bingoMap,
+        public GeoPlugin $location,
+        public GeneralService $generalService) {}
 
     /**
      * Find bingo map by uuid.
@@ -92,11 +76,11 @@ readonly class BingoProcess
     /**
      * Show bingo page.
      */
-    public function showBingo(string $bingoId): array
+    public function showBingo(Bingo $bingo): array
     {
-        $bingo = $this->bingo->with(['words', 'user', 'project'])->find($bingoId);
+        $bingo->load(['words', 'user', 'project']);
 
-        $words = is_null($bingo) ? null : $bingo->words->chunk(3);
+        $words = $bingo->words->chunk(3);
 
         return [$bingo, $words];
     }
@@ -110,14 +94,14 @@ readonly class BingoProcess
 
         $uuid = Session::get('bingoUuid');
 
-        $map = $uuid === null ? $this->createBingoMap($bingo) : $this->findBingoMapByUuid($bingo, $uuid);
+        $bingoMap = $uuid === null ? $this->createBingoMap($bingo) : $this->findBingoMapByUuid($bingo, $uuid);
 
-        Session::put('bingoUuid', $map->uuid);
+        Session::put('bingoUuid', $bingoMap->uuid);
 
         JavaScript::put([
-            'channel' => config('config.poll_bingo_channel').'.'.$bingo->id,
-            'winnerUrl' => route('ajax.get.bingoWinner', ['bingo' => 1, 'map' => $map->id]),
-            'mapUuid' => $map->uuid,
+            'channel' => config('config.poll_bingo_channel').'.'.$bingo->uuid,
+            'winnerUrl' => route('front.get.bingo-winner', [$bingo, $bingoMap]),
+            'mapUuid' => $bingoMap->uuid,
         ]);
 
         $words = $bingo->words->pluck('definition', 'word')->shuffleWords();

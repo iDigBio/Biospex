@@ -18,7 +18,10 @@
  */
 
 use App\Http\Controllers\Front\BingoController;
+use App\Http\Controllers\Front\BingoWinnerController;
 
 Route::get('bingos', [BingoController::class, 'index'])->name('front.bingos.index');
 Route::get('bingos/{bingo}', [BingoController::class, 'show'])->name('front.bingos.show');
-Route::get('bingos/{bingo}/generate', [BingoController::class, 'generate'])->name('front.bingos.generate');
+Route::get('bingos/{bingo}/create', [BingoController::class, 'create'])->name('front.bingos.create');
+
+Route::get('bingos/{bingo}/winner/{map}', BingoWinnerController::class)->name('front.get.bingo-winner');

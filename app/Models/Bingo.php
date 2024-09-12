@@ -20,6 +20,7 @@
 namespace App\Models;
 
 use App\Models\Traits\Presentable;
+use App\Models\Traits\UuidTrait;
 use App\Presenters\BingoPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Bingo extends BaseEloquentModel
 {
-    use HasFactory, Presentable;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -50,6 +51,23 @@ class Bingo extends BaseEloquentModel
      * @var string
      */
     protected $presenter = BingoPresenter::class;
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * User relation.

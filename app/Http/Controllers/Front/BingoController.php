@@ -21,29 +21,19 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Services\Games\BingoProcess;
+use App\Models\Bingo;
+use App\Services\Bingo\BingoService;
+use Illuminate\Support\Facades\View;
 
 /**
  * Class BingoController
- *
- * @package App\Http\Controllers\Front
  */
 class BingoController extends Controller
 {
     /**
-     * @var \App\Services\Games\BingoProcess
-     */
-    private $bingoProcess;
-
-    /**
      * BingoController constructor.
-     *
-     * @param \App\Services\Games\BingoProcess $bingoProcess
      */
-    public function __construct(BingoProcess $bingoProcess)
-    {
-        $this->bingoProcess = $bingoProcess;
-    }
+    public function __construct(protected BingoService $bingoService) {}
 
     /**
      * Display admin index for bingo games created by user.
@@ -52,41 +42,36 @@ class BingoController extends Controller
      */
     public function index()
     {
-        $bingos = $this->bingoProcess->getAllBingos();
+        $bingos = $this->bingoService->bingo->with(['user', 'project'])->get();
 
-        return \View::make('front.bingo.index', compact('bingos'));
-    }
-
-    /**
-     * Bingo show.
-     *
-     * @param string $bingoId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     */
-    public function show(string $bingoId)
-    {
-        [$bingo, $words] = $this->bingoProcess->showBingo($bingoId);
-
-        return \View::make('front.bingo.show', compact('bingo', 'words'));
+        return View::make('front.bingo.index', compact('bingos'));
     }
 
     /**
      * Generate bingo card.
      *
-     * @param string $bingoId
      * @return \Illuminate\View\View|string
      */
-    public function generate(string $bingoId)
+    public function create(Bingo $bingo)
     {
-        $bingo = $this->bingoProcess->findBingoWith($bingoId, ['project', 'words']);
-        if (!$bingo) {
-            return t('Bingo Game could not be found.');
-        }
+        $bingo->load('project', 'words');
 
-        $rows = $this->bingoProcess->generateBingoCard($bingo);
+        $rows = $this->bingoService->generateBingoCard($bingo);
 
-        BingoJob::dispatch($bingoId);
+        BingoJob::dispatch($bingo);
 
-        return \View::make('front.bingo.card', compact('bingo', 'rows'));
+        return View::make('front.bingo.card', compact('bingo', 'rows'));
+    }
+
+    /**
+     * Bingo show.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function show(Bingo $bingo)
+    {
+        [$bingo, $words] = $this->bingoService->showBingo($bingo);
+
+        return View::make('front.bingo.show', compact('bingo', 'words'));
     }
 }

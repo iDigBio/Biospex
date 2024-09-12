@@ -20,6 +20,7 @@
 namespace App\Jobs;
 
 use App\Events\BingoEvent;
+use App\Models\Bingo;
 use App\Models\BingoMap;
 use App\Models\User;
 use App\Notifications\Generic;
@@ -36,26 +37,20 @@ class BingoJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private string $bingoId;
-
-    private ?string $mapId;
-
     /**
      * BingoJob constructor.
      */
-    public function __construct(string $bingoId, ?string $mapId = null)
+    public function __construct(public Bingo $bingo, public ?BingoMap $bingoMap = null)
     {
-        $this->bingoId = $bingoId;
-        $this->mapId = $mapId;
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Job handle.
      */
-    public function handle(BingoMap $bingoMap, BingoEvent $bingoEvent): void
+    public function handle(BingoMap $bingoMap): void
     {
-        $locations = $bingoMap->where('bingo_id', $this->bingoId)->get();
+        $locations = $bingoMap->where('bingo_id', $this->bingo->id)->get();
         $data['markers'] = $locations->map(function ($location) {
             return [
                 'latitude' => $location->latitude,
@@ -65,13 +60,12 @@ class BingoJob implements ShouldQueue
         })->toArray();
 
         $data['winner'] = null;
-        if ($this->mapId !== null) {
-            $map = $bingoMap->find($this->mapId);
-            $data['winner']['city'] = $map->city;
-            $data['winner']['uuid'] = $map->uuid;
+        if (! is_null($this->bingoMap)) {
+            $data['winner']['city'] = $this->bingoMap->city;
+            $data['winner']['uuid'] = $this->bingoMap->uuid;
         }
 
-        $bingoEvent::dispatch($this->bingoId, $data);
+        BingoEvent::dispatch($this->bingo, $data);
     }
 
     /**

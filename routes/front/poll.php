@@ -11,14 +11,12 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Front\AjaxController;
+use App\Http\Controllers\Front\PollController;
 
-Route::get('poll', [\App\Http\Controllers\Front\PollController::class, 'index']);
-
-Route::get('bingos/{bingo}/winner/{map}', [AjaxController::class, 'bingoWinner'])->name('ajax.get.bingoWinner');
+Route::get('poll', [PollController::class, 'index']);

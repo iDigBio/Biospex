@@ -19,46 +19,34 @@
 
 namespace App\Events;
 
+use App\Models\Bingo;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Class BingoEvent
- *
- * @package App\Events
  */
 class BingoEvent implements ShouldBroadcast
 {
+    use Dispatchable, SerializesModels;
 
-    use Dispatchable;
+    protected Bingo $bingo;
 
-    /**
-     * @var false|string
-     */
-    public string|false $data;
-
-    /**
-     * @var int
-     */
-    public int $bingoId;
+    protected string $data;
 
     /**
      * BingoEvent constructor.
-     *
-     * @param int $bingoId
-     * @param array $data
      */
-    public function __construct(int $bingoId, array $data)
+    public function __construct(Bingo $bingo, array $data)
     {
-        $this->bingoId = $bingoId;
+        $this->bingo = $bingo;
         $this->data = json_encode($data);
     }
 
     /**
      * The name of the queue on which to place the broadcasting job.
-     *
-     * @return string
      */
     public function broadcastQueue(): string
     {
@@ -67,11 +55,9 @@ class BingoEvent implements ShouldBroadcast
 
     /**
      * Get the channels the event should be broadcast on.
-     *
-     * @return Channel
      */
     public function broadcastOn(): Channel
     {
-        return new Channel(config('config.poll_bingo_channel') . '.' . $this->bingoId);
+        return new Channel(config('config.poll_bingo_channel').'.'.$this->bingo->id);
     }
 }
