@@ -22,10 +22,10 @@ namespace App\Http\Controllers\Front;
 use App\Facades\CountHelper;
 use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
-use App\Services\Chart\TranscriptionChartService;
 use App\Services\Models\ProjectModelService;
 use App\Services\Models\StateCountyModelService;
 use JavaScript;
+use View;
 
 /**
  * Class ProjectController
@@ -46,7 +46,7 @@ class ProjectController extends Controller
     {
         $projects = $this->projectModelService->getPublicProjectIndex();
 
-        return \View::make('front.project.index', compact('projects'));
+        return View::make('front.project.index', compact('projects'));
     }
 
     /**
@@ -64,7 +64,7 @@ class ProjectController extends Controller
         $order = \Request::get('order');
         $projects = $this->projectModelService->getPublicProjectIndex($sort, $order);
 
-        return \View::make('front.project.partials.project', compact('projects'));
+        return View::make('front.project.partials.project', compact('projects'));
     }
 
     /**
@@ -73,7 +73,6 @@ class ProjectController extends Controller
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function project(
-        TranscriptionChartService $chartService,
         StateCountyModelService $stateCountyModelService,
         $slug
     ) {
@@ -117,6 +116,6 @@ class ProjectController extends Controller
             'project' => $project->id,
         ]);
 
-        return \View::make('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
+        return View::make('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
     }
 }

@@ -24,9 +24,9 @@ use App\Models\AmChart;
 use App\Models\Expedition;
 use App\Models\Project;
 use App\Services\Models\PanoptesTranscriptionModelService;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use File;
-use Illuminate\Support\Carbon;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
 /**
@@ -34,37 +34,31 @@ use Illuminate\Support\Collection;
  */
 class TranscriptionChartService
 {
-    /**
-     * @var mixed
-     */
-    private $amChartData;
+    private mixed $amChartData;
 
-    /**
-     * @var mixed
-     */
-    private $projectChartSeries;
+    private mixed $projectChartSeries;
 
-    /**
-     * @var mixed
-     */
-    private $projectChartSeriesFile;
+    private mixed $projectChartSeriesFile;
 
-    private $begin;
+    private mixed $begin;
 
-    private $end;
+    private mixed $end;
 
-    private $yearDaysArray;
+    private mixed $yearDaysArray;
 
     /**
      * TranscriptionChartService constructor.
      */
-    public function __construct(private PanoptesTranscriptionModelService $panoptesTranscriptionModelService
+    public function __construct(
+        protected PanoptesTranscriptionModelService $panoptesTranscriptionModelService,
+        protected Carbon $carbon,
+        protected Filesystem $filesystem
     ) {}
 
     /**
      * Process project for amchart.
      */
-    public function process(Project $project)
+    public function process(Project $project): void
     {
         $this->checkNewChart($project);
 
@@ -76,7 +70,7 @@ class TranscriptionChartService
         }
 
         $years->reject(function ($year) use ($project) {
-            return isset($project->amChart['series'][$year]) && $year !== Carbon::now()->year;
+            return isset($project->amChart['series'][$year]) && $year !== $this->carbon::now()->year;
         })->each(function ($year) use ($project) {
             $this->setBeginEndOfYear($year);
             $this->setAmChartData($year);
@@ -101,7 +95,7 @@ class TranscriptionChartService
     /**
      * Check if this is a new chart. Create and load if new.
      */
-    protected function checkNewChart(Project &$project)
+    protected function checkNewChart(Project &$project): void
     {
         if ($project->amChart === null) {
             $amChart = new AmChart;
@@ -120,7 +114,7 @@ class TranscriptionChartService
         $this->amChartData = collect();
         $this->projectChartSeries = [];
         $file = config('config.project_chart_series');
-        $this->projectChartSeriesFile = json_decode(File::get($file), true);
+        $this->projectChartSeriesFile = json_decode($this->filesystem->get($file), true);
     }
 
     /**
@@ -148,11 +142,9 @@ class TranscriptionChartService
 
     /**
      * Set years array.
-     * Carbon::parse('first day of January next year')->subSecond();
-     *
-     * @return \Illuminate\Support\Collection|null
+     * $this->carbon::parse('first day of January next year')->subSecond();
      */
-    public function setYearsArray(int $projectId)
+    public function setYearsArray(int $projectId): ?Collection
     {
         $earliest_date = $this->panoptesTranscriptionModelService->getMinFinishedAtDateByProjectId($projectId);
         $latest_date = $this->panoptesTranscriptionModelService->getMaxFinishedAtDateByProjectId($projectId);
@@ -161,7 +153,7 @@ class TranscriptionChartService
             return null;
         }
 
-        $years = range(Carbon::parse($earliest_date)->year, Carbon::parse($latest_date)->year);
+        $years = range($this->carbon::parse($earliest_date)->year, $this->carbon::parse($latest_date)->year);
         rsort($years);
 
         return collect($years);
@@ -170,16 +162,16 @@ class TranscriptionChartService
     /**
      * Return first day and last day of given year, or if current year, get today.
      */
-    protected function setBeginEndOfYear(int $year)
+    protected function setBeginEndOfYear(int $year): void
     {
-        $this->begin = Carbon::parse('first day of January '.$year);
-        $this->end = $year === Carbon::now()->year ? Carbon::parse('today')->addDay()->subSecond() : Carbon::parse('last day of December '.$year)->addDay()->subSecond();
+        $this->begin = $this->carbon::parse('first day of January '.$year);
+        $this->end = $year === $this->carbon::now()->year ? $this->carbon::parse('today')->addDay()->subSecond() : $this->carbon::parse('last day of December '.$year)->addDay()->subSecond();
     }
 
     /**
      * Builds the amChartData for all years and days.
      */
-    protected function setAmChartData(int $year)
+    protected function setAmChartData(int $year): void
     {
         $period = collect(CarbonPeriod::create($this->begin, 'P1D', $this->end));
         $this->amChartData[$year] = $period->mapWithKeys(function ($date) {
@@ -190,7 +182,7 @@ class TranscriptionChartService
     /**
      * Set yearDaysArray for merging expedition dates and counts.
      */
-    protected function setYearDaysArray(int $year)
+    protected function setYearDaysArray(int $year): void
     {
         $this->yearDaysArray = collect(array_fill_keys($this->amChartData[$year]->keys()->toArray(), []));
     }
@@ -223,10 +215,8 @@ class TranscriptionChartService
 
     /**
      * Map date counts for expedition transcriptions.
-     *
-     * @return \Illuminate\Support\Collection
      */
-    protected function mapDateCounts(Collection $dateCount, string $record)
+    protected function mapDateCounts(Collection $dateCount, string $record): Collection
     {
         return $dateCount->mapWithKeys(function ($value, $key) use ($record) {
             return [$key => [$record => $value]];
@@ -237,10 +227,8 @@ class TranscriptionChartService
 
     /**
      * Add empty values for missing date fields for expedition.
-     *
-     * @return \Illuminate\Support\Collection
      */
-    protected function addEmptyDateCounts(Collection $mergedDates, string $record)
+    protected function addEmptyDateCounts(Collection $mergedDates, string $record): Collection
     {
         return $mergedDates->mapWithKeys(function ($count, $date) use ($record) {
             if (empty($count)) {
@@ -254,7 +242,7 @@ class TranscriptionChartService
     /**
      * Calculate the count totals per date for Expeditioni.
      */
-    protected function calculateCountTotals(Collection &$completeDates, string $record)
+    protected function calculateCountTotals(Collection &$completeDates, string $record): void
     {
         $total = 0;
         $completeDates->transform(function ($value, $key) use ($record, &$total) {
@@ -267,7 +255,7 @@ class TranscriptionChartService
     /**
      * Build expedition series and add to chart series.
      */
-    public function buildExpeditionSeries(Expedition $expedition, int $year)
+    public function buildExpeditionSeries(Expedition $expedition, int $year): void
     {
         $this->projectChartSeriesFile['dataFields']['valueY'] = 'expedition'.$expedition->id;
         $this->projectChartSeriesFile['name'] = $expedition->title;

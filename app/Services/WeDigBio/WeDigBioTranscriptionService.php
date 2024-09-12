@@ -11,33 +11,31 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Transcriptions;
+namespace App\Services\WeDigBio;
 
 use App\Jobs\WeDigBioEventProgressJob;
 use App\Models\WeDigBioEventDate;
-use App\Services\Models\WeDigBioEventDateModelService;
-use App\Services\Models\WeDigBioEventTranscriptionModelService;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Validator;
 
 /**
- * Class CreateWeDigBioTranscriptionService
+ * Class WeDigBioTranscriptionService
  */
-class CreateWeDigBioTranscriptionService
+class WeDigBioTranscriptionService
 {
     /**
      * EventTranscriptionService constructor.
      */
     public function __construct(
-        protected WeDigBioEventDateModelService $weDigBioEventDateModelService,
-        protected WeDigBioEventTranscriptionModelService $weDigBioEventTranscriptionModelService
+        protected WeDigBioService $weDigBioService,
+        protected \Carbon\Carbon $carbon
     ) {}
 
     /**
@@ -48,9 +46,9 @@ class CreateWeDigBioTranscriptionService
         int $projectId,
         ?Carbon $date = null
     ): void {
-        $wedigbioDate = $this->weDigBioEventDateModelService->getFirstBy('active', 1);
+        $wedigbioDate = $this->weDigBioService->weDigBioEventDate->where('active', 1)->first();
 
-        $timestamp = ! isset($date) ? Carbon::now('UTC') : $date;
+        $timestamp = ! isset($date) ? $this->carbon::now('UTC') : $date;
 
         if ($wedigbioDate === null || ! $this->checkDate($wedigbioDate, $timestamp)) {
             return;
@@ -68,7 +66,7 @@ class CreateWeDigBioTranscriptionService
 
         $values = array_merge($attributes, ['created_at' => $timestamp->toDateTimeString(), 'updated_at' => $timestamp->toDateTimeString()]);
 
-        $this->weDigBioEventTranscriptionModelService->create($values);
+        $this->weDigBioService->weDigBioEventTranscription->create($values);
         \Cache::forget('wedigbio-event-transcription');
 
         WeDigBioEventProgressJob::dispatch($wedigbioDate);

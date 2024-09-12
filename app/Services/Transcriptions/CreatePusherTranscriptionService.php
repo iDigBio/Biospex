@@ -26,11 +26,11 @@ use Validator;
 /**
  * Class CreatePusherTranscriptionService
  */
-readonly class CreatePusherTranscriptionService
+class CreatePusherTranscriptionService
 {
     public function __construct(
-        private PusherClassification $pusherClassification,
-        private PusherTranscriptionModelService $pusherTranscriptionModelService
+        protected PusherClassification $pusherClassification,
+        protected PusherTranscriptionModelService $pusherTranscriptionModelService
     ) {}
 
     /**

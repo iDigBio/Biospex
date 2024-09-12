@@ -123,7 +123,7 @@ $(function () {
                 return;
             }
             // UUID is matched with the event uuid from WeDigBioEventProgressJob
-            // WeDigBioEventProgressJob called from CreateWeDigBioTranscriptionService
+            // WeDigBioEventProgressJob called from WeDigBioTranscriptionService
             Echo.channel(channel)
                 .listen('WeDigBioProgressEvent', (e) => {
                     $.each(e.data, function (id, val) {

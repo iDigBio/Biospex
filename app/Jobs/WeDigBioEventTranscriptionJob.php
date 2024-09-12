@@ -19,7 +19,8 @@
 
 namespace App\Jobs;
 
-use App\Services\Event\WeDigBioEventService;
+use App\Services\Models\ProjectModelService;
+use App\Services\WeDigBio\WeDigBioTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -55,11 +56,19 @@ class WeDigBioEventTranscriptionJob implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle(WeDigBioEventService $weDigBioEventService)
+    public function handle(
+        ProjectModelService $projectModelService,
+        WeDigBioTranscriptionService $weDigBioTranscriptionService): void
     {
-        $weDigBioEventService->process($this->data, $this->projectId);
+        $project = $projectModelService->project->find($this->projectId);
+
+        if ($project === null) {
+            $this->delete();
+
+            return;
+        }
+
+        $weDigBioTranscriptionService->createEventTranscription((int) $this->data['classification_id'], $project->id);
     }
 }

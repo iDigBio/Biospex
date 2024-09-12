@@ -31,7 +31,7 @@ use Validator;
  * Class EventTranscriptionService
  * TODO: Try to break into smaller classes to avoid DI count.
  */
-readonly class EventTranscriptionService
+class EventTranscriptionService
 {
     /**
      * EventTranscriptionService constructor.

@@ -138,14 +138,14 @@
         <div id="active-expeditions-main" class="col-sm-12 show">
             @include('common.expedition-sort', ['type' => 'active', 'route' => route('front.expeditions.sort'), 'id' => $project->id])
             <div id="active-expeditions" class="row col-sm-12 mx-auto justify-content-center">
-                @include('front.expedition.partials.expedition',['expeditions', 'project' => true])
+                @include('front.expedition.partials.expedition',['expeditions'])
             </div>
         </div>
         <div id="completed-expeditions-main" class="col-sm-12 collapse">
             @include('common.expedition-sort', ['type' => 'completed', 'route' => route('front.expeditions.sort'), 'id' => $project->id])
             <canvas id="expedition-conffeti" style="z-index: -1; position:fixed; top:0;left:0;"></canvas>
             <div id="completed-expeditions" class="row col-sm-12 mx-auto justify-content-center">
-                @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted, 'project' => true])
+                @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
             </div>
         </div>
     </div>
@@ -239,10 +239,10 @@
     @endif
     <script src="{{ asset('js/amChartEventRate.min.js')}}"></script>
     <script>
-        let expeditionConfetti = new ConfettiGenerator({ target: 'expedition-conffeti' });
+        let expeditionConfetti = new ConfettiGenerator({target: 'expedition-conffeti'});
         expeditionConfetti.render();
 
-        let eventConfetti = new ConfettiGenerator({ target: 'event-conffeti' });
+        let eventConfetti = new ConfettiGenerator({target: 'event-conffeti'});
         eventConfetti.render();
     </script>
 @endpush

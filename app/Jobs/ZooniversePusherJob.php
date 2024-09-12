@@ -22,8 +22,8 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Event\EventTranscriptionService;
-use App\Services\Transcriptions\CreateWeDigBioTranscriptionService;
 use App\Services\Transcriptions\UpdateOrCreatePusherTranscriptionService;
+use App\Services\WeDigBio\WeDigBioTranscriptionService;
 use App\Traits\SkipZooniverse;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -63,7 +63,7 @@ class ZooniversePusherJob implements ShouldQueue
     public function handle(
         UpdateOrCreatePusherTranscriptionService $updateOrCreatePusherTranscriptionService,
         EventTranscriptionService $eventTranscriptionService,
-        CreateWeDigBioTranscriptionService $createWeDigBioTranscriptionService): void
+        WeDigBioTranscriptionService $weDigBioTranscriptionService): void
     {
         if ($this->skipReconcile($this->expeditionId)) {
             $this->delete();
@@ -83,11 +83,11 @@ class ZooniversePusherJob implements ShouldQueue
         $transcriptions->each(function ($transcription) use (
             $updateOrCreatePusherTranscriptionService,
             $eventTranscriptionService,
-            $createWeDigBioTranscriptionService,
+            $weDigBioTranscriptionService,
             $expedition) {
             $updateOrCreatePusherTranscriptionService->processTranscripts($transcription, $expedition);
             $eventTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
-            $createWeDigBioTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->classification_finished_at);
+            $weDigBioTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->classification_finished_at);
         });
     }
 

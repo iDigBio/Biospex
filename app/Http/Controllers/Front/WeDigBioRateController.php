@@ -21,19 +21,19 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\WeDigBioEventDate;
-use App\Services\Chart\WeDigBioEventRateChartProcess;
+use App\Services\WeDigBio\WeDigBioRateService;
 use Illuminate\Support\Facades\Response;
 
 class WeDigBioRateController extends Controller
 {
-    public function __construct(protected WeDigBioEventRateChartProcess $weDigBioEventRateChartProcess) {}
+    public function __construct(protected WeDigBioRateService $weDigBioRateService) {}
 
     /**
      * @return \Illuminate\Http\JsonResponse
      */
     public function __invoke(?WeDigBioEventDate $event = null)
     {
-        $result = $this->weDigBioEventRateChartProcess->getWeDigBioEventRateChart($event);
+        $result = $this->weDigBioRateService->getWeDigBioEventRateChart($event);
 
         return Response::json($result);
     }

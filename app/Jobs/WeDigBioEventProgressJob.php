@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Events\WeDigBioProgressEvent;
 use App\Nova\WeDigBioEventDate;
-use App\Services\Models\WeDigBioEventDateModelService;
+use App\Services\WeDigBio\WeDigBioService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -46,9 +46,9 @@ class WeDigBioEventProgressJob implements ShouldQueue
     /**
      * Handle Job.
      */
-    public function handle(WeDigBioEventDateModelService $weDigBioEventDateModelService): void
+    public function handle(WeDigBioService $weDigBioService): void
     {
-        $weDigBioDate = $weDigBioEventDateModelService->getWeDigBioEventTranscriptions($this->event);
+        $weDigBioDate = $weDigBioService->getWeDigBioEventTranscriptions($this->event);
         $uuid = is_null($this->event) ? 0 : $weDigBioDate->uuid;
 
         $data = [$uuid => View::make('common.wedigbio-progress-content', compact('weDigBioDate'))->render()];

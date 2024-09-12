@@ -20,7 +20,7 @@
             </div>
             <hr>
             <div class="d-flex align-items-start justify-content-between mt-4 mx-auto">
-                {!! !isset($project) ? '' : $expedition->project->present()->project_page_icon !!}
+                {!! isset($project) ? $project->present()->project_page_icon : $expedition->project->present()->project_page_icon !!}
                 @isset($expedition->panoptesProject)
                     @if ($expedition->zooniverseActor->pivot->state > 1)
                         {!! $expedition->panoptesProject->present()->url !!}

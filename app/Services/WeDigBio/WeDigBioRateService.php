@@ -12,31 +12,32 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Chart;
+namespace App\Services\WeDigBio;
 
 use App\Models\WeDigBioEventDate;
-use App\Services\Models\WeDigBioEventDateModelService;
-use App\Services\Models\WeDigBioEventTranscriptionModelService;
-use Illuminate\Support\Carbon;
+use App\Services\Traits\RateChartTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 /**
- * Class WeDigBioEventRateChartProcess
+ * Class WeDigBioRateService
  */
-readonly class WeDigBioEventRateChartProcess
+class WeDigBioRateService
 {
+    use RateChartTrait;
+
     /**
      * AjaxService constructor.
      */
     public function __construct(
-        private WeDigBioEventDateModelService $weDigBioEventDateModelService,
-        private WeDigBioEventTranscriptionModelService $weDigBioEventTranscriptionModelService
+        protected WeDigBioService $weDigBioService,
+        protected Carbon $carbon
     ) {}
 
     /**
@@ -44,13 +45,13 @@ readonly class WeDigBioEventRateChartProcess
      */
     public function getWeDigBioEventRateChart(WeDigBioEventDate $event, ?string $timestamp = null): ?array
     {
-        $weDigBioDate = $this->weDigBioEventDateModelService->getActiveOrComplete($event);
+        $weDigBioDate = $this->weDigBioService->getActiveOrComplete($event);
 
         if ($weDigBioDate === null) {
             return null;
         }
 
-        $loadTime = $this->getLoadTime($weDigBioDate, $timestamp);
+        $loadTime = $this->getLoadTime($weDigBioDate, $this->carbon, $timestamp);
 
         $startLoad = $loadTime->copy();
 
@@ -58,15 +59,15 @@ readonly class WeDigBioEventRateChartProcess
 
         $intervals = $this->setTimeIntervals($startLoad, $endLoad, $timestamp);
 
-        $transcriptions = $this->weDigBioEventTranscriptionModelService->getWeDigBioRateChartTranscriptions($weDigBioDate->id, $startLoad, $endLoad);
+        $transcriptions = $this->weDigBioService->getWeDigBioRateChartTranscriptions($weDigBioDate->id, $startLoad,
+            $endLoad);
 
         $projects = $transcriptions->map(function ($transcription) {
             return $transcription->project->title;
         })->unique();
 
-        return $transcriptions->isEmpty() ?
-            $this->processEmptyResult($weDigBioDate->end_date, $projects, $intervals) :
-            $this->processTranscriptionResult($projects, $transcriptions, $intervals);
+        return $transcriptions->isEmpty() ? $this->processEmptyResult($weDigBioDate->end_date, $projects,
+            $intervals) : $this->processTranscriptionResult($projects, $transcriptions, $intervals);
     }
 
     /**
@@ -74,7 +75,7 @@ readonly class WeDigBioEventRateChartProcess
      */
     public function processEmptyResult(Carbon $end_date, Collection $projects, Collection $intervals): array
     {
-        if (Carbon::now('UTC')->gt($end_date)) {
+        if ($this->carbon::now('UTC')->gt($end_date)) {
             return [];
         }
 
@@ -113,7 +114,7 @@ readonly class WeDigBioEventRateChartProcess
     {
         $data = [];
         $transcriptions->each(function ($transcription) use (&$data) {
-            $date = Carbon::parse($transcription->time)->timezone('UTC')->format('Y-m-d H:i:s');
+            $date = $this->carbon::parse($transcription->time)->timezone('UTC')->format('Y-m-d H:i:s');
             $data[$date][$transcription->project->title] = $transcription->count * 12;
         });
 
@@ -147,57 +148,18 @@ readonly class WeDigBioEventRateChartProcess
     }
 
     /**
-     * Set the date in the array and keys to numeric.
-     */
-    protected function setDateInArray(Collection $transformed): array
-    {
-        $complete = $transformed->map(function ($collection, $key) {
-            return array_merge($collection, ['date' => $key]);
-        })->sortKeys();
-
-        return array_values($complete->toArray());
-    }
-
-    /**
-     * Get the load time given.
-     */
-    protected function getLoadTime(WeDigBioEventDate $weDigBioEventDate, ?string $timestamp = null): Carbon
-    {
-        return $timestamp === null ?
-            $weDigBioEventDate->start_date :
-            Carbon::createFromTimestampMs($timestamp, 'UTC')->floorMinutes(5);
-    }
-
-    /**
      * Get end load time. If wedigbio event is over, it will display all points from beginning to end.
      */
-    protected function getEndLoad(WeDigBioEventDate $weDigBioEventDate, Carbon $loadTime, ?string $timestamp = null): Carbon
-    {
-        $now = Carbon::now('UTC');
+    protected function getEndLoad(
+        WeDigBioEventDate $weDigBioEventDate,
+        Carbon $loadTime,
+        ?string $timestamp = null
+    ): Carbon {
+        $now = $this->carbon::now('UTC');
         if ($now->gt($weDigBioEventDate->end_date)) {
             return $weDigBioEventDate->end_date;
         }
 
-        return $timestamp === null ?
-            $now->floorMinutes(5) : $loadTime->addMinutes(5);
-    }
-
-    /**
-     * Get 5 minute time intervals.
-     */
-    protected function setTimeIntervals(Carbon $startLoad, Carbon $endLoad, ?string $timestamp = null): Collection
-    {
-        $start = $startLoad->copy();
-        $end = $endLoad->copy();
-
-        do {
-            $intervals[] = $timestamp == null ?
-                $start->copy()->format('Y-m-d H:i:s') :
-                $start->copy()->addMinutes(5)->format('Y-m-d H:i:s');
-            $timestamp = false;
-            $start->addMinutes(5);
-        } while ($start->lt($end));
-
-        return collect($intervals)->flip();
+        return $timestamp === null ? $now->floorMinutes(5) : $loadTime->addMinutes(5);
     }
 }

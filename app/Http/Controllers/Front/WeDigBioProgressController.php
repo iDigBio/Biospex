@@ -21,11 +21,11 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\WeDigBioEventDate;
-use App\Services\Models\WeDigBioEventDateModelService;
+use App\Services\WeDigBio\WeDigBioService;
 
 class WeDigBioProgressController extends Controller
 {
-    public function __construct(protected WeDigBioEventDateModelService $weDigBioEventDateModelService) {}
+    public function __construct(protected WeDigBioService $weDigBioService) {}
 
     /**
      * Show progress for wedigbio events.
@@ -38,7 +38,7 @@ class WeDigBioProgressController extends Controller
             return response()->json(['html' => 'Error retrieving the WeDigBio Event']);
         }
 
-        $weDigBioDate = $this->weDigBioEventDateModelService->getWeDigBioEventTranscriptions($event);
+        $weDigBioDate = $this->weDigBioService->getWeDigBioEventTranscriptions($event);
 
         return \View::make('common.wedigbio-progress-content', compact('weDigBioDate'));
     }

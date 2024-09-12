@@ -17,35 +17,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Models;
+namespace App\Services\WeDigBio;
 
 use App\Models\WeDigBioEventDate;
+use App\Models\WeDigBioEventTranscription;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-class WeDigBioEventDateModelService
+class WeDigBioService
 {
     /**
      * WeDigBioEventDateRepository constructor.
      */
-    public function __construct(protected WeDigBioEventDate $model) {}
+    public function __construct(
+        public WeDigBioEventDate $weDigBioEventDate,
+        public WeDigBioEventTranscription $weDigBioEventTranscription
+    ) {}
 
     /**
-     * Get all.
-     *
-     * @return mixed
+     * Get results for WeDigBio page.
      */
-    public function all()
+    public function getWeDigBioPage(): Collection
     {
-        return $this->model->all();
-    }
+        $results = $this->weDigBioEventDate->all()->sortBy('created_at');
 
-    /**
-     * Get first by given column and value.
-     */
-    public function getFirstBy(string $column, mixed $value): mixed
-    {
-        return $this->model->where($column, $value)->first();
+        return $results->partition(function ($event) {
+            return $event->active;
+        });
     }
 
     /**
@@ -60,7 +60,7 @@ class WeDigBioEventDateModelService
         }
 
         return Cache::remember('wedigbio-event-transcription'.$activeEvent->id, 86400, function () use ($activeEvent) {
-            return $this->model->withCount('transcriptions')->with([
+            return $this->weDigBioEventDate->withCount('transcriptions')->with([
                 'transcriptions' => function ($q) {
                     $q->select('*', DB::raw('count(project_id) as total'))
                         ->with(['project' => function ($query) {
@@ -83,7 +83,7 @@ class WeDigBioEventDateModelService
             return null;
         }
 
-        $result = $this->model->with(['transcriptions' => function ($q) {
+        $result = $this->weDigBioEventDate->with(['transcriptions' => function ($q) {
             $q->with(['project' => function ($q2) {
                 $q2->select('id', 'title');
             }])->groupBy('project_id');
@@ -99,6 +99,21 @@ class WeDigBioEventDateModelService
      */
     public function getActiveOrComplete(?WeDigBioEventDate $event = null): mixed
     {
-        return is_null($event) ? $this->model->active()->first() : $this->model->find($event->id);
+        return is_null($event) ? $this->weDigBioEventDate->active()->first() : $this->weDigBioEventDate->find($event->id);
+    }
+
+    /**
+     * Get transcriptions for WeDigBio project event step chart.
+     */
+    public function getWeDigBioRateChartTranscriptions(int $dateId, Carbon $startLoad, Carbon $endLoad): ?Collection
+    {
+        return $this->weDigBioEventTranscription->with(['project:id,title'])
+            ->selectRaw('project_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, count(id) as count')
+            ->where('date_id', $dateId)
+            ->where('created_at', '>=', $startLoad->toDateTimeString())
+            ->where('created_at', '<', $endLoad->toDateTimeString())
+            ->groupBy('time', 'project_id')
+            ->orderBy('time')
+            ->get();
     }
 }

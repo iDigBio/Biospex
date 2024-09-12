@@ -24,24 +24,14 @@ use App\Models\ProjectResource;
 
 readonly class ProjectModelService
 {
-    public function __construct(private Project $model) {}
-
-    /**
-     * Get all.
-     *
-     * @return mixed
-     */
-    public function all()
-    {
-        return $this->model->get();
-    }
+    public function __construct(public Project $project) {}
 
     /**
      * Get all with relations.
      */
     public function findWithRelations(int $id, array $relations = []): mixed
     {
-        return $this->model->with($relations)->find($id);
+        return $this->project->with($relations)->find($id);
     }
 
     /**
@@ -51,7 +41,7 @@ readonly class ProjectModelService
      */
     public function getProjectEventSelect()
     {
-        $results = $this->model->has('panoptesProjects')
+        $results = $this->project->has('panoptesProjects')
             ->orderBy('title')
             ->get(['id', 'title'])
             ->pluck('title', 'id');
@@ -66,7 +56,7 @@ readonly class ProjectModelService
      */
     public function create(array $data): \Illuminate\Database\Eloquent\Model|bool|Project
     {
-        $project = $this->model->create($data);
+        $project = $this->project->create($data);
 
         if (! isset($data['resources'])) {
             return true;
@@ -92,7 +82,7 @@ readonly class ProjectModelService
      */
     public function update(array $data, $resourceId)
     {
-        $model = $this->model->find($resourceId);
+        $model = $this->project->find($resourceId);
 
         $data['slug'] = null;
         $model->fill($data)->save();
@@ -113,7 +103,7 @@ readonly class ProjectModelService
             return true;
         }
 
-        return $model->resources()->saveMany($resources->all());
+        return $project->resources()->saveMany($resources->all());
     }
 
     /**
@@ -125,7 +115,7 @@ readonly class ProjectModelService
      */
     public function getAdminProjectIndex($userId, $sort = null, $order = null)
     {
-        $results = $this->model->withCount('expeditions')->with([
+        $results = $this->project->withCount('expeditions')->with([
             'group' => function ($q) use ($userId) {
                 $q->whereHas('users', function ($q) use ($userId) {
                     $q->where('users.id', $userId);
@@ -149,7 +139,7 @@ readonly class ProjectModelService
      */
     public function getPublicProjectIndex($sort = null, $order = null)
     {
-        $results = $this->model->withCount('expeditions')
+        $results = $this->project->withCount('expeditions')
             ->withCount('events')->with('group')->has('panoptesProjects')->get();
 
         return $this->sortResults($order, $results, $sort);
@@ -160,7 +150,7 @@ readonly class ProjectModelService
      */
     public function getProjectShow($projectId): ?Project
     {
-        return $this->model->withCount('expeditions')->with([
+        return $this->project->withCount('expeditions')->with([
             'group',
             'ocrQueue',
             'expeditions' => function ($q) {
@@ -176,7 +166,7 @@ readonly class ProjectModelService
      */
     public function getProjectPageBySlug($slug)
     {
-        return $this->model->withCount('events')->withCount('expeditions')->with([
+        return $this->project->withCount('events')->withCount('expeditions')->with([
             'amChart',
             'group.users.profile',
             'resources',
@@ -196,7 +186,7 @@ readonly class ProjectModelService
      */
     public function getProjectForDelete($projectId): ?Project
     {
-        return $this->model->with([
+        return $this->project->with([
             'group',
             'panoptesProjects',
             'workflowManagers',
@@ -281,7 +271,7 @@ readonly class ProjectModelService
      */
     public function getProjectForAmChartJob($projectId)
     {
-        return $this->model->with([
+        return $this->project->with([
             'amChart',
             'expeditions' => function ($q) {
                 $q->with('stat')->has('stat');
@@ -292,7 +282,7 @@ readonly class ProjectModelService
 
     public function getProjectForDarwinImportJob($projectId): mixed
     {
-        return $this->model->with(['group' => function ($q) {
+        return $this->project->with(['group' => function ($q) {
             $q->with(['owner', 'users' => function ($q) {
                 $q->where('notification', 1);
             }]);

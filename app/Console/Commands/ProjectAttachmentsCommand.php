@@ -55,7 +55,7 @@ class ProjectAttachmentsCommand extends Command
      */
     public function handle()
     {
-        $projects = $this->projectModelService->all();
+        $projects = $this->projectModelService->project->all();
 
         $projects->each(function ($project) {
             if (! $this->variantExists($project->logo)) {

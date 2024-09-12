@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\WeDigBioEventDate;
-use App\Services\Models\WeDigBioEventDateModelService;
+use App\Services\WeDigBio\WeDigBioService;
 use Illuminate\Support\Facades\Response;
 
 class WeDigBioProjectsController extends Controller
 {
-    public function __construct(protected WeDigBioEventDateModelService $weDigBioEventDateModelService) {}
+    public function __construct(protected WeDigBioService $weDigBioService) {}
 
     /**
      * Returns titles of projects that have transcriptions from WeDigBio.
@@ -22,6 +22,6 @@ class WeDigBioProjectsController extends Controller
             return response()->json(['html' => 'Request must be ajax.']);
         }
 
-        return Response::json($this->weDigBioEventDateModelService->getProjectsForWeDigBioRateChart($event));
+        return Response::json($this->weDigBioService->getProjectsForWeDigBioRateChart($event));
     }
 }
