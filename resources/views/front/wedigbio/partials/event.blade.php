@@ -12,7 +12,8 @@
         </div>
         @if( ! event_before($event, 'UTC'))
             <div class="text-center">
-                <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
+                <button class="btn btn-primary mb-4 text-uppercase"
+                        data-toggle="modal"
                         data-remote="false"
                         data-target="#wedigbio-progress-modal"
                         data-href="{{ route('front.wedigbio-progress', [$event]) }}"
@@ -20,11 +21,13 @@
                         data-uuid="{{ $event->uuid }}">{{ t('Progress') }}
                 </button>
 
-                <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
+                <button class="btn btn-primary mb-4 text-uppercase"
+                        data-toggle="modal"
                         data-remote="false"
                         data-target="#wedigbio-rate-modal"
+                        data-projects="{{ route('front.get.wedigbio-projects', [$event]) }}"
                         data-uuid="{{ $event->uuid }}"
-                        data-href="{{ route('front.get.wedigbio-rate', [$event]) }}">{{ t('Rates') }}</a>
+                        data-href="{{ route('front.get.wedigbio-rate', [$event]) }}">{{ t('Rates') }}</button>
                 </button>
             </div>
         @endif

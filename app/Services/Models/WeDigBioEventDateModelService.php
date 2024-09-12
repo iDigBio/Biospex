@@ -53,15 +53,11 @@ class WeDigBioEventDateModelService
      */
     public function getWeDigBioEventTranscriptions(?WeDigBioEventDate $event = null): mixed
     {
-        $activeEvent = $this->getByActiveOrDateId($event);
+        $activeEvent = $this->getActiveOrComplete($event);
 
         if ($activeEvent === null) {
-            \Log::info('null');
-
             return null;
         }
-
-        \Log::info($activeEvent);
 
         return Cache::remember('wedigbio-event-transcription'.$activeEvent->id, 86400, function () use ($activeEvent) {
             return $this->model->withCount('transcriptions')->with([
@@ -78,12 +74,10 @@ class WeDigBioEventDateModelService
 
     /**
      * Return project titles for WeDigBio Rate chart.
-     *
-     * @return null
      */
-    public function getProjectsForWeDigBioRateChart(?int $dateId = null)
+    public function getProjectsForWeDigBioRateChart(?WeDigBioEventDate $event = null): ?array
     {
-        $activeEvent = $this->getByActiveOrDateId($dateId);
+        $activeEvent = $this->getActiveOrComplete($event);
 
         if ($activeEvent === null) {
             return null;
@@ -103,7 +97,7 @@ class WeDigBioEventDateModelService
     /**
      * Get WeDigBioDate by date or active.
      */
-    public function getByActiveOrDateId(?WeDigBioEventDate $event = null): mixed
+    public function getActiveOrComplete(?WeDigBioEventDate $event = null): mixed
     {
         return is_null($event) ? $this->model->active()->first() : $this->model->find($event->id);
     }

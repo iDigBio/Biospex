@@ -4,13 +4,15 @@ am4core.ready(function () {
 
     $('#wedigbio-rate-modal').on('show.bs.modal', function (e) {
         let $div = $(this).find('#weDigBioRateChartDiv');
-        let projects = $(e.relatedTarget).data('projects');
+        let projectsUrl = $(e.relatedTarget).data('projects');
         let url = $(e.relatedTarget).data('href');
-        let uuid = $(e.relatedTarget).data('date');
+
+        console.log('projectsUrl: ' + projectsUrl);
+        console.log('url: ' + url);
 
         let createChart = function () {
             am4core.disposeAllCharts();
-            $.get(projects + '/' + uuid).fail(function () {
+            $.get(projectsUrl).fail(function () {
                 $div.html('<p class="d-flex justify-content-center">Failed to load projects</p>');
             }).done(function (projects) {
                 if (!projects) {

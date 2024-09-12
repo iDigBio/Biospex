@@ -44,7 +44,7 @@ readonly class WeDigBioEventRateChartProcess
      */
     public function getWeDigBioEventRateChart(WeDigBioEventDate $event, ?string $timestamp = null): ?array
     {
-        $weDigBioDate = $this->weDigBioEventDateModelService->getByActiveOrDateId($dateId);
+        $weDigBioDate = $this->weDigBioEventDateModelService->getActiveOrComplete($event);
 
         if ($weDigBioDate === null) {
             return null;

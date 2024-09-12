@@ -121,16 +121,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.321.6",
+            "version": "3.321.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "3dc53a79677dd1f0e682dfc05f9815901ec7bf58"
+                "reference": "5de5099cfe0e17cb3eb2fe51de0101c99bc9442a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3dc53a79677dd1f0e682dfc05f9815901ec7bf58",
-                "reference": "3dc53a79677dd1f0e682dfc05f9815901ec7bf58",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5de5099cfe0e17cb3eb2fe51de0101c99bc9442a",
+                "reference": "5de5099cfe0e17cb3eb2fe51de0101c99bc9442a",
                 "shasum": ""
             },
             "require": {
@@ -213,9 +213,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.321.6"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.321.9"
             },
-            "time": "2024-09-06T18:06:38+00:00"
+            "time": "2024-09-11T18:15:49+00:00"
         },
         {
             "name": "brick/math",
@@ -401,21 +401,21 @@
         },
         {
             "name": "cocur/slugify",
-            "version": "v4.5.1",
+            "version": "v4.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cocur/slugify.git",
-                "reference": "7c6e088228b9f082050876ae8b0cd287b117b840"
+                "reference": "1d674022e9cbefa80b4f51aa3e2375b6e3c14fdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cocur/slugify/zipball/7c6e088228b9f082050876ae8b0cd287b117b840",
-                "reference": "7c6e088228b9f082050876ae8b0cd287b117b840",
+                "url": "https://api.github.com/repos/cocur/slugify/zipball/1d674022e9cbefa80b4f51aa3e2375b6e3c14fdb",
+                "reference": "1d674022e9cbefa80b4f51aa3e2375b6e3c14fdb",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": "~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0"
+                "php": "~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
             },
             "conflict": {
                 "symfony/config": "<3.4 || >=4,<4.3",
@@ -469,9 +469,9 @@
             ],
             "support": {
                 "issues": "https://github.com/cocur/slugify/issues",
-                "source": "https://github.com/cocur/slugify/tree/v4.5.1"
+                "source": "https://github.com/cocur/slugify/tree/v4.6.0"
             },
-            "time": "2023-09-17T07:26:20+00:00"
+            "time": "2024-09-10T14:09:25+00:00"
         },
         {
             "name": "cviebrock/eloquent-sluggable",
@@ -549,16 +549,16 @@
         },
         {
             "name": "czim/file-handling",
-            "version": "2.1.5",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/czim/file-handling.git",
-                "reference": "d6a2f06b16a867851417a234d40d1ab3dd77eb6f"
+                "reference": "7e736b42dcce2e7148b4b5ac16dc5a567c4f626b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/czim/file-handling/zipball/d6a2f06b16a867851417a234d40d1ab3dd77eb6f",
-                "reference": "d6a2f06b16a867851417a234d40d1ab3dd77eb6f",
+                "url": "https://api.github.com/repos/czim/file-handling/zipball/7e736b42dcce2e7148b4b5ac16dc5a567c4f626b",
+                "reference": "7e736b42dcce2e7148b4b5ac16dc5a567c4f626b",
                 "shasum": ""
             },
             "require": {
@@ -599,26 +599,26 @@
             ],
             "support": {
                 "issues": "https://github.com/czim/file-handling/issues",
-                "source": "https://github.com/czim/file-handling/tree/2.1.5"
+                "source": "https://github.com/czim/file-handling/tree/2.2.1"
             },
-            "time": "2024-04-13T16:35:47+00:00"
+            "time": "2024-09-10T08:08:22+00:00"
         },
         {
             "name": "czim/laravel-paperclip",
-            "version": "5.0.4",
+            "version": "5.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/czim/laravel-paperclip.git",
-                "reference": "1a1a025f2514188a4e1c6d551e6f9a91bfd3222d"
+                "reference": "ef38e7748851db4f704361c02a912e7827ad904f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/czim/laravel-paperclip/zipball/1a1a025f2514188a4e1c6d551e6f9a91bfd3222d",
-                "reference": "1a1a025f2514188a4e1c6d551e6f9a91bfd3222d",
+                "url": "https://api.github.com/repos/czim/laravel-paperclip/zipball/ef38e7748851db4f704361c02a912e7827ad904f",
+                "reference": "ef38e7748851db4f704361c02a912e7827ad904f",
                 "shasum": ""
             },
             "require": {
-                "czim/file-handling": "^2.0",
+                "czim/file-handling": "^2.2.1",
                 "ext-json": "*",
                 "php": "^8.1"
             },
@@ -654,9 +654,9 @@
             ],
             "support": {
                 "issues": "https://github.com/czim/laravel-paperclip/issues",
-                "source": "https://github.com/czim/laravel-paperclip/tree/5.0.4"
+                "source": "https://github.com/czim/laravel-paperclip/tree/5.0.5"
             },
-            "time": "2023-12-01T08:29:38+00:00"
+            "time": "2024-09-10T12:19:09+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -2155,16 +2155,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.22.0",
+            "version": "v11.23.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "868c75beacc47d0f361b919bbc155c0b619bf3d5"
+                "reference": "1f4d69dded2c242cd0cb3a20da9e3e9fd8e5a4c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/868c75beacc47d0f361b919bbc155c0b619bf3d5",
-                "reference": "868c75beacc47d0f361b919bbc155c0b619bf3d5",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/1f4d69dded2c242cd0cb3a20da9e3e9fd8e5a4c8",
+                "reference": "1f4d69dded2c242cd0cb3a20da9e3e9fd8e5a4c8",
                 "shasum": ""
             },
             "require": {
@@ -2226,6 +2226,7 @@
                 "illuminate/bus": "self.version",
                 "illuminate/cache": "self.version",
                 "illuminate/collections": "self.version",
+                "illuminate/concurrency": "self.version",
                 "illuminate/conditionable": "self.version",
                 "illuminate/config": "self.version",
                 "illuminate/console": "self.version",
@@ -2268,7 +2269,7 @@
                 "league/flysystem-sftp-v3": "^3.0",
                 "mockery/mockery": "^1.6",
                 "nyholm/psr7": "^1.2",
-                "orchestra/testbench-core": "^9.1.5",
+                "orchestra/testbench-core": "^9.4.0",
                 "pda/pheanstalk": "^5.0",
                 "phpstan/phpstan": "^1.11.5",
                 "phpunit/phpunit": "^10.5|^11.0",
@@ -2326,6 +2327,7 @@
                     "src/Illuminate/Events/functions.php",
                     "src/Illuminate/Filesystem/functions.php",
                     "src/Illuminate/Foundation/helpers.php",
+                    "src/Illuminate/Log/functions.php",
                     "src/Illuminate/Support/helpers.php"
                 ],
                 "psr-4": {
@@ -2357,7 +2359,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2024-09-03T15:27:15+00:00"
+            "time": "2024-09-12T13:08:55+00:00"
         },
         {
             "name": "laravel/nova",
@@ -5145,16 +5147,16 @@
         },
         {
             "name": "psr/log",
-            "version": "3.0.1",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "79dff0b268932c640297f5208d6298f71855c03e"
+                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/79dff0b268932c640297f5208d6298f71855c03e",
-                "reference": "79dff0b268932c640297f5208d6298f71855c03e",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
+                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
                 "shasum": ""
             },
             "require": {
@@ -5189,9 +5191,9 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/3.0.1"
+                "source": "https://github.com/php-fig/log/tree/3.0.2"
             },
-            "time": "2024-08-21T13:31:24+00:00"
+            "time": "2024-09-11T13:17:53+00:00"
         },
         {
             "name": "psr/simple-cache",
