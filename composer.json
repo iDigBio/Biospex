@@ -76,7 +76,8 @@
       "Database\\Seeders\\": "database/seeders/"
     },
     "files": [
-      "app/Helpers/date_helper.php"
+      "app/Helpers/date_helper.php",
+      "app/Helpers/general_helper.php"
     ]
   },
   "autoload-dev": {

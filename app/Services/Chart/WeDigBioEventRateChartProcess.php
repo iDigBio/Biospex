@@ -42,7 +42,7 @@ readonly class WeDigBioEventRateChartProcess
     /**
      * Get wedigbio event transcription data for step chart.
      */
-    public function getWeDigBioEventRateChart(int $dateId, ?string $timestamp = null): ?array
+    public function getWeDigBioEventRateChart(WeDigBioEventDate $event, ?string $timestamp = null): ?array
     {
         $weDigBioDate = $this->weDigBioEventDateModelService->getByActiveOrDateId($dateId);
 

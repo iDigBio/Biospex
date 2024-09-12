@@ -28,7 +28,7 @@ class WeDigBioEventDateModelService
     /**
      * WeDigBioEventDateRepository constructor.
      */
-    public function __construct(private readonly WeDigBioEventDate $model) {}
+    public function __construct(protected WeDigBioEventDate $model) {}
 
     /**
      * Get all.
@@ -51,13 +51,17 @@ class WeDigBioEventDateModelService
     /**
      * @return mixed|null
      */
-    public function getWeDigBioEventTranscriptions(int $dateId): mixed
+    public function getWeDigBioEventTranscriptions(?WeDigBioEventDate $event = null): mixed
     {
-        $activeEvent = $this->getByActiveOrDateId($dateId);
+        $activeEvent = $this->getByActiveOrDateId($event);
 
         if ($activeEvent === null) {
+            \Log::info('null');
+
             return null;
         }
+
+        \Log::info($activeEvent);
 
         return Cache::remember('wedigbio-event-transcription'.$activeEvent->id, 86400, function () use ($activeEvent) {
             return $this->model->withCount('transcriptions')->with([
@@ -99,8 +103,8 @@ class WeDigBioEventDateModelService
     /**
      * Get WeDigBioDate by date or active.
      */
-    public function getByActiveOrDateId(int $dateId): mixed
+    public function getByActiveOrDateId(?WeDigBioEventDate $event = null): mixed
     {
-        return $dateId === 0 ? $this->model->active()->first() : $this->model->find($dateId);
+        return is_null($event) ? $this->model->active()->first() : $this->model->find($event->id);
     }
 }

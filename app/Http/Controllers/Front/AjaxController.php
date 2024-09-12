@@ -21,31 +21,12 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Services\Chart\WeDigBioEventRateChartProcess;
-use App\Services\Models\EventModel;
-use App\Services\Models\WeDigBioEventDateModelService;
 
 /**
  * Class AjaxController
  */
 class AjaxController extends Controller
 {
-    /**
-     * Load event scoreboard.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
-     */
-    public function scoreboard(EventModel $eventModel, string $eventId)
-    {
-        $event = $eventModel->getEventScoreboard($eventId, ['id']);
-
-        if (! \Request::ajax() || is_null($event)) {
-            return response()->json(['html' => 'Error retrieving the Event']);
-        }
-
-        return \View::make('common.scoreboard-content', ['event' => $event]);
-    }
-
     /**
      * Trigger bingo winner.
      */
@@ -54,49 +35,5 @@ class AjaxController extends Controller
         if (\Request::ajax()) {
             BingoJob::dispatch($bingoId, $mapId);
         }
-    }
-
-    /**
-     * Show progress for wedigbio events.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
-     */
-    public function weDigBioProgress(WeDigBioEventDateModelService $weDigBioEventDateModelService, string $dateId)
-    {
-        if (! \Request::ajax()) {
-            return response()->json(['html' => 'Error retrieving the WeDigBio Event']);
-        }
-
-        $weDigBioDate = $weDigBioEventDateModelService->getWeDigBioEventTranscriptions((int) $dateId);
-
-        return \View::make('common.wedigbio-progress-content', compact('weDigBioDate'));
-    }
-
-    /**
-     * Returns titles of projects that have transcriptions from WeDigBio.
-     *
-     * @return \Illuminate\Http\JsonResponse|null
-     */
-    public function getProjectsForWeDigBioRateChart(WeDigBioEventDateModelService $weDigBioEventDateModelService, string $dateId)
-    {
-        if (! \Request::ajax()) {
-            return response()->json(['html' => 'Request must be ajax.']);
-        }
-
-        return $weDigBioEventDateModelService->getProjectsForWeDigBioRateChart((int) $dateId);
-    }
-
-    /**
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function weDigBioRate(WeDigBioEventRateChartProcess $weDigBioEventRateChartProcess, string $dateId)
-    {
-        $result = $weDigBioEventRateChartProcess->getWeDigBioEventRateChart((int) $dateId);
-
-        if (is_null($result)) {
-            return response()->json(['html' => 'Error retrieving the WeDigBio Event']);
-        }
-
-        return response()->json($result);
     }
 }

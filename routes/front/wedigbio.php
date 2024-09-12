@@ -18,5 +18,10 @@
  */
 
 use App\Http\Controllers\Front\WeDigBioController;
+use App\Http\Controllers\Front\WeDigBioProgressController;
+use App\Http\Controllers\Front\WeDigBioRateController;
 
 Route::get('wedigbio', [WeDigBioController::class, 'index'])->name('front.wedigbio.index');
+Route::get('wedigbio/progress/{event?}', WeDigBioProgressController::class)->name('front.wedigbio-progress');
+Route::get('wedigbio/rate/{event?}', WeDigBioRateController::class)->name('front.get.wedigbio-rate');
+Route::get('wedigbio/projects/{event?}', WeDigBioRateController::class)->name('front.get.wedigbio-projects');

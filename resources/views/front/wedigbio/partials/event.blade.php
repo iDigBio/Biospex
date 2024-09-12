@@ -15,16 +15,16 @@
                 <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
                         data-remote="false"
                         data-target="#wedigbio-progress-modal"
-                        data-href="{{ route('ajax.get.wedigbio-progress', ['dateId' => $event->id]) }}"
-                        data-channel="{{ config('config.poll_wedigbio_progress_channel') . '.' . $event->id }}"
-                        data-date="{{ $event->id }}">{{ t('Progress') }}
+                        data-href="{{ route('front.wedigbio-progress', [$event]) }}"
+                        data-channel="{{ config('config.poll_wedigbio_progress_channel') . '.' . $event->uuid }}"
+                        data-uuid="{{ $event->uuid }}">{{ t('Progress') }}
                 </button>
 
                 <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
                         data-remote="false"
                         data-target="#wedigbio-rate-modal"
-                        data-date="{{ $event->id }}"
-                        data-href="{{ route('ajax.get.wedigbio-rate', ['dateId' => $event->id]) }}">{{ t('Rates') }}</a>
+                        data-uuid="{{ $event->uuid }}"
+                        data-href="{{ route('front.get.wedigbio-rate', [$event]) }}">{{ t('Rates') }}</a>
                 </button>
             </div>
         @endif

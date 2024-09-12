@@ -26,7 +26,6 @@
  * @return \Carbon\Carbon|string
  */
 if (! function_exists('format_date')) {
-
     function format_date(mixed $date, string $format = 'Y-m-d', string $tz = 'UTC')
     {
         $dateHelper = app(\App\Services\Helpers\DateService::class);

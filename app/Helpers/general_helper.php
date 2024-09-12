@@ -11,14 +11,22 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Front\AjaxController;
+use App\Models\WeDigBioEventDate;
 
-Route::get('poll', [\App\Http\Controllers\Front\PollController::class, 'index']);
+if (! function_exists('check_wedigbio_event')) {
+    /**
+     * Check if the event is WeDigBio event.
+     */
+    function check_wedigbio_event(): ?WeDigBioEventDate
+    {
+        $generalService = app(App\Services\Helpers\GeneralService::class);
 
-Route::get('bingos/{bingo}/winner/{map}', [AjaxController::class, 'bingoWinner'])->name('ajax.get.bingoWinner');
+        return $generalService->checkWeDigBioEvent();
+    }
+}

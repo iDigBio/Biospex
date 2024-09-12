@@ -52,6 +52,7 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
+        /*
         Schema::table('actor_contacts', function (Blueprint $table) {
             DB::statement('ALTER TABLE `actor_contacts` CHANGE `email` `email` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;');
         });
@@ -141,6 +142,7 @@ class UpdateQueries extends Command
         Schema::table('expeditions', function (Blueprint $table) {
             DB::statement('ALTER TABLE `expeditions` ADD `logo_created_at` TIMESTAMP NULL DEFAULT NULL AFTER `logo_updated_at`;');
         });
+        */
 
         /*
         users
@@ -154,6 +156,7 @@ class UpdateQueries extends Command
         event_teams
         */
 
+        /*
         $users = \App\Models\User::get(['id', 'uuid']);
         Schema::table('users', function (Blueprint $table) {
             DB::statement('ALTER TABLE `users` DROP COLUMN `uuid`;');
@@ -245,6 +248,16 @@ class UpdateQueries extends Command
             $oldUuid = $this->getUuid($team->uuid);
             $record->uuid = $oldUuid;
             $record->save();
+        });
+        */
+
+        $wedigbioEvents = \App\Models\WeDigBioEventDate::get();
+        Schema::table('wedigbio_event_dates', function (Blueprint $table) {
+            DB::statement('ALTER TABLE `wedigbio_event_dates` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `wedigbio_event_dates_uuid_index` (`uuid`);');
+        });
+        $wedigbioEvents->each(function ($wedigbioEvent) {
+            $wedigbioEvent->uuid = \Str::uuid();
+            $wedigbioEvent->save();
         });
 
     }

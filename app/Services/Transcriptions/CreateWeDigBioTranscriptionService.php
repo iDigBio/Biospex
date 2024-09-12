@@ -36,8 +36,8 @@ class CreateWeDigBioTranscriptionService
      * EventTranscriptionService constructor.
      */
     public function __construct(
-        private readonly WeDigBioEventDateModelService $weDigBioEventDateModelService,
-        private readonly WeDigBioEventTranscriptionModelService $weDigBioEventTranscriptionModelService
+        protected WeDigBioEventDateModelService $weDigBioEventDateModelService,
+        protected WeDigBioEventTranscriptionModelService $weDigBioEventTranscriptionModelService
     ) {}
 
     /**
@@ -47,7 +47,7 @@ class CreateWeDigBioTranscriptionService
         int $classification_id,
         int $projectId,
         ?Carbon $date = null
-    ) {
+    ): void {
         $wedigbioDate = $this->weDigBioEventDateModelService->getFirstBy('active', 1);
 
         $timestamp = ! isset($date) ? Carbon::now('UTC') : $date;
@@ -71,7 +71,7 @@ class CreateWeDigBioTranscriptionService
         $this->weDigBioEventTranscriptionModelService->create($values);
         \Cache::forget('wedigbio-event-transcription');
 
-        WeDigBioEventProgressJob::dispatch($wedigbioDate->id);
+        WeDigBioEventProgressJob::dispatch($wedigbioDate);
     }
 
     /**

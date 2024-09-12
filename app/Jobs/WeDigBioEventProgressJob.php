@@ -20,40 +20,39 @@
 namespace App\Jobs;
 
 use App\Events\WeDigBioProgressEvent;
+use App\Nova\WeDigBioEventDate;
 use App\Services\Models\WeDigBioEventDateModelService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use View;
 
 class WeDigBioEventProgressJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private int $dateId;
-
     /**
      * Create a new job instance.
+     * Null is passed to the event parameter if using Nav links that result in active WeDigBio Event.
+     * Assigns zero to the channel.
      */
-    public function __construct(int $dateId)
+    public function __construct(public ?WeDigBioEventDate $event = null)
     {
-        $this->dateId = $dateId;
         $this->onQueue(config('config.queue.event'));
     }
 
     /**
      * Handle Job.
-     *
-     * @return void
      */
-    public function handle(WeDigBioEventDateModelService $weDigBioEventDateModelService)
+    public function handle(WeDigBioEventDateModelService $weDigBioEventDateModelService): void
     {
-        $weDigBioDate = $weDigBioEventDateModelService->getWeDigBioEventTranscriptions($this->dateId);
-        $id = $weDigBioDate->active ? 0 : $weDigBioDate->id;
+        $weDigBioDate = $weDigBioEventDateModelService->getWeDigBioEventTranscriptions($this->event);
+        $uuid = is_null($this->event) ? 0 : $weDigBioDate->uuid;
 
-        $data = [$id => \View::make('common.wedigbio-progress-content', compact('weDigBioDate'))->render()];
+        $data = [$uuid => View::make('common.wedigbio-progress-content', compact('weDigBioDate'))->render()];
 
-        WeDigBioProgressEvent::dispatch($id, $data);
+        WeDigBioProgressEvent::dispatch($uuid, $data);
     }
 }
