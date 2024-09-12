@@ -19,135 +19,83 @@
 
 /**
  * Format date using timezone and format.
- *
- * @param  mixed  $date
- * @param  string  $format
- * @param  string  $tz
- * @return \Carbon\Carbon|string
  */
-if (! function_exists('format_date')) {
-    function format_date(mixed $date, string $format = 'Y-m-d', string $tz = 'UTC')
-    {
-        $dateHelper = app(\App\Services\Helpers\DateService::class);
+function format_date(mixed $date, string $format = 'Y-m-d', string $tz = 'UTC'): \Carbon\Carbon|string
+{
+    $dateHelper = app(\App\Services\Helpers\DateService::class);
 
-        return $dateHelper->formatDate($date, $format, $tz);
-    }
+    return $dateHelper->formatDate($date, $format, $tz);
 }
 
 /**
  * Return format for Mongo UTCDateTime milliseconds.
- *
- * @param  \MongoDB\BSON\UTCDateTime  $date
- * @param  string  $format
- * @param  string  $tz
- * @return \Carbon\Carbon|string
  */
-if (! function_exists('format_mongo_date')) {
+function format_mongo_date(\MongoDB\BSON\UTCDateTime $date, string $format = 'Y-m-d', string $tz = 'UTC'): \Carbon\Carbon|string
+{
+    $dateHelper = app(\App\Services\Helpers\DateService::class);
 
-    function format_mongo_date(\MongoDB\BSON\UTCDateTime $date, string $format = 'Y-m-d', string $tz = 'UTC')
-    {
-        $dateHelper = app(\App\Services\Helpers\DateService::class);
-
-        return $dateHelper->formatMongoDate($date, $format, $tz);
-    }
+    return $dateHelper->formatMongoDate($date, $format, $tz);
 }
 
 /**
  * Return timezone array for select box.
  *
- * @return array
  *
  * @throws \Exception
  */
-if (! function_exists('time_zone_select')) {
+function time_zone_select(): array
+{
+    $dateHelper = app(\App\Services\Helpers\DateService::class);
 
-    function time_zone_select()
-    {
-        $dateHelper = app(\App\Services\Helpers\DateService::class);
-
-        return $dateHelper->timeZoneSelect();
-    }
+    return $dateHelper->timeZoneSelect();
 }
 
 /**
  * Return timezone title for event rate chart.
- *
- * @param  string  $tz
- * @return string
  */
-if (! function_exists('event_rate_chart_timezone')) {
+function event_rate_chart_timezone(string $tz = 'UTC'): string
+{
+    $dateHelper = app(\App\Services\Helpers\DateService::class);
 
-    function event_rate_chart_timezone(string $tz = 'UTC')
-    {
-        $dateHelper = app(\App\Services\Helpers\DateService::class);
-
-        return $dateHelper->eventRateChartTimezone($tz);
-    }
+    return $dateHelper->eventRateChartTimezone($tz);
 }
 
 /**
  * Check event is before start date.
- *
- * @param  $event
- * @param  string|null  $tz
- * @return bool
  */
-if (! function_exists('event_before')) {
+function event_before(mixed $event, ?string $tz = null): bool
+{
+    $dateHelper = app(\App\Services\Helpers\DateService::class);
 
-    function event_before(mixed $event, ?string $tz = null)
-    {
-        $dateHelper = app(\App\Services\Helpers\DateService::class);
-
-        return $dateHelper->eventBefore($event, $tz);
-    }
+    return $dateHelper->eventBefore($event, $tz);
 }
 
 /**
  * Check if event is over.
- *
- * @param  $event
- * @param  string|null  $tz
- * @return bool
  */
-if (! function_exists('event_after')) {
+function event_after(mixed $event, ?string $tz = null): bool
+{
+    $dateHelper = app(\App\Services\Helpers\DateService::class);
 
-    function event_after(mixed $event, ?string $tz = null)
-    {
-        $dateHelper = app(\App\Services\Helpers\DateService::class);
-
-        return $dateHelper->eventAfter($event, $tz);
-    }
+    return $dateHelper->eventAfter($event, $tz);
 }
 
 /**
  * Check event in progress.
- *
- * @param  mixed  $event
- * @param  string|null  $tz
- * @return bool
  */
-if (! function_exists('event_active')) {
+function event_active(mixed $event, ?string $tz = null): bool
+{
+    $dateHelper = app(\App\Services\Helpers\DateService::class);
 
-    function event_active(mixed $event, ?string $tz = null)
-    {
-        $dateHelper = app(\App\Services\Helpers\DateService::class);
-
-        return $dateHelper->eventActive($event, $tz);
-    }
+    return $dateHelper->eventActive($event, $tz);
 }
 
 /**
  * Set dates for event.
- *
- * @param  array  $data
- * @return array
  */
-if (! function_exists('set_event_dates')) {
+function set_event_dates(array &$data): void
+{
+    $dateHelper = app(\App\Services\Helpers\DateService::class);
 
-    function set_event_dates(array &$data): void
-    {
-        $dateHelper = app(\App\Services\Helpers\DateService::class);
-
-        $dateHelper->setEventDates($data);
-    }
+    $dateHelper->setEventDates($data);
 }
