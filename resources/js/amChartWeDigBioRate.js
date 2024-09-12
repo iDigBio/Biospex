@@ -7,9 +7,6 @@ am4core.ready(function () {
         let projectsUrl = $(e.relatedTarget).data('projects');
         let url = $(e.relatedTarget).data('href');
 
-        console.log('projectsUrl: ' + projectsUrl);
-        console.log('url: ' + url);
-
         let createChart = function () {
             am4core.disposeAllCharts();
             $.get(projectsUrl).fail(function () {
