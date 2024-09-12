@@ -32,7 +32,7 @@ class WeDigBioProgressController extends Controller
      *
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
-    public function __invoke(WeDigBioEventDate $event)
+    public function __invoke(?WeDigBioEventDate $event = null)
     {
         if (! \Request::ajax()) {
             return response()->json(['html' => 'Error retrieving the WeDigBio Event']);
