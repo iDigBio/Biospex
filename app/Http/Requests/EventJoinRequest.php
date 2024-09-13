@@ -25,8 +25,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Class EventJoinRequest
- *
- * @package App\Http\Requests
  */
 class EventJoinRequest extends FormRequest
 {
@@ -49,14 +47,14 @@ class EventJoinRequest extends FormRequest
     {
         return [
             'team_id' => 'required',
-            'nfn_user' => ['required', 'between:3,30', new EventJoinUniqueUserTeamValidation()]
+            'nfn_user' => ['required', 'between:3,30', new EventJoinUniqueUserTeamValidation],
         ];
     }
 
     public function messages()
     {
         return [
-            'team_id.required'        => 'Group Id missing',
+            'team_id.required' => 'Group Id missing',
             'nfn_user.required' => 'Zooniverse username required',
             'nfn_user.between' => 'Username must be between 3-30 characters',
             'g-recaptcha-response' => ['required', new ReCaptcha],

@@ -24,8 +24,6 @@ use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Class GeoPlugin
- *
- * @package App\Services\Api
  */
 class GeoPlugin
 {
@@ -146,8 +144,6 @@ class GeoPlugin
 
     /**
      * GeoHelper constructor.
-     *
-     * @param \App\Services\Requests\HttpRequest $request
      */
     public function __construct(HttpRequest $request)
     {
@@ -157,7 +153,7 @@ class GeoPlugin
     /**
      * Locate ip.
      *
-     * @param null $ip
+     * @param  null  $ip
      * @return bool
      */
     public function locate($ip = null)
@@ -191,7 +187,6 @@ class GeoPlugin
     /**
      * Fetch geo data.
      *
-     * @param $host
      * @return mixed
      */
     private function fetch($host)
@@ -208,8 +203,6 @@ class GeoPlugin
 
     /**
      * Set data.
-     *
-     * @param $data
      */
     private function setData($data)
     {

@@ -40,10 +40,17 @@ class Kernel extends ConsoleKernel
 
         if ($this->app->environment('production')) {
             // Trigger workflow manager to handle csv creation and updating expedition/project
+            $schedule->command('workflow:manage')->daily()->before(function () {
+                Cache::flush();
+                Artisan::call('lada-cache:flush');
+            });
+
+            /* May need to be re-enabled
             $schedule->command('workflow:manage')->days([0, 2, 4])->before(function () {
                 Cache::flush();
                 Artisan::call('lada-cache:flush');
             });
+            */
 
             // WeDigBio classification cron. Pulls pusher records from MySql table and enters into pusher_transcriptions
             $schedule->command('dashboard:records')->everyFiveMinutes();

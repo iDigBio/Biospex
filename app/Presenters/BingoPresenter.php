@@ -21,8 +21,6 @@ namespace App\Presenters;
 
 /**
  * Class BingoPresenter
- *
- * @package App\Presenters
  */
 class BingoPresenter extends Presenter
 {
@@ -44,8 +42,8 @@ class BingoPresenter extends Presenter
     public function adminShowIcon()
     {
         return '<a href="'.route('admin.bingos.show', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('View Bingo').'">
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('View Bingo').'">
                 <i class="fas fa-eye"></i></a>';
     }
 
@@ -57,8 +55,8 @@ class BingoPresenter extends Presenter
     public function showIcon()
     {
         return '<a href="'.route('front.bingos.show', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('View Bingo').'">
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('View Bingo').'">
                 <i class="fas fa-eye"></i></a>';
     }
 
@@ -70,8 +68,8 @@ class BingoPresenter extends Presenter
     public function editIcon()
     {
         return '<a href="'.route('admin.bingos.edit', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Edit Bingo').'">
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('Edit Bingo').'">
                 <i class="fas fa-edit"></i></a>';
     }
 
@@ -83,8 +81,8 @@ class BingoPresenter extends Presenter
     public function editIconLrg()
     {
         return '<a href="'.route('admin.bingos.edit', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Edit Bingo').'">
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('Edit Bingo').'">
                 <i class="fas fa-edit fa-2x"></i></a>';
     }
 
@@ -96,13 +94,13 @@ class BingoPresenter extends Presenter
     public function deleteIcon()
     {
         return '<a href="'.route('admin.bingos.delete', [
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Delete Bingo').'" 
+            $this->model->id,
+        ]).'" class="prevent-default"
+            title="'.t('Delete Bingo').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Delete Bingo').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
+            data-title="'.t('Delete Bingo').'?" data-content="'.t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -114,13 +112,13 @@ class BingoPresenter extends Presenter
     public function deleteIconLrg()
     {
         return '<a href="'.route('admin.bingos.delete', [
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Delete Bingo').'" 
+            $this->model->id,
+        ]).'" class="prevent-default"
+            title="'.t('Delete Bingo').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Delete Bingo').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
+            data-title="'.t('Delete Bingo').'?" data-content="'.t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -130,18 +128,19 @@ class BingoPresenter extends Presenter
      * <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fbiospex.org%2Fevents%2F13&text=Event%20to%20show&hashtags=biospex%2Ceventname" target="_blank">
      * <i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span>
      * </a>
+     *
      * @return string
      */
     public function twitterIcon()
     {
         $id = $this->model->id;
         $title = $this->model->title;
-        $url = config('app.url') . '/bingos/' . $id . '&text=' . $title;
+        $url = config('app.url').'/bingos/'.$id.'&text='.$title;
 
         return '<a href="https://twitter.com/intent/tweet?url='.$url.'" 
             target="_blank" 
             data-hover="tooltip" 
-            title="'. t('Share on Twitter').'">
+            title="'.t('Share on Twitter').'">
             <i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -154,13 +153,13 @@ class BingoPresenter extends Presenter
      */
     public function facebookIcon()
     {
-        $url = urlencode(config('app.url') . '/bingos/' . $this->model->id);
+        $url = urlencode(config('app.url').'/bingos/'.$this->model->id);
         $title = urlencode($this->model->title);
 
         return '<a href="http://www.facebook.com/share.php?u='.$url.'&title='.$title.'" 
             target="_blank" 
             data-hover="tooltip" 
-            title="'. t('Share on Facebook').'">
+            title="'.t('Share on Facebook').'">
             <i class="fab fa-facebook"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -171,7 +170,7 @@ class BingoPresenter extends Presenter
      */
     public function contactIcon()
     {
-        return '<a href="mailto:'.$this->model->contact.'" data-hover="tooltip" title="'. t('Contact').'">
+        return '<a href="mailto:'.$this->model->contact.'" data-hover="tooltip" title="'.t('Contact').'">
                 <i class="fas fa-envelope"></i></a>';
     }
 }

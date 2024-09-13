@@ -23,14 +23,11 @@ namespace App\Listeners;
  * Class BingoEventSubscriber
  *
  * TODO: Is this listener necessary?
- * @package App\Listeners
  */
 class BingoEventSubscriber
 {
     /**
      * Register the listeners for the subscriber.
-     *
-     * @param $events
      */
     public function subscribe($events)
     {
@@ -40,11 +37,5 @@ class BingoEventSubscriber
         );
     }
 
-    /**
-     *
-     */
-    public function update()
-    {
-
-    }
+    public function update() {}
 }

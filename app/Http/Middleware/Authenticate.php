@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Middleware;
@@ -18,7 +19,7 @@ class Authenticate extends Middleware
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return string|null
      */
     protected function redirectTo($request)

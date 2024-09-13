@@ -27,4 +27,3 @@ Route::get('bingos/{bingos}', [BingoController::class, 'show'])->name('admin.bin
 Route::get('bingos/{bingos}/edit', [BingoController::class, 'edit'])->name('admin.bingos.edit');
 Route::put('bingos/{bingos}', [BingoController::class, 'update'])->name('admin.bingos.update');
 Route::delete('bingos/{bingos}', [BingoController::class, 'delete'])->name('admin.bingos.delete');
-

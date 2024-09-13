@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * Class GeneralHelper
- * @package App\Facades
  */
 class GeneralHelper extends Facade
 {

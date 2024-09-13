@@ -31,19 +31,11 @@ class ZooniverseBiospexEventJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 60;
 
-    /**
-     * @var array
-     */
     private array $data;
 
-    /**
-     * @var int
-     */
     private int $expeditionId;
 
     /**

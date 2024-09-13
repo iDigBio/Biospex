@@ -27,21 +27,12 @@ class WeDigBioProgressEvent extends Event implements ShouldBroadcast
 {
     use Dispatchable;
 
-    /**
-     * @var array
-     */
     public array $data = [];
 
-    /**
-     * @var int
-     */
     public int $dateId;
 
     /**
      * ScoreboardEvent constructor.
-     *
-     * @param int $dateId
-     * @param array $data
      */
     public function __construct(int $dateId, array $data)
     {
@@ -51,8 +42,6 @@ class WeDigBioProgressEvent extends Event implements ShouldBroadcast
 
     /**
      * The name of the queue on which to place the broadcasting job.
-     *
-     * @return string
      */
     public function broadcastQueue(): string
     {
@@ -66,6 +55,6 @@ class WeDigBioProgressEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel(config('config.poll_wedigbio_progress_channel') . '.' . $this->dateId);
+        return new Channel(config('config.poll_wedigbio_progress_channel').'.'.$this->dateId);
     }
 }

@@ -31,24 +31,17 @@ class ZooniverseWeDigBioEventJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 60;
 
-    /**
-     * @var array
-     */
     private array $data;
 
-    /**
-     * @var int
-     */
     private int $projectId;
 
     /**
      * Create a new job instance.
      * Handles WeDigBio even transcriptions
+     *
      * @see \App\Jobs\ZooniversePusherHandlerJob
      *
      * @return void

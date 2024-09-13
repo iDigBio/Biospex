@@ -25,8 +25,6 @@ use App\Services\Games\BingoProcess;
 
 /**
  * Class BingoController
- *
- * @package App\Http\Controllers\Front
  */
 class BingoController extends Controller
 {
@@ -37,8 +35,6 @@ class BingoController extends Controller
 
     /**
      * BingoController constructor.
-     *
-     * @param \App\Services\Games\BingoProcess $bingoProcess
      */
     public function __construct(BingoProcess $bingoProcess)
     {
@@ -60,7 +56,6 @@ class BingoController extends Controller
     /**
      * Bingo show.
      *
-     * @param string $bingoId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show(string $bingoId)
@@ -73,13 +68,12 @@ class BingoController extends Controller
     /**
      * Generate bingo card.
      *
-     * @param string $bingoId
      * @return \Illuminate\View\View|string
      */
     public function generate(string $bingoId)
     {
         $bingo = $this->bingoProcess->findBingoWith($bingoId, ['project', 'words']);
-        if (!$bingo) {
+        if (! $bingo) {
             return t('Bingo Game could not be found.');
         }
 
