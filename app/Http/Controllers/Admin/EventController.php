@@ -95,11 +95,11 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        $this->eventService->getAdminShow($event);
-
         if (! CheckPermission::handle('read', $event)) {
             return Redirect::route('admin.events.index');
         }
+
+        $this->eventService->getAdminShow($event);
 
         return View::make('admin.event.show', compact('event'));
     }
@@ -113,12 +113,11 @@ class EventController extends Controller
      */
     public function edit(Event $event)
     {
-        $this->eventService->edit($event);
-
         if (! CheckPermission::handle('update', $event)) {
             return back();
         }
 
+        $this->eventService->edit($event);
         $projects = $this->projectModelService->getProjectEventSelect();
 
         return View::make('admin.event.edit', compact('event', 'projects'));
