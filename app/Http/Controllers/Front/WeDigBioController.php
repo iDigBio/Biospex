@@ -21,8 +21,6 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Services\WeDigBio\WeDigBioService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
 
 class WeDigBioController extends Controller
@@ -36,12 +34,8 @@ class WeDigBioController extends Controller
      */
     public function __invoke(): mixed
     {
-        if (! Auth::check()) {
-            return Redirect::route('front.projects.index')->with('info', 'You must be logged in to access this page.');
-        }
+        $events = $this->weDigBioService->getWeDigBioPage();
 
-        [$events, $eventsCompleted] = $this->weDigBioService->getWeDigBioPage();
-
-        return View::make('front.wedigbio.index', compact('events', 'eventsCompleted'));
+        return View::make('front.wedigbio.index', compact('events'));
     }
 }

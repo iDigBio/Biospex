@@ -41,11 +41,7 @@ class WeDigBioService
      */
     public function getWeDigBioPage(): Collection
     {
-        $results = $this->weDigBioEventDate->all()->sortBy('created_at');
-
-        return $results->partition(function ($event) {
-            return $event->active;
-        });
+        return $this->weDigBioEventDate->all()->sortBy('created_at');
     }
 
     /**
