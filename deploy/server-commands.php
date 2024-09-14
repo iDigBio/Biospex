@@ -19,12 +19,14 @@
 
 namespace Deployer;
 
-task('artisan:update:queries', function () {
-    cd('{{release_or_current_path}}');
-    run('php artisan update:queries');
-})->desc('Deploying files...');
+task('set:permissions', function () {
+    run('sudo chown -R ubuntu.www-data {{deploy_path}}');
+    run('sudo truncate -s 0 {{release_or_current_path}}/storage/logs/laravel.log');
+})->desc('Setting permissions...');
 
-task('artisan:deploy:files', function () {
-    cd('{{release_or_current_path}}');
-    run('php artisan deploy:files');
-})->desc('Running update queries...');
+task('supervisor:reload', function () {
+    run('sudo supervisorctl reread');
+    run('sudo supervisorctl update');
+    run('sudo systemctl restart supervisor.service');
+    run('sudo service beanstalkd restart');
+})->desc('Reloading Supervisor...');
