@@ -28,18 +28,13 @@ use App\Models\FaqCategory;
 class FaqController extends Controller
 {
     /**
-     * FaqController constructor.
-     */
-    public function __construct(private readonly FaqCategory $faqCategory) {}
-
-    /**
      * Show categories.
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function __invoke(FaqCategory $faqCategory)
     {
-        $categories = $this->faqCategory->with('faqs')
+        $categories = $faqCategory->with('faqs')
             ->groupBy('id')
             ->orderBy('id', 'asc')
             ->get();

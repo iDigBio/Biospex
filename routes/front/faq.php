@@ -19,4 +19,4 @@
 
 use App\Http\Controllers\Front\FaqController;
 
-Route::get('faq', [FaqController::class, 'index'])->name('front.faqs.index');
+Route::get('faq', FaqController::class)->name('front.faqs.index');
