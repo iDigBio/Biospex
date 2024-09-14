@@ -39,6 +39,7 @@
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.5",
     "barryvdh/laravel-ide-helper": "^v3.0.0",
+    "deployer/deployer": "^7.4",
     "fakerphp/faker": "^1.9.1",
     "kitloong/laravel-migrations-generator": "^v7.0.1",
     "laravel/pint": "^1.17",

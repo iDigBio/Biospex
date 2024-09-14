@@ -1,0 +1,58 @@
+import:
+  - recipe/laravel.php
+  - contrib/php-fpm.php
+  - contrib/yarn.php
+  - deploy/artisan.php
+
+config:
+  default_stage: 'development'
+  repository: 'https://github.com/iDigBio/Biospex.git'
+  branch: 'master-refactor'
+  remote_user: ubuntu
+  base_deploy_path: '/data/web'
+  php_fpm_version: '8.3'
+  ssh_multiplexing: true
+  writable_mode: 'chmod'
+
+hosts:
+  #  production:
+  #    hostname: '3.142.169.134'
+  #    deploy_path: '{{base_deploy_path}}/biospex'
+  development:
+    hostname: '3.142.169.134'
+    deploy_path: '{{base_deploy_path}}/dev.biospex'
+  staging:
+    hostname: '3.142.169.134'
+    deploy_path: '{{base_deploy_path}}/staging.biospex'
+
+tasks:
+  deploy:
+    - deploy:prepare
+    - deploy:vendors
+    - artisan:storage:link
+    - artisan:view:cache
+    - artisan:config:cache
+    - yarn:install:prod
+    #- artisan:migrate
+    #- artisan:update:queries
+    - artisan:deploy:files
+    - deploy:publish
+
+  yarn:install:prod:
+    - run: 'cd {{release_path}} && yarn install --prod --ignore-engines'
+
+after:
+  deploy:failed: deploy:unlock
+
+  # - artisan:update:queries
+  # - artisan:deploy:files
+
+  # cd {{ release }}
+  # sudo supervisorctl reread
+  # sudo supervisorctl update
+  # sudo systemctl restart supervisor.service
+  # sudo service beanstalkd restart
+
+  # cd {{ project }}
+  # sudo chown -R ubuntu.www-data *
+  # sudo truncate -s 0 storage/logs/laravel.log
