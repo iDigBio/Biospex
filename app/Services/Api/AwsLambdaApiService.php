@@ -23,32 +23,27 @@ use Aws\Lambda\LambdaClient;
 
 class AwsLambdaApiService
 {
-    /**
-     * @var \Aws\Lambda\LambdaClient
-     */
-    private LambdaClient $lambdaClient;
+    protected LambdaClient $lambdaClient;
 
     /**
      * Construct
      */
-    public function __construct()
+    public function __construct($client = null, $region = null, $version = null, $profile = null)
     {
+        if (gettype($client) == LambdaClient::class) {
+            $this->lambdaClient = $client;
+
+            return;
+        }
         $this->lambdaClient = new LambdaClient([
-            'credentials' => [
-                'key'    => config('config.aws.access_key'),
-                'secret' => config('config.aws.secret_key'),
-            ],
-            'version'     => '2015-03-31',
-            'region'      => config('config.aws.default_region'),
+            'region' => config('config.aws.default_region'),
+            'version' => 'latest',
+            'profile' => 'default',
         ]);
     }
 
     /**
      * Invoke lambda client.
-     *
-     * @param string $function
-     * @param array $data
-     * @return void
      */
     public function lambdaInvokeAsync(string $function, array $data): void
     {
@@ -57,18 +52,14 @@ class AwsLambdaApiService
 
         $this->lambdaClient->invoke([
             // The name your created Lamda function
-            'FunctionName'   => $function,
-            'Payload'        => json_encode($data),
+            'FunctionName' => $function,
+            'Payload' => json_encode($data),
             'InvocationType' => 'Event',
         ]);
     }
 
     /**
      * Invoke lambda client synchronously.
-     *
-     * @param string $function
-     * @param array $data
-     * @return \Aws\Result
      */
     public function lambdaInvoke(string $function, array $data): \Aws\Result
     {
@@ -77,8 +68,8 @@ class AwsLambdaApiService
 
         return $this->lambdaClient->invoke([
             // The name your created Lamda function
-            'FunctionName'   => $function,
-            'Payload'        => json_encode($data),
+            'FunctionName' => $function,
+            'Payload' => json_encode($data),
         ]);
     }
 }
