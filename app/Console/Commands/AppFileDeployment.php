@@ -71,6 +71,11 @@ class AppFileDeployment extends Command
         $subTargets = collect($supFiles)->reject(function ($file) {
             return $this->rejectFiles($file);
         })->map(function ($file) {
+
+            if (! Storage::exists('supervisor')) {
+                Storage::makeDirectory('supervisor');
+            }
+
             $target = Storage::path('supervisor').'/'.$file->getBaseName();
             if (File::exists($target)) {
                 File::delete($target);
