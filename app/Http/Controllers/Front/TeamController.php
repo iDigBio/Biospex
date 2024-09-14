@@ -32,7 +32,7 @@ class TeamController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(TeamCategory $teamCategory)
+    public function __invoke(TeamCategory $teamCategory)
     {
         $categories = $teamCategory->with('teams')
             ->orderBy('id', 'asc')
