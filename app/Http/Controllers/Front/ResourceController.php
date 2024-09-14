@@ -21,7 +21,12 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Resource;
-use Storage;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Class ResourceController
@@ -30,30 +35,24 @@ class ResourceController extends Controller
 {
     /**
      * Show resources.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Resource $resource)
+    public function index(Resource $resource): Factory|\Illuminate\View\View
     {
         $resources = $resource->orderBy('order', 'asc')->get();
 
-        return \View::make('front.resource.index', compact('resources'));
+        return View::make('front.resource.index', compact('resources'));
     }
 
     /**
      * Download resource file.
-     *
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function download(Resource $resource, $resourceId)
+    public function show(Resource $resource): RedirectResponse|StreamedResponse
     {
-        $download = $resource->find($resourceId);
+        if (! $resource->document->exists() || ! file_exists(public_path('storage'.$resource->document->path()))) {
 
-        if (! $download->document->exists() || ! file_exists(public_path('storage'.$download->document->path()))) {
-
-            return \Redirect::route('front.resources.index')->with('danger', t('File cannot be found.'));
+            return Redirect::route('front.resources.index')->with('danger', t('File cannot be found.'));
         }
 
-        return Storage::download('public/'.$download->document->path());
+        return Storage::download('public/'.$resource->document->path());
     }
 }

@@ -19,5 +19,7 @@
 
 use App\Http\Controllers\Front\ResourceController;
 
-Route::get('resource', [ResourceController::class, 'index'])->name('front.resources.index');
-Route::get('resource/{id}', [ResourceController::class, 'download'])->name('front.resources.download');
+Route::resource('resource', ResourceController::class)->only(['index', 'show'])->names([
+    'index' => 'front.resources.index',
+    'show' => 'front.resources.show',
+]);
