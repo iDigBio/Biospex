@@ -26,8 +26,6 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AppFileDeployment
- *
- * @package App\Console\Commands
  */
 class AppFileDeployment extends Command
 {
@@ -45,9 +43,6 @@ class AppFileDeployment extends Command
      */
     protected $description = 'Handles moving, renaming, and replacing files needed per environment settings';
 
-    /**
-     * @var Collection
-     */
     private Collection $config;
 
     /**
@@ -96,17 +91,16 @@ class AppFileDeployment extends Command
     }
 
     /**
-     * @param $search
      * @return false|\Illuminate\Config\Repository|mixed|string
      */
     private function configureReplace($search): mixed
     {
         if (str_starts_with($search, 'APP_')) {
-            return config('config.' . strtolower($search));
+            return config('config.'.strtolower($search));
         }
 
         if ($search === 'PUSHER_APP_CLUSTER') {
-            return config('config.' . strtolower($search));
+            return config('config.'.strtolower($search));
         }
 
         if ($search === 'REDIS_HOST') {
@@ -121,7 +115,7 @@ class AppFileDeployment extends Command
             return json_encode(base64_decode(config('config.'.strtolower($search))));
         }
 
-        return config('config.' . strtolower(\Str::replaceFirst('_', '.', $search)));
+        return config('config.'.strtolower(\Str::replaceFirst('_', '.', $search)));
     }
 
     /**
@@ -134,9 +128,6 @@ class AppFileDeployment extends Command
 
     /**
      * check file.
-     *
-     * @param $file
-     * @return bool
      */
     private function rejectFiles($file): bool
     {
@@ -147,6 +138,6 @@ class AppFileDeployment extends Command
 
         $env = ['production', 'local'];
 
-        return !in_array(config('app.env'), $env) && in_array($file->getBaseName(), $files);
+        return ! in_array(config('app.env'), $env) && in_array($file->getBaseName(), $files);
     }
 }
