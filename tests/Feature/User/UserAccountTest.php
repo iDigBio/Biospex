@@ -18,30 +18,31 @@
  */
 
 it('gives redirect response for unauthicated user', function () {
-    $response = $this->get(route('admin.users.edit', ['users' => 0]));
+    $user = \App\Models\User::factory()->create();
+    $response = $this->get(route('admin.users.edit', [$user]));
 
     $response->assertStatus(302);
 });
 
 it('gives redirect response for unauthorized user', function () {
-    $user = \App\Models\User::factory()->verified()->create();
-    $response = $this->actingAs($user)->get(route('admin.users.edit', ['users' => 0]));
+    $user = \App\Models\User::factory()->create();
+    $response = $this->actingAs($user)->get(route('admin.users.edit', [$user]));
 
     $response->assertStatus(302);
 });
 
 it('gives success response for authorized user', function () {
     $user = \App\Models\User::factory()->verified()->create();
-    $profile = \App\Models\Profile::factory()->create(['user_id' => $user->id]);
-    $response = $this->actingAs($user)->get(route('admin.users.edit', ['users' => $user->id]));
+    $profile = \App\Models\Profile::factory()->create([$user]);
+    $response = $this->actingAs($user)->get(route('admin.users.edit', [$user]));
 
     $response->assertStatus(200);
 });
 
 it('has profile form for authorized user', function () {
     $user = \App\Models\User::factory()->verified()->create();
-    $profile = \App\Models\Profile::factory()->create(['user_id' => $user->id]);
-    $response = $this->actingAs($user)->get(route('admin.users.edit', ['users' => $user->id]));
+    $profile = \App\Models\Profile::factory()->create([$user]);
+    $response = $this->actingAs($user)->get(route('admin.users.edit', [$user]));
     $response->assertSee('first_name')->assertSee('last_name')->assertSee('email')->assertSee('timezone');
 });
 
@@ -50,14 +51,14 @@ it('can update profile for authorized user', function () {
     $profile = \App\Models\Profile::factory()->create(['user_id' => $user->id]);
 
     // Hit page first due to unit test not working well with Redirect::bock().
-    $this->actingAs($user)->get(route('admin.users.edit', ['users' => $user->id]));
+    $this->actingAs($user)->get(route('admin.users.edit', [$user]));
 
     $firstName = fake()->firstName;
     $lastName = fake()->lastName;
     $email = fake()->email;
     $timezone = fake()->timezone;
 
-    $response = $this->actingAs($user)->put(route('admin.users.update', ['users' => $user->id]), [
+    $response = $this->actingAs($user)->put(route('admin.users.update', [$user]), [
         'first_name' => $firstName,
         'last_name' => $lastName,
         'email' => $email,
@@ -80,14 +81,14 @@ it('can update profile for authorized user', function () {
 it('can update password for authorized user', function () {
     $current_password = fake()->password;
     $user = \App\Models\User::factory()->verified()->create(['password' => bcrypt($current_password)]);
-    $profile = \App\Models\Profile::factory()->create(['user_id' => $user->id]);
+    $profile = \App\Models\Profile::factory()->create(['user_id' => $user]);
 
     // Hit page first due to unit test not working well with Redirect::bock().
-    $this->actingAs($user)->get(route('admin.users.edit', ['users' => $user->id]));
+    $this->actingAs($user)->get(route('admin.users.edit', [$user]));
 
     $password = bcrypt(fake()->password);
 
-    $this->actingAs($user)->put(route('admin.users.password', ['users' => $user->id]), [
+    $this->actingAs($user)->put(route('admin.users.update', [$user]), [
         'current_password' => $current_password,
         'password' => $password,
         'password_confirmation' => $password,

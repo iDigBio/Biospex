@@ -13,7 +13,7 @@
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Edit Account') }}</h2>
                     <form method="post"
-                          action="{{ route('admin.users.update', ['users' => $user->id]) }}"
+                          action="{{ route('admin.users.update', [$user]) }}"
                           role="form" enctype="multipart/form-data">
                         {!! method_field('put') !!}
                         @csrf
@@ -77,7 +77,8 @@
                             </div>
                             <input type="hidden" name="current_avatar" value="{{ $user->profile->avatar_file_name }}">
                             <div class="form-group col-sm-6">
-                                <img alt="profile avatar" class="img-fluid" style="display: inline; width: 100px; height: 100px;"
+                                <img alt="profile avatar" class="img-fluid"
+                                     style="display: inline; width: 100px; height: 100px;"
                                      src="{{ $user->profile->avatar->url('medium') }}"/>
                             </div>
                         </div>
@@ -93,10 +94,9 @@
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Change Password') }}</h2>
                     <form method="post"
-                          action="{{ route('admin.users.password', ['users' => $user->id]) }}" role="form">
+                          action="{{ route('admin.users.password', [$user]) }}" role="form">
                         {!! method_field('put') !!}
                         @csrf
-                        <input type="hidden" id="id" name="id" value="{{ $user->id }}">
                         <div class="form-group">
                             <label for="current_password" class="col-form-label required">{{ t('Old Password') }}
                                 :</label>

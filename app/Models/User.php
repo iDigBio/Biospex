@@ -67,7 +67,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * {@inheritDoc}
      */
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['id', 'password', 'remember_token'];
 
     /**
      * Attributes that should be hashed.
@@ -80,6 +80,14 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var string
      */
     protected $presenter = UserPresenter::class;
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * Boot functions.

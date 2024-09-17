@@ -47,7 +47,7 @@ class EditUserFormRequest extends Request
         return [
             'first_name' => 'required',
             'last_name' => 'required',
-            'email' => 'required|min:4|max:32|email|unique:users,email,'.$this->route('users'),
+            'email' => 'required|min:4|max:32|email|unique:users,email,'.Auth::user()->id,
             'avatar' => ['image', new FileUploadNameValidation],
         ];
     }

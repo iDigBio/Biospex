@@ -19,26 +19,18 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EditUserFormRequest;
-use App\Http\Requests\PasswordFormRequest;
-use App\Services\User\UserAccountService;
-use Illuminate\Foundation\Auth\ResetsPasswords;
+use App\Models\User;
+use App\Services\Permission\CheckPermission;
+use Illuminate\Support\Facades\Redirect;
 
 /**
- * Class UserAccountController
+ * Class UserController
  */
-class UserAccountController extends Controller
+class UserController extends Controller
 {
-    use ResetsPasswords;
-
-    private UserAccountService $userAccountService;
-
-    public function __construct(UserAccountService $userAccountService)
-    {
-        $this->userAccountService = $userAccountService;
-    }
-
     /**
      * Show the form for user edit.
      *
@@ -46,9 +38,15 @@ class UserAccountController extends Controller
      *
      * @throws \Exception
      */
-    public function edit(int $userId)
+    public function edit(User $user)
     {
-        return $this->userAccountService->editUserProfile($userId);
+        if (! CheckPermission::handle('edit', $user)) {
+            return Redirect::route('admin.projects.index');
+        }
+
+        $timezones = DateHelper::timeZoneSelect();
+
+        return view('admin.user.edit', compact('user', 'timezones'));
     }
 
     /**
@@ -56,18 +54,19 @@ class UserAccountController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(EditUserFormRequest $request)
+    public function update(User $user, EditUserFormRequest $request)
     {
-        return $this->userAccountService->updateUserProfile($request);
-    }
+        if (! CheckPermission::handle('update', $user)) {
+            return Redirect::route('admin.projects.index');
+        }
 
-    /**
-     * Update the user password.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function password(PasswordFormRequest $request)
-    {
-        return $this->userAccountService->updateUserPassword($request);
+        $request['notification'] = isset($request['notification']) ? 1 : 0;
+
+        $result = $user->fill($request->all())->save();
+        $user->profile->fill($request->all())->save();
+
+        return $result === true ?
+            Redirect::route('admin.users.edit', [$user])->with('success', t('User profile updated.')) :
+            Redirect::route('admin.users.edit', [$user])->with('error', t('User profile could not be updated.'));
     }
 }

@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Mail;
 class MailController extends Controller
 {
     /**
-     * UserAccountController constructor.
+     * UserController constructor.
      */
     public function __construct(private readonly UserModelService $userModelService) {}
 

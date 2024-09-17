@@ -20,6 +20,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class AppCommand
@@ -47,5 +48,8 @@ class AppCommand extends Command
     /**
      * @return void
      */
-    public function handle() {}
+    public function handle()
+    {
+        dd(Uuid::uuid4());
+    }
 }

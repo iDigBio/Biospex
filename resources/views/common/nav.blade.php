@@ -92,7 +92,7 @@
                     @endcan
                     <a href="{{ route('admin.update.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Updates') }}</a>
-                    <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"
+                    <a href="{{ route('admin.users.edit', [Auth::user()]) }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Account') }}</a>
                     <a href="{{ route('app.get.logout') }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Logout') }}</a>

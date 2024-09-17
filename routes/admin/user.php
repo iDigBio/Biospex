@@ -17,14 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserPasswordController;
+
 Route::get('users', function () {
-    return redirect()->route('admin.users.edit', [\Auth::user()->id]);
+    return redirect()->route('admin.users.edit', [Auth::user()]);
 })->name('admin.users.index');
 
-Route::get('users/{users}', function () {
-    return redirect()->route('admin.users.edit', [\Auth::user()->id]);
+Route::get('users/{user}', function () {
+    return redirect()->route('admin.users.edit', [Auth::user()]);
 })->name('admin.users.show');
 
-Route::get('users/{users}/edit', [\App\Http\Controllers\Admin\UserAccountController::class, 'edit'])->name('admin.users.edit');
-Route::put('users/{users}', [\App\Http\Controllers\Admin\UserAccountController::class, 'update'])->name('admin.users.update');
-Route::put('password/{users}/pass', [\App\Http\Controllers\Admin\UserAccountController::class, 'password'])->name('admin.users.password');
+Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+Route::put('users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+
+Route::put('password/{user}/pass', UserPasswordController::class)->name('admin.users.password');
