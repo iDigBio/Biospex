@@ -105,7 +105,7 @@ class GridExportCsvJob implements ShouldQueue
 
             $route = route('admin.downloads.report', ['file' => base64_encode($csvName)]);
             $btn = $this->createButton($route, t('Download CSV'));
-            $html = $this->data['expeditionId'] !== 0 ?
+            $html = ! is_null($this->data['expeditionId']) ?
                 t('Your grid export for Expedition Id %s is complete. Click the button provided to download:', $this->data['expeditionId']) :
                 t('Your grid export for Project Id %s is complete. Click the button provided to download:', $this->data['projectId']);
 
@@ -119,7 +119,10 @@ class GridExportCsvJob implements ShouldQueue
 
         } catch (Exception $e) {
 
-            $idMessage = $this->data['expeditionId'] !== 0 ? t('Expedition Id: %s', $this->data['expeditionId']) : t('Project Id: %s', $this->data['projectId']);
+            $idMessage = ! is_null($this->data['expeditionId']) ?
+                t('Expedition Id: %s', $this->data['expeditionId']) :
+                t('Project Id: %s', $this->data['projectId']);
+
             $attributes = [
                 'subject' => t('Grid Export to CSV Error'),
                 'html' => [

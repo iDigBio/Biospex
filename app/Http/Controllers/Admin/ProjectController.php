@@ -24,9 +24,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectFormRequest;
 use App\Jobs\DeleteProjectJob;
 use App\Jobs\DeleteUnassignedSubjectsJob;
+use App\Models\Project;
 use App\Services\Grid\JqGridEncoder;
 use App\Services\Models\GroupModelService;
 use App\Services\Models\ProjectModelService;
+use App\Services\Permission\CheckPermission;
 use Auth;
 use Exception;
 use JavaScript;
@@ -76,11 +78,11 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function show(Project $project): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectModelService->getProjectShow($projectId);
+        $this->projectModelService->getProjectShow($project);
 
-        if (! $this->checkPermissions('readProject', $project->group)) {
+        if (! CheckPermission::handle('readProject', $project->group)) {
             return Redirect::route('admin.projects.index');
         }
 
@@ -117,7 +119,7 @@ class ProjectController extends Controller
         $model = $this->projectModelService->create($request->all());
 
         if ($model) {
-            return Redirect::route('admin.projects.show', [$model->id])
+            return Redirect::route('admin.projects.show', [$model])
                 ->with('success', t('Record was created successfully.'));
         }
 
@@ -132,7 +134,7 @@ class ProjectController extends Controller
         $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
         if (! $project) {
-            return Redirect::route('admin.projects.show', [$projectId])
+            return Redirect::route('admin.projects.show', [$project])
                 ->with('danger', t('Error retrieving record from database'));
         }
 

@@ -23,7 +23,7 @@ use App\Models\Expedition;
 use App\Models\GeoLocateExport;
 use App\Models\GeoLocateForm;
 use App\Services\Csv\AwsS3CsvService;
-use App\Services\Models\ExpeditionService;
+use App\Services\Expedition\ExpeditionService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Storage;
@@ -58,7 +58,7 @@ class GeoLocateExportForm
      */
     public function findExpeditionWithRelations(int $expeditionId, array $relations = []): Expedition
     {
-        return $this->expeditionService->findExpeditionWithRelations($expeditionId, $relations);
+        return $this->expeditionService->expedition->with($relations)->find($expeditionId);
     }
 
     /**

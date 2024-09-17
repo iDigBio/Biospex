@@ -20,8 +20,9 @@
                     @endcan
                 </div>
                 <div class="text-center mt-4">
-                <a href="{{ route('admin.expeditions.create', [$project->id]) }}" class="btn btn-primary text-uppercase">
-                    <i class="fas fa-plus-circle"></i> {{ t('New Expedition') }}</a>
+                    <a href="{{ route('admin.expeditions.create', [$project]) }}"
+                       class="btn btn-primary text-uppercase">
+                        <i class="fas fa-plus-circle"></i> {{ t('New Expedition') }}</a>
                 </div>
             </div>
         </div>

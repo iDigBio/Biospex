@@ -34,7 +34,7 @@ class SubjectModelService
     /**
      * SubjectModelService constructor.
      */
-    public function __construct(protected Subject $model) {}
+    public function __construct(public Subject $subject) {}
 
     /**
      * Create.
@@ -43,7 +43,7 @@ class SubjectModelService
      */
     public function create(array $data)
     {
-        return $this->model->create($data);
+        return $this->subject->create($data);
     }
 
     /**
@@ -53,7 +53,7 @@ class SubjectModelService
      */
     public function update(array $data, $resourceId)
     {
-        $model = $this->model->find($resourceId);
+        $model = $this->subject->find($resourceId);
         $result = $model->fill($data)->save();
 
         return $result ? $model : false;
@@ -66,7 +66,7 @@ class SubjectModelService
      */
     public function find(string $id)
     {
-        return $this->model->find($id);
+        return $this->subject->find($id);
     }
 
     /**
@@ -77,7 +77,7 @@ class SubjectModelService
      */
     public function getWhereIn(string $field, array $values, array $columns = ['*'])
     {
-        return $this->model->whereIn($field, $values)->get($columns);
+        return $this->subject->whereIn($field, $values)->get($columns);
     }
 
     /**
@@ -88,7 +88,7 @@ class SubjectModelService
      */
     public function findByExpeditionId($expeditionId, array $attributes = ['*']): mixed
     {
-        return $this->model->where('expedition_ids', $expeditionId)->get($attributes);
+        return $this->subject->where('expedition_ids', $expeditionId)->get($attributes);
     }
 
     /**
@@ -96,7 +96,7 @@ class SubjectModelService
      */
     public function getSubjectCursorForExport($expeditionId): LazyCollection
     {
-        return $this->model->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])
+        return $this->subject->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])
             ->timeout(86400)->cursor();
     }
 
@@ -105,7 +105,7 @@ class SubjectModelService
      */
     public function getSubjectCursorForOcr(int $projectId, ?int $expeditionId = null): LazyCollection
     {
-        $query = $this->model->where('project_id', $projectId);
+        $query = $this->subject->where('project_id', $projectId);
         $query = $expeditionId === null ? $query : $query->where('expedition_ids', $expeditionId);
 
         return $query->where(function ($q) {
@@ -118,7 +118,7 @@ class SubjectModelService
      */
     public function getSubjectCountForOcr(int $projectId, ?int $expeditionId = null): int
     {
-        $query = $this->model->where('project_id', $projectId);
+        $query = $this->subject->where('project_id', $projectId);
         $query = $expeditionId === null ? $query : $query->where('expedition_ids', $expeditionId);
 
         return $query->where(function ($query) {
@@ -132,7 +132,7 @@ class SubjectModelService
     public function detachSubjects(Collection $subjectIds, int $expeditionId)
     {
         $subjectIds->each(function ($subjectId) use ($expeditionId) {
-            $subject = $this->model->find($subjectId);
+            $subject = $this->subject->find($subjectId);
             $subject->expedition_ids = collect($subject->expedition_ids)->filter(function ($value) use ($expeditionId) {
                 return $value != $expeditionId;
             })->unique()->toArray();
@@ -147,7 +147,7 @@ class SubjectModelService
     public function attachSubjects(Collection $subjectIds, int $expeditionId)
     {
         $subjectIds->each(function ($subjectId) use ($expeditionId) {
-            $subject = $this->model->find($subjectId);
+            $subject = $this->subject->find($subjectId);
             $subject->expedition_ids = collect($subject->expedition_ids)->push($expeditionId)->unique()->toArray();
             $subject->save();
         });
@@ -160,7 +160,7 @@ class SubjectModelService
      */
     public function deleteUnassignedByProject(int $projectId)
     {
-        return $this->model->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->cursor();
+        return $this->subject->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->cursor();
     }
 
     /**
@@ -187,7 +187,7 @@ class SubjectModelService
      */
     public function getGridTotalRowCount(array $vars = [])
     {
-        $count = $this->model->whereNested(function ($query) use ($vars) {
+        $count = $this->subject->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true])->count();
 
@@ -213,7 +213,7 @@ class SubjectModelService
      */
     public function getGridRows(array $vars = [])
     {
-        $query = $this->model->whereNested(function ($query) use ($vars) {
+        $query = $this->subject->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true])->take($vars['limit'])->skip($vars['offset']);
 
@@ -237,7 +237,7 @@ class SubjectModelService
      */
     public function exportGridRows(array $vars): LazyCollection
     {
-        $query = $this->model->whereNested(function ($query) use ($vars) {
+        $query = $this->subject->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true]);
 

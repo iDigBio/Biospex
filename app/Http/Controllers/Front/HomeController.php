@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 use App\Services\Models\PanoptesTranscriptionModelService;
 
 /**
@@ -31,9 +31,9 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(ExpeditionModelService $expeditionModelService, PanoptesTranscriptionModelService $panoptesTranscriptionModelService): \Illuminate\Contracts\View\View
+    public function index(ExpeditionService $expeditionService, PanoptesTranscriptionModelService $panoptesTranscriptionModelService): \Illuminate\Contracts\View\View
     {
-        $expedition = $expeditionModelService->getHomePageProjectExpedition();
+        $expedition = $expeditionService->getHomePageProjectExpedition();
         $contributorCount = $panoptesTranscriptionModelService->getContributorCount();
         $transcriptionCount = $panoptesTranscriptionModelService->getTotalTranscriptions();
 

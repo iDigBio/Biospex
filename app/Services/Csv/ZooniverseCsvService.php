@@ -21,7 +21,7 @@ namespace App\Services\Csv;
 
 use App\Services\Api\AwsS3ApiService;
 use App\Services\Api\PanoptesApiService;
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -35,7 +35,7 @@ class ZooniverseCsvService
      * ZooniverseCsvService constructor.
      */
     public function __construct(
-        private ExpeditionModelService $expeditionModelService,
+        private ExpeditionService $expeditionService,
         private PanoptesApiService $panoptesApiService,
         private AwsS3ApiService $awsS3ApiService
     ) {}
@@ -45,7 +45,7 @@ class ZooniverseCsvService
      */
     public function getExpedition(int $expeditionId): mixed
     {
-        return $this->expeditionModelService->getExpeditionForZooniverseProcess($expeditionId);
+        return $this->expeditionService->getExpeditionForZooniverseProcess($expeditionId);
     }
 
     /**

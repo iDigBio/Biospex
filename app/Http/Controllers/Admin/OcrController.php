@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\TesseractOcrCreateJob;
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 use App\Services\Models\ProjectModelService;
 
 class OcrController extends Controller
@@ -29,7 +29,9 @@ class OcrController extends Controller
     /**
      * OcrController constructor.
      */
-    public function __construct(private readonly ProjectModelService $projectModelService, private readonly ExpeditionModelService $expeditionModelService) {}
+    public function __construct(
+        protected ProjectModelService $projectModelService,
+        protected ExpeditionService $expeditionService) {}
 
     /**
      * Reprocess OCR.
@@ -38,7 +40,7 @@ class OcrController extends Controller
     {
         $group = $expeditionId === null ?
             $this->projectModelService->findWithRelations($projectId, ['group'])->group :
-            $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['project.group'])->project->group;
+            $this->expeditionService->expedition->with(['project.group'])->find($expeditionId)->project->group;
 
         if (! $this->checkPermissions('updateProject', $group)) {
             return \Redirect::route('admin.projects.index');

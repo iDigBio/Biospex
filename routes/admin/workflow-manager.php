@@ -17,9 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Admin\ZooniverseController;
+use App\Http\Controllers\Admin\WorkflowManagerController;
 
-Route::post('projects/{projects}/expeditions/{expeditions}/process', [ZooniverseController::class, 'process'])->name('admin.zooniverse.process');
-Route::delete('projects/{projects}/expeditions/{expeditions}/stop', [ZooniverseController::class, 'stop'])->name('admin.zooniverse.stop');
-Route::get('projects/{projects}/expeditions/{expeditions}/workflow', [ZooniverseController::class, 'workflowShowForm'])->name('admin.zooniverse.workflowShowForm');
-Route::post('projects/{projects}/expeditions/{expeditions}/workflow', [ZooniverseController::class, 'workflowUpdateForm'])->name('admin.zooniverse.workflowUpdateForm');
+Route::post('expeditions/{expeditions}/process', [WorkflowManagerController::class, 'process'])->name('admin.workflow-manager.create');
+Route::delete('expeditions/{expeditions}/stop', [WorkflowManagerController::class, 'stop'])->name('admin.workflow-manager.update');
+
+Route::get('expeditions/{expeditions}/workflow', [WorkflowManagerController::class, 'workflowShowForm'])->name('admin.zooniverse.workflowShowForm');
+Route::post('expeditions/{expeditions}/workflow', [WorkflowManagerController::class, 'workflowUpdateForm'])->name('admin.zooniverse.workflowUpdateForm');

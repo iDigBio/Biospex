@@ -20,7 +20,7 @@
 namespace App\Jobs;
 
 use App\Notifications\Generic;
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 use App\Services\Reconcile\ExpertReconcileService;
 use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Batchable;
@@ -60,10 +60,10 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
      * @return void
      */
     public function handle(
-        ExpeditionModelService $expeditionModelService,
+        ExpeditionService $expeditionService,
         ExpertReconcileService $expertReconcileService
     ) {
-        $expedition = $expeditionModelService->findExpeditionWithRelations($this->expeditionId, ['project.group.owner']);
+        $expedition = $expeditionService->expedition->with(['project.group.owner'])->find($this->expeditionId);
 
         try {
             if ($this->skipReconcile($this->expeditionId)) {

@@ -25,7 +25,7 @@ use App\Models\Expedition;
 use App\Models\ExportQueue;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Actor\ActorFactory;
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 use Illuminate\Support\Facades\Storage;
 
 readonly class ZooniverseExportQueue
@@ -34,7 +34,7 @@ readonly class ZooniverseExportQueue
      * ExportQueueCommand constructor.
      */
     public function __construct(
-        private ExpeditionModelService $expeditionModelService,
+        private ExpeditionService $expeditionService,
         private ExportQueue $exportQueue,
         private ActorDirectory $actorDirectory,
         private Download $download
@@ -65,7 +65,7 @@ readonly class ZooniverseExportQueue
      */
     public function getExportQueueForStageCommand(int $queueId): ExportQueue
     {
-        return $this->exportQueueRepository->findWith($queueId, ['expedition']);
+        return $this->exportQueue->with(['expedition'])->find($queueId);
     }
 
     /**
@@ -129,6 +129,6 @@ readonly class ZooniverseExportQueue
      */
     private function getExpedition(int $expeditionId): Expedition
     {
-        return $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['zooniverseActor', 'stat', 'exportQueue']);
+        return $this->expeditionService->expedition->with(['zooniverseActor', 'stat', 'exportQueue'])->find($expeditionId);
     }
 }

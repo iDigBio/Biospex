@@ -23,8 +23,6 @@ use Storage;
 
 /**
  * Class ExpeditionPresenter
- *
- * @package App\Presenters
  */
 class ExpeditionPresenter extends Presenter
 {
@@ -49,10 +47,9 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionShowIcon()
     {
-        return '<a href="'.route('admin.expeditions.show', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('View Expedition').'">
+        return '<a href="'.route('admin.expeditions.show', [$this->model]).'" \
+            data-hover="tooltip" 
+            title="'.t('View Expedition').'">
             <i class="fas fa-eye"></i></a>';
     }
 
@@ -63,11 +60,10 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionShowIconLrg()
     {
-        return '<a href="'.route('admin.expeditions.show', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('View Expedition').'">
-            <i class="fas fa-eye fa-2x"></i></a>';
+        return '<a href="'.route('admin.expeditions.show', [$this->model]).'" 
+        data-hover="tooltip" 
+        title="'.t('View Expedition').'">
+        <i class="fas fa-eye fa-2x"></i></a>';
     }
 
     /**
@@ -82,7 +78,7 @@ class ExpeditionPresenter extends Presenter
                        data-toggle="modal"
                        data-target="#global-modal"
                        data-size="modal-lg"
-                       data-url="'.route('admin.expeditions.tools', [$this->model->project_id, $this->model->id]).'"
+                       data-url="'.route('admin.expeditions.tools', [$this->model]).'"
                        data-hover="tooltip"
                        data-title="'.t('Expedition Tools').'"><i class="fas fa-tools fa-2x"></i></a>';
     }
@@ -94,18 +90,15 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionDownloadIconLrg()
     {
-        $route = route('admin.downloads.index', [
-            $this->model->project_id,
-            $this->model->id,
-        ]);
+        $route = route('admin.downloads.index', [$this->model]);
 
         return '<a href="#" class="prevent-default" 
                 data-toggle="modal" 
-                data-title="'. t('Download Expedition Files').'" 
+                data-title="'.t('Download Expedition Files').'" 
                 data-url="'.$route.'"
                 data-dismiss="modal" data-toggle="modal" data-target="#global-modal" data-size="modal-xl" 
                 data-hover="tooltip" 
-                title="'. t('Download Expedition Files').'"><i class="fas fa-file-download fa-2x"></i></a>';
+                title="'.t('Download Expedition Files').'"><i class="fas fa-file-download fa-2x"></i></a>';
     }
 
     /**
@@ -115,10 +108,8 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionEditIcon()
     {
-        return '<a href="'.route('admin.expeditions.edit', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Edit Expedition').'"><i class="fas fa-edit"></i></a>';
+        return '<a href="'.route('admin.expeditions.edit', [$this->model]).'" data-hover="tooltip" title="'.t('Edit Expedition').'">
+        <i class="fas fa-edit"></i></a>';
     }
 
     /**
@@ -128,23 +119,21 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionEditIconLrg()
     {
-        return '<a href="'.route('admin.expeditions.edit', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Edit Expedition').'"><i class="fas fa-edit fa-2x"></i></a>';
+        return '<a href="'.route('admin.expeditions.edit', [$this->model]).'" 
+        data-hover="tooltip" 
+        title="'.t('Edit Expedition').'">
+        <i class="fas fa-edit fa-2x"></i></a>';
     }
 
     /**
      * Return return clone icon.
-     *
-     * @return string
      */
     public function expeditionCloneIcon()
     {
-        return '<a href="'.route('admin.expeditions.clone', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Clone Expedition').'"><i class="fas fa-clone"></i></a>';
+        return '<a href="'.route('admin.expeditions.clone', [$this->model]).'" 
+        data-hover="tooltip" 
+        title="'.t('Clone Expedition').'">
+        <i class="fas fa-clone"></i></a>';
     }
 
     /**
@@ -154,10 +143,10 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionCloneIconLrg()
     {
-        return '<a href="'.route('admin.expeditions.clone', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Clone Expedition').'"><i class="fas fa-clone fa-2x"></i></a>';
+        return '<a href="'.route('admin.expeditions.clone', [$this->model]).'" 
+        data-hover="tooltip" 
+        title="'.t('Clone Expedition').'">
+        <i class="fas fa-clone fa-2x"></i></a>';
     }
 
     /**
@@ -167,15 +156,13 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionDeleteIcon()
     {
-        return '<a href="'.route('admin.expeditions.delete', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Delete Expedition').'" 
+        return '<a href="'.route('admin.expeditions.delete', [$this->model]).'" 
+            class="prevent-default"
+            title="'.t('Delete Expedition').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Delete Expedition').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
+            data-title="'.t('Delete Expedition').'?" data-content="'.t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -186,16 +173,14 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionDeleteIconLrg()
     {
-        return '<a href="'.route('admin.expeditions.delete', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Delete Expedition').'" 
+        return '<a href="'.route('admin.expeditions.delete', [$this->model]).'" 
+            class="prevent-default"
+            title="'.t('Delete Expedition').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Delete Expedition').'?" 
-            data-content="'. t('This will permanently delete the record and all associated records.').'">
+            data-title="'.t('Delete Expedition').'?" 
+            data-content="'.t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -206,15 +191,12 @@ class ExpeditionPresenter extends Presenter
      */
     public function expeditionOcrBtn()
     {
-        return '<a href="'.route('admin.expeditions.ocr', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" class="prevent-default btn btn-primary rounded-0 mb-1 mt-1"
+        return '<a href="'.route('admin.expeditions.ocr', [$this->model]).'" 
+            class="prevent-default btn btn-primary rounded-0 mb-1 mt-1"
             data-method="post"
             data-confirm="confirmation"
-            data-title="'. t('Reprocess Subject OCR').'?" 
-            data-content="'. t('This action will reprocess all ocr for the Expedition.').'">
-            '. t('Reprocess Subject OCR').'</a>';
+            data-title="'.t('Reprocess Subject OCR').'?" 
+            data-content="'.t('This action will reprocess all ocr for the Expedition.').'">
+            '.t('Reprocess Subject OCR').'</a>';
     }
-
 }

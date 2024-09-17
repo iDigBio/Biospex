@@ -20,12 +20,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\GridExportCsvJob;
 use App\Services\Csv\Csv;
+use App\Services\Expedition\ExpeditionService;
 use App\Services\Grid\JqGridEncoder;
-use App\Services\Models\ExpeditionModelService;
 use App\Services\Models\SubjectModelService;
-use Auth;
 use Exception;
 
 /**
@@ -89,75 +87,13 @@ class GridController extends Controller
     }
 
     /**
-     * Show grid in expeditions.
-     *
-     * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function expeditionsShow(int $projectId, int $expeditionId)
-    {
-        try {
-            return $this->grid->encodeGridRequestedData(\Request::all(), 'show', (int) $projectId, (int) $expeditionId);
-        } catch (Exception $e) {
-            return response($e->getMessage(), 404);
-        }
-    }
-
-    /**
-     * Show grid in expeditions edit.
-     *
-     * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function expeditionsEdit(int $projectId, int $expeditionId)
-    {
-        try {
-            return $this->grid->encodeGridRequestedData(\Request::all(), 'edit', (int) $projectId, (int) $expeditionId);
-        } catch (Exception $e) {
-            return response($e->getMessage(), 404);
-        }
-    }
-
-    /**
-     * Show grid in expeditions create.
-     *
-     * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function expeditionsCreate(int $projectId)
-    {
-        try {
-            return $this->grid->encodeGridRequestedData(\Request::all(), 'create', (int) $projectId);
-        } catch (Exception $e) {
-            return response($e->getMessage(), 404);
-        }
-    }
-
-    /**
-     * Export csv from grid button.
-     *
-     * @param  string|null  $expeditionId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function export(int $projectId, ?int $expeditionId = null)
-    {
-        $attributes = [
-            'projectId' => (int) $projectId,
-            'expeditionId' => (int) $expeditionId,
-            'postData' => ['filters' => \Request::exists('filters') ? \Request::get('filters') : null],
-            'route' => \Request::get('route'),
-        ];
-
-        GridExportCsvJob::dispatch(Auth::user(), $attributes);
-
-        return response()->json(['success' => true], 200);
-    }
-
-    /**
      * Delete subject if not part of expedition process.
      *
      * @note Removed from jqGrid but keep code in case we need it again.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete(SubjectModelService $subjectModelService, ExpeditionModelService $expeditionModelService)
+    public function delete(SubjectModelService $subjectModelService, ExpeditionService $expeditionService)
     {
         if (! \Request::ajax()) {
             return response()->json(['error' => 'Delete must be performed via ajax.'], 404);
@@ -171,9 +107,9 @@ class GridController extends Controller
 
         $subjects = $subjectModelService->getWhereIn('_id', $subjectIds);
 
-        $subjects->reject(function ($subject) use ($expeditionModelService) {
+        $subjects->reject(function ($subject) use ($expeditionService) {
             foreach ($subject->expedition_ids as $expeditionId) {
-                $expedition = $expeditionModelService->findExpeditionHavingWorkflowManager($expeditionId);
+                $expedition = $expeditionService->findExpeditionHavingWorkflowManager($expeditionId);
                 if ($expedition !== null) {
                     return true;
                 }

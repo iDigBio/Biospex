@@ -148,15 +148,15 @@ readonly class ProjectModelService
     /**
      * Get project for show page.
      */
-    public function getProjectShow($projectId): ?Project
+    public function getProjectShow(Project &$project)
     {
-        return $this->project->withCount('expeditions')->with([
+        $project->loadCount('expeditions')->load([
             'group',
             'ocrQueue',
             'expeditions' => function ($q) {
                 $q->with(['stat', 'zooniverseExport', 'panoptesProject', 'workflowManager']);
             },
-        ])->find($projectId);
+        ]);
     }
 
     /**

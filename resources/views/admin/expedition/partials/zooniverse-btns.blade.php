@@ -14,13 +14,13 @@
    data-toggle="modal"
    data-target="#global-modal"
    data-size="modal-lg"
-   data-url="{{ route('admin.zooniverse.workflowShowForm', [$expedition->project->id, $expedition->id]) }}"
+   data-url="{{ route('admin.zooniverse.workflowShowForm', [$expedition]) }}"
    data-title="{{ t('Edit Workflow Id') }}"> {{ t('Edit Workflow Id') }}</a>
 @if(zooniverse_export_file_check($expedition))
     @if(check_panoptes_workflow($expedition))
         @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
             @unless($expedition->stat->local_subject_count === 0)
-                <a href="{{ route('admin.zooniverse.process', [$expedition->project_id, $expedition->id]) }}"
+                <a href="{{ route('admin.workflow-manager.create', [$expedition]) }}"
                    class="prevent-default btn btn-primary rounded-0 mb-1 green"
                    data-method="post"
                    data-confirm="confirmation"
@@ -29,7 +29,7 @@
                     {{ t('Start Expedition Processing') }}</a>
             @endunless
         @else
-            <a href="{{ route('admin.zooniverse.stop', [$expedition->project_id, $expedition->id]) }}"
+            <a href="{{ route('admin.workflow-manager.update', [$expedition]) }}"
                class="prevent-default btn btn-primary rounded-0 mb-1"
                data-method="delete"
                data-confirm="confirmation"

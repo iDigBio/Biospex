@@ -24,7 +24,7 @@ use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Api\PanoptesApiService;
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -58,15 +58,15 @@ class ZooniverseClassificationCountJob implements ShouldQueue
      * @return void
      */
     public function handle(
-        ExpeditionModelService $expeditionModelService,
+        ExpeditionService $expeditionService,
         PanoptesApiService $panoptesApiService
     ) {
-        $expedition = $expeditionModelService->findExpeditionWithRelations($this->expeditionId, [
+        $expedition = $expeditionService->expedition->with([
             'project.group.owner',
             'stat',
             'zooniverseActor',
             'panoptesProject',
-        ]);
+        ])->find($this->expeditionId);
 
         if ($expedition === null || $this->workflowIdDoesNotExist($expedition)) {
             $this->delete();

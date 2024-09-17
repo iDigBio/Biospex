@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 use App\Services\Reconcile\ExpertReconcileService;
 use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Batchable;
@@ -59,10 +59,10 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
      * @return void
      */
     public function handle(
-        ExpeditionModelService $expeditionModelService,
+        ExpeditionService $expeditionService,
         ExpertReconcileService $expertReconcileService
     ) {
-        $expedition = $expeditionModelService->findExpeditionForExpertReview($this->expeditionId);
+        $expedition = $expeditionService->expedition->find($this->expeditionId);
 
         try {
             if ($this->skipReconcile($this->expeditionId)) {

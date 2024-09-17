@@ -23,8 +23,6 @@ use Illuminate\Support\LazyCollection;
 
 /**
  * Class JqGridEncoder
- *
- * @package App\Services\Grid
  */
 class JqGridEncoder
 {
@@ -40,13 +38,10 @@ class JqGridEncoder
 
     /**
      * JqGridEncoder constructor.
-     *
-     * @param \App\Services\Grid\GridModel $gridModel
-     * @param \App\Services\Grid\GridData $gridData
      */
     public function __construct(
         GridModel $gridModel,
-        GridData  $gridData
+        GridData $gridData
     ) {
         $this->gridModel = $gridModel;
         $this->gridData = $gridData;
@@ -55,7 +50,6 @@ class JqGridEncoder
     /**
      * Load grid model.
      *
-     * @param int $projectId
      * @return false|string
      */
     public function loadGridModel(int $projectId)
@@ -66,11 +60,9 @@ class JqGridEncoder
     /**
      * Get grid data.
      *
-     * @param $postedData
-     * @param $route
-     * @param $projectId
-     * @param null $expeditionId
+     * @param  null  $expeditionId
      * @return array
+     *
      * @throws \Exception
      */
     public function encodeGridRequestedData($postedData, $route, $projectId, $expeditionId = null)
@@ -88,21 +80,17 @@ class JqGridEncoder
         $this->gridData->prefixOccurrence($rows);
 
         return [
-            'page'    => $vars['page'],
-            'total'   => $vars['total'],
+            'page' => $vars['page'],
+            'total' => $vars['total'],
             'records' => $vars['count'],
-            'rows'    => $rows,
+            'rows' => $rows,
         ];
     }
 
     /**
      * Return query for processing exports.
      *
-     * @param $postedData
-     * @param $route
-     * @param $projectId
-     * @param null $expeditionId
-     * @return \Illuminate\Support\LazyCollection
+     * @param  null  $expeditionId
      */
     public function encodeGridExportData($postedData, $route, $projectId, $expeditionId = null): LazyCollection
     {

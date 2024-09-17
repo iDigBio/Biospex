@@ -23,8 +23,6 @@ use Storage;
 
 /**
  * Class ProjectPresenter
- *
- * @package App\Presenters
  */
 class ProjectPresenter extends Presenter
 {
@@ -71,9 +69,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectPageIcon()
     {
-        $route = route("front.projects.slug", [$this->model->slug]);
+        $route = route('front.projects.slug', [$this->model->slug]);
 
-        return $this->model->slug == null ? '' : '<a href="'.$route.'" data-hover="tooltip" title="'. t('Project Public Page').'">
+        return $this->model->slug == null ? '' : '<a href="'.$route.'" data-hover="tooltip" title="'.t('Project Public Page').'">
                 <i class="fas fa-project-diagram"></i></a>';
     }
 
@@ -84,9 +82,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectPageIconLrg()
     {
-        $route = route("front.projects.slug", [$this->model->slug]);
+        $route = route('front.projects.slug', [$this->model->slug]);
 
-        return $this->model->slug == null ? '' : '<a href="'.$route.'" target="_blank" data-hover="tooltip" title="'. t('Project Public Page').'">
+        return $this->model->slug == null ? '' : '<a href="'.$route.'" target="_blank" data-hover="tooltip" title="'.t('Project Public Page').'">
                 <i class="fas fa-project-diagram fa-2x"></i></a>';
     }
 
@@ -97,9 +95,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectAdminIconLrg()
     {
-        $route = route("admin.projects.show", [$this->model->id]);
+        $route = route('admin.projects.show', [$this->model]);
 
-        return $this->model->id == null ? '' : '<a href="'.$route.'" data-hover="tooltip" title="'. t('Show Project Admin Page').'">
+        return $this->model->id == null ? '' : '<a href="'.$route.'" data-hover="tooltip" title="'.t('Show Project Admin Page').'">
                 <i class="fas fa-project-diagram fa-2x"></i></a>';
     }
 
@@ -110,9 +108,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectEventsIcon()
     {
-        $route = route("front.projects.slug", [$this->model->slug]);
+        $route = route('front.projects.slug', [$this->model->slug]);
 
-        return $this->model->events_count == null ? '' : '<a href="'.$route.'#events" data-hover="tooltip" title="'. t('Events').'">
+        return $this->model->events_count == null ? '' : '<a href="'.$route.'#events" data-hover="tooltip" title="'.t('Events').'">
                 <i class="far fa-calendar-alt"></i></a>';
     }
 
@@ -123,9 +121,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectEventsIconLrg()
     {
-        $route = route("front.projects.slug", [$this->model->slug]);
+        $route = route('front.projects.slug', [$this->model->slug]);
 
-        return $this->model->events_count == null ? '' : '<a href="'.$route.'#events" data-hover="tooltip" title="'. t('Events').'">
+        return $this->model->events_count == null ? '' : '<a href="'.$route.'#events" data-hover="tooltip" title="'.t('Events').'">
                 <i class="far fa-calendar-alt fa-2x"></i></a>';
     }
 
@@ -136,7 +134,7 @@ class ProjectPresenter extends Presenter
      */
     public function organizationIcon()
     {
-        return $this->model->organization_website == null ? '' : '<a href="'.$this->model->organization_website.'" target="_blank" data-hover="tooltip" title="'. t('Organization').'">
+        return $this->model->organization_website == null ? '' : '<a href="'.$this->model->organization_website.'" target="_blank" data-hover="tooltip" title="'.t('Organization').'">
                 <i class="fas fa-building"></i></a>';
     }
 
@@ -147,7 +145,7 @@ class ProjectPresenter extends Presenter
      */
     public function organizationIconLrg()
     {
-        return $this->model->organization_website == null ? '' : '<a href="'.$this->model->organization_website.'" target="_blank" data-hover="tooltip" title="'. t('Organization').'">
+        return $this->model->organization_website == null ? '' : '<a href="'.$this->model->organization_website.'" target="_blank" data-hover="tooltip" title="'.t('Organization').'">
                 <i class="fas fa-building fa-2x"></i></a>';
     }
 
@@ -158,7 +156,7 @@ class ProjectPresenter extends Presenter
      */
     public function twitterIcon()
     {
-        return $this->model->twitter == null ? '' : '<a href="'.$this->model->twitter.'" target="_blank" data-hover="tooltip" title="'. t('Twitter').'">
+        return $this->model->twitter == null ? '' : '<a href="'.$this->model->twitter.'" target="_blank" data-hover="tooltip" title="'.t('Twitter').'">
                 <i class="fab fa-twitter"></i></a>';
     }
 
@@ -169,7 +167,7 @@ class ProjectPresenter extends Presenter
      */
     public function twitterIconLrg()
     {
-        return $this->model->twitter == null ? '' : '<a href="'.$this->model->twitter.'" target="_blank" data-hover="tooltip" title="'. t('Twitter').'">
+        return $this->model->twitter == null ? '' : '<a href="'.$this->model->twitter.'" target="_blank" data-hover="tooltip" title="'.t('Twitter').'">
                 <i class="fab fa-twitter fa-2x"></i></a>';
     }
 
@@ -180,7 +178,7 @@ class ProjectPresenter extends Presenter
      */
     public function facebookIcon()
     {
-        return $this->model->facebook == null ? '' : '<a href="'.$this->model->facebook.'" target="_blank" data-hover="tooltip" title="'. t('Facebook').'">
+        return $this->model->facebook == null ? '' : '<a href="'.$this->model->facebook.'" target="_blank" data-hover="tooltip" title="'.t('Facebook').'">
                 <i class="fab fa-facebook"></i></a>';
     }
 
@@ -191,7 +189,7 @@ class ProjectPresenter extends Presenter
      */
     public function facebookIconLrg()
     {
-        return $this->model->facebook == null ? '' : '<a href="'.$this->model->facebook.'" target="_blank" data-hover="tooltip" title="'. t('Facebook').'">
+        return $this->model->facebook == null ? '' : '<a href="'.$this->model->facebook.'" target="_blank" data-hover="tooltip" title="'.t('Facebook').'">
                 <i class="fab fa-facebook fa-2x"></i></a>';
     }
 
@@ -202,7 +200,7 @@ class ProjectPresenter extends Presenter
      */
     public function blogIcon()
     {
-        return $this->model->blog_url == null ? '' : '<a href="'.$this->model->blog_url.'" target="_blank" data-hover="tooltip" title="'. t('Blog').'">
+        return $this->model->blog_url == null ? '' : '<a href="'.$this->model->blog_url.'" target="_blank" data-hover="tooltip" title="'.t('Blog').'">
                 <i class="fab fa-blogger-b"></i></a>';
     }
 
@@ -213,7 +211,7 @@ class ProjectPresenter extends Presenter
      */
     public function blogIconLrg()
     {
-        return $this->model->blog_url == null ? '' : '<a href="'.$this->model->blog_url.'" target="_blank" data-hover="tooltip" title="'. t('Blog').'">
+        return $this->model->blog_url == null ? '' : '<a href="'.$this->model->blog_url.'" target="_blank" data-hover="tooltip" title="'.t('Blog').'">
                 <i class="fab fa-blogger-b fa-2x"></i></a>';
     }
 
@@ -224,7 +222,7 @@ class ProjectPresenter extends Presenter
      */
     public function contactEmailIcon()
     {
-        return $this->model->contact_email == null ? '' : '<a href="mailto:'.$this->model->contact_email.'" data-hover="tooltip" title="'. t('Contact').'">
+        return $this->model->contact_email == null ? '' : '<a href="mailto:'.$this->model->contact_email.'" data-hover="tooltip" title="'.t('Contact').'">
                 <i class="fas fa-envelope"></i></a>';
     }
 
@@ -235,7 +233,7 @@ class ProjectPresenter extends Presenter
      */
     public function contactEmailIconLrg()
     {
-        return $this->model->contact_email == null ? '' : '<a href="mailto:'.$this->model->contact_email.'" data-hover="tooltip" title="'. t('Contact').'">
+        return $this->model->contact_email == null ? '' : '<a href="mailto:'.$this->model->contact_email.'" data-hover="tooltip" title="'.t('Contact').'">
                 <i class="fas fa-envelope fa-2x"></i></a>';
     }
 
@@ -246,7 +244,7 @@ class ProjectPresenter extends Presenter
      */
     public function projectExpeditionsIcon()
     {
-        return '<a href="#expeditions" data-hover="tooltip" title="'. t('Expeditions').'"><i class="fas fa-binoculars"></i></a>';
+        return '<a href="#expeditions" data-hover="tooltip" title="'.t('Expeditions').'"><i class="fas fa-binoculars"></i></a>';
     }
 
     /**
@@ -256,7 +254,7 @@ class ProjectPresenter extends Presenter
      */
     public function projectExpeditionsIconLrg()
     {
-        return '<a href="#expeditions" data-hover="tooltip" title="'. t('Expeditions').'"><i class="fas fa-binoculars fa-2x"></i></a>';
+        return '<a href="#expeditions" data-hover="tooltip" title="'.t('Expeditions').'"><i class="fas fa-binoculars fa-2x"></i></a>';
     }
 
     /**
@@ -267,8 +265,8 @@ class ProjectPresenter extends Presenter
     public function projectExploreIconLrg()
     {
         return '<a href="'.route('admin.projects.explore', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Explore Project Subjects').'"><i class="fas fa-table fa-2x"></i></a>';
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('Explore Project Subjects').'"><i class="fas fa-table fa-2x"></i></a>';
     }
 
     /**
@@ -279,8 +277,8 @@ class ProjectPresenter extends Presenter
     public function projectShowIcon()
     {
         return '<a href="'.route('admin.projects.show', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('View Project').'"><i class="fas fa-eye"></i></a>';
+            $this->model,
+        ]).'" data-hover="tooltip" title="'.t('View Project').'"><i class="fas fa-eye"></i></a>';
     }
 
     /**
@@ -291,8 +289,8 @@ class ProjectPresenter extends Presenter
     public function projectShowIconLrg()
     {
         return '<a href="'.route('admin.projects.show', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('View Project').'"><i class="fas fa-eye fa-2x"></i></a>';
+            $this->model,
+        ]).'" data-hover="tooltip" title="'.t('View Project').'"><i class="fas fa-eye fa-2x"></i></a>';
     }
 
     /**
@@ -303,7 +301,7 @@ class ProjectPresenter extends Presenter
     public function projectAdvertiseIconLrg()
     {
         return '<a href="'.route('admin.advertises.index', [$this->model->id]).'" 
-                    data-hover="tooltip" title="'. t('Download Advertisement Manifest').'"><i class="fas fa-ad fa-2x"></i></a>';
+                    data-hover="tooltip" title="'.t('Download Advertisement Manifest').'"><i class="fas fa-ad fa-2x"></i></a>';
     }
 
     /**
@@ -314,8 +312,8 @@ class ProjectPresenter extends Presenter
     public function projectStatisticsIconLrg()
     {
         return '<a href="'.route('admin.projects.statistics', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Project Statistics').'"><i class="fas fa-chart-bar fa-2x"></i></a>';
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('Project Statistics').'"><i class="fas fa-chart-bar fa-2x"></i></a>';
     }
 
     /**
@@ -326,8 +324,8 @@ class ProjectPresenter extends Presenter
     public function projectEditIcon()
     {
         return '<a href="'.route('admin.projects.edit', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Edit Project').'"><i class="fas fa-edit"></i></a>';
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('Edit Project').'"><i class="fas fa-edit"></i></a>';
     }
 
     /**
@@ -338,8 +336,8 @@ class ProjectPresenter extends Presenter
     public function projectEditIconLrg()
     {
         return '<a href="'.route('admin.projects.edit', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Edit Project').'"><i class="fas fa-edit fa-2x"></i></a>';
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('Edit Project').'"><i class="fas fa-edit fa-2x"></i></a>';
     }
 
     /**
@@ -350,8 +348,8 @@ class ProjectPresenter extends Presenter
     public function projectCloneIcon()
     {
         return '<a href="'.route('admin.projects.clone', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Clone Project').'"><i class="fas fa-clone"></i></a>';
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('Clone Project').'"><i class="fas fa-clone"></i></a>';
     }
 
     /**
@@ -362,8 +360,8 @@ class ProjectPresenter extends Presenter
     public function projectCloneIconLrg()
     {
         return '<a href="'.route('admin.projects.clone', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Clone Project').'"><i class="fas fa-clone fa-2x"></i></a>';
+            $this->model->id,
+        ]).'" data-hover="tooltip" title="'.t('Clone Project').'"><i class="fas fa-clone fa-2x"></i></a>';
     }
 
     /**
@@ -374,11 +372,11 @@ class ProjectPresenter extends Presenter
     public function projectDeleteIcon()
     {
         return '<a href="'.route('admin.projects.delete', [$this->model->id]).'" class="prevent-default"
-            title="'. t('Delete Project').'" 
+            title="'.t('Delete Project').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Delete Project').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
+            data-title="'.t('Delete Project').'?" data-content="'.t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -390,11 +388,11 @@ class ProjectPresenter extends Presenter
     public function projectDeleteIconLrg()
     {
         return '<a href="'.route('admin.projects.delete', [$this->model->id]).'" class="prevent-default"
-            title="'. t('Delete Project').'" 
+            title="'.t('Delete Project').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Delete Project').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
+            data-title="'.t('Delete Project').'?" data-content="'.t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -408,8 +406,8 @@ class ProjectPresenter extends Presenter
         return '<a href="#" class="prevent-default" 
                     data-url="'.route('admin.imports.index', [$this->model->id]).'" 
                     data-dismiss="modal" data-toggle="modal" data-target="#global-modal" data-size="modal-lg"
-                    data-title="'. t('Import Project Subjects').'"
-                    data-hover="tooltip" title="'. t('Import Project Subjects').'">
+                    data-title="'.t('Import Project Subjects').'"
+                    data-hover="tooltip" title="'.t('Import Project Subjects').'">
                     <i class="fas fa-file-import fa-2x"></i></a>';
     }
 
@@ -421,13 +419,13 @@ class ProjectPresenter extends Presenter
     public function projectOcrIconLrg()
     {
         return '<a href="'.route('admin.projects.ocr', [
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Reprocess Subject OCR').'" 
+            $this->model->id,
+        ]).'" class="prevent-default"
+            title="'.t('Reprocess Subject OCR').'" 
             data-hover="tooltip"        
             data-method="post"
             data-confirm="confirmation"
-            data-title="'. t('Reprocess Subject OCR').'?" data-content="'.t('This action will reprocess all ocr for the Project.').'">
+            data-title="'.t('Reprocess Subject OCR').'?" data-content="'.t('This action will reprocess all ocr for the Project.').'">
             <i class="fas fa-redo-alt fa-2x"></i></a>';
     }
 }

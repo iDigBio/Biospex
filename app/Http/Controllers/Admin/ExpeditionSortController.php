@@ -11,30 +11,35 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\Expedition\ExpeditionService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use View;
 
-/**
- * Class ExpeditionController
- */
-class ExpeditionController extends Controller
+class ExpeditionSortController extends Controller
 {
     /**
-     * Displays Expeditions on public page.
+     * Sort expedition admin page.
      */
     public function __invoke(ExpeditionService $expeditionService)
     {
-        [$expeditions, $expeditionsCompleted] = $expeditionService->getExpeditionPublicIndex();
+        if (! Request::ajax()) {
+            return null;
+        }
 
-        return View::make('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
+        [$active, $completed] = $expeditionService->getAdminIndex(Auth::user(), Request::all());
+
+        $expeditions = Request::get('type') === 'active' ? $active : $completed;
+
+        return View::make('admin.expedition.partials.expedition', compact('expeditions'));
     }
 }

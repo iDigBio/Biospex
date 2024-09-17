@@ -24,7 +24,7 @@ use App\Models\Download;
 use App\Models\Reconcile;
 use App\Notifications\Generic;
 use App\Services\Csv\AwsS3CsvService;
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 
 /**
  * Class ExpertReconcilePublishService
@@ -37,7 +37,7 @@ readonly class ExpertReconcilePublishService
     public function __construct(
         private Reconcile $reconcile,
         private Download $download,
-        private ExpeditionModelService $expeditionModelService,
+        private ExpeditionService $expeditionService,
         private AwsS3CsvService $awsS3CsvService
     ) {}
 
@@ -112,7 +112,7 @@ readonly class ExpertReconcilePublishService
      */
     private function sendEmail(string $expeditionId): void
     {
-        $expedition = $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['project.group.owner']);
+        $expedition = $this->expeditionService->expedition->with(['project.group.owner'])->find($expeditionId);
 
         $attributes = [
             'subject' => t('Reconciled Expert Review Published'),

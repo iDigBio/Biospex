@@ -23,7 +23,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ExpertReconcileReviewPublishJob;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Api\ZooniverseTalkApiService;
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 use App\Services\Reconcile\ExpertReconcileService;
 use App\Services\Reconcile\ReconcileService;
 use App\Traits\SkipZooniverse;
@@ -44,7 +44,7 @@ class ReconcileController extends Controller
      */
     public function __construct(
         private ExpertReconcileService $expertReconcileService,
-        private ExpeditionModelService $expeditionModelService,
+        private ExpeditionService $expeditionService,
         private ReconcileService $reconcileService
     ) {}
 
@@ -53,7 +53,7 @@ class ReconcileController extends Controller
      */
     public function index(int $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService): View|RedirectResponse
     {
-        $expedition = $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['project.group.owner', 'panoptesProject']);
+        $expedition = $this->expeditionService->expedition->with(['project.group.owner', 'panoptesProject'])->find($expeditionId);
 
         if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);

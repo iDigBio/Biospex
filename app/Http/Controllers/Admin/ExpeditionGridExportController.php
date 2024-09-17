@@ -11,30 +11,35 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\Expedition\ExpeditionService;
-use View;
+use App\Jobs\GridExportCsvJob;
+use App\Models\Expedition;
+use Illuminate\Support\Facades\Auth;
 
-/**
- * Class ExpeditionController
- */
-class ExpeditionController extends Controller
+class ExpeditionGridExportController extends Controller
 {
     /**
-     * Displays Expeditions on public page.
+     * Export csv from grid button.
      */
-    public function __invoke(ExpeditionService $expeditionService)
+    public function __invoke(Expedition $expedition)
     {
-        [$expeditions, $expeditionsCompleted] = $expeditionService->getExpeditionPublicIndex();
+        $attributes = [
+            'projectId' => $expedition->project_id,
+            'expeditionId' => $expedition->id,
+            'postData' => ['filters' => \Request::exists('filters') ? \Request::get('filters') : null],
+            'route' => \Request::get('route'),
+        ];
 
-        return View::make('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
+        GridExportCsvJob::dispatch(Auth::user(), $attributes);
+
+        return response()->json(['success' => true], 200);
     }
 }

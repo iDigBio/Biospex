@@ -23,12 +23,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkflowIdFormRequest;
 use App\Jobs\PanoptesProjectUpdateJob;
 use App\Models\PanoptesProject;
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 use App\Services\Models\ProjectModelService;
 use App\Services\Models\WorkflowManagerModelService;
 use Exception;
 
-class ZooniverseController extends Controller
+class WorkflowManagerController extends Controller
 {
     /**
      * Construct
@@ -41,7 +41,7 @@ class ZooniverseController extends Controller
     /**
      * Start processing expedition actors
      */
-    public function process(ExpeditionModelService $expeditionModelService, int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
+    public function process(ExpeditionService $expeditionService, int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
     {
         $project = $this->projectModelService->findWithRelations($projectId, ['group']);
 
@@ -50,12 +50,12 @@ class ZooniverseController extends Controller
         }
 
         try {
-            $expedition = $expeditionModelService->findExpeditionWithRelations($expeditionId, [
+            $expedition = $expeditionService->expedition->with([
                 'actors',
                 'panoptesProject',
                 'workflowManager',
                 'stat',
-            ]);
+            ])->find($expeditionId);
 
             if ($expedition->panoptesProject === null) {
                 throw new Exception(t('Zooniverse Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));

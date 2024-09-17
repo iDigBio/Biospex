@@ -9,7 +9,7 @@
 @section('content')
     @include('admin.expedition.partials.panel')
     <form id="gridForm" method="post"
-          action="{{ route('admin.expeditions.update', [$expedition->project->id, $expedition->id]) }}"
+          action="{{ route('admin.expeditions.update', [$expedition]) }}"
           role="form" enctype="multipart/form-data">
         {!! method_field('put') !!}
         @csrf

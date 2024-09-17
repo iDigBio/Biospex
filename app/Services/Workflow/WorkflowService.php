@@ -11,15 +11,28 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Front\ExpeditionController;
-use App\Http\Controllers\Front\ExpeditionSortController;
+namespace App\Services\Workflow;
 
-Route::get('expeditions', ExpeditionController::class)->name('front.expeditions.index');
+use App\Models\Workflow;
 
-Route::post('expeditions/sort', ExpeditionSortController::class)->name('front.expeditions.sort');
+class WorkflowService
+{
+    public function __construct(public Workflow $workflow) {}
+
+    /**
+     * Return workflow select options.
+     */
+    public function getWorkflowSelect(): array
+    {
+        return ['' => '--Select--'] + $this->workflow->where('enabled', '=', 1)
+            ->orderBy('id', 'asc')
+            ->pluck('title', 'id')
+            ->toArray();
+    }
+}

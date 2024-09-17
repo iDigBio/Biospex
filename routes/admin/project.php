@@ -17,18 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Admin\OcrController;
 use App\Http\Controllers\Admin\ProjectController;
 
 Route::get('projects', [ProjectController::class, 'index'])->name('admin.projects.index');
 Route::get('projects/create', [ProjectController::class, 'create'])->name('admin.projects.create');
-Route::post('projects/create', [ProjectController::class, 'store'])->name('admin.projects.store');
-Route::get('projects/{projects}', [ProjectController::class, 'show'])->name('admin.projects.show');
-Route::get('projects/{projects}/edit', [ProjectController::class, 'edit'])->name('admin.projects.edit');
-Route::put('projects/{projects}', [ProjectController::class, 'update'])->name('admin.projects.update');
-Route::get('projects/{projects}/clone', [ProjectController::class, 'clone'])->name('admin.projects.clone');
-Route::get('projects/{projects}/explore', [ProjectController::class, 'explore'])->name('admin.projects.explore');
-Route::get('projects/{projects}/statistics', [ProjectController::class, 'statistics'])->name('admin.projects.statistics');
+Route::post('projects/store', [ProjectController::class, 'store'])->name('admin.projects.store');
+Route::get('projects/{project}', [ProjectController::class, 'show'])->name('admin.projects.show');
+Route::get('projects/{project}/edit', [ProjectController::class, 'edit'])->name('admin.projects.edit');
+Route::put('projects/{project}', [ProjectController::class, 'update'])->name('admin.projects.update');
+Route::get('projects/{project}/clone', [ProjectController::class, 'clone'])->name('admin.projects.clone');
+Route::get('projects/{project}/explore', [ProjectController::class, 'explore'])->name('admin.projects.explore');
+Route::get('projects/{project}/statistics', [ProjectController::class, 'statistics'])->name('admin.projects.statistics');
 
 Route::post('projects/sort', [ProjectController::class, 'sort'])->name('admin.projects.sort');
 

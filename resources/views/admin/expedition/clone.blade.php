@@ -9,10 +9,9 @@
 @section('content')
     @include('admin.project.partials.project-panel', ['project' => $expedition->project])
     <form id="gridForm" method="post"
-          action="{{ route('admin.expeditions.store', [$expedition->project->id, $expedition->id]) }}"
+          action="{{ route('admin.expeditions.store', [$expedition->project]) }}"
           role="form" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="project_id" value="{{ $expedition->project->id }}">
         <input type="hidden" name="subject-ids" id="subject-ids">
         <div class="row">
             <div class="col-sm-10 mx-auto">

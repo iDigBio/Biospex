@@ -88,6 +88,23 @@ class Project extends BaseEloquentModel implements AttachableInterface
     protected $presenter = ProjectPresenter::class;
 
     /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    /**
      * Project constructor.
      */
     public function __construct(array $attributes = [])

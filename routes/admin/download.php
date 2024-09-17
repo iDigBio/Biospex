@@ -19,8 +19,8 @@
 
 use App\Http\Controllers\Admin\DownloadController;
 
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads', [DownloadController::class, 'index'])->name('admin.downloads.index');
+Route::get('expeditions/{expeditions}/downloads', [DownloadController::class, 'index'])->name('admin.downloads.index');
 Route::get('reports/{file}', [DownloadController::class, 'report'])->name('admin.downloads.report');
-Route::get('projects/{projects}/expeditions/{expeditions}/export', [DownloadController::class, 'export'])->name('admin.downloads.export');
-Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/batch', [DownloadController::class, 'batch'])->name('admin.downloads.batch');
+Route::get('expeditions/{expeditions}/export', [DownloadController::class, 'export'])->name('admin.downloads.export');
+Route::get('expeditions/{expeditions}/downloads/{downloads}/batch', [DownloadController::class, 'batch'])->name('admin.downloads.batch');
 Route::get('geolocates/{file}', [DownloadController::class, 'geoLocate'])->name('admin.downloads.geolocate');

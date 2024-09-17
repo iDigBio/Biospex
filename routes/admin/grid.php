@@ -17,14 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use App\Http\Controllers\Admin\ExpeditionGridController;
+use App\Http\Controllers\Admin\ExpeditionGridExportController;
 use App\Http\Controllers\Admin\GridController;
+use App\Http\Controllers\Admin\ProjectGridExportController;
 
 Route::get('grids/{projects}/explore', [GridController::class, 'explore'])->name('admin.grids.explore');
 Route::post('grids/{projects}/delete', [GridController::class, 'delete'])->name('admin.grids.delete');
-Route::post('grids/{projects}/export', [GridController::class, 'export'])->name('admin.grids.export');
 
-Route::get('grids/{projects}/expeditions/create', [GridController::class, 'expeditionsCreate'])->name('admin.grids.create');
-Route::get('grids/{projects}/expeditions/{expeditions}', [GridController::class, 'expeditionsShow'])->name('admin.grids.show');
-Route::get('grids/{projects}/expeditions/{expeditions}/edit', [GridController::class, 'expeditionsEdit'])->name('admin.grids.edit');
-Route::post('grids/{projects}/expeditions/{expeditions}/export', [GridController::class, 'export'])->name('admin.grids.expedition.export');
+// Expeditions grid.
+Route::get('grids/{project}/create', [ExpeditionGridController::class, 'create'])->name('admin.grids.create');
+Route::get('grids/{expedition}', [ExpeditionGridController::class, 'show'])->name('admin.grids.show');
+Route::get('grids/{expedition}/edit', [ExpeditionGridController::class, 'edit'])->name('admin.grids.edit');
 
+// Export csv from grid button.
+Route::post('grids/{expedition}/export', ExpeditionGridExportController::class)->name('admin.grids.expedition.export');
+Route::post('grids/{projects}/export', ProjectGridExportController::class)->name('admin.grids.export');

@@ -25,6 +25,8 @@ use App\Services\Helpers\TranscriptionMapService;
 use App\Services\Models\PanoptesTranscriptionModelService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
+use Laracasts\Utilities\JavaScript\LaravelViewBinder;
+use Laracasts\Utilities\JavaScript\Transformers\Transformer;
 
 /**
  * Class BiospexServiceProvider
@@ -46,6 +48,16 @@ class BiospexServiceProvider extends ServiceProvider
             return $keys->map(function ($key) {
                 return [$key, $this[$key]];
             });
+        });
+
+        $this->app->bind(Transformer::class, function ($app) {
+            return new Transformer(
+                new LaravelViewBinder(
+                    $app['events'],
+                    config('javascript.bind_js_vars_to_this_view')
+                ),
+                config('javascript.js_namespace')
+            );
         });
     }
 

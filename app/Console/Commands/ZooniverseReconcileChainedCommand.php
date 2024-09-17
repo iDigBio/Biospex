@@ -19,7 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Models\ExpeditionModelService;
+use App\Services\Expedition\ExpeditionService;
 use App\Traits\SkipZooniverse;
 use Illuminate\Console\Command;
 
@@ -53,7 +53,7 @@ class ZooniverseReconcileChainedCommand extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(protected ExpeditionService $expeditionService)
     {
         parent::__construct();
     }
@@ -64,10 +64,10 @@ class ZooniverseReconcileChainedCommand extends Command
      *
      * @see \App\Listeners\LabelReconciliationListener for result processing.
      */
-    public function handle(ExpeditionModelService $expeditionModelService): void
+    public function handle(): void
     {
         $expeditionIds = empty($this->argument('expeditionIds')) ?
-            $this->getExpeditionIds($expeditionModelService) : $this->argument('expeditionIds');
+            $this->getExpeditionIds() : $this->argument('expeditionIds');
 
         foreach ($expeditionIds as $expeditionId) {
             if ($this->skipReconcile($expeditionId)) {
@@ -83,9 +83,9 @@ class ZooniverseReconcileChainedCommand extends Command
     /**
      * Get all expeditions for process if no ids are passed.
      */
-    private function getExpeditionIds(ExpeditionModelService $expeditionModelService): array
+    private function getExpeditionIds(): array
     {
-        $expeditions = $expeditionModelService->getExpeditionsForZooniverseProcess();
+        $expeditions = $this->expeditionService->getExpeditionsForZooniverseProcess();
 
         return $expeditions->pluck('id')->toArray();
     }

@@ -25,9 +25,10 @@ use App\Models\Event;
 use App\Services\Event\EventService;
 use App\Services\Models\ProjectModelService;
 use App\Services\Permission\CheckPermission;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
+use Auth;
 use Redirect;
+use Throwable;
+use View;
 
 /**
  * Class EventController
@@ -51,16 +52,15 @@ class EventController extends Controller
             [$events, $eventsCompleted] = $this->eventService->getAdminIndex(Auth::user());
 
             return View::make('admin.event.index', compact('events', 'eventsCompleted'));
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
 
-            return Redirect::route('admin.projects.index')->with('error', t('An error occurred when retrieving Event records.'));
+            return Redirect::route('admin.projects.index')
+                ->with('error', t('An error occurred when retrieving Event records.'));
         }
     }
 
     /**
      * Create event.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      *
      * @throws \Exception
      */
@@ -73,8 +73,6 @@ class EventController extends Controller
 
     /**
      * Store Event.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(EventFormRequest $request)
     {
@@ -82,7 +80,7 @@ class EventController extends Controller
             $event = $this->eventService->store($request->all());
 
             return Redirect::route('admin.events.show', [$event])->with('success', t('Record was created successfully.'));
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
 
             return Redirect::route('admin.events.index')->with('error', t('An error occurred when saving record.'));
         }
@@ -90,8 +88,6 @@ class EventController extends Controller
 
     /**
      * Show event.
-     *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show(Event $event)
     {
@@ -106,10 +102,6 @@ class EventController extends Controller
 
     /**
      * Edit event.
-     *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     *
-     * @throws \Exception
      */
     public function edit(Event $event)
     {
@@ -125,8 +117,6 @@ class EventController extends Controller
 
     /**
      * Update Event.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Event $event, EventFormRequest $request)
     {
@@ -145,8 +135,6 @@ class EventController extends Controller
 
     /**
      * Delete Event.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Event $event)
     {
