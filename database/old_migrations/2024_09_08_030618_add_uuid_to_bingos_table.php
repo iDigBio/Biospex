@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('bingos', function (Blueprint $table) {
-            $table->uuid('uuid')->after('id')->index();
+            $table->uuid('uuid')->after('id')->unique();
         });
     }
 

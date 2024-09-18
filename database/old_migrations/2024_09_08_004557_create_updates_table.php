@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('events', function (Blueprint $table) {
-            $table->uuid('uuid')->after('id')->index();
+        Schema::create('updates', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('title');
+            $table->text('message');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('events', function (Blueprint $table) {
-            $table->dropColumn('uuid');
-        });
+        Schema::dropIfExists('updates');
     }
 };
