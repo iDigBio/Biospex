@@ -11,7 +11,7 @@
         data-title="{{ t('GeoLocate Export Form') }}">{{ t('GeoLocate Export Form') }}</button>
 
 @if($expedition->project->group->geoLocateForms->isNotEmpty())
-    <a href="{{ route('admin.groups.show', [$expedition->project->group->id]) }}#geolocate-forms"
+    <a href="{{ route('admin.groups.show', [$expedition->project->group]) }}#geolocate-forms"
        class="btn btn-primary rounded-0 mb-1">{{ t('Manage GeoLocate Forms') }}</a>
 @endif
 

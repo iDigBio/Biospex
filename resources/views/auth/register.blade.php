@@ -22,9 +22,9 @@
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
-                <form action="{{ route('app.post.register') }}" method="post" role="form" class="form-horizontal recaptcha">
+                <form action="{{ route('app.post.register', [$invite]) }}" method="post" role="form"
+                      class="form-horizontal recaptcha">
                     @csrf
-                    <input type="hidden" name="apiuser" value="false">
                     <div class="form-group">
                         <label for="first_name" class="col-form-label required">{{ t('First Name') }}:</label>
                         <input type="text" class="form-control @error('first_name') is-invalid @enderror"
@@ -51,7 +51,7 @@
                         <label for="email" class="col-form-label required">{{ t('Email') }}:</label>
                         <input type="email" class="form-control @error('email') is-invalid @enderror"
                                id="email" name="email"
-                               value="{{ old('email') }}" required>
+                               value="{{ old('email', isset($invite->email) ? $invite->email : null) }}" required>
                         @error('email')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -70,7 +70,8 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="password_confirmation" class="col-form-label required">{{ t('Confirm Password') }}:</label>
+                        <label for="password_confirmation" class="col-form-label required">{{ t('Confirm Password') }}
+                            :</label>
                         <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror"
                                id="password_confirmation" name="password_confirmation"
                                value="{{ old('password_confirmation') }}" required>
@@ -95,18 +96,6 @@
                             @endforeach
                         </select>
                         <span class="invalid-feedback">{{ $errors->first('timezone') }}</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="invite" class="col-form-label">{{ t('Group Invite Code') }}:</label>
-                        <input type="text" class="form-control @error('invite') is-invalid @enderror"
-                               id="invite" name="invite"
-                               value="{{ old("invite", $code ?? '') }}">
-                        @error('invite')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
                     </div>
                     @include('common.recaptcha')
                     @include('common.submit-button')

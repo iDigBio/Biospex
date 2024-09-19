@@ -121,16 +121,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.321.11",
+            "version": "3.322.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "bbd357d246350ffcd0dd8df30951d2d46c5ddadb"
+                "reference": "3eeb8d400acc902965f7de5bc85635853f27c109"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/bbd357d246350ffcd0dd8df30951d2d46c5ddadb",
-                "reference": "bbd357d246350ffcd0dd8df30951d2d46c5ddadb",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3eeb8d400acc902965f7de5bc85635853f27c109",
+                "reference": "3eeb8d400acc902965f7de5bc85635853f27c109",
                 "shasum": ""
             },
             "require": {
@@ -213,9 +213,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.321.11"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.322.0"
             },
-            "time": "2024-09-13T18:05:10+00:00"
+            "time": "2024-09-18T18:09:42+00:00"
         },
         {
             "name": "brick/math",
@@ -549,16 +549,16 @@
         },
         {
             "name": "czim/file-handling",
-            "version": "2.2.1",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/czim/file-handling.git",
-                "reference": "7e736b42dcce2e7148b4b5ac16dc5a567c4f626b"
+                "reference": "cdf9abeb721bbaff39683590698059cc8817bfcc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/czim/file-handling/zipball/7e736b42dcce2e7148b4b5ac16dc5a567c4f626b",
-                "reference": "7e736b42dcce2e7148b4b5ac16dc5a567c4f626b",
+                "url": "https://api.github.com/repos/czim/file-handling/zipball/cdf9abeb721bbaff39683590698059cc8817bfcc",
+                "reference": "cdf9abeb721bbaff39683590698059cc8817bfcc",
                 "shasum": ""
             },
             "require": {
@@ -599,26 +599,26 @@
             ],
             "support": {
                 "issues": "https://github.com/czim/file-handling/issues",
-                "source": "https://github.com/czim/file-handling/tree/2.2.1"
+                "source": "https://github.com/czim/file-handling/tree/2.3.0"
             },
-            "time": "2024-09-10T08:08:22+00:00"
+            "time": "2024-09-16T10:01:03+00:00"
         },
         {
             "name": "czim/laravel-paperclip",
-            "version": "5.0.5",
+            "version": "5.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/czim/laravel-paperclip.git",
-                "reference": "ef38e7748851db4f704361c02a912e7827ad904f"
+                "reference": "ce26caadecc701df81eda2db4c9058583b5462c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/czim/laravel-paperclip/zipball/ef38e7748851db4f704361c02a912e7827ad904f",
-                "reference": "ef38e7748851db4f704361c02a912e7827ad904f",
+                "url": "https://api.github.com/repos/czim/laravel-paperclip/zipball/ce26caadecc701df81eda2db4c9058583b5462c6",
+                "reference": "ce26caadecc701df81eda2db4c9058583b5462c6",
                 "shasum": ""
             },
             "require": {
-                "czim/file-handling": "^2.2.1",
+                "czim/file-handling": "^2.3",
                 "ext-json": "*",
                 "php": "^8.1"
             },
@@ -654,9 +654,9 @@
             ],
             "support": {
                 "issues": "https://github.com/czim/laravel-paperclip/issues",
-                "source": "https://github.com/czim/laravel-paperclip/tree/5.0.5"
+                "source": "https://github.com/czim/laravel-paperclip/tree/5.0.6"
             },
-            "time": "2024-09-10T12:19:09+00:00"
+            "time": "2024-09-16T11:52:50+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -4166,16 +4166,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.1.0",
+            "version": "v5.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "683130c2ff8c2739f4822ff7ac5c873ec529abd1"
+                "reference": "23c79fbbfb725fb92af9bcf41065c8e9a0d49ddb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/683130c2ff8c2739f4822ff7ac5c873ec529abd1",
-                "reference": "683130c2ff8c2739f4822ff7ac5c873ec529abd1",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/23c79fbbfb725fb92af9bcf41065c8e9a0d49ddb",
+                "reference": "23c79fbbfb725fb92af9bcf41065c8e9a0d49ddb",
                 "shasum": ""
             },
             "require": {
@@ -4218,9 +4218,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.1.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.2.0"
             },
-            "time": "2024-07-01T20:03:41+00:00"
+            "time": "2024-09-15T16:40:33+00:00"
         },
         {
             "name": "nunomaduro/termwind",
@@ -9586,16 +9586,16 @@
         },
         {
             "name": "maximebf/debugbar",
-            "version": "v1.22.5",
+            "version": "v1.22.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/maximebf/php-debugbar.git",
-                "reference": "1b5cabe0ce013134cf595bfa427bbf2f6abcd989"
+                "reference": "d7881b498f9e649610bf6ae91cdd6353859f75d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maximebf/php-debugbar/zipball/1b5cabe0ce013134cf595bfa427bbf2f6abcd989",
-                "reference": "1b5cabe0ce013134cf595bfa427bbf2f6abcd989",
+                "url": "https://api.github.com/repos/maximebf/php-debugbar/zipball/d7881b498f9e649610bf6ae91cdd6353859f75d2",
+                "reference": "d7881b498f9e649610bf6ae91cdd6353859f75d2",
                 "shasum": ""
             },
             "require": {
@@ -9648,9 +9648,9 @@
             ],
             "support": {
                 "issues": "https://github.com/maximebf/php-debugbar/issues",
-                "source": "https://github.com/maximebf/php-debugbar/tree/v1.22.5"
+                "source": "https://github.com/maximebf/php-debugbar/tree/v1.22.6"
             },
-            "time": "2024-09-09T08:05:55+00:00"
+            "time": "2024-09-16T11:47:59+00:00"
         },
         {
             "name": "mockery/mockery",

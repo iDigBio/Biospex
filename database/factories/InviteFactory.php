@@ -21,11 +21,11 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Invite;
+use App\Models\GroupInvite;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\Invite>
+ * @extends Factory<\App\Models\GroupInvite>
  */
 final class InviteFactory extends Factory
 {
@@ -34,7 +34,7 @@ final class InviteFactory extends Factory
      *
      * @var string
      */
-    protected $model = Invite::class;
+    protected $model = GroupInvite::class;
 
     /**
      * Define the model's default state.

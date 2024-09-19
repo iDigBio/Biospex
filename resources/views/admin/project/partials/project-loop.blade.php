@@ -20,6 +20,7 @@
 
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
+                {!! $project->group->present()->group_project_icon !!}
                 {!! $project->present()->project_page_icon !!}
                 {!! $project->present()->project_show_icon !!}
                 {!! $project->present()->project_edit_icon !!}

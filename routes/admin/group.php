@@ -18,13 +18,26 @@
  */
 
 use App\Http\Controllers\Admin\GroupController;
+use App\Http\Controllers\Admin\GroupGeoLocateFormController;
+use App\Http\Controllers\Admin\GroupInviteController;
+use App\Http\Controllers\Admin\GroupUserController;
 
-Route::get('groups', [GroupController::class, 'index'])->name('admin.groups.index');
-Route::get('groups/create', [GroupController::class, 'create'])->name('admin.groups.create');
-Route::post('groups', [GroupController::class, 'store'])->name('admin.groups.store');
-Route::get('groups/{group}', [GroupController::class, 'show'])->name('admin.groups.show');
-Route::get('groups/{group}/edit', [GroupController::class, 'edit'])->name('admin.groups.edit');
-Route::put('groups/{group}', [GroupController::class, 'update'])->name('admin.groups.update');
-Route::delete('groups/{group}', [GroupController::class, 'delete'])->name('admin.groups.delete');
-Route::delete('groups/{group}/{user}', [GroupController::class, 'deleteGroupUser'])->name('admin.groups.deleteUser');
-Route::delete('groups/{group}/geolocate/{form}', [GroupController::class, 'deleteGeoLocateForm'])->name('admin.groups.deleteForm');
+Route::resource('groups', GroupController::class)->names([
+    'index' => 'admin.groups.index',
+    'create' => 'admin.groups.create',
+    'store' => 'admin.groups.store',
+    'show' => 'admin.groups.show',
+    'edit' => 'admin.groups.edit',
+    'update' => 'admin.groups.update',
+    'destroy' => 'admin.users.destroy',
+]);
+
+// Handle users in groups.
+Route::delete('groups/{group}/delete-user/{user}', GroupUserController::class)->name('admin.groups-user.destroy');
+
+Route::get('groups/{group}/invites', [GroupInviteController::class, 'create'])->name('admin.invites.create');
+Route::post('groups/{group}/invites', [GroupInviteController::class, 'store'])->name('admin.invites.store');
+Route::delete('groups/{group}/invites/{invite}', [GroupInviteController::class, 'destroy'])->name('admin.invites.delete');
+
+// Handle geolocate forms in groups.
+Route::delete('groups/{group}delete-form/{form}', GroupGeoLocateFormController::class)->name('admin.groups-geolocate-form.destroy');
