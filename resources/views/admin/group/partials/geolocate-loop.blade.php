@@ -1,5 +1,6 @@
 <tr>
-    <td><a href="{{ route('admin.groups-geolocate-form.destroy', [$group, $form]) }}'" class="prevent-default"
+    <td><a href="{{ route('admin.groups-geolocate-form.destroy', [$group, $form]) }}'"
+           class="prevent-default"
            title="{{ t('Delete GeoLocateExport Form') }}"
            data-hover="tooltip"
            data-method="delete"

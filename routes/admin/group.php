@@ -40,4 +40,4 @@ Route::post('groups/{group}/invites', [GroupInviteController::class, 'store'])->
 Route::delete('groups/{group}/invites/{invite}', [GroupInviteController::class, 'destroy'])->name('admin.invites.delete');
 
 // Handle geolocate forms in groups.
-Route::delete('groups/{group}delete-form/{form}', GroupGeoLocateFormController::class)->name('admin.groups-geolocate-form.destroy');
+Route::delete('groups/{group}/delete-form/{form}', GroupGeoLocateFormController::class)->name('admin.groups-geolocate-form.destroy');
