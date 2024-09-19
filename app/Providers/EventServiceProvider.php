@@ -32,8 +32,6 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 
 /**
  * Class EventServiceProvider
- *
- * @package App\Providers
  */
 class EventServiceProvider extends ServiceProvider
 {
@@ -43,18 +41,18 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        Registered::class               => [
+        Registered::class => [
             SendEmailVerificationNotification::class,
         ],
         LabelReconciliationEvent::class => [
             LabelReconciliationListener::class,
         ],
-        ImageExportEvent::class         => [
+        ImageExportEvent::class => [
             ImageExportListener::class,
         ],
-        TesseractOcrEvent::class        => [
+        TesseractOcrEvent::class => [
             TesseractOcrListener::class,
-        ]
+        ],
     ];
 
     /**

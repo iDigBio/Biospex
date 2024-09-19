@@ -38,8 +38,6 @@ class Event extends BaseEloquentModel
      */
     protected $table = 'events';
 
-    protected string $presenter = EventPresenter::class;
-
     /**
      * The attributes that should be cast.
      *
@@ -95,6 +93,11 @@ class Event extends BaseEloquentModel
     {
         return 'uuid';
     }
+
+    /**
+     * The presenter class to use for this model.
+     */
+    protected string $presenter = EventPresenter::class;
 
     /**
      * Model Boot

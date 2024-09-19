@@ -26,7 +26,7 @@ use App\Jobs\DeleteProjectJob;
 use App\Jobs\DeleteUnassignedSubjectsJob;
 use App\Models\Project;
 use App\Services\Grid\JqGridEncoder;
-use App\Services\Models\GroupModelService;
+use App\Services\Group\GroupService;
 use App\Services\Models\ProjectModelService;
 use App\Services\Permission\CheckPermission;
 use Auth;
@@ -45,7 +45,7 @@ class ProjectController extends Controller
      */
     public function __construct(
         private readonly ProjectModelService $projectModelService,
-        private readonly GroupModelService $groupModelService,
+        private readonly GroupService $groupService,
     ) {}
 
     /**
@@ -55,7 +55,7 @@ class ProjectController extends Controller
     {
         $user = Auth::user();
 
-        $groups = $this->groupModelService->getUserGroupCount($user->id);
+        $groups = $this->groupService->getUserGroupCount($user->id);
         $projects = $this->projectModelService->getAdminProjectIndex($user->id);
 
         return $groups === 0 ? View::make('admin.welcome') : View::make('admin.project.index', compact('projects'));
@@ -66,7 +66,7 @@ class ProjectController extends Controller
      */
     public function create(): \Illuminate\View\View
     {
-        $groupOptions = ['' => '--Select--'] + $this->groupModelService->getUsersGroupsSelect(\Request::user());
+        $groupOptions = ['' => '--Select--'] + $this->groupService->getUsersGroupsSelect(\Request::user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
@@ -110,7 +110,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectFormRequest $request): mixed
     {
-        $group = $this->groupModelService->findWithRelations($request->get('group_id'));
+        $group = $this->groupService->findWithRelations($request->get('group_id'));
 
         if (! $this->checkPermissions('createProject', $group)) {
             return Redirect::route('admin.projects.index');
@@ -138,7 +138,7 @@ class ProjectController extends Controller
                 ->with('danger', t('Error retrieving record from database'));
         }
 
-        $groupOptions = ['' => '--Select--'] + $this->groupModelService->getUsersGroupsSelect(\Request::user());
+        $groupOptions = ['' => '--Select--'] + $this->groupService->getUsersGroupsSelect(\Request::user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
@@ -155,14 +155,14 @@ class ProjectController extends Controller
      */
     public function edit($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $project = $this->groupModelService->findWithRelations($projectId, ['group', 'resources']);
+        $project = $this->groupService->findWithRelations($projectId, ['group', 'resources']);
         if (! $project) {
 
             return Redirect::route('admin.projects.index')
                 ->with('danger', t('Error retrieving record from database'));
         }
 
-        $groupOptions = ['' => '--Select--'] + $this->groupModelService->getUsersGroupsSelect(\Request::user());
+        $groupOptions = ['' => '--Select--'] + $this->groupService->getUsersGroupsSelect(\Request::user());
         $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', $project->resources->count() ?: 1);
         $resources = $project->resources;
@@ -177,7 +177,7 @@ class ProjectController extends Controller
      */
     public function update(ProjectFormRequest $request, $projectId): \Illuminate\Http\RedirectResponse
     {
-        $group = $this->groupModelService->findWithRelations($request->get('group_id'));
+        $group = $this->groupService->findWithRelations($request->get('group_id'));
 
         if (! $this->checkPermissions('updateProject', $group)) {
             return Redirect::route('admin.projects.index');

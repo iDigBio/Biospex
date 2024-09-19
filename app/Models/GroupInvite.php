@@ -11,7 +11,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -19,20 +19,19 @@
 
 namespace App\Models;
 
+use App\Models\Traits\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 
-/**
- * Class Invite
- */
-class Invite extends BaseEloquentModel
+class GroupInvite extends BaseEloquentModel
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, UuidTrait;
 
     /**
      * {@inheritDoc}
      */
-    protected $table = 'invites';
+    protected $table = 'group_invites';
 
     /**
      * {@inheritDoc}
@@ -44,11 +43,36 @@ class Invite extends BaseEloquentModel
     ];
 
     /**
-     * Group relationship.
+     * The attributes that should be hidden for arrays.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @var array
      */
-    public function group()
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    /**
+     * Boot functions.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::bootUuidTrait();
+    }
+
+    /**
+     * Group relationship.
+     */
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }

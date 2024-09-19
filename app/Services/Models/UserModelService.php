@@ -27,14 +27,14 @@ readonly class UserModelService
     /**
      * UserModelService constructor.
      */
-    public function __construct(private User $model) {}
+    public function __construct(public User $user) {}
 
     /**
      * Find user with relations.
      */
     public function findWithRelations(int $id, array $relations = []): ?User
     {
-        return $this->model->with($relations)->find($id);
+        return $this->user->with($relations)->find($id);
     }
 
     /**
@@ -42,7 +42,7 @@ readonly class UserModelService
      */
     public function getFirstBy(string $column, string $value): ?User
     {
-        return $this->model->where($column, $value)->first();
+        return $this->user->where($column, $value)->first();
     }
 
     /**
@@ -54,7 +54,7 @@ readonly class UserModelService
             return $this->getAllUsersOrderByDate();
         }
 
-        return $this->model->has('ownGroups')->with(['profile'])->get();
+        return $this->user->has('ownGroups')->with(['profile'])->get();
     }
 
     /**
@@ -62,6 +62,6 @@ readonly class UserModelService
      */
     public function getAllUsersOrderByDate(): Collection
     {
-        return $this->model->with('profile')->orderBy('created_at')->get();
+        return $this->user->with('profile')->orderBy('created_at')->get();
     }
 }

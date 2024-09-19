@@ -19,6 +19,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -26,7 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class EventUser extends BaseEloquentModel
 {
-    use HasFactory;
+    use HasFactory, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -39,6 +40,33 @@ class EventUser extends BaseEloquentModel
     protected $fillable = [
         'nfn_user',
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    /**
+     * Boot functions.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::bootUuidTrait();
+    }
 
     /**
      * EventTeam relationship.

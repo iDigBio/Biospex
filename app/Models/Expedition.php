@@ -162,16 +162,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Download GeoLocate Export relation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function geoLocateExport()
-    {
-        return $this->hasOne(Download::class)->where('actor_id', config('geolocate.actor_id'))->where('type', 'export');
-    }
-
-    /**
      * Ocr Queue relation.
      */
     public function ocrQueue(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -293,14 +283,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public function exportQueue(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(ExportQueue::class);
-    }
-
-    /**
-     * GeoLocateExport relation with mongodb
-     */
-    public function geoLocateExports(): \MongoDB\Laravel\Relations\HasMany
-    {
-        return $this->hasMany(GeoLocateExport::class, 'subject_expeditionId');
     }
 
     /**

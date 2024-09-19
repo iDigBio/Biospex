@@ -83,11 +83,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
     ];
 
     /**
-     * @var string
-     */
-    protected $presenter = ProjectPresenter::class;
-
-    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
@@ -103,6 +98,11 @@ class Project extends BaseEloquentModel implements AttachableInterface
     {
         return 'uuid';
     }
+
+    /**
+     * @var string
+     */
+    protected $presenter = ProjectPresenter::class;
 
     /**
      * Project constructor.

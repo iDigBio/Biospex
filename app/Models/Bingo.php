@@ -48,11 +48,6 @@ class Bingo extends BaseEloquentModel
     ];
 
     /**
-     * @var string
-     */
-    protected $presenter = BingoPresenter::class;
-
-    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
@@ -68,6 +63,11 @@ class Bingo extends BaseEloquentModel
     {
         return 'uuid';
     }
+
+    /**
+     * @var string
+     */
+    protected $presenter = BingoPresenter::class;
 
     /**
      * User relation.

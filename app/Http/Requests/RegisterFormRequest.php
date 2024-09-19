@@ -23,15 +23,11 @@ use App\Rules\ReCaptcha;
 
 /**
  * Class RegisterFormRequest
- *
- * @package App\Http\Requests
  */
 class RegisterFormRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -40,18 +36,16 @@ class RegisterFormRequest extends Request
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
-            'first_name'            => 'required',
-            'last_name'             => 'required',
-            'email'                 => 'required|min:4|max:32|email|unique:users',
-            'password'              => 'required|min:6|confirmed',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|min:4|max:32|email|unique:users',
+            'password' => 'required|min:6|confirmed',
             'password_confirmation' => 'required',
-            'timezone'              => 'required',
+            'timezone' => 'required',
             'g-recaptcha-response' => ['required', new ReCaptcha],
         ];
     }

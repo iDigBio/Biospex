@@ -19,7 +19,7 @@
 
 namespace App\Listeners;
 
-use App\Services\Models\GroupModelService;
+use App\Services\Group\GroupService;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +33,7 @@ readonly class GroupEventSubscriber
     /**
      * GroupSessionEventListener constructor.
      */
-    public function __construct(private GroupModelService $groupModelService) {}
+    public function __construct(private GroupService $groupService) {}
 
     /**
      * Register the listeners for the subscriber.
@@ -85,7 +85,7 @@ readonly class GroupEventSubscriber
      */
     public function setUserGroupSession($groupId = null): void
     {
-        $groupIds = $this->groupModelService->getUserGroupIds(Auth::id());
+        $groupIds = $this->groupService->getUserGroupIds(Auth::id());
 
         $groups = $groupId === null ? $groupIds : $groupIds->diff([$groupId]);
 

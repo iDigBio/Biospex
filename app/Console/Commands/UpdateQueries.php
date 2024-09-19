@@ -19,6 +19,7 @@
 
 namespace App\Console\Commands;
 
+use File;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +53,113 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        /*
+        $this->fixTables();
+        $this->addUuid();
+        $this->updateUuid();
+    }
+
+    private function addUuid()
+    {
+        $tablesAdd = [
+            'bingos' => 'App\Models\Bingo',
+            'events' => 'App\Models\Event',
+            'event_users' => 'App\Models\EventUser',
+            'geo_locate_communities' => 'App\Models\GeoLocateCommunity',
+            'geo_locate_data_sources' => 'App\Models\GeoLocateDataSource',
+            'geo_locate_forms' => 'App\Models\GeoLocateForm',
+            'group_invites' => 'App\Models\GroupInvite',
+            'resources' => 'App\Models\Resource',
+        ];
+
+        collect($tablesAdd)->each(function ($className, $tableName) {
+            $this->addUuidToTable($tableName);
+            $this->createNewUuid($className);
+            $this->setUuidNotNull($tableName);
+        });
+    }
+
+    public function updateUuid(): void
+    {
+        $tablesUpdate = [
+            'bingo_maps' => 'App\Models\BingoMap',
+            'downloads' => 'App\Models\Download',
+            'event_teams' => 'App\Models\EventTeam',
+            'expeditions' => 'App\Models\Expedition',
+            'groups' => 'App\Models\Group',
+            'projects' => 'App\Models\Project',
+            'users' => 'App\Models\User',
+        ];
+
+        collect($tablesUpdate)->each(function ($className, $tableName) {
+            $this->addUuidNewToTable($tableName);
+            $this->updateNewUuid($className);
+            $this->dropOldUuidAndRename($tableName);
+            $this->setUuidNotNull($tableName);
+        });
+    }
+
+    private function getUuid($value): string
+    {
+        $uuid = bin2hex($value);
+
+        return substr($uuid, 0, 8).'-'.substr($uuid, 8, 4).'-'.substr($uuid, 12, 4).'-'.substr($uuid, 16, 4).'-'.substr($uuid, 20);
+    }
+
+    public function addUuidToTable(string $tableName): void
+    {
+        Schema::table($tableName, function (Blueprint $table) use ($tableName) {
+            DB::statement('ALTER TABLE `'.$tableName.'` ADD `uuid` CHAR(36) NULL AFTER `id`;');
+        });
+    }
+
+    public function createNewUuid(string $className): void
+    {
+        $class = \App::make($className);
+        $records = $class::get();
+        $records->each(function ($record) {
+            $record->uuid = \Str::uuid();
+            $record->save();
+        });
+    }
+
+    public function setUuidNotNull(string $tableName): void
+    {
+        Schema::table($tableName, function (Blueprint $table) use ($tableName) {
+            DB::statement('ALTER TABLE `'.$tableName.'` CHANGE `uuid` `uuid` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;');
+            DB::statement('ALTER TABLE `'.$tableName.'` ADD UNIQUE `'.$tableName.'_uuid_unique` (`uuid`);');
+        });
+    }
+
+    public function addUuidNewToTable(string $tableName): void
+    {
+        DB::statement('ALTER TABLE `'.$tableName.'` ADD `uuid_new` CHAR(36) NULL AFTER `uuid`;');
+    }
+
+    public function updateNewUuid(string $className): void
+    {
+        $class = \App::make($className);
+        $records = $class::get();
+        $records->each(function ($record) {
+            $uuid = $this->getUuid($record->uuid);
+            $record->uuid_new = $uuid;
+            $record->save();
+        });
+    }
+
+    public function dropOldUuidAndRename(string $tableName)
+    {
+        Schema::table($tableName, function (Blueprint $table) use ($tableName) {
+            DB::statement('ALTER TABLE `'.$tableName.'` DROP COLUMN `uuid`, CHANGE `uuid_new` `uuid` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;');
+        });
+    }
+
+    public function fixTables()
+    {
+        DB::statement('TRUNCATE `migrations`;');
+        DB::unprepared(File::get(storage_path('migrations.sql')));
+
+        Schema::dropIfExists('project_old_workflow');
+
         Schema::table('actor_contacts', function (Blueprint $table) {
             DB::statement('ALTER TABLE `actor_contacts` CHANGE `email` `email` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;');
         });
@@ -91,6 +198,12 @@ class UpdateQueries extends Command
 
         Schema::table('groups', function (Blueprint $table) {
             DB::statement('ALTER TABLE `groups` CHANGE `uuid` `uuid` BINARY(16) NOT NULL, CHANGE `title` `title` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;');
+        });
+
+        Schema::table('invites', function (Blueprint $table) {
+            DB::statement('RENAME TABLE `biospex`.`invites` TO `biospex`.`group_invites`;');
+            DB::statement('ALTER TABLE `group_invites` RENAME INDEX `invites_group_id_email_index` TO `group_invites_group_id_email_index`;');
+            DB::statement('ALTER TABLE `group_invites` RENAME INDEX `invites_code_index` TO `group_invites_code_index`;');
         });
 
         Schema::table('notices', function (Blueprint $table) {
@@ -142,130 +255,5 @@ class UpdateQueries extends Command
         Schema::table('expeditions', function (Blueprint $table) {
             DB::statement('ALTER TABLE `expeditions` ADD `logo_created_at` TIMESTAMP NULL DEFAULT NULL AFTER `logo_updated_at`;');
         });
-        */
-
-        /*
-        users
-        groups
-        projects
-        expeditions
-        downloads
-        bingos
-        bingo_maps
-        events
-        event_teams
-        */
-
-        /*
-        $users = \App\Models\User::get(['id', 'uuid']);
-        Schema::table('users', function (Blueprint $table) {
-            DB::statement('ALTER TABLE `users` DROP COLUMN `uuid`;');
-            DB::statement('ALTER TABLE `users` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `users_uuid_index` (`uuid`);');
-        });
-        $users->each(function ($user) {
-            $record = \App\Models\User::find($user->id);
-            $oldUuid = $this->getUuid($user->uuid);
-            $record->uuid = $oldUuid;
-            $record->save();
-        });
-
-        $groups = \App\Models\Group::get(['id', 'uuid']);
-        Schema::table('groups', function (Blueprint $table) {
-            DB::statement('ALTER TABLE `groups` DROP COLUMN `uuid`;');
-            DB::statement('ALTER TABLE `groups` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `groups_uuid_index` (`uuid`);');
-        });
-        $groups->each(function ($group) {
-            $group->uuid = \Str::uuid();
-            $group->save();
-        });
-
-        $projects = \App\Models\Project::get(['id', 'uuid']);
-        Schema::table('projects', function (Blueprint $table) {
-            DB::statement('ALTER TABLE `projects` DROP COLUMN `uuid`;');
-            DB::statement('ALTER TABLE `projects` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `projects_uuid_index` (`uuid`);');
-        });
-        $projects->each(function ($project) {
-            $record = \App\Models\Project::find($project->id);
-            $oldUuid = $this->getUuid($project->uuid);
-            $record->uuid = $oldUuid;
-            $record->save();
-        });
-
-        $expeditions = \App\Models\Expedition::get(['id', 'uuid']);
-        Schema::table('groups', function (Blueprint $table) {
-            DB::statement('ALTER TABLE `expeditions` DROP COLUMN `uuid`;');
-            DB::statement('ALTER TABLE `expeditions` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `expeditions_uuid_index` (`uuid`);');
-        });
-        $expeditions->each(function ($expedition) {
-            $record = \App\Models\Expedition::find($expedition->id);
-            $oldUuid = $this->getUuid($expedition->uuid);
-            $record->uuid = $oldUuid;
-            $record->save();
-        });
-
-        $downloads = \App\Models\Download::get(['id', 'uuid']);
-        Schema::table('downloads', function (Blueprint $table) {
-            DB::statement('ALTER TABLE `downloads` DROP COLUMN `uuid`;');
-            DB::statement('ALTER TABLE `downloads` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `downloads_uuid_index` (`uuid`);');
-        });
-        $downloads->each(function ($download) {
-            $record = \App\Models\Download::find($download->id);
-            $oldUuid = $this->getUuid($download->uuid);
-            $record->uuid = $oldUuid;
-            $record->save();
-        });
-
-        $bingos = \App\Models\Bingo::get();
-        $bingos->each(function ($bingo) {
-            $bingo->uuid = \Str::uuid();
-            $bingo->save();
-        });
-
-        $bingoMaps = \App\Models\BingoMap::get(['id', 'uuid']);
-        Schema::table('bingo_maps', function (Blueprint $table) {
-            DB::statement('ALTER TABLE `bingo_maps` DROP COLUMN `uuid`;');
-            DB::statement('ALTER TABLE `bingo_maps` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `bingo_maps_uuid_index` (`uuid`);');
-        });
-        $bingoMaps->each(function ($bingoMap) {
-            $record = \App\Models\BingoMap::find($bingoMap->id);
-            $record->uuid = \Str::uuid();
-            $record->save();
-        });
-
-        $events = \App\Models\Event::get();
-        $events->each(function ($event) {
-            $event->uuid = \Str::uuid();
-            $event->save();
-        });
-
-        $teams = \App\Models\EventTeam::get(['id', 'uuid']);
-        Schema::table('event_teams', function (Blueprint $table) {
-            DB::statement('ALTER TABLE `event_teams` DROP COLUMN `uuid`;');
-            DB::statement('ALTER TABLE `event_teams` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `event_teams_uuid_index` (`uuid`);');
-        });
-        $teams->each(function ($team) {
-            $record = \App\Models\EventTeam::find($team->id);
-            $oldUuid = $this->getUuid($team->uuid);
-            $record->uuid = $oldUuid;
-            $record->save();
-        });
-        */
-
-        $wedigbioEvents = \App\Models\WeDigBioEventDate::get();
-        Schema::table('wedigbio_event_dates', function (Blueprint $table) {
-            DB::statement('ALTER TABLE `wedigbio_event_dates` ADD `uuid` CHAR(36) NOT NULL AFTER `id`, ADD INDEX `wedigbio_event_dates_uuid_index` (`uuid`);');
-        });
-        $wedigbioEvents->each(function ($wedigbioEvent) {
-            $wedigbioEvent->uuid = \Str::uuid();
-            $wedigbioEvent->save();
-        });
-
-    }
-
-    private function getUuid($value): string
-    {
-        $uuid = bin2hex($value);
-
-        return substr($uuid, 0, 8).'-'.substr($uuid, 8, 4).'-'.substr($uuid, 12, 4).'-'.substr($uuid, 16, 4).'-'.substr($uuid, 20);
     }
 }

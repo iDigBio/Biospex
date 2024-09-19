@@ -49,6 +49,23 @@ class Download extends BaseEloquentModel
     ];
 
     /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    /**
      * @var string
      */
     protected $presenter = DownloadPresenter::class;

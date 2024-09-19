@@ -23,41 +23,34 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Class GroupFormRequest
- *
- * @package App\Http\Requests
  */
 class GroupFormRequest extends Request
 {
-
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return Auth::check();
     }
 
     /**
      * Validation rules.
-     *
-     * @return array
      */
-    public function rules()
+    public function rules(): array
     {
+        $groupId = isset($this->route('group')->id) ? $this->route('group')->id : null;
+
         return [
-            'title' => 'required|min:4|max:32|not_in:'. config('config.admin.group') . '|unique:groups,title,' . $this->route('groups'),
-            'user_id' => 'required'
+            'title' => 'required|min:4|max:32|not_in:'.config('config.admin.group').'|unique:groups,title,'.$groupId,
+            'user_id' => 'required',
         ];
     }
 
     /**
      * Alter group form input before validation.
-     * 
-     * @return array
      */
-    public function alterInput()
+    public function alterInput(): array
     {
         $input = $this->all();
         $input['title'] = $this->route('groups') === config('config.admin.group_id') ? config('config.admin.group_id') : trim($input['title']);

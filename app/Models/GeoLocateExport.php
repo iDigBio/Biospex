@@ -19,16 +19,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 class GeoLocateExport extends BaseMongoModel
 {
-    use HasFactory;
+    protected $connection = 'mongodb';
 
     /**
      * Set Collection
      */
-    protected $table = 'geolocate_exports';
+    protected $collection = 'geolocate_exports';
 
     /**
      * The attributes that should be cast.

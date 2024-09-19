@@ -20,11 +20,10 @@
 namespace App\Services\Auth;
 
 use App\Facades\DateHelper;
-use App\Models\Group;
-use App\Models\Invite;
+use App\Models\GroupInvite;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use View;
 
 class RegisterUserService
@@ -34,42 +33,30 @@ class RegisterUserService
      *
      * @throws \Exception
      */
-    public function showForm(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function showForm(?GroupInvite $invite = null): \Illuminate\Contracts\View\View|RedirectResponse
     {
         if (! config('config.app_registration')) {
             return \Redirect::route('home')->with('error', t('Registration is not available at this time.'));
         }
 
-        $code = request('code');
-
-        $invite = Invite::where('code', $code)->first();
-
-        if (! empty($code) && ! $invite) {
-            Session::flash('warning', t('Your invite was unable to be found. Please contact the administration.'));
-        }
-
-        $code = $invite->code ?? null;
-        $email = $invite->email ?? null;
         $timezones = DateHelper::timeZoneSelect();
 
-        return View::make('auth.register', compact('code', 'email', 'timezones'));
+        return View::make('auth.register', compact('invite', 'timezones'));
     }
 
     /**
      * Register a new user.
      */
-    public function registerUser(): User
+    public function registerUser(array $request, ?GroupInvite $invite = null): User
     {
-        $input = request()->only('email', 'password', 'first_name', 'last_name', 'timezone', 'invite');
-        $input['password'] = Hash::make($input['password']);
-        $user = User::create($input);
-        $user->profile()->create($input);
+        $request['password'] = Hash::make($request['password']);
+        $user = User::create($request);
+        $user->profile()->create($request);
 
-        if (! empty($input['invite'])) {
-            $invite = Invite::where('code', $input['invite'])->first();
+        if (! is_null($invite)) {
             if ($invite->email === $user->email) {
-                $group = Group::find($invite->group_id);
-                $user->assignGroup($group);
+                $invite->load('group');
+                $user->assignGroup($invite->group);
                 $invite->delete();
             }
         }

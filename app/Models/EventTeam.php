@@ -45,11 +45,6 @@ class EventTeam extends BaseEloquentModel
     ];
 
     /**
-     * @var string
-     */
-    protected $presenter = EventTeamPresenter::class;
-
-    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
@@ -65,6 +60,11 @@ class EventTeam extends BaseEloquentModel
     {
         return 'uuid';
     }
+
+    /**
+     * @var string
+     */
+    protected $presenter = EventTeamPresenter::class;
 
     /**
      * Model Boot

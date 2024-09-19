@@ -11,20 +11,22 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Csv;
+namespace App\Services\Actor\GeoLocate;
 
 use App\Models\Download;
 use App\Models\Expedition;
 use App\Models\GeoLocateExport;
 use App\Models\GeoLocateForm;
+use App\Services\Csv\AwsS3CsvService;
 use Exception;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\LazyCollection;
 
 /**
  * Class CsvExportType
@@ -37,10 +39,18 @@ class GeoLocateExportService
      * Construct
      */
     public function __construct(
-        private AwsS3CsvService $awsS3CsvService,
-        private GeoLocateExport $geoLocateExport,
-        private Download $download,
+        protected GeoLocateExport $geoLocateExport,
+        protected AwsS3CsvService $awsS3CsvService,
+        protected Download $download,
     ) {}
+
+    /**
+     * Get geolocate records by expedition id.
+     */
+    public function getByExpeditionId(int $expeditionId): LazyCollection
+    {
+        return $this->geoLocateExport->where('subject_expeditionId', $expeditionId)->options(['allowDiskUse' => true])->timeout(86400)->cursor();
+    }
 
     /**
      * Process GeoLocate export.
@@ -94,7 +104,7 @@ class GeoLocateExportService
         $records = $this->awsS3CsvService->csv->getRecords($header);
 
         foreach ($records as $record) {
-            $this->geoLocateRepository->updateOrCreate(['subject_id' => (int) $record['subject_id']], $record);
+            $this->geoLocateExport->updateOrCreate(['subject_id' => (int) $record['subject_id']], $record);
         }
 
         $this->awsS3CsvService->closeBucketStream();
@@ -205,7 +215,7 @@ class GeoLocateExportService
             'type' => 'export',
         ];
 
-        $this->downloadRepository->updateOrCreate($attributes, $values);
+        $this->download->updateOrCreate($attributes, $values);
     }
 
     /**
