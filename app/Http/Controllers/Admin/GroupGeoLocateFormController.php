@@ -35,7 +35,7 @@ class GroupGeoLocateFormController extends Controller
         }
 
         try {
-            $form->withCount('expeditions');
+            $form->loadCount('expeditions');
 
             if ($form->expeditions_count > 0) {
                 return Redirect::route('admin.groups.show', [$group])
@@ -46,7 +46,7 @@ class GroupGeoLocateFormController extends Controller
 
             return Redirect::route('admin.groups.show', [$group])->with('success', t('GeoLocateExport Form was deleted.'));
         } catch (Throwable $t) {
-            return Redirect::route('admin.groups.show', [$group])->with('danger', t('There was an error deleteing the GeoLocateExport Form.'));
+            return Redirect::route('admin.groups.show', [$group])->with('danger', t('There was an error deleting the GeoLocateExport Form.'.$t->getMessage()));
         }
     }
 }

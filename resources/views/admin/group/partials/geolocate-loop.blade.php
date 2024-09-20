@@ -5,7 +5,7 @@
            data-hover="tooltip"
            data-method="delete"
            data-confirm="confirmation"
-           data-title="{{ t('Delete GeoLocateExport Form') }} ?"
+           data-title="{{ t('Delete GeoLocateExport Form') }}?"
            data-content="{{ t('This will permanently delete the form') }}">
             <i class="fas fa-trash-alt"></i></a>
     </td>
