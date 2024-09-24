@@ -19,5 +19,4 @@
 
 use App\Http\Controllers\Admin\AdvertiseController;
 
-Route::get('projects/{projects}/advertises', [AdvertiseController::class, 'index'])->name('admin.advertises.index');
-Route::get('projects/{projects}/advertises/download', [AdvertiseController::class, 'download'])->name('admin.advertises.download');
+Route::get('projects/{project}/advertises', AdvertiseController::class)->name('admin.advertises.index');

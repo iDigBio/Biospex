@@ -20,8 +20,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\Models\ProjectModelService;
-use Illuminate\Contracts\Routing\ResponseFactory;
+use App\Models\Project;
+use Illuminate\Support\Facades\Response;
 
 /**
  * Class AdvertiseController
@@ -33,15 +33,15 @@ class AdvertiseController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function index(ResponseFactory $response, ProjectModelService $projectModelService, $projectId)
+    public function __invoke(Project $project)
     {
-        $project = $projectModelService->findWithRelations($projectId, ['group']);
+        $project->load('group');
 
         if (! $this->checkPermissions('readProject', $project->group)) {
             return \Redirect::route('webauth.projects.index');
         }
 
-        return $response->make(json_encode($project->advertise, JSON_UNESCAPED_SLASHES), '200', [
+        return Response::make(json_encode($project->advertise, JSON_UNESCAPED_SLASHES), '200', [
             'Content-Type' => 'application/json',
             'Content-Disposition' => 'attachment; filename="'.$project->uuid.'.json"',
         ]);
