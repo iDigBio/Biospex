@@ -11,7 +11,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -23,34 +23,41 @@ use App\Models\OcrQueue;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use App\Repositories\OcrQueueFileRepository;
+use App\Repositories\OcrQueueRepository;
 use App\Repositories\SubjectRepository;
 use App\Services\Process\CreateReportService;
-use Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
-/**
- * Class OcrService
- */
-class TesseractOcrComplete
+class TesseractOcrService
 {
     use ButtonTrait;
 
-    private SubjectRepository $subjectRepo;
-
-    private CreateReportService $createReportService;
-
-    private OcrQueueFileRepository $ocrQueueFileRepo;
-
     /**
-     * Ocr constructor.
+     * OcrService constructor.
      */
     public function __construct(
-        SubjectRepository $subjectRepo,
-        OcrQueueFileRepository $ocrQueueFileRepo,
-        CreateReportService $createReportService
-    ) {
-        $this->subjectRepo = $subjectRepo;
-        $this->createReportService = $createReportService;
-        $this->ocrQueueFileRepo = $ocrQueueFileRepo;
+        protected OcrQueueRepository $ocrQueueRepo,
+        protected OcrQueueFileRepository $ocrQueueFileRepo,
+        protected SubjectRepository $subjectRepo,
+        protected CreateReportService $createReportService
+    ) {}
+
+    /**
+     * Return ocr queue for command process.
+     */
+    public function getFirstQueue(bool $reset = false): ?OcrQueue
+    {
+        return $this->ocrQueueRepo->getFirstQueue($reset);
+    }
+
+    /**
+     * Get unprocessed ocr queue files.
+     * Limited return depending on config.
+     */
+    public function getUnprocessedOcrQueueFiles(int $queueId, int $take = 50): \Illuminate\Database\Eloquent\Collection|array
+    {
+        return $this->ocrQueueFileRepo->getUnprocessedOcrQueueFiles($queueId, $take);
     }
 
     /**
@@ -65,9 +72,6 @@ class TesseractOcrComplete
         $this->sendNotify($ocrQueue);
 
         $ocrQueue->delete();
-
-        $files = \Storage::disk('s3')->allFiles(config('zooniverse.directory.lambda-ocr'));
-        \Storage::disk('s3')->delete($files);
     }
 
     /**
@@ -79,9 +83,16 @@ class TesseractOcrComplete
 
         $cursor->each(function ($file) {
             $filePath = config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt';
-            $content = \Storage::disk('s3')->get($filePath);
+
+            $content = ! Storage::disk('s3')->exists($filePath) ?
+                t('Error: Text file is missing in path: %s', $filePath) :
+                Storage::disk('s3')->get($filePath);
+
             $ocrText = trim(preg_replace('/\s+/', ' ', trim($content)));
+
             $this->subjectRepo->update(['ocr' => $ocrText], $file->subject_id);
+
+            Storage::disk('s3')->delete($filePath);
         });
     }
 
