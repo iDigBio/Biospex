@@ -23,8 +23,6 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Class ImportFormRequest
- *
- * @package App\Http\Requests
  */
 class ImportFormRequest extends Request
 {
@@ -61,14 +59,12 @@ class ImportFormRequest extends Request
     public function alterInput()
     {
         $input = $this->all();
-        
+
         // Alter record set if available
-        if (null !== $this->input('recordset')) {
+        if ($this->input('recordset') !== null) {
             $input['recordset'] = strstr($this->input('recordset'), '/') ?
                 trim(strrchr($this->input('recordset'), '/'), '/') : trim($this->input('recordset'));
-        }
-        else
-        {
+        } else {
             $input['recordset'] = $this->input('recordset');
         }
 

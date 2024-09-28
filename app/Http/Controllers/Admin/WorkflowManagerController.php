@@ -24,8 +24,8 @@ use App\Http\Requests\WorkflowIdFormRequest;
 use App\Jobs\PanoptesProjectUpdateJob;
 use App\Models\PanoptesProject;
 use App\Services\Expedition\ExpeditionService;
-use App\Services\Models\ProjectModelService;
 use App\Services\Models\WorkflowManagerModelService;
+use App\Services\Project\ProjectService;
 use Exception;
 
 class WorkflowManagerController extends Controller
@@ -34,7 +34,7 @@ class WorkflowManagerController extends Controller
      * Construct
      */
     public function __construct(
-        private ProjectModelService $projectModelService,
+        private ProjectService $projectService,
         private WorkflowManagerModelService $workflowManagerModelService
     ) {}
 
@@ -43,7 +43,7 @@ class WorkflowManagerController extends Controller
      */
     public function process(ExpeditionService $expeditionService, int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
+        $project = $this->projectService->findWithRelations($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return \Redirect::route('admin.projects.index');
@@ -96,7 +96,7 @@ class WorkflowManagerController extends Controller
      */
     public function stop(int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
+        $project = $this->projectService->findWithRelations($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return \Redirect::route('admin.projects.index');
@@ -145,7 +145,7 @@ class WorkflowManagerController extends Controller
             return \Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
-        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
+        $project = $this->projectService->findWithRelations($projectId, ['group']);
 
         if (! $this->checkPermissions('updateProject', $project->group)) {
             return \Response::json(['message' => t('You are not authorized for this action.')], 401);

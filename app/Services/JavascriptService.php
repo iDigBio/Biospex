@@ -33,7 +33,7 @@ class JavascriptService
      * JavascriptService constructor.
      */
     public function __construct(
-        protected Javascript $javascript,
+        public Javascript $javascript,
         protected JqGridEncoder $jqGridEncoder,
         protected WorkflowService $workflowService
     ) {}
@@ -47,6 +47,24 @@ class JavascriptService
     }
 
     /**
+     * Explore project.
+     */
+    public function projectExplore(Project $project): void
+    {
+        $this->setModel($project);
+
+        $this->javascript->put([
+            'model' => $this->model,
+            'subjectIds' => [],
+            'maxCount' => config('config.expedition_size'),
+            'dataUrl' => route('admin.grids.project.index', [$project]),
+            'exportUrl' => route('admin.grids.projects.export', [$project]),
+            'checkbox' => false,
+            'route' => 'explore', // used for export
+        ]);
+    }
+
+    /**
      * Create expedition.
      */
     public function expeditionCreate(Project $project): void
@@ -57,8 +75,8 @@ class JavascriptService
             'model' => $this->model,
             'subjectIds' => [],
             'maxCount' => config('config.expedition_size'),
-            'dataUrl' => route('admin.grids.create', [$project]),
-            'exportUrl' => route('admin.grids.export', [$project]),
+            'dataUrl' => route('admin.grids.expeditions.create', [$project]),
+            'exportUrl' => route('admin.grids.projects.export', [$project]),
             'checkbox' => true,
             'route' => 'create', // used for export and create
         ]);
@@ -75,8 +93,8 @@ class JavascriptService
             'model' => $this->model,
             'subjectIds' => [],
             'maxCount' => config('config.expedition_size'),
-            'dataUrl' => route('admin.grids.show', [$expedition]),
-            'exportUrl' => route('admin.grids.expedition.export', [$expedition]),
+            'dataUrl' => route('admin.grids.expeditions.show', [$expedition]),
+            'exportUrl' => route('admin.grids.expeditions.export', [$expedition]),
             'checkbox' => false,
             'route' => 'show', // used for export
         ]);
@@ -90,8 +108,8 @@ class JavascriptService
             'model' => $this->model,
             'subjectIds' => $subjectIds,
             'maxCount' => config('config.expedition_size'),
-            'dataUrl' => route('admin.grids.edit', [$expedition]),
-            'exportUrl' => route('admin.grids.expedition.export', [$expedition]),
+            'dataUrl' => route('admin.grids.expeditions.edit', [$expedition]),
+            'exportUrl' => route('admin.grids.expeditions.export', [$expedition]),
             'checkbox' => $expedition->workflowManager === null,
             'route' => 'edit', // used for export
         ]);

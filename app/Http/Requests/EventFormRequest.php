@@ -24,8 +24,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Class EventFormRequest
- *
- * @package App\Http\Requests
  */
 class EventFormRequest extends FormRequest
 {
@@ -46,14 +44,16 @@ class EventFormRequest extends FormRequest
      */
     public function rules()
     {
+        $eventId = isset($this->route('event')->id) ? $this->route('event')->id : null;
+
         return [
-            'project_id'    => 'required',
-            'title'         => 'required|between:6,140|unique:expeditions,title,'.$this->route('expeditions'),
-            'description'   => 'required|between:6,140',
-            'contact'       => 'required',
+            'project_id' => 'required',
+            'title' => 'required|between:6,140|unique:expeditions,title,'.$eventId,
+            'description' => 'required|between:6,140',
+            'contact' => 'required',
             'contact_email' => 'required|email',
-            'start_date'    => 'required|date|before:end_date',
-            'end_date'      => 'required|date|after:start_date',
+            'start_date' => 'required|date|before:end_date',
+            'end_date' => 'required|date|after:start_date',
             'teams.*.title' => 'max:20',
         ];
     }
@@ -62,7 +62,7 @@ class EventFormRequest extends FormRequest
     {
         return [
             'start_date.before' => 'Date must be greater than End',
-            'end_date.after'    => 'Date must be greater than Start',
+            'end_date.after' => 'Date must be greater than Start',
             'teams.*.title.max' => 'Title is 20 character max',
         ];
     }

@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Chart\TranscriptionChartService;
-use App\Services\Models\ProjectModelService;
+use App\Services\Project\ProjectService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -54,9 +54,9 @@ class AmChartJob implements ShouldQueue
     /**
      * Handle job.
      */
-    public function handle(ProjectModelService $projectModelService, TranscriptionChartService $service): void
+    public function handle(ProjectService $projectService, TranscriptionChartService $service): void
     {
-        $project = $projectModelService->getProjectForAmChartJob($this->projectId);
+        $project = $projectService->getProjectForAmChartJob($this->projectId);
 
         $service->process($project);
 

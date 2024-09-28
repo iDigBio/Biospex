@@ -71,8 +71,9 @@ class ProjectPresenter extends Presenter
     {
         $route = route('front.projects.slug', [$this->model->slug]);
 
-        return $this->model->slug == null ? '' : '<a href="'.$route.'" data-hover="tooltip" title="'.t('Project Public Page').'">
-                <i class="fas fa-project-diagram"></i></a>';
+        return $this->model->slug == null ? '' : '<a href="'.$route.'" 
+            data-hover="tooltip" 
+            title="'.t('Project Public Page').'"><i class="fas fa-project-diagram"></i></a>';
     }
 
     /**
@@ -84,8 +85,10 @@ class ProjectPresenter extends Presenter
     {
         $route = route('front.projects.slug', [$this->model->slug]);
 
-        return $this->model->slug == null ? '' : '<a href="'.$route.'" target="_blank" data-hover="tooltip" title="'.t('Project Public Page').'">
-                <i class="fas fa-project-diagram fa-2x"></i></a>';
+        return $this->model->slug == null ? '' : '<a href="'.$route.'" 
+            target="_blank" 
+            data-hover="tooltip" 
+            title="'.t('Project Public Page').'"><i class="fas fa-project-diagram fa-2x"></i></a>';
     }
 
     /**
@@ -97,8 +100,9 @@ class ProjectPresenter extends Presenter
     {
         $route = route('admin.projects.show', [$this->model]);
 
-        return $this->model->id == null ? '' : '<a href="'.$route.'" data-hover="tooltip" title="'.t('Show Project Admin Page').'">
-                <i class="fas fa-project-diagram fa-2x"></i></a>';
+        return $this->model->id == null ? '' : '<a href="'.$route.'" 
+            data-hover="tooltip" 
+            title="'.t('Show Project Admin Page').'"><i class="fas fa-project-diagram fa-2x"></i></a>';
     }
 
     /**
@@ -264,9 +268,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectExploreIconLrg()
     {
-        return '<a href="'.route('admin.projects.explore', [
-            $this->model->id,
-        ]).'" data-hover="tooltip" title="'.t('Explore Project Subjects').'"><i class="fas fa-table fa-2x"></i></a>';
+        return '<a href="'.route('admin.project-subjects.index', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('Explore Project Subjects').'"><i class="fas fa-table fa-2x"></i></a>';
     }
 
     /**
@@ -276,9 +280,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectShowIcon()
     {
-        return '<a href="'.route('admin.projects.show', [
-            $this->model,
-        ]).'" data-hover="tooltip" title="'.t('View Project').'"><i class="fas fa-eye"></i></a>';
+        return '<a href="'.route('admin.projects.show', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('View Project').'"><i class="fas fa-eye"></i></a>';
     }
 
     /**
@@ -288,9 +292,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectShowIconLrg()
     {
-        return '<a href="'.route('admin.projects.show', [
-            $this->model,
-        ]).'" data-hover="tooltip" title="'.t('View Project').'"><i class="fas fa-eye fa-2x"></i></a>';
+        return '<a href="'.route('admin.projects.show', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('View Project').'"><i class="fas fa-eye fa-2x"></i></a>';
     }
 
     /**
@@ -300,8 +304,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectAdvertiseIconLrg()
     {
-        return '<a href="'.route('admin.advertises.index', [$this->model->id]).'" 
-                    data-hover="tooltip" title="'.t('Download Advertisement Manifest').'"><i class="fas fa-ad fa-2x"></i></a>';
+        return '<a href="'.route('admin.advertises.index', [$this->model]).'" 
+                    data-hover="tooltip" 
+                    title="'.t('Download Advertisement Manifest').'"><i class="fas fa-ad fa-2x"></i></a>';
     }
 
     /**
@@ -311,9 +316,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectStatisticsIconLrg()
     {
-        return '<a href="'.route('admin.projects.statistics', [
-            $this->model->id,
-        ]).'" data-hover="tooltip" title="'.t('Project Statistics').'"><i class="fas fa-chart-bar fa-2x"></i></a>';
+        return '<a href="'.route('admin.project-stats.index', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('Project Statistics').'"><i class="fas fa-chart-bar fa-2x"></i></a>';
     }
 
     /**
@@ -323,9 +328,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectEditIcon()
     {
-        return '<a href="'.route('admin.projects.edit', [
-            $this->model->id,
-        ]).'" data-hover="tooltip" title="'.t('Edit Project').'"><i class="fas fa-edit"></i></a>';
+        return '<a href="'.route('admin.projects.edit', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('Edit Project').'"><i class="fas fa-edit"></i></a>';
     }
 
     /**
@@ -335,9 +340,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectEditIconLrg()
     {
-        return '<a href="'.route('admin.projects.edit', [
-            $this->model->id,
-        ]).'" data-hover="tooltip" title="'.t('Edit Project').'"><i class="fas fa-edit fa-2x"></i></a>';
+        return '<a href="'.route('admin.projects.edit', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('Edit Project').'"><i class="fas fa-edit fa-2x"></i></a>';
     }
 
     /**
@@ -347,9 +352,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectCloneIcon()
     {
-        return '<a href="'.route('admin.projects.clone', [
-            $this->model->id,
-        ]).'" data-hover="tooltip" title="'.t('Clone Project').'"><i class="fas fa-clone"></i></a>';
+        return '<a href="'.route('admin.projects.clone', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('Clone Project').'"><i class="fas fa-clone"></i></a>';
     }
 
     /**
@@ -359,9 +364,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectCloneIconLrg()
     {
-        return '<a href="'.route('admin.projects.clone', [
-            $this->model->id,
-        ]).'" data-hover="tooltip" title="'.t('Clone Project').'"><i class="fas fa-clone fa-2x"></i></a>';
+        return '<a href="'.route('admin.projects.clone', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('Clone Project').'"><i class="fas fa-clone fa-2x"></i></a>';
     }
 
     /**
@@ -371,7 +376,7 @@ class ProjectPresenter extends Presenter
      */
     public function projectDeleteIcon()
     {
-        return '<a href="'.route('admin.projects.delete', [$this->model->id]).'" class="prevent-default"
+        return '<a href="'.route('admin.projects.destroy', [$this->model]).'" class="prevent-default"
             title="'.t('Delete Project').'" 
             data-hover="tooltip"        
             data-method="delete"
@@ -387,7 +392,7 @@ class ProjectPresenter extends Presenter
      */
     public function projectDeleteIconLrg()
     {
-        return '<a href="'.route('admin.projects.delete', [$this->model->id]).'" class="prevent-default"
+        return '<a href="'.route('admin.projects.destroy', [$this->model]).'" class="prevent-default"
             title="'.t('Delete Project').'" 
             data-hover="tooltip"        
             data-method="delete"

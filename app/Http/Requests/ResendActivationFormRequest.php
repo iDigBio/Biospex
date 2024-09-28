@@ -23,8 +23,6 @@ use App\Rules\ReCaptcha;
 
 /**
  * Class ResendActivationFormRequest
- *
- * @package App\Http\Requests
  */
 class ResendActivationFormRequest extends Request
 {
@@ -46,7 +44,7 @@ class ResendActivationFormRequest extends Request
     public function rules()
     {
         return [
-            'email'                => 'required|min:4|max:32|email',
+            'email' => 'required|min:4|max:32|email',
             'g-recaptcha-response' => ['required', new ReCaptcha],
         ];
     }

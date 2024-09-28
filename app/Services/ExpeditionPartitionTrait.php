@@ -11,39 +11,25 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Http\Requests;
+namespace App\Services;
 
-/**
- * Class WorkflowFormRequest
- */
-class WorkflowFormRequest extends Request
+use Illuminate\Support\Collection;
+
+trait ExpeditionPartitionTrait
 {
     /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
+     * Partition records into completed and active.
      */
-    public function authorize()
+    public function partitionRecords(Collection $records): Collection
     {
-        return true;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            'title' => 'required|between:3,60|unique:workflows,title,'.$this->route('workflows'),
-            'actors.*.id' => 'required',
-        ];
+        return $records->partition(function ($expedition) {
+            return $expedition->completed === 0;
+        });
     }
 }

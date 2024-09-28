@@ -24,7 +24,7 @@ use App\Jobs\DwcFileImportJob;
 use App\Jobs\DwcUriImportJob;
 use App\Jobs\RecordsetImportJob;
 use App\Models\Import;
-use App\Services\Models\ProjectModelService;
+use App\Services\Project\ProjectService;
 use Auth;
 use Exception;
 use Illuminate\Support\Facades\Redirect;
@@ -39,9 +39,9 @@ class ImportController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index(ProjectModelService $projectModelService, $projectId)
+    public function index(ProjectService $projectService, $projectId)
     {
-        $project = $projectModelService->findWithRelations($projectId);
+        $project = $projectService->findWithRelations($projectId);
 
         return \View::make('admin.partials.import-modal-body', compact('project'));
     }

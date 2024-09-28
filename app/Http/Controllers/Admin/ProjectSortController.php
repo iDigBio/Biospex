@@ -11,45 +11,40 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Http\Requests;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+use App\Services\Project\ProjectService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+use Request;
 
-/**
- * Class InviteFormRequest
- */
-class InviteFormRequest extends Request
+class ProjectSortController extends Controller
 {
     /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
+     * ProjectSortController constructor.
      */
-    public function authorize()
-    {
-        return Auth::check();
-    }
+    public function __construct(
+        protected ProjectService $projectService,
+    ) {}
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
+     * Admin Projects page sort and order.
      */
-    public function rules()
+    public function __invoke(): ?\Illuminate\Contracts\View\View
     {
-        return ['invites.*.email' => 'email'];
-    }
+        if (! Request::ajax()) {
+            return null;
+        }
 
-    public function messages()
-    {
-        return [
-            'invites.*.email' => 'Please enter valid email addresses',
-        ];
+        $projects = $this->projectService->getAdminIndex(Auth::user(), Request::all());
+
+        return View::make('admin.project.partials.project', compact('projects'));
     }
 }

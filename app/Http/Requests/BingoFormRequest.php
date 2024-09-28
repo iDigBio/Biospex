@@ -24,8 +24,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Class BingoFormRequest
- *
- * @package App\Http\Requests
  */
 class BingoFormRequest extends FormRequest
 {
@@ -46,11 +44,13 @@ class BingoFormRequest extends FormRequest
      */
     public function rules()
     {
+        $bingoId = isset($this->route('bingo')->id) ? $this->route('bingo')->id : null;
+
         return [
-            'project_id'   => 'required',
-            'title'        => 'required|between:5,20|unique:bingos,title,'.$this->route('bingos'),
-            'directions'   => 'required|between:10,200',
-            'contact'      => 'required|email',
+            'project_id' => 'required',
+            'title' => 'required|between:5,20|unique:bingos,title,'.$bingoId,
+            'directions' => 'required|between:10,200',
+            'contact' => 'required|email',
             'words.*.word' => 'max:30',
         ];
     }

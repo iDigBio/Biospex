@@ -19,20 +19,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\CountHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectFormRequest;
 use App\Jobs\DeleteProjectJob;
-use App\Jobs\DeleteUnassignedSubjectsJob;
 use App\Models\Project;
-use App\Services\Grid\JqGridEncoder;
 use App\Services\Group\GroupService;
-use App\Services\Models\ProjectModelService;
 use App\Services\Permission\CheckPermission;
+use App\Services\Project\ProjectService;
 use Auth;
 use Exception;
-use JavaScript;
 use Redirect;
+use Request;
 use View;
 
 /**
@@ -44,8 +41,8 @@ class ProjectController extends Controller
      * ProjectController constructor.
      */
     public function __construct(
-        private readonly ProjectModelService $projectModelService,
-        private readonly GroupService $groupService,
+        protected ProjectService $projectService,
+        protected GroupService $groupService,
     ) {}
 
     /**
@@ -53,10 +50,8 @@ class ProjectController extends Controller
      */
     public function index(): \Illuminate\Contracts\View\View
     {
-        $user = Auth::user();
-
-        $groups = $this->groupService->getUserGroupCount($user->id);
-        $projects = $this->projectModelService->getAdminProjectIndex($user->id);
+        $groups = $this->groupService->getUserGroupCount(Auth::id());
+        $projects = $this->projectService->getAdminIndex(Auth::user());
 
         return $groups === 0 ? View::make('admin.welcome') : View::make('admin.project.index', compact('projects'));
     }
@@ -66,11 +61,9 @@ class ProjectController extends Controller
      */
     public function create(): \Illuminate\View\View
     {
-        $groupOptions = ['' => '--Select--'] + $this->groupService->getUsersGroupsSelect(\Request::user());
-        $resourceOptions = config('config.project_resources');
-        $resourceCount = old('entries', 1);
+        $groupOptions = $this->groupService->getUsersGroupsSelect(Request::user());
 
-        $vars = compact('groupOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('groupOptions');
 
         return View::make('admin.project.create', $vars);
     }
@@ -80,27 +73,11 @@ class ProjectController extends Controller
      */
     public function show(Project $project): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $this->projectModelService->getProjectShow($project);
+        $viewParams = $this->projectService->getProjectShow($project);
 
         if (! CheckPermission::handle('readProject', $project->group)) {
             return Redirect::route('admin.projects.index');
         }
-
-        [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
-            return $expedition->completed === 0;
-        });
-
-        $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
-        $transcribersCount = CountHelper::projectTranscriberCount($project->id);
-
-        $viewParams = [
-            'project' => $project,
-            'group' => $project->group,
-            'expeditions' => $expeditions,
-            'expeditionsCompleted' => $expeditionsCompleted,
-            'transcriptionsCount' => $transcriptionsCount,
-            'transcribersCount' => $transcribersCount,
-        ];
 
         return View::make('admin.project.show', $viewParams);
     }
@@ -110,41 +87,20 @@ class ProjectController extends Controller
      */
     public function store(ProjectFormRequest $request): mixed
     {
-        $group = $this->groupService->findWithRelations($request->get('group_id'));
+        $group = $this->groupService->group->find($request->get('group_id'));
 
-        if (! $this->checkPermissions('createProject', $group)) {
+        if (! CheckPermission::handle('createProject', $group)) {
             return Redirect::route('admin.projects.index');
         }
 
-        $model = $this->projectModelService->create($request->all());
+        $project = $this->projectService->create($request->all());
 
-        if ($model) {
-            return Redirect::route('admin.projects.show', [$model])
+        if ($project) {
+            return Redirect::route('admin.projects.show', [$project])
                 ->with('success', t('Record was created successfully.'));
         }
 
         return Redirect::route('admin.projects.create')->withInput()->with('danger', t('An error occurred when saving record.'));
-    }
-
-    /**
-     * Create duplicate project
-     */
-    public function clone($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
-    {
-        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
-
-        if (! $project) {
-            return Redirect::route('admin.projects.show', [$project])
-                ->with('danger', t('Error retrieving record from database'));
-        }
-
-        $groupOptions = ['' => '--Select--'] + $this->groupService->getUsersGroupsSelect(\Request::user());
-        $resourceOptions = config('config.project_resources');
-        $resourceCount = old('entries', 1);
-
-        $vars = compact('project', 'groupOptions', 'resourceOptions', 'resourceCount');
-
-        return View::make('admin.project.clone', $vars);
     }
 
     /**
@@ -153,21 +109,14 @@ class ProjectController extends Controller
      * $model->relation()->exists(); // bool: true if there is at least one row
      * $model->relation()->count(); // int: number of related rows
      */
-    public function edit($projectId): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function edit(Project $project): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        $project = $this->groupService->findWithRelations($projectId, ['group', 'resources']);
-        if (! $project) {
+        $project->load(['group', 'resources']);
 
-            return Redirect::route('admin.projects.index')
-                ->with('danger', t('Error retrieving record from database'));
-        }
-
-        $groupOptions = ['' => '--Select--'] + $this->groupService->getUsersGroupsSelect(\Request::user());
-        $resourceOptions = config('config.project_resources');
-        $resourceCount = old('entries', $project->resources->count() ?: 1);
+        $groupOptions = $this->groupService->getUsersGroupsSelect(Request::user());
         $resources = $project->resources;
 
-        $vars = compact('project', 'resources', 'groupOptions', 'resourceOptions', 'resourceCount');
+        $vars = compact('project', 'resources', 'groupOptions');
 
         return View::make('admin.project.edit', $vars);
     }
@@ -175,64 +124,19 @@ class ProjectController extends Controller
     /**
      * Update project.
      */
-    public function update(ProjectFormRequest $request, $projectId): \Illuminate\Http\RedirectResponse
+    public function update(Project $project, ProjectFormRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $group = $this->groupService->findWithRelations($request->get('group_id'));
+        $project->load('group');
 
-        if (! $this->checkPermissions('updateProject', $group)) {
+        if (! CheckPermission::handle('updateProject', $project->group)) {
             return Redirect::route('admin.projects.index');
         }
 
-        $project = $this->projectModelService->update($request->all(), $projectId);
+        $result = $this->projectService->update($request->all(), $project);
 
-        return $project ?
-            Redirect::back()->with('success', t('Record was updated successfully.')) :
-            Redirect::back()->with('danger', t('Error while updating record.'));
-    }
-
-    /**
-     * Admin Projects page sort and order.
-     */
-    public function sort(): ?\Illuminate\Contracts\View\View
-    {
-        if (! \Request::ajax()) {
-            return null;
-        }
-
-        $user = Auth::user();
-        $sort = \Request::get('sort');
-        $order = \Request::get('order');
-        $projects = $this->projectModelService->getAdminProjectIndex($user->id, $sort, $order);
-
-        return View::make('admin.project.partials.project', compact('projects'));
-    }
-
-    /**
-     * Display project explore page.
-     */
-    public function explore($projectId, JqGridEncoder $grid): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
-    {
-        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
-
-        if (! $this->checkPermissions('readProject', $project->group)) {
-            return Redirect::route('admin.projects.index');
-        }
-
-        $model = $grid->loadGridModel($projectId);
-
-        JavaScript::put([
-            'model' => $model,
-            'subjectIds' => [],
-            'maxCount' => config('config.expedition_size'),
-            'dataUrl' => route('admin.grids.explore', [$projectId]),
-            'exportUrl' => route('admin.grids.export', [$projectId]),
-            'checkbox' => false,
-            'route' => 'explore', // used for export
-        ]);
-
-        $subjectAssignedCount = $this->projectModelService->findWithRelations($projectId)->expeditionStats->sum('local_subject_count');
-
-        return View::make('admin.project.explore', compact('project', 'subjectAssignedCount'));
+        return $result ?
+            Redirect::route('admin.projects.show', $project)->with('success', t('Record was updated successfully.')) :
+            Redirect::route('admin.projects.index')->with('danger', t('Error while updating record.'));
     }
 
     /**
@@ -240,9 +144,9 @@ class ProjectController extends Controller
      */
     public function delete($projectId): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectModelService->getProjectForDelete($projectId);
+        $project = $this->projectService->getProjectForDelete($projectId);
 
-        if (! $this->checkPermissions('isOwner', $project->group)) {
+        if (! CheckPermission::handle('isOwner', $project->group)) {
             return Redirect::route('admin.projects.index');
         }
 
@@ -260,38 +164,6 @@ class ProjectController extends Controller
         } catch (Exception $e) {
 
             return Redirect::route('admin.projects.index')->with('danger', t('An error occurred when deleting record.'));
-        }
-    }
-
-    /**
-     * Project Stats.
-     */
-    public function statistics($projectId): \Illuminate\Contracts\View\View
-    {
-        $project = $this->projectModelService->findWithRelations($projectId, ['group']);
-
-        $transcribers = CountHelper::getTranscribersTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
-        $transcriptions = CountHelper::getTranscriptionsPerTranscribers($projectId, $transcribers);
-
-        JavaScript::put(['transcriptions' => $transcriptions]);
-
-        return View::make('admin.project.statistics', compact('project', 'transcribers', 'transcriptions'));
-    }
-
-    /**
-     * Delete all unassigned subjects for project.
-     */
-    public function deleteSubjects(int $projectId): \Illuminate\Http\RedirectResponse
-    {
-        try {
-            DeleteUnassignedSubjectsJob::dispatch(Auth::user(), (int) $projectId);
-
-            return Redirect::route('admin.projects.explore', [$projectId])
-                ->with('success', t('Subjects have been set for deletion. You will be notified by email when complete.'));
-        } catch (Exception $e) {
-
-            return Redirect::route('admin.projects.explore', [$projectId])
-                ->with('danger', t('An error occurred when deleting Subjects.'));
         }
     }
 }

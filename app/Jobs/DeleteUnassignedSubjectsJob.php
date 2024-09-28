@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Project;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Models\SubjectModelService;
@@ -36,17 +37,11 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private int $projectId;
-
-    private User $user;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(User $user, int $projectId)
+    public function __construct(protected User $user, protected Project $project)
     {
-        $this->user = $user;
-        $this->projectId = $projectId;
         $this->onQueue(config('config.queue.default'));
     }
 
@@ -56,7 +51,7 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
     public function handle(SubjectModelService $subjectModelService): void
     {
         try {
-            $cursor = $subjectModelService->deleteUnassignedByProject($this->projectId);
+            $cursor = $subjectModelService->deleteUnassignedByProject($this->project->id);
             $cursor->each(function ($subject) {
                 $subject->delete();
             });
@@ -64,7 +59,7 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
             $attributes = [
                 'subject' => t('Delete Unassigned Subjects Complete'),
                 'html' => [
-                    t('All unassigned subjects for Project Id %s have been deleted.', $this->projectId),
+                    t('All unassigned subjects for Project Id %s have been deleted.', $this->project->id),
                 ],
             ];
 
@@ -75,7 +70,7 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
             $attributes = [
                 'subject' => t('Delete Unassigned Subjects Error'),
                 'html' => [
-                    t('Error: Could not delete unassigned subjects for Project Id %s.', $this->projectId),
+                    t('Error: Could not delete unassigned subjects for Project Id %s.', $this->project->id),
                     t('An error occurred while importing the Darwin Core Archive.'),
                     t('File: %s', $e->getFile()),
                     t('Line: %s', $e->getLine()),

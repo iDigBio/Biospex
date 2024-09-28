@@ -23,8 +23,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BingoFormRequest;
 use App\Models\Bingo;
 use App\Services\Bingo\BingoService;
-use App\Services\Models\ProjectModelService;
 use App\Services\Permission\CheckPermission;
+use App\Services\Project\ProjectService;
 use Illuminate\Support\Facades\Auth;
 use Redirect;
 use View;
@@ -39,7 +39,7 @@ class BingoController extends Controller
      */
     public function __construct(
         protected BingoService $bingoService,
-        protected ProjectModelService $projectModelService
+        protected ProjectService $projectService
     ) {}
 
     /**
@@ -61,7 +61,7 @@ class BingoController extends Controller
      */
     public function create()
     {
-        $projects = $this->projectModelService->getProjectEventSelect();
+        $projects = $this->projectService->getProjectEventSelect();
 
         return View::make('admin.bingo.create', compact('projects'));
     }
@@ -106,7 +106,7 @@ class BingoController extends Controller
     public function edit(Bingo $bingo)
     {
         $bingo->load(['words', 'project']);
-        $projects = $this->projectModelService->getProjectEventSelect();
+        $projects = $this->projectService->getProjectEventSelect();
 
         return View::make('admin.bingo.edit', compact('bingo', 'projects'));
     }

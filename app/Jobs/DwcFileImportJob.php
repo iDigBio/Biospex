@@ -22,9 +22,9 @@ namespace App\Jobs;
 use App\Models\Import;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Services\Models\ProjectModelService;
 use App\Services\Process\CreateReportService;
 use App\Services\Process\DarwinCore;
+use App\Services\Project\ProjectService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -59,14 +59,14 @@ class DwcFileImportJob implements ShouldQueue
     }
 
     public function handle(
-        ProjectModelService $projectModelService,
+        ProjectService $projectService,
         DarwinCore $dwcProcess,
         CreateReportService $createReportService
     ) {
         $scratchFileDir = Storage::disk('efs')->path(config('config.scratch_dir').'/'.md5($this->import->file));
         $importFilePath = Storage::disk('efs')->path($this->import->file);
 
-        $project = $projectModelService->getProjectForDarwinImportJob($this->import->project_id);
+        $project = $projectService->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
 
         try {

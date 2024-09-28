@@ -17,7 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use App\Http\Controllers\Admin\ProjectCloneController;
 use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\ProjectSortController;
+use App\Http\Controllers\Admin\ProjectStatsController;
+use App\Http\Controllers\Admin\ProjectSubjectController;
 
 Route::get('projects', [ProjectController::class, 'index'])->name('admin.projects.index');
 Route::get('projects/create', [ProjectController::class, 'create'])->name('admin.projects.create');
@@ -25,11 +29,10 @@ Route::post('projects/store', [ProjectController::class, 'store'])->name('admin.
 Route::get('projects/{project}', [ProjectController::class, 'show'])->name('admin.projects.show');
 Route::get('projects/{project}/edit', [ProjectController::class, 'edit'])->name('admin.projects.edit');
 Route::put('projects/{project}', [ProjectController::class, 'update'])->name('admin.projects.update');
-Route::get('projects/{project}/clone', [ProjectController::class, 'clone'])->name('admin.projects.clone');
-Route::get('projects/{project}/explore', [ProjectController::class, 'explore'])->name('admin.projects.explore');
-Route::get('projects/{project}/statistics', [ProjectController::class, 'statistics'])->name('admin.projects.statistics');
+Route::delete('projects/{project}', [ProjectController::class, 'delete'])->name('admin.projects.destroy');
 
-Route::post('projects/sort', [ProjectController::class, 'sort'])->name('admin.projects.sort');
-
-Route::delete('projects/{projects}', [ProjectController::class, 'delete'])->name('admin.projects.delete');
-Route::delete('projects/{projects}/subject', [ProjectController::class, 'deleteSubjects'])->name('admin.projects.deleteSubjects');
+Route::get('projects/{project}/statistics', ProjectStatsController::class)->name('admin.project-stats.index');
+Route::post('projects/sort', ProjectSortController::class)->name('admin.projects.sort');
+Route::get('projects/{project}/clone', ProjectCloneController::class)->name('admin.projects.clone');
+Route::get('projects/{project}/subjects', [ProjectSubjectController::class, 'index'])->name('admin.project-subjects.index');
+Route::delete('projects/{project}/subject', [ProjectSubjectController::class, 'destroy'])->name('admin.project-subjects.destroy');

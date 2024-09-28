@@ -1,0 +1,49 @@
+<?php
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Project;
+use App\Services\Group\GroupService;
+use App\Services\Project\ProjectService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\View;
+use Request;
+
+class ProjectCloneController extends Controller
+{
+    public function __construct(
+        protected ProjectService $projectService,
+        protected GroupService $groupService,
+    ) {}
+
+    /**
+     * Create duplicate project
+     */
+    public function __invoke(Project $project): \Illuminate\Contracts\View\View|RedirectResponse
+    {
+        $project->load(['group']);
+        $project->resources = null;
+
+        $groupOptions = $this->groupService->getUsersGroupsSelect(Request::user());
+
+        return View::make('admin.project.clone', compact('project', 'groupOptions'));
+    }
+}

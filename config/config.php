@@ -7,6 +7,8 @@ return [
     'app_server_user' => env('APP_SERVER_USER'),
     'app_registration' => env('APP_REGISTRATION'),
 
+    'db_log' => env('DB_LOG', false),
+
     'expedition_size' => env('EXPEDITION_SIZE'),
     'pusher_app_cluster' => env('PUSHER_APP_CLUSTER'),
 
@@ -63,6 +65,7 @@ return [
         'Website URL',
         'Video URL',
         'File Download',
+        'Delete',
     ],
 
     /**

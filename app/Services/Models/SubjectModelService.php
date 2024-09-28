@@ -155,10 +155,8 @@ class SubjectModelService
 
     /**
      * Cursor to delete unassigned by project id.
-     *
-     * @return \Illuminate\Support\LazyCollection
      */
-    public function deleteUnassignedByProject(int $projectId)
+    public function deleteUnassignedByProject(int $projectId): LazyCollection
     {
         return $this->subject->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->cursor();
     }

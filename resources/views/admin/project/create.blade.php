@@ -16,8 +16,7 @@
                     <form method="post" id="projectFrm" action="{{ route('admin.projects.store') }}" role="form"
                           enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" id="entries" name="entries" value="{{ old('entries', $resourceCount) }}">
-                        <input type="hidden" name="id" value="">
+                        <input type="hidden" id="entries" name="entries" value="{{ old('entries', 1) }}">
                         <div class="form-row">
                             <div class="form-group col-sm-6">
                                 <label for="group_id"
@@ -26,6 +25,7 @@
                                 <select name="group_id" id="group_id"
                                         class="form-control custom-select {{ ($errors->has('group_id')) ? 'is-invalid' : '' }}"
                                         required>
+                                    <option value="">{{ t('Select Group') }}</option>
                                     @foreach($groupOptions as $key => $name)
                                         <option {{ $key == old('group_id') ?
                                         ' selected=selected' : '' }} value="{{ $key }}">{{ $name }}</option>
@@ -242,7 +242,8 @@
                                    data-hover="tooltip" title="{{ t('Click to select banner.') }}">
                                     {{ t('Click to select banner.') }}
                                     <img class="img-fluid" id="banner-img"
-                                         src="{{ old('banner_file', project_banner_file_url() }}" alt="Project Banner"/>
+                                         src="{{ old('banner_file', project_banner_file_url()) }}"
+                                         alt="Project Banner"/>
                                 </a>
                             </div>
                         </div>

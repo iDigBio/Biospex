@@ -23,19 +23,19 @@ use App\Facades\DateHelper;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
-use Cviebrock\EloquentSluggable\Sluggable;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Config;
 use MongoDB\Laravel\Eloquent\HybridRelations;
+use Str;
 
 /**
  * Class Project
  */
 class Project extends BaseEloquentModel implements AttachableInterface
 {
-    use HasFactory, HybridRelations, PaperclipTrait, Presentable, Sluggable, UuidTrait;
+    use HasFactory, HybridRelations, PaperclipTrait, Presentable, UuidTrait;
 
     /**
      * @var string
@@ -125,25 +125,11 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
         static::bootUuidTrait();
 
-        static::creating(function ($model) {
+        static::saving(function ($model) {
+            \Log::info('Project saving');
+            $model->slug = Str::slug($model->title);
             $model->advertise = $model->attributes;
         });
-
-        static::updating(function ($model) {
-            $model->advertise = $model->attributes;
-        });
-    }
-
-    /**
-     * Return the sluggable configuration array for this model test.
-     */
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'title',
-            ],
-        ];
     }
 
     /**
@@ -188,10 +174,8 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Expedition Stat relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function expeditionStats()
+    public function expeditionStats(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(ExpeditionStat::class, Expedition::class);
     }

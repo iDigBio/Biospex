@@ -17,14 +17,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Models;
+namespace App\Services\Project;
 
+use App\Facades\CountHelper;
 use App\Models\Project;
 use App\Models\ProjectResource;
+use App\Models\User;
+use App\Services\ExpeditionPartitionTrait;
+use App\Services\Helpers\CountService;
+use Illuminate\Support\Collection;
 
-readonly class ProjectModelService
+readonly class ProjectService
 {
-    public function __construct(public Project $project) {}
+    use ExpeditionPartitionTrait;
+
+    /**
+     * ProjectService constructor.
+     */
+    public function __construct(
+        public Project $project,
+        public ProjectResource $projectResource,
+        public CountService $countService,
+    ) {}
 
     /**
      * Get all with relations.
@@ -65,7 +79,7 @@ readonly class ProjectModelService
         $resources = collect($data['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
         })->map(function ($resource) {
-            return new ProjectResource($resource);
+            return $this->projectResource::make($resource);
         });
 
         $project->resources()->saveMany($resources->all());
@@ -74,18 +88,11 @@ readonly class ProjectModelService
     }
 
     /**
-     * Override project update.
-     *
-     * TODO move resource code
-     *
-     * @return bool|iterable
+     * Update project.
      */
-    public function update(array $data, $resourceId)
+    public function update(array $data, Project $project): array|bool
     {
-        $model = $this->project->find($resourceId);
-
-        $data['slug'] = null;
-        $model->fill($data)->save();
+        $project->fill($data)->save();
 
         if (! isset($data['resources'])) {
             return true;
@@ -96,7 +103,7 @@ readonly class ProjectModelService
         })->reject(function ($resource) {
             return ! empty($resource['id']) && $this->updateProjectResource($resource);
         })->map(function ($resource) {
-            return new ProjectResource($resource);
+            return $this->projectResource::make($resource);
         });
 
         if ($resources->isEmpty()) {
@@ -108,41 +115,35 @@ readonly class ProjectModelService
 
     /**
      * Get projects for admin index page.
-     *
-     * @param  null  $sort
-     * @param  null  $order
-     * @return mixed
      */
-    public function getAdminProjectIndex($userId, $sort = null, $order = null)
+    public function getAdminIndex(User $user, array $request = []): Collection
     {
-        $results = $this->project->withCount('expeditions')->with([
-            'group' => function ($q) use ($userId) {
-                $q->whereHas('users', function ($q) use ($userId) {
-                    $q->where('users.id', $userId);
+        $records = $this->project->withCount('expeditions')->with([
+            'group' => function ($q) use ($user) {
+                $q->whereHas('users', function ($q) use ($user) {
+                    $q->where('users.id', $user->id);
                 });
             },
-        ])->whereHas('group', function ($q) use ($userId) {
-            $q->whereHas('users', function ($q) use ($userId) {
-                $q->where('users.id', $userId);
+        ])->whereHas('group', function ($q) use ($user) {
+            $q->whereHas('users', function ($q) use ($user) {
+                $q->where('users.id', $user->id);
             });
         })->get();
 
-        return $this->sortResults($order, $results, $sort);
+        return $this->sortResults($records, $request);
     }
 
     /**
      * Get public project index page.
      *
-     * @param  null  $sort
-     * @param  null  $order
      * @return mixed
      */
-    public function getPublicProjectIndex($sort = null, $order = null)
+    public function getPublicProjectIndex(array $request = [])
     {
         $results = $this->project->withCount('expeditions')
             ->withCount('events')->with('group')->has('panoptesProjects')->get();
 
-        return $this->sortResults($order, $results, $sort);
+        return $this->sortResults($results, $request);
     }
 
     /**
@@ -157,6 +158,20 @@ readonly class ProjectModelService
                 $q->with(['stat', 'zooniverseExport', 'panoptesProject', 'workflowManager']);
             },
         ]);
+
+        [$expeditions, $expeditionsCompleted] = $this->partitionRecords($project->expeditions);
+
+        $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
+        $transcribersCount = CountHelper::projectTranscriberCount($project->id);
+
+        return [
+            'project' => $project,
+            'group' => $project->group,
+            'expeditions' => $expeditions,
+            'expeditionsCompleted' => $expeditionsCompleted,
+            'transcriptionsCount' => $transcriptionsCount,
+            'transcribersCount' => $transcribersCount,
+        ];
     }
 
     /**
@@ -205,7 +220,7 @@ readonly class ProjectModelService
             return true;
         }
 
-        if ($resource['type'] === 'delete') {
+        if (strtolower($resource['type']) === 'delete') {
             ProjectResource::destroy($resource['id']);
 
             return true;
@@ -236,30 +251,25 @@ readonly class ProjectModelService
 
     /**
      * Sort results from index pages.
-     *
-     * @return mixed
      */
-    protected function sortResults($order, $results, $sort)
+    protected function sortResults(Collection $records, array $request = []): Collection
     {
-        if ($order === null) {
-            return $results->sortBy('created_at');
+        if (! isset($request['order'])) {
+            return $records->sortBy('created_at');
         }
 
-        switch ($sort) {
-            case 'title':
-                $results = $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
-                break;
-            case 'group':
-                $results = $order === 'desc' ? $results->sortByDesc(function ($project) {
-                    return $project->group->title;
-                }) : $results->sortBy(function ($project) {
-                    return $project->group->title;
-                });
-                break;
-            case 'date':
-                $results = $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
-                break;
-        }
+        // use match instead of switch
+        match ($request['sort']) {
+            'title' => $results = $request['order'] === 'desc' ?
+                $records->sortByDesc('title') :
+                $records->sortBy('title'),
+            'group' => $results = $request['order'] === 'desc' ?
+                $records->sortByDesc(fn ($project) => $project->group->title) :
+                $records->sortBy(fn ($project) => $project->group->title),
+            'date' => $results = $request['order'] === 'desc' ?
+                $records->sortByDesc('created_at') :
+                $records->sortBy('created_at'),
+        };
 
         return $results;
     }

@@ -255,5 +255,9 @@ class UpdateQueries extends Command
         Schema::table('expeditions', function (Blueprint $table) {
             DB::statement('ALTER TABLE `expeditions` ADD `logo_created_at` TIMESTAMP NULL DEFAULT NULL AFTER `logo_updated_at`;');
         });
+
+        Schema::table('project_resources', function (Blueprint $table) {
+            DB::statement('ALTER TABLE `project_resources` ADD `download_created_at` TIMESTAMP NULL DEFAULT NULL AFTER `download_updated_at`;');
+        });
     }
 }

@@ -61,13 +61,11 @@ class GridExportCsvJob implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function handle(
         JqGridEncoder $jqGridEncoder,
         AwsS3CsvService $awsS3CsvService,
-        GeneralService $generalService)
+        GeneralService $generalService): void
     {
         $csvName = Str::random().'.csv';
 
@@ -91,7 +89,7 @@ class GridExportCsvJob implements ShouldQueue
                 $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
                 $subjectArray['created_at'] = $subject->created_at->toDateTimeString();
                 $subjectArray['ocr'] = $generalService->forceUtf8($subject->ocr);
-                $subjectArray['occurrence'] = $this->decodeAndEncode($subject->occurrence->getAttributes());
+                $subjectArray['occurrence'] = $this->decodeAndEncode($subject['occurrence']->getAttributes());
 
                 $merged = $header->merge($subjectArray);
 
@@ -131,6 +129,7 @@ class GridExportCsvJob implements ShouldQueue
                     t('File: %s', $e->getFile()),
                     t('Line: %s', $e->getLine()),
                     t('Message: %s', $e->getMessage()),
+                    t('Code: %s', $e->getTrace()),
                     t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
                 ],
             ];
@@ -142,10 +141,8 @@ class GridExportCsvJob implements ShouldQueue
 
     /**
      * Build the header for export.
-     *
-     * @return \Illuminate\Support\Collection
      */
-    private function buildHeader()
+    private function buildHeader(): \Illuminate\Support\Collection
     {
         $header = Header::where('project_id', $this->data['projectId'])->first()->header['image'];
         array_unshift($header, '_id', 'project_id', 'id', 'expedition_ids', 'exported');

@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\Import;
 use App\Notifications\Generic;
 use App\Services\Helpers\GeneralService;
-use App\Services\Models\ProjectModelService;
+use App\Services\Project\ProjectService;
 use Exception;
 use finfo;
 use Illuminate\Bus\Queueable;
@@ -63,10 +63,10 @@ class DwcUriImportJob implements ShouldQueue
      */
     public function handle(
         Import $import,
-        ProjectModelService $projectModelService,
+        ProjectService $projectService,
         GeneralService $generalService
     ): void {
-        $project = $projectModelService->getProjectForDarwinImportJob($this->data['id']);
+        $project = $projectService->getProjectForDarwinImportJob($this->data['id']);
         $users = $project->group->users->push($project->group->owner);
 
         try {

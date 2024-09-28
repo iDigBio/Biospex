@@ -13,7 +13,6 @@
     "ext-mongodb": "*",
     "aws/aws-php-sns-message-validator": "^1.0",
     "aws/aws-sdk-php": "~3.0",
-    "cviebrock/eloquent-sluggable": "^11.0",
     "czim/laravel-paperclip": "^5.0",
     "graham-campbell/markdown": "^15.0",
     "laracasts/utilities": "^3.2",

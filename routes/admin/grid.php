@@ -19,17 +19,16 @@
 
 use App\Http\Controllers\Admin\ExpeditionGridController;
 use App\Http\Controllers\Admin\ExpeditionGridExportController;
-use App\Http\Controllers\Admin\GridController;
+use App\Http\Controllers\Admin\ProjectGridController;
 use App\Http\Controllers\Admin\ProjectGridExportController;
 
-Route::get('grids/{projects}/explore', [GridController::class, 'explore'])->name('admin.grids.explore');
-Route::post('grids/{projects}/delete', [GridController::class, 'delete'])->name('admin.grids.delete');
+Route::get('grids/{project}/explore', ProjectGridController::class)->name('admin.grids.project.index');
 
 // Expeditions grid.
-Route::get('grids/{project}/create', [ExpeditionGridController::class, 'create'])->name('admin.grids.create');
-Route::get('grids/{expedition}', [ExpeditionGridController::class, 'show'])->name('admin.grids.show');
-Route::get('grids/{expedition}/edit', [ExpeditionGridController::class, 'edit'])->name('admin.grids.edit');
+Route::get('grids/{project}/create', [ExpeditionGridController::class, 'create'])->name('admin.grids.expeditions.create');
+Route::get('grids/{expedition}', [ExpeditionGridController::class, 'show'])->name('admin.grids.expeditions.show');
+Route::get('grids/{expedition}/edit', [ExpeditionGridController::class, 'edit'])->name('admin.grids.expeditions.edit');
 
 // Export csv from grid button.
-Route::post('grids/{expedition}/export', ExpeditionGridExportController::class)->name('admin.grids.expedition.export');
-Route::post('grids/{projects}/export', ProjectGridExportController::class)->name('admin.grids.export');
+Route::post('grids/{expedition}/expedition-export', ExpeditionGridExportController::class)->name('admin.grids.expeditions.export');
+Route::post('grids/{project}/project-export', ProjectGridExportController::class)->name('admin.grids.projects.export');

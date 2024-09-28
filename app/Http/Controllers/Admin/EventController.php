@@ -23,8 +23,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Models\Event;
 use App\Services\Event\EventService;
-use App\Services\Models\ProjectModelService;
 use App\Services\Permission\CheckPermission;
+use App\Services\Project\ProjectService;
 use Auth;
 use Redirect;
 use Throwable;
@@ -40,7 +40,7 @@ class EventController extends Controller
      */
     public function __construct(
         protected EventService $eventService,
-        protected ProjectModelService $projectModelService
+        protected ProjectService $projectService
     ) {}
 
     /**
@@ -66,7 +66,7 @@ class EventController extends Controller
      */
     public function create()
     {
-        $projects = $this->projectModelService->getProjectEventSelect();
+        $projects = $this->projectService->getProjectEventSelect();
 
         return View::make('admin.event.create', compact('projects'));
     }
@@ -110,7 +110,7 @@ class EventController extends Controller
         }
 
         $this->eventService->edit($event);
-        $projects = $this->projectModelService->getProjectEventSelect();
+        $projects = $this->projectService->getProjectEventSelect();
 
         return View::make('admin.event.edit', compact('event', 'projects'));
     }

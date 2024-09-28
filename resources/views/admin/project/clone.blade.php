@@ -10,8 +10,9 @@
         .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
             font-size: 1rem;
         }
+
         #searchmodfbox_jqGridExpedition {
-            top:auto;
+            top: auto;
         }
     </style>
 @endpush
@@ -24,10 +25,11 @@
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Clone Project') }}</h2>
-                    <form method="post" id="projectFrm" action="{{ route('admin.projects.store', $project->id) }}" role="form"
+                    <form method="post" id="projectFrm" action="{{ route('admin.projects.store') }}"
+                          role="form"
                           enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" id="entries" name="entries" value="{{ old('entries', $resourceCount) }}">
+                        <input type="hidden" id="entries" name="entries" value="{{ old('entries', 1) }}">
                         <input type="hidden" name="id" value="">
                         <div class="form-row">
                             <div class="form-group col-sm-6">
@@ -37,6 +39,7 @@
                                 <select name="group_id" id="group_id"
                                         class="form-control custom-select {{ ($errors->has('group_id')) ? 'is-invalid' : '' }}"
                                         required>
+                                    <option value="">{{ t('Select Group') }}</option>
                                     @foreach($groupOptions as $key => $name)
                                         {{ $key }}
                                         <option {{ $key == old('group_id', $project->group_id) ?
@@ -214,7 +217,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="language_skills" class="col-form-label">{{ t('Language Skills Required') }}:</label>
+                            <label for="language_skills" class="col-form-label">{{ t('Language Skills Required') }}
+                                :</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('language_skills')) ? 'is-invalid' : '' }}"
                                    id="language_skills" name="language_skills"

@@ -16,25 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
 use Schema;
-use Illuminate\Pagination\Paginator;
 
 /**
  * Class AppServiceProvider
- *
- * @package App\Providers
  */
 class AppServiceProvider extends ServiceProvider
 {
-
     /**
      * Bootstrap any application services.
      * creating, created, updating, updated, saving, saved, deleting, deleted, restoring, restored
+     *
      * @return void
      */
     public function boot()
@@ -48,6 +49,15 @@ class AppServiceProvider extends ServiceProvider
 
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventAccessingMissingAttributes(! $this->app->isProduction());
+
+        // Check if the application is running in the local environment
+        if (config('config.db_log') && $this->app->environment('local')) {
+            // Register a listener for database queries
+            DB::listen(function ($query) {
+                // Log the query with parameters
+                Log::info($query->sql, $query->bindings);
+            });
+        }
     }
 
     /**

@@ -21,7 +21,7 @@ namespace App\Jobs;
 
 use App\Models\Import;
 use App\Notifications\Generic;
-use App\Services\Models\ProjectModelService;
+use App\Services\Project\ProjectService;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
@@ -69,10 +69,10 @@ class RecordsetImportJob implements ShouldQueue
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(Import $import, ProjectModelService $projectModelService): void
+    public function handle(Import $import, ProjectService $projectService): void
     {
         $this->import = $import;
-        $project = $projectModelService->getProjectForDarwinImportJob($this->data['id']);
+        $project = $projectService->getProjectForDarwinImportJob($this->data['id']);
         $users = $project->group->users->push($project->group->owner);
 
         try {

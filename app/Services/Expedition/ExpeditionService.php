@@ -22,6 +22,7 @@ namespace App\Services\Expedition;
 use App\Models\Expedition;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\ExpeditionPartitionTrait;
 use App\Services\Models\SubjectModelService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -29,6 +30,8 @@ use Illuminate\Support\Facades\Notification;
 
 class ExpeditionService
 {
+    use ExpeditionPartitionTrait;
+
     private Collection $subjectIds;
 
     /**
@@ -117,16 +120,6 @@ class ExpeditionService
         };
 
         return $records;
-    }
-
-    /**
-     * Partition records into completed and active.
-     */
-    public function partitionRecords(Collection $records): Collection
-    {
-        return $records->partition(function ($expedition) {
-            return $expedition->completed === 0;
-        });
     }
 
     /**

@@ -67,7 +67,7 @@ class JqGridEncoder
      */
     public function encodeGridRequestedData($postedData, $route, $projectId, $expeditionId = null)
     {
-        $vars = $this->gridData->buildVariables($postedData, $route, $projectId, $expeditionId);
+        $vars = $this->gridData->buildVariables($postedData, $route, (int) $projectId, $expeditionId);
 
         $this->gridData->getTotalRows($vars);
 

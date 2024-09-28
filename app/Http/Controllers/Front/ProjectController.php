@@ -22,8 +22,8 @@ namespace App\Http\Controllers\Front;
 use App\Facades\CountHelper;
 use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
-use App\Services\Models\ProjectModelService;
 use App\Services\Models\StateCountyModelService;
+use App\Services\Project\ProjectService;
 use JavaScript;
 use View;
 
@@ -35,7 +35,7 @@ class ProjectController extends Controller
     /**
      * ProjectController constructor.
      */
-    public function __construct(private readonly ProjectModelService $projectModelService) {}
+    public function __construct(private readonly ProjectService $projectService) {}
 
     /**
      * Public Projects page.
@@ -44,7 +44,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = $this->projectModelService->getPublicProjectIndex();
+        $projects = $this->projectService->getPublicProjectIndex();
 
         return View::make('front.project.index', compact('projects'));
     }
@@ -62,7 +62,7 @@ class ProjectController extends Controller
 
         $sort = \Request::get('sort');
         $order = \Request::get('order');
-        $projects = $this->projectModelService->getPublicProjectIndex($sort, $order);
+        $projects = $this->projectService->getPublicProjectIndex($sort, $order);
 
         return View::make('front.project.partials.project', compact('projects'));
     }
@@ -76,7 +76,7 @@ class ProjectController extends Controller
         StateCountyModelService $stateCountyModelService,
         $slug
     ) {
-        $project = $this->projectModelService->getProjectPageBySlug($slug);
+        $project = $this->projectService->getProjectPageBySlug($slug);
 
         if ($project === null) {
 

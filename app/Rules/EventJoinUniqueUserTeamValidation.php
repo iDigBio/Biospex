@@ -24,23 +24,19 @@ use Illuminate\Contracts\Validation\Rule;
 
 /**
  * Class EventJoinUniqueUserTeamValidation
- *
- * @package App\Rules
  */
 class EventJoinUniqueUserTeamValidation implements Rule
 {
     /**
      * Create a new rule instance.
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string $attribute
-     * @param  mixed $value
+     * @param  string  $attribute
+     * @param  mixed  $value
      * @return bool
      */
     public function passes($attribute, $value)
@@ -48,9 +44,9 @@ class EventJoinUniqueUserTeamValidation implements Rule
         $groupId = \Request::get('team_id');
         $nfnUser = \Request::get('nfn_user');
 
-        $result = Event::whereHas('teams', function($query) use ($groupId){
+        $result = Event::whereHas('teams', function ($query) use ($groupId) {
             $query->where('id', $groupId);
-        })->whereHas('teams.users', function($query) use($nfnUser){
+        })->whereHas('teams.users', function ($query) use ($nfnUser) {
             $query->where('nfn_user', $nfnUser);
         })->count();
 
@@ -59,7 +55,6 @@ class EventJoinUniqueUserTeamValidation implements Rule
 
     /**
      * Get the validation error message.
-     *
      */
     public function message()
     {

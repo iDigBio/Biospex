@@ -24,7 +24,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EditUserFormRequest;
 use App\Models\User;
 use App\Services\Permission\CheckPermission;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 /**
  * Class UserController
@@ -34,11 +36,9 @@ class UserController extends Controller
     /**
      * Show the form for user edit.
      *
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     *
      * @throws \Exception
      */
-    public function edit(User $user)
+    public function edit(User $user): \Illuminate\View\View|RedirectResponse
     {
         if (! CheckPermission::handle('edit', $user)) {
             return Redirect::route('admin.projects.index');
@@ -46,15 +46,13 @@ class UserController extends Controller
 
         $timezones = DateHelper::timeZoneSelect();
 
-        return view('admin.user.edit', compact('user', 'timezones'));
+        return View::make('admin.user.edit', compact('user', 'timezones'));
     }
 
     /**
      * Update the specified resource in storage
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(User $user, EditUserFormRequest $request)
+    public function update(User $user, EditUserFormRequest $request): RedirectResponse
     {
         if (! CheckPermission::handle('update', $user)) {
             return Redirect::route('admin.projects.index');

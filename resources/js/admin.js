@@ -61,7 +61,12 @@ $(function () {
         newEntry.find(':input').each(function () {
             $(this).val('')
         })
-        newEntry.find('.fileName').html('')
+        newEntry.find('.custom-file-label').each(function () {
+            $(this).text('')
+        });
+        newEntry.find(':file').each(function () {
+            $(this).val('')
+        });
         controls.find('.entry:last span.btn-add')
             .removeClass('btn-add').addClass('btn-remove')
             .html('<i class="fas fa-minus"></i>')

@@ -28,24 +28,16 @@ use Illuminate\Support\Facades\Auth;
 readonly class GroupService
 {
     public function __construct(
-        protected Group $model,
-        protected User $user
+        public Group $group,
+        public User $user
     ) {}
-
-    /**
-     * Get group ids for user session.
-     */
-    public function findWithRelations(int $id, array $relations = []): ?\App\Models\Group
-    {
-        return $this->model->with($relations)->find($id);
-    }
 
     /**
      * Display groups.
      */
     public function getAdminIndex(): Collection
     {
-        return $this->model->withCount(['projects', 'expeditions', 'users'])
+        return $this->group->withCount(['projects', 'expeditions', 'users'])
             ->whereHas('users', function ($q) {
                 $q->where('user_id', Auth::id());
             })->get();
@@ -56,7 +48,7 @@ readonly class GroupService
      */
     public function storeGroup(User $user, array $request): Group
     {
-        $group = $this->model->create(['user_id' => $user->id, 'title' => $request['title']]);
+        $group = $this->group->create(['user_id' => $user->id, 'title' => $request['title']]);
 
         $user->assignGroup($group);
         $admin = $this->user::find(1);
@@ -116,7 +108,7 @@ readonly class GroupService
      */
     public function getUserGroupCount($userId): int
     {
-        return $this->model->withCount([
+        return $this->group->withCount([
             'users' => function ($q) use ($userId) {
                 $q->where('user_id', $userId);
             },
@@ -128,9 +120,9 @@ readonly class GroupService
     /**
      * Get group select for user.
      */
-    public function getUsersGroupsSelect($user): array
+    public function getUsersGroupsSelect(User $user): array
     {
-        return $this->model->whereHas('users', function ($query) use ($user) {
+        return $this->group->whereHas('users', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })->pluck('title', 'id')->toArray();
     }
@@ -140,7 +132,7 @@ readonly class GroupService
      */
     public function getUserGroupIds($userId): \Illuminate\Support\Collection
     {
-        return $this->model->whereHas('users', function ($query) use ($userId) {
+        return $this->group->whereHas('users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })->get()->map(function ($item) {
             return $item['id'];

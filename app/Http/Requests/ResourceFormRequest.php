@@ -23,8 +23,6 @@ use App\Rules\FileUploadNameValidation;
 
 /**
  * Class ResourceFormRequest
- *
- * @package App\Http\Requests
  */
 class ResourceFormRequest extends Request
 {
@@ -45,10 +43,12 @@ class ResourceFormRequest extends Request
      */
     public function rules()
     {
+        $resourceId = isset($this->route('resource')->id) ? $this->route('resource')->id : null;
+
         return [
-            'title' => 'required|between:3,255|unique:resources,title,' . $this->route('resources'),
+            'title' => 'required|between:3,255|unique:resources,title,'.$resourceId,
             'description' => 'required',
-            'document' => ['mimes:pdf', new FileUploadNameValidation()]
+            'document' => ['mimes:pdf', new FileUploadNameValidation],
         ];
     }
 }
