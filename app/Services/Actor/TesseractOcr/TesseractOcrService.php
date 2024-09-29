@@ -93,6 +93,7 @@ class TesseractOcrService
             $this->subjectRepo->update(['ocr' => $ocrText], $file->subject_id);
 
             Storage::disk('s3')->delete($filePath);
+            $file->delete();
         });
     }
 
