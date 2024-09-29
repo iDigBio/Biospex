@@ -29,14 +29,17 @@ class OcrQueueRepository extends BaseRepository
     /**
      * OcrQueueRepository constructor.
      */
-    public function __construct(protected OcrQueue $ocrQueue) {}
+    public function __construct(OcrQueue $ocrQueue)
+    {
+        $this->model = $ocrQueue;
+    }
 
     /**
      * Get ocr queue for poll command.
      */
     public function getOcrQueuesForPollCommand(): mixed
     {
-        return $this->ocrQueue->withCount([
+        return $this->model->withCount([
             'files' => function ($q) {
                 $q->where('processed', 1);
             },
@@ -49,7 +52,7 @@ class OcrQueueRepository extends BaseRepository
     public function getFirstQueue(bool $reset = false): ?OcrQueue
     {
         return $reset ?
-            $this->ocrQueue->orderBy('id')->first() :
-            $this->ocrQueue->where('error', 0)->where('status', 0)->orderBy('id', 'asc')->first();
+            $this->model->orderBy('id')->first() :
+            $this->model->where('error', 0)->where('status', 0)->orderBy('id', 'asc')->first();
     }
 }
