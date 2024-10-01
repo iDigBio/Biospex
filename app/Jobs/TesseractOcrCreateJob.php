@@ -63,17 +63,14 @@ class TesseractOcrCreateJob implements ShouldQueue
 
         try {
             $total = $tesseractOcrBuild->getSubjectCountForOcr($this->projectId, $this->expeditionId);
-            \Log::info('Total subjects for OCR: '.$total);
 
             // If no subjects to OCR, return
             if ($total === 0) {
-                \Log::info('No subjects to OCR.');
 
                 return;
             }
 
             $ocrQueue = $tesseractOcrBuild->createOcrQueue($this->projectId, $this->expeditionId, ['total' => $total]);
-            \Log::info('OCR Queue created: '.$ocrQueue->id);
 
             $tesseractOcrBuild->createOcrQueueFiles($ocrQueue->id, $this->projectId, $this->expeditionId);
 
