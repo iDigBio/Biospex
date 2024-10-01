@@ -54,7 +54,7 @@ class TesseractOcrProcessJob implements ShouldQueue
     ): void {
         try {
 
-            $files = $tesseractOcrService->getUnprocessedOcrQueueFiles($this->ocrQueue->id);
+            $files = $tesseractOcrService->getUnprocessedOcrQueueFiles($this->ocrQueue->id, 100);
 
             // If processed files count is 0, update subjects in mongodb, send notification to user, and delete the queue
             if ($files->count() === 0) {

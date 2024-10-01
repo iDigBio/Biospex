@@ -44,14 +44,5 @@ class AppCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * @return void
-     */
-    public function handle() {
-        //$bucket = config('filesystems.disks.s3.bucket');
-        //$directory = config('zooniverse.directory.lambda-ocr');
-        //echo 'aws s3 rm s3://'.$bucket.'/'.$directory.' --exclude "*" --include "*.txt" --recursive --dryrun'  . PHP_EOL;
-
-        //exec('aws s3 rm s3://'.$bucket.'/'.$directory.' --exclude "*" --include "*.txt" --recursive');
-    }
+    public function handle(): void {}
 }
