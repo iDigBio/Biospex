@@ -19,7 +19,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\TesseractOcrProcessJob;
-use App\Services\Actor\TesseractOcr\TesseractOcrProcess;
+use App\Services\Actor\TesseractOcr\TesseractOcrService;
 use Illuminate\Console\Command;
 
 class TesseractOcrCommand extends Command
@@ -39,32 +39,26 @@ class TesseractOcrCommand extends Command
     protected $description = 'Checks queue and processes OCR jobs.';
 
     /**
-     * @var \App\Services\Actor\TesseractOcr\TesseractOcrProcess
-     */
-    private TesseractOcrProcess $tesseractOcrProcess;
-
-    /**
      * Create a new command instance.
      * Command is called after queue is created and while processing.
      *
-     * @param \App\Services\Actor\TesseractOcr\TesseractOcrProcess $tesseractOcrProcess
-     *@see \App\Services\Actor\TesseractOcr\TesseractOcrProcess
+     * @see \App\Services\Actor\TesseractOcr\TesseractOcrProcess
      * @see \App\Jobs\TesseractOcrCreateJob
      */
-    public function __construct(TesseractOcrProcess $tesseractOcrProcess)
+    public function __construct(protected TesseractOcrService $service)
     {
         parent::__construct();
-        $this->tesseractOcrProcess = $tesseractOcrProcess;
     }
+
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         // If reset is true, it will return first in the queue whether it's error or not.
         $queue = $this->option('reset') ?
-            $this->tesseractOcrProcess->getFirstQueue(true) :
-            $this->tesseractOcrProcess->getFirstQueue();
+            $this->service->getFirstQueue(true) :
+            $this->service->getFirstQueue();
 
         if ($queue === null) {
             return;

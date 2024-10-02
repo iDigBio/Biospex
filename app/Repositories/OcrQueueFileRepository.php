@@ -17,45 +17,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Actor\TesseractOcr;
+namespace App\Repositories;
 
-use App\Models\OcrQueue;
 use App\Models\OcrQueueFile;
-use App\Notifications\Traits\ButtonTrait;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\LazyCollection;
 
 /**
- * Class OcrService
+ * Class OcrQueueRepository
  */
-readonly class TesseractOcrProcess
+class OcrQueueFileRepository extends BaseRepository
 {
-    use ButtonTrait;
-
     /**
-     * Ocr constructor.
+     * OcrQueueRepository constructor.
      */
-    public function __construct(
-        private OcrQueue $ocrQueue,
-        private OcrQueueFile $ocrQueueFile,
-    ) {}
-
-    /**
-     * Return ocr queue for command process.
-     */
-    public function getFirstQueue(bool $reset = false): Model|Builder|null
+    public function __construct(OcrQueueFile $ocrQueueFile)
     {
-        return $reset ?
-            $this->ocrQueue->orderBy('id', 'asc')->first() :
-            $this->ocrQueue->where('error', 0)->orderBy('id', 'asc')->first();
+        $this->model = $ocrQueueFile;
     }
 
     /**
-     * Get unprocessed ocr queue files.
-     * Limited return depending on config.
+     * Get OcrQueueFile query.
+     */
+    public function getOcrQueueFileQuery(int $queueId): LazyCollection
+    {
+        return $this->model->where('queue_id', $queueId)->cursor();
+    }
+
+    /**
+     * Get OcrQueueFile empty.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getUnprocessedOcrQueueFiles(int $queueId, int $take = 50): \Illuminate\Database\Eloquent\Collection|array
     {
-        return $this->ocrQueueFile->where('queue_id', $queueId)->where('processed', 0)->take($take)->get();
+        return $this->model->where('queue_id', $queueId)->where('processed', 0)->take($take)->get();
     }
 }
