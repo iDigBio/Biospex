@@ -35,36 +35,16 @@ class ProjectController extends Controller
     /**
      * ProjectController constructor.
      */
-    public function __construct(private readonly ProjectService $projectService) {}
+    public function __construct(protected ProjectService $projectService) {}
 
     /**
      * Public Projects page.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
-        $projects = $this->projectService->getPublicProjectIndex();
+        $projects = $this->projectService->getPublicIndex();
 
         return View::make('front.project.index', compact('projects'));
-    }
-
-    /**
-     * Public Projects page sort and order.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function sort()
-    {
-        if (! \Request::ajax()) {
-            return null;
-        }
-
-        $sort = \Request::get('sort');
-        $order = \Request::get('order');
-        $projects = $this->projectService->getPublicProjectIndex($sort, $order);
-
-        return View::make('front.project.partials.project', compact('projects'));
     }
 
     /**
@@ -72,7 +52,7 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function project(
+    public function show(
         StateCountyModelService $stateCountyModelService,
         $slug
     ) {

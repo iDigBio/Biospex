@@ -7,7 +7,7 @@
                 <div class="col-md-6">
                     <p>{{ t('Project') }}
                         :
-                        <a href="{{ route('front.projects.slug', ['slug' => $bingo->project->slug]) }}">{{ $bingo->project->title }}</a>
+                        <a href="{{ route('front.projects.show', ['slug' => $bingo->project->slug]) }}">{{ $bingo->project->title }}</a>
                     </p>
                 </div>
             </div>

@@ -136,12 +136,12 @@ readonly class ProjectService
     /**
      * Get public project index page.
      */
-    public function getPublicProjectIndex(array $request = []): Collection
+    public function getPublicIndex(array $request = []): Collection
     {
-        $results = $this->project->withCount('expeditions')
+        $records = $this->project->withCount('expeditions')
             ->withCount('events')->with('group')->has('panoptesProjects')->get();
 
-        return $this->sortResults($results, $request);
+        return $this->sortResults($records, $request);
     }
 
     /**
@@ -250,7 +250,6 @@ readonly class ProjectService
             return $records->sortBy('created_at');
         }
 
-        // use match instead of switch
         match ($request['sort']) {
             'title' => $results = $request['order'] === 'desc' ?
                 $records->sortByDesc('title') :

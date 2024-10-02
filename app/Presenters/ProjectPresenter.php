@@ -69,7 +69,7 @@ class ProjectPresenter extends Presenter
      */
     public function projectPageIcon()
     {
-        $route = route('front.projects.slug', [$this->model->slug]);
+        $route = route('front.projects.show', [$this->model->slug]);
 
         return $this->model->slug == null ? '' : '<a href="'.$route.'" 
             data-hover="tooltip" 
@@ -83,7 +83,7 @@ class ProjectPresenter extends Presenter
      */
     public function projectPageIconLrg()
     {
-        $route = route('front.projects.slug', [$this->model->slug]);
+        $route = route('front.projects.show', [$this->model->slug]);
 
         return $this->model->slug == null ? '' : '<a href="'.$route.'" 
             target="_blank" 
@@ -112,7 +112,7 @@ class ProjectPresenter extends Presenter
      */
     public function projectEventsIcon()
     {
-        $route = route('front.projects.slug', [$this->model->slug]);
+        $route = route('front.projects.show', [$this->model->slug]);
 
         return $this->model->events_count == null ? '' : '<a href="'.$route.'#events" data-hover="tooltip" title="'.t('Events').'">
                 <i class="far fa-calendar-alt"></i></a>';
@@ -125,7 +125,7 @@ class ProjectPresenter extends Presenter
      */
     public function projectEventsIconLrg()
     {
-        $route = route('front.projects.slug', [$this->model->slug]);
+        $route = route('front.projects.show', [$this->model->slug]);
 
         return $this->model->events_count == null ? '' : '<a href="'.$route.'#events" data-hover="tooltip" title="'.t('Events').'">
                 <i class="far fa-calendar-alt fa-2x"></i></a>';
