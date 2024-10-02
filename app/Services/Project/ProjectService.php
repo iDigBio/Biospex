@@ -135,10 +135,8 @@ readonly class ProjectService
 
     /**
      * Get public project index page.
-     *
-     * @return mixed
      */
-    public function getPublicProjectIndex(array $request = [])
+    public function getPublicProjectIndex(array $request = []): Collection
     {
         $results = $this->project->withCount('expeditions')
             ->withCount('events')->with('group')->has('panoptesProjects')->get();
@@ -149,7 +147,7 @@ readonly class ProjectService
     /**
      * Get project for show page.
      */
-    public function getProjectShow(Project &$project)
+    public function getProjectShow(Project &$project): array
     {
         $project->loadCount('expeditions')->load([
             'group',
@@ -176,10 +174,8 @@ readonly class ProjectService
 
     /**
      * Get project page by slug.
-     *
-     * @return \App\Models\Project|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
-    public function getProjectPageBySlug($slug)
+    public function getProjectPageBySlug($slug): ?Project
     {
         return $this->project->withCount('events')->withCount('expeditions')->with([
             'amChart',
@@ -199,22 +195,20 @@ readonly class ProjectService
     /**
      * Get project for deletion.
      */
-    public function getProjectForDelete($projectId): ?Project
+    public function loadRelationsForDelete(Project &$project): void
     {
-        return $this->project->with([
+        $project->load([
             'group',
             'panoptesProjects',
             'workflowManagers',
             'expeditions.downloads',
-        ])->find($projectId);
+        ]);
     }
 
     /**
      * Filter or delete resource.
-     *
-     * @return bool
      */
-    public function filterOrDeleteResources($resource)
+    public function filterOrDeleteResources($resource): bool
     {
         if ($resource['type'] === null) {
             return true;
@@ -231,10 +225,8 @@ readonly class ProjectService
 
     /**
      * Update project resource.
-     *
-     * @return bool
      */
-    public function updateProjectResource($resource)
+    public function updateProjectResource($resource): bool
     {
         $record = ProjectResource::find($resource['id']);
         $record->type = $resource['type'];
@@ -276,10 +268,8 @@ readonly class ProjectService
 
     /**
      * Get project for amChart.
-     *
-     * @return mixed
      */
-    public function getProjectForAmChartJob($projectId)
+    public function getProjectForAmChartJob($projectId): ?Project
     {
         return $this->project->with([
             'amChart',
@@ -290,7 +280,10 @@ readonly class ProjectService
         ])->find($projectId);
     }
 
-    public function getProjectForDarwinImportJob($projectId): mixed
+    /**
+     * Get project for Darwin import job.
+     */
+    public function getProjectForDarwinImportJob($projectId): ?Project
     {
         return $this->project->with(['group' => function ($q) {
             $q->with(['owner', 'users' => function ($q) {

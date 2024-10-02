@@ -142,9 +142,9 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete($projectId): \Illuminate\Http\RedirectResponse
+    public function delete(Project $project): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectService->getProjectForDelete($projectId);
+        $this->projectService->loadRelationsForDelete($project);
 
         if (! CheckPermission::handle('isOwner', $project->group)) {
             return Redirect::route('admin.projects.index');

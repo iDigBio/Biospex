@@ -28,44 +28,32 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Class DeleteProjectJob
- *
- * @package App\Jobs
  */
 class DeleteProjectJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Models\Project
-     */
-    public Project $project;
-
-    /**
      * Create a new job instance.
-     *
-     * @param \App\Models\Project $project
      */
-    public function __construct(Project $project)
+    public function __construct(protected Project $project)
     {
-        $this->project = $project;
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
-     *
-     * @param \App\Services\MongoDbService $mongoDbService
-     * @return void
      */
-    public function handle(MongoDbService $mongoDbService)
+    public function handle(MongoDbService $mongoDbService): void
     {
         $this->project->load(['expeditions.downloads', 'group.owner']);
 
         $this->project->expeditions->each(function ($expedition) use ($mongoDbService) {
-            $expedition->downloads->each(function ($download){
+            $expedition->downloads->each(function ($download) {
                 Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
             });
 
@@ -86,20 +74,17 @@ class DeleteProjectJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
-    public function failed(\Throwable $throwable): void
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Delete Project Job Failed'),
-            'html'    => [
+            'html' => [
                 t('Error: Could not delete Group %s', $this->project->title),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),
-                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.')
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
             ],
         ];
 
