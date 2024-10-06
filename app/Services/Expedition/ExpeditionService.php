@@ -277,7 +277,7 @@ class ExpeditionService
     /**
      * Get expedition download by actor.
      */
-    public function expeditionDownloadsByActor($expeditionId): \Illuminate\Database\Eloquent\Model
+    public function getExpeditionDownloadsByActor($expeditionId): \Illuminate\Database\Eloquent\Model
     {
         return $this->expedition->with([
             'project.group',

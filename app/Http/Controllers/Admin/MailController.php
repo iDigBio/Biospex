@@ -22,8 +22,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MailFormRequest;
 use App\Mail\SiteMailer;
-use App\Services\Models\UserModelService;
+use App\Services\User\UserService;
 use Illuminate\Support\Facades\Mail;
+use Redirect;
 
 /**
  * Class MailController
@@ -33,7 +34,7 @@ class MailController extends Controller
     /**
      * UserController constructor.
      */
-    public function __construct(private readonly UserModelService $userModelService) {}
+    public function __construct(protected UserService $userService) {}
 
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -46,19 +47,16 @@ class MailController extends Controller
     /**
      * Show the form for user edit.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function send(MailFormRequest $request)
     {
-        $users = $this->userModelService->getUsersForMailer($request->get('recipients'));
-        $recipients = $users->reject(function ($user) {
-            return $user->email === config('mail.from.address');
-        })->pluck('email');
+        $recipients = $this->userService->getUsersForMailer($request->get('recipients'));
 
         Mail::to(config('mail.from.address'))
             ->bcc($recipients)
             ->send(new SiteMailer($request->get('subject'), $request->get('message')));
 
-        return \Redirect::route('admin.mail.index')->with('success', t('Your message has been sent.'));
+        return Redirect::route('admin.mail.index')->with('success', t('Your message has been sent.'));
     }
 }

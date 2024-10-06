@@ -23,9 +23,11 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ExportDownloadBatchJob;
 use App\Models\Download;
 use App\Services\Expedition\ExpeditionService;
-use App\Services\Models\UserModelService;
+use App\Services\Permission\CheckPermission;
+use App\Services\User\UserService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
@@ -37,7 +39,7 @@ class DownloadController extends Controller
      * DownloadController constructor.
      */
     public function __construct(
-        protected UserModelService $userModelService,
+        protected UserService $userService,
         protected ExpeditionService $expeditionService,
     ) {}
 
@@ -46,10 +48,10 @@ class DownloadController extends Controller
      */
     public function index(int $projectId, int $expeditionId): Factory|View
     {
-        $user = $this->userModelService->findWithRelations(\Request::user()->id, ['profile']);
-        $expedition = $this->expeditionService->expeditionDownloadsByActor($expeditionId);
+        $user = Auth::user()->load('profile');
+        $expedition = $this->expeditionService->getExpeditionDownloadsByActor($expeditionId);
 
-        $error = ! $this->checkPermissions('readProject', $expedition->project->group);
+        $error = ! CheckPermission::handle('readProject', $expedition->project->group);
 
         return \View::make('admin.expedition.partials.download-modal-body', compact('expedition', 'user', 'error'));
     }

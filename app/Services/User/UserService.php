@@ -17,51 +17,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Models;
+namespace App\Services\User;
 
 use App\Models\User;
 use Illuminate\Support\Collection;
 
-readonly class UserModelService
+class UserService
 {
     /**
-     * UserModelService constructor.
+     * UserService constructor.
      */
-    public function __construct(public User $user) {}
-
-    /**
-     * Find user with relations.
-     */
-    public function findWithRelations(int $id, array $relations = []): ?User
-    {
-        return $this->user->with($relations)->find($id);
-    }
-
-    /**
-     * Get user by column.
-     */
-    public function getFirstBy(string $column, string $value): ?User
-    {
-        return $this->user->where($column, $value)->first();
-    }
+    public function __construct(protected User $user) {}
 
     /**
      * Get users for site mailer.
      */
     public function getUsersForMailer(string $type): Collection
     {
-        if ($type === 'all') {
-            return $this->getAllUsersOrderByDate();
-        }
+        $users = $type === 'all' ?
+            $this->user->with('profile')->orderBy('created_at')->get() :
+            $this->user->has('ownGroups')->with(['profile'])->get();
 
-        return $this->user->has('ownGroups')->with(['profile'])->get();
-    }
-
-    /**
-     * Get all users and order by date.
-     */
-    public function getAllUsersOrderByDate(): Collection
-    {
-        return $this->user->with('profile')->orderBy('created_at')->get();
+        return $users->reject(function ($user) {
+            return $user->email === config('mail.from.address');
+        })->pluck('email');
     }
 }

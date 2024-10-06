@@ -12,7 +12,7 @@
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Mail') }}</h2>
-                    <form method="post" action="{{ route('admin.mail.send') }}" role="form"
+                    <form method="post" action="{{ route('admin.mail.create') }}" role="form"
                           enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
@@ -23,8 +23,12 @@
                                 <select name="recipients" id="recipients"
                                         class="form-control custom-select {{ ($errors->has('recipients')) ? 'is-invalid' : '' }}"
                                         required>
-                                    <option {{ old('recipients') === 'owners' ? ' selected=selected' : '' }} value="owners">Project Owners</option>
-                                    <option {{ old('recipients') === 'all' ? ' selected=selected' : '' }} value="all">All Users</option>
+                                    <option {{ old('recipients') === 'owners' ? ' selected=selected' : '' }} value="owners">
+                                        Project Owners
+                                    </option>
+                                    <option {{ old('recipients') === 'all' ? ' selected=selected' : '' }} value="all">
+                                        All Users
+                                    </option>
                                 </select>
                                 <span class="invalid-feedback">{{ $errors->first('recipients') }}</span>
                             </div>
