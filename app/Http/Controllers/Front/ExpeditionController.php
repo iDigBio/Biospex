@@ -33,7 +33,7 @@ class ExpeditionController extends Controller
      */
     public function __invoke(ExpeditionService $expeditionService)
     {
-        [$expeditions, $expeditionsCompleted] = $expeditionService->getExpeditionPublicIndex();
+        [$expeditions, $expeditionsCompleted] = $expeditionService->getPublicIndex();
 
         return View::make('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
     }

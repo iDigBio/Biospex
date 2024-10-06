@@ -35,7 +35,7 @@ class ExpeditionSortController extends Controller
             return null;
         }
 
-        [$active, $completed] = $expeditionService->getExpeditionPublicIndex(Request::all());
+        [$active, $completed] = $expeditionService->getPublicIndex(Request::all());
 
         $expeditions = Request::get('type') === 'active' ? $active : $completed;
 

@@ -84,7 +84,7 @@ class ExpeditionService
     /**
      * Get expeditions for public index.
      */
-    public function getExpeditionPublicIndex(array $request = []): Collection
+    public function getPublicIndex(array $request = []): Collection
     {
         $query = $this->expedition->with('project:id,slug')
             ->has('panoptesProject')->has('zooniverseActor')
@@ -143,7 +143,7 @@ class ExpeditionService
      */
     public function getSubjectIdsByExpeditionId(Expedition $expedition): Collection
     {
-        return $this->subjectModelService->subject->where('expedition_ids', $expedition->id)->get(['id'])->pluck('id');
+        return $this->subjectModelService->subject->where('expedition_ids', $expedition->id)->get(['_id'])->pluck('_id');
     }
 
     /**
@@ -155,7 +155,7 @@ class ExpeditionService
             return;
         }
 
-        $oldIds = $this->getSubjectIdsByExpeditionId($expedition->id);
+        $oldIds = $this->getSubjectIdsByExpeditionId($expedition);
         $newIds = $this->subjectIds;
 
         $detachIds = $oldIds->diff($newIds);
