@@ -14,6 +14,7 @@
     "aws/aws-php-sns-message-validator": "^1.0",
     "aws/aws-sdk-php": "~3.0",
     "czim/laravel-paperclip": "^5.0",
+    "czim/file-handling": "dev-load-count-fix as 2.3.0",
     "graham-campbell/markdown": "^15.0",
     "laracasts/utilities": "^3.2",
     "laravel/framework": "^11.0",
@@ -54,6 +55,10 @@
     "nova": {
       "type": "composer",
       "url": "https://nova.laravel.com"
+    },
+    "file-handling": {
+      "type": "github",
+      "url": "https://github.com/rbruhn/file-handling.git"
     }
   },
   "config": {
