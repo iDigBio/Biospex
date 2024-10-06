@@ -40,31 +40,28 @@ class ExportDownloadBatchJob implements ShouldQueue
      */
     public int $timeout = 3600;
 
-    private int $downloadId;
-
     /**
      * ExportDownloadBatchJob constructor.
      */
-    public function __construct(int $downloadId)
+    public function __construct(protected Download $download)
     {
-        $this->downloadId = $downloadId;
         $this->onQueue(config('config.queue.export'));
     }
 
     /**
      * Handle download batch job.
      */
-    public function handle(Download $download, ZooniverseExportBatch $zooniverseExportBatch): void
+    public function handle(ZooniverseExportBatch $zooniverseExportBatch): void
     {
-        $download = $download->with(['expedition.project.group.owner', 'actor'])->find($this->downloadId);
+        $this->download->load(['expedition.project.group.owner', 'actor']);
 
         try {
-            $zooniverseExportBatch->process($download);
+            $zooniverseExportBatch->process($this->download);
         } catch (Throwable $throwable) {
             $attributes = [
                 'subject' => t('Export Download Batch Error'),
                 'html' => [
-                    t('The batch export for Expedition %s has failed.', $download->expedition->title),
+                    t('The batch export for Expedition %s has failed.', $this->download->expedition->title),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),
                     t('Message: %s', $throwable->getMessage()),
@@ -72,7 +69,7 @@ class ExportDownloadBatchJob implements ShouldQueue
                 ],
             ];
 
-            $download->expedition->project->group->owner->notify(new Generic($attributes, true));
+            $this->download->expedition->project->group->owner->notify(new Generic($attributes, true));
             $this->delete();
         }
     }

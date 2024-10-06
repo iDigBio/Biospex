@@ -26,7 +26,6 @@ use App\Models\GeoLocateForm;
 use App\Services\Csv\AwsS3CsvService;
 use Exception;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\LazyCollection;
 use Throwable;
 
 /**
@@ -44,14 +43,6 @@ class GeoLocateExportService
         protected AwsS3CsvService $awsS3CsvService,
         protected Download $download,
     ) {}
-
-    /**
-     * Get geolocate records by expedition id.
-     */
-    public function getByExpeditionId(int $expeditionId): LazyCollection
-    {
-        return $this->geoLocateExport->where('subject_expeditionId', $expeditionId)->options(['allowDiskUse' => true])->timeout(86400)->cursor();
-    }
 
     /**
      * Process GeoLocate export.

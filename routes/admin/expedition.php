@@ -19,6 +19,7 @@
 
 use App\Http\Controllers\Admin\ExpeditionCloneController;
 use App\Http\Controllers\Admin\ExpeditionController;
+use App\Http\Controllers\Admin\ExpeditionExportController;
 use App\Http\Controllers\Admin\ExpeditionSortController;
 use App\Http\Controllers\Admin\ExpeditionToolController;
 
@@ -37,3 +38,5 @@ Route::post('expeditions/{project}/store', [ExpeditionController::class, 'store'
 Route::get('expeditions/{expedition}/clone', ExpeditionCloneController::class)->name('admin.expeditions.clone');
 Route::get('expeditions/{expedition}/tools', ExpeditionToolController::class)->name('admin.expeditions.tools');
 Route::post('expeditions/sort', ExpeditionSortController::class)->name('admin.expeditions.sort');
+
+Route::get('expeditions/{expedition}/export', ExpeditionExportController::class)->name('admin.expeditions.export');

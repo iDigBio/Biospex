@@ -68,17 +68,12 @@ class GeoLocateExportJob implements ShouldQueue
         $this->expedition->load('geoLocateForm');
 
         $geoLocateExportService->process($this->expedition);
-        $csvFilePath = $geoLocateExportService->getCsvFilePath();
-
-        $route = route('admin.downloads.geolocate', ['file' => base64_encode($csvFilePath)]);
-        $btn = $this->createButton($route, t('Download GeoLocateExport CSV'));
 
         $attributes = [
             'subject' => t('GeoLocateExport Csv Export'),
             'html' => [
-                t('Your GeoLocateExport csv export is completed. You may click the download button to download the file or visit the Expedition and use the download section.'),
+                t('Your GeoLocate csv export is completed. Please visit the Expedition Download section to download.'),
             ],
-            'buttons' => $btn,
         ];
 
         $this->user->notify(new Generic($attributes));

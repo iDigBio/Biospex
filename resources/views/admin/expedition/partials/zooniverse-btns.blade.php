@@ -1,7 +1,7 @@
 <hr class="header mx-auto" style="width:300px;">
 <h4>{{ $actor->title }}</h4>
 @if($expedition->stat->local_subject_count > 0)
-    <a href="{{ route('admin.downloads.export', [$expedition->project->id, $expedition->id]) }}"
+    <a href="{{ route('admin.expeditions.export', [$expedition]) }}"
        class="prevent-default btn btn-primary rounded-0 mb-1"
        data-method="get"
        data-confirm="confirmation"
