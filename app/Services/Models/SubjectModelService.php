@@ -235,7 +235,7 @@ class SubjectModelService
      */
     public function exportGridRows(array $vars): LazyCollection
     {
-        $query = $this->subject->whereNested(function ($query) use ($vars) {
+        $query = $this->subject->with('occurrence')->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true]);
 
