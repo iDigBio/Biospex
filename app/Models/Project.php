@@ -126,7 +126,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
         static::bootUuidTrait();
 
         static::saving(function ($model) {
-            \Log::info('Project saving');
             $model->slug = Str::slug($model->title);
             $model->advertise = $model->attributes;
         });

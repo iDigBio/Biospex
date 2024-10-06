@@ -28,8 +28,8 @@ use App\Services\JavascriptService;
 use App\Services\Permission\CheckPermission;
 use App\Services\Workflow\WorkflowService;
 use Auth;
-use Exception;
 use Redirect;
+use Throwable;
 use View;
 
 /**
@@ -88,7 +88,7 @@ class ExpeditionController
             $expedition = $this->expeditionService->store($project, $request->all());
 
             return Redirect::route('admin.expeditions.show', [$expedition])->with('success', t('Record was created successfully.'));
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             return Redirect::route('admin.projects.show', [$project])->with('danger', t('An error occurred when saving record.'));
         }
 
@@ -146,7 +146,7 @@ class ExpeditionController
 
             return Redirect::route('admin.expeditions.show', [$expedition])
                 ->with('success', t('Record was updated successfully.'));
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             return Redirect::route('admin.expeditions.edit', [$expedition])
                 ->with('danger', t('An error occurred when saving record.'));
         }
@@ -174,7 +174,7 @@ class ExpeditionController
 
             return Redirect::route('admin.projects.show', [$expedition->project])
                 ->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes. You will receive an email when complete.'));
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             return Redirect::route('admin.expeditions.show', [$expedition])->with('danger', t('An error occurred when deleting record.'));
         }
     }

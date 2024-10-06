@@ -47,6 +47,7 @@ class ExpeditionService
      */
     public function store(Project $project, array $request): mixed
     {
+        $request['project_id'] = $project->id;
         $expedition = $this->expedition->create($request);
 
         $expedition->load(['project', 'workflow.actors.contacts']);

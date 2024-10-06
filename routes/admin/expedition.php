@@ -22,15 +22,15 @@ use App\Http\Controllers\Admin\ExpeditionController;
 use App\Http\Controllers\Admin\ExpeditionSortController;
 use App\Http\Controllers\Admin\ExpeditionToolController;
 
-Route::resource('expeditions', ExpeditionController::class)->except('store')->names([
+Route::resource('expeditions', ExpeditionController::class)->except(['create', 'store'])->names([
     'index' => 'admin.expeditions.index',
-    'create' => 'admin.expeditions.create',
     'show' => 'admin.expeditions.show',
     'edit' => 'admin.expeditions.edit',
     'update' => 'admin.expeditions.update',
     'destroy' => 'admin.expeditions.delete',
 ]);
 
+Route::get('expeditions/{project}/create', [ExpeditionController::class, 'create'])->name('admin.expeditions.create');
 Route::post('expeditions/{project}/store', [ExpeditionController::class, 'store'])->name('admin.expeditions.store');
 
 //# New

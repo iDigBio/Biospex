@@ -92,7 +92,15 @@
     <div id="jqGridDiv" class="row">
         <h3 class="mx-auto">{{ t('Subjects currently assigned') }}
             <span id="max">{{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}</span>:
-            <span id="subject-count-html"></span></h3>
+            <span id="subject-count-html"></span>
+        </h3>
+        @if(Route::currentRouteName() === 'admin.expeditions.edit')
+            <div class="col-sm-8 mx-auto">
+                <div class="alert alert-info text-center">
+                    {{ t('Checked rows are Subjects currently assigned to this particular Expedition.') }}
+                </div>
+            </div>
+        @endif
         <div class="col-md-12">
             <table class="table table-bordered" id="jqGridTable"></table>
         </div>
