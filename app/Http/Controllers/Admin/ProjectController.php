@@ -27,9 +27,9 @@ use App\Services\Group\GroupService;
 use App\Services\Permission\CheckPermission;
 use App\Services\Project\ProjectService;
 use Auth;
-use Exception;
 use Redirect;
 use Request;
+use Throwable;
 use View;
 
 /**
@@ -158,7 +158,7 @@ class ProjectController extends Controller
 
             return Redirect::route('admin.projects.index')
                 ->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
 
             return Redirect::route('admin.projects.index')->with('danger', t('An error occurred when deleting record.'));
         }

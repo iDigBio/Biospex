@@ -24,13 +24,13 @@ use App\Jobs\ExportDownloadBatchJob;
 use App\Models\Expedition;
 use App\Services\Expedition\ExpeditionService;
 use App\Services\Models\UserModelService;
-use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Throwable;
 
 /**
  * Class DownloadController
@@ -79,7 +79,7 @@ class DownloadController extends Controller
             \Artisan::call('export:queue', ['expeditionId' => $expeditionId]);
             $status = 'success';
             $message = t('Export generation has been added to the job queue. You will be notified when completed.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $status = 'error';
             $message = t('An error occurred while trying to generate the download. Please contact the administration with this error and the title of the Expedition.');
         }

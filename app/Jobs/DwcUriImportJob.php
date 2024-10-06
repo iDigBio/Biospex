@@ -32,6 +32,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Class DwcUriImportJob
@@ -93,16 +94,16 @@ class DwcUriImportJob implements ShouldQueue
             ]);
 
             DwcFileImportJob::dispatch($import);
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             $attributes = [
                 'subject' => 'DWC Uri Import Error',
                 'html' => [
                     t('An error occurred while importing the Darwin Core Archive using a uri.'),
                     t('Project: %s', $project->title),
                     t('ID: %s'.$project->id),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
                     t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
                 ],
             ];

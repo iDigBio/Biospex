@@ -61,8 +61,6 @@ class EventController extends Controller
 
     /**
      * Create event.
-     *
-     * @throws \Exception
      */
     public function create()
     {

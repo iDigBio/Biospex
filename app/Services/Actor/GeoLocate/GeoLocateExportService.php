@@ -27,6 +27,7 @@ use App\Services\Csv\AwsS3CsvService;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
+use Throwable;
 
 /**
  * Class CsvExportType
@@ -68,7 +69,7 @@ class GeoLocateExportService
             $this->createDownload($expedition);
             $this->updateActorExpeditionPivot($expedition);
 
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             $expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
                 'state' => 0,
             ]);

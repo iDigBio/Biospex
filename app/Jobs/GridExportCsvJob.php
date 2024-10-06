@@ -34,6 +34,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * Class GridExportCsvJob
@@ -115,7 +116,7 @@ class GridExportCsvJob implements ShouldQueue
 
             $this->user->notify(new Generic($attributes));
 
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
 
             $idMessage = ! is_null($this->data['expeditionId']) ?
                 t('Expedition Id: %s', $this->data['expeditionId']) :
@@ -126,10 +127,10 @@ class GridExportCsvJob implements ShouldQueue
                 'html' => [
                     t('An error occurred during csv export from the grid.'),
                     $idMessage,
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
-                    t('Code: %s', $e->getTrace()),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                    t('Code: %s', $throwable->getTrace()),
                     t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
                 ],
             ];

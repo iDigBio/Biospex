@@ -22,13 +22,12 @@ namespace App\Jobs;
 use App\Notifications\Generic;
 use App\Services\Expedition\ExpeditionService;
 use App\Services\Reconcile\ExpertReconcilePublishService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Csv\CannotInsertRecord;
+use Throwable;
 
 /**
  * Class ExpertReconcileReviewPublishJob
@@ -59,14 +58,14 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
 
         try {
             $expertReconcilePublishService->publishReconciled($this->expeditionId);
-        } catch (CannotInsertRecord|Exception $e) {
+        } catch (Throwable $throwable) {
             $attributes = [
                 'subject' => t('Expert Reconcile Publish Error'),
                 'html' => [
                     t('An error occurred while importing the Darwin Core Archive.'),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
                     t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
                 ],
             ];

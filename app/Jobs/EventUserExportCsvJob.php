@@ -25,7 +25,6 @@ use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use App\Services\Models\EventModel;
 use App\Services\Process\CreateReportService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -102,14 +101,14 @@ class EventUserExportCsvJob implements ShouldQueue
 
             $this->user->notify(new Generic($attributes));
 
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             $attributes = [
                 'subject' => t('Event User Export Error'),
                 'html' => [
                     t('There was an error while exporting the csv file. The Administration has been copied on this error and will investigate.'),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
                 ],
             ];
             $this->user->notify(new Generic($attributes, true));

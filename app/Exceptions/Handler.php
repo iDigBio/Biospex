@@ -16,20 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Exceptions;
 
-use Throwable;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Throwable;
 
 /**
  * Class Handler
- *
- * @package App\Exceptions
  */
 class Handler extends ExceptionHandler
 {
-	/**
+    /**
      * A list of the exception types that are not reported.
      *
      * @var array
@@ -51,11 +50,9 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception
      *
-     * @param \Throwable $e
-     * @return void
      * @throws \Throwable
      */
-    public function report(Throwable $e): void
+    public function report(Throwable $throwable): void
     {
         parent::report($e);
     }
@@ -63,12 +60,9 @@ class Handler extends ExceptionHandler
     /**
      * Render and Exception into an HTTP response.
      *
-     * @param $request
-     * @param \Throwable $e
-     * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Throwable
      */
-    public function render($request, Throwable $e): \Symfony\Component\HttpFoundation\Response
+    public function render($request, Throwable $throwable): \Symfony\Component\HttpFoundation\Response
     {
         return parent::render($request, $e);
     }
@@ -76,8 +70,7 @@ class Handler extends ExceptionHandler
     /**
      * Convert an authentication exception into a response.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Illuminate\Auth\AuthenticationException $exception
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     protected function unauthenticated($request, AuthenticationException $exception)

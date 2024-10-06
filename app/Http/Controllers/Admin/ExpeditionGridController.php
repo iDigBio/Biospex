@@ -34,7 +34,7 @@ class ExpeditionGridController extends Controller
     {
         try {
             return $this->grid->encodeGridRequestedData(\Request::all(), 'create', $project->id);
-        } catch (Throwable $t) {
+        } catch (Throwable $throwable) {
             return response($t->getMessage(), 404);
         }
     }
@@ -46,7 +46,7 @@ class ExpeditionGridController extends Controller
     {
         try {
             return $this->grid->encodeGridRequestedData(Request::all(), 'show', $expedition->project_id, $expedition->id);
-        } catch (Throwable $t) {
+        } catch (Throwable $throwable) {
             return response($t->getMessage(), 404);
         }
     }
@@ -58,7 +58,7 @@ class ExpeditionGridController extends Controller
     {
         try {
             return $this->grid->encodeGridRequestedData(Request::all(), 'edit', $expedition->project_id, $expedition->id);
-        } catch (Throwable $t) {
+        } catch (Throwable $throwable) {
             return response($t->getMessage(), 404);
         }
     }

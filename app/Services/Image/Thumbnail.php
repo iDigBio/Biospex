@@ -22,38 +22,21 @@ namespace App\Services\Image;
 use Exception;
 use Illuminate\Support\Facades\File;
 use Storage;
+use Throwable;
 
 /**
  * Class Thumbnail
- *
- * @package App\Services\Image
  */
 class Thumbnail
 {
-
-    /**
-     * @var mixed
-     */
     public mixed $defaultThumbImg;
 
-    /**
-     * @var string
-     */
     public string $tnWidth;
 
-    /**
-     * @var string
-     */
     public string $tnHeight;
 
-    /**
-     * @var string
-     */
     public string $thumbDirectory;
 
-    /**
-     * @var string
-     */
     public string $imageProcessFile;
 
     /**
@@ -71,8 +54,6 @@ class Thumbnail
     /**
      * Return thumbnail or create if not exists.
      *
-     * @param $url
-     * @return string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getThumbnail($url): string
@@ -84,7 +65,7 @@ class Thumbnail
             if (! File::isFile($thumbFile)) {
                 $this->processImage($url, $thumbName);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             return $this->getFile($this->defaultThumbImg);
         }
 
@@ -94,9 +75,8 @@ class Thumbnail
     /**
      * Get image and create thumbnail.
      *
-     * @param string $url
-     * @param string $fileName
      * @return void
+     *
      * @throws \Exception
      */
     protected function processImage(string $url, string $fileName)
@@ -106,7 +86,7 @@ class Thumbnail
 
         exec($command, $output);
 
-        if (!$output[0]) {
+        if (! $output[0]) {
             throw new Exception('Could not retrieve image for thumbnail.');
         }
     }
@@ -114,8 +94,6 @@ class Thumbnail
     /**
      * Get thumbnail file or default file.
      *
-     * @param $thumbFile
-     * @return string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function getFile($thumbFile): string

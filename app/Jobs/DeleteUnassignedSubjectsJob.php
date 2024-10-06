@@ -23,12 +23,12 @@ use App\Models\Project;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Models\SubjectModelService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class DeleteUnassignedSubjectsJob
@@ -66,15 +66,15 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
             $this->user->notify(new Generic($attributes));
 
             $this->delete();
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             $attributes = [
                 'subject' => t('Delete Unassigned Subjects Error'),
                 'html' => [
                     t('Error: Could not delete unassigned subjects for Project Id %s.', $this->project->id),
                     t('An error occurred while importing the Darwin Core Archive.'),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
                     t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
                 ],
             ];

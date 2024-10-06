@@ -34,6 +34,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Notification;
+use Throwable;
 
 /**
  * Class DwcFileImportJob
@@ -112,7 +113,7 @@ class DwcFileImportJob implements ShouldQueue
             $this->import->delete();
             $this->delete();
 
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             $this->import->error = 1;
             $this->import->save();
             File::cleanDirectory($scratchFileDir);
@@ -124,9 +125,9 @@ class DwcFileImportJob implements ShouldQueue
                     t('An error occurred while importing the Darwin Core Archive.'),
                     t('Project: %s', $project->title),
                     t('ID: %s'.$project->id),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
                     t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
                 ],
             ];

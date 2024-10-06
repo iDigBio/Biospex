@@ -67,7 +67,7 @@ class GroupController extends Controller
             $this->groupService->storeGroup(Auth::user(), $request->all());
 
             return Redirect::route('admin.groups.index')->with('success', t('Group successfully created.'));
-        } catch (Throwable $e) {
+        } catch (Throwable $throwable) {
             return Redirect::back()->with('danger', t('Failed to create Group.'));
         }
     }
@@ -133,7 +133,7 @@ class GroupController extends Controller
             return Redirect::route('admin.groups.index')
                 ->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
-        } catch (Throwable $e) {
+        } catch (Throwable $throwable) {
 
             return Redirect::route('admin.groups.index')->with('danger', t('An error occurred when deleting record.'));
         }

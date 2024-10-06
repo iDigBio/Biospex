@@ -27,6 +27,7 @@ use App\Services\Expedition\ExpeditionService;
 use App\Services\Models\WorkflowManagerModelService;
 use App\Services\Project\ProjectService;
 use Exception;
+use Throwable;
 
 class WorkflowManagerController extends Controller
 {
@@ -84,10 +85,10 @@ class WorkflowManagerController extends Controller
             }
 
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('success', $message);
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
 
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
-                ->with('danger', t('An error occurred when trying to process the expedition: %s', $e->getMessage()));
+                ->with('danger', t('An error occurred when trying to process the expedition: %s', $throwable->getMessage()));
         }
     }
 

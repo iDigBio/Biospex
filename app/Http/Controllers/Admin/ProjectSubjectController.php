@@ -69,7 +69,7 @@ class ProjectSubjectController extends Controller
 
             return Redirect::route('admin.project-subjects.index', [$project])
                 ->with('success', t('Subjects have been set for deletion. You will be notified by email when complete.'));
-        } catch (Throwable $t) {
+        } catch (Throwable $throwable) {
             return Redirect::route('admin.project-subjects.index', [$project])
                 ->with('danger', t('An error occurred when deleting Subjects.'));
         }

@@ -22,12 +22,12 @@ namespace App\Jobs;
 use App\Models\ExpeditionStat;
 use App\Models\PanoptesProject;
 use App\Services\Api\PanoptesApiService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class PanoptesProjectUpdateJob
@@ -82,7 +82,7 @@ class PanoptesProjectUpdateJob implements ShouldQueue
             $this->panoptesProject->fill($values);
             $this->panoptesProject->save();
 
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             $this->delete();
         }
 

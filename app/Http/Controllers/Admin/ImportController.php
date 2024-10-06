@@ -26,8 +26,8 @@ use App\Jobs\RecordsetImportJob;
 use App\Models\Import;
 use App\Services\Project\ProjectService;
 use Auth;
-use Exception;
 use Illuminate\Support\Facades\Redirect;
+use Throwable;
 
 /**
  * Class ImportController
@@ -66,7 +66,7 @@ class ImportController extends Controller
             DwcFileImportJob::dispatch($import);
 
             return Redirect::back()->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             return Redirect::back()->with('error', t('Error uploading file. %', $throwable->getMessage()));
         }
     }
@@ -90,8 +90,8 @@ class ImportController extends Controller
             RecordsetImportJob::dispatch($data);
 
             return Redirect::back()->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));
-        } catch (Exception $e) {
-            return Redirect::back()->with('error', t('Error uploading file. %', $e->getMessage()));
+        } catch (Throwable $throwable) {
+            return Redirect::back()->with('error', t('Error uploading file. %', $throwable->getMessage()));
         }
     }
 
@@ -114,8 +114,8 @@ class ImportController extends Controller
             DwcUriImportJob::dispatch($data);
 
             return Redirect::back()->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));
-        } catch (Exception $e) {
-            return Redirect::back()->with('error', t('Error uploading file. %', $e->getMessage()));
+        } catch (Throwable $throwable) {
+            return Redirect::back()->with('error', t('Error uploading file. %', $throwable->getMessage()));
         }
     }
 }

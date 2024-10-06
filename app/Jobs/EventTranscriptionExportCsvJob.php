@@ -26,13 +26,13 @@ use App\Notifications\Traits\ButtonTrait;
 use App\Services\Models\EventTranscriptionModelService;
 use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Services\Process\CreateReportService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Str;
+use Throwable;
 
 /**
  * Class EventTranscriptionExportCsvJob
@@ -103,14 +103,14 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
             ];
 
             $this->user->notify(new Generic($attributes));
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             $attributes = [
                 'subject' => t('Event Transcription Export Error'),
                 'html' => [
                     t('There was an error while exporting the csv file. The Administration has been copied on this error and will investigate.'),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
                 ],
             ];
             $this->user->notify(new Generic($attributes, true));

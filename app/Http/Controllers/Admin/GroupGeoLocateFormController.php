@@ -45,7 +45,7 @@ class GroupGeoLocateFormController extends Controller
             $form->delete();
 
             return Redirect::route('admin.groups.show', [$group])->with('success', t('GeoLocateExport Form was deleted.'));
-        } catch (Throwable $t) {
+        } catch (Throwable $throwable) {
             return Redirect::route('admin.groups.show', [$group])->with('danger', t('There was an error deleting the GeoLocateExport Form.'.$t->getMessage()));
         }
     }

@@ -24,8 +24,8 @@ use App\Services\Csv\AwsS3CsvService;
 use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Services\Models\SubjectModelService;
 use App\Services\Process\CreateReportService;
-use Exception;
 use Str;
+use Throwable;
 use Validator;
 
 /**
@@ -70,9 +70,9 @@ class CreatePanoptesTranscriptionService
             }
 
             return;
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
 
-            $this->csvError[] = ['error' => $file.': '.$e->getMessage().', Line: '.$e->getLine()];
+            $this->csvError[] = ['error' => $file.': '.$throwable->getMessage().', Line: '.$throwable->getLine()];
 
             return;
         }

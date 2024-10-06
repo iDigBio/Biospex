@@ -26,10 +26,10 @@ use App\Jobs\GeoLocateStatsJob;
 use App\Services\Actor\GeoLocate\GeoLocateExportForm;
 use App\Services\Actor\GeoLocate\GeoLocateStat;
 use App\Services\Helpers\GeneralService;
-use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class GeoLocateController extends Controller
 {
@@ -60,8 +60,8 @@ class GeoLocateController extends Controller
             }
 
             return \View::make('admin.geolocate.partials.stats', compact('expedition'));
-        } catch (\Exception $e) {
-            return \Response::json(['message' => $e->getMessage()], 500);
+        } catch (Throwable $throwable) {
+            return \Response::json(['message' => $throwable->getMessage()], 500);
         }
     }
 
@@ -90,8 +90,8 @@ class GeoLocateController extends Controller
             $route = route('admin.geolocates.form', [$expedition->project->id, $expedition->id]);
 
             return \View::make('admin.geolocate.partials.form-show', compact('expedition', 'route', 'formFields'));
-        } catch (\Exception $e) {
-            return \Response::json(['message' => $e->getMessage().$e->getFile().$e->getLine()], 500);
+        } catch (Throwable $throwable) {
+            return \Response::json(['message' => $throwable->getMessage().$throwable->getFile().$throwable->getLine()], 500);
         }
     }
 
@@ -116,8 +116,8 @@ class GeoLocateController extends Controller
             $disabled = $form['exported'] && $this->generalService->downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
 
             return \View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'));
-        } catch (\Exception $e) {
-            return \Response::json(['message' => $e->getMessage()], 500);
+        } catch (Throwable $throwable) {
+            return \Response::json(['message' => $throwable->getMessage()], 500);
         }
     }
 
@@ -144,8 +144,8 @@ class GeoLocateController extends Controller
             ]);
 
             return \View::make('admin.geolocate.partials.geolocate-fields', compact('expedition', 'form'))->render();
-        } catch (\Exception $e) {
-            return \Response::json(['message' => $e->getMessage().$e->getFile().$e->getLine()], 500);
+        } catch (Throwable $throwable) {
+            return \Response::json(['message' => $throwable->getMessage().$throwable->getFile().$throwable->getLine()], 500);
         }
     }
 
@@ -169,8 +169,8 @@ class GeoLocateController extends Controller
             $this->geoLocateExportForm->saveForm(\Request::all(), $expedition);
 
             return \Response::json(['message' => t('GeoLocate export form saved.')]);
-        } catch (Exception $e) {
-            return \Response::json(['message' => $e->getMessage()], 500);
+        } catch (Throwable $throwable) {
+            return \Response::json(['message' => $throwable->getMessage()], 500);
         }
     }
 
@@ -195,8 +195,8 @@ class GeoLocateController extends Controller
             GeoLocateExportJob::dispatch($expedition, Auth::user());
 
             return \Response::json(['message' => t('Geo Locate export job scheduled for processing. You will receive an email when file has been created.')]);
-        } catch (Exception $e) {
-            return \Response::json(['message' => $e->getMessage()], 500);
+        } catch (Throwable $throwable) {
+            return \Response::json(['message' => $throwable->getMessage()], 500);
         }
     }
 
@@ -219,7 +219,7 @@ class GeoLocateController extends Controller
                 $projectId,
                 $expeditionId,
             ])->with('success', t('Geo Locate stats job is scheduled for processing. You will receive an email when the process is complete.'));
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             return \Redirect::route('admin.expeditions.show', [
                 $projectId,
                 $expeditionId,
@@ -249,7 +249,7 @@ class GeoLocateController extends Controller
             ]);
 
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('success', t('GeoLocateExport form data and file deleted.'));
-        } catch (Exception $exception) {
+        } catch (Throwable $throwablexception) {
 
             return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('danger', t('Error %s.', $exception->getMessage()));
         }
