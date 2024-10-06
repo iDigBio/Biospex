@@ -19,7 +19,7 @@
                         {!! method_field('put') !!}
                         @csrf
                         <input type="hidden" id="entries" name="entries"
-                               value="{{ old('entries', $project->resources->count() ?: 1) }}">
+                               value="{{ old('entries', $resources->count() ?: 1) }}">
                         <input type="hidden" name="id" value="{{ $project->id }}">
                         <div class="form-row">
                             <div class="form-group col-sm-6">

@@ -24,6 +24,7 @@ use App\Models\Project;
 use App\Services\Group\GroupService;
 use App\Services\Project\ProjectService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\View;
 use Request;
 
@@ -32,6 +33,7 @@ class ProjectCloneController extends Controller
     public function __construct(
         protected ProjectService $projectService,
         protected GroupService $groupService,
+        protected Collection $collection
     ) {}
 
     /**
@@ -40,10 +42,10 @@ class ProjectCloneController extends Controller
     public function __invoke(Project $project): \Illuminate\Contracts\View\View|RedirectResponse
     {
         $project->load(['group']);
-        $project->resources = null;
 
         $groupOptions = $this->groupService->getUsersGroupsSelect(Request::user());
+        $resources = $this->collection->make();
 
-        return View::make('admin.project.clone', compact('project', 'groupOptions'));
+        return View::make('admin.project.clone', compact('project', 'groupOptions', 'resources'));
     }
 }

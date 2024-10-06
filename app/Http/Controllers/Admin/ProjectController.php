@@ -105,9 +105,6 @@ class ProjectController extends Controller
 
     /**
      * Edit project.
-     *
-     * $model->relation()->exists(); // bool: true if there is at least one row
-     * $model->relation()->count(); // int: number of related rows
      */
     public function edit(Project $project): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
