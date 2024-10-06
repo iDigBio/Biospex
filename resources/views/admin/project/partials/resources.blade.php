@@ -1,4 +1,4 @@
-@for($i=0; $i < (isset($project->resources) ? $project->resources->count() : 1); $i++)
+@for($i=0; $i < ($project->resources->isNotEmpty() ? $project->resources->count() : 1); $i++)
     <div class="entry mb-4">
         <fieldset class="row border p-2">
             <legend class="w-auto">{{ t('Resources') }} {{ $i+1 }}</legend>
