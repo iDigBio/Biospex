@@ -21,7 +21,6 @@ namespace App\Services\Event;
 
 use App\Models\Event;
 use App\Services\Helpers\DateService;
-use App\Services\Models\EventTranscriptionModelService;
 use App\Services\Traits\RateChartTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -37,7 +36,7 @@ readonly class EventRateService
      * AjaxService constructor.
      */
     public function __construct(
-        protected EventTranscriptionModelService $eventTranscriptionModelService,
+        protected EventTranscriptionService $eventTranscriptionService,
         protected DateService $dateService,
         protected Carbon $carbon
     ) {}
@@ -57,7 +56,7 @@ readonly class EventRateService
 
         $intervals = $this->setTimeIntervals($startLoad, $endLoad, $timestamp);
 
-        $transcriptions = $this->eventTranscriptionModelService->getEventRateChartTranscriptions($event->id, $startLoad, $endLoad);
+        $transcriptions = $this->eventTranscriptionService->getEventRateChartTranscriptions($event->id, $startLoad, $endLoad);
 
         return $transcriptions->isEmpty() ? $this->processEmptyResult($event, $intervals) : $this->processTranscriptionResult($event, $transcriptions, $intervals);
     }

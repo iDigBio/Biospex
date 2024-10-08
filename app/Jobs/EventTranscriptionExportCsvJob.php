@@ -23,7 +23,7 @@ use App\Models\Event;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Services\Models\EventTranscriptionModelService;
+use App\Services\Event\EventTranscriptionService;
 use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Services\Process\CreateReportService;
 use Illuminate\Bus\Queueable;
@@ -68,13 +68,13 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
      * TODO: Verify export is working.
      */
     public function handle(
-        EventTranscriptionModelService $eventTranscriptionModelService,
+        EventTranscriptionService $eventTranscriptionService,
         PanoptesTranscriptionModelService $panoptesTranscriptionModelService,
         CreateReportService $createReportService,
     ): void {
 
         try {
-            $ids = $eventTranscriptionModelService->getEventClassificationIds($this->event->id);
+            $ids = $eventTranscriptionService->getEventClassificationIds($this->event->id);
 
             $transcriptions = $ids->map(function ($id) use ($panoptesTranscriptionModelService) {
                 $transcript = $panoptesTranscriptionModelService->getFirst('classification_id', $id);

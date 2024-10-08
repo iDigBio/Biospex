@@ -27,7 +27,13 @@ use Illuminate\Support\Collection;
 
 class EventService
 {
-    public function __construct(protected Event $event, protected EventTeam $eventTeam, protected DateService $dateService) {}
+    /**
+     * EventService constructor.
+     */
+    public function __construct(
+        protected Event $event,
+        protected EventTeam $eventTeam,
+        protected DateService $dateService) {}
 
     /**
      * Get events for admin index.
@@ -175,5 +181,35 @@ class EventService
             $team = $this->eventTeam->make($team);
             $event->teams()->save($team);
         }
+    }
+
+    /**
+     * Get events by project id.
+     */
+    public function getEventsByProjectId($projectId): Collection
+    {
+        return $this->event->withCount('transcriptions')->with([
+            'teams' => function ($q) {
+                $q->withCount('transcriptions')->orderBy('transcriptions_count', 'desc');
+            },
+        ])->whereHas('teams')->where('project_id', $projectId)->get();
+    }
+
+    /**
+     * Get any ongoing events for user using project id and dates.
+     */
+    public function getAnyEventsForUserByProjectIdAndDate(int $projectId, int $userId, string $date): \Illuminate\Database\Eloquent\Collection|array
+    {
+        $callback = function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        };
+
+        return $this->event->with(['teams' => function ($q) use ($callback) {
+            $q->whereHas('users', $callback);
+            $q->with(['users' => $callback]);
+        }])
+            ->where('project_id', $projectId)
+            ->where('start_date', '<', $date)
+            ->where('end_date', '>', $date)->get();
     }
 }

@@ -248,10 +248,12 @@ class GeoLocateController extends Controller
                 'state' => 0,
             ]);
 
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('success', t('GeoLocateExport form data and file deleted.'));
-        } catch (Throwable $throwablexception) {
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+                ->with('success', t('GeoLocateExport form data and file deleted.'));
+        } catch (Throwable $throwable) {
 
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('danger', t('Error %s.', $exception->getMessage()));
+            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+                ->with('danger', t('Error %s.', $throwable->getMessage()));
         }
     }
 

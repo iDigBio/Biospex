@@ -20,10 +20,10 @@
 namespace App\Services\Event;
 
 use App\Jobs\ScoreboardJob;
-use App\Services\Models\EventModel;
-use App\Services\Models\EventTranscriptionModelService;
-use App\Services\Models\EventUserModelService;
+use App\Models\EventTranscription;
+use App\Models\EventUser;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Validator;
 
@@ -37,9 +37,9 @@ class EventTranscriptionService
      * EventTranscriptionService constructor.
      */
     public function __construct(
-        protected EventModel $eventModel,
-        protected EventTranscriptionModelService $eventTranscriptionModelService,
-        protected EventUserModelService $eventUserModelService,
+        protected EventService $eventService,
+        protected EventTranscription $eventTranscription,
+        protected EventUser $eventUser,
         protected Carbon $carbon,
         protected ScoreboardJob $scoreboardJob
     ) {}
@@ -53,7 +53,7 @@ class EventTranscriptionService
         string $userName,
         ?Carbon $date = null
     ): void {
-        $user = $this->eventUserModelService->findByNfnUser($userName, ['id']);
+        $user = $this->eventUser->where('nfn_user', $userName)->first(['id']);
 
         if ($user === null) {
             return;
@@ -61,7 +61,7 @@ class EventTranscriptionService
 
         $timestamp = ! isset($date) ? $this->carbon::now('UTC') : $date;
 
-        $events = $this->eventModel->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp->toDateTimeString());
+        $events = $this->eventService->getAnyEventsForUserByProjectIdAndDate($projectId, $user->id, $timestamp->toDateTimeString());
 
         $events->each(function ($event) use ($classification_id, $user, $timestamp) {
             $event->teams->each(function ($team) use ($event, $classification_id, $user, $timestamp) {
@@ -78,7 +78,7 @@ class EventTranscriptionService
 
                 $values = array_merge($attributes, ['created_at' => $timestamp->toDateTimeString(), 'updated_at' => $timestamp->toDateTimeString()]);
 
-                $this->eventTranscriptionModelService->create($values);
+                $this->eventTranscription->create($values);
             });
         });
 
@@ -100,5 +100,26 @@ class EventTranscriptionService
 
         // returns true if records exists
         return $validator->fails();
+    }
+
+    /**
+     * Get event classification ids.
+     */
+    public function getEventClassificationIds($eventId): mixed
+    {
+        return $this->eventTranscription->where('event_id', $eventId)->pluck('classification_id');
+    }
+
+    /**
+     * Get transcriptions for event step chart.
+     */
+    public function getEventRateChartTranscriptions(int $eventId, Carbon $startLoad, Carbon $endLoad): ?Collection
+    {
+        return $this->eventTranscription->with(['team:id,title'])
+            ->selectRaw('event_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, team_id, count(id) as count')
+            ->where('event_id', $eventId)
+            ->where('created_at', '>=', $startLoad->toDateTimeString())
+            ->where('created_at', '<', $endLoad->toDateTimeString())
+            ->groupBy('time', 'team_id', 'event_id')->orderBy('time')->get();
     }
 }

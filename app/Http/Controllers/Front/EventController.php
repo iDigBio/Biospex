@@ -22,7 +22,6 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Services\Event\EventService;
-use App\Services\Models\EventModel;
 use Illuminate\Support\Facades\View;
 
 /**
@@ -30,7 +29,7 @@ use Illuminate\Support\Facades\View;
  */
 class EventController extends Controller
 {
-    public function __construct(protected EventService $eventService, protected EventModel $eventModel) {}
+    public function __construct(protected EventService $eventService) {}
 
     /**
      * Displays Events on public page.

@@ -23,7 +23,7 @@ use App\Models\Event;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Services\Models\EventModel;
+use App\Services\Event\EventService;
 use App\Services\Process\CreateReportService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -31,6 +31,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Str;
+use Throwable;
 
 /**
  * Class EventUserExportCsvJob
@@ -41,38 +42,27 @@ class EventUserExportCsvJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
-    public $timeout = 1800;
-
-    private User $user;
-
-    private Event $event;
+    public int $timeout = 1800;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(User $user, Event $event)
+    public function __construct(protected User $user, protected Event $event)
     {
-        $this->user = $user;
-        $this->event = $event;
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
-     * TODO: Check if Event has other attributes besides id.
-     *
-     * @return void
      */
     public function handle(
-        EventModel $eventModel,
+        EventService $eventService,
         CreateReportService $createReportService,
-    ) {
+    ): void {
         try {
-            $event = $eventModel->getShow($this->event->id);
-            $rows = $event->teams->flatMap(function ($team) {
+            $eventService->getAdminShow($this->event);
+            $rows = $this->event->teams->flatMap(function ($team) {
                 return $team->users->map(function ($user) use ($team) {
                     return [
                         'Team' => $team->title,
