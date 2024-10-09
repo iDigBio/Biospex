@@ -94,7 +94,7 @@
             <span id="max">{{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}</span>:
             <span id="subject-count-html"></span>
         </h3>
-        @if(Route::currentRouteName() === 'admin.expeditions.edit')
+        @if(Route::currentRouteName() === 'admin.expeditions.edit'  && $expedition->workflowManager === null)
             <div class="col-sm-8 mx-auto">
                 <div class="alert alert-info text-center">
                     {{ t('Checked rows are Subjects currently assigned to this particular Expedition.') }}
