@@ -83,7 +83,9 @@ class EventController extends Controller
             return \Redirect::route('front.events.index');
         }
 
-        return \View::make('front.event.show', compact('event'));
+        // TODO: find better solution for looping
+        $project = $event->project;
+        return \View::make('front.event.show', compact('event', 'project'));
     }
 
     /**
@@ -116,7 +118,9 @@ class EventController extends Controller
         $uuid
     ) {
 
-        $user = $eventUserRepo->updateOrCreate(['nfn_user' => $request->get('nfn_user')], ['nfn_user' => $request->get('nfn_user')]);
+        $attributes = ['nfn_user' => $request->get('nfn_user')];
+        $values = ['nfn_user' => $request->get('nfn_user')];
+        $user = $eventUserRepo->updateOrCreate($attributes, $values);
 
         if ($user !== null) {
             $team = $eventTeamRepo->findWith($request->get('team_id'), ['event']);
