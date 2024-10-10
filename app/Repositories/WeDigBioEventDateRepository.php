@@ -20,7 +20,6 @@
 namespace App\Repositories;
 
 use App\Models\WeDigBioEventDate;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -47,17 +46,15 @@ class WeDigBioEventDateRepository extends BaseRepository
             return null;
         }
 
-        return Cache::remember('wedigbio-event-transcription'.$activeEvent->id, 86400, function () use ($activeEvent) {
-            return $this->model->withCount('transcriptions')->with([
-                'transcriptions' => function ($q) {
-                    $q->select('*', DB::raw('count(project_id) as total'))
-                        ->with(['project' => function ($query) {
-                            $query->select('id', 'title');
-                        }])->groupBy('project_id')
-                        ->orderBy('total', 'desc');
-                },
-            ])->find($activeEvent->id);
-        });
+        return $this->model->withCount('transcriptions')->with([
+            'transcriptions' => function ($q) {
+                $q->select('*', DB::raw('count(project_id) as total'))
+                    ->with(['project' => function ($query) {
+                        $query->select('id', 'title');
+                    }])->groupBy('project_id')
+                    ->orderBy('total', 'desc');
+            },
+        ])->find($activeEvent->id);
     }
 
     /**
