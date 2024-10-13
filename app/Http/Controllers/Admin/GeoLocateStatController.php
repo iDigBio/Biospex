@@ -21,7 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\GeoLocateStatsJob;
-use App\Models\GeoLocateDataSource;
+use App\Models\Expedition;
 use App\Services\Permission\CheckPermission;
 use Illuminate\Http\RedirectResponse;
 use Redirect;
@@ -35,20 +35,20 @@ class GeoLocateStatController extends Controller
     /**
      * Display stats in modal.
      */
-    public function index(GeoLocateDataSource $geoLocateDataSource): mixed
+    public function index(Expedition $expedition): mixed
     {
         if (! Request::ajax()) {
             return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
         try {
-            $geoLocateDataSource->load('project.group', 'expedition');
+            $expedition->load('project.group', 'geoLocateDataSource');
 
-            if (! CheckPermission::handle('readProject', $geoLocateDataSource->project->group)) {
+            if (! CheckPermission::handle('readProject', $expedition->project->group)) {
                 return Response::json(['message' => t('You do not have permission.')], 401);
             }
 
-            return View::make('admin.geolocate.partials.stats', compact('geoLocateDataSource'));
+            return View::make('admin.geolocate.partials.stats', compact('expedition'));
         } catch (Throwable $throwable) {
             return Response::json(['message' => $throwable->getMessage()], 500);
         }
@@ -57,21 +57,21 @@ class GeoLocateStatController extends Controller
     /**
      * Refresh GeoLocate stats at user request.
      */
-    public function update(GeoLocateDataSource $geoLocateDataSource): RedirectResponse
+    public function update(Expedition $expedition): RedirectResponse
     {
         try {
-            $geoLocateDataSource->load('project.group', 'expedition.geoActor');
+            $expedition->load('project.group');
 
-            if (! CheckPermission::handle('updateProject', $geoLocateDataSource->project->group)) {
-                return Redirect::route('admin.expeditions.show', [$geoLocateDataSource->expedition]);
+            if (! CheckPermission::handle('updateProject', $expedition->project->group)) {
+                return Redirect::route('admin.expeditions.show', [$expedition]);
             }
 
-            GeoLocateStatsJob::dispatch($geoLocateDataSource->expedition->geoActor, true);
+            GeoLocateStatsJob::dispatch($expedition, true);
 
-            return Redirect::route('admin.expeditions.show', [$geoLocateDataSource->expedition])
+            return Redirect::route('admin.expeditions.show', [$expedition])
                 ->with('success', t('GeoLocate stats job is scheduled for processing. You will receive an email when the process is complete.'));
         } catch (Throwable $throwable) {
-            return Redirect::route('admin.expeditions.show', [$geoLocateDataSource->expedition])
+            return Redirect::route('admin.expeditions.show', [$expedition])
                 ->with('danger', t('An error occurred while processing job.'));
         }
     }

@@ -25,6 +25,7 @@ use App\Jobs\ZooniverseClassificationCountJob;
 use App\Jobs\ZooniversePusherJob;
 use App\Jobs\ZooniverseTranscriptionJob;
 use App\Models\Download;
+use App\Models\Expedition;
 use App\Services\Api\AwsLambdaApiService;
 use App\Traits\SkipZooniverse;
 use Illuminate\Contracts\View\View;
@@ -39,14 +40,18 @@ use Illuminate\Support\Facades\Bus;
  *
  * @see \App\Listeners\LabelReconciliationListener
  */
-readonly class ReconcileService
+class ReconcileService
 {
     use SkipZooniverse;
 
     /**
      * ReconcileService constructor.
      */
-    public function __construct(private Download $download, private AwsLambdaApiService $awsLambdaApiService) {}
+    public function __construct(
+        protected Expedition $expedition,
+        protected Download $download,
+        protected AwsLambdaApiService $awsLambdaApiService
+    ) {}
 
     /**
      * Process payload from lambda function.
@@ -69,13 +74,14 @@ readonly class ReconcileService
         $expeditionId = (int) $responsePayload['body']['expeditionId'];
         $explanations = (bool) $responsePayload['body']['explanations'];
 
+        $expedition = $this->expedition->find($expeditionId);
         if ($explanations) {
-            $this->processExplained($expeditionId);
+            $this->processExplained($expedition);
 
             return;
         }
 
-        $this->processReconcile($expeditionId);
+        $this->processReconcile($expedition);
     }
 
     /**
@@ -86,12 +92,12 @@ readonly class ReconcileService
      *
      * @throws \Throwable
      */
-    public function processExplained(int $expeditionId): void
+    public function processExplained(Expedition $expedition): void
     {
         Bus::batch([
-            new ExpertReviewMigrateReconcilesJob($expeditionId),
-            new ExpertReviewSetProblemsJob($expeditionId),
-        ])->name('Expert Reconcile '.$expeditionId)->onQueue(config('config.queue.reconcile'))->dispatch();
+            new ExpertReviewMigrateReconcilesJob($expedition),
+            new ExpertReviewSetProblemsJob($expedition),
+        ])->name('Expert Reconcile '.$expedition->id)->onQueue(config('config.queue.reconcile'))->dispatch();
     }
 
     /**
@@ -118,20 +124,20 @@ readonly class ReconcileService
      * @see ZooniversePusherJob
      * @see ZooniverseClassificationCountJob
      */
-    public function processReconcile(int $expeditionId): void
+    public function processReconcile(Expedition $expedition): void
     {
-        $this->updateOrCreateDownloads($expeditionId);
+        $this->updateOrCreateDownloads($expedition->id);
 
         ZooniverseTranscriptionJob::withChain([
-            new ZooniversePusherJob($expeditionId),
-            new ZooniverseClassificationCountJob($expeditionId),
-        ])->dispatch($expeditionId);
+            new ZooniversePusherJob($expedition),
+            new ZooniverseClassificationCountJob($expedition),
+        ])->dispatch($expedition->id);
     }
 
     /**
      * Update or create downloads for reconcile files produced.
      */
-    protected function updateOrCreateDownloads($expeditionId): void
+    protected function updateOrCreateDownloads(int $expeditionId): void
     {
         collect(config('zooniverse.file_types'))->each(function ($type) use ($expeditionId) {
             $values = [

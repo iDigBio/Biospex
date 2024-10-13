@@ -20,7 +20,6 @@
 namespace App\Services\Transcriptions;
 
 use App\Facades\TranscriptionMapHelper;
-use App\Services\Expedition\ExpeditionService;
 use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Services\Models\PusherTranscriptionModelService;
 use Ramsey\Uuid\Uuid;
@@ -36,19 +35,8 @@ readonly class UpdateOrCreatePusherTranscriptionService
      */
     public function __construct(
         private PusherTranscriptionModelService $pusherTranscriptionModelService,
-        private ExpeditionService $expeditionService,
         private PanoptesTranscriptionModelService $panoptesTranscriptionModelService
     ) {}
-
-    /**
-     * Get expedition.
-     *
-     * @return \App\Models\Expedition|null
-     */
-    public function getExpedition($expeditionId)
-    {
-        return $this->expeditionService->expedition->with(['panoptesProject'])->find($expeditionId);
-    }
 
     /**
      * Get transcriptions.

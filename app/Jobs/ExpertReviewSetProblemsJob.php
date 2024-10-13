@@ -19,9 +19,9 @@
 
 namespace App\Jobs;
 
+use App\Models\Expedition;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Services\Expedition\ExpeditionService;
 use App\Services\Reconcile\ExpertReconcileService;
 use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Batchable;
@@ -35,8 +35,6 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
 {
     use Batchable, ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
 
-    private int $expeditionId;
-
     public int $timeout = 1800;
 
     /**
@@ -47,46 +45,43 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(int $expeditionId)
+    public function __construct(protected Expedition $expedition)
     {
-        $this->expeditionId = $expeditionId;
         $this->onQueue(config('config.queue.reconcile'));
     }
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle(
-        ExpeditionService $expeditionService,
-        ExpertReconcileService $expertReconcileService
-    ) {
-        $expedition = $expeditionService->expedition->find($this->expeditionId);
+    public function handle(ExpertReconcileService $expertReconcileService): void
+    {
+        $this->expedition->load('project.group.owner', 'zooniverseActor');
 
         try {
-            if ($this->skipReconcile($this->expeditionId)) {
-                throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [':id' => $expedition->id, ':title' => $expedition->title]));
+            if ($this->skipReconcile($this->expedition->id)) {
+                throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [
+                    ':id' => $this->expedition->id, ':title' => $this->expedition->title,
+                ]));
             }
 
-            $expertReconcileService->setReconcileProblems($expedition->id);
+            $expertReconcileService->setReconcileProblems($this->expedition->id);
 
-            $expedition->zooniverseActor->pivot->expert = 1;
-            $expedition->zooniverseActor->pivot->save();
+            $this->expedition->zooniverseActor->pivot->expert = 1;
+            $this->expedition->zooniverseActor->pivot->save();
 
-            $route = route('admin.reconciles.index', ['expeditions' => $this->expeditionId]);
+            $route = route('admin.reconciles.index', ['expeditions' => $this->expedition->id]);
             $btn = $this->createButton($route, t('Expert Review Start'));
 
             $attributes = [
                 'subject' => t('Expert Review Job Complete'),
                 'html' => [
-                    t('The Expert Review job for %s is complete and you may start reviewing the reconciled records.', $expedition->title),
+                    t('The Expert Review job for %s is complete and you may start reviewing the reconciled records.', $this->expedition->title),
                     t('You may access the page by going to the Expedition Download modal and clicking the green button or click the button below and be taken to the page directly.'),
                 ],
                 'buttons' => $btn,
             ];
 
-            $expedition->project->group->owner->notify(new Generic($attributes));
+            $this->expedition->project->group->owner->notify(new Generic($attributes));
 
             $this->delete();
 
@@ -94,7 +89,7 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
             $attributes = [
                 'subject' => t('Expert Review Job Error'),
                 'html' => [
-                    t('An error occurred while setting the problems for Expedition %s.', $expedition->title),
+                    t('An error occurred while setting the problems for Expedition %s.', $this->expedition->title),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),
                     t('Message: %s', $throwable->getMessage()),
@@ -102,7 +97,7 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
                 ],
             ];
 
-            $expedition->project->group->owner->notify(new Generic($attributes, true));
+            $this->expedition->project->group->owner->notify(new Generic($attributes, true));
 
             $this->delete();
         }

@@ -32,12 +32,12 @@
             data-toggle="modal"
             data-target="#global-modal"
             data-size="modal-lg"
-            data-url="{{ route('admin.geolocate-stats.index', [$expedition->geoLocateDataSource]) }}"
+            data-url="{{ route('admin.geolocate-stat.index', [$expedition]) }}"
             data-title="{{ t('GeoLocate Stats') }}">{{ t('GeoLocate Stats') }}</button>
 @endif
 
 @if($actor->pivot->state === 3)
-    <a href="{{ route('admin.geolocate-stats.update', [$expedition->geoLocateDataSource]) }}"
+    <a href="{{ route('admin.geolocate-stat.update', [$expedition]) }}"
        class="prevent-default btn btn-primary rounded-0 mb-1"
        data-dismiss="modal"
        data-title="{{ t('Refresh GeoLocate Stats') }}"

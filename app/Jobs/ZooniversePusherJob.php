@@ -19,13 +19,13 @@
 
 namespace App\Jobs;
 
+use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Event\EventTranscriptionService;
 use App\Services\Transcriptions\UpdateOrCreatePusherTranscriptionService;
 use App\Services\WeDigBio\WeDigBioTranscriptionService;
 use App\Traits\SkipZooniverse;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -47,7 +47,7 @@ class ZooniversePusherJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected int $expeditionId, protected ?int $days = null)
+    public function __construct(protected Expedition $expedition, protected ?int $days = null)
     {
         $this->onQueue(config('config.queue.reconcile'));
     }
@@ -65,29 +65,25 @@ class ZooniversePusherJob implements ShouldQueue
         EventTranscriptionService $eventTranscriptionService,
         WeDigBioTranscriptionService $weDigBioTranscriptionService): void
     {
-        if ($this->skipReconcile($this->expeditionId)) {
+        if ($this->skipReconcile($this->expedition->id)) {
             $this->delete();
 
             return;
         }
 
-        $expedition = $updateOrCreatePusherTranscriptionService->getExpedition($this->expeditionId);
-        if (! $expedition) {
-            throw new Exception(t('Could not find Expedition using Id: %', $this->expeditionId));
-        }
+        $this->expedition->load('panoptesProject');
 
         $timestamp = isset($this->days) ? Carbon::now()->subDays($this->days) : Carbon::now()->subDays(3);
 
-        $transcriptions = $updateOrCreatePusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
+        $transcriptions = $updateOrCreatePusherTranscriptionService->getTranscriptions($this->expedition->id, $timestamp);
 
         $transcriptions->each(function ($transcription) use (
             $updateOrCreatePusherTranscriptionService,
             $eventTranscriptionService,
-            $weDigBioTranscriptionService,
-            $expedition) {
-            $updateOrCreatePusherTranscriptionService->processTranscripts($transcription, $expedition);
-            $eventTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
-            $weDigBioTranscriptionService->createEventTranscription($transcription->classification_id, $expedition->project_id, $transcription->classification_finished_at);
+            $weDigBioTranscriptionService) {
+            $updateOrCreatePusherTranscriptionService->processTranscripts($transcription, $this->expedition);
+            $eventTranscriptionService->createEventTranscription($transcription->classification_id, $this->expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
+            $weDigBioTranscriptionService->createEventTranscription($transcription->classification_id, $this->expedition->project_id, $transcription->classification_finished_at);
         });
     }
 
@@ -98,15 +94,13 @@ class ZooniversePusherJob implements ShouldQueue
      */
     public function middleware(): array
     {
-        return [new WithoutOverlapping($this->expeditionId)];
+        return [new WithoutOverlapping($this->expedition->id)];
     }
 
     /**
      * Handle a job failure.
-     *
-     * @return void
      */
-    public function failed(Throwable $throwable)
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Zooniverse Pusher Job Failed'),

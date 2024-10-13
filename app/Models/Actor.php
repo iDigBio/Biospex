@@ -82,9 +82,6 @@ class Actor extends BaseEloquentModel
             ->withTimestamps();
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
-     */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
     {
         return $this->hasOneThrough(Expedition::class, ActorExpedition::class, 'actor_id', 'id', 'id', 'expedition_id');
@@ -96,5 +93,13 @@ class Actor extends BaseEloquentModel
     public function exportQueues()
     {
         return $this->hasMany(ExportQueue::class);
+    }
+
+    /**
+     * Used to return the pivot table when calling geoActor or zooActor
+     */
+    public function pivot(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ActorExpedition::class);
     }
 }

@@ -27,9 +27,8 @@ class GeoLocateStats extends Command
      */
     public function handle()
     {
-        $expeditionId = $this->argument('expeditionId');
-        $expedition = Expedition::with('geoLocateActor')->find($expeditionId);
+        $expedition = Expedition::find($this->argument('expeditionId'));
 
-        GeoLocateStatsJob::dispatch($expedition->geoLocateActor, true);
+        GeoLocateStatsJob::dispatch($expedition, true);
     }
 }

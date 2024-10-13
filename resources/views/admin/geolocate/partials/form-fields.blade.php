@@ -23,7 +23,7 @@
                     data-width="350"
                     data-hide-disabled="true"
                     data-style="btn-primary"
-                    data-url="{{ route('admin.geolocate-fields.index', [$expedition]) }}"
+                    data-url="{{ route('admin.geolocate-field.index', [$expedition]) }}"
                     required>
                 <option value="reconciled"
                         {{ $form['source'] === 'reconciled' ? 'selected' : '' }}>{{ t('Reconciled') }}</option>

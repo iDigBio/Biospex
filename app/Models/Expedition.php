@@ -277,6 +277,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public function geoActor()
     {
         return $this->hasOneThrough(Actor::class, ActorExpedition::class, 'expedition_id', 'id', 'id', 'actor_id')
+            ->with('pivot')
             ->where('actor_id', config('geolocate.actor_id'));
     }
 
@@ -286,6 +287,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public function zooActor()
     {
         return $this->hasOneThrough(Actor::class, ActorExpedition::class, 'expedition_id', 'id', 'id', 'actor_id')
+            ->with('pivot')
             ->where('actor_id', config('zooniverse.actor_id'));
     }
 

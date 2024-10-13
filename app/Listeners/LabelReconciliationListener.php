@@ -34,9 +34,6 @@ use Throwable;
  */
 class LabelReconciliationListener implements ShouldQueue
 {
-    /**
-     * @var \App\Services\Reconcile\ReconcileService
-     */
     public ReconcileService $reconcileService;
 
     /**
@@ -49,8 +46,6 @@ class LabelReconciliationListener implements ShouldQueue
 
     /**
      * Set tube for listener.
-     *
-     * @return string
      */
     public function viaQueue(): string
     {
@@ -71,15 +66,12 @@ class LabelReconciliationListener implements ShouldQueue
     /**
      * Handle a LabelReconciliationEvent failure.
      * Will send email to admin so they can investigate.
-     *
-     * @param LabelReconciliationEvent $event
-     * @param Throwable $exception
      */
     public function failed(LabelReconciliationEvent $event, Throwable $exception): void
     {
         $attributes = [
             'subject' => t('LabelReconciliationListener Failed'),
-            'html'    => [
+            'html' => [
                 t('LabelReconciliationListener failed'),
                 t('Error: %s', $exception->getMessage()),
                 t('File: %s', $exception->getFile()),

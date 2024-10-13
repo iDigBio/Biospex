@@ -33,20 +33,4 @@ class ActorExpedition extends Pivot
         'role',
         'status',
     ];
-
-    /**
-     * Actor relationship.
-     */
-    public function actor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(Actor::class);
-    }
-
-    /**
-     * Expedition relationship.
-     */
-    public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(Expedition::class);
-    }
 }

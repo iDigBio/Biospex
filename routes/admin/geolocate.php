@@ -24,18 +24,18 @@ use App\Http\Controllers\Admin\GeolocateFieldsController;
 use App\Http\Controllers\Admin\GeolocateFormController;
 use App\Http\Controllers\Admin\GeoLocateStatController;
 
-Route::post('geolocates/{expeditions}/store', [GeoLocateController::class, 'store'])->name('admin.geolocates.store');
-Route::delete('geolocates/{expeditions}/destroy', [GeoLocateController::class, 'destroy'])->name('admin.geolocates.destroy');
+Route::post('geolocates/{expedition}/store', [GeoLocateController::class, 'store'])->name('admin.geolocates.store');
+Route::delete('geolocates/{expedition}/destroy', [GeoLocateController::class, 'destroy'])->name('admin.geolocates.destroy');
 
-Route::get('geolocates/stats/{geoLocateDataSource}', [GeoLocateStatController::class, 'index'])->name('admin.geolocate-stats.index');
-Route::post('geolocates/{geoLocateDataSource}/update', [GeoLocateStatController::class, 'update'])->name('admin.geolocate-stats.update');
+Route::get('geolocates/stat/{expedition}', [GeoLocateStatController::class, 'index'])->name('admin.geolocate-stat.index');
+Route::post('geolocates/stat/{expedition}/update', [GeoLocateStatController::class, 'update'])->name('admin.geolocate-stat.update');
 
 Route::get('geolocates/form/{expedition}', [GeoLocateFormController::class, 'index'])->name('admin.geolocate-form.index');
 Route::post('geolocates/form/{expedition}/show', [GeoLocateFormController::class, 'show'])->name('admin.geolocate-form.show');
 
-Route::post('geolocates/fields/{expedition}', GeoLocateFieldsController::class)->name('admin.geolocate-fields.index');
+Route::post('geolocates/field/{expedition}', GeoLocateFieldsController::class)->name('admin.geolocate-field.index');
 
 Route::get('geolocates/community/{expedition}/edit', [GeoLocateCommunityController::class, 'edit'])->name('admin.geolocate-community.edit');
 Route::post('geolocates/community/{expedition}/update', [GeoLocateCommunityController::class, 'update'])->name('admin.geolocate-community.update');
 
-Route::post('geolocates/{expeditions}/export', GeoLocateExportController::class)->name('admin.geolocate-export.index');
+Route::post('geolocates/{expedition}/export', GeoLocateExportController::class)->name('admin.geolocate-export.index');
