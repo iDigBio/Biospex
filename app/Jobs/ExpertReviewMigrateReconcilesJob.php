@@ -19,10 +19,11 @@
 
 namespace App\Jobs;
 
+use App\Models\Expedition;
 use App\Notifications\Generic;
-use App\Services\Expedition\ExpeditionService;
 use App\Services\Reconcile\ExpertReconcileService;
 use App\Traits\SkipZooniverse;
+use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,6 @@ use Illuminate\Queue\SerializesModels;
 class ExpertReviewMigrateReconcilesJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SkipZooniverse;
-
-    private int $expeditionId;
 
     public int $timeout = 1800;
 
@@ -48,35 +47,32 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(int $expeditionId)
+    public function __construct(protected Expedition $expedition)
     {
-        $this->expeditionId = $expeditionId;
         $this->onQueue(config('config.queue.reconcile'));
     }
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle(
-        ExpeditionService $expeditionService,
-        ExpertReconcileService $expertReconcileService
-    ) {
-        $expedition = $expeditionService->expedition->with(['project.group.owner'])->find($this->expeditionId);
+    public function handle(ExpertReconcileService $expertReconcileService): void
+    {
+        $this->expedition->load('project.group.owner');
 
         try {
-            if ($this->skipReconcile($this->expeditionId)) {
-                throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [':id' => $expedition->id, ':title' => $expedition->title]));
+            if ($this->skipReconcile($this->expedition->id)) {
+                throw new Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [
+                    ':id' => $this->expedition->id, ':title' => $this->expedition->title,
+                ]));
             }
 
-            $expertReconcileService->migrateReconcileCsv($expedition->id);
+            $expertReconcileService->migrateReconcileCsv($this->expedition->id);
 
         } catch (\Throwable $throwable) {
             $attributes = [
                 'subject' => t('Expert Review Migration Failed'),
                 'html' => [
-                    t('Expedition %s', $expedition->title),
+                    t('Expedition %s', $this->expedition->title),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),
                     t('Message: %s', $throwable->getMessage()),
@@ -84,7 +80,7 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
                 ],
             ];
 
-            $expedition->project->group->owner->notify(new Generic($attributes, true));
+            $this->expedition->project->group->owner->notify(new Generic($attributes, true));
 
             $this->delete();
         }
