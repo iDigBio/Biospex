@@ -98,7 +98,7 @@ class GeoLocateDataSource extends BaseEloquentModel
     }
 
     /**
-     * Geo Locate community relation.
+     * GeoLocate community relation.
      */
     public function geoLocateCommunity(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

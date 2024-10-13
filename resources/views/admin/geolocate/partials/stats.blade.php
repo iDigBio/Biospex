@@ -9,8 +9,8 @@
             </tr>
             </thead>
             <tbody>
-            @if(isset($expedition->geoLocateDataSource->data))
-                @foreach($expedition->geoLocateDataSource->data['stats'] as $label => $stat)
+            @if(isset($geoLocateDataSource->data))
+                @foreach($geoLocateDataSource->data['stats'] as $label => $stat)
                     <tr>
                         <td class="text-left">{{ $label }}</td>
                         <td>{{ $stat }}</td>

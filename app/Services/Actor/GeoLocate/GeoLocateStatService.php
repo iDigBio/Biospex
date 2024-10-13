@@ -19,17 +19,18 @@
 
 namespace App\Services\Actor\GeoLocate;
 
+use App\Models\Expedition;
 use App\Models\GeoLocateCommunity;
 use App\Models\GeoLocateDataSource;
 use App\Services\Api\GeoLocateApi;
 
 /**
- * Class GeoLocateStat
+ * Class GeoLocateStatService
  */
-class GeoLocateStat
+class GeoLocateStatService
 {
     /**
-     * GeoLocateStat constructor.
+     * GeoLocateStatService constructor.
      */
     public function __construct(
         private GeoLocateCommunity $geoLocateCommunity,
@@ -42,11 +43,11 @@ class GeoLocateStat
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function saveCommunityDataSource(array $data, int $projectId, int $expeditionId): void
+    public function saveCommunityDataSource(array $data, Expedition &$expedition): void
     {
         if (! empty($data['community'])) {
             $this->getCommunityDataSource($data['community']);
-            $community = $this->updateOrCreateCommunity($projectId, $data['community']);
+            $community = $this->updateOrCreateCommunity($expedition->project_id, $data['community']);
         } else {
             $community = $this->geoLocateCommunity->find($data['community_id']);
         }
@@ -55,7 +56,11 @@ class GeoLocateStat
             $this->getCommunityDataSource($community->name, $data['data_source']);
         }
 
-        $this->updateOrCreateDataSource($projectId, $expeditionId, $community->id, $data['data_source']);
+        $this->updateOrCreateDataSource($expedition, $community->id, $data['data_source']);
+
+        $expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
+            'state' => 2,
+        ]);
     }
 
     /**
@@ -78,15 +83,15 @@ class GeoLocateStat
     /**
      * Update or Create GeoLocateDataSource.
      */
-    public function updateOrCreateDataSource(int $projectId, int $expeditionId, int $communityId, string $dataSource): \App\Models\GeoLocateDataSource
+    public function updateOrCreateDataSource(Expedition $expedition, int $communityId, string $dataSource): \App\Models\GeoLocateDataSource
     {
         $attributes = [
-            'project_id' => $projectId,
-            'expedition_id' => $expeditionId,
+            'project_id' => $expedition->project_id,
+            'expedition_id' => $expedition->id,
         ];
         $values = [
-            'project_id' => $projectId,
-            'expedition_id' => $expeditionId,
+            'project_id' => $expedition->project_id,
+            'expedition_id' => $expedition->id,
             'geo_locate_community_id' => $communityId,
             'data_source' => $dataSource,
         ];

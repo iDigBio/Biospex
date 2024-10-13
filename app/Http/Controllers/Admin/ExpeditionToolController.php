@@ -43,6 +43,7 @@ class ExpeditionToolController extends Controller
             'project.group.geoLocateForms',
             'actors',
             'stat',
+            'geoLocateDataSource',
             'zooniverseExport',
             'panoptesProject',
             'workflowManager',

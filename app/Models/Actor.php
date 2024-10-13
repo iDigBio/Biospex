@@ -83,6 +83,14 @@ class Actor extends BaseEloquentModel
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     */
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
+    {
+        return $this->hasOneThrough(Expedition::class, ActorExpedition::class, 'actor_id', 'id', 'id', 'expedition_id');
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function exportQueues()

@@ -37,10 +37,6 @@ class GeoLocateExportJob implements ShouldQueue
 {
     use ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private Expedition $expedition;
-
-    private User $user;
-
     private GeoLocateExportService $geoLocateExportService;
 
     /**
@@ -51,11 +47,9 @@ class GeoLocateExportJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(Expedition $expedition, User $user)
+    public function __construct(protected Expedition $expedition, protected User $user)
     {
         $this->onQueue(config('config.queue.geolocate'));
-        $this->expedition = $expedition;
-        $this->user = $user;
     }
 
     /**

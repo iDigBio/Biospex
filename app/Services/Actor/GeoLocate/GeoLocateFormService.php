@@ -20,15 +20,14 @@
 namespace App\Services\Actor\GeoLocate;
 
 use App\Models\Expedition;
-use App\Models\GeoLocateExport;
 use App\Models\GeoLocateForm;
 use App\Services\Csv\AwsS3CsvService;
-use App\Services\Expedition\ExpeditionService;
+use App\Services\Helpers\GeneralService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Storage;
 
-class GeoLocateExportForm
+class GeoLocateFormService
 {
     private string $source;
 
@@ -47,26 +46,17 @@ class GeoLocateExportForm
      * Construct.
      */
     public function __construct(
-        private ExpeditionService $expeditionService,
         private GeoLocateForm $geoLocateForm,
         private AwsS3CsvService $awsS3CsvService,
-        private GeoLocateExport $geoLocateExport
+        private GeneralService $generalService
     ) {}
-
-    /**
-     * Find project with relations.
-     */
-    public function findExpeditionWithRelations(int $expeditionId, array $relations = []): Expedition
-    {
-        return $this->expeditionService->expedition->with($relations)->find($expeditionId);
-    }
 
     /**
      * Get the form based on new or existing.
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getForm(Expedition $expedition, array $request): array
+    public function getFormData(Expedition $expedition, array $request): array
     {
         $record = isset($request['formId']) ? $this->findGeoLocateFormById($request['formId']) : null;
 
@@ -77,6 +67,18 @@ class GeoLocateExportForm
         $this->setSource($request, $record);
 
         return $record === null ? $this->newForm($expedition) : $this->existingForm($record, $expedition);
+    }
+
+    /**
+     * Get form fields for view.
+     */
+    public function getFormFields(Expedition $expedition, array $form): string
+    {
+        $disabled = is_null($expedition->geoLocateExport) ? $form['exported'] :
+            $form['exported'] &&
+                $this->generalService->downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
+
+        return view('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'))->render();
     }
 
     /**
@@ -245,26 +247,5 @@ class GeoLocateExportForm
     public function findGeoLocateFormById(int $id): GeoLocateForm
     {
         return $this->geoLocateForm->find($id);
-    }
-
-    /**
-     * Delete all geolocate records for expedition.
-     */
-    public function deleteGeoLocate(int $expeditionId): void
-    {
-        $this->geoLocateExport->where('subject_expeditionId', '=', $expeditionId)->get()->each(function ($geoLocate) {
-            $geoLocate->delete();
-        });
-    }
-
-    /**
-     * Delete GeoLocateExport csv file.
-     */
-    public function deleteGeoLocateFile(int $expeditionId): void
-    {
-        $filePath = config('geolocate.dir.export').'/'.$expeditionId.'.csv';
-        if (Storage::disk('s3')->exists($filePath)) {
-            Storage::disk('s3')->delete($filePath);
-        }
     }
 }

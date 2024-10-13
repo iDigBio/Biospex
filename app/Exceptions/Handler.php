@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
      *
      * @throws \Throwable
      */
-    public function report(Throwable $throwable): void
+    public function report(Throwable $e): void
     {
         parent::report($e);
     }
@@ -62,7 +62,7 @@ class Handler extends ExceptionHandler
      *
      * @throws \Throwable
      */
-    public function render($request, Throwable $throwable): \Symfony\Component\HttpFoundation\Response
+    public function render($request, Throwable $e): \Symfony\Component\HttpFoundation\Response
     {
         return parent::render($request, $e);
     }

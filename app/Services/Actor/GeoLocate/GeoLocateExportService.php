@@ -219,4 +219,39 @@ class GeoLocateExportService
             'state' => 1,
         ]);
     }
+
+    /**
+     * Delete GeoLocateForm and associated data and file.
+     */
+    public function destroyGeoLocate(Expedition &$expedition): void
+    {
+        $this->deleteGeoLocateFile($expedition->id);
+        $this->deleteGeoLocateRecords($expedition->id);
+
+        $expedition->geoLocateForm()->dissociate()->save();
+        $expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
+            'state' => 0,
+        ]);
+    }
+
+    /**
+     * Delete all geolocate records for expedition.
+     */
+    public function deleteGeoLocateRecords(int $expeditionId): void
+    {
+        $this->geoLocateExport->where('subject_expeditionId', '=', $expeditionId)->get()->each(function ($geoLocate) {
+            $geoLocate->delete();
+        });
+    }
+
+    /**
+     * Delete GeoLocateExport csv file.
+     */
+    public function deleteGeoLocateFile(int $expeditionId): void
+    {
+        $filePath = config('geolocate.dir.export').'/'.$expeditionId.'.csv';
+        if (Storage::disk('s3')->exists($filePath)) {
+            Storage::disk('s3')->delete($filePath);
+        }
+    }
 }
