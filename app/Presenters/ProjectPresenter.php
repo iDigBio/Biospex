@@ -424,7 +424,7 @@ class ProjectPresenter extends Presenter
     public function projectOcrIconLrg()
     {
         return '<a href="'.route('admin.projects.ocr', [
-            $this->model->id,
+            $this->model,
         ]).'" class="prevent-default"
             title="'.t('Reprocess Subject OCR').'" 
             data-hover="tooltip"        

@@ -21,39 +21,26 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\TesseractOcrCreateJob;
-use App\Services\Expedition\ExpeditionService;
+use App\Models\Expedition;
 use App\Services\Permission\CheckPermission;
-use App\Services\Project\ProjectService;
 use Redirect;
 
-class OcrController extends Controller
+class OcrExpeditionController extends Controller
 {
-    /**
-     * OcrController constructor.
-     * TODO: Refactor
-     */
-    public function __construct(
-        protected ProjectService $projectService,
-        protected ExpeditionService $expeditionService) {}
-
     /**
      * Reprocess OCR.
      */
-    public function index(int $projectId, ?int $expeditionId = null): \Illuminate\Http\RedirectResponse
+    public function __invoke(Expedition $expedition): \Illuminate\Http\RedirectResponse
     {
-        $group = $expeditionId === null ?
-            $this->projectService->findWithRelations($projectId, ['group'])->group :
-            $this->expeditionService->expedition->with(['project.group'])->find($expeditionId)->project->group;
+        $expedition->load('project.group');
 
-        if (! CheckPermission::handle('updateProject', $group)) {
+        if (! CheckPermission::handle('updateProject', $expedition->project->group)) {
             return Redirect::route('admin.projects.index');
         }
 
-        TesseractOcrCreateJob::dispatch($projectId, $expeditionId);
+        TesseractOcrCreateJob::dispatch($expedition->project, $expedition);
 
-        $route = $expeditionId === null ? 'admin.projects.show' : 'admin.expeditions.show';
-
-        return Redirect::route($route, [$projectId, $expeditionId])
+        return Redirect::route('admin.expeditions.show', [$expedition])
             ->with('success', t('OCR processing has been submitted. It may take some time before appearing in the Processes modal. You will be notified by email when the process is complete.'));
     }
 }

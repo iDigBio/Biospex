@@ -19,6 +19,7 @@
 
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\ImportDwcFileController;
+use App\Http\Controllers\Admin\ImportDwcUriController;
 use App\Http\Controllers\Admin\ImportRecordSetController;
 
 Route::get('projects/{project}/import', ImportController::class)->name('admin.imports.index');

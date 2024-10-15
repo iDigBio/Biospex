@@ -19,7 +19,9 @@
 
 namespace App\Services\Subject;
 
+use App\Models\Project;
 use App\Models\Subject;
+use App\Nova\Expedition;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 
@@ -103,10 +105,10 @@ class SubjectService
     /**
      * Return query for processing subjects in ocr.
      */
-    public function getSubjectCursorForOcr(int $projectId, ?int $expeditionId = null): LazyCollection
+    public function getSubjectCursorForOcr(Project $project, ?Expedition $expedition = null): LazyCollection
     {
-        $query = $this->subject->where('project_id', $projectId);
-        $query = $expeditionId === null ? $query : $query->where('expedition_ids', $expeditionId);
+        $query = $this->subject->where('project_id', $project->id);
+        $query = $expedition === null ? $query : $query->where('expedition_ids', $expedition->id);
 
         return $query->where(function ($q) {
             $q->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
@@ -116,10 +118,10 @@ class SubjectService
     /**
      * Get subject cursor for OCR processing.
      */
-    public function getSubjectCountForOcr(int $projectId, ?int $expeditionId = null): int
+    public function getSubjectCountForOcr(Project $project, ?Expedition $expedition = null): int
     {
-        $query = $this->subject->where('project_id', $projectId);
-        $query = $expeditionId === null ? $query : $query->where('expedition_ids', $expeditionId);
+        $query = $this->subject->where('project_id', $project->id);
+        $query = $expedition === null ? $query : $query->where('expedition_ids', $expedition->id);
 
         return $query->where(function ($query) {
             $query->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');

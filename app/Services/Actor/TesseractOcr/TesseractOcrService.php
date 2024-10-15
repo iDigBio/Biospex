@@ -105,9 +105,9 @@ class TesseractOcrService
      */
     public function sendNotify(OcrQueue $queue): void
     {
-        $queue->load('project.group.owner');
+        $queue->load('project.group.owner', 'expedition');
 
-        $cursor = $this->subjectService->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id);
+        $cursor = $this->subjectService->getSubjectCursorForOcr($queue->project, $queue->expedition);
         $subjects = $cursor->map(function ($subject) {
             return [
                 'subject_id' => $subject->_id,

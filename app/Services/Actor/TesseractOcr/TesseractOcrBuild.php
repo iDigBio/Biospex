@@ -21,7 +21,9 @@ namespace App\Services\Actor\TesseractOcr;
 
 use App\Models\OcrQueue;
 use App\Models\OcrQueueFile;
+use App\Models\Project;
 use App\Notifications\Traits\ButtonTrait;
+use App\Nova\Expedition;
 use App\Services\Subject\SubjectService;
 
 /**
@@ -43,32 +45,32 @@ readonly class TesseractOcrBuild
     /**
      * Get subject count for ocr process.
      */
-    public function getSubjectCountForOcr(int $projectId, ?int $expeditionId = null): int
+    public function getSubjectCountForOcr(Project $project, ?Expedition $expedition = null): int
     {
-        return $this->subjectService->getSubjectCountForOcr($projectId, $expeditionId);
+        return $this->subjectService->getSubjectCountForOcr($project, $expedition);
     }
 
     /**
      * Create ocr queue record.
      */
-    public function createOcrQueue(int $projectId, ?int $expeditionId = null, array $data = []): OcrQueue
+    public function createOcrQueue(Project $project, ?Expedition $expedition = null, array $data = []): OcrQueue
     {
         return $this->ocrQueue->firstOrCreate([
-            'project_id' => $projectId,
-            'expedition_id' => $expeditionId,
+            'project_id' => $project->id,
+            'expedition_id' => $expedition->id,
         ], $data);
     }
 
     /**
      * Create ocr queue files.
      */
-    public function createOcrQueueFiles(int $queueId, int $projectId, ?int $expeditionId = null): void
+    public function createOcrQueueFiles(OcrQueue $queue, Project $project, ?Expedition $expedition = null): void
     {
-        $cursor = $this->subjectService->getSubjectCursorForOcr($projectId, $expeditionId);
+        $cursor = $this->subjectService->getSubjectCursorForOcr($project, $expedition);
 
-        $cursor->each(function ($subject) use ($queueId) {
+        $cursor->each(function ($subject) use ($queue) {
             $attributes = [
-                'queue_id' => $queueId,
+                'queue_id' => $queue->id,
                 'subject_id' => (string) $subject->_id,
                 'access_uri' => $subject->accessURI,
             ];

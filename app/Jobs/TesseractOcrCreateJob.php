@@ -19,8 +19,10 @@
 
 namespace App\Jobs;
 
+use App\Models\Project;
 use App\Models\User;
 use App\Notifications\Generic;
+use App\Nova\Expedition;
 use App\Services\Actor\TesseractOcr\TesseractOcrBuild;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -38,17 +40,11 @@ class TesseractOcrCreateJob implements ShouldQueue
 
     public int $timeout = 3600;
 
-    private int $projectId;
-
-    private ?int $expeditionId;
-
     /**
      * OcrCreateJob constructor.
      */
-    public function __construct(int $projectId, ?int $expeditionId = null)
+    public function __construct(protected Project $project, protected ?Expedition $expedition = null)
     {
-        $this->projectId = $projectId;
-        $this->expeditionId = $expeditionId;
         $this->onQueue(config('config.queue.default'));
     }
 
@@ -62,23 +58,23 @@ class TesseractOcrCreateJob implements ShouldQueue
         }
 
         try {
-            $total = $tesseractOcrBuild->getSubjectCountForOcr($this->projectId, $this->expeditionId);
+            $total = $tesseractOcrBuild->getSubjectCountForOcr($this->project, $this->expedition);
 
             // If no subjects to OCR, return
             if ($total === 0) {
                 return;
             }
 
-            $ocrQueue = $tesseractOcrBuild->createOcrQueue($this->projectId, $this->expeditionId, ['total' => $total]);
+            $ocrQueue = $tesseractOcrBuild->createOcrQueue($this->project, $this->expedition, ['total' => $total]);
 
-            $tesseractOcrBuild->createOcrQueueFiles($ocrQueue->id, $this->projectId, $this->expeditionId);
+            $tesseractOcrBuild->createOcrQueueFiles($ocrQueue, $this->project, $this->expedition);
 
         } catch (Throwable $throwable) {
             $attributes = [
                 'subject' => t('Error creating OCR job.'),
                 'html' => [
-                    t('Project Id: %s', $this->projectId),
-                    t('Expedition Id: %s', $this->expeditionId),
+                    t('Project Id: %s', $this->project->id),
+                    t('Expedition Id: %s', $this->expedition->id),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),
                     t('Message: %s', $throwable->getMessage()),
