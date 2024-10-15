@@ -30,8 +30,6 @@ class ImportRecordSetController extends Controller
 {
     /**
      * Upload record set.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function __invoke(): \Illuminate\Http\RedirectResponse
     {

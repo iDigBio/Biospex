@@ -30,8 +30,6 @@ class ImportDwcUriController extends Controller
 {
     /**
      * Upload Dwc uri.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function __invoke(): \Illuminate\Http\RedirectResponse
     {
