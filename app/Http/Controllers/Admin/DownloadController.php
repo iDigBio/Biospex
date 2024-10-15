@@ -22,13 +22,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\ExportDownloadBatchJob;
 use App\Models\Download;
+use App\Models\Expedition;
 use App\Services\Expedition\ExpeditionService;
 use App\Services\Permission\CheckPermission;
 use App\Services\User\UserService;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Auth;
+use Redirect;
+use View;
 
 /**
  * Class DownloadController
@@ -46,26 +46,26 @@ class DownloadController extends Controller
     /**
      * Index showing downloads for Expedition.
      */
-    public function index(int $projectId, int $expeditionId): Factory|View
+    public function index(Expedition $expedition): \Illuminate\View\View
     {
         $user = Auth::user()->load('profile');
-        $expedition = $this->expeditionService->getExpeditionDownloadsByActor($expeditionId);
+        $this->expeditionService->getExpeditionDownloadsByActor($expedition);
 
         $error = ! CheckPermission::handle('readProject', $expedition->project->group);
 
-        return \View::make('admin.expedition.partials.download-modal-body', compact('expedition', 'user', 'error'));
+        return View::make('admin.expedition.partials.download-modal-body', compact('expedition', 'user', 'error'));
     }
 
     /**
      * Send request to have export split into batch downloads.
      */
-    public function create(Download $download): RedirectResponse
+    public function create(Download $download): \Illuminate\Http\RedirectResponse
     {
         $download->load('expedition');
 
         ExportDownloadBatchJob::dispatch($download);
 
-        return \Redirect::route('admin.expeditions.show', [$download->expedition])
+        return Redirect::route('admin.expeditions.show', [$download->expedition])
             ->with('success', t('Your batch request has been submitted. You will receive an email with download links when the process is complete.'));
     }
 }

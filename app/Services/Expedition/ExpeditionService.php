@@ -22,8 +22,8 @@ namespace App\Services\Expedition;
 use App\Models\Expedition;
 use App\Models\Project;
 use App\Models\User;
-use App\Services\ExpeditionPartitionTrait;
-use App\Services\Models\SubjectModelService;
+use App\Services\Subject\SubjectService;
+use App\Services\Trait\ExpeditionPartitionTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Notification;
@@ -39,7 +39,7 @@ class ExpeditionService
      */
     public function __construct(
         public Expedition $expedition,
-        public SubjectModelService $subjectModelService
+        public SubjectService $subjectService
     ) {}
 
     /**
@@ -79,7 +79,7 @@ class ExpeditionService
 
         $sortedRecords = $this->sortRecords($query, $request);
 
-        return $this->partitionRecords($sortedRecords);
+        return $this->partitionExpeditions($sortedRecords);
     }
 
     /**
@@ -93,7 +93,7 @@ class ExpeditionService
 
         $sortedResults = $this->sortRecords($query, $request);
 
-        return $this->partitionRecords($sortedResults);
+        return $this->partitionExpeditions($sortedResults);
     }
 
     /**
@@ -144,7 +144,7 @@ class ExpeditionService
      */
     public function getSubjectIdsByExpeditionId(Expedition $expedition): Collection
     {
-        return $this->subjectModelService->subject->where('expedition_ids', $expedition->id)->get(['_id'])->pluck('_id');
+        return $this->subjectService->subject->where('expedition_ids', $expedition->id)->get(['_id'])->pluck('_id');
     }
 
     /**
@@ -173,7 +173,7 @@ class ExpeditionService
      */
     public function detachSubjects(int $expeditionId, Collection $detachIds): void
     {
-        $this->subjectModelService->detachSubjects($detachIds, $expeditionId);
+        $this->subjectService->detachSubjects($detachIds, $expeditionId);
     }
 
     /**
@@ -183,7 +183,7 @@ class ExpeditionService
     {
         $attachIds = $attachIds === null ? $this->subjectIds : $attachIds;
 
-        $this->subjectModelService->attachSubjects($attachIds, $expeditionId);
+        $this->subjectService->attachSubjects($attachIds, $expeditionId);
     }
 
     /**
@@ -277,14 +277,14 @@ class ExpeditionService
     /**
      * Get expedition download by actor.
      */
-    public function getExpeditionDownloadsByActor($expeditionId): \Illuminate\Database\Eloquent\Model
+    public function getExpeditionDownloadsByActor(Expedition &$expedition): \Illuminate\Database\Eloquent\Model
     {
-        return $this->expedition->with([
+        return $expedition->load([
             'project.group',
-            'actors.downloads' => function ($query) use ($expeditionId) {
-                $query->where('expedition_id', $expeditionId);
+            'actors.downloads' => function ($query) use ($expedition) {
+                $query->where('expedition_id', $expedition->id);
             },
-        ])->find($expeditionId);
+        ]);
     }
 
     /**
