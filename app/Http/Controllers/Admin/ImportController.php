@@ -20,103 +20,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\DwcFileImportJob;
-use App\Jobs\DwcUriImportJob;
-use App\Jobs\RecordsetImportJob;
-use App\Models\Import;
-use App\Services\Project\ProjectService;
-use Auth;
-use Illuminate\Support\Facades\Redirect;
-use Throwable;
+use App\Models\Project;
+use View;
 
 /**
  * Class ImportController
- * TODO: Refactor this class
  */
 class ImportController extends Controller
 {
     /**
      * Add data to project
-     *
-     * @return \Illuminate\View\View
      */
-    public function index(ProjectService $projectService, $projectId)
+    public function __invoke(Project $project): \Illuminate\View\View
     {
-        $project = $projectService->findWithRelations($projectId);
-
-        return \View::make('admin.partials.import-modal-body', compact('project'));
-    }
-
-    /**
-     * Upload DWC file.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function dwcFile(Import $import)
-    {
-        try {
-            $projectId = \Request::input('project_id');
-            $path = \Request::file('dwc-file')->store(config('config.import_dir'), 'efs');
-
-            $import = $import->create([
-                'user_id' => Auth::user()->id,
-                'project_id' => $projectId,
-                'file' => $path,
-            ]);
-
-            DwcFileImportJob::dispatch($import);
-
-            return Redirect::back()->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));
-        } catch (Throwable $throwable) {
-            return Redirect::back()->with('error', t('Error uploading file. %', $throwable->getMessage()));
-        }
-    }
-
-    /**
-     * Upload record set.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function recordSet()
-    {
-        try {
-            $projectId = \Request::input('project_id');
-
-            $data = [
-                'id' => \Request::input('recordset'),
-                'user_id' => Auth::user()->id,
-                'project_id' => $projectId,
-            ];
-
-            RecordsetImportJob::dispatch($data);
-
-            return Redirect::back()->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));
-        } catch (Throwable $throwable) {
-            return Redirect::back()->with('error', t('Error uploading file. %', $throwable->getMessage()));
-        }
-    }
-
-    /**
-     * Upload Dwc uri.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function dwcUri()
-    {
-        try {
-            $projectId = \Request::input('project_id');
-
-            $data = [
-                'id' => $projectId,
-                'user_id' => Auth::user()->id,
-                'url' => \Request::input('dwc-url'),
-            ];
-
-            DwcUriImportJob::dispatch($data);
-
-            return Redirect::back()->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));
-        } catch (Throwable $throwable) {
-            return Redirect::back()->with('error', t('Error uploading file. %', $throwable->getMessage()));
-        }
+        return View::make('admin.partials.import-modal-body', compact('project'));
     }
 }

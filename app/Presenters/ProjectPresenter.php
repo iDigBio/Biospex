@@ -409,7 +409,7 @@ class ProjectPresenter extends Presenter
     public function projectImportIconLrg()
     {
         return '<a href="#" class="prevent-default" 
-                    data-url="'.route('admin.imports.index', [$this->model->id]).'" 
+                    data-url="'.route('admin.imports.index', [$this->model]).'" 
                     data-dismiss="modal" data-toggle="modal" data-target="#global-modal" data-size="modal-lg"
                     data-title="'.t('Import Project Subjects').'"
                     data-hover="tooltip" title="'.t('Import Project Subjects').'">
