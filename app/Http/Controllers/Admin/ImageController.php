@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\Image\Thumbnail;
+use Request;
 
 /**
  * Class ImageController
@@ -28,19 +29,10 @@ use App\Services\Image\Thumbnail;
 class ImageController extends Controller
 {
     /**
-     * @var Thumbnail
+     * Constructor.
      */
-    public $thumbnail;
-
-    /**
-     * Construct
-     * TODO: refactor this
-     */
-    public function __construct(
-        Thumbnail $thumbnail
-    ) {
-        $this->thumbnail = $thumbnail;
-    }
+    public function __construct(protected Thumbnail $thumbnail
+    ) {}
 
     /**
      * Return resized image
@@ -51,11 +43,11 @@ class ImageController extends Controller
      */
     public function preview()
     {
-        if (\Request::has('url-view')) {
-            return \Request::input('url');
+        if (Request::has('url-view')) {
+            return Request::input('url');
         }
 
-        $url = \Request::input('url');
+        $url = Request::input('url');
         $thumb = $this->thumbnail->getThumbnail(urldecode($url));
 
         return '<img src="data:image/jpeg;base64,'.base64_encode($thumb).'" />';

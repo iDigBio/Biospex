@@ -36,7 +36,7 @@
     "image-type": "^5.2.0",
     "laravel-echo": "^1.15.3",
     "pusher-js": "^8.3.0",
-    "sharp": "^0.33.4",
+    "sharp": "^0.33.5",
     "webpack": "^5.91.0"
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
