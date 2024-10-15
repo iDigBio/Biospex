@@ -23,8 +23,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MailFormRequest;
 use App\Mail\SiteMailer;
 use App\Services\User\UserService;
-use Illuminate\Support\Facades\Mail;
+use Mail;
 use Redirect;
+use View;
 
 /**
  * Class MailController
@@ -37,19 +38,17 @@ class MailController extends Controller
     public function __construct(protected UserService $userService) {}
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Show mail form
      */
-    public function index()
+    public function index(): \Illuminate\View\View
     {
-        return \View::make('admin.mail.index');
+        return View::make('admin.mail.index');
     }
 
     /**
      * Show the form for user edit.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function send(MailFormRequest $request)
+    public function send(MailFormRequest $request): \Illuminate\Http\RedirectResponse
     {
         $recipients = $this->userService->getUsersForMailer($request->get('recipients'));
 

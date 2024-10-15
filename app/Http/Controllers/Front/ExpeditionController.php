@@ -31,7 +31,7 @@ class ExpeditionController extends Controller
     /**
      * Displays Expeditions on public page.
      */
-    public function __invoke(ExpeditionService $expeditionService)
+    public function __invoke(ExpeditionService $expeditionService): \Illuminate\View\View
     {
         [$expeditions, $expeditionsCompleted] = $expeditionService->getPublicIndex();
 

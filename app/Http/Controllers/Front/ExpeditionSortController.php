@@ -22,6 +22,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Services\Expedition\ExpeditionService;
 use Request;
+use Response;
 use View;
 
 class ExpeditionSortController extends Controller
@@ -29,10 +30,10 @@ class ExpeditionSortController extends Controller
     /**
      * Displays Completed Expeditions on public page.
      */
-    public function __invoke(ExpeditionService $expeditionService)
+    public function __invoke(ExpeditionService $expeditionService): mixed
     {
         if (! Request::ajax()) {
-            return null;
+            return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
         [$active, $completed] = $expeditionService->getPublicIndex(Request::all());

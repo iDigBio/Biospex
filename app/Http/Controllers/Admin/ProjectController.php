@@ -48,7 +48,7 @@ class ProjectController extends Controller
     /**
      * Show projects list for admin page.
      */
-    public function index(): \Illuminate\Contracts\View\View
+    public function index(): \Illuminate\View\View
     {
         $groups = $this->groupService->getUserGroupCount(Auth::id());
         $projects = $this->projectService->getAdminIndex(Auth::user());
@@ -106,7 +106,7 @@ class ProjectController extends Controller
     /**
      * Edit project.
      */
-    public function edit(Project $project): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function edit(Project $project): \Illuminate\View\View
     {
         $project->load(['group', 'resources']);
 

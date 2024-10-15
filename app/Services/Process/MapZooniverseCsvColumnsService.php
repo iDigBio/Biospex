@@ -22,7 +22,7 @@ namespace App\Services\Process;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
 use App\Models\Subject;
-use App\Services\Models\SubjectModelService;
+use App\Services\Subject\SubjectService;
 
 class MapZooniverseCsvColumnsService
 {
@@ -32,7 +32,7 @@ class MapZooniverseCsvColumnsService
     private mixed $zooniverseCsvMap;
 
     public function __construct(
-        private readonly SubjectModelService $subjectModelService
+        private readonly SubjectService $subjectService
     ) {
         $this->zooniverseCsvMap = config('zooniverse.csv_map');
     }
@@ -42,7 +42,7 @@ class MapZooniverseCsvColumnsService
      */
     public function mapColumns(ExportQueueFile $file, ExportQueue $queue): array
     {
-        $subject = $this->subjectModelService->find($file->subject_id);
+        $subject = $this->subjectService->find($file->subject_id);
 
         $csvArray = [];
         $presetValues = ['#expeditionId', '#expeditionTitle', 'imageName'];

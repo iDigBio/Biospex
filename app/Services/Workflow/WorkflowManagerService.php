@@ -17,11 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Models;
+namespace App\Services\Workflow;
 
 use App\Models\WorkflowManager;
 
-readonly class WorkflowManagerModelService
+readonly class WorkflowManagerService
 {
     /**
      * WorkflowManagerRepository constructor.

@@ -44,8 +44,6 @@ class GroupPolicy
      */
     public function isOwner(User $user, Group $group): bool
     {
-        dd($user);
-
         return $user->id === $group->user_id;
     }
 
@@ -61,6 +59,14 @@ class GroupPolicy
      * Check if user can store group
      */
     public function store(User $user, Group $group): bool
+    {
+        return true;
+    }
+
+    /**
+     * Check if user can store group
+     */
+    public function update(User $user, Group $group): bool
     {
         return true;
     }

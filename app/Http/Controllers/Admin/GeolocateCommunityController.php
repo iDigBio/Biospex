@@ -26,13 +26,11 @@ use App\Services\Actor\GeoLocate\GeoLocateFormService;
 use App\Services\Actor\GeoLocate\GeoLocateStatService;
 use App\Services\Helpers\GeneralService;
 use App\Services\Permission\CheckPermission;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\View;
 use Redirect;
+use Request;
+use Response;
 use Throwable;
+use View;
 
 class GeolocateCommunityController extends Controller
 {
@@ -44,7 +42,7 @@ class GeolocateCommunityController extends Controller
     /**
      * Show community and datasource form in modal.
      */
-    public function edit(Expedition $expedition): \Illuminate\View\View|JsonResponse|RedirectResponse
+    public function edit(Expedition $expedition): \Illuminate\View\View|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
         if (! Request::ajax()) {
             return Response::json(['message' => t('Request must be ajax.')], 400);
@@ -62,7 +60,7 @@ class GeolocateCommunityController extends Controller
     /**
      * Store community and datasource form.
      */
-    public function update(GeoLocateCommunityRequest $request, Expedition $expedition): JsonResponse
+    public function update(GeoLocateCommunityRequest $request, Expedition $expedition): \Illuminate\Http\JsonResponse
     {
         try {
 
@@ -76,7 +74,7 @@ class GeolocateCommunityController extends Controller
                 return Response::json(['message' => t('You are not authorized for this action.')], 401);
             }
 
-            $this->geoLocateStatService->saveCommunityDataSource(Request::all(), $expedition);
+            $this->geoLocateStatService->saveCommunityDataSource($request->all(), $expedition);
 
             return Response::json(['message' => t('Community and data source added.')]);
         } catch (Throwable $throwable) {

@@ -21,7 +21,7 @@ namespace App\Services\Event;
 
 use App\Models\Event;
 use App\Services\Helpers\DateService;
-use App\Services\Traits\RateChartTrait;
+use App\Services\Trait\RateChartTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 

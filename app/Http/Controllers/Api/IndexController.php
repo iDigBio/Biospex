@@ -21,8 +21,6 @@ namespace App\Http\Controllers\Api;
 
 /**
  * Class IndexController
- *
- * @package App\Http\Controllers\Api\Index
  */
 class IndexController
 {

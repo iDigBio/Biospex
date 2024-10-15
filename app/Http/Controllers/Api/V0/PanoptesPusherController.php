@@ -20,19 +20,15 @@
 namespace App\Http\Controllers\Api\V0;
 
 use App\Jobs\ZooniversePusherHandlerJob;
-use Illuminate\Support\Facades\Response;
+use Response;
 
 /**
  * Class PanoptesPusherController
- *
- * @package App\Http\Controllers\Api\V0
  */
 class PanoptesPusherController extends ApiController
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Support\Facades\Response
      */
     public function index(): Response
     {
@@ -41,19 +37,17 @@ class PanoptesPusherController extends ApiController
 
     /**
      * Create pusher classification.
-     *
-     * @return \Illuminate\Http\Response|void
      */
-    public function create()
+    public function create(): ?\Illuminate\Http\Response
     {
         if (! \Request::isJson()) {
-            return;
+            return null;
         }
 
         $data = json_decode(\Request::getContent(), true);
 
         if (! isset($data['workflow_id'])) {
-            return;
+            return null;
         }
 
         ZooniversePusherHandlerJob::dispatch($data);
@@ -63,8 +57,6 @@ class PanoptesPusherController extends ApiController
 
     /**
      * Display the specified resource.
-     *
-     * @return \Illuminate\Support\Facades\Response
      */
     public function show(): Response
     {
@@ -73,8 +65,6 @@ class PanoptesPusherController extends ApiController
 
     /**
      * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Support\Facades\Response
      */
     public function update(): Response
     {
@@ -83,8 +73,6 @@ class PanoptesPusherController extends ApiController
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Support\Facades\Response
      */
     public function delete(): Response
     {

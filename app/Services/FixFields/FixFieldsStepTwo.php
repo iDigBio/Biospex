@@ -159,7 +159,7 @@ class FixFieldsStepTwo extends FixFieldsBase
      */
     private function updateHeader(string $id, mixed $key, string $type)
     {
-        $record = $this->headerModelService->findWithRelations($id);
+        $record = $this->headerService->findWithRelations($id);
         if ($record !== null) {
             $header = $record->header;
             foreach ($header[$type] as $int => $value) {

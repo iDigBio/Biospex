@@ -24,19 +24,25 @@ use App\Http\Requests\WorkflowIdFormRequest;
 use App\Jobs\PanoptesProjectUpdateJob;
 use App\Models\PanoptesProject;
 use App\Services\Expedition\ExpeditionService;
-use App\Services\Models\WorkflowManagerModelService;
+use App\Services\Permission\CheckPermission;
 use App\Services\Project\ProjectService;
+use App\Services\Workflow\WorkflowManagerService;
 use Exception;
+use Redirect;
+use Request;
+use Response;
 use Throwable;
+use View;
 
 class WorkflowManagerController extends Controller
 {
     /**
      * Construct
+     * TODO: Refactor
      */
     public function __construct(
-        private ProjectService $projectService,
-        private WorkflowManagerModelService $workflowManagerModelService
+        protected ProjectService $projectService,
+        protected WorkflowManagerService $workflowManagerService
     ) {}
 
     /**
@@ -46,8 +52,8 @@ class WorkflowManagerController extends Controller
     {
         $project = $this->projectService->findWithRelations($projectId, ['group']);
 
-        if (! $this->checkPermissions('updateProject', $project->group)) {
-            return \Redirect::route('admin.projects.index');
+        if (! CheckPermission::handle('updateProject', $project->group)) {
+            return Redirect::route('admin.projects.index');
         }
 
         try {
@@ -80,14 +86,14 @@ class WorkflowManagerController extends Controller
                     $expedition->actors()->sync($sync, false);
                 });
 
-                $this->workflowManagerModelService->create(['expedition_id' => $expeditionId]);
+                $this->workflowManagerService->create(['expedition_id' => $expeditionId]);
                 $message = t('The expedition has been added to the process queue.');
             }
 
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('success', $message);
+            return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('success', $message);
         } catch (Throwable $throwable) {
 
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+            return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
                 ->with('danger', t('An error occurred when trying to process the expedition: %s', $throwable->getMessage()));
         }
     }
@@ -99,22 +105,22 @@ class WorkflowManagerController extends Controller
     {
         $project = $this->projectService->findWithRelations($projectId, ['group']);
 
-        if (! $this->checkPermissions('updateProject', $project->group)) {
-            return \Redirect::route('admin.projects.index');
+        if (! CheckPermission::handle('updateProject', $project->group)) {
+            return Redirect::route('admin.projects.index');
         }
 
-        $workflow = $this->workflowManagerModelService->getFirstBy('expedition_id', $expeditionId);
+        $workflow = $this->workflowManagerService->getFirstBy('expedition_id', $expeditionId);
 
         if ($workflow === null) {
 
-            return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+            return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
                 ->with('danger', t('Expedition has no processes at this time.'));
         }
 
         $workflow->stopped = 1;
-        $this->workflowManagerModelService->update(['stopped' => 1], $workflow->id);
+        $this->workflowManagerService->update(['stopped' => 1], $workflow->id);
 
-        return \Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+        return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
             ->with('success', t('Expedition process has been stopped locally. This does not stop any processing occurring on remote sites.'));
     }
 
@@ -123,13 +129,13 @@ class WorkflowManagerController extends Controller
      */
     public function workflowShowForm(PanoptesProject $panoptesProjectModel, int $projectId, int $expeditionId): \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
     {
-        if (! \Request::ajax()) {
-            return \Response::json(['message' => t('Request must be ajax.')], 400);
+        if (! Request::ajax()) {
+            return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
         $panoptesProject = $panoptesProjectModel->where('expedition_id', $expeditionId)->first();
 
-        return \View::make('admin.expedition.partials.workflow-modal-body', compact('projectId', 'expeditionId', 'panoptesProject'));
+        return View::make('admin.expedition.partials.workflow-modal-body', compact('projectId', 'expeditionId', 'panoptesProject'));
     }
 
     /**
@@ -142,14 +148,14 @@ class WorkflowManagerController extends Controller
         int $expeditionId
     ): \Illuminate\Http\JsonResponse {
 
-        if (! \Request::ajax()) {
-            return \Response::json(['message' => t('Request must be ajax.')], 400);
+        if (! Request::ajax()) {
+            return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
         $project = $this->projectService->findWithRelations($projectId, ['group']);
 
-        if (! $this->checkPermissions('updateProject', $project->group)) {
-            return \Response::json(['message' => t('You are not authorized for this action.')], 401);
+        if (! CheckPermission::handle('updateProject', $project->group)) {
+            return Response::json(['message' => t('You are not authorized for this action.')], 401);
         }
 
         if (! empty($request->input('panoptes_workflow_id'))) {
@@ -168,9 +174,9 @@ class WorkflowManagerController extends Controller
 
             PanoptesProjectUpdateJob::dispatch($panoptesProject);
 
-            return \Response::json(['message' => t('Workflow id is updated.')]);
+            return Response::json(['message' => t('Workflow id is updated.')]);
         }
 
-        return \Response::json(['message' => t('Could not update Panoptes Workflow Id.')], 500);
+        return Response::json(['message' => t('Could not update Panoptes Workflow Id.')], 500);
     }
 }

@@ -25,8 +25,8 @@ use App\Models\Group;
 use App\Notifications\GroupInvite;
 use App\Services\Group\GroupInviteService;
 use App\Services\Permission\CheckPermission;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Redirect;
+use Notification;
+use Redirect;
 use Throwable;
 use View;
 
@@ -45,7 +45,7 @@ class GroupInviteController extends Controller
     /**
      * Show invite form
      */
-    public function create(Group $group)
+    public function create(Group $group): \Illuminate\Contracts\View\View
     {
         $group->load('invites');
 
@@ -59,7 +59,7 @@ class GroupInviteController extends Controller
     /**
      * Send invites to emails
      */
-    public function store(Group $group, InviteFormRequest $request)
+    public function store(Group $group, InviteFormRequest $request): \Illuminate\Http\RedirectResponse
     {
         $group->load('invites');
 
@@ -70,7 +70,7 @@ class GroupInviteController extends Controller
             Notification::send($group->invites, new GroupInvite($group));
 
             return Redirect::back()->with('success', t('Invites to %s sent successfully.', $group->title));
-        } catch (Throwable $e) {
+        } catch (Throwable $throwable) {
             return Redirect::back()->with('error', t('Unable to sent invites for %s. Please contact the administration.', $group->title));
         }
     }

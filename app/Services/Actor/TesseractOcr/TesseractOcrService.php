@@ -23,8 +23,8 @@ use App\Models\OcrQueue;
 use App\Models\OcrQueueFile;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Services\Models\SubjectModelService;
 use App\Services\Process\CreateReportService;
+use App\Services\Subject\SubjectService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -38,7 +38,7 @@ class TesseractOcrService
     public function __construct(
         protected OcrQueue $ocrQueue,
         protected OcrQueueFile $ocrQueueFile,
-        protected SubjectModelService $subjectModelService,
+        protected SubjectService $subjectService,
         protected CreateReportService $createReportService
     ) {}
 
@@ -91,7 +91,7 @@ class TesseractOcrService
 
             $ocrText = trim(preg_replace('/\s+/', ' ', trim($content)));
 
-            $this->subjectModelService->update(['ocr' => $ocrText], $file->subject_id);
+            $this->subjectService->update(['ocr' => $ocrText], $file->subject_id);
 
             Storage::disk('s3')->delete($filePath);
             $file->delete();
@@ -107,7 +107,7 @@ class TesseractOcrService
     {
         $queue->load('project.group.owner');
 
-        $cursor = $this->subjectModelService->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id);
+        $cursor = $this->subjectService->getSubjectCursorForOcr($queue->project_id, $queue->expedition_id);
         $subjects = $cursor->map(function ($subject) {
             return [
                 'subject_id' => $subject->_id,

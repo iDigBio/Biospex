@@ -17,30 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Models;
+namespace App\Services\Transcriptions;
 
 use App\Models\StateCounty;
 
-readonly class StateCountyModelService
+readonly class StateCountyService
 {
     public function __construct(private StateCounty $model) {}
 
     /**
      * Create.
-     *
-     * @return mixed
      */
-    public function create(array $data)
+    public function create(array $data): mixed
     {
         return $this->model->create($data);
     }
 
     /**
      * Get state transcript count for project.
-     *
-     * @return mixed
      */
-    public function getStateTranscriptCount($projectId)
+    public function getStateTranscriptCount($projectId): mixed
     {
         $results = $this->model->withCount(['transcriptionLocations' => function ($q) use ($projectId) {
             $q->where('project_id', $projectId);
@@ -60,10 +56,8 @@ readonly class StateCountyModelService
 
     /**
      * Get county transcription count for project.
-     *
-     * @return mixed
      */
-    public function getCountyTranscriptionCount($projectId, $stateId)
+    public function getCountyTranscriptionCount($projectId, $stateId): mixed
     {
         return $this->model->withCount(['transcriptionLocations' => function ($q) use ($projectId) {
             $q->where('project_id', $projectId);
@@ -72,10 +66,8 @@ readonly class StateCountyModelService
 
     /**
      * Find by county, state.
-     *
-     * @return mixed
      */
-    public function findByCountyState($county, $stateAbbr)
+    public function findByCountyState($county, $stateAbbr): mixed
     {
         return $this->model->where('county_name', 'like', '%'.$county.'%')->where('state_abbr', $stateAbbr)->first();
     }

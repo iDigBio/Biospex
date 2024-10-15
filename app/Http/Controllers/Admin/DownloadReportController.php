@@ -20,21 +20,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Storage;
+use Redirect;
+use Storage;
 
 class DownloadReportController extends Controller
 {
     /**
      * Download report.
      */
-    public function __invoke(string $fileName): Redirector|RedirectResponse|Application
+    public function __invoke(string $fileName)
     {
         $url = Storage::disk('s3')
             ->temporaryUrl(config('config.report_dir').'/'.base64_decode($fileName), now()->addMinutes(5), ['ResponseContentDisposition' => 'attachment;']);
 
-        return redirect($url);
+        return Redirect::to($url);
     }
 }

@@ -28,20 +28,20 @@ use Illuminate\Http\Request;
  * PusherTranscriptions representation.
  *
  * @Resource("PusherTranscription", uri="/PusherTranscription")
- *
- * @package App\Http\Controllers\V1
  */
 class PusherTranscriptionsController extends ApiController
 {
-
     /**
      * PusherTranscription List.
      *
      * Show JSON representation of PusherTranscription items.
      *
      * @Get("/{?start,rows,date_start,date_end,project_uuid,expedition_uuid}")
+     *
      * @Versions({"v1"})
+     *
      * @Parameters({
+     *
      *     @Parameter("start", description="The start of the results to view.", default=0),
      *     @Parameter("rows", description="The amount of rows to return.", default=200),
      *     @Parameter("date_start", description="Return results >= to UTC timestamp."),
@@ -51,7 +51,7 @@ class PusherTranscriptionsController extends ApiController
      * })
      *
      * @TODO Remove league/fractal from composer and remove V0 api
-     * @param Request $request
+     *
      * @return mixed
      */
     public function index(Request $request)
@@ -67,9 +67,7 @@ class PusherTranscriptionsController extends ApiController
         $previous = (int) max($current - $count, 0); // current - count
         $this->paginate($current, $previous, $next, $count);
 
-
-
-        return $this->respondWithPusherCollection($data, new PusherTranscriptionTransformer(), $totalCount, 'items');
+        return $this->respondWithPusherCollection($data, new PusherTranscriptionTransformer, $totalCount, 'items');
     }
 
     /**
@@ -78,6 +76,7 @@ class PusherTranscriptionsController extends ApiController
      * Show JSON representation of PusherTranscription items.
      *
      * @POST("/")
+     *
      * @Versions({"v1"})
      *
      * @return \Illuminate\Support\Facades\Response
@@ -93,12 +92,14 @@ class PusherTranscriptionsController extends ApiController
      * Show JSON representation of PusherTranscription items.
      *
      * @Get("/{guid}")
+     *
      * @Versions({"v1"})
+     *
      * @Parameters({
+     *
      *     @Parameter("guid", description="GUID of specific resource item", required=true)
      * })
      *
-     * @param string $guid
      * @return mixed
      */
     public function show(string $guid)
@@ -107,14 +108,13 @@ class PusherTranscriptionsController extends ApiController
 
         return $result === null ?
             $this->errorNotFound() :
-            $this->respondWithItem($result, new PusherTranscriptionTransformer(), 'items');
+            $this->respondWithItem($result, new PusherTranscriptionTransformer, 'items');
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param string $guid
+     * @param  string  $guid
      * @return \Illuminate\Support\Facades\Response
      */
     public function update(Request $request, $guid)
@@ -125,7 +125,6 @@ class PusherTranscriptionsController extends ApiController
     /**
      * Delete resource.
      *
-     * @param $guid
      * @return \Illuminate\Support\Facades\Response
      */
     public function delete($guid)
@@ -136,20 +135,18 @@ class PusherTranscriptionsController extends ApiController
     /**
      * Get dashboard count
      *
-     * @param Request $request
      * @return mixed
      */
     private function listApiDashboardCount(Request $request)
     {
-       return PusherTranscription::where(function ($query) use ($request) {
-                $this->buildQuery($query, $request);
-            })->count();
+        return PusherTranscription::where(function ($query) use ($request) {
+            $this->buildQuery($query, $request);
+        })->count();
     }
 
     /**
      * List dashboard.
      *
-     * @param Request $request
      * @return mixed
      */
     private function listApiDashboard(Request $request)
@@ -165,9 +162,6 @@ class PusherTranscriptionsController extends ApiController
 
     /**
      * Build query.
-     *
-     * @param $query
-     * @param $request
      */
     private function buildQuery(&$query, $request)
     {
@@ -177,11 +171,10 @@ class PusherTranscriptionsController extends ApiController
         $date_start = is_numeric($request->input('date_start')) ? (int) $request->input('date_start') : $request->input('date_start');
         $date_end = is_numeric($request->input('date_end')) ? (int) $request->input('date_end') : $request->input('date_end');
 
-        if ($date_start !== null && $date_end !== null)
-        {
+        if ($date_start !== null && $date_end !== null) {
             $timestamps = [
                 Carbon::parse($date_start),
-                Carbon::parse($date_end)
+                Carbon::parse($date_end),
             ];
             $query->whereBetween('timestamp', $timestamps);
 

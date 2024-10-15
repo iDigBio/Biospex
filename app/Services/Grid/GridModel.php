@@ -19,7 +19,7 @@
 
 namespace App\Services\Grid;
 
-use App\Services\Models\HeaderModelService;
+use App\Services\Project\HeaderService;
 
 /**
  * Class GridModel
@@ -33,7 +33,7 @@ class GridModel
     /**
      * GridModel constructor.
      */
-    public function __construct(private HeaderModelService $headerModelService)
+    public function __construct(private HeaderService $headerService)
     {
         $this->defaultGridVisible = config('config.defaultGridVisible');
         $this->defaultSubGridVisible = config('config.defaultSubGridVisible');
@@ -46,7 +46,7 @@ class GridModel
      */
     public function createGridModel(int $projectId)
     {
-        $result = $this->headerModelService->getFirst('project_id', $projectId);
+        $result = $this->headerService->getFirst('project_id', $projectId);
 
         if (empty($result)) {
             $headers['image'] = [

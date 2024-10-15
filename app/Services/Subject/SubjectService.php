@@ -17,13 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Models;
+namespace App\Services\Subject;
 
 use App\Models\Subject;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 
-class SubjectModelService
+class SubjectService
 {
     protected bool $groupAnd;
 
@@ -32,7 +32,7 @@ class SubjectModelService
     protected mixed $assignedRuleData = null;
 
     /**
-     * SubjectModelService constructor.
+     * SubjectService constructor.
      */
     public function __construct(public Subject $subject) {}
 

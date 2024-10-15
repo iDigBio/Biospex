@@ -24,9 +24,9 @@ use App\Models\Expedition;
 use App\Services\Actor\GeoLocate\GeoLocateFormService;
 use App\Services\Permission\CheckPermission;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\View;
+use Response;
 use Throwable;
+use View;
 
 class GeolocateFieldsController extends Controller
 {

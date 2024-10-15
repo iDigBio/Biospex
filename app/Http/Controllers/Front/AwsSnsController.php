@@ -26,8 +26,8 @@ use App\Events\TesseractOcrEvent;
 use Aws\Sns\Exception\InvalidSnsMessageException;
 use Aws\Sns\Message;
 use Aws\Sns\MessageValidator;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
+use Cache;
+use Http;
 
 class AwsSnsController
 {
@@ -38,7 +38,7 @@ class AwsSnsController
      * @see ImageExportEvent
      * @see LabelReconciliationEvent
      */
-    public function index(): \Illuminate\Http\Response
+    public function __invoke(): \Illuminate\Http\Response
     {
         $message = Message::fromRawPostData();
 

@@ -20,11 +20,11 @@
 namespace App\Http\Controllers\Front;
 
 use App\Facades\CountHelper;
-use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
-use App\Services\Models\StateCountyModelService;
 use App\Services\Project\ProjectService;
+use App\Services\Transcriptions\StateCountyService;
 use JavaScript;
+use Redirect;
 use View;
 
 /**
@@ -35,12 +35,14 @@ class ProjectController extends Controller
     /**
      * ProjectController constructor.
      */
-    public function __construct(protected ProjectService $projectService) {}
+    public function __construct(
+        protected ProjectService $projectService,
+        protected StateCountyService $stateCountyService) {}
 
     /**
      * Public Projects page.
      */
-    public function index()
+    public function index(): \Illuminate\Contracts\View\View
     {
         $projects = $this->projectService->getPublicIndex();
 
@@ -49,35 +51,18 @@ class ProjectController extends Controller
 
     /**
      * Show public project page.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function show(
-        StateCountyModelService $stateCountyModelService,
-        $slug
-    ) {
+    public function show($slug): \Illuminate\Http\RedirectResponse|\Illuminate\Contracts\View\View
+    {
         $project = $this->projectService->getProjectPageBySlug($slug);
 
         if ($project === null) {
-
-            return \Redirect::route('front.projects.index')->with('danger', t('Unable to locate project. Please alert the Admin.'));
+            return Redirect::route('front.projects.index')->with('danger', t('Unable to locate project. Please alert the Admin.'));
         }
 
-        $expeditions = null;
-        $expeditionsCompleted = null;
-        if (isset($project->expeditions)) {
-            [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
-                return $expedition->completed === 0;
-            });
-        }
+        [$expeditions, $expeditionsCompleted] = $this->projectService->partitionExpeditions($project->expeditions);
 
-        $events = null;
-        $eventsCompleted = null;
-        if (isset($project->events)) {
-            [$events, $eventsCompleted] = $project->events->partition(function ($event) {
-                return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
-            });
-        }
+        [$events, $eventsCompleted] = $this->projectService->partitionEvents($project->events);
 
         // TODO change to stat table count
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
@@ -86,7 +71,7 @@ class ProjectController extends Controller
         $years = ! isset($project->amChart) || is_null($project->amChart->data) ?
             null : array_keys($project->amChart->data);
 
-        $states = $stateCountyModelService->getStateTranscriptCount($project->id);
+        $states = $this->stateCountyService->getStateTranscriptCount($project->id);
         $max = abs(round(($states->max('value') + 500), -3));
 
         JavaScript::put([

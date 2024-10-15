@@ -25,11 +25,10 @@ use App\Models\Project;
 use App\Services\JavascriptService;
 use App\Services\Permission\CheckPermission;
 use App\Services\Project\ProjectService;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\View;
+use Auth;
+use Redirect;
 use Throwable;
+use View;
 
 class ProjectSubjectController extends Controller
 {
@@ -44,7 +43,7 @@ class ProjectSubjectController extends Controller
     /**
      * Display project explore page.
      */
-    public function index(Project $project): \Illuminate\Contracts\View\View|RedirectResponse
+    public function index(Project $project): \Illuminate\View\View|\Illuminate\Http\RedirectResponse
     {
         $project->load(['group', 'expeditionStats']);
 
@@ -62,7 +61,7 @@ class ProjectSubjectController extends Controller
     /**
      * Delete all unassigned subjects for project.
      */
-    public function destroy(Project $project): RedirectResponse
+    public function destroy(Project $project): \Illuminate\Http\RedirectResponse
     {
         try {
             DeleteUnassignedSubjectsJob::dispatch(Auth::user(), $project);

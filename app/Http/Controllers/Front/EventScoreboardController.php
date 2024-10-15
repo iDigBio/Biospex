@@ -22,8 +22,8 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Services\Event\EventScoreboardService;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\View;
+use Request;
+use View;
 
 class EventScoreboardController extends Controller
 {
@@ -34,10 +34,8 @@ class EventScoreboardController extends Controller
 
     /**
      * Load event scoreboard.
-     *
-     * @return \Illuminate\Contracts\View\View
      */
-    public function __invoke(Event $event)
+    public function __invoke(Event $event): \Illuminate\Contracts\View\View
     {
         if (! Request::ajax() || ! isset($event->uuid)) {
             $event = null;

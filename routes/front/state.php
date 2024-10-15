@@ -11,32 +11,12 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+// Project Map
+use App\Http\Controllers\Front\StateTranscriptionController;
 
-namespace App\Http\Controllers\Front;
-
-use App\Http\Controllers\Controller;
-use App\Services\WeDigBio\WeDigBioService;
-use View;
-
-class WeDigBioController extends Controller
-{
-    /**
-     * WeDigBioController constructor.
-     */
-    public function __construct(protected WeDigBioService $weDigBioService) {}
-
-    /**
-     * Index page.
-     */
-    public function __invoke(): mixed
-    {
-        $events = $this->weDigBioService->getWeDigBioPage();
-
-        return View::make('front.wedigbio.index', compact('events'));
-    }
-}
+Route::get('projects/{project}/{state?}', StateTranscriptionController::class)->name('front.projects.state');

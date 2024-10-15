@@ -17,16 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Models;
+namespace App\Services\Project;
 
 use App\Models\Header;
 
-readonly class HeaderModelService
+class HeaderService
 {
     /**
-     * HeaderModelService constructor.
+     * HeaderService constructor.
      */
-    public function __construct(private Header $model) {}
+    public function __construct(protected Header $model) {}
 
     /**
      * Find with relations.

@@ -21,7 +21,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
-use Illuminate\Support\Facades\Response;
+use App\Services\Permission\CheckPermission;
+use Redirect;
+use Response;
 
 /**
  * Class AdvertiseController
@@ -30,15 +32,13 @@ class AdvertiseController extends Controller
 {
     /**
      * Show advertise page.
-     *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function __invoke(Project $project)
+    public function __invoke(Project $project): \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
     {
         $project->load('group');
 
-        if (! $this->checkPermissions('readProject', $project->group)) {
-            return \Redirect::route('webauth.projects.index');
+        if (! CheckPermission::handle('readProject', $project->group)) {
+            return Redirect::route('webauth.projects.index');
         }
 
         return Response::make(json_encode($project->advertise, JSON_UNESCAPED_SLASHES), '200', [

@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\TeamCategory;
+use View;
 
 /**
  * Class TeamController
@@ -29,16 +30,14 @@ class TeamController extends Controller
 {
     /**
      * Show categories.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function __invoke(TeamCategory $teamCategory)
+    public function __invoke(TeamCategory $teamCategory): \Illuminate\View\View
     {
         $categories = $teamCategory->with('teams')
             ->orderBy('id', 'asc')
             ->groupBy('id')
             ->get();
 
-        return \View::make('front.team.index', compact('categories'));
+        return View::make('front.team.index', compact('categories'));
     }
 }

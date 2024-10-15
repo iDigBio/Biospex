@@ -22,7 +22,7 @@ namespace App\Services\Actor\Zooniverse;
 use App\Models\Actor;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
-use App\Services\Models\SubjectModelService;
+use App\Services\Subject\SubjectService;
 
 /**
  * Class ZooniverseBuildQueue
@@ -35,7 +35,7 @@ class ZooniverseBuildQueue
     public function __construct(
         private ExportQueue $exportQueue,
         private ExportQueueFile $exportQueueFile,
-        private SubjectModelService $subjectModelService
+        private SubjectService $subjectService
     ) {}
 
     /**
@@ -65,7 +65,7 @@ class ZooniverseBuildQueue
      */
     public function buildFiles(ExportQueue $exportQueue): void
     {
-        $subjects = $this->subjectModelService->getSubjectCursorForExport($exportQueue->expedition_id);
+        $subjects = $this->subjectService->getSubjectCursorForExport($exportQueue->expedition_id);
 
         $subjects->each(function ($subject) use ($exportQueue) {
             $attributes = [

@@ -21,7 +21,7 @@
 namespace App\Services\WeDigBio;
 
 use App\Models\WeDigBioEventDate;
-use App\Services\Traits\RateChartTrait;
+use App\Services\Trait\RateChartTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 

@@ -23,6 +23,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ContactFormRequest;
 use App\Mail\ContactForm;
 use Mail;
+use Redirect;
 
 /**
  * Class ContactController
@@ -31,10 +32,8 @@ class ContactController extends Controller
 {
     /**
      * Display contact form.
-     *
-     * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         return \View::make('front.contact');
     }
@@ -42,12 +41,12 @@ class ContactController extends Controller
     /**
      * Send contact form.
      */
-    public function create(ContactFormRequest $request): mixed
+    public function create(ContactFormRequest $request): \Illuminate\Http\RedirectResponse
     {
         $contact = $request->only('name', 'email', 'message');
 
         Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
 
-        return \Redirect::route('home')->with('success', t('Your message has been sent. Thank you.'));
+        return Redirect::route('home')->with('success', t('Your message has been sent. Thank you.'));
     }
 }

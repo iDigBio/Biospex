@@ -25,7 +25,7 @@ use App\Models\Bingo;
 use App\Services\Bingo\BingoService;
 use App\Services\Permission\CheckPermission;
 use App\Services\Project\ProjectService;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use Redirect;
 use View;
 
@@ -44,10 +44,8 @@ class BingoController extends Controller
 
     /**
      * Display admin index for bingo games created by user.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(): \Illuminate\Contracts\View\View
     {
         $bingos = $this->bingoService->getAdminIndex(Auth::user());
 
@@ -56,10 +54,8 @@ class BingoController extends Controller
 
     /**
      * Create bingo.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function create()
+    public function create(): \Illuminate\Contracts\View\View
     {
         $projects = $this->projectService->getProjectEventSelect();
 
@@ -68,10 +64,8 @@ class BingoController extends Controller
 
     /**
      * Store bingo.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(BingoFormRequest $request)
+    public function store(BingoFormRequest $request): \Illuminate\Http\RedirectResponse
     {
         $bingo = $this->bingoService->createBingo($request->all());
 
@@ -84,10 +78,8 @@ class BingoController extends Controller
 
     /**
      * Bingo show.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function show(Bingo $bingo)
+    public function show(Bingo $bingo): mixed
     {
         if (! CheckPermission::handle('read', $bingo)) {
             return Redirect::route('admin.bingos.index');
@@ -100,10 +92,8 @@ class BingoController extends Controller
 
     /**
      * Edit bingo.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(Bingo $bingo)
+    public function edit(Bingo $bingo): \Illuminate\Contracts\View\View
     {
         $bingo->load(['words', 'project']);
         $projects = $this->projectService->getProjectEventSelect();
@@ -113,10 +103,8 @@ class BingoController extends Controller
 
     /**
      * Update bingo.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(BingoFormRequest $request, Bingo $bingo)
+    public function update(BingoFormRequest $request, Bingo $bingo): \Illuminate\Http\RedirectResponse
     {
         if (! CheckPermission::handle('update', $bingo)) {
             return Redirect::route('admin.bingos.index');
@@ -129,12 +117,10 @@ class BingoController extends Controller
 
     /**
      * Delete bingo.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Bingo $bingo)
+    public function destroy(Bingo $bingo): \Illuminate\Http\RedirectResponse
     {
-        if (! $this->checkPermissions('delete', $bingo)) {
+        if (! CheckPermission::handle('delete', $bingo)) {
             return Redirect::route('admin.bingos.index');
         }
 

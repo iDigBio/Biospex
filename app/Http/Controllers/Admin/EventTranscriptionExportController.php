@@ -22,17 +22,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\EventTranscriptionExportCsvJob;
 use App\Models\Event;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Auth;
+use Request;
 
 class EventTranscriptionExportController extends Controller
 {
     /**
      * Export transcription csv from event.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Event $event)
+    public function index(Event $event): \Illuminate\Http\JsonResponse
     {
         if (! Request::ajax()) {
             return response()->json(false);

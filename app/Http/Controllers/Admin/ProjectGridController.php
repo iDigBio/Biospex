@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Services\Grid\JqGridEncoder;
-use Illuminate\Support\Facades\Request;
+use Request;
+use Response;
 use Throwable;
 
 class ProjectGridController extends Controller
@@ -18,12 +19,12 @@ class ProjectGridController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function __invoke(Project $project)
+    public function __invoke(Project $project): mixed
     {
         try {
             return $this->grid->encodeGridRequestedData(Request::all(), 'explore', $project->id);
-        } catch (Throwable $e) {
-            return response($e->getMessage(), 404);
+        } catch (Throwable $throwable) {
+            return Response::make($throwable->getMessage(), 404);
         }
     }
 }

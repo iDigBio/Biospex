@@ -22,7 +22,7 @@ namespace App\Jobs;
 use App\Models\Project;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Models\SubjectModelService;
+use App\Services\Subject\SubjectService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -48,10 +48,10 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(SubjectModelService $subjectModelService): void
+    public function handle(SubjectService $subjectService): void
     {
         try {
-            $cursor = $subjectModelService->deleteUnassignedByProject($this->project->id);
+            $cursor = $subjectService->deleteUnassignedByProject($this->project->id);
             $cursor->each(function ($subject) {
                 $subject->delete();
             });

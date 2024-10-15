@@ -21,12 +21,11 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Resource;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\View;
+use Redirect;
+use Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use View;
 
 /**
  * Class ResourceController
@@ -36,7 +35,7 @@ class ResourceController extends Controller
     /**
      * Show resources.
      */
-    public function index(Resource $resource): Factory|\Illuminate\View\View
+    public function index(Resource $resource): \Illuminate\Contracts\View\View
     {
         $resources = $resource->orderBy('order', 'asc')->get();
 

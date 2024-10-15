@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Traits;
+namespace App\Services\Trait;
 
 use App\Models\Event;
 use App\Models\WeDigBioEventDate;

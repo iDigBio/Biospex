@@ -21,8 +21,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Services\Event\EventService;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\View;
+use Request;
+use Response;
+use View;
 
 class EventSortController extends Controller
 {
@@ -34,10 +35,10 @@ class EventSortController extends Controller
     /**
      * Sort events for public index.
      */
-    public function __invoke()
+    public function __invoke(): mixed
     {
         if (! Request::ajax()) {
-            return null;
+            return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
         [$active, $completed] = $this->eventService->getPublicIndex(Request::all());

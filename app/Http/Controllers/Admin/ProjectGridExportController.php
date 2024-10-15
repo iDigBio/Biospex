@@ -22,8 +22,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\GridExportCsvJob;
 use App\Models\Project;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Auth;
+use Request;
+use Response;
 
 class ProjectGridExportController extends Controller
 {
@@ -41,6 +42,6 @@ class ProjectGridExportController extends Controller
 
         GridExportCsvJob::dispatch(Auth::user(), $attributes);
 
-        return response()->json(['success' => true], 200);
+        return Response::json(['success' => true], 200);
     }
 }

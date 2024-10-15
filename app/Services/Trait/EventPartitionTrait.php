@@ -17,19 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services;
+namespace App\Services\Trait;
 
 use Illuminate\Support\Collection;
 
-trait ExpeditionPartitionTrait
+trait EventPartitionTrait
 {
     /**
-     * Partition records into completed and active.
+     * Partition events into incomplete and complete.
      */
-    public function partitionRecords(Collection $records): Collection
+    public function partitionEvents(Collection $records): Collection
     {
-        return $records->partition(function ($expedition) {
-            return $expedition->completed === 0;
+        return $records->partition(function ($event) {
+            return $this->dateService->eventBefore($event) || $this->dateService->eventActive($event);
         });
     }
 }

@@ -22,7 +22,7 @@ namespace App\Providers;
 use App\Services\Helpers\CountService;
 use App\Services\Helpers\DateService;
 use App\Services\Helpers\TranscriptionMapService;
-use App\Services\Models\PanoptesTranscriptionModelService;
+use App\Services\Transcriptions\PanoptesTranscriptionService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Laracasts\Utilities\JavaScript\LaravelViewBinder;
@@ -79,7 +79,7 @@ class BiospexServiceProvider extends ServiceProvider
     public function registerFacades(): void
     {
         $this->app->singleton('counthelper', function () {
-            return new CountService(app(PanoptesTranscriptionModelService::class));
+            return new CountService(app(PanoptesTranscriptionService::class));
         });
 
         $this->app->singleton('datehelper', function () {

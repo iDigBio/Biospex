@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\FaqCategory;
+use View;
 
 /**
  * Class FaqController
@@ -29,16 +30,14 @@ class FaqController extends Controller
 {
     /**
      * Show categories.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function __invoke(FaqCategory $faqCategory)
+    public function __invoke(FaqCategory $faqCategory): \Illuminate\View\View
     {
         $categories = $faqCategory->with('faqs')
             ->groupBy('id')
             ->orderBy('id', 'asc')
             ->get();
 
-        return \View::make('front.faq.index', compact('categories'));
+        return View::make('front.faq.index', compact('categories'));
     }
 }

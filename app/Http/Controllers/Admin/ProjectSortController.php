@@ -21,9 +21,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\Project\ProjectService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
+use Auth;
 use Request;
+use Response;
+use View;
 
 class ProjectSortController extends Controller
 {
@@ -37,10 +38,10 @@ class ProjectSortController extends Controller
     /**
      * Admin Projects page sort and order.
      */
-    public function __invoke(): ?\Illuminate\Contracts\View\View
+    public function __invoke(): mixed
     {
         if (! Request::ajax()) {
-            return null;
+            return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
         $projects = $this->projectService->getAdminIndex(Auth::user(), Request::all());

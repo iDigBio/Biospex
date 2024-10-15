@@ -20,7 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Services\Actor\ActorFactory;
-use App\Services\Models\WorkflowManagerModelService;
+use App\Services\Workflow\WorkflowManagerService;
 use Illuminate\Console\Command;
 
 /**
@@ -47,7 +47,7 @@ class WorkFlowManagerCommand extends Command
     /**
      * WorkFlowManagerCommand constructor.
      */
-    public function __construct(private readonly WorkflowManagerModelService $workflowManagerModelService)
+    public function __construct(private readonly WorkflowManagerService $workflowManagerService)
     {
         parent::__construct();
         $this->tube = config('config.queue.workflow');
@@ -66,7 +66,7 @@ class WorkFlowManagerCommand extends Command
     {
         $expeditionId = $this->argument('expeditionId');
 
-        $managers = $this->workflowManagerModelService->getWorkflowManagersForProcessing($expeditionId);
+        $managers = $this->workflowManagerService->getWorkflowManagersForProcessing($expeditionId);
 
         if ($managers->isEmpty()) {
             return;

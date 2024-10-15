@@ -24,20 +24,22 @@ use App\Models\Expedition;
 use App\Services\Actor\GeoLocate\GeoLocateFormService;
 use App\Services\Helpers\GeneralService;
 use App\Services\Permission\CheckPermission;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\View;
+use Request;
+use Response;
 use Throwable;
+use View;
 
 class GeolocateFormController extends Controller
 {
-    public function __construct(protected GeoLocateFormService $geoLocateFormService, protected GeneralService $generalService) {}
+    public function __construct(
+        protected GeoLocateFormService $geoLocateFormService,
+        protected GeneralService $generalService
+    ) {}
 
     /**
      * Show export form in modal.
      */
-    public function index(Expedition $expedition): JsonResponse|\Illuminate\Contracts\View\View
+    public function index(Expedition $expedition): mixed
     {
         if (! Request::ajax()) {
             return Response::json(['message' => t('Request must be ajax.')], 400);
@@ -58,7 +60,7 @@ class GeolocateFormController extends Controller
     /**
      * Display form when select is changed.
      */
-    public function show(Expedition $expedition): View|JsonResponse
+    public function show(Expedition $expedition): mixed
     {
         if (! Request::ajax()) {
             return Response::json(['message' => t('Request must be ajax.')], 400);

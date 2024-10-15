@@ -21,19 +21,20 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\Event\EventService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\View;
+use Auth;
+use Request;
+use Response;
+use View;
 
 class EventSortController extends Controller
 {
     /**
      * Displays Completed Events on public page.
      */
-    public function index(EventService $eventService): ?\Illuminate\Contracts\View\View
+    public function index(EventService $eventService): \Illuminate\Http\JsonResponse|\Illuminate\View\View
     {
         if (! Request::ajax()) {
-            return null;
+            return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
         [$eventsActive, $eventsCompleted] = $eventService->getAdminIndex(Auth::user(), Request::all());

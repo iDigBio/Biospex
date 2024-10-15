@@ -21,9 +21,8 @@ namespace App\Services\Transcriptions;
 
 use App\Facades\TranscriptionMapHelper;
 use App\Services\Csv\AwsS3CsvService;
-use App\Services\Models\PanoptesTranscriptionModelService;
-use App\Services\Models\SubjectModelService;
 use App\Services\Process\CreateReportService;
+use App\Services\Subject\SubjectService;
 use Str;
 use Throwable;
 use Validator;
@@ -40,10 +39,11 @@ class CreatePanoptesTranscriptionService
     /**
      * CreatePanoptesTranscriptionService constructor.
      * Used in overnight scripts to create transcriptions from csv to mongodb.
+     * TODO: Refactor so less dependencies are needed.
      */
     public function __construct(
-        private SubjectModelService $subjectModelService,
-        private PanoptesTranscriptionModelService $panoptesTranscriptionModelService,
+        private SubjectService $subjectService,
+        private PanoptesTranscriptionService $panoptesTranscriptionService,
         private CreateTranscriptionLocationService $createTranscriptionLocationService,
         private CreateReportService $createReportService,
         private AwsS3CsvService $awsS3CsvService
@@ -113,7 +113,7 @@ class CreatePanoptesTranscriptionService
             return;
         }
 
-        $subject = $this->subjectModelService->find(trim($row['subject_subjectId']));
+        $subject = $this->subjectService->find(trim($row['subject_subjectId']));
 
         if ($subject === null) {
             $this->csvError[] = array_merge(['error' => 'Could not find subject id for classification'], $row);
@@ -131,15 +131,13 @@ class CreatePanoptesTranscriptionService
             return [$newField => $value];
         })->toArray();
 
-        $this->panoptesTranscriptionModelService->create($rowWithEncodeHeaders);
+        $this->panoptesTranscriptionService->create($rowWithEncodeHeaders);
     }
 
     /**
      * Validate transcription to prevent duplicates.
-     *
-     * @return mixed
      */
-    public function validateTranscription($classification_id)
+    public function validateTranscription($classification_id): mixed
     {
         $rules = ['classification_id' => 'unique:mongodb.panoptes_transcriptions,classification_id'];
         $values = ['classification_id' => (int) $classification_id];

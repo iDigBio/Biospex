@@ -20,9 +20,9 @@
 namespace App\Services\Csv;
 
 use App\Models\Property;
-use App\Services\Models\HeaderModelService;
-use App\Services\Models\SubjectModelService;
 use App\Services\MongoDbService;
+use App\Services\Project\HeaderService;
+use App\Services\Subject\SubjectService;
 use Carbon\Carbon;
 use Exception;
 use ForceUTF8\Encoding;
@@ -82,8 +82,8 @@ class DarwinCoreCsvImport
      */
     public function __construct(
         private readonly Property $property,
-        private readonly SubjectModelService $subjectModelService,
-        private readonly HeaderModelService $headerModelService,
+        private readonly SubjectService $subjectService,
+        private readonly HeaderService $headerService,
         private readonly Validation $factory,
         private readonly Csv $csv,
         private readonly MongoDbService $mongoDbService
@@ -400,7 +400,7 @@ class DarwinCoreCsvImport
             unset($subject['language']);
         }
 
-        $this->subjectModelService->create($subject);
+        $this->subjectService->create($subject);
         $this->subjectCount++;
     }
 
@@ -489,14 +489,14 @@ class DarwinCoreCsvImport
     {
         $type = $loadMedia ? 'image' : 'occurrence';
 
-        $result = $this->headerModelService->getFirst('project_id', $this->projectId);
+        $result = $this->headerService->getFirst('project_id', $this->projectId);
 
         if (empty($result)) {
             $insert = [
                 'project_id' => $this->projectId,
                 'header' => [$type => $header],
             ];
-            $this->headerModelService->create($insert);
+            $this->headerService->create($insert);
         } else {
             $existingHeader = $result->header;
             $existingHeader[$type] = isset($existingHeader[$type]) ? $this->combineHeader($existingHeader[$type], $header) : array_unique($header);

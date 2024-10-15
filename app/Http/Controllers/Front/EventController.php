@@ -22,7 +22,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Services\Event\EventService;
-use Illuminate\Support\Facades\View;
+use View;
 
 /**
  * Class EventController
@@ -44,7 +44,7 @@ class EventController extends Controller
     /**
      * Display the show page for an event.
      */
-    public function show(Event $event): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function show(Event $event): \Illuminate\Contracts\View\View
     {
         $event->load(['project.lastPanoptesProject', 'teams:id,title,event_id']);
 

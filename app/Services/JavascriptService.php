@@ -100,6 +100,9 @@ class JavascriptService
         ]);
     }
 
+    /**
+     * Edit expedition.
+     */
     public function expeditionEdit(Expedition $expedition, array $subjectIds): void
     {
         $this->setModel($expedition->project);
@@ -112,6 +115,19 @@ class JavascriptService
             'exportUrl' => route('admin.grids.expeditions.export', [$expedition]),
             'checkbox' => $expedition->workflowManager === null,
             'route' => 'edit', // used for export
+        ]);
+    }
+
+    /**
+     * Show project.
+     */
+    public function projectShow(Project $project): void
+    {
+        $this->javascript->put([
+            'max' => $max,
+            'states' => $states->toJson(),
+            'years' => $years,
+            'project' => $project->id,
         ]);
     }
 }

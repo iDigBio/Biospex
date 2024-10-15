@@ -19,6 +19,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpeditionJob;
 use App\Models\Expedition;
@@ -35,7 +36,7 @@ use View;
 /**
  * Class ExpeditionController
  */
-class ExpeditionController
+class ExpeditionController extends Controller
 {
     /**
      * ExpeditionController constructor.
@@ -48,7 +49,7 @@ class ExpeditionController
     /**
      * Display all expeditions for user.
      */
-    public function index()
+    public function index(): mixed
     {
         [$expeditions, $expeditionsCompleted] = $this->expeditionService->getAdminIndex(Auth::user());
 
@@ -58,7 +59,7 @@ class ExpeditionController
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Project $project, WorkflowService $workflowService)
+    public function create(Project $project, WorkflowService $workflowService): mixed
     {
         $project->load('group');
 
@@ -76,7 +77,7 @@ class ExpeditionController
     /**
      * Store new expedition.
      */
-    public function store(Project $project, ExpeditionFormRequest $request)
+    public function store(Project $project, ExpeditionFormRequest $request): mixed
     {
         try {
             $project->load('group');
@@ -97,7 +98,7 @@ class ExpeditionController
     /**
      * Display the specified resource.
      */
-    public function show(Expedition $expedition)
+    public function show(Expedition $expedition): mixed
     {
         $expedition->load('project.group', 'downloads', 'stat');
 
@@ -113,7 +114,7 @@ class ExpeditionController
     /**
      * Show the form for editing Expedition.
      */
-    public function edit(Expedition $expedition, WorkflowService $workflowService)
+    public function edit(Expedition $expedition, WorkflowService $workflowService): mixed
     {
         $expedition->load(['project.group', 'downloads', 'stat', 'workflowManager']);
 
@@ -133,7 +134,7 @@ class ExpeditionController
     /**
      * Update expedition.
      */
-    public function update(Expedition $expedition, ExpeditionFormRequest $request)
+    public function update(Expedition $expedition, ExpeditionFormRequest $request): mixed
     {
         $expedition->load('project.group');
 
@@ -155,7 +156,7 @@ class ExpeditionController
     /**
      * Soft delete the specified resource from storage.
      */
-    public function destroy(Expedition $expedition)
+    public function destroy(Expedition $expedition): mixed
     {
         $expedition->load('project.group', 'workflowManager', 'panoptesProject');
 

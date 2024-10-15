@@ -22,7 +22,7 @@ namespace App\Services\Reconcile;
 use App\Facades\TranscriptionMapHelper;
 use App\Models\Reconcile;
 use App\Services\Csv\AwsS3CsvService;
-use App\Services\Models\SubjectModelService;
+use App\Services\Subject\SubjectService;
 use Exception;
 use File;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -45,7 +45,7 @@ class ExpertReconcileService
      */
     public function __construct(
         private readonly Reconcile $reconcile,
-        private readonly SubjectModelService $subjectModelService,
+        private readonly SubjectService $subjectService,
         private readonly AwsS3CsvService $awsS3CsvService
     ) {
         $this->problemRegex = config('zooniverse.reconcile_problem_regex');
@@ -124,7 +124,7 @@ class ExpertReconcileService
     public function getAccessUri($imageName): mixed
     {
         $id = File::name($imageName);
-        $subject = $this->subjectModelService->find($id, ['accessURI']);
+        $subject = $this->subjectService->find($id, ['accessURI']);
 
         return $subject->accessURI;
     }

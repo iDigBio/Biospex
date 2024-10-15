@@ -75,7 +75,7 @@ class GeoLocateController extends Controller
         try {
             $expedition->load('project.group');
 
-            if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
+            if (! CheckPermission::handle('isOwner', $expedition->project->group)) {
                 return Redirect::route('admin.expeditions.show', [$expedition]);
             }
 

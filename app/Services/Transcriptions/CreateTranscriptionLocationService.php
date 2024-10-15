@@ -21,7 +21,6 @@ namespace App\Services\Transcriptions;
 
 use App\Models\TranscriptionLocation;
 use App\Services\Helpers\GeneralService;
-use App\Services\Models\StateCountyModelService;
 
 use function config;
 
@@ -45,7 +44,7 @@ class CreateTranscriptionLocationService
      */
     public function __construct(
         protected TranscriptionLocation $transcriptionLocation,
-        protected StateCountyModelService $stateCountyModelService,
+        protected StateCountyService $stateCountyService,
         protected GeneralService $generalService
     ) {
         $this->dwcTranscriptFields = config('config.dwcTranscriptFields');
@@ -75,7 +74,7 @@ class CreateTranscriptionLocationService
 
         $this->prepCounty($data);
         $stateAbbr = $this->generalService->getState($data['state_province']);
-        $stateResult = $this->stateCountyModelService->findByCountyState($data['county'], $stateAbbr);
+        $stateResult = $this->stateCountyService->findByCountyState($data['county'], $stateAbbr);
 
         if ($stateResult === null) {
             return;

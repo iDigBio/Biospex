@@ -17,12 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Models;
+namespace App\Services\Transcriptions;
 
 use App\Models\PusherTranscription;
 use Carbon\Carbon;
 
-class PusherTranscriptionModelService
+class PusherTranscriptionService
 {
     /**
      * @var \Illuminate\Database\Eloquent\Builder
@@ -30,9 +30,9 @@ class PusherTranscriptionModelService
     private $dashboardQuery;
 
     /**
-     * PusherTranscriptionModelService constructor.
+     * PusherTranscriptionService constructor.
      */
-    public function __construct(private readonly PusherTranscription $model) {}
+    public function __construct(protected PusherTranscription $model) {}
 
     /**
      * Find by column and value.

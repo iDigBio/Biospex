@@ -24,13 +24,13 @@ use App\Jobs\ExpertReconcileReviewPublishJob;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Api\ZooniverseTalkApiService;
 use App\Services\Expedition\ExpeditionService;
+use App\Services\Permission\CheckPermission;
 use App\Services\Reconcile\ExpertReconcileService;
 use App\Services\Reconcile\ReconcileService;
 use App\Traits\SkipZooniverse;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
+use Redirect;
 use Request;
+use View;
 
 /**
  * Class ReconcileController
@@ -41,21 +41,22 @@ class ReconcileController extends Controller
 
     /**
      * ReconcileController constructor.
+     * TODO: Refactor
      */
     public function __construct(
-        private ExpertReconcileService $expertReconcileService,
-        private ExpeditionService $expeditionService,
-        private ReconcileService $reconcileService
+        protected ExpertReconcileService $expertReconcileService,
+        protected ExpeditionService $expeditionService,
+        protected ReconcileService $reconcileService
     ) {}
 
     /**
      * Show files needing reconciliation with pagination.
      */
-    public function index(int $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService): View|RedirectResponse
+    public function index(int $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService)
     {
         $expedition = $this->expeditionService->expedition->with(['project.group.owner', 'panoptesProject'])->find($expeditionId);
 
-        if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
+        if (! CheckPermission::handle('updateProject', $expedition->project->group)) {
             return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
@@ -73,7 +74,7 @@ class ReconcileController extends Controller
         $imgUrl = $this->expertReconcileService->getImageUrl($reconciles->first()->subject_imageName, $location);
         $columns = explode('|', $reconciles->first()->subject_columns);
 
-        return \View::make('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
+        return View::make('admin.reconcile.index', compact('reconciles', 'columns', 'imgUrl', 'expedition', 'comments'));
     }
 
     /**
@@ -82,11 +83,11 @@ class ReconcileController extends Controller
      *
      * @throws \Throwable
      */
-    public function create(int $expeditionId): RedirectResponse
+    public function create(int $expeditionId)
     {
         $expedition = $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['project.group.owner']);
 
-        if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
+        if (! CheckPermission::handle('updateProject', $expedition->project->group)) {
             return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
@@ -105,7 +106,7 @@ class ReconcileController extends Controller
     /**
      * Update reconciled record.
      */
-    public function update(int $expeditionId): RedirectResponse
+    public function update(int $expeditionId)
     {
         if (! $this->expertReconcileService->updateRecord(Request::all())) {
 
@@ -118,7 +119,7 @@ class ReconcileController extends Controller
     /**
      * Publish reconciled csv file.
      */
-    public function publish(int $projectId, int $expeditionId): RedirectResponse
+    public function publish(int $projectId, int $expeditionId)
     {
         ExpertReconcileReviewPublishJob::dispatch($expeditionId);
 

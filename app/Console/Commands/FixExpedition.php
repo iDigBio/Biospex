@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Reconcile;
 use App\Services\Csv\Csv;
-use App\Services\Models\SubjectModelService;
+use App\Services\Subject\SubjectService;
 use Illuminate\Console\Command;
 
 class FixExpedition extends Command
@@ -36,7 +36,7 @@ class FixExpedition extends Command
      */
     public function __construct(
         public Csv $csv,
-        public SubjectModelService $subjectModelService,
+        public SubjectService $subjectService,
         public Reconcile $reconcile)
     {
         parent::__construct();
@@ -68,7 +68,7 @@ class FixExpedition extends Command
         foreach ($reconcileReader as $offset => $record) {
             $this->fixReconcileWithExpert($record);
 
-            $subject = $this->subjectModelService->find($record['subject_subjectId']);
+            $subject = $this->subjectService->find($record['subject_subjectId']);
             $identifier = $subject['identifier'];
 
             $birdImage = $this->findBirdImageRecord($identifier);

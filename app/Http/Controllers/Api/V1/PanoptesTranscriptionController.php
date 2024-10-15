@@ -24,46 +24,29 @@ use Illuminate\Http\Response;
 
 /**
  * Class PanoptesTranscriptionController
- *
- * @package App\Http\Controllers\Api\V1
  */
 class PanoptesTranscriptionController extends ApiController
 {
-    /**
-     * @return \Illuminate\Http\Response
-     */
     public function index(): Response
     {
         return $this->errorUnauthorized();
     }
 
-    /**
-     * @return \Illuminate\Http\Response
-     */
     public function store(): Response
     {
         return $this->errorUnauthorized();
     }
 
-    /**
-     * @return \Illuminate\Http\Response
-     */
     public function show(): Response
     {
         return $this->errorUnauthorized();
     }
 
-    /**
-     * @return \Illuminate\Http\Response
-     */
     public function update(): Response
     {
         return $this->errorUnauthorized();
     }
 
-    /**
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(): Response
     {
         return $this->errorUnauthorized();

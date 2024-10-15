@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -22,8 +21,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\AmChart;
-use App\Services\Models\StateCountyModelService;
+use App\Models\Project;
 use File;
+use Response;
 
 /**
  * Class TranscriptionController
@@ -31,43 +31,23 @@ use File;
 class TranscriptionController extends Controller
 {
     /**
+     * Create a new controller instance.
+     */
+    public function __construct(protected AmChart $amChart) {}
+
+    /**
      * Return json data for transcription charts.
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function transcriptions(AmChart $amChart, int $projectId, string $year): \Illuminate\Http\JsonResponse
+    public function __invoke(Project $project, string $year): \Illuminate\Http\JsonResponse
     {
-        $chart = $amChart->where('project_id', $projectId)->first();
+        $chart = $this->amChart->where('project_id', $project->id)->first();
 
         $file = json_decode(File::get(config('config.project_chart_config')), true);
         $file['series'] = $chart->series[$year];
         $file['data'] = $chart->data[$year];
 
-        return response()->json($file);
-    }
-
-    /**
-     * State counties for project map.
-     *
-     * @return array|\Illuminate\Http\JsonResponse
-     */
-    public function state($projectId, $stateId, StateCountyModelService $stateCountyModelService)
-    {
-        if (! \Request::ajax()) {
-            return response()->json(['html' => 'Error retrieving the counties.']);
-        }
-
-        $counties = $stateCountyModelService->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
-            return [
-                'id' => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
-                'value' => $item->transcription_locations_count,
-                'name' => $item->state_county,
-            ];
-        });
-
-        return [
-            'max' => abs(round(($counties->max('value') + 500), -3)),
-            'counties' => $counties->toJson(),
-        ];
+        return Response::json($file);
     }
 }

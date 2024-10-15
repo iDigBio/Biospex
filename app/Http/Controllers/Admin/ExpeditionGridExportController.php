@@ -22,24 +22,26 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\GridExportCsvJob;
 use App\Models\Expedition;
-use Illuminate\Support\Facades\Auth;
+use Auth;
+use Request;
+use Response;
 
 class ExpeditionGridExportController extends Controller
 {
     /**
      * Export csv from grid button.
      */
-    public function __invoke(Expedition $expedition)
+    public function __invoke(Expedition $expedition): \Illuminate\Http\JsonResponse
     {
         $attributes = [
             'projectId' => $expedition->project_id,
             'expeditionId' => $expedition->id,
-            'postData' => ['filters' => \Request::exists('filters') ? \Request::get('filters') : null],
-            'route' => \Request::get('route'),
+            'postData' => ['filters' => Request::exists('filters') ? Request::get('filters') : null],
+            'route' => Request::get('route'),
         ];
 
         GridExportCsvJob::dispatch(Auth::user(), $attributes);
 
-        return response()->json(['success' => true], 200);
+        return Response::json(['success' => true], 200);
     }
 }

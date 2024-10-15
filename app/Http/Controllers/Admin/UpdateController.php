@@ -21,13 +21,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Update;
+use View;
 
 class UpdateController extends Controller
 {
+    /**
+     * Display update messages.
+     */
     public function index(Update $update)
     {
         $updates = $update->all()->sortByDesc('created_at');
 
-        return \View::make('admin.update.index', compact('updates'));
+        return View::make('admin.update.index', compact('updates'));
     }
 }

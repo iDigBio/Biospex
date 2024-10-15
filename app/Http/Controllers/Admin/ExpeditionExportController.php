@@ -22,7 +22,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Expedition;
 use Artisan;
-use Illuminate\Http\RedirectResponse;
 use Redirect;
 use Throwable;
 
@@ -33,7 +32,7 @@ class ExpeditionExportController extends Controller
      *
      * @see \App\Console\Commands\ExportQueueCommand
      */
-    public function __invoke(Expedition $expedition): RedirectResponse
+    public function __invoke(Expedition $expedition): \Illuminate\Http\RedirectResponse
     {
         try {
             Artisan::call('export:queue', ['expeditionId' => $expedition->id]);

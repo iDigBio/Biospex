@@ -20,9 +20,4 @@
 // Project Transcriptions
 use App\Http\Controllers\Front\TranscriptionController;
 
-Route::get('projects/{project}/transcriptions/{year}', [TranscriptionController::class, 'transcriptions'])->name('front.projects.transcriptions');
-
-// Project Map
-Route::get('projects/{project}/{state?}', [TranscriptionController::class, 'state'])->name('front.projects.state');
-
-
+Route::get('projects/{project}/transcriptions/{year}', TranscriptionController::class)->name('front.projects.transcriptions');

@@ -46,7 +46,7 @@ class EventController extends Controller
     /**
      * Display events.
      */
-    public function index()
+    public function index(): mixed
     {
         try {
             [$events, $eventsCompleted] = $this->eventService->getAdminIndex(Auth::user());
@@ -62,7 +62,7 @@ class EventController extends Controller
     /**
      * Create event.
      */
-    public function create()
+    public function create(): mixed
     {
         $projects = $this->projectService->getProjectEventSelect();
 
@@ -72,7 +72,7 @@ class EventController extends Controller
     /**
      * Store Event.
      */
-    public function store(EventFormRequest $request)
+    public function store(EventFormRequest $request): mixed
     {
         try {
             $event = $this->eventService->store($request->all());
@@ -87,7 +87,7 @@ class EventController extends Controller
     /**
      * Show event.
      */
-    public function show(Event $event)
+    public function show(Event $event): mixed
     {
         if (! CheckPermission::handle('read', $event)) {
             return Redirect::route('admin.events.index');
@@ -101,7 +101,7 @@ class EventController extends Controller
     /**
      * Edit event.
      */
-    public function edit(Event $event)
+    public function edit(Event $event): mixed
     {
         if (! CheckPermission::handle('update', $event)) {
             return back();
@@ -116,7 +116,7 @@ class EventController extends Controller
     /**
      * Update Event.
      */
-    public function update(Event $event, EventFormRequest $request)
+    public function update(Event $event, EventFormRequest $request): mixed
     {
         if (! CheckPermission::handle('update', $event)) {
             return Redirect::route('admin.events.index');
@@ -134,7 +134,7 @@ class EventController extends Controller
     /**
      * Delete Event.
      */
-    public function destroy(Event $event)
+    public function destroy(Event $event): mixed
     {
         if (! CheckPermission::handle('delete', $event)) {
             return Redirect::route('admin.events.index');

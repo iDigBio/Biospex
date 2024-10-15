@@ -11,32 +11,25 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Http\Controllers\Front;
+namespace App\Services\Trait;
 
-use App\Http\Controllers\Controller;
-use App\Services\WeDigBio\WeDigBioService;
-use View;
+use Illuminate\Support\Collection;
 
-class WeDigBioController extends Controller
+trait ExpeditionPartitionTrait
 {
     /**
-     * WeDigBioController constructor.
+     * Partition expeditions into completed and active.
      */
-    public function __construct(protected WeDigBioService $weDigBioService) {}
-
-    /**
-     * Index page.
-     */
-    public function __invoke(): mixed
+    public function partitionExpeditions(Collection $records): Collection
     {
-        $events = $this->weDigBioService->getWeDigBioPage();
-
-        return View::make('front.wedigbio.index', compact('events'));
+        return $records->partition(function ($expedition) {
+            return $expedition->completed === 0;
+        });
     }
 }

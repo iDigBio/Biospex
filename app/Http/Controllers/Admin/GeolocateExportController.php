@@ -22,6 +22,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\GeoLocateExportJob;
 use App\Models\Expedition;
+use App\Services\Permission\CheckPermission;
 use Auth;
 use Request;
 use Response;
@@ -32,7 +33,7 @@ class GeolocateExportController extends Controller
     /**
      * Export form selections to csv.
      */
-    public function __invoke(Expedition $expedition): mixed
+    public function __invoke(Expedition $expedition): \Illuminate\Http\JsonResponse
     {
         if (! Request::ajax()) {
             return Response::json(['message' => t('Request must be ajax.')], 400);
@@ -41,7 +42,7 @@ class GeolocateExportController extends Controller
         try {
             $expedition->load('project.group');
 
-            if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
+            if (! CheckPermission::handle('updateProject', $expedition->project->group)) {
                 return Response::json(['message' => t('You do not have permissions for this action.')], 401);
             }
 

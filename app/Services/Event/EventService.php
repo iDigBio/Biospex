@@ -23,10 +23,13 @@ use App\Models\Event;
 use App\Models\EventTeam;
 use App\Models\User;
 use App\Services\Helpers\DateService;
+use App\Services\Trait\EventPartitionTrait;
 use Illuminate\Support\Collection;
 
 class EventService
 {
+    use EventPartitionTrait;
+
     /**
      * EventService constructor.
      */
@@ -46,7 +49,7 @@ class EventService
 
         $sortedRecords = $this->sortRecords($records, $request);
 
-        return $this->partitionRecords($sortedRecords);
+        return $this->partitionEvents($sortedRecords);
     }
 
     /**
@@ -61,7 +64,7 @@ class EventService
 
         $sortedRecords = $this->sortRecords($records, $request);
 
-        return $this->partitionRecords($sortedRecords);
+        return $this->partitionEvents($sortedRecords);
     }
 
     /**
@@ -83,16 +86,6 @@ class EventService
             'date' => $request['order'] === 'desc' ? $records->sortByDesc('start_date') : $records->sortBy('start_date'),
             default => $records,
         };
-    }
-
-    /**
-     * Partition records into incomplete and complete.
-     */
-    protected function partitionRecords(Collection $records): Collection
-    {
-        return $records->partition(function ($event) {
-            return $this->dateService->eventBefore($event) || $this->dateService->eventActive($event);
-        });
     }
 
     /**

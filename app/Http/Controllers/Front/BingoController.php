@@ -23,7 +23,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
 use App\Models\Bingo;
 use App\Services\Bingo\BingoService;
-use Illuminate\Support\Facades\View;
+use View;
 
 /**
  * Class BingoController
@@ -37,10 +37,8 @@ class BingoController extends Controller
 
     /**
      * Display admin index for bingo games created by user.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         $bingos = $this->bingoService->bingo->with(['user', 'project'])->get();
 
@@ -49,10 +47,8 @@ class BingoController extends Controller
 
     /**
      * Generate bingo card.
-     *
-     * @return \Illuminate\View\View|string
      */
-    public function create(Bingo $bingo)
+    public function create(Bingo $bingo): \Illuminate\View\View
     {
         $bingo->load('project', 'words');
 
@@ -65,12 +61,10 @@ class BingoController extends Controller
 
     /**
      * Bingo show.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function show(Bingo $bingo)
+    public function show(Bingo $bingo): \Illuminate\View\View
     {
-        [$bingo, $words] = $this->bingoService->showPublicBingo($bingo);
+        $words = $this->bingoService->showPublicBingo($bingo);
 
         return View::make('front.bingo.show', compact('bingo', 'words'));
     }

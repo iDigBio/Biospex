@@ -20,7 +20,6 @@
 namespace App\Services\Transcriptions;
 
 use App\Models\PusherClassification;
-use App\Services\Models\PusherTranscriptionModelService;
 use Validator;
 
 /**
@@ -30,7 +29,7 @@ class CreatePusherTranscriptionService
 {
     public function __construct(
         protected PusherClassification $pusherClassification,
-        protected PusherTranscriptionModelService $pusherTranscriptionModelService
+        protected PusherTranscriptionService $pusherTranscriptionService
     ) {}
 
     /**
@@ -61,7 +60,7 @@ class CreatePusherTranscriptionService
             return;
         }
 
-        $this->pusherTranscriptionModelService->create($pusherClassification->data);
+        $this->pusherTranscriptionService->create($pusherClassification->data);
     }
 
     /**

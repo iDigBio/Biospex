@@ -24,9 +24,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EditUserFormRequest;
 use App\Models\User;
 use App\Services\Permission\CheckPermission;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\View;
+use Redirect;
+use View;
 
 /**
  * Class UserController
@@ -38,7 +37,7 @@ class UserController extends Controller
      *
      * @throws \Exception
      */
-    public function edit(User $user): \Illuminate\View\View|RedirectResponse
+    public function edit(User $user): mixed
     {
         if (! CheckPermission::handle('edit', $user)) {
             return Redirect::route('admin.projects.index');
@@ -52,7 +51,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage
      */
-    public function update(User $user, EditUserFormRequest $request): RedirectResponse
+    public function update(User $user, EditUserFormRequest $request): mixed
     {
         if (! CheckPermission::handle('update', $user)) {
             return Redirect::route('admin.projects.index');

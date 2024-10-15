@@ -20,29 +20,37 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Models\WeDigBioEventDate;
-use App\Services\WeDigBio\WeDigBioService;
+use App\Models\Project;
+use App\Services\Transcriptions\StateCountyService;
 use Request;
-use View;
 
-class WeDigBioProgressController extends Controller
+class StateTranscriptionController extends Controller
 {
     /**
      * Create a new controller instance.
      */
-    public function __construct(protected WeDigBioService $weDigBioService) {}
+    public function __construct(protected StateCountyService $stateCountyService) {}
 
     /**
-     * Show progress for wedigbio events.
+     * Display the specified resource.
      */
-    public function __invoke(?WeDigBioEventDate $event = null): \Illuminate\Http\JsonResponse|\Illuminate\View\View
+    public function __invoke(Project $project, ?string $stateId = null)
     {
         if (! Request::ajax()) {
-            return response()->json(['html' => 'Error retrieving the WeDigBio Event']);
+            return response()->json(['html' => 'Error retrieving the counties.']);
         }
 
-        $weDigBioDate = $this->weDigBioService->getWeDigBioEventTranscriptions($event);
+        $counties = $this->stateCountyService->getCountyTranscriptionCount($project->id, $stateId)->map(function ($item) {
+            return [
+                'id' => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
+                'value' => $item->transcription_locations_count,
+                'name' => $item->state_county,
+            ];
+        });
 
-        return View::make('common.wedigbio-progress-content', compact('weDigBioDate'));
+        return [
+            'max' => abs(round(($counties->max('value') + 500), -3)),
+            'counties' => $counties->toJson(),
+        ];
     }
 }

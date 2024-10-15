@@ -24,8 +24,8 @@ use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use App\Services\Event\EventTranscriptionService;
-use App\Services\Models\PanoptesTranscriptionModelService;
 use App\Services\Process\CreateReportService;
+use App\Services\Transcriptions\PanoptesTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -48,36 +48,28 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
      */
     public $timeout = 1800;
 
-    private User $user;
-
-    private Event $event;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(User $user, Event $event)
+    public function __construct(protected User $user, protected Event $event)
     {
-        $this->user = $user;
-        $this->event = $event;
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
-     * TODO: Check if models have more than just id.
-     * TODO: Verify export is working.
      */
     public function handle(
         EventTranscriptionService $eventTranscriptionService,
-        PanoptesTranscriptionModelService $panoptesTranscriptionModelService,
+        PanoptesTranscriptionService $panoptesTranscriptionService,
         CreateReportService $createReportService,
     ): void {
 
         try {
             $ids = $eventTranscriptionService->getEventClassificationIds($this->event->id);
 
-            $transcriptions = $ids->map(function ($id) use ($panoptesTranscriptionModelService) {
-                $transcript = $panoptesTranscriptionModelService->getFirst('classification_id', $id);
+            $transcriptions = $ids->map(function ($id) use ($panoptesTranscriptionService) {
+                $transcript = $panoptesTranscriptionService->getFirst('classification_id', $id);
                 unset($transcript['_id']);
 
                 return $transcript;

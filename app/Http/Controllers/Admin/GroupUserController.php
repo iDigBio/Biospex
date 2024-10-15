@@ -23,7 +23,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\User;
 use App\Services\Permission\CheckPermission;
-use Illuminate\Support\Facades\Redirect;
+use Redirect;
 use Throwable;
 
 class GroupUserController extends Controller

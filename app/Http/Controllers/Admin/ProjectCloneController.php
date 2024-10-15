@@ -23,10 +23,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Services\Group\GroupService;
 use App\Services\Project\ProjectService;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\View;
+use Illuminate\Database\Eloquent\Collection;
 use Request;
+use View;
 
 class ProjectCloneController extends Controller
 {
@@ -39,7 +38,7 @@ class ProjectCloneController extends Controller
     /**
      * Create duplicate project
      */
-    public function __invoke(Project $project): \Illuminate\Contracts\View\View|RedirectResponse
+    public function __invoke(Project $project): \Illuminate\View\View
     {
         $project->load(['group']);
 

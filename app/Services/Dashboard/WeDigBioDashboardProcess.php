@@ -19,7 +19,7 @@
 
 namespace App\Services\Dashboard;
 
-use App\Services\Models\PusherTranscriptionModelService;
+use App\Services\Transcriptions\PusherTranscriptionService;
 
 /**
  * Class WeDigBioDashboardProcess
@@ -29,14 +29,14 @@ class WeDigBioDashboardProcess
     /**
      * WeDigBioDashboardProcess constructor.
      */
-    public function __construct(private readonly PusherTranscriptionModelService $pusherTranscriptionModelService) {}
+    public function __construct(protected PusherTranscriptionService $pusherTranscriptionService) {}
 
     /**
      * Set dashboard query
      */
     public function setDashboardQuery(array $request)
     {
-        $this->pusherTranscriptionModelService->setQueryForDashboard($request);
+        $this->pusherTranscriptionService->setQueryForDashboard($request);
     }
 
     /**
@@ -46,7 +46,7 @@ class WeDigBioDashboardProcess
      */
     public function getTotalCount()
     {
-        return $this->pusherTranscriptionModelService->getWeDigBioDashboardCount();
+        return $this->pusherTranscriptionService->getWeDigBioDashboardCount();
     }
 
     /**
@@ -56,7 +56,7 @@ class WeDigBioDashboardProcess
      */
     public function getItems(int $limit, int $offset)
     {
-        return $this->pusherTranscriptionModelService->getWeDigBioDashboardItems($limit, $offset);
+        return $this->pusherTranscriptionService->getWeDigBioDashboardItems($limit, $offset);
     }
 
     /**
@@ -84,6 +84,6 @@ class WeDigBioDashboardProcess
      */
     public function showApiDashboard($guid)
     {
-        return $this->pusherTranscriptionModelService->findBy('guid', $guid);
+        return $this->pusherTranscriptionService->findBy('guid', $guid);
     }
 }

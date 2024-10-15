@@ -23,10 +23,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EventJoinRequest;
 use App\Models\EventTeam;
 use App\Services\Event\EventTeamUserService;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\View;
+use Redirect;
+use Session;
 use Throwable;
+use View;
 
 class EventTeamUserController extends Controller
 {

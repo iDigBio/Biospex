@@ -39,7 +39,7 @@ class FixFieldsStepOne extends FixFieldsBase
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
 
-        $this->headers = $this->headerModelService->getAll();
+        $this->headers = $this->headerService->getAll();
 
         $this->properties = collect($this->getPropertiesFile('properties.json'));
 

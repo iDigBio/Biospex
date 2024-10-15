@@ -21,8 +21,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\Expedition\ExpeditionService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Auth;
+use Request;
+use Response;
 use View;
 
 class ExpeditionSortController extends Controller
@@ -30,10 +31,10 @@ class ExpeditionSortController extends Controller
     /**
      * Sort expedition admin page.
      */
-    public function __invoke(ExpeditionService $expeditionService)
+    public function __invoke(ExpeditionService $expeditionService): \Illuminate\Http\JsonResponse|\Illuminate\View\View
     {
         if (! Request::ajax()) {
-            return null;
+            return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
         [$active, $completed] = $expeditionService->getAdminIndex(Auth::user(), Request::all());

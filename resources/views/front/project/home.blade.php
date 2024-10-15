@@ -203,7 +203,7 @@
                 <div class="text-center mt-4 mb-4">
                     @foreach($years as $year)
                         <button class="btn btn-primary btn-transcription" id="year{{ $year }}"
-                                data-href="{{ route('front.projects.transcriptions', [$project->id, $year]) }}">{{ $year }}
+                                data-href="{{ route('front.projects.transcriptions', [$project, $year]) }}">{{ $year }}
                         </button>
                     @endforeach
                 </div>
@@ -224,7 +224,7 @@
                     <div id="mapDiv" class="d-flex" style="width:100%; height: 500px"></div>
                     <div id="mapLegendDiv" style="width:100%; height: 100px"></div>
                     <div class="hide" id="projectUrl"
-                         data-href="{{ route('front.projects.state', [$project->id]) }}"></div>
+                         data-href="{{ route('front.projects.state', [$project]) }}"></div>
                 </div>
             </div>
         </div>

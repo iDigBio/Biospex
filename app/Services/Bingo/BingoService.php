@@ -112,13 +112,11 @@ class BingoService
     /**
      * Show bingo page.
      */
-    public function showPublicBingo(Bingo $bingo): array
+    public function showPublicBingo(Bingo &$bingo): array
     {
         $bingo->load(['words', 'user', 'project']);
 
-        $words = $bingo->words->chunk(3);
-
-        return [$bingo, $words];
+        return $bingo->words->chunk(3);
     }
 
     /**

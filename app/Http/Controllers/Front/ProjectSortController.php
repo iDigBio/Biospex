@@ -21,8 +21,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Services\Project\ProjectService;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\View;
+use Request;
+use Response;
+use View;
 
 class ProjectSortController extends Controller
 {
@@ -36,10 +37,10 @@ class ProjectSortController extends Controller
     /**
      * Admin Projects page sort and order.
      */
-    public function __invoke(): ?\Illuminate\Contracts\View\View
+    public function __invoke(): \Illuminate\Http\JsonResponse
     {
         if (! Request::ajax()) {
-            return null;
+            return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
         $projects = $this->projectService->getPublicIndex(Request::all());

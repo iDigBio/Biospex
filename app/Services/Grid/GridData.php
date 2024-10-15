@@ -19,7 +19,7 @@
 
 namespace App\Services\Grid;
 
-use App\Services\Models\SubjectModelService;
+use App\Services\Subject\SubjectService;
 use Exception;
 use Illuminate\Support\LazyCollection;
 
@@ -31,7 +31,7 @@ class GridData
     /**
      * GridData constructor.
      */
-    public function __construct(private readonly SubjectModelService $subjectModelService) {}
+    public function __construct(private readonly SubjectService $subjectService) {}
 
     /**
      * Get total rows and assign to vars count.
@@ -40,7 +40,7 @@ class GridData
      */
     public function getTotalRows(array &$vars)
     {
-        $vars['count'] = $this->subjectModelService->getGridTotalRowCount($vars);
+        $vars['count'] = $this->subjectService->getGridTotalRowCount($vars);
 
         if (! is_int($vars['count'])) {
             throw new Exception('The method getTotalNumberOfRows must return an integer');
@@ -56,7 +56,7 @@ class GridData
      */
     public function getDataRows(array $vars)
     {
-        return $this->subjectModelService->getGridRows($vars);
+        return $this->subjectService->getGridRows($vars);
     }
 
     /**
@@ -64,7 +64,7 @@ class GridData
      */
     public function getQueryForExport(array $vars): LazyCollection
     {
-        return $this->subjectModelService->exportGridRows($vars);
+        return $this->subjectService->exportGridRows($vars);
     }
 
     /**

@@ -41,7 +41,7 @@ class ExpeditionCloneController
         protected WorkflowService $workflowService
     ) {}
 
-    public function __invoke(Expedition $expedition, JavascriptService $javascriptService)
+    public function __invoke(Expedition $expedition, JavascriptService $javascriptService): mixed
     {
         $expedition->load(['project.group', 'downloads', 'stat']);
 

@@ -19,4 +19,4 @@
 
 use App\Http\Controllers\Front\AwsSnsController;
 
-Route::post('/aws-sns-webhook', [AwsSnsController::class, 'index']);
+Route::post('/aws-sns-webhook', AwsSnsController::class);

@@ -23,21 +23,24 @@ use App\Facades\CountHelper;
 use App\Models\Project;
 use App\Models\ProjectResource;
 use App\Models\User;
-use App\Services\ExpeditionPartitionTrait;
 use App\Services\Helpers\CountService;
+use App\Services\Helpers\DateService;
+use App\Services\Trait\EventPartitionTrait;
+use App\Services\Trait\ExpeditionPartitionTrait;
 use Illuminate\Support\Collection;
 
 readonly class ProjectService
 {
-    use ExpeditionPartitionTrait;
+    use EventPartitionTrait, ExpeditionPartitionTrait;
 
     /**
      * ProjectService constructor.
      */
     public function __construct(
-        public Project $project,
-        public ProjectResource $projectResource,
-        public CountService $countService,
+        protected Project $project,
+        protected ProjectResource $projectResource,
+        protected CountService $countService,
+        protected DateService $dateService,
     ) {}
 
     /**
@@ -157,7 +160,7 @@ readonly class ProjectService
             },
         ]);
 
-        [$expeditions, $expeditionsCompleted] = $this->partitionRecords($project->expeditions);
+        [$expeditions, $expeditionsCompleted] = $this->partitionExpeditions($project->expeditions);
 
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
         $transcribersCount = CountHelper::projectTranscriberCount($project->id);

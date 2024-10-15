@@ -23,7 +23,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GeoLocateForm;
 use App\Models\Group;
 use App\Services\Permission\CheckPermission;
-use Illuminate\Support\Facades\Redirect;
+use Redirect;
 use Throwable;
 
 class GroupGeoLocateFormController extends Controller
@@ -46,7 +46,7 @@ class GroupGeoLocateFormController extends Controller
 
             return Redirect::route('admin.groups.show', [$group])->with('success', t('GeoLocateExport Form was deleted.'));
         } catch (Throwable $throwable) {
-            return Redirect::route('admin.groups.show', [$group])->with('danger', t('There was an error deleting the GeoLocateExport Form.'.$t->getMessage()));
+            return Redirect::route('admin.groups.show', [$group])->with('danger', t('There was an error deleting the GeoLocateExport Form.'.$throwable->getMessage()));
         }
     }
 }

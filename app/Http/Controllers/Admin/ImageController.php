@@ -20,13 +20,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Request;
 use App\Services\Image\Thumbnail;
 
 /**
  * Class ImageController
- *
- * @package App\Http\Controllers\Admin
  */
 class ImageController extends Controller
 {
@@ -37,13 +34,11 @@ class ImageController extends Controller
 
     /**
      * Construct
-     *
-     * @param Thumbnail $thumbnail
+     * TODO: refactor this
      */
     public function __construct(
         Thumbnail $thumbnail
-    )
-    {
+    ) {
         $this->thumbnail = $thumbnail;
     }
 
@@ -51,6 +46,7 @@ class ImageController extends Controller
      * Return resized image
      *
      * @return string
+     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function preview()
@@ -62,6 +58,6 @@ class ImageController extends Controller
         $url = \Request::input('url');
         $thumb = $this->thumbnail->getThumbnail(urldecode($url));
 
-        return '<img src="data:image/jpeg;base64,' . base64_encode($thumb) . '" />';
+        return '<img src="data:image/jpeg;base64,'.base64_encode($thumb).'" />';
     }
 }

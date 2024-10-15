@@ -17,13 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Models;
+namespace App\Services\Transcriptions;
 
 use App\Models\PanoptesTranscription;
 use Illuminate\Support\Facades\Cache;
 use MongoDB\BSON\UTCDateTime;
 
-class PanoptesTranscriptionModelService
+class PanoptesTranscriptionService
 {
     public function __construct(protected PanoptesTranscription $model) {}
 

@@ -22,7 +22,7 @@ namespace App\Services\Actor\TesseractOcr;
 use App\Models\OcrQueue;
 use App\Models\OcrQueueFile;
 use App\Notifications\Traits\ButtonTrait;
-use App\Services\Models\SubjectModelService;
+use App\Services\Subject\SubjectService;
 
 /**
  * Class OcrService
@@ -37,7 +37,7 @@ readonly class TesseractOcrBuild
     public function __construct(
         private OcrQueue $ocrQueue,
         private OcrQueueFile $ocrQueueFile,
-        private SubjectModelService $subjectModelService,
+        private SubjectService $subjectService,
     ) {}
 
     /**
@@ -45,7 +45,7 @@ readonly class TesseractOcrBuild
      */
     public function getSubjectCountForOcr(int $projectId, ?int $expeditionId = null): int
     {
-        return $this->subjectModelService->getSubjectCountForOcr($projectId, $expeditionId);
+        return $this->subjectService->getSubjectCountForOcr($projectId, $expeditionId);
     }
 
     /**
@@ -64,7 +64,7 @@ readonly class TesseractOcrBuild
      */
     public function createOcrQueueFiles(int $queueId, int $projectId, ?int $expeditionId = null): void
     {
-        $cursor = $this->subjectModelService->getSubjectCursorForOcr($projectId, $expeditionId);
+        $cursor = $this->subjectService->getSubjectCursorForOcr($projectId, $expeditionId);
 
         $cursor->each(function ($subject) use ($queueId) {
             $attributes = [

@@ -26,9 +26,9 @@ use App\Models\Group;
 use App\Services\Group\GroupService;
 use App\Services\Permission\CheckPermission;
 use Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\View;
+use Redirect;
 use Throwable;
+use View;
 
 /**
  * Class GroupController
@@ -43,7 +43,7 @@ class GroupController extends Controller
     /**
      * Display groups.
      */
-    public function index()
+    public function index(): mixed
     {
         $groups = $this->groupService->getAdminIndex();
 
@@ -53,15 +53,15 @@ class GroupController extends Controller
     /**
      * Show create group form.
      */
-    public function create()
+    public function create(): mixed
     {
-        return \View::make('admin.group.create');
+        return View::make('admin.group.create');
     }
 
     /**
      * Store a newly created group.
      */
-    public function store(GroupFormRequest $request)
+    public function store(GroupFormRequest $request): \Illuminate\Http\RedirectResponse
     {
         try {
             $this->groupService->storeGroup(Auth::user(), $request->all());
@@ -75,7 +75,7 @@ class GroupController extends Controller
     /**
      * Show a group.
      */
-    public function show(Group $group)
+    public function show(Group $group): mixed
     {
         if (! CheckPermission::handle('read', $group)) {
             return Redirect::back();
@@ -89,7 +89,7 @@ class GroupController extends Controller
     /**
      * Show group edit form.
      */
-    public function edit(Group $group)
+    public function edit(Group $group): mixed
     {
         if (! CheckPermission::handle('isOwner', $group)) {
             return Redirect::back();
@@ -103,7 +103,7 @@ class GroupController extends Controller
     /**
      * Update group.
      */
-    public function update(Group $group, GroupFormRequest $request)
+    public function update(Group $group, GroupFormRequest $request): \Illuminate\Http\RedirectResponse
     {
         if (! CheckPermission::handle('isOwner', $group)) {
             return Redirect::back();
@@ -117,7 +117,7 @@ class GroupController extends Controller
     /**
      * Delete group.
      */
-    public function destroy(Group $group)
+    public function destroy(Group $group): \Illuminate\Http\RedirectResponse
     {
         if (! CheckPermission::handle('isOwner', $group)) {
             return Redirect::back();

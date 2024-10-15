@@ -23,43 +23,47 @@ use App\Http\Controllers\Controller;
 use App\Models\Expedition;
 use App\Models\Project;
 use App\Services\Grid\JqGridEncoder;
-use Illuminate\Support\Facades\Request;
+use Request;
+use Response;
 use Throwable;
 
 class ExpeditionGridController extends Controller
 {
     public function __construct(protected JqGridEncoder $grid) {}
 
-    public function create(Project $project)
+    /**
+     * Show grid in expedition create page.
+     */
+    public function create(Project $project): mixed
     {
         try {
-            return $this->grid->encodeGridRequestedData(\Request::all(), 'create', $project->id);
+            return $this->grid->encodeGridRequestedData(Request::all(), 'create', $project->id);
         } catch (Throwable $throwable) {
-            return response($t->getMessage(), 404);
+            return Response::make($throwable->getMessage(), 404);
         }
     }
 
     /**
      * Show grid in expeditions.
      */
-    public function show(Expedition $expedition)
+    public function show(Expedition $expedition): mixed
     {
         try {
             return $this->grid->encodeGridRequestedData(Request::all(), 'show', $expedition->project_id, $expedition->id);
         } catch (Throwable $throwable) {
-            return response($t->getMessage(), 404);
+            return Response::make($throwable->getMessage(), 404);
         }
     }
 
     /**
      * Show grid in expeditions edit.
      */
-    public function edit(Expedition $expedition)
+    public function edit(Expedition $expedition): mixed
     {
         try {
             return $this->grid->encodeGridRequestedData(Request::all(), 'edit', $expedition->project_id, $expedition->id);
         } catch (Throwable $throwable) {
-            return response($t->getMessage(), 404);
+            return Response::make($throwable->getMessage(), 404);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace App\Services\Chart;
 use App\Models\AmChart;
 use App\Models\Expedition;
 use App\Models\Project;
-use App\Services\Models\PanoptesTranscriptionModelService;
+use App\Services\Transcriptions\PanoptesTranscriptionService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Filesystem\Filesystem;
@@ -50,7 +50,7 @@ class TranscriptionChartService
      * TranscriptionChartService constructor.
      */
     public function __construct(
-        protected PanoptesTranscriptionModelService $panoptesTranscriptionModelService,
+        protected PanoptesTranscriptionService $panoptesTranscriptionService,
         protected Carbon $carbon,
         protected Filesystem $filesystem
     ) {}
@@ -146,8 +146,8 @@ class TranscriptionChartService
      */
     public function setYearsArray(int $projectId): ?Collection
     {
-        $earliest_date = $this->panoptesTranscriptionModelService->getMinFinishedAtDateByProjectId($projectId);
-        $latest_date = $this->panoptesTranscriptionModelService->getMaxFinishedAtDateByProjectId($projectId);
+        $earliest_date = $this->panoptesTranscriptionService->getMinFinishedAtDateByProjectId($projectId);
+        $latest_date = $this->panoptesTranscriptionService->getMaxFinishedAtDateByProjectId($projectId);
 
         if ($earliest_date === null || $latest_date === null) {
             return null;
@@ -210,7 +210,7 @@ class TranscriptionChartService
      */
     protected function transcriptionCountPerDate(int $workflowId): mixed
     {
-        return $this->panoptesTranscriptionModelService->getTranscriptionCountPerDate($workflowId, $this->begin, $this->end);
+        return $this->panoptesTranscriptionService->getTranscriptionCountPerDate($workflowId, $this->begin, $this->end);
     }
 
     /**

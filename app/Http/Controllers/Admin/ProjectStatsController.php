@@ -25,7 +25,7 @@ use App\Models\Project;
 use App\Services\Group\GroupService;
 use App\Services\JavascriptService;
 use App\Services\Project\ProjectService;
-use Illuminate\Support\Facades\View;
+use View;
 
 class ProjectStatsController extends Controller
 {

@@ -24,7 +24,7 @@ use App\Http\Requests\PasswordFormRequest;
 use App\Models\User;
 use App\Services\Permission\CheckPermission;
 use Illuminate\Foundation\Auth\ResetsPasswords;
-use Illuminate\Support\Facades\Redirect;
+use Redirect;
 
 class UserPasswordController extends Controller
 {
@@ -33,7 +33,7 @@ class UserPasswordController extends Controller
     /**
      * Update the user password.
      */
-    public function __invoke(User $user, PasswordFormRequest $request)
+    public function __invoke(User $user, PasswordFormRequest $request): mixed
     {
         if (! CheckPermission::handle('password', $user)) {
             return Redirect::back();

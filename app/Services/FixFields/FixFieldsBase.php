@@ -20,8 +20,8 @@
 namespace App\Services\FixFields;
 
 use App\Models\Property;
-use App\Services\Models\HeaderModelService;
 use App\Services\MongoDbService;
+use App\Services\Project\HeaderService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
@@ -32,7 +32,7 @@ class FixFieldsBase
      */
     public function __construct(
         public MongoDbService $mongoDbService,
-        public HeaderModelService $headerModelService,
+        public HeaderService $headerService,
         public Property $property
     ) {}
 
@@ -114,7 +114,7 @@ class FixFieldsBase
      */
     public function removeAndSetHeader(string $projectId, array $fields, string $type)
     {
-        $record = $this->headerModelService->getFirst('project_id', $projectId);
+        $record = $this->headerService->getFirst('project_id', $projectId);
 
         if ($record !== null) {
             $header = $record->header;
