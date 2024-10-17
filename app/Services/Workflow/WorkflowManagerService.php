@@ -19,36 +19,22 @@
 
 namespace App\Services\Workflow;
 
+use App\Models\Expedition;
 use App\Models\WorkflowManager;
 
-readonly class WorkflowManagerService
+class WorkflowManagerService
 {
     /**
      * WorkflowManagerRepository constructor.
      */
-    public function __construct(private WorkflowManager $model) {}
+    public function __construct(protected WorkflowManager $model) {}
 
     /**
      * Create.
-     *
-     * @return mixed
      */
     public function create(array $data)
     {
         return $this->model->create($data);
-    }
-
-    /**
-     * Update.
-     *
-     * @return WorkflowManager|bool
-     */
-    public function update(array $data, $resourceId)
-    {
-        $model = $this->model->find($resourceId);
-        $result = $model->fill($data)->save();
-
-        return $result ? $model : false;
     }
 
     /**
@@ -60,13 +46,38 @@ readonly class WorkflowManagerService
     }
 
     /**
+     * Create workflow manager process.
+     */
+    public function createProcess(Expedition &$expedition): string
+    {
+        if ($expedition->workflowManager !== null) {
+            $expedition->workflowManager->stopped = 0;
+            $expedition->workflowManager->save();
+
+            return t('The expedition has been removed from the process queue.');
+        } else {
+            // Only start process for Zooniverse Actor.
+            $sync = [
+                $expedition->zooActor->id => [
+                    'order' => $expedition->zooActor->pivot->order,
+                    'state' => $expedition->zooActor->pivot->state === 1 ? 2 : $expedition->zooActor->pivot->state,
+                ],
+            ];
+            $expedition->actors()->sync($sync, false);
+
+            $this->create(['expedition_id' => $expedition->id]);
+
+            return t('The expedition has been added to the process queue.');
+        }
+    }
+
+    /**
      * Get workflow managers for overnight process.
      *
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getWorkflowManagersForProcessing($expeditionId = null, array $attributes = ['*']): \Illuminate\Database\Eloquent\Collection|array
     {
-        // TODO query selects state => 1. Need to remove this and get all records and determine action by state in actor class.
         $model = $this->model->with(['expedition.stat', 'expedition.actors' => function ($query) {
             $query->where('state', '>', 0)->where('error', 0);
         }])->where('stopped', 0);

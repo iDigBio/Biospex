@@ -20,27 +20,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\WorkflowIdFormRequest;
-use App\Jobs\PanoptesProjectUpdateJob;
-use App\Models\PanoptesProject;
+use App\Models\Expedition;
 use App\Services\Expedition\ExpeditionService;
 use App\Services\Permission\CheckPermission;
 use App\Services\Project\ProjectService;
 use App\Services\Workflow\WorkflowManagerService;
 use Exception;
 use Redirect;
-use Request;
-use Response;
 use Throwable;
-use View;
 
 class WorkflowManagerController extends Controller
 {
     /**
-     * Construct
-     * TODO: Refactor
+     * Constructor.
      */
     public function __construct(
+        protected ExpeditionService $expeditionService,
         protected ProjectService $projectService,
         protected WorkflowManagerService $workflowManagerService
     ) {}
@@ -48,135 +43,58 @@ class WorkflowManagerController extends Controller
     /**
      * Start processing expedition actors
      */
-    public function process(ExpeditionService $expeditionService, int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
+    public function create(Expedition $expedition): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectService->findWithRelations($projectId, ['group']);
+        $expedition->load([
+            'project.group',
+            'zooActor',
+            'panoptesProject',
+            'workflowManager',
+            'stat',
+        ]);
 
-        if (! CheckPermission::handle('updateProject', $project->group)) {
+        if (! CheckPermission::handle('updateProject', $expedition->project->group)) {
             return Redirect::route('admin.projects.index');
         }
 
         try {
-            $expedition = $expeditionService->expedition->with([
-                'actors',
-                'panoptesProject',
-                'workflowManager',
-                'stat',
-            ])->find($expeditionId);
-
             if ($expedition->panoptesProject === null) {
                 throw new Exception(t('Zooniverse Workflow Id is missing. Please update the Expedition once Workflow Id is acquired.'));
             }
 
-            if ($expedition->workflowManager !== null) {
-                $expedition->workflowManager->stopped = 0;
-                $expedition->workflowManager->save();
-                $message = t('The expedition has been removed from the process queue.');
-            } else {
-                // Dont't start GeoLocateExport Actor.
-                $expedition->actors->reject(function ($actor) {
-                    return $actor->id == config('geolocate.actor_id');
-                })->each(function ($actor) use ($expedition) {
-                    $sync = [
-                        $actor->id => [
-                            'order' => $actor->pivot->order,
-                            'state' => $actor->pivot->state === 1 ? 2 : $actor->pivot->state,
-                        ],
-                    ];
-                    $expedition->actors()->sync($sync, false);
-                });
+            $message = $this->workflowManagerService->createProcess($expedition);
 
-                $this->workflowManagerService->create(['expedition_id' => $expeditionId]);
-                $message = t('The expedition has been added to the process queue.');
-            }
-
-            return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])->with('success', $message);
+            return Redirect::route('admin.expeditions.show', [$expedition])->with('success', $message);
         } catch (Throwable $throwable) {
-
-            return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+            return Redirect::route('admin.expeditions.show', [$expedition])
                 ->with('danger', t('An error occurred when trying to process the expedition: %s', $throwable->getMessage()));
         }
     }
 
     /**
      * Stop a expedition process.
+     * Does not destroy the process, just stops it.
      */
-    public function stop(int $projectId, int $expeditionId): \Illuminate\Http\RedirectResponse
+    public function destroy(Expedition $expedition): \Illuminate\Http\RedirectResponse
     {
-        $project = $this->projectService->findWithRelations($projectId, ['group']);
+        $expedition->load([
+            'project.group',
+            'workflowManager',
+        ]);
 
-        if (! CheckPermission::handle('updateProject', $project->group)) {
+        if (! CheckPermission::handle('updateProject', $expedition->project->group)) {
             return Redirect::route('admin.projects.index');
         }
 
-        $workflow = $this->workflowManagerService->getFirstBy('expedition_id', $expeditionId);
-
-        if ($workflow === null) {
-
-            return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+        if (is_null($expedition->workflowManager)) {
+            return Redirect::route('admin.expeditions.show', [$expedition])
                 ->with('danger', t('Expedition has no processes at this time.'));
         }
 
-        $workflow->stopped = 1;
-        $this->workflowManagerService->update(['stopped' => 1], $workflow->id);
+        $expedition->workflowManager->stopped = 1;
+        $expedition->workflowManager->save();
 
-        return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
+        return Redirect::route('admin.expeditions.show', [$expedition])
             ->with('success', t('Expedition process has been stopped locally. This does not stop any processing occurring on remote sites.'));
-    }
-
-    /**
-     * Return workflow id form.
-     */
-    public function workflowShowForm(PanoptesProject $panoptesProjectModel, int $projectId, int $expeditionId): \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
-    {
-        if (! Request::ajax()) {
-            return Response::json(['message' => t('Request must be ajax.')], 400);
-        }
-
-        $panoptesProject = $panoptesProjectModel->where('expedition_id', $expeditionId)->first();
-
-        return View::make('admin.expedition.partials.workflow-modal-body', compact('projectId', 'expeditionId', 'panoptesProject'));
-    }
-
-    /**
-     * Update or create the workflow id.
-     */
-    public function workflowUpdateForm(
-        WorkflowIdFormRequest $request,
-        PanoptesProject $panoptesProjectModel,
-        int $projectId,
-        int $expeditionId
-    ): \Illuminate\Http\JsonResponse {
-
-        if (! Request::ajax()) {
-            return Response::json(['message' => t('Request must be ajax.')], 400);
-        }
-
-        $project = $this->projectService->findWithRelations($projectId, ['group']);
-
-        if (! CheckPermission::handle('updateProject', $project->group)) {
-            return Response::json(['message' => t('You are not authorized for this action.')], 401);
-        }
-
-        if (! empty($request->input('panoptes_workflow_id'))) {
-            $attributes = [
-                'project_id' => $projectId,
-                'expedition_id' => $expeditionId,
-            ];
-
-            $values = [
-                'project_id' => $project->id,
-                'expedition_id' => $expeditionId,
-                'panoptes_workflow_id' => $request->input('panoptes_workflow_id'),
-            ];
-
-            $panoptesProject = $panoptesProjectModel->updateOrCreate($attributes, $values);
-
-            PanoptesProjectUpdateJob::dispatch($panoptesProject);
-
-            return Response::json(['message' => t('Workflow id is updated.')]);
-        }
-
-        return Response::json(['message' => t('Could not update Panoptes Workflow Id.')], 500);
     }
 }

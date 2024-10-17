@@ -11,13 +11,13 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Http\Controllers\Admin\WorkflowManagerController;
+use App\Http\Controllers\Admin\PanoptesWorkflowFormController;
 
-Route::post('expeditions/{expedition}/create', [WorkflowManagerController::class, 'create'])->name('admin.workflow-manager.create');
-Route::delete('expeditions/{expedition}/destroy', [WorkflowManagerController::class, 'destroy'])->name('admin.workflow-manager.destroy');
+Route::get('expeditions/{expedition}/workflow', [PanoptesWorkflowFormController::class, 'edit'])->name('admin.panoptes-workflow.edit');
+Route::post('expeditions/{expedition}/workflow', [PanoptesWorkflowFormController::class, 'update'])->name('admin.panoptes-workflow.update');
