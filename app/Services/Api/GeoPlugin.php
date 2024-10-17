@@ -28,11 +28,6 @@ use GuzzleHttp\Exception\GuzzleException;
 class GeoPlugin
 {
     /**
-     * @var \App\Services\Requests\HttpRequest
-     */
-    private $request;
-
-    /**
      * Plugin server.
      *
      * @var string
@@ -145,10 +140,7 @@ class GeoPlugin
     /**
      * GeoHelper constructor.
      */
-    public function __construct(HttpRequest $request)
-    {
-        $this->request = $request;
-    }
+    public function __construct(protected HttpRequest $request) {}
 
     /**
      * Locate ip.

@@ -42,11 +42,11 @@ class CreatePanoptesTranscriptionService
      * TODO: Refactor so less dependencies are needed.
      */
     public function __construct(
-        private SubjectService $subjectService,
-        private PanoptesTranscriptionService $panoptesTranscriptionService,
-        private CreateTranscriptionLocationService $createTranscriptionLocationService,
-        private CreateReportService $createReportService,
-        private AwsS3CsvService $awsS3CsvService
+        protected SubjectService $subjectService,
+        protected PanoptesTranscriptionService $panoptesTranscriptionService,
+        protected CreateTranscriptionLocationService $createTranscriptionLocationService,
+        protected CreateReportService $createReportService,
+        protected AwsS3CsvService $awsS3CsvService
     ) {}
 
     /**

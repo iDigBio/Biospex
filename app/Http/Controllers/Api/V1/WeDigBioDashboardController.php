@@ -30,15 +30,10 @@ use Illuminate\Http\Response;
  */
 class WeDigBioDashboardController extends ApiController
 {
-    private WeDigBioDashboardProcess $weDigBioDashboardProcess;
-
     /**
      * WeDigBioDashboardController constructor.
      */
-    public function __construct(WeDigBioDashboardProcess $weDigBioDashboardProcess)
-    {
-        $this->weDigBioDashboardProcess = $weDigBioDashboardProcess;
-    }
+    public function __construct(protected WeDigBioDashboardProcess $weDigBioDashboardProcess) {}
 
     /**
      * PusherTranscription List.

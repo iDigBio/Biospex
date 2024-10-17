@@ -33,9 +33,9 @@ class ZooniverseBuildQueue
      * Construct.
      */
     public function __construct(
-        private ExportQueue $exportQueue,
-        private ExportQueueFile $exportQueueFile,
-        private SubjectService $subjectService
+        protected ExportQueue $exportQueue,
+        protected ExportQueueFile $exportQueueFile,
+        protected SubjectService $subjectService
     ) {}
 
     /**

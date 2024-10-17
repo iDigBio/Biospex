@@ -28,12 +28,12 @@ use Illuminate\Support\Facades\Session;
 /**
  * Class GroupEventSubscriber
  */
-readonly class GroupEventSubscriber
+class GroupEventSubscriber
 {
     /**
      * GroupSessionEventListener constructor.
      */
-    public function __construct(private GroupService $groupService) {}
+    public function __construct(protected GroupService $groupService) {}
 
     /**
      * Register the listeners for the subscriber.

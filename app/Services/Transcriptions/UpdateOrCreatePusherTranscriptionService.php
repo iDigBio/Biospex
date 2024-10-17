@@ -26,14 +26,14 @@ use Validator;
 /**
  * Class UpdateOrCreatePusherTranscriptionService
  */
-readonly class UpdateOrCreatePusherTranscriptionService
+class UpdateOrCreatePusherTranscriptionService
 {
     /**
      * UpdateOrCreatePusherTranscriptionService constructor.
      */
     public function __construct(
-        private PusherTranscriptionService $pusherTranscriptionService,
-        private PanoptesTranscriptionService $panoptesTranscriptionService
+        protected PusherTranscriptionService $pusherTranscriptionService,
+        protected PanoptesTranscriptionService $panoptesTranscriptionService
     ) {}
 
     /**

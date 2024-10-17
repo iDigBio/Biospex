@@ -29,16 +29,16 @@ use App\Services\Expedition\ExpeditionService;
 /**
  * Class ExpertReconcilePublishService
  */
-readonly class ExpertReconcilePublishService
+class ExpertReconcilePublishService
 {
     /**
      * ExpertReconcilePublishService constructor.
      */
     public function __construct(
-        private Reconcile $reconcile,
-        private Download $download,
-        private ExpeditionService $expeditionService,
-        private AwsS3CsvService $awsS3CsvService
+        protected Reconcile $reconcile,
+        protected Download $download,
+        protected ExpeditionService $expeditionService,
+        protected AwsS3CsvService $awsS3CsvService
     ) {}
 
     /**

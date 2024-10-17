@@ -39,8 +39,8 @@ class ZooniverseExportCreateReport
      * Construct.
      */
     public function __construct(
-        private ExportQueueFile $exportQueueFile,
-        private CreateReportService $createReportService
+        protected ExportQueueFile $exportQueueFile,
+        protected CreateReportService $createReportService
     ) {}
 
     /**

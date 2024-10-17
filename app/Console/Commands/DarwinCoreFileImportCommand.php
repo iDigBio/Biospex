@@ -45,7 +45,7 @@ class DarwinCoreFileImportCommand extends Command
     /**
      * DarwinCoreFileImportCommand constructor.
      */
-    public function __construct(private Import $import)
+    public function __construct(protected Import $import)
     {
         parent::__construct();
     }

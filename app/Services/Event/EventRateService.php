@@ -28,7 +28,7 @@ use Illuminate\Support\Collection;
 /**
  * Class EventRateService
  */
-readonly class EventRateService
+class EventRateService
 {
     use RateChartTrait;
 

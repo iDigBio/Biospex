@@ -45,7 +45,7 @@ class AmChartUpdate extends Command
     /**
      * AmChartUpdate constructor.
      */
-    public function __construct(private readonly AmChart $amChart)
+    public function __construct(protected AmChart $amChart)
     {
         parent::__construct();
     }

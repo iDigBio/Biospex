@@ -25,8 +25,6 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AppCommand
- *
- * @package App\Console\Commands
  */
 class AppLambdaCommand extends Command
 {
@@ -41,17 +39,11 @@ class AppLambdaCommand extends Command
     protected $description = 'Used to test sqs lambda code';
 
     /**
-     * @var \App\Services\Api\AwsLambdaApiService
-     */
-    private AwsLambdaApiService $awsLambdaApiService;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(AwsLambdaApiService $awsLambdaApiService)
+    public function __construct(protected AwsLambdaApiService $awsLambdaApiService)
     {
         parent::__construct();
-        $this->awsLambdaApiService = $awsLambdaApiService;
     }
 
     /**
@@ -76,13 +68,13 @@ class AppLambdaCommand extends Command
 
     private function exportTest(): void
     {
-        $workingDir = "scratch/folderName-queueId-actorId-expeditionUuid";
+        $workingDir = 'scratch/folderName-queueId-actorId-expeditionUuid';
         $attributes = [
-            'bucket'    => config('filesystems.disks.s3.bucket'),
-            'queueId'   => 999999,
-            'subjectId' => "615da36c65b16554e4781ed9",
-            'url'       => "https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg",
-            'dir'       => $workingDir,
+            'bucket' => config('filesystems.disks.s3.bucket'),
+            'queueId' => 999999,
+            'subjectId' => '615da36c65b16554e4781ed9',
+            'url' => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
+            'dir' => $workingDir,
         ];
 
         Storage::disk('s3')->makeDirectory($workingDir);
@@ -96,8 +88,8 @@ class AppLambdaCommand extends Command
     private function explainTest(): void
     {
         $attributes = [
-            'bucket'       => 'biospex-dev',
-            'key'          => 'zooniverse/classification/999999.csv',
+            'bucket' => 'biospex-dev',
+            'key' => 'zooniverse/classification/999999.csv',
             'explanations' => true,
         ];
 
@@ -126,9 +118,9 @@ class AppLambdaCommand extends Command
     {
         $attributes = [
             'bucket' => config('filesystems.disks.s3.bucket'),
-            'key'    => config('zooniverse.directory.lambda-ocr').'/615da36c65b16554e4781ed9.txt',
-            'file'   => 999,
-            'uri'    => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
+            'key' => config('zooniverse.directory.lambda-ocr').'/615da36c65b16554e4781ed9.txt',
+            'file' => 999,
+            'uri' => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
         ]; //https://sernecportal.org/imglib/seinet/sernec/FTU/FTU0016/FTU0016693.jpg
 
         $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), $attributes);

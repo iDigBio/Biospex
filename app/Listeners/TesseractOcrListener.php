@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Listeners;
 
 use App\Events\TesseractOcrEvent;
@@ -28,17 +29,9 @@ use Throwable;
 class TesseractOcrListener implements ShouldQueue
 {
     /**
-     * @var \App\Services\Actor\TesseractOcr\TesseractOcrResponse $tesseractOcrResponse
-     */
-    private TesseractOcrResponse $tesseractOcrResponse;
-
-    /**
      * Create the event listener.
      */
-    public function __construct(TesseractOcrResponse $tesseractOcrResponse)
-    {
-        $this->tesseractOcrResponse = $tesseractOcrResponse;
-    }
+    public function __construct(protected TesseractOcrResponse $tesseractOcrResponse) {}
 
     /**
      * Handle the event.
@@ -52,8 +45,6 @@ class TesseractOcrListener implements ShouldQueue
 
     /**
      * Set tube for listener.
-     *
-     * @return string
      */
     public function viaQueue(): string
     {
@@ -63,15 +54,12 @@ class TesseractOcrListener implements ShouldQueue
     /**
      * Handle a LabelReconciliationEvent failure.
      * Will send email to admin so they can investigate.
-     *
-     * @param TesseractOcrEvent $event
-     * @param Throwable $exception
      */
     public function failed(TesseractOcrEvent $event, Throwable $exception): void
     {
         $attributes = [
             'subject' => t('TesseractOcrListener Failed'),
-            'html'    => [
+            'html' => [
                 t('TesseractOcrListener failed for Queue File ID: %s', $event->payload['responsePayload']['body']['file']),
                 t('Error: %s', $exception->getMessage()),
                 t('File: %s', $exception->getFile()),

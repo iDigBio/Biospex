@@ -24,12 +24,12 @@ use App\Models\ExportQueueFile;
 /**
  * Class SnsImageExportResultProcess
  */
-readonly class SnsImageExportResultProcess
+class SnsImageExportResultProcess
 {
     /**
      * Construct.
      */
-    public function __construct(private ExportQueueFile $exportQueueFile) {}
+    public function __construct(protected ExportQueueFile $exportQueueFile) {}
 
     /**
      * Handle hard failure of lambda function.

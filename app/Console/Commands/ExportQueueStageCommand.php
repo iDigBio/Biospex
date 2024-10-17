@@ -31,8 +31,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
  * Class ExportQueueCommand
- *
- * @package App\Console\Commands
  */
 class ExportQueueStageCommand extends Command
 {
@@ -53,25 +51,13 @@ class ExportQueueStageCommand extends Command
     protected $description = 'Fire export queue in mid process by giving stage.';
 
     /**
-     * @var \App\Services\Actor\Zooniverse\ZooniverseExportQueue
-     */
-    private ZooniverseExportQueue $zooniverseExportQueue;
-
-    /**
-     * @var \App\Services\Actor\ActorDirectory
-     */
-    private ActorDirectory $actorDirectory;
-
-    /**
      * ExportQueueCommand constructor.
-     *
-     * @param \App\Services\Actor\Zooniverse\ZooniverseExportQueue $zooniverseExportQueue
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      */
-    public function __construct(ZooniverseExportQueue $zooniverseExportQueue, ActorDirectory $actorDirectory) {
+    public function __construct(
+        protected ZooniverseExportQueue $zooniverseExportQueue,
+        protected ActorDirectory $actorDirectory)
+    {
         parent::__construct();
-        $this->zooniverseExportQueue = $zooniverseExportQueue;
-        $this->actorDirectory = $actorDirectory;
     }
 
     /**

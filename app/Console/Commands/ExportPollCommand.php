@@ -51,7 +51,7 @@ class ExportPollCommand extends Command
     /**
      * ExportPollCommand constructor.
      */
-    public function __construct(private ExportQueue $exportQueue)
+    public function __construct(protected ExportQueue $exportQueue)
     {
         parent::__construct();
 

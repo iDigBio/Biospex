@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Services\Project\ProjectService;
+use App\Models\Project;
 use App\Services\WeDigBio\WeDigBioTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,10 +35,6 @@ class WeDigBioEventTranscriptionJob implements ShouldQueue
      */
     public int $timeout = 60;
 
-    private array $data;
-
-    private int $projectId;
-
     /**
      * Create a new job instance.
      * Handles WeDigBio even transcriptions
@@ -47,10 +43,8 @@ class WeDigBioEventTranscriptionJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(array $data, int $projectId)
+    public function __construct(protected array $data, protected int $projectId)
     {
-        $this->data = $data;
-        $this->projectId = $projectId;
         $this->onQueue(config('config.queue.wedigbio_event'));
     }
 
@@ -58,10 +52,10 @@ class WeDigBioEventTranscriptionJob implements ShouldQueue
      * Execute the job.
      */
     public function handle(
-        ProjectService $projectService,
+        Project $project,
         WeDigBioTranscriptionService $weDigBioTranscriptionService): void
     {
-        $project = $projectService->project->find($this->projectId);
+        $project = $project->find($this->projectId);
 
         if ($project === null) {
             $this->delete();

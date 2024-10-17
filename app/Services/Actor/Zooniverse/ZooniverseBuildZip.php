@@ -28,12 +28,12 @@ use Storage;
 /**
  * Class ZooniverseBuildZip
  */
-readonly class ZooniverseBuildZip
+class ZooniverseBuildZip
 {
     /**
      * Construct.
      */
-    public function __construct(private Download $download) {}
+    public function __construct(protected Download $download) {}
 
     /**
      * Process the actor.

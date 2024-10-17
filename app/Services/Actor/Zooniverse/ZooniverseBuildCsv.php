@@ -37,9 +37,9 @@ class ZooniverseBuildCsv
      * Construct.
      */
     public function __construct(
-        private ExportQueueFile $exportQueueFile,
-        private AwsS3CsvService $awsS3CsvService,
-        private MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService
+        protected ExportQueueFile $exportQueueFile,
+        protected AwsS3CsvService $awsS3CsvService,
+        protected MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService
     ) {}
 
     /**

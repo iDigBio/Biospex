@@ -21,9 +21,9 @@ namespace App\Services\Transcriptions;
 
 use App\Models\StateCounty;
 
-readonly class StateCountyService
+class StateCountyService
 {
-    public function __construct(private StateCounty $model) {}
+    public function __construct(protected StateCounty $model) {}
 
     /**
      * Create.

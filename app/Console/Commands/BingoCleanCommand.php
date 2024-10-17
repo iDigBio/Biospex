@@ -42,7 +42,7 @@ class BingoCleanCommand extends Command
      */
     protected $description = 'Remove expired bingo maps.';
 
-    public function __construct(private readonly BingoMap $bingoMap)
+    public function __construct(protected BingoMap $bingoMap)
     {
         parent::__construct();
     }

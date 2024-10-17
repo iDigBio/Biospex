@@ -35,14 +35,11 @@ class TesseractOcrProcessJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private OcrQueue $ocrQueue;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(OcrQueue $ocrQueue)
+    public function __construct(protected OcrQueue $ocrQueue)
     {
-        $this->ocrQueue = $ocrQueue;
         $this->onQueue(config('config.queue.lambda_ocr'));
     }
 

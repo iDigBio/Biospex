@@ -32,33 +32,22 @@ use Throwable;
 
 /**
  * Class ZooniverseExportBuildQueueJob
- *
- * @package App\Jobs
  */
-class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
+class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
-     * @var \App\Models\Actor
-     */
-    private Actor $actor;
-
-    /**
      * Create a new job instance.
-     *
-     * @param \App\Models\Actor $actor
      */
-    public function __construct(Actor $actor)
+    public function __construct(protected Actor $actor)
     {
-        $this->actor = $actor;
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\Zooniverse\ZooniverseBuildQueue $zooniverseBuildQueue
      * @throws \Exception
      */
     public function handle(ZooniverseBuildQueue $zooniverseBuildQueue): void
@@ -68,21 +57,18 @@ class ZooniverseExportBuildQueueJob implements ShouldQueue, ShouldBeUnique
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
     public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Zooniverse Export Build Queue Job Failed'),
-            'html'    => [
+            'html' => [
                 t('An error occurred building the export queue.'),
                 t('Actor Id: %s', $this->actor->id),
                 t('Expedition Id: %s', $this->actor->pivot->id),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage())
+                t('Message: %s', $throwable->getMessage()),
             ],
         ];
 

@@ -31,8 +31,8 @@ class ZooniverseExportProcessImages
      * ZooniverseExportProcessImages constructor.
      */
     public function __construct(
-        private ExportQueueFile $exportQueueFile,
-        private AwsLambdaApiService $awsLambdaApiService
+        protected ExportQueueFile $exportQueueFile,
+        protected AwsLambdaApiService $awsLambdaApiService
     ) {}
 
     /**

@@ -37,19 +37,13 @@ class ZooniverseCsvJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SkipZooniverse;
 
-    private int $expeditionId;
-
-    private bool $noDelay;
-
     /**
      * Create a new job instance.
      * noDelay is used to skip the delay in the job when using commands.
      */
-    public function __construct(int $expeditionId, bool $noDelay = false)
+    public function __construct(protected int $expeditionId, protected bool $noDelay = false)
     {
         $this->onQueue(config('config.queue.classification'));
-        $this->expeditionId = $expeditionId;
-        $this->noDelay = $noDelay;
     }
 
     /**

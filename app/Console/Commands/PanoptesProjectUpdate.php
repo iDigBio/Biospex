@@ -42,8 +42,6 @@ class PanoptesProjectUpdate extends Command
      */
     protected $description = 'Update expedition panoptes_projects. Accepts comma separated ids or empty.';
 
-    private $expeditionIds;
-
     /**
      * PanoptesProjectUpdate constructor.
      */
@@ -55,25 +53,17 @@ class PanoptesProjectUpdate extends Command
     /**
      * Execute the console command.
      */
-    public function handle(PanoptesProject $panoptesProject)
+    public function handle(PanoptesProject $panoptesProject): void
     {
-        $this->setIds();
+        $expeditionIds = $this->argument('expeditionIds') === null ? null :
+            explode(',', $this->argument('expeditionIds'));
 
-        $projects = $this->expeditionIds === null ?
+        $projects = $expeditionIds === null ?
             $panoptesProject->all() :
-            $panoptesProject->whereIn('expedition_id', $this->expeditionIds)->get();
+            $panoptesProject->whereIn('expedition_id', $expeditionIds)->get();
 
         $projects->each(function ($project) {
             PanoptesProjectUpdateJob::dispatch($project);
         });
-    }
-
-    /**
-     * Set expedition ids if passed via argument.
-     */
-    private function setIds()
-    {
-        $this->expeditionIds = $this->argument('expeditionIds') === null ? null :
-            explode(',', $this->argument('expeditionIds'));
     }
 }

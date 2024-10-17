@@ -35,14 +35,12 @@ class ZooniversePusherHandlerJob implements ShouldQueue
      */
     public int $timeout = 60;
 
-    private array $data;
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(array $data)
+    public function __construct(protected array $data)
     {
         $this->data = $data;
         $this->onQueue(config('config.queue.pusher_handler'));
@@ -54,10 +52,10 @@ class ZooniversePusherHandlerJob implements ShouldQueue
      * @return void
      */
     public function handle(
-        PanoptesProject $panoptesProjectModel,
+        PanoptesProject $panoptesProject,
         WeDigBioProject $weDigBioProject,
     ) {
-        $panoptesProject = $panoptesProjectModel->where('panoptes_project_id', $this->data['project_id'])
+        $panoptesProject = $panoptesProject->where('panoptes_project_id', $this->data['project_id'])
             ->where('panoptes_workflow_id', $this->data['workflow_id'])->first();
 
         $record = $weDigBioProject->where('panoptes_project_id', $this->data['project_id'])

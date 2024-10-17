@@ -26,14 +26,14 @@ use App\Services\Project\HeaderService;
  */
 class GridModel
 {
-    private $defaultGridVisible;
+    private mixed $defaultGridVisible;
 
-    private $defaultSubGridVisible;
+    private mixed $defaultSubGridVisible;
 
     /**
      * GridModel constructor.
      */
-    public function __construct(private HeaderService $headerService)
+    public function __construct(protected HeaderService $headerService)
     {
         $this->defaultGridVisible = config('config.defaultGridVisible');
         $this->defaultSubGridVisible = config('config.defaultSubGridVisible');
@@ -41,10 +41,8 @@ class GridModel
 
     /**
      * Create the grid model.
-     *
-     * @return false|string
      */
-    public function createGridModel(int $projectId)
+    public function createGridModel(int $projectId): false|string
     {
         $result = $this->headerService->getFirst('project_id', $projectId);
 

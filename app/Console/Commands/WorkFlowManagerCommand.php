@@ -47,7 +47,7 @@ class WorkFlowManagerCommand extends Command
     /**
      * WorkFlowManagerCommand constructor.
      */
-    public function __construct(private readonly WorkflowManagerService $workflowManagerService)
+    public function __construct(protected WorkflowManagerService $workflowManagerService)
     {
         parent::__construct();
         $this->tube = config('config.queue.workflow');

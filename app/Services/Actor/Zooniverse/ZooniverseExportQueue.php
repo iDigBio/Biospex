@@ -28,16 +28,16 @@ use App\Services\Actor\ActorFactory;
 use App\Services\Expedition\ExpeditionService;
 use Illuminate\Support\Facades\Storage;
 
-readonly class ZooniverseExportQueue
+class ZooniverseExportQueue
 {
     /**
      * ExportQueueCommand constructor.
      */
     public function __construct(
-        private ExpeditionService $expeditionService,
-        private ExportQueue $exportQueue,
-        private ActorDirectory $actorDirectory,
-        private Download $download
+        protected ExpeditionService $expeditionService,
+        protected ExportQueue $exportQueue,
+        protected ActorDirectory $actorDirectory,
+        protected Download $download
     ) {}
 
     /**

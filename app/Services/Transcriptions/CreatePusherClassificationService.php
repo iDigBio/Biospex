@@ -34,8 +34,8 @@ class CreatePusherClassificationService
      * CreatePusherClassificationService constructor.
      */
     public function __construct(
-        private readonly PanoptesApiService $apiService,
-        private readonly PusherClassification $pusherClassification
+        protected PanoptesApiService $apiService,
+        protected PusherClassification $pusherClassification
     ) {}
 
     /**

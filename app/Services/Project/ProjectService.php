@@ -29,7 +29,7 @@ use App\Services\Trait\EventPartitionTrait;
 use App\Services\Trait\ExpeditionPartitionTrait;
 use Illuminate\Support\Collection;
 
-readonly class ProjectService
+class ProjectService
 {
     use EventPartitionTrait, ExpeditionPartitionTrait;
 

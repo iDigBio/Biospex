@@ -33,9 +33,9 @@ class GeoLocateStatService
      * GeoLocateStatService constructor.
      */
     public function __construct(
-        private GeoLocateCommunity $geoLocateCommunity,
-        private GeoLocateDataSource $geoLocateDataSource,
-        private GeoLocateApi $geoLocateApi
+        protected GeoLocateCommunity $geoLocateCommunity,
+        protected GeoLocateDataSource $geoLocateDataSource,
+        protected GeoLocateApi $geoLocateApi
     ) {}
 
     /**

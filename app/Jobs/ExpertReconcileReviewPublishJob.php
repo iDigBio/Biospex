@@ -36,14 +36,11 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private int $expeditionId;
-
     /**
      * ExpertReconcileReviewPublishJob constructor.
      */
-    public function __construct(int $expeditionId)
+    public function __construct(protected int $expeditionId)
     {
-        $this->expeditionId = $expeditionId;
         $this->onQueue(config('config.queue.reconcile'));
     }
 

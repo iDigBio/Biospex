@@ -38,17 +38,11 @@ class DeleteExpeditionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private User $user;
-
-    private Expedition $expedition;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(User $user, Expedition $expedition)
+    public function __construct(protected User $user, protected Expedition $expedition)
     {
-        $this->user = $user;
-        $this->expedition = $expedition;
         $this->onQueue(config('config.queue.default'));
     }
 

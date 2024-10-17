@@ -21,7 +21,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Expedition;
-use App\Services\Expedition\ExpeditionService;
 use Request;
 use Response;
 use View;
@@ -31,7 +30,7 @@ class ExpeditionToolController extends Controller
     /**
      * Display expedition tools.
      */
-    public function __invoke(ExpeditionService $expeditionService, Expedition $expedition): \Illuminate\Http\JsonResponse|\Illuminate\View\View
+    public function __invoke(Expedition $expedition): \Illuminate\Http\JsonResponse|\Illuminate\View\View
     {
         if (! Request::ajax()) {
             return Response::json(['message' => t('Request must be ajax.')], 400);

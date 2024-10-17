@@ -31,7 +31,7 @@ class GridData
     /**
      * GridData constructor.
      */
-    public function __construct(private readonly SubjectService $subjectService) {}
+    public function __construct(protected SubjectService $subjectService) {}
 
     /**
      * Get total rows and assign to vars count.

@@ -44,15 +44,12 @@ class ExportQueueCommand extends Command
      */
     protected $description = 'Fire export queue process. Expedition Id resets the Expedition.';
 
-    private ZooniverseExportQueue $zooniverseExportQueue;
-
     /**
      * ExportQueueCommand constructor.
      */
-    public function __construct(ZooniverseExportQueue $zooniverseExportQueue)
+    public function __construct(protected ZooniverseExportQueue $zooniverseExportQueue)
     {
         parent::__construct();
-        $this->zooniverseExportQueue = $zooniverseExportQueue;
     }
 
     /**

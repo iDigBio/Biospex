@@ -35,33 +35,15 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Models\ExportQueue
-     */
-    private ExportQueue $exportQueue;
-
-    /**
-     * @var \App\Services\Actor\ActorDirectory
-     */
-    private ActorDirectory $actorDirectory;
-
-    /**
      * Create a new job instance.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      */
-    public function __construct(ExportQueue $exportQueue, ActorDirectory $actorDirectory)
+    public function __construct(protected ExportQueue $exportQueue, protected ActorDirectory $actorDirectory)
     {
-        $this->exportQueue = $exportQueue;
-        $this->actorDirectory = $actorDirectory;
         $this->onQueue(config('config.queue.export'));
     }
 
     /**
      * Execute the job.
-     *
-     * @param \App\Services\Actor\Zooniverse\ZooniverseExportProcessImages $zooniverseExportProcessImages
-     * @return void
      */
     public function handle(ZooniverseExportProcessImages $zooniverseExportProcessImages): void
     {
@@ -79,7 +61,7 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
 
             $attributes = [
                 'subject' => t('Ocr Process Error'),
-                'html'    => [
+                'html' => [
                     t('Queue Id: %s', $this->exportQueue->id),
                     t('Expedition Id: %s'.$this->exportQueue->expedition->id),
                     t('File: %s', $throwable->getFile()),

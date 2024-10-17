@@ -81,12 +81,12 @@ class DarwinCoreCsvImport
      * Construct
      */
     public function __construct(
-        private readonly Property $property,
-        private readonly SubjectService $subjectService,
-        private readonly HeaderService $headerService,
-        private readonly Validation $factory,
-        private readonly Csv $csv,
-        private readonly MongoDbService $mongoDbService
+        protected Property $property,
+        protected SubjectService $subjectService,
+        protected HeaderService $headerService,
+        protected Validation $factory,
+        protected Csv $csv,
+        protected MongoDbService $mongoDbService
     ) {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
         $this->mongoDbService->setCollection('subjects');

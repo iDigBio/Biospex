@@ -25,8 +25,6 @@ use Illuminate\Console\Command;
 
 /**
  * Class ReconcileHeaderCommand
- *
- * @package App\Console\Commands
  */
 class ReconcileHeaderCommand extends Command
 {
@@ -41,25 +39,11 @@ class ReconcileHeaderCommand extends Command
     protected $description = 'Used to create reconcile header for mapping.';
 
     /**
-     * @var \App\Services\MongoDbService
-     */
-    private $mongoDbService;
-
-    /**
-     * @var \App\Services\Csv\Csv
-     */
-    private $csv;
-
-    /**
      * AppCommand constructor.
-     *
-     * @param \App\Services\MongoDbService $mongoDbService
-     * @param \App\Services\Csv\Csv $csv
      */
-    public function __construct(MongoDbService $mongoDbService, Csv $csv) {
+    public function __construct(protected MongoDbService $mongoDbService, protected Csv $csv)
+    {
         parent::__construct();
-        $this->mongoDbService = $mongoDbService;
-        $this->csv = $csv;
     }
 
     /**
@@ -68,12 +52,12 @@ class ReconcileHeaderCommand extends Command
     public function handle()
     {
         $this->mongoDbService->setCollection('panoptes_transcriptions');
-        $options = ["typeMap" => ['root' => 'array', 'document' => 'array']];
+        $options = ['typeMap' => ['root' => 'array', 'document' => 'array']];
         $results = $this->mongoDbService->find([], $options);
 
         $header = collect();
         foreach ($results as $doc) {
-            $flipped =  collect($doc)->keys()->flip();
+            $flipped = collect($doc)->keys()->flip();
 
             $header = $header->merge($flipped);
 
@@ -81,7 +65,7 @@ class ReconcileHeaderCommand extends Command
         }
 
         $keys = $header->keys()->toArray();
-        asort($keys, SORT_STRING | SORT_FLAG_CASE );
+        asort($keys, SORT_STRING | SORT_FLAG_CASE);
 
         $this->csv->writerCreateFromPath(storage_path('/app/headers.csv'));
 

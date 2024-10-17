@@ -26,12 +26,12 @@ use App\Services\Csv\AwsS3CsvService;
 /**
  * Class CreateReportService
  */
-readonly class CreateReportService
+class CreateReportService
 {
     /**
      * Construct.
      */
-    public function __construct(private AwsS3CsvService $awsS3CsvService, private Download $download) {}
+    public function __construct(protected AwsS3CsvService $awsS3CsvService, protected Download $download) {}
 
     /**
      * Create csv report.

@@ -31,7 +31,7 @@ class AwsS3CsvService
     /**
      * @return void
      */
-    public function __construct(private readonly AwsS3ApiService $awsS3ApiService, public Csv $csv) {}
+    public function __construct(protected AwsS3ApiService $awsS3ApiService, public Csv $csv) {}
 
     /**
      * Create bucket stream.

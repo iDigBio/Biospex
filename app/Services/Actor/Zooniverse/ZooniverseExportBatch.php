@@ -34,18 +34,10 @@ class ZooniverseExportBatch
 {
     private array $fileNames = [];
 
-    private Csv $csv;
-
-    private ActorBatchDirectory $actorBatchDirectory;
-
     /**
      * Construct
      */
-    public function __construct(Csv $csv, ActorBatchDirectory $actorBatchDirectory)
-    {
-        $this->csv = $csv;
-        $this->actorBatchDirectory = $actorBatchDirectory;
-    }
+    public function __construct(protected Csv $csv, protected ActorBatchDirectory $actorBatchDirectory) {}
 
     /**
      * Process download into batches.

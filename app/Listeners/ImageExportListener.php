@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Listeners;
 
 use App\Events\ImageExportEvent;
@@ -26,22 +27,12 @@ use Throwable;
 class ImageExportListener implements ShouldQueue
 {
     /**
-     * @var \App\Services\Process\SnsImageExportResultProcess
-     */
-    private SnsImageExportResultProcess $snsImageExportResultProcess;
-
-    /**
      * Create the event listener.
      */
-    public function __construct(SnsImageExportResultProcess $snsImageExportResultProcess)
-    {
-        $this->snsImageExportResultProcess = $snsImageExportResultProcess;
-    }
+    public function __construct(protected SnsImageExportResultProcess $snsImageExportResultProcess) {}
 
     /**
      * Set tube for listener.
-     *
-     * @return string
      */
     public function viaQueue(): string
     {
@@ -60,6 +51,7 @@ class ImageExportListener implements ShouldQueue
         // If errorMessage, something really went bad with the lambda function.
         if (isset($responsePayload['errorMessage'])) {
             $this->snsImageExportResultProcess->handleErrorMessage($requestPayload, $responsePayload['errorMessage']);
+
             return;
         }
 

@@ -27,18 +27,10 @@ use App\Models\PusherTranscription;
  */
 class TranscriptionMapService
 {
-    private array $reservedEncoded;
-
-    private array $mappedTranscriptionFields;
-
     /**
      * TranscriptionMapService construct
      */
-    public function __construct(array $reservedEncoded, array $mappedTranscriptionFields)
-    {
-        $this->reservedEncoded = $reservedEncoded;
-        $this->mappedTranscriptionFields = $mappedTranscriptionFields;
-    }
+    public function __construct(protected array $reservedEncoded, protected array $mappedTranscriptionFields) {}
 
     /**
      * Map transcription fields that are varied in database.

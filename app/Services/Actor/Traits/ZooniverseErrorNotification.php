@@ -28,19 +28,15 @@ trait ZooniverseErrorNotification
 {
     /**
      * Send error notification.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \Throwable $throwable
-     * @return void
      */
     private function sendErrorNotification(ExportQueue $exportQueue, Throwable $throwable): void
     {
         $exportQueue->load([
-            'expedition.project.group' => function($q) {
-                $q->with(['owner', 'users' => function($q){
+            'expedition.project.group' => function ($q) {
+                $q->with(['owner', 'users' => function ($q) {
                     $q->where('notification', 1);
                 }]);
-            }
+            },
         ]);
 
         $exportQueue->error = 1;
@@ -51,7 +47,7 @@ trait ZooniverseErrorNotification
 
         $attributes = [
             'subject' => t('Error Exporting For Zooniverse'),
-            'html'    => [
+            'html' => [
                 t('An error occurred while exporting.'),
                 t('The Biospex Administration has been notified and will investigate the issue. Please do not attempt to restart export or perform other functions on this project.'),
                 t('Expedition: %s', $exportQueue->expedition->title),
@@ -59,8 +55,8 @@ trait ZooniverseErrorNotification
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),
-                t('The Administration has been notified.')
-            ]
+                t('The Administration has been notified.'),
+            ],
         ];
 
         Notification::send($users, new Generic($attributes, true));

@@ -26,7 +26,7 @@ class TesseractOcrResponse
     /**
      * Create a new instance.
      */
-    public function __construct(private OcrQueueFile $ocrQueueFile) {}
+    public function __construct(protected OcrQueueFile $ocrQueueFile) {}
 
     /**
      * Process ocr payload.

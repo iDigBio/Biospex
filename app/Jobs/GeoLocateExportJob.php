@@ -37,8 +37,6 @@ class GeoLocateExportJob implements ShouldQueue
 {
     use ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private GeoLocateExportService $geoLocateExportService;
-
     /**
      * The number of seconds the job can run before timing out.
      */

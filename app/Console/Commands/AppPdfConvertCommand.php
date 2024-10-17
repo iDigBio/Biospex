@@ -25,8 +25,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
  * Class UpdateQueries
- *
- * @package App\Console\Commands
  */
 class AppPdfConvertCommand extends Command
 {
@@ -48,17 +46,11 @@ class AppPdfConvertCommand extends Command
     protected $imageDir = null;
 
     /**
-     * @var \App\Services\Csv\Csv
-     */
-    private $csv;
-
-    /**
      * UpdateQueries constructor.
      */
-    public function __construct(Csv $csv)
+    public function __construct(protected Csv $csv)
     {
         parent::__construct();
-        $this->csv = $csv;
     }
 
     /**
@@ -76,10 +68,10 @@ class AppPdfConvertCommand extends Command
     public function convertPdf()
     {
         $pdfPath = \Storage::path(config('config.scratch_dir').'/osteology');
-        echo $pdfPath . PHP_EOL;
-        collect(\File::files($pdfPath))->each(function($file){
+        echo $pdfPath.PHP_EOL;
+        collect(\File::files($pdfPath))->each(function ($file) {
             $this->writeFileToImage($file);
-            echo 'writing image' . PHP_EOL;
+            echo 'writing image'.PHP_EOL;
             $this->combineImages($file);
             \File::deleteDirectory($this->imageDir);
             $this->imageDir = null;
@@ -88,36 +80,36 @@ class AppPdfConvertCommand extends Command
 
     private function writeFileToImage($file)
     {
-        $this->imageDir = \Storage::path(config('config.scratch_dir') . '/'.rand(10,12));
+        $this->imageDir = \Storage::path(config('config.scratch_dir').'/'.rand(10, 12));
         \File::makeDirectory($this->imageDir);
 
-        $im = new \Imagick();
+        $im = new \Imagick;
         $im->setResourceLimit(6, 1);
-        $im->setResolution(300,300);
+        $im->setResolution(300, 300);
         $im->readImage($file->getPathname());
         $im->setBackgroundColor('white');
-        $im->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE );
+        $im->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
         $im->setImageFormat('jpg');
 
-        $im->writeImages($this->imageDir . '/' . $file->getBasename('.pdf') . '.jpg', false);
+        $im->writeImages($this->imageDir.'/'.$file->getBasename('.pdf').'.jpg', false);
         $im->clear();
     }
 
     private function combineImages($file)
     {
-        $name = $file->getBasename('.pdf') . '.jpg';
+        $name = $file->getBasename('.pdf').'.jpg';
 
-        $im = new \Imagick();
+        $im = new \Imagick;
         $files = collect(\File::files($this->imageDir));
         $files->each(function ($file) use (&$im) {
-            $im->setResolution(300,300);
+            $im->setResolution(300, 300);
             $im->readImage($file->getPathName());
         });
 
         $im->resetIterator();
         $combined = $im->appendImages(true);
         $combined->setImageFormat('jpg');
-        $combined->writeImage( \Storage::path(config('config.scratch_dir') . '/combined/' . $name));
+        $combined->writeImage(\Storage::path(config('config.scratch_dir').'/combined/'.$name));
         $im->clear();
         $combined->clear();
     }
@@ -134,8 +126,8 @@ class AppPdfConvertCommand extends Command
 
         $files = \File::files($publicDir);
         collect($files)->each(function ($file) use ($newDir) {
-            $fileName = trim(preg_replace("/[^\w-]/", "", $file->getBasename('.jpg')));
-            \File::copy($file->getPathname(), $newDir . '/' . $fileName . '.jpg');
+            $fileName = trim(preg_replace("/[^\w-]/", '', $file->getBasename('.jpg')));
+            \File::copy($file->getPathname(), $newDir.'/'.$fileName.'.jpg');
         });
     }
 
@@ -153,12 +145,11 @@ class AppPdfConvertCommand extends Command
         $rows = $this->csv->getRecords();
         foreach ($rows as $offset => $row) {
             $subStr = substr($row['title'], 0, strrpos($row['title'], '.'));
-            $title = trim(preg_replace("/[^\w-]/", "", $subStr));
-            $accessUri = "https://biospex.org/tmpimage/" . $title . '.jpg';
+            $title = trim(preg_replace("/[^\w-]/", '', $subStr));
+            $accessUri = 'https://biospex.org/tmpimage/'.$title.'.jpg';
 
             $row['accessURI'] = $accessUri;
             $this->csv->insertOne($row);
         }
     }
 }
-

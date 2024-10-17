@@ -37,18 +37,15 @@ class GeoLocateFormService
 
     private bool $expertReviewExists;
 
-    /**
-     * @var true
-     */
     private bool $mismatchSource = false;
 
     /**
      * Construct.
      */
     public function __construct(
-        private GeoLocateForm $geoLocateForm,
-        private AwsS3CsvService $awsS3CsvService,
-        private GeneralService $generalService
+        protected GeoLocateForm $geoLocateForm,
+        protected AwsS3CsvService $awsS3CsvService,
+        protected GeneralService $generalService
     ) {}
 
     /**

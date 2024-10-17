@@ -35,42 +35,23 @@ use Throwable;
 /**
  * Class ZooniverseExportDeleteFilesJob
  */
-class ZooniverseExportDeleteFilesJob implements ShouldQueue, ShouldBeUnique
+class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
 
-    /**
-     * @var \App\Models\ExportQueue
-     */
-    private ExportQueue $exportQueue;
-
-    /**
-     * @var int
-     */
     public int $timeout = 300;
 
     /**
-     * @var \App\Services\Actor\ActorDirectory
-     */
-    private ActorDirectory $actorDirectory;
-
-    /**
      * Create a new job instance.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      */
-    public function __construct(ExportQueue $exportQueue, ActorDirectory $actorDirectory)
+    public function __construct(protected ExportQueue $exportQueue, protected ActorDirectory $actorDirectory)
     {
-        $this->exportQueue = $exportQueue;
-        $this->actorDirectory = $actorDirectory;
         $this->onQueue(config('config.queue.export'));
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\Zooniverse\ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles
      * @throws \Exception
      */
     public function handle(ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles): void
@@ -82,9 +63,6 @@ class ZooniverseExportDeleteFilesJob implements ShouldQueue, ShouldBeUnique
 
     /**
      * Handle a job failure.
-     *
-     * @param  \Throwable  $throwable
-     * @return void
      */
     public function failed(Throwable $throwable): void
     {

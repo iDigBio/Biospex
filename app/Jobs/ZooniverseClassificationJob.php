@@ -32,39 +32,22 @@ class ZooniverseClassificationJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 60;
 
     /**
-     * @var array
-     */
-    private array $data;
-
-    /**
-     * @var string
-     */
-    private string $title;
-
-    /**
      * Create a new job instance.
-     *
-     * @param array $data
-     * @param string $title
      */
-    public function __construct(array $data, string $title)
+    public function __construct(protected array $data, protected string $title)
     {
-        $this->data = $data;
-        $this->title = $title;
         $this->onQueue(config('config.queue.pusher_classification'));
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Transcriptions\CreatePusherClassificationService $createPusherClassificationService
      * @return void
+     *
      * @throws \Exception
      */
     public function handle(CreatePusherClassificationService $createPusherClassificationService)

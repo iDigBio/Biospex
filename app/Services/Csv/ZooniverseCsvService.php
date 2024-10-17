@@ -35,9 +35,9 @@ class ZooniverseCsvService
      * ZooniverseCsvService constructor.
      */
     public function __construct(
-        private ExpeditionService $expeditionService,
-        private PanoptesApiService $panoptesApiService,
-        private AwsS3ApiService $awsS3ApiService
+        protected ExpeditionService $expeditionService,
+        protected PanoptesApiService $panoptesApiService,
+        protected AwsS3ApiService $awsS3ApiService
     ) {}
 
     /**

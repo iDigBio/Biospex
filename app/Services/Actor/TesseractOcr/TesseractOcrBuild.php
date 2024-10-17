@@ -29,7 +29,7 @@ use App\Services\Subject\SubjectService;
 /**
  * Class OcrService
  */
-readonly class TesseractOcrBuild
+class TesseractOcrBuild
 {
     use ButtonTrait;
 
@@ -37,9 +37,9 @@ readonly class TesseractOcrBuild
      * Ocr constructor.
      */
     public function __construct(
-        private OcrQueue $ocrQueue,
-        private OcrQueueFile $ocrQueueFile,
-        private SubjectService $subjectService,
+        protected OcrQueue $ocrQueue,
+        protected OcrQueueFile $ocrQueueFile,
+        protected SubjectService $subjectService,
     ) {}
 
     /**

@@ -27,25 +27,9 @@ use Illuminate\Support\LazyCollection;
 class JqGridEncoder
 {
     /**
-     * @var \App\Services\Grid\GridModel
-     */
-    private $gridModel;
-
-    /**
-     * @var \App\Services\Grid\GridData
-     */
-    private $gridData;
-
-    /**
      * JqGridEncoder constructor.
      */
-    public function __construct(
-        GridModel $gridModel,
-        GridData $gridData
-    ) {
-        $this->gridModel = $gridModel;
-        $this->gridData = $gridData;
-    }
+    public function __construct(protected GridModel $gridModel, protected GridData $gridData) {}
 
     /**
      * Load grid model.

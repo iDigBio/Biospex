@@ -30,17 +30,6 @@ use Psr\Http\Message\RequestInterface;
  */
 class PanoptesApiService extends HttpRequest
 {
-    const CONFIG_SHAPE = [
-        'clientId' => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-        'clientSecret' => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-        'redirectUri' => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-        'urlAccessToken' => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-        'scope' => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-    ];
-
-    /**
-     * @var \Illuminate\Config\Repository
-     */
     private mixed $apiUri;
 
     private int $subject_count;

@@ -31,9 +31,8 @@ class MapZooniverseCsvColumnsService
      */
     private mixed $zooniverseCsvMap;
 
-    public function __construct(
-        private readonly SubjectService $subjectService
-    ) {
+    public function __construct(protected SubjectService $subjectService)
+    {
         $this->zooniverseCsvMap = config('zooniverse.csv_map');
     }
 

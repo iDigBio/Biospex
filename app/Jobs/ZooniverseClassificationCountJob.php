@@ -19,7 +19,6 @@
 
 namespace App\Jobs;
 
-use App\Models\Actor;
 use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\Generic;
@@ -38,8 +37,6 @@ use Throwable;
 class ZooniverseClassificationCountJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    private ?Actor $actor;
 
     /**
      * Create a new job instance.

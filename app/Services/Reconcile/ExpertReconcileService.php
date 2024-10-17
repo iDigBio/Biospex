@@ -44,9 +44,9 @@ class ExpertReconcileService
      * ExpertReconcileService constructor.
      */
     public function __construct(
-        private readonly Reconcile $reconcile,
-        private readonly SubjectService $subjectService,
-        private readonly AwsS3CsvService $awsS3CsvService
+        protected Reconcile $reconcile,
+        protected SubjectService $subjectService,
+        protected AwsS3CsvService $awsS3CsvService
     ) {
         $this->problemRegex = config('zooniverse.reconcile_problem_regex');
     }

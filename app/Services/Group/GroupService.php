@@ -25,7 +25,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
-readonly class GroupService
+class GroupService
 {
     public function __construct(
         public Group $group,

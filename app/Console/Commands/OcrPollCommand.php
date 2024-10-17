@@ -45,7 +45,7 @@ class OcrPollCommand extends Command
     /**
      * OcrPollCommand constructor.
      */
-    public function __construct(private OcrQueue $ocrQueue)
+    public function __construct(protected OcrQueue $ocrQueue)
     {
         parent::__construct();
     }

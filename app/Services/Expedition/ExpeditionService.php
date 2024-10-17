@@ -38,8 +38,8 @@ class ExpeditionService
      * Create a new instance of ExpeditionService.
      */
     public function __construct(
-        public Expedition $expedition,
-        public SubjectService $subjectService
+        protected Expedition $expedition,
+        protected SubjectService $subjectService
     ) {}
 
     /**
