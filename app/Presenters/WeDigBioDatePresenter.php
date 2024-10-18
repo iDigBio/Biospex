@@ -20,18 +20,15 @@
 namespace App\Presenters;
 
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Class WeDigBioDatePresenter
- *
- * @package App\Presenters
  */
 class WeDigBioDatePresenter extends Presenter
 {
     public function progressTitle()
     {
-        return t('WEDIGBIO') . ' ' . $this->model->start_date->isoFormat('MMMM YYYY');
+        return t('WEDIGBIO').' '.$this->model->start_date->isoFormat('MMMM YYYY');
     }
 
     /**

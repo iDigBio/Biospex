@@ -30,6 +30,7 @@ trait Presentable
 
     /**
      * @return mixed
+     *
      * @throws PresenterException
      */
     public function present()

@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -26,18 +27,15 @@ class TesseractOcrEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @var array $payload
-     */
     public array $payload;
 
     /**
      * Create a new event instance.
+     *
      * @see \App\Listeners\TesseractOcrListener
      */
     public function __construct(array $payload)
     {
         $this->payload = $payload;
     }
-
 }

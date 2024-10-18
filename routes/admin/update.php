@@ -18,4 +18,3 @@
  */
 
 Route::get('updates', [\App\Http\Controllers\Admin\UpdateController::class, 'index'])->name('admin.update.index');
-

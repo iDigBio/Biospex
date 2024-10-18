@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Nova;
 
 use Laravel\Nova\Fields\File;
@@ -26,8 +27,6 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 /**
  * Class BiospexResource
- *
- * @package App\Nova
  */
 class BiospexResource extends Resource
 {
@@ -71,7 +70,6 @@ class BiospexResource extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return array
      */
     public function fields(NovaRequest $request)
@@ -86,18 +84,17 @@ class BiospexResource extends Resource
                         'document' => $request->document,
                         'document_file_name' => $request->document->getClientOriginalName(),
                         'document_file_size' => $request->document->getSize(),
-                        'document_content_type' => $request->document->getMimeType()
+                        'document_content_type' => $request->document->getMimeType(),
                     ];
                 })->prunable()->resolveUsing(function ($document) {
                     return $document->originalFilename();
-                })
+                }),
         ];
     }
 
     /**
      * Get the cards available for the request.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return array
      */
     public function cards(NovaRequest $request)
@@ -108,7 +105,6 @@ class BiospexResource extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return array
      */
     public function filters(NovaRequest $request)
@@ -119,7 +115,6 @@ class BiospexResource extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return array
      */
     public function lenses(NovaRequest $request)
@@ -130,7 +125,6 @@ class BiospexResource extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return array
      */
     public function actions(NovaRequest $request)

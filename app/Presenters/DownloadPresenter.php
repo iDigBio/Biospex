@@ -23,8 +23,6 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Class DownloadPresenter
- *
- * @package App\Presenters
  */
 class DownloadPresenter extends Presenter
 {
@@ -36,7 +34,7 @@ class DownloadPresenter extends Presenter
     public function fileType()
     {
         if ($this->model->type === 'reconciled-with-expert' || $this->model->type === 'reconciled-with-user') {
-            return str_replace('-', '_', $this->model->type) . '_opinion';
+            return str_replace('-', '_', $this->model->type).'_opinion';
         }
 
         if ($this->model->type === 'report') {
@@ -48,12 +46,11 @@ class DownloadPresenter extends Presenter
 
     /**
      * Return export file url.
-     *
-     * @return string
      */
     public function exportDownload(): string
     {
         $filename = "{$this->model->type}-{$this->model->file}";
+
         return $this->model->actor_id == config('zooniverse.actor_id') ?
             Storage::disk('s3')->temporaryUrl(config('config.export_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename=zooniverse-'.$filename]) :
             Storage::disk('s3')->temporaryUrl(config('geolocate.dir.export').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename=geolocate-'.$filename]);
@@ -61,8 +58,6 @@ class DownloadPresenter extends Presenter
 
     /**
      * Return report file url.
-     *
-     * @return string
      */
     public function reportDownload(): string
     {
@@ -71,12 +66,11 @@ class DownloadPresenter extends Presenter
 
     /**
      * Return csv file url.
-     *
-     * @return string
      */
     public function downloadType(): string
     {
         $filename = "{$this->model->type}-{$this->model->file}";
+
         return Storage::disk('s3')->temporaryUrl(config('zooniverse.directory.'.$this->model->type).'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename='.$filename]);
     }
 }

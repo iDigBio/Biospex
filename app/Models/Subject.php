@@ -21,8 +21,6 @@ namespace App\Models;
 
 /**
  * Class Subject
- *
- * @package App\Models
  */
 class Subject extends BaseMongoModel
 {
@@ -35,7 +33,7 @@ class Subject extends BaseMongoModel
     {
         return [
             'project_id' => 'integer',
-            'exported' => 'boolean'
+            'exported' => 'boolean',
         ];
     }
 
@@ -64,8 +62,6 @@ class Subject extends BaseMongoModel
     }
 
     /**
-     * @param $query
-     * @param $projectId
      * @return mixed
      */
     public function scopeProjectId($query, $projectId)
@@ -74,8 +70,6 @@ class Subject extends BaseMongoModel
     }
 
     /**
-     * @param $query
-     * @param $subjectId
      * @return mixed
      */
     public function scopeSubjectId($query, $subjectId)

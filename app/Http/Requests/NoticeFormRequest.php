@@ -21,8 +21,6 @@ namespace App\Http\Requests;
 
 /**
  * Class NoticeFormRequest
- *
- * @package App\Http\Requests
  */
 class NoticeFormRequest extends Request
 {
@@ -44,7 +42,7 @@ class NoticeFormRequest extends Request
     public function rules()
     {
         return [
-            'message' => 'required'
+            'message' => 'required',
         ];
     }
 }

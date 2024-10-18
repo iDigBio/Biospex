@@ -24,8 +24,6 @@ use Memcached;
 
 /**
  * Class ClearMemcachedCommand
- *
- * @package App\Console\Commands
  */
 class ClearMemcachedCommand extends Command
 {
@@ -58,7 +56,7 @@ class ClearMemcachedCommand extends Command
      */
     public function handle()
     {
-        $m = new Memcached();
+        $m = new Memcached;
         $m->addServer('127.0.0.1', 11211);
 
         /* flush all items in 10 seconds */

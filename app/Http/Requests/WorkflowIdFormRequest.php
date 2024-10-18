@@ -25,7 +25,7 @@ class WorkflowIdFormRequest extends FormRequest
     public function rules()
     {
         return [
-            'panoptes_workflow_id' => 'required|integer'
+            'panoptes_workflow_id' => 'required|integer',
         ];
     }
 }

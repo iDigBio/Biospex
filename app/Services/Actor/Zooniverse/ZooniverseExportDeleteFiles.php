@@ -29,10 +29,6 @@ class ZooniverseExportDeleteFiles
 {
     /**
      * Process actor.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
-     * @return void
      */
     public function process(ExportQueue $exportQueue, ActorDirectory $actorDirectory): void
     {

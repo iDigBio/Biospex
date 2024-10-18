@@ -21,8 +21,6 @@ namespace App\Http\Requests;
 
 /**
  * Class MailFormRequest
- *
- * @package App\Http\Requests
  */
 class MailFormRequest extends Request
 {
@@ -46,7 +44,7 @@ class MailFormRequest extends Request
         return [
             'recipients' => 'required',
             'subject' => 'required|max:100',
-            'message' => 'required'
+            'message' => 'required',
         ];
     }
 }

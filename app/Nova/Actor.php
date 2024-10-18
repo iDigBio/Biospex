@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Nova;
 
-use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -26,41 +26,39 @@ use Outl1ne\NovaSortable\Traits\HasSortableManyToManyRows;
 
 /**
  * Class Actor
- *
- * @package App\Nova
  */
 class Actor extends Resource
 {
     use HasSortableManyToManyRows;
+
     /**
      * The model the resource corresponds to.
      *
-     * @var  string
+     * @var string
      */
     public static $model = \App\Models\Actor::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
-     * @var  string
+     * @var string
      */
     public static $title = 'title';
 
     /**
      * The columns that should be searched.
      *
-     * @var  array
+     * @var array
      */
     public static $search = [
         'id',
         'title',
     ];
 
-
     /**
      * Get the displayable label of the resource.
      *
-     * @return  string
+     * @return string
      */
     public static function label()
     {
@@ -70,7 +68,7 @@ class Actor extends Resource
     /**
      * Get the displayable singular label of the resource.
      *
-     * @return  string
+     * @return string
      */
     public static function singularLabel()
     {
@@ -80,8 +78,7 @@ class Actor extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function fields(NovaRequest $request)
     {
@@ -96,8 +93,7 @@ class Actor extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function cards(NovaRequest $request)
     {
@@ -107,8 +103,7 @@ class Actor extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function filters(NovaRequest $request)
     {
@@ -118,8 +113,7 @@ class Actor extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function lenses(NovaRequest $request)
     {
@@ -129,8 +123,7 @@ class Actor extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function actions(NovaRequest $request)
     {

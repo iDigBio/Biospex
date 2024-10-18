@@ -21,7 +21,6 @@ namespace App\Services\FixFields;
 
 class FixFieldsStepFive extends FixFieldsBase
 {
-
     /**
      * Start process.
      *
@@ -29,7 +28,7 @@ class FixFieldsStepFive extends FixFieldsBase
      */
     public function start()
     {
-        echo "Starting to check and set image, occurrence, and mixed dups on properties" . PHP_EOL;
+        echo 'Starting to check and set image, occurrence, and mixed dups on properties'.PHP_EOL;
 
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
@@ -50,7 +49,7 @@ class FixFieldsStepFive extends FixFieldsBase
         $occurrences = [];
         $mixed = [];
 
-        $properties->each(function ($property, $key) use(&$images, &$occurrences, &$mixed) {
+        $properties->each(function ($property, $key) use (&$images, &$occurrences, &$mixed) {
             foreach ($property['fields'] as $field => $array) {
                 if (($property['imageFieldCount'] > 0 && $array['occurrenceFieldCount'] > 0)
                     || ($property['occurrenceFieldCount'] > 0 && $array['imageFieldCount'] > 0)) {
@@ -61,6 +60,7 @@ class FixFieldsStepFive extends FixFieldsBase
 
                 if ($property['imageFieldCount'] > 0 || $array['imageFieldCount'] > 0) {
                     $images[$key] = $property;
+
                     continue;
                 }
 
@@ -81,22 +81,19 @@ class FixFieldsStepFive extends FixFieldsBase
 
     /**
      * Step 5: Check dup fields in same record for images.
-     *
-     * @param $images
-     * @return \Illuminate\Support\Collection
      */
     private function checkImageDupes($images): \Illuminate\Support\Collection
     {
-        return collect($images)->map(function($property, $key) {
+        return collect($images)->map(function ($property, $key) {
             $first = collect($property['imageHeaderProjectIds']);
             foreach ($property['fields'] as $index => $array) {
                 $second = collect($property['fields'][$index]['imageHeaderProjectIds']);
                 $projectIds = $first->merge($second)->unique();
-                $duplicates = $projectIds->reject(function($id){
+                $duplicates = $projectIds->reject(function ($id) {
                     return empty($id);
-                })->map(function($id) use ($key, $index){
+                })->map(function ($id) use ($key, $index) {
                     return $this->countFieldDuplication($id, $key, $index);
-                })->reject(function($id){
+                })->reject(function ($id) {
                     return $id === 0;
                 });
 
@@ -113,22 +110,19 @@ class FixFieldsStepFive extends FixFieldsBase
 
     /**
      * Step 5: Check dup fields in same record.
-     *
-     * @param $occurrences
-     * @return \Illuminate\Support\Collection
      */
     private function checkOccurrenceDupes($occurrences): \Illuminate\Support\Collection
     {
-        return collect($occurrences)->each(function($property, $key) {
+        return collect($occurrences)->each(function ($property, $key) {
             $first = collect($property['occurrenceHeaderProjectIds']);
             foreach ($property['fields'] as $index => $array) {
                 $second = collect($property['fields'][$index]['occurrenceHeaderProjectIds']);
                 $projectIds = $first->merge($second)->unique();
-                $duplicates = $projectIds->reject(function($id){
+                $duplicates = $projectIds->reject(function ($id) {
                     return empty($id);
-                })->map(function($id) use ($key, $index){
+                })->map(function ($id) use ($key, $index) {
                     return $this->countFieldDuplication($id, $key, $index);
-                })->reject(function($id){
+                })->reject(function ($id) {
                     return $id === 0;
                 });
 
@@ -145,9 +139,6 @@ class FixFieldsStepFive extends FixFieldsBase
 
     /**
      * Step 5: Check mixed for dup fields.
-     *
-     * @param $mixed
-     * @return \Illuminate\Support\Collection
      */
     private function checkMixedDups($mixed): \Illuminate\Support\Collection
     {
@@ -158,11 +149,6 @@ class FixFieldsStepFive extends FixFieldsBase
 
     /**
      * Count fields that exist in same record.
-     *
-     * @param int $projectId
-     * @param string $fieldOne
-     * @param string $fieldTwo
-     * @return int
      */
     public function countFieldDuplication(int $projectId, string $fieldOne, string $fieldTwo): int
     {
@@ -171,7 +157,7 @@ class FixFieldsStepFive extends FixFieldsBase
         return $this->mongoDbService->count([
             'project_id' => $projectId,
             $fieldOne => ['$exists' => true],
-            $fieldTwo => ['$exists' => true]
+            $fieldTwo => ['$exists' => true],
         ]);
     }
 }

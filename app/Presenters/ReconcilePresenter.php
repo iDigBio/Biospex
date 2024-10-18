@@ -21,15 +21,11 @@ namespace App\Presenters;
 
 /**
  * Class ActorPresenter
- *
- * @package App\Presenters
  */
 class ReconcilePresenter extends Presenter
 {
     /**
      * Return button and path for expert review.
-     *
-     * @return string
      */
     public function reconcileReviewed(): string
     {

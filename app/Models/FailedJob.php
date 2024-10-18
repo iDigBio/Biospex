@@ -24,8 +24,6 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class FailedJob
- *
- * @package App\Models
  */
 class FailedJob extends Model
 {

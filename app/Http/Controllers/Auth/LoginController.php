@@ -26,12 +26,9 @@ use Illuminate\Http\Request;
 
 /**
  * Class LoginController
- *
- * @package App\Http\Controllers\Auth
  */
 class LoginController extends Controller
 {
-
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -47,8 +44,6 @@ class LoginController extends Controller
 
     /**
      * Where to redirect users after login.
-     *
-     * @var string
      */
     protected string $redirectTo = '/admin/projects';
 
@@ -68,9 +63,6 @@ class LoginController extends Controller
     /**
      * Override AuthenticatesUsers
      * Validate the user login request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
      */
     protected function validateLogin(Request $request): void
     {

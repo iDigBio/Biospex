@@ -6,8 +6,6 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 /**
  * Class WeDigBioDashboardCollection
- *
- * @package App\Http\Resources
  */
 class WeDigBioDashboardCollection extends ResourceCollection
 {
@@ -36,10 +34,10 @@ class WeDigBioDashboardCollection extends ResourceCollection
     /**
      * Add for routing.
      *
-     * @param $collectionRoute
      * @return $this
      */
-    public function collectionRoute($collectionRoute){
+    public function collectionRoute($collectionRoute)
+    {
         $this->collectionRoute = $collectionRoute;
 
         return $this;
@@ -48,10 +46,10 @@ class WeDigBioDashboardCollection extends ResourceCollection
     /**
      * Add for routing.
      *
-     * @param $resourceRoute
      * @return $this
      */
-    public function resourceRoute($resourceRoute){
+    public function resourceRoute($resourceRoute)
+    {
         $this->resourceRoute = $resourceRoute;
 
         return $this;
@@ -75,7 +73,7 @@ class WeDigBioDashboardCollection extends ResourceCollection
     public function with($request)
     {
         return [
-            'links'    => [
+            'links' => [
                 'self' => route($this->collectionRoute),
             ],
         ];

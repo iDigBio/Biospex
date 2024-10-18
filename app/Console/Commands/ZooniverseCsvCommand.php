@@ -26,8 +26,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
  * Class ZooniverseClassificationCount
- *
- * @package App\Console\Commands
  */
 class ZooniverseCsvCommand extends Command
 {

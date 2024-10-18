@@ -31,22 +31,15 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Class DeleteGroupJob
- *
- * @package App\Jobs
  */
 class DeleteGroupJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * @var \App\Models\Group
-     */
     public Group $group;
 
     /**
      * Create a new job instance.
-     *
-     * @param \App\Models\Group $group
      */
     public function __construct(Group $group)
     {
@@ -56,9 +49,6 @@ class DeleteGroupJob implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @param \App\Services\MongoDbService $mongoDbService
-     * @return void
      */
     public function handle(MongoDbService $mongoDbService): void
     {
@@ -88,20 +78,17 @@ class DeleteGroupJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
     public function failed(\Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Delete Group Job Failed'),
-            'html'    => [
+            'html' => [
                 t('Error: Could not delete Group %s', $this->group->title),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),
-                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.')
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
             ],
         ];
 

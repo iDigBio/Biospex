@@ -25,26 +25,22 @@ use JavaScript;
 
 /**
  * Class PhpVarsComposer
- *
- * @package App\Http\ViewComposers
  */
 class PhpVarsComposer
 {
-
     /**
      * Bind data to the view.
      *
-     * @param  View $view
      * @return void
      */
     public function compose(View $view)
     {
         JavaScript::put([
-            'groupIds'      => json_encode(Session::get('groupIds')),
-            'ocrChannel'    => config('config.poll_ocr_channel'),
+            'groupIds' => json_encode(Session::get('groupIds')),
+            'ocrChannel' => config('config.poll_ocr_channel'),
             'exportChannel' => config('config.poll_export_channel'),
             'imagePreviewPath' => '/admin/images/preview?url=',
-            'habitatBannersPath' => '/images/habitat-banners/'
+            'habitatBannersPath' => '/images/habitat-banners/',
         ]);
 
         $view->with(['common.process-modal', 'common.modal', 'common.project-modal']);

@@ -23,11 +23,9 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * Class DateHelper
- * @package App\Facades
  */
 class DateHelper extends Facade
 {
-
     /**
      * Get the registered name of the component.
      *

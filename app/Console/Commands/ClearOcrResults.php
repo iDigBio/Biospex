@@ -25,8 +25,6 @@ use Illuminate\Console\Command;
 
 /**
  * Class ClearOcrResults
- *
- * @package App\Console\Commands
  */
 class ClearOcrResults extends Command
 {
@@ -46,7 +44,6 @@ class ClearOcrResults extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {

@@ -23,22 +23,20 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
  * Class EventTranscription
- *
- * @package App\Models
  */
 class EventTranscription extends BaseEloquentModel
 {
     use HybridRelations;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'event_transcriptions';
 
     /**
      * Created and Updated dates are fillable so overnight scripts can update with correct time for missing records.
      *
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'classification_id',
@@ -46,11 +44,10 @@ class EventTranscription extends BaseEloquentModel
         'team_id',
         'user_id',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
-     *
      * The attributes that should be cast.
      *
      * @return string[]
@@ -59,26 +56,22 @@ class EventTranscription extends BaseEloquentModel
     {
         return [
             'classification_id' => 'int',
-            'event_id'          => 'int',
-            'team_id'           => 'int',
-            'user_id'           => 'int',
+            'event_id' => 'int',
+            'team_id' => 'int',
+            'user_id' => 'int',
         ];
     }
 
     /**
      * Transcription relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function transcription(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(PanoptesTranscription::class,'_id', 'classification_id');
+        return $this->hasOne(PanoptesTranscription::class, '_id', 'classification_id');
     }
 
     /**
      * Event relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function event(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -87,8 +80,6 @@ class EventTranscription extends BaseEloquentModel
 
     /**
      * Event Team relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -97,8 +88,6 @@ class EventTranscription extends BaseEloquentModel
 
     /**
      * Event User relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

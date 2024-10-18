@@ -23,8 +23,6 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 /**
  * Class PusherTranscriptionCollection
- *
- * @package App\Http\Resources
  */
 class PusherTranscriptionCollection extends ResourceCollection
 {
@@ -37,14 +35,14 @@ class PusherTranscriptionCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => PusherTranscriptionResource::collection($this->collection)
+            'data' => PusherTranscriptionResource::collection($this->collection),
         ];
     }
 
     public function with($request)
     {
         return [
-            'links'    => [
+            'links' => [
                 'self' => route('wedigbiodashboards.index'),
             ],
         ];

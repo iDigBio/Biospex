@@ -28,7 +28,7 @@ class FixFieldsStepEight extends FixFieldsBase
      */
     public function start()
     {
-        echo "Starting to match dup mixed image fields to project id." . PHP_EOL;
+        echo 'Starting to match dup mixed image fields to project id.'.PHP_EOL;
 
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
@@ -52,7 +52,7 @@ class FixFieldsStepEight extends FixFieldsBase
         $this->writeToFile('step8-imageMixedFields-properties.json', $mappedImageFieldsToProjects);
 
         $type = 'image';
-        $mappedImageFieldsToProjects->each(function ($fields, $projectId) use ($type){
+        $mappedImageFieldsToProjects->each(function ($fields, $projectId) use ($type) {
             $matched = $fields['matched'] ?? [];
             $this->updateFields($projectId, $matched, $type);
 

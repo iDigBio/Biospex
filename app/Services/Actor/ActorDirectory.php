@@ -26,72 +26,32 @@ use Illuminate\Support\Facades\Storage;
  */
 class ActorDirectory
 {
-    /**
-     * @var string
-     */
     public string $folderName;
 
-    /**
-     * @var string
-     */
     public string $scratchDir;
 
-    /**
-     * @var string
-     */
     public string $workingDir;
 
-    /**
-     * @var string
-     */
     public string $exportDirectory;
 
-    /**
-     * @var string
-     */
     public string $exportArchiveFile;
 
-    /**
-     * @var string
-     */
     public string $exportArchiveFilePath;
 
-    /**
-     * @var array
-     */
-    public array $rejected  = [];
+    public array $rejected = [];
 
-    /**
-     * @var string
-     */
     public string $expeditionUuid;
 
-    /**
-     * @var string
-     */
     public string $efsExportDir;
 
-    /**
-     * @var string
-     */
     public string $efsExportDirFolder;
 
-    /**
-     * @var string
-     */
     public string $bucketPath;
 
-    /**
-     * @var string
-     */
     public string $exportCsvFilePath;
 
     /**
      * Set folder property.
-     *
-     * @param int $queueId
-     * @param int $actorId
-     * @param string $expeditionUuid
      */
     public function setFolder(int $queueId, int $actorId, string $expeditionUuid): void
     {
@@ -101,8 +61,6 @@ class ActorDirectory
 
     /**
      * Set directories.
-     *
-     * @return void
      */
     public function setDirectories(): void
     {
@@ -122,7 +80,6 @@ class ActorDirectory
     {
         $this->scratchDir = config('config.scratch_dir');
     }
-
 
     /**
      * Set working directory.
@@ -161,30 +118,24 @@ class ActorDirectory
 
     /**
      * Set efs batch directory.
-     *
-     * @return void
      */
     private function setEfsExportDirectory(): void
     {
         $this->efsExportDir = config('config.export_dir');
-        $this->efsExportDirFolder = $this->efsExportDir . '/' . $this->folderName;
+        $this->efsExportDirFolder = $this->efsExportDir.'/'.$this->folderName;
         Storage::disk('efs')->makeDirectory($this->efsExportDirFolder);
     }
 
     /**
      * Set bucket path.
-     *
-     * @return void
      */
     private function setBucketPath(): void
     {
-        $this->bucketPath = 's3://' . config('filesystems.disks.s3.bucket');
+        $this->bucketPath = 's3://'.config('filesystems.disks.s3.bucket');
     }
 
     /**
      * Delete existing file.
-     *
-     * @param string $filePath
      */
     public function deleteEfsFile(string $filePath): void
     {
@@ -195,8 +146,6 @@ class ActorDirectory
 
     /**
      * Delete existing file.
-     *
-     * @param string $filePath
      */
     public function deleteS3File(string $filePath): void
     {
@@ -207,9 +156,6 @@ class ActorDirectory
 
     /**
      * Delete directory.
-     *
-     * @param string $dir
-     * @return void
      */
     public function deleteEfsDirectory(string $dir): void
     {
@@ -220,9 +166,6 @@ class ActorDirectory
 
     /**
      * Delete directory.
-     *
-     * @param string $dir
-     * @return void
      */
     public function deleteS3Directory(string $dir): void
     {
@@ -233,9 +176,6 @@ class ActorDirectory
 
     /**
      * Check if file exists.
-     *
-     * @param string $filePath
-     * @return bool
      */
     public function checkS3FileExists(string $filePath): bool
     {

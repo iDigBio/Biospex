@@ -20,28 +20,21 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**
  * Class BiospexException
- *
- * @package App\Mail
  */
 class BiospexException extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    /**
-     * @var
-     */
     public $content;
 
     /**
      * Create a new message instance.
-     *
-     * @param $content
      */
     public function __construct($content)
     {

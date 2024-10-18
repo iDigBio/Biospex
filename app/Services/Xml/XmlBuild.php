@@ -16,21 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Services\Xml;
 
 use DOMDocument;
 
 /**
  * Class XmlBuild
- *
- * @package App\Services\Xml
  */
 class XmlBuild
 {
-    public function __contstuct()
-    {
-
-    }
+    public function __contstuct() {}
 
     public function setDomDocument($version, $encoding)
     {
@@ -44,11 +40,11 @@ class XmlBuild
         }
 
         // Create the element
-        $element_value = ( ! empty($data['value'])) ? $data['value'] : null;
+        $element_value = (! empty($data['value'])) ? $data['value'] : null;
         $element = $dom->createElement($data['name'], $element_value);
 
         // Add any attributes
-        if ( ! empty($data['attributes']) && is_array($data['attributes'])) {
+        if (! empty($data['attributes']) && is_array($data['attributes'])) {
             foreach ($data['attributes'] as $attribute_key => $attribute_value) {
                 $element->setAttribute($attribute_key, $attribute_value);
             }
@@ -56,7 +52,7 @@ class XmlBuild
 
         // Any other items in the data array should be child elements
         foreach ($data as $data_key => $child_data) {
-            if ( ! is_numeric($data_key)) {
+            if (! is_numeric($data_key)) {
                 continue;
             }
 

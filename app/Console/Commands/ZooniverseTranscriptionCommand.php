@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Console\Commands;
 
 use App\Jobs\ZooniverseTranscriptionJob;
@@ -23,8 +24,6 @@ use Illuminate\Console\Command;
 
 /**
  * Class ZooniverseTranscriptionCommand
- *
- * @package App\Console\Commands
  */
 class ZooniverseTranscriptionCommand extends Command
 {

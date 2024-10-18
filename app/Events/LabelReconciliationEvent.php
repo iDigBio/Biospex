@@ -27,13 +27,11 @@ class LabelReconciliationEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @var array $payload
-     */
     public array $payload;
 
     /**
      * Create a new event instance.
+     *
      * @see \App\Listeners\LabelReconciliationListener
      */
     public function __construct(array $payload)

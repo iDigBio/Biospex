@@ -40,21 +40,20 @@ class ZooniverseExpertReviewCommand extends Command
 
     /**
      * The console command description.
+     *
      * @see \App\Http\Controllers\Admin\ReconcileController::create()
      *
      * @var string
      */
     protected $description = 'Runs an expedition through creating expert review migrations';
 
-   /**
+    /**
      * Execute command to create explained for expert review.
+     *
      * @see \App\Listeners\LabelReconciliationListener for result processing.
      * Will process explained and then chain:
      * @see ExpertReviewMigrateReconcilesJob
      * @see ExpertReviewSetProblemsJob
-     *
-     * @param \App\Services\Reconcile\ReconcileService $reconcileService
-     * @return void
      */
     public function handle(ReconcileService $reconcileService): void
     {

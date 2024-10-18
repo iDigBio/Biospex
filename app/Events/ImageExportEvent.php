@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -26,13 +27,11 @@ class ImageExportEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @var array
-     */
     public array $payload;
 
     /**
      * Create a new event instance.
+     *
      * @see \App\Listeners\ImageExportListener
      */
     public function __construct(array $payload)

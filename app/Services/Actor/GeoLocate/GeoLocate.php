@@ -32,7 +32,6 @@ class GeoLocate
      *  State = 2: GeoLocate community and datasource added.
      *  State = 3: GeoLocate with stats completed
      *
-     * @param \App\Models\Actor $actor
      * @throws \Throwable
      */
     public function actor(Actor $actor): void
