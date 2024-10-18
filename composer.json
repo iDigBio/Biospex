@@ -11,6 +11,7 @@
     "php": "^8.2",
     "ext-dom": "*",
     "ext-fileinfo": "*",
+    "ext-memcached": "*",
     "ext-mongodb": "*",
     "aws/aws-php-sns-message-validator": "^1.0",
     "aws/aws-sdk-php": "~3.0",
