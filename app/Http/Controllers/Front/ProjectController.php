@@ -19,7 +19,6 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\CountHelper;
 use App\Http\Controllers\Controller;
 use App\Services\Project\ProjectService;
 use App\Services\Transcriptions\StateCountyService;
@@ -64,10 +63,6 @@ class ProjectController extends Controller
 
         [$events, $eventsCompleted] = $this->projectService->partitionEvents($project->events);
 
-        // TODO change to stat table count
-        $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
-        $transcribersCount = CountHelper::projectTranscriberCount($project->id);
-
         $years = ! isset($project->amChart) || is_null($project->amChart->data) ?
             null : array_keys($project->amChart->data);
 
@@ -81,6 +76,6 @@ class ProjectController extends Controller
             'project' => $project->id,
         ]);
 
-        return View::make('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
+        return View::make('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted'));
     }
 }

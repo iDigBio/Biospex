@@ -129,8 +129,8 @@
                             <div class="col-12">
                                 <ul class="text">
                                     <li class="mt-3">{{ $expedition->project->expeditions_count }} {{ t('Expeditions') }}</li>
-                                    <li>{{ CountHelper::projectTranscriberCount($expedition->project->id) }} {{ t('Participants') }}</li>
-                                    <li>{{ CountHelper::projectTranscriptionCount($expedition->project->id) }} {{ t('Digitizations') }}</li>
+                                    <li>{{ $expedition->project->expedition_stats_sum_transcriptions_completed }} {{ t('Digitizations') }}</li>
+                                    <li>{{ $expedition->project->expedition_stats_sum_transcriber_count }} {{ t('Participants') }}</li>
                                 </ul>
                             </div>
                         </div>

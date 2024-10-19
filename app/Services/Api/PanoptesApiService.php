@@ -40,6 +40,8 @@ class PanoptesApiService extends HttpRequest
 
     private int $local_transcriptions_completed;
 
+    private int $transcriber_count;
+
     private float $percent_completed;
 
     /**
@@ -182,6 +184,7 @@ class PanoptesApiService extends HttpRequest
         $this->transcriptions_goal = (int) $workflow['subjects_count'] * (int) $workflow['retirement']['options']['count'];
         $this->transcriptions_completed = (int) $workflow['classifications_count'];
         $this->local_transcriptions_completed = CountHelper::expeditionTranscriptionCount($expeditionId);
+        $this->transcriber_count = CountHelper::expeditionTranscriberCount($expeditionId);
         $this->percent_completed = $this->percentCompleted();
     }
 
@@ -227,6 +230,14 @@ class PanoptesApiService extends HttpRequest
     public function getLocalTranscriptionsCompleted(): int
     {
         return $this->local_transcriptions_completed;
+    }
+
+    /**
+     * Return transcriber count.
+     */
+    public function getExpeditionTranscriberCount(): int
+    {
+        return $this->transcriber_count;
     }
 
     /**

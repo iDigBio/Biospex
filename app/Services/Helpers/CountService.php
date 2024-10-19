@@ -33,43 +33,25 @@ class CountService
     public function __construct(public PanoptesTranscriptionService $panoptesTranscriptionService) {}
 
     /**
-     * Return project transcription count.
-     *
-     * @TODO Change to get project total from expedition_stat
-     *
-     * @return mixed
-     */
-    public function projectTranscriptionCount(int $projectId)
-    {
-        return $this->panoptesTranscriptionService->getProjectTranscriptionCount($projectId);
-    }
-
-    /**
      * Return expedition transcription count.
-     *
-     * @return mixed
      */
-    public function expeditionTranscriptionCount(int $expeditionId)
+    public function expeditionTranscriptionCount(int $expeditionId): mixed
     {
         return $this->panoptesTranscriptionService->getExpeditionTranscriptionCount($expeditionId);
     }
 
     /**
-     * Return unique transcriber count for project.
-     *
-     * @return mixed
+     * Return unique transcriber count for expedition.
      */
-    public function projectTranscriberCount(int $projectId)
+    public function expeditionTranscriberCount(int $expeditionId): mixed
     {
-        return $this->panoptesTranscriptionService->getProjectTranscriberCount($projectId);
+        return $this->panoptesTranscriptionService->getExpeditionTranscriberCount($expeditionId);
     }
 
     /**
      * Return user transcription count for stats.
-     *
-     * @return mixed
      */
-    public function getTranscribersTranscriptionCount(int $projectId)
+    public function getTranscribersTranscriptionCount(int $projectId): mixed
     {
         return $this->panoptesTranscriptionService->getTranscribersTranscriptionCount($projectId);
     }
@@ -77,11 +59,10 @@ class CountService
     /**
      * Return transcriptions per transcribers
      *
-     * @return mixed
      *
      * @static
      */
-    public function getTranscriptionsPerTranscribers(int $projectId, $transcribers)
+    public function getTranscriptionsPerTranscribers(int $projectId, $transcribers): mixed
     {
         return Cache::rememberForever(md5(__METHOD__.$projectId), function () use ($transcribers) {
             return $transcribers->isEmpty() ? null :
@@ -95,10 +76,8 @@ class CountService
 
     /**
      * Return transcription count per transcriber
-     *
-     * @return mixed
      */
-    public function getTranscriptionCountForTranscriber(int $projectId, string $transcriber)
+    public function getTranscriptionCountForTranscriber(int $projectId, string $transcriber): mixed
     {
         return Cache::remember(md5(__METHOD__.$projectId.$transcriber), 86400, function () use ($projectId, $transcriber) {
             return $this->panoptesTranscriptionService->getTranscriptionCountForTranscriber($projectId, $transcriber);

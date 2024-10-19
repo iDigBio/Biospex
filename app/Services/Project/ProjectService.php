@@ -19,7 +19,6 @@
 
 namespace App\Services\Project;
 
-use App\Facades\CountHelper;
 use App\Models\Project;
 use App\Models\ProjectResource;
 use App\Models\User;
@@ -121,17 +120,20 @@ class ProjectService
      */
     public function getAdminIndex(User $user, array $request = []): Collection
     {
-        $records = $this->project->withCount('expeditions')->with([
-            'group' => function ($q) use ($user) {
+        $records = $this->project->withCount('expeditions')
+            ->withSum('expeditionStats', 'transcriptions_completed')
+            ->withSum('expeditionStats', 'transcriber_count')
+            ->with([
+                'group' => function ($q) use ($user) {
+                    $q->whereHas('users', function ($q) use ($user) {
+                        $q->where('users.id', $user->id);
+                    });
+                },
+            ])->whereHas('group', function ($q) use ($user) {
                 $q->whereHas('users', function ($q) use ($user) {
                     $q->where('users.id', $user->id);
                 });
-            },
-        ])->whereHas('group', function ($q) use ($user) {
-            $q->whereHas('users', function ($q) use ($user) {
-                $q->where('users.id', $user->id);
-            });
-        })->get();
+            })->get();
 
         return $this->sortResults($records, $request);
     }
@@ -142,6 +144,8 @@ class ProjectService
     public function getPublicIndex(array $request = []): Collection
     {
         $records = $this->project->withCount('expeditions')
+            ->withSum('expeditionStats', 'transcriptions_completed')
+            ->withSum('expeditionStats', 'transcriber_count')
             ->withCount('events')->with('group')->has('panoptesProjects')->get();
 
         return $this->sortResults($records, $request);
@@ -152,26 +156,24 @@ class ProjectService
      */
     public function getProjectShow(Project &$project): array
     {
-        $project->loadCount('expeditions')->load([
-            'group',
-            'ocrQueue',
-            'expeditions' => function ($q) {
-                $q->with(['stat', 'zooniverseExport', 'panoptesProject', 'workflowManager']);
-            },
-        ]);
+        $project->loadCount('expeditions')
+            ->loadSum('expeditionStats', 'transcriptions_completed')
+            ->loadSum('expeditionStats', 'transcriber_count')
+            ->load([
+                'group',
+                'ocrQueue',
+                'expeditions' => function ($q) {
+                    $q->with(['stat', 'zooniverseExport', 'panoptesProject', 'workflowManager']);
+                },
+            ]);
 
         [$expeditions, $expeditionsCompleted] = $this->partitionExpeditions($project->expeditions);
-
-        $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
-        $transcribersCount = CountHelper::projectTranscriberCount($project->id);
 
         return [
             'project' => $project,
             'group' => $project->group,
             'expeditions' => $expeditions,
             'expeditionsCompleted' => $expeditionsCompleted,
-            'transcriptionsCount' => $transcriptionsCount,
-            'transcribersCount' => $transcribersCount,
         ];
     }
 
@@ -180,19 +182,23 @@ class ProjectService
      */
     public function getProjectPageBySlug($slug): ?Project
     {
-        return $this->project->withCount('events')->withCount('expeditions')->with([
-            'amChart',
-            'group.users.profile',
-            'resources',
-            'lastPanoptesProject',
-            'bingos',
-            'expeditions' => function ($query) {
-                $query->has('panoptesProject')->has('zooniverseActor')->with('panoptesProject', 'stat', 'zooniverseActor');
-            },
-            'events' => function ($q) {
-                $q->with('teams');
-                $q->orderBy('start_date', 'desc');
-            }])->where('slug', '=', $slug)->first();
+        return $this->project->withCount('events')
+            ->withCount('expeditions')
+            ->withSum('expeditionStats', 'transcriptions_completed')
+            ->withSum('expeditionStats', 'transcriber_count')
+            ->with([
+                'amChart',
+                'group.users.profile',
+                'resources',
+                'lastPanoptesProject',
+                'bingos',
+                'expeditions' => function ($query) {
+                    $query->has('panoptesProject')->has('zooniverseActor')->with('panoptesProject', 'stat', 'zooniverseActor');
+                },
+                'events' => function ($q) {
+                    $q->with('teams');
+                    $q->orderBy('start_date', 'desc');
+                }])->where('slug', '=', $slug)->first();
     }
 
     /**

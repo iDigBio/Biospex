@@ -58,12 +58,8 @@ class PanoptesTranscriptionService
 
     /**
      * Get total transcriptions for site.
-     *
-     * @TODO Use expedition_stat table to get sum
-     *
-     * @return mixed
      */
-    public function getTotalTranscriptions()
+    public function getTotalTranscriptions(): mixed
     {
         return Cache::remember(md5(__METHOD__), 14440, function () {
             return $this->model->count();
@@ -71,30 +67,9 @@ class PanoptesTranscriptionService
     }
 
     /**
-     * Get project transcription count.
-     *
-     * TODO Change to sum expedition stat table
-     */
-    public function getProjectTranscriptionCount(int $projectId): int
-    {
-        $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
-            return $this->model->raw(function ($collection) use ($projectId) {
-                return $collection->aggregate([
-                    ['$match' => ['subject_projectId' => $projectId]],
-                    ['$count' => 'count'],
-                ]);
-            })->first();
-        });
-
-        return $result === null ? 0 : $result->count;
-    }
-
-    /**
      * Get expedition transcription count.
-     *
-     * @return int
      */
-    public function getExpeditionTranscriptionCount(int $expeditionId)
+    public function getExpeditionTranscriptionCount(int $expeditionId): int
     {
         $result = Cache::remember(md5(__METHOD__.$expeditionId), 14440, function () use ($expeditionId) {
             return $this->model->raw(function ($collection) use ($expeditionId) {
@@ -109,17 +84,15 @@ class PanoptesTranscriptionService
     }
 
     /**
-     * Get transcriber count for project.
-     *
-     * @return int
+     * Get transcriber count for expedition.
      */
-    public function getProjectTranscriberCount(int $projectId)
+    public function getExpeditionTranscriberCount(int $expeditionId): int
     {
-        $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
-            return $this->model->raw(function ($collection) use ($projectId) {
+        $result = Cache::remember(md5(__METHOD__.$expeditionId), 14440, function () use ($expeditionId) {
+            return $this->model->raw(function ($collection) use ($expeditionId) {
                 return $collection->aggregate([
                     [
-                        '$match' => ['subject_projectId' => (int) $projectId],
+                        '$match' => ['subject_expeditionId' => $expeditionId],
                     ],
                     [
                         '$group' => ['_id' => '$user_name'],
@@ -134,10 +107,8 @@ class PanoptesTranscriptionService
 
     /**
      * Get transcribers transcription count.
-     *
-     * @return mixed
      */
-    public function getTranscribersTranscriptionCount(int $projectId)
+    public function getTranscribersTranscriptionCount(int $projectId): mixed
     {
         return Cache::rememberForever(md5(__METHOD__.$projectId), function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
@@ -184,11 +155,8 @@ class PanoptesTranscriptionService
 
     /**
      * Get transcription for dashboard.
-     *
-     * @param  null  $timestamp
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getTranscriptionForDashboardJob(int $expeditionId, $timestamp = null)
+    public function getTranscriptionForDashboardJob(int $expeditionId, $timestamp = null): mixed
     {
         $model = $this->model->with([
             'subject' => function ($query) {
@@ -205,10 +173,8 @@ class PanoptesTranscriptionService
 
     /**
      * Get minimum finish date of transcriptions for project.
-     *
-     * @return mixed|null
      */
-    public function getMinFinishedAtDateByProjectId(int $projectId)
+    public function getMinFinishedAtDateByProjectId(int $projectId): mixed
     {
         $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {

@@ -302,8 +302,10 @@ class ExpeditionService
     {
         return $this->expedition->with([
             'project' => function ($q) {
-                $q->withCount('expeditions');
-                $q->withCount('events');
+                $q->withCount('expeditions')
+                    ->withSum('expeditionStats', 'transcriptions_completed')
+                    ->withSum('expeditionStats', 'transcriber_count')
+                    ->withCount('events');
             },
         ])->with('panoptesProject')->whereHas('stat', function ($q) {
             $q->whereBetween('percent_completed', [0.00, 99.99]);
