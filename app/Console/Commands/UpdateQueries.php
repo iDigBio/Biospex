@@ -55,6 +55,8 @@ class UpdateQueries extends Command
         $this->fixTables();
         $this->addUuid();
         $this->updateUuid();
+
+        \Artisan::call('zooniverse:count --update');
     }
 
     private function addUuid()
