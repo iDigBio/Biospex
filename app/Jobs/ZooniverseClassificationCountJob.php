@@ -41,7 +41,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected Expedition $expedition)
+    public function __construct(protected Expedition $expedition, protected bool $update = false)
     {
         $this->onQueue(config('config.queue.classification'));
     }
@@ -71,9 +71,14 @@ class ZooniverseClassificationCountJob implements ShouldQueue
         $this->expedition->stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
         $this->expedition->stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
         $this->expedition->stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
+        $this->expedition->stat->transcriber_count = $panoptesApiService->getExpeditionTranscriberCount($this->expedition->id);
         $this->expedition->stat->percent_completed = $panoptesApiService->getPercentCompleted();
 
         $this->expedition->stat->save();
+
+        if ($this->update) {
+            return;
+        }
 
         $this->checkFinishedAt($this->expedition, $workflow['finished_at']);
 

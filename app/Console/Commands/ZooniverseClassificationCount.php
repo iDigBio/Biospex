@@ -37,7 +37,7 @@ class ZooniverseClassificationCount extends Command
      *
      * @var string
      */
-    protected $signature = 'zooniverse:count {expeditionIds?*}';
+    protected $signature = 'zooniverse:count {expeditionIds?*} {--update}';
 
     /**
      * The console command description.
@@ -66,7 +66,10 @@ class ZooniverseClassificationCount extends Command
 
         foreach ($expeditionIds as $expeditionId) {
             $expedition = Expedition::find($expeditionId);
-            ZooniverseClassificationCountJob::dispatch($expedition);
+
+            $this->option('update') ?
+                ZooniverseClassificationCountJob::dispatch($expedition, true) :
+                ZooniverseClassificationCountJob::dispatch($expedition);
         }
     }
 
