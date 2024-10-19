@@ -210,6 +210,6 @@ return [
         'logout' => '/logout',
         'login' => '/login',
         'forgot_password' => '/forgot-password',
-        'reset_password' => '/reset-password'
-    ]
+        'reset_password' => '/reset-password',
+    ],
 ];

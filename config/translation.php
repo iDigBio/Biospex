@@ -18,14 +18,13 @@
  */
 
 return [
-    'key'                  => env('TRANSLATIONIO_KEY'),
-    'source_locale'        => 'en',
-    'target_locales'       => ['en-US'],
+    'key' => env('TRANSLATIONIO_KEY'),
+    'source_locale' => 'en',
+    'target_locales' => ['en-US'],
 
     /* Directories to scan for Gettext strings */
-    'gettext_parse_paths'  => ['app', 'resources'],
+    'gettext_parse_paths' => ['app', 'resources'],
 
     /* Where the Gettext translations are stored */
-    'gettext_locales_path' => 'lang/gettext'
+    'gettext_locales_path' => 'lang/gettext',
 ];
-

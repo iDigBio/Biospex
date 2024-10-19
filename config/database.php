@@ -58,9 +58,9 @@ return [
         ],
 
         'mongodb' => [
-            'driver'   => 'mongodb',
-            'host'     => env('MONGODB_HOST', 'localhost'),
-            'port'     => env('MONGODB_PORT', 27017),
+            'driver' => 'mongodb',
+            'host' => env('MONGODB_HOST', 'localhost'),
+            'port' => env('MONGODB_PORT', 27017),
             'username' => env('MONGODB_USERNAME', 'user'),
             'password' => env('MONGODB_PASSWORD', 'pass'),
             'database' => env('MONGODB_DATABASE', 'local'),
@@ -126,7 +126,7 @@ return [
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', 6379),
             'database' => 0,
-            'read_write_timeout' => 0
+            'read_write_timeout' => 0,
         ],
         'cache' => [
             'host' => env('REDIS_HOST', '127.0.0.1'),

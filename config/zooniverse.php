@@ -1,29 +1,29 @@
 <?php
 
 return [
-    'actor_id'                 => env('ZOONIVERSE_ACTOR_ID'),
-    'project_url'              => env('ZOONIVERSE_PROJECT_URL'),
-    'reconcile_problem_regex'  => env('ZOONIVERSE_RECONCILE_PROBLEM_REGEX'),
-    'talk_api_uri'             => env('ZOONIVERSE_TALK_API'),
+    'actor_id' => env('ZOONIVERSE_ACTOR_ID'),
+    'project_url' => env('ZOONIVERSE_PROJECT_URL'),
+    'reconcile_problem_regex' => env('ZOONIVERSE_RECONCILE_PROBLEM_REGEX'),
+    'talk_api_uri' => env('ZOONIVERSE_TALK_API'),
     'new_expedition_notification' => [2 => 'ZooniverseNewExpedition'],
-    'participate_url'          => env('ZOONIVERSE_PARTICIPATE_URL'),
+    'participate_url' => env('ZOONIVERSE_PARTICIPATE_URL'),
     // Skip api calls for expedition ids that cause issues
-    'skip_api'                 => env('ZOONIVERSE_SKIP_API'),
+    'skip_api' => env('ZOONIVERSE_SKIP_API'),
     // Skip reconcile for expedition ids that cause issues
-    'skip_reconcile'           => env('ZOONIVERSE_SKIP_RECONCILE'),
-    'pusher_id'                => env('ZOONIVERSE_PUSHER_ID'),
+    'skip_reconcile' => env('ZOONIVERSE_SKIP_RECONCILE'),
+    'pusher_id' => env('ZOONIVERSE_PUSHER_ID'),
 
     'directory' => [
-        'parent'                 => env('ZOONIVERSE_DIRECTORY', 'zooniverse'),
-        'classification'         => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/classification',
-        'reconciled'             => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled',
+        'parent' => env('ZOONIVERSE_DIRECTORY', 'zooniverse'),
+        'classification' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/classification',
+        'reconciled' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled',
         'reconciled-with-expert' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled-with-expert',
-        'reconciled-with-user'   => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled-with-user',
-        'summary'                => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/summary',
-        'transcript'             => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/transcript',
-        'explained'              => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/explained',
-        'lambda-reconciliation'  => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/lambda-reconciliation',
-        'lambda-ocr'             => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/lambda-ocr',
+        'reconciled-with-user' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled-with-user',
+        'summary' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/summary',
+        'transcript' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/transcript',
+        'explained' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/explained',
+        'lambda-reconciliation' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/lambda-reconciliation',
+        'lambda-ocr' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/lambda-ocr',
     ],
 
     'file_types' => [
@@ -34,30 +34,30 @@ return [
     ],
 
     'search_urls' => [
-        'eol'     => env('ZOONIVERSE_EOL_SEARCH'),
-        'mol'     => env('ZOONIVERSE_MOL_SEARCH'),
+        'eol' => env('ZOONIVERSE_EOL_SEARCH'),
+        'mol' => env('ZOONIVERSE_MOL_SEARCH'),
         'idigbio' => env('ZOONIVERSE_IDIGBIO_SEARCH'),
     ],
 
     'csv_map' => [
-        'subjectId'           => '_id',
-        'imageName'           => '_id',
-        'references'          => ['occurrence' => 'references'],
-        'scientificName'      => ['occurrence' => 'scientificName'],
-        'country'             => ['occurrence' => 'country'],
-        'stateProvince'       => ['occurrence' => 'stateProvince'],
-        'county'              => ['occurrence' => 'county'],
-        'eol'                 => ['occurrence' => 'scientificName'],
-        'mol'                 => ['occurrence' => 'scientificName'],
-        'idigbio'             => ['occurrence' => 'scientificName'],
-        '#institutionCode'    => ['occurrence' => 'institutionCode'],
-        '#collectionCode'     => ['occurrence' => 'collectionCode'],
-        '#catalogNumber'      => ['occurrence' => 'catalogNumber'],
+        'subjectId' => '_id',
+        'imageName' => '_id',
+        'references' => ['occurrence' => 'references'],
+        'scientificName' => ['occurrence' => 'scientificName'],
+        'country' => ['occurrence' => 'country'],
+        'stateProvince' => ['occurrence' => 'stateProvince'],
+        'county' => ['occurrence' => 'county'],
+        'eol' => ['occurrence' => 'scientificName'],
+        'mol' => ['occurrence' => 'scientificName'],
+        'idigbio' => ['occurrence' => 'scientificName'],
+        '#institutionCode' => ['occurrence' => 'institutionCode'],
+        '#collectionCode' => ['occurrence' => 'collectionCode'],
+        '#catalogNumber' => ['occurrence' => 'catalogNumber'],
         '#occurrenceRecordId' => ['occurrence' => ['recordID', 'recordId']],
-        '#occurrernceId'      => ['occurrence' => 'id'],
-        '#imageId'            => 'id',
-        '#expeditionId'       => '',
-        '#expeditionTitle'    => '',
+        '#occurrernceId' => ['occurrence' => 'id'],
+        '#imageId' => 'id',
+        '#expeditionId' => '',
+        '#expeditionTitle' => '',
     ],
 
     'export_stages' => [
@@ -69,17 +69,17 @@ return [
         'Deleting Working Files', // 5
     ],
 
-    'panoptes'                    => [
-        'client_id'     => env('ZOONIVERSE_PANOPTES_CLIENT_ID'),
+    'panoptes' => [
+        'client_id' => env('ZOONIVERSE_PANOPTES_CLIENT_ID'),
         'client_secret' => env('ZOONIVERSE_PANOPTES_CLIENT_SECRET'),
-        'api_uri'       => env('ZOONIVERSE_PANOPTES_URI'),
-        'token_uri'     => env('ZOONIVERSE_PANOPTES_TOKEN_URI'),
-        'redirect_uri'  => env('ZOONIVERSE_PANOPTES_REDIRECT_URI'),
-        'scopes'        => env('ZOONIVERSE_PANOPTES_SCOPES'),
+        'api_uri' => env('ZOONIVERSE_PANOPTES_URI'),
+        'token_uri' => env('ZOONIVERSE_PANOPTES_TOKEN_URI'),
+        'redirect_uri' => env('ZOONIVERSE_PANOPTES_REDIRECT_URI'),
+        'scopes' => env('ZOONIVERSE_PANOPTES_SCOPES'),
     ],
 
     // See TranscriptionHelper.php
-    'reserved_encoded'            => [
+    'reserved_encoded' => [
         '_id',
         'classification_id',
         'workflow_id',
@@ -97,7 +97,7 @@ return [
         'Location',
     ],
     'mapped_transcription_fields' => [
-        'province'  => [
+        'province' => [
             'StateProvince',
             'State_Province',
             'State Province',
@@ -111,7 +111,7 @@ return [
             'Collected By (first collector only)',
             'subject_collectedBy',
         ],
-        'taxon'     => [
+        'taxon' => [
             'Scientific Name',
             'Scientific_Name',
             'ScientificName',
@@ -120,7 +120,7 @@ return [
     ],
 
     'reconcile' => [
-        'file_path'   => env('ZOONIVERSE_RECONCILE_FILE_PATH'),
+        'file_path' => env('ZOONIVERSE_RECONCILE_FILE_PATH'),
         'python_path' => env('ZOONIVERSE_RECONCILE_PYTHON_PATH'),
     ],
 ];
