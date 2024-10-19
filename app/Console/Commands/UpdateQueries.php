@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use File;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +32,7 @@ class UpdateQueries extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'update:queries {method?}';
+    protected $signature = 'update:queries';
 
     /**
      * The console command description.
@@ -155,8 +154,8 @@ class UpdateQueries extends Command
 
     public function fixTables()
     {
-        DB::statement('TRUNCATE `migrations`;');
-        DB::unprepared(File::get(storage_path('migrations.sql')));
+        //DB::statement('TRUNCATE `migrations`;');
+        //DB::unprepared(File::get(storage_path('migrations.sql')));
 
         Schema::dropIfExists('project_old_workflow');
 
