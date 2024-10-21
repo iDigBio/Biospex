@@ -21,10 +21,10 @@ namespace App\Services\Reconcile;
 
 use App\Facades\TranscriptionMapHelper;
 use App\Models\Download;
+use App\Models\Expedition;
 use App\Models\Reconcile;
 use App\Notifications\Generic;
 use App\Services\Csv\AwsS3CsvService;
-use App\Services\Expedition\ExpeditionService;
 
 /**
  * Class ExpertReconcilePublishService
@@ -37,32 +37,25 @@ class ExpertReconcilePublishService
     public function __construct(
         protected Reconcile $reconcile,
         protected Download $download,
-        protected ExpeditionService $expeditionService,
         protected AwsS3CsvService $awsS3CsvService
     ) {}
 
     /**
      * Publish reconciled file.
-     *
-     * @see \App\Jobs\ExpertReconcileReviewPublishJob
-     *
-     * @throws \League\Csv\CannotInsertRecord
      */
-    public function publishReconciled(string $expeditionId): void
+    public function publishReconciled(Expedition $expedition): void
     {
-        $this->createReconcileCsv($expeditionId);
-        $this->createDownload($expeditionId);
-        $this->sendEmail($expeditionId);
+        $this->createReconcileCsv($expedition);
+        $this->createDownload($expedition);
+        $this->sendEmail($expedition);
     }
 
     /**
      * Create csv file for reconciled.
-     *
-     * @throws \League\Csv\CannotInsertRecord|\Exception
      */
-    private function createReconcileCsv(string $expeditionId): void
+    private function createReconcileCsv(Expedition $expedition): void
     {
-        $results = $this->reconcile->where('subject_expeditionId', (int) $expeditionId)->get();
+        $results = $this->reconcile->where('subject_expeditionId', (int) $expedition->id)->get();
         $mapped = $results->map(function ($record) {
             unset($record->_id, $record->subject_columns, $record->subject_problem, $record->updated_at, $record->created_at, $record->reviewed);
 
@@ -70,7 +63,7 @@ class ExpertReconcilePublishService
         });
 
         if ($mapped->isEmpty()) {
-            throw new \Exception(t('Missing reconciled records for Expert Review publish for Expedition Id: %s', $expeditionId));
+            throw new \Exception(t('Missing reconciled records for Expert Review publish for Expedition Id: %s', $expedition->id));
         }
 
         $header = array_keys($mapped->first()->toArray());
@@ -79,7 +72,7 @@ class ExpertReconcilePublishService
             $decodedHeader[] = TranscriptionMapHelper::decodeTranscriptionField($value);
         }
 
-        $file = config('zooniverse.directory.reconciled-with-expert').'/'.$expeditionId.'.csv';
+        $file = config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv';
         $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $file, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();
         $this->awsS3CsvService->csv->insertOne($decodedHeader);
@@ -89,18 +82,18 @@ class ExpertReconcilePublishService
     /**
      * Create download file.
      */
-    private function createDownload(string $expeditionId): void
+    private function createDownload(Expedition $expedition): void
     {
         $values = [
-            'expedition_id' => $expeditionId,
+            'expedition_id' => $expedition->id,
             'actor_id' => 2,
-            'file' => $expeditionId.'.csv',
+            'file' => $expedition->id.'.csv',
             'type' => 'reconciled-with-expert',
         ];
         $attributes = [
-            'expedition_id' => $expeditionId,
+            'expedition_id' => $expedition->id,
             'actor_id' => 2,
-            'file' => $expeditionId.'.csv',
+            'file' => $expedition->id.'.csv',
             'type' => 'reconciled-with-expert',
         ];
 
@@ -110,10 +103,8 @@ class ExpertReconcilePublishService
     /**
      * Send email to project owner.
      */
-    private function sendEmail(string $expeditionId): void
+    private function sendEmail(Expedition $expedition): void
     {
-        $expedition = $this->expeditionService->expedition->with(['project.group.owner'])->find($expeditionId);
-
         $attributes = [
             'subject' => t('Reconciled Expert Review Published'),
             'html' => [

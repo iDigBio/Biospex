@@ -16,11 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use App\Http\Controllers\Admin\ReconcileController;
 
-Route::get('reconciles/{expeditions}', [ReconcileController::class, 'index'])->name('admin.reconciles.index');
-Route::get('reconciles/{expeditions}/create', [ReconcileController::class, 'create'])->name('admin.reconciles.create');
-Route::put('reconciles/{expeditions}', [ReconcileController::class, 'update'])->name('admin.reconciles.update');
-Route::post('reconciles/{projects}/publish/{expeditions}', [ReconcileController::class, 'publish'])->name('admin.reconciles.publish');
-Route::get('reconciles/{projects}/upload/{expeditions}', [ReconcileController::class, 'reconciledWithUser'])->name('admin.reconciles.uploadShow');
-Route::post('reconciles/{projects}/upload/{expeditions}', [ReconcileController::class, 'reconciledWithUser'])->name('admin.reconciles.upload');
+use App\Http\Controllers\Admin\ExpertReconcileController;
+use App\Http\Controllers\Admin\ExpertReconcileFormController;
+use App\Http\Controllers\Admin\ExpertReconcilePublishController;
+
+Route::get('reconciles/{expedition}', [ExpertReconcileController::class, 'index'])->name('admin.reconciles.index');
+Route::get('reconciles/{expedition}/create', [ExpertReconcileController::class, 'create'])->name('admin.reconciles.create');
+Route::put('reconciles/{expedition}', [ExpertReconcileController::class, 'update'])->name('admin.reconciles.update');
+
+Route::post('reconciles/{expedition}/publish', ExpertReconcilePublishController::class)->name('admin.reconciles.publish');
+
+Route::get('reconciles/{expedition}/edit', [ExpertReconcileFormController::class, 'edit'])->name('admin.reconcile-user-form.edit');
+Route::post('reconciles/{expedition}/update', [ExpertReconcileFormController::class, 'update'])->name('admin.reconcile-user-form.upload');

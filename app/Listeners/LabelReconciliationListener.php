@@ -20,9 +20,12 @@
 namespace App\Listeners;
 
 use App\Events\LabelReconciliationEvent;
+use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Reconcile\ReconcileService;
+use App\Services\Reconcile\ReconcileProcessAll;
+use App\Services\Reconcile\ReconcileProcessExplained;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Throwable;
 
@@ -34,15 +37,14 @@ use Throwable;
  */
 class LabelReconciliationListener implements ShouldQueue
 {
-    public ReconcileService $reconcileService;
-
     /**
      * Create the event listener.
      */
-    public function __construct(ReconcileService $reconcileService)
-    {
-        $this->reconcileService = $reconcileService;
-    }
+    public function __construct(
+        protected ReconcileProcessAll $reconcileProcessAll,
+        protected ReconcileProcessExplained $reconcileProcessExplained,
+        protected Expedition $expedition
+    ) {}
 
     /**
      * Set tube for listener.
@@ -60,7 +62,25 @@ class LabelReconciliationListener implements ShouldQueue
      */
     public function handle(LabelReconciliationEvent $event): void
     {
-        $this->reconcileService->process($event->payload);
+        $responsePayload = $event->payload['responsePayload'];
+
+        // If errorMessage, something really went bad.
+        if (isset($responsePayload['errorMessage'])) {
+            throw new Exception($responsePayload['errorMessage']);
+        }
+
+        if ($responsePayload['statusCode'] !== 200) {
+            throw new Exception('Invalid response status code: '.$responsePayload['body']['message']);
+        }
+
+        $expeditionId = (int) $responsePayload['body']['expeditionId'];
+        $explanations = (bool) $responsePayload['body']['explanations'];
+
+        $expedition = $this->expedition->find($expeditionId);
+
+        $explanations ?
+            $this->reconcileProcessExplained->process($expedition) :
+            $this->reconcileProcessAll->process($expedition);
     }
 
     /**

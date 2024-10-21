@@ -19,8 +19,8 @@
 
 namespace App\Jobs;
 
+use App\Models\Expedition;
 use App\Notifications\Generic;
-use App\Services\Expedition\ExpeditionService;
 use App\Services\Reconcile\ExpertReconcilePublishService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,7 +39,7 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
     /**
      * ExpertReconcileReviewPublishJob constructor.
      */
-    public function __construct(protected int $expeditionId)
+    public function __construct(protected Expedition $expedition)
     {
         $this->onQueue(config('config.queue.reconcile'));
     }
@@ -47,28 +47,30 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
     /**
      * Handle Job.
      */
-    public function handle(
-        ExpertReconcilePublishService $expertReconcilePublishService,
-        ExpeditionService $expeditionService
-    ): void {
-        $expedition = $expeditionService->expedition->with(['project.group.owner'])->find($this->expeditionId);
+    public function handle(ExpertReconcilePublishService $expertReconcilePublishService): void
+    {
+        $this->expedition->load(['project.group.owner']);
 
-        try {
-            $expertReconcilePublishService->publishReconciled($this->expeditionId);
-        } catch (Throwable $throwable) {
-            $attributes = [
-                'subject' => t('Expert Reconcile Publish Error'),
-                'html' => [
-                    t('An error occurred while importing the Darwin Core Archive.'),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ],
-            ];
-            $expedition->project->group->owner->notify(new Generic($attributes, true));
-        }
+        $expertReconcilePublishService->publishReconciled($this->expedition);
 
         $this->delete();
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $exception): void
+    {
+        $attributes = [
+            'subject' => t('Expert Reconcile Publish Error'),
+            'html' => [
+                t('An error occurred while importing the Darwin Core Archive.'),
+                t('File: %s', $exception->getFile()),
+                t('Line: %s', $exception->getLine()),
+                t('Message: %s', $exception->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
+        ];
+        $this->expedition->project->group->owner->notify(new Generic($attributes, true));
     }
 }

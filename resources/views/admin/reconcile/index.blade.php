@@ -36,7 +36,7 @@
         </div>
         <div class="col-6">
             <form method="post" id="frmReconcile"
-                  action="{{ route('admin.reconciles.update', [$expedition->id]) }}" role="form">
+                  action="{{ route('admin.reconciles.update', [$expedition]) }}" role="form">
                 {!! method_field('put') !!}
                 @csrf
                 <input type="hidden" name="_id" value="{{ $reconciles->first()->_id }}">
@@ -98,7 +98,7 @@
             @if(!$reconciles->hasMorePages())
                 <div class="row mt-5">
                     <div class="col-12 m-auto justify-content-center text-center">
-                        <a href="{{ route('admin.reconciles.publish', [$expedition->project_id, $expedition->id]) }}"
+                        <a href="{{ route('admin.reconciles.publish', [$expedition]) }}"
                            class="btn btn-primary p-2 m-1 prevent-default text-uppercase"
                            data-method="post"
                            data-confirm="confirmation"

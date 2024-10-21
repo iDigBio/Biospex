@@ -69,7 +69,7 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
             $this->expedition->zooniverseActor->pivot->expert = 1;
             $this->expedition->zooniverseActor->pivot->save();
 
-            $route = route('admin.reconciles.index', ['expeditions' => $this->expedition->id]);
+            $route = route('admin.reconciles.index', [$this->expedition]);
             $btn = $this->createButton($route, t('Expert Review Start'));
 
             $attributes = [

@@ -41,7 +41,7 @@
                 data-toggle="modal"
                 data-target="#global-modal"
                 data-size="modal-lg"
-                data-url="{{ route('admin.reconciles.uploadShow', [$expedition->project->id, $expedition->id]) }}"
+                data-url="{{ route('admin.reconcile-user-form.edit', [$expedition]) }}"
                 data-title="{{ t('Upload Reconciled With User Opinion') }}"></button>
     </div>
     <div class="form-group col-sm-10 mx-auto text-center">

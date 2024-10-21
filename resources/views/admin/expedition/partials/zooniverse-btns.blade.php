@@ -41,7 +41,7 @@
 @endif
 @if($actor->pivot->state === 3  && $actor->id === 2)
     <a class="btn btn-primary rounded-0 mb-1{{ $actor->pivot->expert ? ' green' : '' }}"
-       href="{{ route($actor->pivot->expert ? 'admin.reconciles.index' : 'admin.reconciles.create', [$actor->pivot->expedition_id]) }}">
+       href="{{ route($actor->pivot->expert ? 'admin.reconciles.index' : 'admin.reconciles.create', [$expedition]) }}">
         {{ t('Expert Review Ambiguities') }}</a>
 
     <a href="" class="prevent-default btn btn-primary rounded-0 mb-1"
@@ -49,6 +49,6 @@
        data-toggle="modal"
        data-target="#global-modal"
        data-size="modal-lg"
-       data-url="{{ route('admin.reconciles.uploadShow', [$expedition->project->id, $expedition->id]) }}"
+       data-url="{{ route('admin.reconcile-user-form.edit', [$expedition]) }}"
        data-title="{{ t('Upload Reconciled With User Opinion') }}"> {{ t('Upload Reconciled With User Opinion') }}</a>
 @endif

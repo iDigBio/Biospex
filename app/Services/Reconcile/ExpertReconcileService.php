@@ -58,7 +58,7 @@ class ExpertReconcileService
      *
      * @throws \League\Csv\Exception|\Exception
      */
-    public function migrateReconcileCsv(string $expeditionId)
+    public function migrateReconcileCsv(string $expeditionId): void
     {
         $file = config('zooniverse.directory.reconciled').'/'.$expeditionId.'.csv';
 
@@ -156,7 +156,7 @@ class ExpertReconcileService
      *
      * @throws \League\Csv\Exception|\Exception
      */
-    public function setReconcileProblems(int $expeditionId)
+    public function setReconcileProblems(int $expeditionId): void
     {
         $file = config('zooniverse.directory.explained').'/'.$expeditionId.'.csv';
 

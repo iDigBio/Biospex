@@ -20,41 +20,39 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ExpertReconcileReviewPublishJob;
+use App\Models\Expedition;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Api\ZooniverseTalkApiService;
-use App\Services\Expedition\ExpeditionService;
 use App\Services\Permission\CheckPermission;
 use App\Services\Reconcile\ExpertReconcileService;
-use App\Services\Reconcile\ReconcileService;
+use App\Services\Reconcile\ReconcileLambdaService;
 use App\Traits\SkipZooniverse;
 use Redirect;
 use Request;
 use View;
 
 /**
- * Class ReconcileController
+ * Class ExpertReconcileController
  */
-class ReconcileController extends Controller
+class ExpertReconcileController extends Controller
 {
     use SkipZooniverse;
 
     /**
-     * ReconcileController constructor.
-     * TODO: Refactor
+     * ExpertReconcileController constructor.
      */
     public function __construct(
         protected ExpertReconcileService $expertReconcileService,
-        protected ExpeditionService $expeditionService,
-        protected ReconcileService $reconcileService
+        protected PanoptesApiService $panoptesApiService,
+        protected ZooniverseTalkApiService $zooniverseTalkApiService
     ) {}
 
     /**
      * Show files needing reconciliation with pagination.
      */
-    public function index(int $expeditionId, PanoptesApiService $panoptesApiService, ZooniverseTalkApiService $zooniverseTalkApiService)
+    public function index(Expedition $expedition)
     {
-        $expedition = $this->expeditionService->expedition->with(['project.group.owner', 'panoptesProject'])->find($expeditionId);
+        $expedition->load(['project.group.owner', 'panoptesProject']);
 
         if (! CheckPermission::handle('updateProject', $expedition->project->group)) {
             return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
@@ -68,9 +66,9 @@ class ReconcileController extends Controller
                 ->with('danger', t('Reconcile data for processing is missing.'));
         }
 
-        $comments = $zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, $reconciles->first()->subject_id);
+        $comments = $this->zooniverseTalkApiService->getComments($expedition->panoptesProject->panoptes_project_id, $reconciles->first()->subject_id);
 
-        $location = $panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
+        $location = $this->panoptesApiService->getSubjectImageLocation($reconciles->first()->subject_id);
         $imgUrl = $this->expertReconcileService->getImageUrl($reconciles->first()->subject_imageName, $location);
         $columns = explode('|', $reconciles->first()->subject_columns);
 
@@ -83,30 +81,29 @@ class ReconcileController extends Controller
      *
      * @throws \Throwable
      */
-    public function create(int $expeditionId)
+    public function create(Expedition $expedition, ReconcileLambdaService $reconcileLambdaService)
     {
-        $expedition = $this->expeditionModelService->findExpeditionWithRelations($expeditionId, ['project.group.owner']);
+        $expedition->load('project.group.owner');
 
         if (! CheckPermission::handle('updateProject', $expedition->project->group)) {
             return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expedition->id]);
         }
 
-        if ($this->skipReconcile($expeditionId)) {
-
-            return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expeditionId])
-                ->with('warning', t('Expert Review Process for Expedition (:id) was skipped. Please contact Biospex Administration', [':id' => $expeditionId]));
+        if ($this->skipReconcile($expedition->id)) {
+            return Redirect::route('admin.expeditions.show', [$expedition])
+                ->with('warning', t('Expert Review Process for Expedition (:id) was skipped. Please contact Biospex Administration', [':id' => $expedition->id]));
         }
 
-        $this->reconcileService->invokeLambdaExplained($expedition->id);
+        $reconcileLambdaService->invokeLambdaExplained($expedition->id);
 
-        return Redirect::route('admin.expeditions.show', [$expedition->project_id, $expeditionId])
+        return Redirect::route('admin.expeditions.show', [$expedition])
             ->with('success', t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));
     }
 
     /**
      * Update reconciled record.
      */
-    public function update(int $expeditionId)
+    public function update(Expedition $expedition)
     {
         if (! $this->expertReconcileService->updateRecord(Request::all())) {
 
@@ -114,24 +111,5 @@ class ReconcileController extends Controller
         }
 
         return Redirect::to(Request::get('page'))->with('success', t('Record was updated successfully.'));
-    }
-
-    /**
-     * Publish reconciled csv file.
-     */
-    public function publish(int $projectId, int $expeditionId)
-    {
-        ExpertReconcileReviewPublishJob::dispatch($expeditionId);
-
-        return Redirect::route('admin.expeditions.show', [$projectId, $expeditionId])
-            ->with('success', t('The Expert Review Publish job has been submitted. You will receive an email when it has completed.'));
-    }
-
-    /**
-     * Upload reconciled qc file.
-     */
-    public function reconciledWithUser(int $projectId, int $expeditionId): View|\Illuminate\Http\JsonResponse
-    {
-        return $this->reconcileService->reconciledWithUserFile($projectId, $expeditionId);
     }
 }
