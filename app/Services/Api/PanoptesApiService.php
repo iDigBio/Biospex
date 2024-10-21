@@ -203,7 +203,8 @@ class PanoptesApiService extends HttpRequest
      */
     private function percentCompleted(): float|bool|int
     {
-        $value = ($this->local_transcriptions_completed === 0) ? 0 : ($this->local_transcriptions_completed / $this->transcriptions_goal) * 100;
+        $value = ($this->local_transcriptions_completed === 0) ? 0 :
+            ($this->local_transcriptions_completed / $this->transcriptions_goal) * 100;
 
         return ($value > 100) ? 100 : round($value, 2);
     }
