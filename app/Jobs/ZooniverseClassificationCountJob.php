@@ -117,6 +117,10 @@ class ZooniverseClassificationCountJob implements ShouldQueue
 
         $expedition->zooniverseActor()->updateExistingPivot($expedition->zooniverseActor->pivot->actor_id, $attributes);
 
+        // Todo: Change expedition->completed to actor_expedition table.
+        $expedition->completed = 1;
+        $expedition->save();
+
         $attributes = [
             'subject' => t('Zooniverse Transcriptions Completed'),
             'html' => [
