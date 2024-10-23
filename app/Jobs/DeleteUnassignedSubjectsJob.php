@@ -50,37 +50,39 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
      */
     public function handle(SubjectService $subjectService): void
     {
-        try {
-            $cursor = $subjectService->deleteUnassignedByProject($this->project->id);
-            $cursor->each(function ($subject) {
-                $subject->delete();
-            });
+        $cursor = $subjectService->deleteUnassignedByProject($this->project->id);
+        $cursor->each(function ($subject) {
+            $subject->delete();
+        });
 
-            $attributes = [
-                'subject' => t('Delete Unassigned Subjects Complete'),
-                'html' => [
-                    t('All unassigned subjects for Project Id %s have been deleted.', $this->project->id),
-                ],
-            ];
+        $attributes = [
+            'subject' => t('Delete Unassigned Subjects Complete'),
+            'html' => [
+                t('All unassigned subjects for Project Id %s have been deleted.', $this->project->id),
+            ],
+        ];
 
-            $this->user->notify(new Generic($attributes));
+        $this->user->notify(new Generic($attributes));
 
-            $this->delete();
-        } catch (Throwable $throwable) {
-            $attributes = [
-                'subject' => t('Delete Unassigned Subjects Error'),
-                'html' => [
-                    t('Error: Could not delete unassigned subjects for Project Id %s.', $this->project->id),
-                    t('An error occurred while importing the Darwin Core Archive.'),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ],
-            ];
-            $this->user->notify(new Generic($attributes, true));
+        $this->delete();
+    }
 
-            $this->delete();
-        }
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $attributes = [
+            'subject' => t('Delete Unassigned Subjects Error'),
+            'html' => [
+                t('Error: Could not delete unassigned subjects for Project Id %s.', $this->project->id),
+                t('An error occurred while importing the Darwin Core Archive.'),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
+        ];
+        $this->user->notify(new Generic($attributes, true));
     }
 }

@@ -30,6 +30,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 class ExpertReviewMigrateReconcilesJob implements ShouldQueue
 {
@@ -54,35 +55,41 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
 
     /**
      * Execute the job.
+     *
+     * @throws \League\Csv\Exception
+     * @throws \Exception
      */
     public function handle(ExpertReconcileService $expertReconcileService): void
     {
         $this->expedition->load('project.group.owner');
 
-        try {
-            if ($this->skipReconcile($this->expedition->id)) {
-                throw new Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [
-                    ':id' => $this->expedition->id, ':title' => $this->expedition->title,
-                ]));
-            }
-
-            $expertReconcileService->migrateReconcileCsv($this->expedition->id);
-
-        } catch (\Throwable $throwable) {
-            $attributes = [
-                'subject' => t('Expert Review Migration Failed'),
-                'html' => [
-                    t('Expedition %s', $this->expedition->title),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ],
-            ];
-
-            $this->expedition->project->group->owner->notify(new Generic($attributes, true));
-
-            $this->delete();
+        if ($this->skipReconcile($this->expedition->id)) {
+            throw new Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [
+                ':id' => $this->expedition->id, ':title' => $this->expedition->title,
+            ]));
         }
+
+        $expertReconcileService->migrateReconcileCsv($this->expedition->id);
+
+        $this->delete();
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $attributes = [
+            'subject' => t('Expert Review Migration Failed'),
+            'html' => [
+                t('Expedition %s', $this->expedition->title),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
+        ];
+
+        $this->expedition->project->group->owner->notify(new Generic($attributes, true));
     }
 }

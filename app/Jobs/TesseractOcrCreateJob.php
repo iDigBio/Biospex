@@ -57,34 +57,37 @@ class TesseractOcrCreateJob implements ShouldQueue
             return;
         }
 
-        try {
-            $total = $tesseractOcrBuild->getSubjectCountForOcr($this->project, $this->expedition);
+        $total = $tesseractOcrBuild->getSubjectCountForOcr($this->project, $this->expedition);
 
-            // If no subjects to OCR, return
-            if ($total === 0) {
-                return;
-            }
-
-            $ocrQueue = $tesseractOcrBuild->createOcrQueue($this->project, $this->expedition, ['total' => $total]);
-
-            $tesseractOcrBuild->createOcrQueueFiles($ocrQueue, $this->project, $this->expedition);
-
-        } catch (Throwable $throwable) {
-            $attributes = [
-                'subject' => t('Error creating OCR job.'),
-                'html' => [
-                    t('Project Id: %s', $this->project->id),
-                    t('Expedition Id: %s', $this->expedition->id),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                ],
-            ];
-
-            $user = User::find(config('config.admin.user_id'));
-            $user->notify(new Generic($attributes));
+        // If no subjects to OCR, return
+        if ($total === 0) {
+            return;
         }
 
+        $ocrQueue = $tesseractOcrBuild->createOcrQueue($this->project, $this->expedition, ['total' => $total]);
+
+        $tesseractOcrBuild->createOcrQueueFiles($ocrQueue, $this->project, $this->expedition);
+
         $this->delete();
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $attributes = [
+            'subject' => t('Error creating OCR job.'),
+            'html' => [
+                t('Project Id: %s', $this->project->id),
+                t('Expedition Id: %s', $this->expedition->id),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
+        ];
+
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

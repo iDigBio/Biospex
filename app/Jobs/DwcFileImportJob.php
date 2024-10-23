@@ -60,7 +60,7 @@ class DwcFileImportJob implements ShouldQueue
         ProjectService $projectService,
         DarwinCore $dwcProcess,
         CreateReportService $createReportService
-    ) {
+    ): void {
         $scratchFileDir = Storage::disk('efs')->path(config('config.scratch_dir').'/'.md5($this->import->file));
         $importFilePath = Storage::disk('efs')->path($this->import->file);
 
@@ -137,7 +137,7 @@ class DwcFileImportJob implements ShouldQueue
     /**
      * @throws \Exception
      */
-    private function makeDirectory($dir)
+    private function makeDirectory($dir): void
     {
         if (! File::isDirectory($dir) && ! File::makeDirectory($dir, 0775, true)) {
             throw new Exception(t('Unable to create directory: :directory', [':directory' => $dir]));
@@ -151,7 +151,7 @@ class DwcFileImportJob implements ShouldQueue
     /**
      * Unzip file in directory.
      */
-    private function unzip($zipFile, $dir)
+    private function unzip($zipFile, $dir): void
     {
         shell_exec("unzip $zipFile -d $dir");
     }

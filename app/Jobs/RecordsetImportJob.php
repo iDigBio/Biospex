@@ -42,26 +42,18 @@ class RecordsetImportJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
-    public $timeout = 1800;
+    public int $timeout = 1800;
 
-    public $data;
+    public Import $import;
 
-    public $import;
-
-    /**
-     * Curl response
-     */
-    public $response;
+    public string $response;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($data)
+    public function __construct(protected array $data)
     {
-        $this->data = $data;
         $this->onQueue(config('config.queue.import'));
     }
 

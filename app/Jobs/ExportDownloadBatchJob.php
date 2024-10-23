@@ -50,27 +50,32 @@ class ExportDownloadBatchJob implements ShouldQueue
 
     /**
      * Handle download batch job.
+     *
+     * @throws \Exception
      */
     public function handle(ZooniverseExportBatch $zooniverseExportBatch): void
     {
         $this->download->load(['expedition.project.group.owner', 'actor']);
 
-        try {
-            $zooniverseExportBatch->process($this->download);
-        } catch (Throwable $throwable) {
-            $attributes = [
-                'subject' => t('Export Download Batch Error'),
-                'html' => [
-                    t('The batch export for Expedition %s has failed.', $this->download->expedition->title),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ],
-            ];
+        $zooniverseExportBatch->process($this->download);
+    }
 
-            $this->download->expedition->project->group->owner->notify(new Generic($attributes, true));
-            $this->delete();
-        }
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $exception): void
+    {
+        $attributes = [
+            'subject' => t('Export Download Batch Error'),
+            'html' => [
+                t('The batch export for Expedition %s has failed.', $this->download->expedition->title),
+                t('File: %s', $exception->getFile()),
+                t('Line: %s', $exception->getLine()),
+                t('Message: %s', $exception->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
+        ];
+
+        $this->download->expedition->project->group->owner->notify(new Generic($attributes, true));
     }
 }

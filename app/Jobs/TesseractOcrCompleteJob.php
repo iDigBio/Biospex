@@ -46,34 +46,36 @@ class TesseractOcrCompleteJob implements ShouldQueue
 
     /**
      * Execute the job.
+     *
+     * @throws \League\Csv\CannotInsertRecord
      */
     public function handle(TesseractOcrService $service): void
     {
         $this->ocrQueue->status = 1;
         $this->ocrQueue->save();
 
-        try {
-            $service->ocrCompleted($this->ocrQueue);
-        } catch (Throwable $throwable) {
-            $this->ocrQueue->error = 1;
-            $this->ocrQueue->save();
+        $service->ocrCompleted($this->ocrQueue);
+    }
 
-            $attributes = [
-                'subject' => t('Ocr Process Error'),
-                'html' => [
-                    t('Queue Id: %s', $this->ocrQueue->id),
-                    t('Project Id: %s', $this->ocrQueue->project->id),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                ],
-            ];
-            $user = User::find(config('config.admin.user_id'));
-            $user->notify(new Generic($attributes));
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $this->ocrQueue->error = 1;
+        $this->ocrQueue->save();
 
-            $this->delete();
-
-            return;
-        }
+        $attributes = [
+            'subject' => t('Ocr Process Error'),
+            'html' => [
+                t('Queue Id: %s', $this->ocrQueue->id),
+                t('Project Id: %s', $this->ocrQueue->project_id),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
+        ];
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

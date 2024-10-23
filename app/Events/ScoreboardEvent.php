@@ -30,18 +30,10 @@ class ScoreboardEvent extends Event implements ShouldBroadcast
 {
     use Dispatchable;
 
-    public array $data = [];
-
-    public $projectId;
-
     /**
      * ScoreboardEvent constructor.
      */
-    public function __construct($projectId, $data)
-    {
-        $this->projectId = $projectId;
-        $this->data = $data;
-    }
+    public function __construct(public $projectId, public array $data = []) {}
 
     /**
      * The name of the queue on which to place the broadcasting job.

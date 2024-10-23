@@ -58,7 +58,7 @@ class ZooniverseProcessCsvJob implements ShouldQueue
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      * @throws \Exception
      */
-    public function handle(ZooniverseCsvService $service)
+    public function handle(ZooniverseCsvService $service): void
     {
         $result = $service->checkCsvRequest($this->expeditionId);
         if ($result['media'][0]['metadata']['state'] === 'creating') {
@@ -91,10 +91,8 @@ class ZooniverseProcessCsvJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @return void
      */
-    public function failed(Throwable $throwable)
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Zooniverse Process CSV Failed'),

@@ -42,6 +42,8 @@ class GeoLocateStatsJob implements ShouldQueue
     }
 
     /**
+     * Execute the job.
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle(GeoLocateStatService $geoLocateStatService): void

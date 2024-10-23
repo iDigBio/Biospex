@@ -42,6 +42,8 @@ class ExpertReconcilePublishService
 
     /**
      * Publish reconciled file.
+     *
+     * @throws \Exception
      */
     public function publishReconciled(Expedition $expedition): void
     {
@@ -52,6 +54,8 @@ class ExpertReconcilePublishService
 
     /**
      * Create csv file for reconciled.
+     *
+     * @throws \Exception
      */
     private function createReconcileCsv(Expedition $expedition): void
     {

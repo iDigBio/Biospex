@@ -43,19 +43,14 @@ class DwcUriImportJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
-    public $timeout = 1800;
-
-    public $data;
+    public int $timeout = 1800;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($data)
+    public function __construct(protected array $data)
     {
-        $this->data = $data;
         $this->onQueue(config('config.queue.import'));
     }
 

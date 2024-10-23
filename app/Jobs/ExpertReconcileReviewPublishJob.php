@@ -46,6 +46,8 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
 
     /**
      * Handle Job.
+     *
+     * @throws \Exception
      */
     public function handle(ExpertReconcilePublishService $expertReconcilePublishService): void
     {

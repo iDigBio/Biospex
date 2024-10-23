@@ -143,10 +143,8 @@ class ZooniverseClassificationCountJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @return void
      */
-    public function failed(Throwable $throwable)
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Zooniverse Classification Count Job Failed'),

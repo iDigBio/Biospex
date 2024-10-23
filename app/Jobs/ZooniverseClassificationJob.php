@@ -46,11 +46,9 @@ class ZooniverseClassificationJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
-     *
      * @throws \Exception
      */
-    public function handle(CreatePusherClassificationService $createPusherClassificationService)
+    public function handle(CreatePusherClassificationService $createPusherClassificationService): void
     {
         $createPusherClassificationService->process($this->data, $this->title);
     }

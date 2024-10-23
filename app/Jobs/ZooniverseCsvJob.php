@@ -49,13 +49,12 @@ class ZooniverseCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      * @throws \Exception
      */
-    public function handle(ZooniverseCsvService $service)
+    public function handle(ZooniverseCsvService $service): void
     {
         if ($this->skipApi($this->expeditionId)) {
             $this->delete();
@@ -90,10 +89,8 @@ class ZooniverseCsvJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @return void
      */
-    public function failed(Throwable $throwable)
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Zooniverse CSV Job Failed'),

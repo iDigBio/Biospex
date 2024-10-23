@@ -30,6 +30,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 class ExpertReviewSetProblemsJob implements ShouldQueue
 {
@@ -52,54 +53,57 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
 
     /**
      * Execute the job.
+     *
+     * @throws \League\Csv\Exception
      */
     public function handle(ExpertReconcileService $expertReconcileService): void
     {
         $this->expedition->load('project.group.owner', 'zooniverseActor');
 
-        try {
-            if ($this->skipReconcile($this->expedition->id)) {
-                throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [
-                    ':id' => $this->expedition->id, ':title' => $this->expedition->title,
-                ]));
-            }
-
-            $expertReconcileService->setReconcileProblems($this->expedition->id);
-
-            $this->expedition->zooniverseActor->pivot->expert = 1;
-            $this->expedition->zooniverseActor->pivot->save();
-
-            $route = route('admin.reconciles.index', [$this->expedition]);
-            $btn = $this->createButton($route, t('Expert Review Start'));
-
-            $attributes = [
-                'subject' => t('Expert Review Job Complete'),
-                'html' => [
-                    t('The Expert Review job for %s is complete and you may start reviewing the reconciled records.', $this->expedition->title),
-                    t('You may access the page by going to the Expedition Download modal and clicking the green button or click the button below and be taken to the page directly.'),
-                ],
-                'buttons' => $btn,
-            ];
-
-            $this->expedition->project->group->owner->notify(new Generic($attributes));
-
-            $this->delete();
-
-        } catch (\Throwable $throwable) {
-            $attributes = [
-                'subject' => t('Expert Review Job Error'),
-                'html' => [
-                    t('An error occurred while setting the problems for Expedition %s.', $this->expedition->title),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ],
-            ];
-
-            $this->expedition->project->group->owner->notify(new Generic($attributes, true));
-
-            $this->delete();
+        if ($this->skipReconcile($this->expedition->id)) {
+            throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [
+                ':id' => $this->expedition->id, ':title' => $this->expedition->title,
+            ]));
         }
+
+        $expertReconcileService->setReconcileProblems($this->expedition->id);
+
+        $this->expedition->zooniverseActor->pivot->expert = 1;
+        $this->expedition->zooniverseActor->pivot->save();
+
+        $route = route('admin.reconciles.index', [$this->expedition]);
+        $btn = $this->createButton($route, t('Expert Review Start'));
+
+        $attributes = [
+            'subject' => t('Expert Review Job Complete'),
+            'html' => [
+                t('The Expert Review job for %s is complete and you may start reviewing the reconciled records.', $this->expedition->title),
+                t('You may access the page by going to the Expedition Download modal and clicking the green button or click the button below and be taken to the page directly.'),
+            ],
+            'buttons' => $btn,
+        ];
+
+        $this->expedition->project->group->owner->notify(new Generic($attributes));
+
+        $this->delete();
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $attributes = [
+            'subject' => t('Expert Review Job Error'),
+            'html' => [
+                t('An error occurred while setting the problems for Expedition %s.', $this->expedition->title),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
+        ];
+
+        $this->expedition->project->group->owner->notify(new Generic($attributes, true));
     }
 }

@@ -45,12 +45,10 @@ class GridExportCsvJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
-    public $timeout = 1800;
+    public int $timeout = 1800;
 
-    protected GeneralService $generalService;
+    private string $csvName;
 
     /**
      * Create a new job instance.
@@ -58,86 +56,62 @@ class GridExportCsvJob implements ShouldQueue
     public function __construct(public User $user, public array $data)
     {
         $this->onQueue(config('config.queue.default'));
+        $this->csvName = Str::random().'.csv';
     }
 
     /**
      * Execute the job.
+     *
+     * @throws \League\Csv\CannotInsertRecord
      */
     public function handle(
         JqGridEncoder $jqGridEncoder,
         AwsS3CsvService $awsS3CsvService,
         GeneralService $generalService): void
     {
-        $csvName = Str::random().'.csv';
+        $cursor = $jqGridEncoder->encodeGridExportData($this->data);
 
-        try {
+        $header = $this->buildHeader();
 
-            $cursor = $jqGridEncoder->encodeGridExportData($this->data['postData'], $this->data['route'], $this->data['projectId'], $this->data['expeditionId']);
+        $bucket = config('filesystems.disks.s3.bucket');
+        $filePath = config('config.report_dir').'/'.$this->csvName;
 
-            $header = $this->buildHeader();
+        $awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
+        $awsS3CsvService->createCsvWriterFromStream();
+        $awsS3CsvService->csv->insertOne($header->keys()->toArray());
 
-            $bucket = config('filesystems.disks.s3.bucket');
-            $filePath = config('config.report_dir').'/'.$csvName;
+        $cursor->each(function ($subject) use ($header, $awsS3CsvService, $generalService) {
+            $subjectArray = $subject->getAttributes();
+            $subjectArray['_id'] = (string) $subject->_id;
+            $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
+            $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
+            $subjectArray['created_at'] = $subject->created_at->toDateTimeString();
+            $subjectArray['ocr'] = $generalService->forceUtf8($subject->ocr);
+            $subjectArray['occurrence'] = $this->decodeAndEncode($subject['occurrence']->getAttributes());
 
-            $awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
-            $awsS3CsvService->createCsvWriterFromStream();
-            $awsS3CsvService->csv->insertOne($header->keys()->toArray());
+            $merged = $header->merge($subjectArray);
 
-            $cursor->each(function ($subject) use ($header, $awsS3CsvService, $generalService) {
-                $subjectArray = $subject->getAttributes();
-                $subjectArray['_id'] = (string) $subject->_id;
-                $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
-                $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
-                $subjectArray['created_at'] = $subject->created_at->toDateTimeString();
-                $subjectArray['ocr'] = $generalService->forceUtf8($subject->ocr);
-                $subjectArray['occurrence'] = $this->decodeAndEncode($subject['occurrence']->getAttributes());
+            $awsS3CsvService->csv->insertOne($merged->toArray());
+        });
+        $awsS3CsvService->closeBucketStream();
 
-                $merged = $header->merge($subjectArray);
-
-                $awsS3CsvService->csv->insertOne($merged->toArray());
-            });
-            $awsS3CsvService->closeBucketStream();
-
-            if (! Storage::disk('s3')->exists($filePath)) {
-                throw new Exception(t('Csv export file is missing: %s', $filePath));
-            }
-
-            $route = route('admin.downloads.report', ['file' => base64_encode($csvName)]);
-            $btn = $this->createButton($route, t('Download CSV'));
-            $html = ! is_null($this->data['expeditionId']) ?
-                t('Your grid export for Expedition Id %s is complete. Click the button provided to download:', $this->data['expeditionId']) :
-                t('Your grid export for Project Id %s is complete. Click the button provided to download:', $this->data['projectId']);
-
-            $attributes = [
-                'subject' => t('Grid Export to CSV Complete'),
-                'html' => [$html],
-                'buttons' => $btn,
-            ];
-
-            $this->user->notify(new Generic($attributes));
-
-        } catch (Throwable $throwable) {
-
-            $idMessage = ! is_null($this->data['expeditionId']) ?
-                t('Expedition Id: %s', $this->data['expeditionId']) :
-                t('Project Id: %s', $this->data['projectId']);
-
-            $attributes = [
-                'subject' => t('Grid Export to CSV Error'),
-                'html' => [
-                    t('An error occurred during csv export from the grid.'),
-                    $idMessage,
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                    t('Code: %s', $throwable->getTrace()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ],
-            ];
-
-            $this->user->notify(new Generic($attributes, true));
-            Storage::disk('s3')->delete(config('config.report_dir').'/'.$csvName);
+        if (! Storage::disk('s3')->exists($filePath)) {
+            throw new Exception(t('Csv export file is missing: %s', $filePath));
         }
+
+        $route = route('admin.downloads.report', ['file' => base64_encode($this->csvName)]);
+        $btn = $this->createButton($route, t('Download CSV'));
+        $html = ! is_null($this->data['expeditionId']) ?
+            t('Your grid export for Expedition Id %s is complete. Click the button provided to download:', $this->data['expeditionId']) :
+            t('Your grid export for Project Id %s is complete. Click the button provided to download:', $this->data['projectId']);
+
+        $attributes = [
+            'subject' => t('Grid Export to CSV Complete'),
+            'html' => [$html],
+            'buttons' => $btn,
+        ];
+
+        $this->user->notify(new Generic($attributes));
     }
 
     /**
@@ -182,5 +156,31 @@ class GridExportCsvJob implements ShouldQueue
         $json = json_decode($str);
 
         return $json !== false && ! is_null($json) && $str != $json;
+    }
+
+    /**
+     * The job failed to process.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $idMessage = ! is_null($this->data['expeditionId']) ?
+            t('Expedition Id: %s', $this->data['expeditionId']) :
+            t('Project Id: %s', $this->data['projectId']);
+
+        $attributes = [
+            'subject' => t('Grid Export to CSV Error'),
+            'html' => [
+                t('An error occurred during csv export from the grid.'),
+                $idMessage,
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('Code: %s', $throwable->getTrace()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
+        ];
+
+        $this->user->notify(new Generic($attributes, true));
+        Storage::disk('s3')->delete(config('config.report_dir').'/'.$this->csvName);
     }
 }

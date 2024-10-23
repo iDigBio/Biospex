@@ -45,11 +45,10 @@ class JqGridEncoder
      * Get grid data.
      *
      * @param  null  $expeditionId
-     * @return array
      *
      * @throws \Exception
      */
-    public function encodeGridRequestedData($postedData, $route, $projectId, $expeditionId = null)
+    public function encodeGridRequestedData($postedData, $route, $projectId, $expeditionId = null): array
     {
         $vars = $this->gridData->buildVariables($postedData, $route, (int) $projectId, $expeditionId);
 
@@ -73,11 +72,14 @@ class JqGridEncoder
 
     /**
      * Return query for processing exports.
-     *
-     * @param  null  $expeditionId
      */
-    public function encodeGridExportData($postedData, $route, $projectId, $expeditionId = null): LazyCollection
+    public function encodeGridExportData(array $data): LazyCollection
     {
+        $postedData = $data['postData'];
+        $route = $data['route'];
+        $projectId = $data['projectId'];
+        $expeditionId = $data['expeditionId'];
+
         $vars = $this->gridData->buildVariables($postedData, $route, $projectId, $expeditionId);
         $this->gridData->setOrderBy($vars);
 

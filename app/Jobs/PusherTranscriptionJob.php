@@ -26,6 +26,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Throwable;
 
 /**
  * Class PusherTranscriptionJob
@@ -36,10 +37,8 @@ class PusherTranscriptionJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
-    public $timeout = 300;
+    public int $timeout = 300;
 
     /**
      * Create a new job instance.
@@ -54,33 +53,30 @@ class PusherTranscriptionJob implements ShouldQueue
     /**
      * Executes moving pusher classifications from mysql to pusher transcriptions in mongodb.
      * Cron runs every 5 minutes.
-     *
-     * @return void
      */
-    public function handle(CreatePusherTranscriptionService $createPusherTranscriptionService)
+    public function handle(CreatePusherTranscriptionService $createPusherTranscriptionService): void
     {
-        try {
 
-            $createPusherTranscriptionService->process();
-            $this->delete();
+        $createPusherTranscriptionService->process();
+        $this->delete();
 
-            return;
-        } catch (\Throwable $throwable) {
-            $attributes = [
-                'subject' => t('Pusher Transcription Job Error'),
-                'html' => [
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                ],
-            ];
+    }
 
-            $user = User::find(config('config.admin.user_id'));
-            $user->notify(new Generic($attributes));
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $attributes = [
+            'subject' => t('Pusher Transcription Job Error'),
+            'html' => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
+        ];
 
-            $this->delete();
-
-            return;
-        }
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

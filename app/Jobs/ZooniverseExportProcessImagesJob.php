@@ -24,11 +24,13 @@ use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Actor\Zooniverse\ZooniverseExportProcessImages;
+use Artisan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 class ZooniverseExportProcessImagesJob implements ShouldQueue
 {
@@ -51,30 +53,30 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
         $this->exportQueue->load('expedition');
         $this->exportQueue->stage = 1;
         $this->exportQueue->save();
-        \Artisan::call('export:poll');
+        Artisan::call('export:poll');
 
-        try {
-            $zooniverseExportProcessImages->process($this->exportQueue, $this->actorDirectory);
-        } catch (\Throwable $throwable) {
-            $this->exportQueue->error = 1;
-            $this->exportQueue->save();
+        $zooniverseExportProcessImages->process($this->exportQueue, $this->actorDirectory);
+    }
 
-            $attributes = [
-                'subject' => t('Ocr Process Error'),
-                'html' => [
-                    t('Queue Id: %s', $this->exportQueue->id),
-                    t('Expedition Id: %s'.$this->exportQueue->expedition->id),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                ],
-            ];
-            $user = User::find(config('config.admin.user_id'));
-            $user->notify(new Generic($attributes));
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $this->exportQueue->error = 1;
+        $this->exportQueue->save();
 
-            $this->delete();
-
-            return;
-        }
+        $attributes = [
+            'subject' => t('Ocr Process Error'),
+            'html' => [
+                t('Queue Id: %s', $this->exportQueue->id),
+                t('Expedition Id: %s'.$this->exportQueue->expedition->id),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
+        ];
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

@@ -23,6 +23,7 @@ use App\Models\ExportQueue;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Actor\Traits\ZooniverseErrorNotification;
 use App\Services\Actor\Zooniverse\ZooniverseBuildCsv;
+use Artisan;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -58,7 +59,7 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
     {
         $this->exportQueue->stage = 2;
         $this->exportQueue->save();
-        \Artisan::call('export:poll');
+        Artisan::call('export:poll');
         $zooniverseBuildCsv->process($this->exportQueue, $this->actorDirectory);
     }
 
