@@ -28,6 +28,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Class DeleteGroupJob
@@ -36,12 +37,10 @@ class DeleteGroupJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public Group $group;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(Group $group)
+    public function __construct(protected Group $group)
     {
         $this->group = $group;
         $this->onQueue(config('config.queue.default'));
@@ -79,7 +78,7 @@ class DeleteGroupJob implements ShouldQueue
     /**
      * Handle a job failure.
      */
-    public function failed(\Throwable $throwable): void
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Delete Group Job Failed'),

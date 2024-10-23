@@ -48,14 +48,11 @@ class DwcFileImportJob implements ShouldQueue
      */
     public int $timeout = 1800;
 
-    public Import $import;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(Import $import)
+    public function __construct(protected Import $import)
     {
-        $this->import = $import;
         $this->onQueue(config('config.queue.import'));
     }
 

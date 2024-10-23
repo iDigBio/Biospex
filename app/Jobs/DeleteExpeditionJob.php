@@ -30,6 +30,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Class DeleteExpeditionJob
@@ -87,7 +88,7 @@ class DeleteExpeditionJob implements ShouldQueue
     /**
      * Handle a job failure.
      */
-    public function failed(\Throwable $throwable): void
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Delete Expedition Job Failed'),
