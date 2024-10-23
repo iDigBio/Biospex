@@ -200,38 +200,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Return zooniverse actor relation.
-     */
-    public function zooniverseActor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
-    {
-        $pivot = [
-            'id',
-            'expedition_id',
-            'actor_id',
-            'state',
-            'total',
-            'error',
-            'order',
-            'expert',
-        ];
-
-        return $this->belongsToMany(Actor::class, 'actor_expedition')
-            ->withPivot($pivot)
-            ->wherePivot('actor_id', config('zooniverse.actor_id'));
-    }
-
-    /**
-     * Return zooniverseActor attribute.
-     * $expedition->zooniverseActor
-     *
-     * @return int
-     */
-    public function getZooniverseActorAttribute()
-    {
-        return $this->getRelationValue('zooniverseActor')->first();
-    }
-
-    /**
      * Download Zooniverse Export relation
      */
     public function zooniverseExport(): \Illuminate\Database\Eloquent\Relations\HasOne
