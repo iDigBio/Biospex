@@ -210,7 +210,7 @@ class GeoLocateFormService
     public function setExpertExistVars(Expedition $expedition): void
     {
         $this->expertReconciledFileExists = Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv');
-        $this->expertReviewExists = $expedition->zooniverseActor->pivot->expert;
+        $this->expertReviewExists = $expedition->zooActor->pivot->expert;
     }
 
     /**

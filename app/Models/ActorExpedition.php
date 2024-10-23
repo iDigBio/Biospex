@@ -30,7 +30,10 @@ class ActorExpedition extends Pivot
     protected $fillable = [
         'actor_id',
         'expedition_id',
-        'role',
-        'status',
+        'state',
+        'total',
+        'error',
+        'order',
+        'expert',
     ];
 }

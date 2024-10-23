@@ -51,6 +51,22 @@ class Actor extends BaseEloquentModel
     }
 
     /**
+     * Scope for zooniverse.
+     */
+    public function scopeZooniverse($query): mixed
+    {
+        return $query->where('actors.id', config('zooniverse.actor_id'));
+    }
+
+    /**
+     * Scope for geolocate.
+     */
+    public function scopeGeolocate($query): mixed
+    {
+        return $query->where('actors.id', config('geolocate.actor_id'));
+    }
+
+    /**
      * Workflows relationship.
      */
     public function workflows(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

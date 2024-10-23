@@ -73,7 +73,7 @@ class ZooniverseExportQueue
      */
     public function resetExpeditionExport(int $expeditionId): void
     {
-        $expedition = $this->getExpedition($expeditionId);
+        $expedition = $this->expeditionService->getExpeditionForQueueReset($expeditionId);
 
         if (! is_null($expedition->exportQueue)) {
             $expedition->exportQueue->delete();
@@ -92,16 +92,16 @@ class ZooniverseExportQueue
         // Set actor_expedition pivot state to 1 if currently 0.
         // Otherwise, it's a regeneration export and state stays the same
         $attributes = [
-            'state' => $expedition->zooniverseActor->pivot->state === 0 ? 1 : $expedition->zooniverseActor->pivot->state,
+            'state' => $expedition->zooActor->pivot->state === 0 ? 1 : $expedition->zooActor->pivot->state,
             'total' => $expedition->stat->local_subject_count,
         ];
 
-        $expedition->zooniverseActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+        $expedition->zooActor->pivot->update($attributes);
 
         // Set state to 1 to handle regenerating exports without effecting database value.
-        $expedition->zooniverseActor->pivot->state = 1;
+        $expedition->zooActor->pivot->state = 1;
 
-        ActorFactory::create($expedition->zooniverseActor->class)->actor($expedition->zooniverseActor);
+        ActorFactory::create($expedition->zooActor->class)->actor($expedition->zooActor);
     }
 
     /**
@@ -109,7 +109,10 @@ class ZooniverseExportQueue
      */
     public function deleteExportFiles(string $expeditionId): void
     {
-        $downloads = $this->download->getZooniverseExportFiles($expeditionId);
+        $downloads = $this->download->where('actor_id', config('zooniverse.actor_id'))
+            ->where('expedition_id', $expeditionId)
+            ->where('type', 'export')
+            ->get();
 
         $downloads->each(function ($download) {
             if (Storage::disk('s3')->exists(config('config.export_dir').'/'.$download->file)) {
@@ -122,13 +125,5 @@ class ZooniverseExportQueue
 
             $download->delete();
         });
-    }
-
-    /**
-     * Get expedition with zooniverseActor and stat.
-     */
-    private function getExpedition(int $expeditionId): Expedition
-    {
-        return $this->expeditionService->expedition->with(['zooniverseActor', 'stat', 'exportQueue'])->find($expeditionId);
     }
 }

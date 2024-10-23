@@ -46,7 +46,7 @@ class GeolocateFormController extends Controller
         }
 
         try {
-            $expedition->load('project.group', 'geoLocateExport');
+            $expedition->load('project.group', 'geoLocateExport', 'zooActor');
 
             $form = $this->geoLocateFormService->getFormData($expedition, ['formId' => $expedition->geo_locate_form_id]);
             $formFields = $this->geoLocateFormService->getFormFields($expedition, $form);
@@ -67,7 +67,7 @@ class GeolocateFormController extends Controller
         }
 
         try {
-            $expedition->load('project.group', 'geoLocateExport');
+            $expedition->load('project.group', 'geoLocateExport', 'zooActor');
 
             if (! CheckPermission::handle('readProject', $expedition->project->group)) {
                 return Response::json(['message' => t('You do not have permissions for this action.')], 401);

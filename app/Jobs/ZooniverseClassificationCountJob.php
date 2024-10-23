@@ -54,7 +54,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
         $this->expedition->load([
             'project.group.owner',
             'stat',
-            'zooniverseActor',
+            'zooActor',
             'panoptesProject',
         ]);
 

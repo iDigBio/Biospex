@@ -178,7 +178,7 @@ class PanoptesApiService extends HttpRequest
     /**
      * Calculates totals for transcripts and sets properties.
      */
-    public function calculateTotals($workflow, $expeditionId)
+    public function calculateTotals($workflow, $expeditionId): void
     {
         $this->subject_count = (int) $workflow['subjects_count'];
         $this->transcriptions_goal = (int) $workflow['subjects_count'] * (int) $workflow['retirement']['options']['count'];

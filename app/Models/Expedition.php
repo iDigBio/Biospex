@@ -283,6 +283,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
 
     /**
      * ZooActor relation.
+     * Example: $expedition->zooActor->pivot->expert = 1;
      */
     public function zooActor()
     {

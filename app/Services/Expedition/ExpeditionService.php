@@ -88,8 +88,8 @@ class ExpeditionService
     public function getPublicIndex(array $request = []): Collection
     {
         $query = $this->expedition->with('project:id,slug')
-            ->has('panoptesProject')->has('zooniverseActor')
-            ->with('panoptesProject', 'stat', 'zooniverseActor');
+            ->has('panoptesProject')->has('zooActor')
+            ->with('panoptesProject', 'stat', 'zooActor');
 
         $sortedResults = $this->sortRecords($query, $request);
 
@@ -257,7 +257,8 @@ class ExpeditionService
      */
     private function setExpeditionCompleted(Expedition $expedition, int $workflow_id): int
     {
-        return ($expedition->completed && ! $expedition->locked && $workflow_id == config('geolocate.workflow_id')) ? 0 : $expedition->completed;
+        return ($expedition->completed && ! $expedition->locked &&
+            $workflow_id == config('geolocate.workflow_id')) ? 0 : $expedition->completed;
     }
 
     /**
@@ -265,13 +266,9 @@ class ExpeditionService
      */
     public function getExpeditionsForZooniverseProcess(): \Illuminate\Database\Eloquent\Collection
     {
-        return $this->expedition->with([
-            'panoptesProject',
-            'stat',
-            'zooniverseActor',
-        ])->has('panoptesProject')->whereHas('zooniverseActor', function ($query) {
-            $query->where('completed', 0);
-        })->get();
+        return $this->expedition->whereHas('panoptesProject')->whereHas('actors', function ($q) {
+            $q->zooniverse();
+        })->where('completed', 0)->get();
     }
 
     /**
@@ -324,8 +321,16 @@ class ExpeditionService
     public function getExpeditionForZooniverseProcess(int $expeditionId): \Illuminate\Database\Eloquent\Model
     {
         return $this->expedition->with(['panoptesProject', 'stat', 'zooniverseActor'])
-            ->has('panoptesProject')->whereHas('zooniverseActor', function ($query) {
-                $query->where('completed', 0);
-            })->find($expeditionId);
+            ->has('panoptesProject')->whereHas('actors', function ($q) {
+                $q->zooniverse();
+            })->where('completed', 0)->find($expeditionId);
+    }
+
+    /**
+     * Get expedition for queue reset.
+     */
+    public function getExpeditionForQueueReset(int $expeditionId): Expedition
+    {
+        return $this->expedition->with(['zooActor', 'stat', 'exportQueue'])->find($expeditionId);
     }
 }
