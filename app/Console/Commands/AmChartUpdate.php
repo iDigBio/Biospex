@@ -21,6 +21,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
 use App\Models\AmChart;
+use App\Models\Project;
 use Illuminate\Console\Command;
 
 /**
@@ -45,7 +46,7 @@ class AmChartUpdate extends Command
     /**
      * AmChartUpdate constructor.
      */
-    public function __construct(protected AmChart $amChart)
+    public function __construct(protected AmChart $amChart, protected Project $project)
     {
         parent::__construct();
     }
@@ -59,7 +60,8 @@ class AmChartUpdate extends Command
             $this->amChart->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
 
         $projectIds->each(function ($projectId) {
-            AmChartJob::dispatch((int) $projectId);
+            $project = $this->project->find($projectId);
+            AmChartJob::dispatch($project);
         });
     }
 }

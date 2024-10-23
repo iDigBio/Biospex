@@ -60,6 +60,14 @@ class TranscriptionChartService
      */
     public function process(Project $project): void
     {
+        $project->load([
+            'amChart',
+            'expeditions' => function ($q) {
+                $q->with('stat')->has('stat');
+                $q->with('panoptesProject')->has('panoptesProject');
+            },
+        ]);
+
         $this->checkNewChart($project);
 
         $this->resetTemplates();
@@ -109,7 +117,7 @@ class TranscriptionChartService
     /**
      * Reset the templates for each project.
      */
-    protected function resetTemplates()
+    protected function resetTemplates(): void
     {
         $this->amChartData = collect();
         $this->projectChartSeries = [];

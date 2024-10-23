@@ -275,20 +275,6 @@ class ProjectService
     }
 
     /**
-     * Get project for amChart.
-     */
-    public function getProjectForAmChartJob($projectId): ?Project
-    {
-        return $this->project->with([
-            'amChart',
-            'expeditions' => function ($q) {
-                $q->with('stat')->has('stat');
-                $q->with('panoptesProject')->has('panoptesProject');
-            },
-        ])->find($projectId);
-    }
-
-    /**
      * Get project for Darwin import job.
      */
     public function getProjectForDarwinImportJob($projectId): ?Project

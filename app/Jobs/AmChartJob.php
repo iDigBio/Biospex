@@ -19,46 +19,42 @@
 
 namespace App\Jobs;
 
+use App\Models\Project;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Chart\TranscriptionChartService;
-use App\Services\Project\ProjectService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Class AmChartJob
  */
 class AmChartJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
      */
     public int $timeout = 3600;
 
-    protected int $projectId;
-
     /**
      * AmChartJob constructor.
      */
-    public function __construct(int $projectId)
+    public function __construct(protected Project $project)
     {
-        $this->projectId = $projectId;
         $this->onQueue(config('config.queue.chart'));
     }
 
     /**
      * Handle job.
      */
-    public function handle(ProjectService $projectService, TranscriptionChartService $service): void
+    public function handle(TranscriptionChartService $service): void
     {
-        $project = $projectService->getProjectForAmChartJob($this->projectId);
-
-        $service->process($project);
+        $service->process($this->project);
 
         $this->delete();
     }
