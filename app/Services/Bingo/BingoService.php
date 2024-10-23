@@ -39,10 +39,10 @@ class BingoService
      * BingoService constructor.
      */
     public function __construct(
-        public Bingo $bingo,
-        public BingoMap $bingoMap,
-        public BingoWord $bingoWord,
-        public GeoPlugin $location
+        protected Bingo $bingo,
+        protected BingoMap $bingoMap,
+        protected BingoWord $bingoWord,
+        protected GeoPlugin $location
     ) {}
 
     /**
@@ -53,6 +53,14 @@ class BingoService
         return $user->isAdmin() ?
             $this->bingo->with(['user', 'project', 'words'])->orderBy('created_at', 'desc')->get() :
             $this->bingo->with(['user', 'project', 'words'])->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+    }
+
+    /**
+     * Get bingo with relations for front index.
+     */
+    public function getFrontIndex(): Collection
+    {
+        return $this->bingo->with(['user', 'project'])->get();
     }
 
     /**
@@ -159,5 +167,13 @@ class BingoService
         Session::put('bingoUuid', $bingoMap->uuid);
 
         return $bingoMap;
+    }
+
+    /**
+     * Get locations for bingo map.
+     */
+    public function getMapLocations(int $bingoId): Collection
+    {
+        return $this->bingoMap->where('bingo_id', $bingoId)->get();
     }
 }

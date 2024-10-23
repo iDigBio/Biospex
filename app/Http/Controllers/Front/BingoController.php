@@ -40,7 +40,7 @@ class BingoController extends Controller
      */
     public function index(): \Illuminate\View\View
     {
-        $bingos = $this->bingoService->bingo->with(['user', 'project'])->get();
+        $bingos = $this->bingoService->getFrontIndex();
 
         return View::make('front.bingo.index', compact('bingos'));
     }

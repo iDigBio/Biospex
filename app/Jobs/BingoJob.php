@@ -24,11 +24,13 @@ use App\Models\Bingo;
 use App\Models\BingoMap;
 use App\Models\User;
 use App\Notifications\Generic;
+use App\Services\Bingo\BingoService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class BingoJob
@@ -40,7 +42,7 @@ class BingoJob implements ShouldQueue
     /**
      * BingoJob constructor.
      */
-    public function __construct(public Bingo $bingo, public ?BingoMap $bingoMap = null)
+    public function __construct(protected Bingo $bingo, protected ?BingoMap $bingoMap = null)
     {
         $this->onQueue(config('config.queue.default'));
     }
@@ -48,9 +50,9 @@ class BingoJob implements ShouldQueue
     /**
      * Job handle.
      */
-    public function handle(BingoMap $bingoMap): void
+    public function handle(BingoService $bingoService): void
     {
-        $locations = $bingoMap->where('bingo_id', $this->bingo->id)->get();
+        $locations = $bingoService->getMapLocations($this->bingo->id);
         $data['markers'] = $locations->map(function ($location) {
             return [
                 'latitude' => $location->latitude,
@@ -71,7 +73,7 @@ class BingoJob implements ShouldQueue
     /**
      * Handle a job failure.
      */
-    public function failed(\Throwable $throwable): void
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Bingo Job Failed'),

@@ -148,7 +148,7 @@ class GeoPlugin
      * @param  null  $ip
      * @return bool
      */
-    public function locate($ip = null)
+    public function locate($ip = null): bool
     {
         if (is_null($ip)) {
             if (! empty($_SERVER['HTTP_CLIENT_IP'])) {
