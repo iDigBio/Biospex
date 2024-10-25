@@ -42,7 +42,7 @@ class GeolocateFieldsController extends Controller
         }
 
         try {
-            $expedition->load('project.group.geoLocateForms', 'zooActor');
+            $expedition->load('project.group.geoLocateForms', 'zooActor', 'geoActor');
 
             if (! CheckPermission::handle('readProject', $expedition->project->group)) {
                 return Response::json(['message' => t('You do not have permission.')], 401);

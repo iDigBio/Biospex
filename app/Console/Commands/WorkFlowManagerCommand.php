@@ -88,7 +88,7 @@ class WorkFlowManagerCommand extends Command
                     'total' => $expedition->stat->local_subject_count,
                 ];
 
-                $actor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+                $actor->pivot->update($attributes);
             }
 
             ActorFactory::create($actor->class)->actor($actor);

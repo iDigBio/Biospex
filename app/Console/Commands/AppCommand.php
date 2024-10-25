@@ -19,7 +19,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Expedition;
 use Illuminate\Console\Command;
 
 /**
@@ -50,12 +49,31 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $expedition = \App\Models\Expedition::with('actors')->find(308);
+
+        $expedition->actors->each(function ($actor) {
+            if ($actor->id == config('zooniverse.actor_id')) {
+                $attributes = [
+                    'total' => 485,
+                ];
+
+                $actor->pivot->update($attributes);
+
+                //$actor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+                dd($actor->pivot->id);
+            }
+        });
+        $this->info($expedition->actors->count());
+
+        /*
         $results = Expedition::with(['panoptesProject', 'stat', 'zooniverseActor'])
             ->has('panoptesProject')->whereHas('actors', function ($q) {
                 $q->zooniverse();
             })->where('completed', 0)->find(308);
 
         $this->info($results->zooActor->id);
+        */
+
         /*
         $results = Expedition::has('panoptesProject')->whereHas('actors', function ($q) {
             $q->zooniverse();

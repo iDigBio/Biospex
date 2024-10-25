@@ -208,38 +208,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * GeoLocate actor relation.
-     */
-    public function geoLocateActor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
-    {
-        $pivot = [
-            'id',
-            'expedition_id',
-            'actor_id',
-            'state',
-            'total',
-            'error',
-            'order',
-            'expert',
-        ];
-
-        return $this->belongsToMany(Actor::class, 'actor_expedition')
-            ->withPivot($pivot)
-            ->wherePivot('actor_id', config('geolocate.actor_id'));
-    }
-
-    /**
-     * Return geoLocateActor attribute.
-     * $expedition->geoLocateActor
-     *
-     * @return int
-     */
-    public function getGeoLocateActorAttribute()
-    {
-        return $this->getRelationValue('geoLocateActor')->first();
-    }
-
-    /**
      * GeoActor relation.
      */
     public function geoActor()
