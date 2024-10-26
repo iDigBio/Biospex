@@ -88,7 +88,9 @@ class ExpeditionService
     public function getPublicIndex(array $request = []): Collection
     {
         $query = $this->expedition->with('project:id,slug')
-            ->has('panoptesProject')->has('zooActor')
+            ->has('panoptesProject')->whereHas('actors', function ($q) {
+                $q->zooniverse();
+            })
             ->with('panoptesProject', 'stat', 'zooActor');
 
         $sortedResults = $this->sortRecords($query, $request);
