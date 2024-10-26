@@ -27,6 +27,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Laracasts\Utilities\JavaScript\LaravelViewBinder;
 use Laracasts\Utilities\JavaScript\Transformers\Transformer;
+use View;
 
 /**
  * Class BiospexServiceProvider
@@ -66,11 +67,9 @@ class BiospexServiceProvider extends ServiceProvider
      */
     public function setViewComposers(): void
     {
-        \View::composer(
-            'common.notices', 'App\Http\ViewComposers\NoticesComposer'
-        );
-
-        \View::composer(['common.process-modal', 'common.modal'], 'App\Http\ViewComposers\PhpVarsComposer');
+        View::composer('common.notices', 'App\Http\ViewComposers\NoticesComposer');
+        View::composer(['common.process-modal', 'common.modal'], 'App\Http\ViewComposers\PhpVarsComposer');
+        View::composer('common.nav', 'App\Http\ViewComposers\NavComposer');
     }
 
     /**

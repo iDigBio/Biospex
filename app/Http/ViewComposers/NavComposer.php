@@ -11,7 +11,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -19,23 +19,23 @@
 
 namespace App\Http\ViewComposers;
 
-use Auth;
+use App\Models\WeDigBioEventDate;
 use Illuminate\Contracts\View\View;
 
-/**
- * Class AuthUserComposer
- */
-class AuthUserComposer
+class NavComposer
 {
     /**
-     * Bind data to the view.
-     *
-     * @return void
+     * Create a new view composer.
      */
-    public function compose(View $view)
-    {
-        $authUser = Auth::check() ? Auth::user()->load('profile') : null;
+    public function __construct(protected WeDigBioEventDate $weDigBioEventDate) {}
 
-        $view->with('authUser', $authUser);
+    /**
+     * Bind data to the view.
+     */
+    public function compose(View $view): void
+    {
+        $event = $this->weDigBioEventDate->where('active', 1)->first();
+
+        $view->with('event', $event);
     }
 }

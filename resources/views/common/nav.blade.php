@@ -36,21 +36,20 @@
                aria-haspopup="true"
                aria-expanded="false">{{ t('WeDigBio') }}</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-                @php $event = check_wedigbio_event(); @endphp
-                <a class="dropdown-item text-uppercase" href="#"
-                   data-toggle="modal"
-                   data-target="#wedigbio-progress-modal"
-                   data-href="{{ route('front.wedigbio-progress', [$event]) }}"
-                   data-channel="{{ config('config.poll_wedigbio_progress_channel') . '.' . (is_null($event) ? 0 : $event->uuid) }}"
-                   data-uuid="{{ is_null($event) ? 0 : $event->uuid }}">{{ t('Progress') }}</a>
-                @if(!is_null($event))
+                @isset($event)
+                    <a class="dropdown-item text-uppercase" href="#"
+                       data-toggle="modal"
+                       data-target="#wedigbio-progress-modal"
+                       data-href="{{ route('front.wedigbio-progress', [$event]) }}"
+                       data-channel="{{ config('config.poll_wedigbio_progress_channel') . '.' . $event->uuid }}"
+                       data-uuid="{{ $event->uuid }}">{{ t('Progress') }}</a>
                     <a class="dropdown-item text-uppercase" href="#"
                        data-toggle="modal"
                        data-target="#wedigbio-rate-modal"
                        data-projects="{{ route('front.get.wedigbio-projects', [$event]) }}"
-                       data-uuid="{{ is_null($event) ? 0 : $event->uuid }}"
+                       data-uuid="{{ $event->uuid }}"
                        data-href="{{ route('front.get.wedigbio-rate', [$event]) }}">{{ t('Rates') }}</a>
-                @endif
+                @endisset
                 <a class="dropdown-item text-uppercase"
                    href="{{ route('front.wedigbio.index') }}">{{ t('Past Events') }}</a>
                 <a class="dropdown-item text-uppercase" href="https://wedigbio.org"

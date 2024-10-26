@@ -25,6 +25,9 @@ use App\Presenters\WeDigBioDatePresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Class WeDigBioEventDate
+ */
 class WeDigBioEventDate extends BaseEloquentModel
 {
     use HasFactory, Presentable, UuidTrait;

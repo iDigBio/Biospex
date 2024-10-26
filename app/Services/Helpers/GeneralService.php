@@ -20,7 +20,6 @@
 namespace App\Services\Helpers;
 
 use App\Models\Expedition;
-use App\Models\WeDigBioEventDate;
 use Storage;
 
 /**
@@ -28,16 +27,6 @@ use Storage;
  */
 class GeneralService
 {
-    public function __construct(protected WeDigBioEventDate $weDigBioEventDate) {}
-
-    /**
-     * Check if weDigBio event is active.
-     */
-    public function checkWeDigBioEvent(): ?WeDigBioEventDate
-    {
-        return $this->weDigBioEventDate->where('active', 1)->first();
-    }
-
     /**
      * Encode a full url.
      */

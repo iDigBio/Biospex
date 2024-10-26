@@ -40,7 +40,7 @@ class WeDigBioService
      */
     public function getWeDigBioPage(): Collection
     {
-        return $this->weDigBioEventDate->all()->sortBy('created_at');
+        return $this->weDigBioEventDate->all()->sortByDesc('created_at');
     }
 
     /**

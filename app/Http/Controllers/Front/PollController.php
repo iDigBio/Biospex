@@ -20,7 +20,7 @@
 namespace App\Http\Controllers\Front;
 
 use Artisan;
-use Illuminate\Http\Request;
+use Request;
 
 class PollController
 {

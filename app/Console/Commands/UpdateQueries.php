@@ -70,6 +70,7 @@ class UpdateQueries extends Command
             'geo_locate_forms' => 'App\Models\GeoLocateForm',
             'group_invites' => 'App\Models\GroupInvite',
             'resources' => 'App\Models\Resource',
+            'wedigbio_event_dates' => 'App\Models\WeDigBioEventDate',
         ];
 
         collect($tablesAdd)->each(function ($className, $tableName) {

@@ -17,18 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Models\WeDigBioEventDate;
-
-/**
- * Check if the event is WeDigBio event.
- */
-function check_wedigbio_event(): ?WeDigBioEventDate
-{
-    $generalService = app(App\Services\Helpers\GeneralService::class);
-
-    return $generalService->checkWeDigBioEvent();
-}
-
 /**
  * Encode a full url.
  */

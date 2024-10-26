@@ -20,6 +20,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class AppCommand
@@ -49,6 +50,10 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        echo Uuid::uuid4()->toString().PHP_EOL;
+        echo Uuid::uuid4()->toString().PHP_EOL;
+        echo Uuid::uuid4()->toString().PHP_EOL;
+
         $expedition = \App\Models\Expedition::with('actors')->find(308);
 
         $expedition->actors->each(function ($actor) {
