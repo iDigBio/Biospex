@@ -30,14 +30,12 @@ class ProjectSortController extends Controller
     /**
      * ProjectSortController constructor.
      */
-    public function __construct(
-        protected ProjectService $projectService,
-    ) {}
+    public function __construct(protected ProjectService $projectService) {}
 
     /**
      * Admin Projects page sort and order.
      */
-    public function __invoke(): \Illuminate\Http\JsonResponse
+    public function __invoke(): \Illuminate\View\View|\Illuminate\Http\JsonResponse
     {
         if (! Request::ajax()) {
             return Response::json(['message' => t('Request must be ajax.')], 400);
