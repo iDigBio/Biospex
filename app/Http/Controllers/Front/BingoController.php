@@ -64,7 +64,6 @@ class BingoController extends Controller
      */
     public function show(Bingo $bingo): \Illuminate\View\View
     {
-        dd($bingo);
         $this->bingoService->showPublicBingo($bingo);
 
         return View::make('front.bingo.show', compact('bingo'));

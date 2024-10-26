@@ -42,7 +42,7 @@ class BingoPresenter extends Presenter
     public function adminShowIcon()
     {
         return '<a href="'.route('admin.bingos.show', [
-            $this->model->id,
+            $this->model,
         ]).'" data-hover="tooltip" title="'.t('View Bingo').'">
                 <i class="fas fa-eye"></i></a>';
     }
@@ -68,7 +68,7 @@ class BingoPresenter extends Presenter
     public function editIcon()
     {
         return '<a href="'.route('admin.bingos.edit', [
-            $this->model->id,
+            $this->model,
         ]).'" data-hover="tooltip" title="'.t('Edit Bingo').'">
                 <i class="fas fa-edit"></i></a>';
     }
@@ -81,7 +81,7 @@ class BingoPresenter extends Presenter
     public function editIconLrg()
     {
         return '<a href="'.route('admin.bingos.edit', [
-            $this->model->id,
+            $this->model,
         ]).'" data-hover="tooltip" title="'.t('Edit Bingo').'">
                 <i class="fas fa-edit fa-2x"></i></a>';
     }
@@ -94,7 +94,7 @@ class BingoPresenter extends Presenter
     public function deleteIcon()
     {
         return '<a href="'.route('admin.bingos.destroy', [
-            $this->model->id,
+            $this->model,
         ]).'" class="prevent-default"
             title="'.t('Delete Bingo').'" 
             data-hover="tooltip"        
@@ -112,7 +112,7 @@ class BingoPresenter extends Presenter
     public function deleteIconLrg()
     {
         return '<a href="'.route('admin.bingos.destroy', [
-            $this->model->id,
+            $this->model,
         ]).'" class="prevent-default"
             title="'.t('Delete Bingo').'" 
             data-hover="tooltip"        

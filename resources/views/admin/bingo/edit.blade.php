@@ -15,7 +15,7 @@
                     <h2 class="text-center content-header text-uppercase mb-4">{{ t('Edit Bingo') }}</h2>
 
                     <form method="post"
-                          action="{{ route('admin.bingos.update', [$bingo->id]) }}"
+                          action="{{ route('admin.bingos.update', [$bingo]) }}"
                           role="form" enctype="multipart/form-data">
                         {!! method_field('put') !!}
                         @csrf

@@ -81,7 +81,6 @@ class BingoController extends Controller
      */
     public function show(Bingo $bingo): mixed
     {
-        dd($bingo);
         if (! CheckPermission::handle('read', $bingo)) {
             return Redirect::route('admin.bingos.index');
         }
