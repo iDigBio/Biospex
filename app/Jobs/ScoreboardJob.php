@@ -24,15 +24,14 @@ use App\Services\Event\EventService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use View;
 
 /**
  * Class ScoreboardJob
  */
 class ScoreboardJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, Queueable;
 
     /**
      * ScoreBoardJob constructor.
@@ -51,7 +50,7 @@ class ScoreboardJob implements ShouldQueue
     {
         $events = $eventService->getEventsByProjectId($this->projectId);
         $data = $events->mapWithKeys(function ($event) {
-            return [$event->uuid => \View::make('common.scoreboard-content', ['event' => $event])->render()];
+            return [$event->uuid => View::make('common.scoreboard-content', ['event' => $event])->render()];
         });
 
         ScoreboardEvent::dispatch($this->projectId, $data->toArray());

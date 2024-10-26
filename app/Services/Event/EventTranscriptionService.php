@@ -19,7 +19,6 @@
 
 namespace App\Services\Event;
 
-use App\Jobs\ScoreboardJob;
 use App\Models\EventTranscription;
 use App\Models\EventUser;
 use Carbon\Carbon;
@@ -40,8 +39,7 @@ class EventTranscriptionService
         protected EventService $eventService,
         protected EventTranscription $eventTranscription,
         protected EventUser $eventUser,
-        protected Carbon $carbon,
-        protected ScoreboardJob $scoreboardJob
+        protected Carbon $carbon
     ) {}
 
     /**
@@ -52,11 +50,11 @@ class EventTranscriptionService
         int $projectId,
         string $userName,
         ?Carbon $date = null
-    ): void {
+    ): bool {
         $user = $this->eventUser->where('nfn_user', $userName)->first(['id']);
 
         if ($user === null) {
-            return;
+            return false;
         }
 
         $timestamp = ! isset($date) ? $this->carbon::now('UTC') : $date;
@@ -82,9 +80,7 @@ class EventTranscriptionService
             });
         });
 
-        if ($events->isNotEmpty() && ! isset($date)) {
-            $this->scoreboardJob::dispatch($projectId);
-        }
+        return $events->isNotEmpty();
     }
 
     /**

@@ -43,7 +43,7 @@ class UpdateOrCreatePusherTranscriptionService
      */
     public function getTranscriptions(int $expeditionId, $timestamp = null): mixed
     {
-        return $this->panoptesTranscriptionService->getTranscriptionForDashboardJob($expeditionId, $timestamp);
+        return $this->panoptesTranscriptionService->getTranscriptionsForDashboardJob($expeditionId, $timestamp);
     }
 
     /**

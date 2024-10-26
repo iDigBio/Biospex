@@ -81,8 +81,15 @@ class ZooniversePusherJob implements ShouldQueue
             $updateOrCreatePusherTranscriptionService,
             $eventTranscriptionService,
             $weDigBioTranscriptionService) {
+
             $updateOrCreatePusherTranscriptionService->processTranscripts($transcription, $this->expedition);
-            $eventTranscriptionService->createEventTranscription($transcription->classification_id, $this->expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
+
+            $scoreboard = $eventTranscriptionService->createEventTranscription($transcription->classification_id, $this->expedition->project_id, $transcription->user_name, $transcription->classification_finished_at);
+
+            if ($scoreboard) {
+                ScoreboardJob::dispatch($this->expedition->project_id);
+            }
+
             $weDigBioTranscriptionService->createEventTranscription($transcription->classification_id, $this->expedition->project_id, $transcription->classification_finished_at);
         });
     }

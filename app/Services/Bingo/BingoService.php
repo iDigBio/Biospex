@@ -120,7 +120,7 @@ class BingoService
     /**
      * Show bingo page.
      */
-    public function showPublicBingo(Bingo &$bingo): array
+    public function showPublicBingo(Bingo &$bingo): Collection
     {
         $bingo->load(['words', 'user', 'project']);
 

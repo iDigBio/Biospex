@@ -156,7 +156,7 @@ class PanoptesTranscriptionService
     /**
      * Get transcription for dashboard.
      */
-    public function getTranscriptionForDashboardJob(int $expeditionId, $timestamp = null): mixed
+    public function getTranscriptionsForDashboardJob(int $expeditionId, $timestamp = null): mixed
     {
         $model = $this->model->with([
             'subject' => function ($query) {
