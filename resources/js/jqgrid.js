@@ -263,6 +263,9 @@ $(function () {
                 return false;
             }
 
+            // clear any form settings on submit
+            eraseSettings();
+
             $('#subject-ids').val(selected);
         });
     }
