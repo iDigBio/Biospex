@@ -84,7 +84,7 @@ class EventService
                 return $event->project->title;
             }),
             'date' => $request['order'] === 'desc' ? $records->sortByDesc('start_date') : $records->sortBy('start_date'),
-            default => $records,
+            default => $records->sortByDesc('start_date'),
         };
     }
 
