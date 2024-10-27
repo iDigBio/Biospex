@@ -322,7 +322,7 @@ class ExpeditionService
      */
     public function getExpeditionForZooniverseProcess(int $expeditionId): \Illuminate\Database\Eloquent\Model
     {
-        return $this->expedition->with(['panoptesProject', 'stat', 'zooniverseActor'])
+        return $this->expedition->with(['panoptesProject', 'stat', 'zooActor'])
             ->has('panoptesProject')->whereHas('actors', function ($q) {
                 $q->zooniverse();
             })->where('completed', 0)->find($expeditionId);
