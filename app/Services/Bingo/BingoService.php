@@ -60,7 +60,7 @@ class BingoService
      */
     public function getFrontIndex(): Collection
     {
-        return $this->bingo->with(['user', 'project'])->get();
+        return $this->bingo->with(['user', 'project'])->get()->sortByDesc('created_at');
     }
 
     /**
