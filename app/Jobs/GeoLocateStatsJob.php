@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Expedition;
+use App\Models\Actor;
 use App\Notifications\Generic;
 use App\Services\Actor\GeoLocate\GeoLocateStatService;
 use Illuminate\Bus\Queueable;
@@ -36,8 +36,9 @@ class GeoLocateStatsJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected Expedition $expedition, protected bool $refresh = false)
+    public function __construct(protected Actor $actor, protected bool $refresh = false)
     {
+        $this->actor = $actor->withoutRelations();
         $this->onQueue(config('config.queue.geolocate'));
     }
 
@@ -48,9 +49,10 @@ class GeoLocateStatsJob implements ShouldQueue
      */
     public function handle(GeoLocateStatService $geoLocateStatService): void
     {
-        $this->expedition->load('project.group.owner', 'geoLocateDataSource.geolocateCommunity');
-        $geoLocateDataSource = $this->expedition->geoLocateDataSource;
-        $geoLocateCommunity = $geoLocateDataSource->geoLocateCommunity;
+
+        $this->actor->load('expedition.project.group.owner', 'expedition.geoLocateDataSource.geolocateCommunity');
+        $geoLocateDataSource = $this->actor->expedition->geoLocateDataSource;
+        $geoLocateCommunity = $this->actor->expedition->geoLocateDataSource->geoLocateCommunity;
 
         if (! $this->refresh && $geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
             return;
@@ -71,21 +73,20 @@ class GeoLocateStatsJob implements ShouldQueue
         // download data source file if completed and notify user
         if ($dataSourceStats['stats']['localityRecords'] === $dataSourceStats['stats']['correctedLocalityRecords']) {
             $uri = $geoLocateStatService->buildDataSourceDownload($geoLocateCommunity->name, $geoLocateDataSource->data_source);
-            $geoLocateStatService->getDataSourceDownload($uri, $this->expedition->id);
+            $geoLocateStatService->getDataSourceDownload($uri, $this->actor->expedition->id);
 
-            $this->expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
-                'state' => 3,
-            ]);
+            $this->actor->pivot->state = 3;
+            $this->actor->pivot->save();
 
             $attributes = [
-                'subject' => t('GeoLocate stats for %s is complete.', $this->expedition->title),
+                'subject' => t('GeoLocate stats for %s is complete.', $this->actor->expedition->title),
                 'html' => [
                     t('The GeoLocate Stat process is complete and the KML file is ready for download.'),
                     t('You can download the file from the Downloads button of the Expedition.'),
                 ],
             ];
 
-            $this->expedition->project->group->owner->notify(new Generic($attributes));
+            $this->actor->expedition->project->group->owner->notify(new Generic($attributes));
         }
     }
 
@@ -94,7 +95,7 @@ class GeoLocateStatsJob implements ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
-        $subject = t('GeoLocate stats for %s failed.', $this->expedition->title);
+        $subject = t('GeoLocate stats for %s failed.', $this->actor->expedition->title);
         $attributes = [
             'subject' => $subject,
             'html' => [
@@ -105,6 +106,6 @@ class GeoLocateStatsJob implements ShouldQueue
             ],
         ];
 
-        $this->expedition->project->group->owner->notify(new Generic($attributes, true));
+        $this->actor->expedition->project->group->owner->notify(new Generic($attributes, true));
     }
 }

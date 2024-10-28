@@ -57,12 +57,9 @@ class WorkFlowManagerCommand extends Command
      * Execute the console command.
      *
      * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
-     *
-     * @return void
-     *
      * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
      */
-    public function handle()
+    public function handle(): void
     {
         $expeditionId = $this->argument('expeditionId');
 
@@ -83,13 +80,8 @@ class WorkFlowManagerCommand extends Command
     protected function processActors($expedition): void
     {
         $expedition->actors->each(function ($actor) use ($expedition) {
-            if ($actor->id == config('zooniverse.actor_id')) {
-                $attributes = [
-                    'total' => $expedition->stat->local_subject_count,
-                ];
-
-                $actor->pivot->update($attributes);
-            }
+            $actor->pivot->total = $expedition->stat->local_subject_count;
+            $actor->pivot->save();
 
             ActorFactory::create($actor->class)->actor($actor);
         });
