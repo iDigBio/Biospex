@@ -43,6 +43,7 @@ class PanoptesProjectUpdateJob implements ShouldQueue
      */
     public function __construct(protected PanoptesProject $panoptesProject)
     {
+        $this->panoptesProject = $panoptesProject->withoutRelations();
         $this->onQueue(config('config.queue.classification'));
     }
 

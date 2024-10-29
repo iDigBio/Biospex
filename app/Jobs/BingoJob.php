@@ -44,6 +44,8 @@ class BingoJob implements ShouldQueue
      */
     public function __construct(protected Bingo $bingo, protected ?BingoMap $bingoMap = null)
     {
+        $this->bingo = $bingo->withoutRelations();
+        $this->bingoMap = $bingoMap?->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 

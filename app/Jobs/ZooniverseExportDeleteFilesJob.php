@@ -46,6 +46,7 @@ class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
      */
     public function __construct(protected ExportQueue $exportQueue, protected ActorDirectory $actorDirectory)
     {
+        $this->exportQueue = $exportQueue->withoutRelations();
         $this->onQueue(config('config.queue.export'));
     }
 

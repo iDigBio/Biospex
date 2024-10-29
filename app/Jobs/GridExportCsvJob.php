@@ -55,6 +55,7 @@ class GridExportCsvJob implements ShouldQueue
      */
     public function __construct(public User $user, public array $data)
     {
+        $this->user = $user->withoutRelations();
         $this->onQueue(config('config.queue.default'));
         $this->csvName = Str::random().'.csv';
     }

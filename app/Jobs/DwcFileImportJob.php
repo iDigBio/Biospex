@@ -53,6 +53,7 @@ class DwcFileImportJob implements ShouldQueue
      */
     public function __construct(protected Import $import)
     {
+        $this->import = $import->withoutRelations();
         $this->onQueue(config('config.queue.import'));
     }
 

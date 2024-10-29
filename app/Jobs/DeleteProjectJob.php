@@ -42,6 +42,7 @@ class DeleteProjectJob implements ShouldQueue
      */
     public function __construct(protected Project $project)
     {
+        $this->project = $project->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 

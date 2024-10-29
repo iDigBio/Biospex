@@ -41,6 +41,7 @@ class TesseractOcrCompleteJob implements ShouldQueue
      */
     public function __construct(protected OcrQueue $ocrQueue)
     {
+        $this->ocrQueue = $ocrQueue->withoutRelations();
         $this->onQueue(config('config.queue.lambda_ocr'));
     }
 

@@ -50,6 +50,8 @@ class EventUserExportCsvJob implements ShouldQueue
      */
     public function __construct(protected User $user, protected Event $event)
     {
+        $this->user = $user->withoutRelations();
+        $this->event = $event->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 

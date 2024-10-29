@@ -50,7 +50,7 @@ class ZooniverseCsvDownloadJob implements ShouldQueue
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(ZooniverseCsvService $service)
+    public function handle(ZooniverseCsvService $service): void
     {
         $service->downloadCsv($this->expeditionId, $this->uri);
     }

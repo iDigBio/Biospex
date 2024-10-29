@@ -43,6 +43,7 @@ class WeDigBioEventProgressJob implements ShouldQueue
      */
     public function __construct(public ?WeDigBioEventDate $event = null)
     {
+        $this->event = $event->withoutRelations();
         $this->onQueue(config('config.queue.event'));
     }
 

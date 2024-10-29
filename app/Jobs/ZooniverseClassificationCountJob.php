@@ -43,6 +43,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
      */
     public function __construct(protected Expedition $expedition, protected bool $update = false)
     {
+        $this->expedition = $expedition->withoutRelations();
         $this->onQueue(config('config.queue.classification'));
     }
 

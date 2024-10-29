@@ -42,6 +42,8 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
      */
     public function __construct(protected User $user, protected Project $project)
     {
+        $this->user = $user->withoutRelations();
+        $this->project = $project->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 

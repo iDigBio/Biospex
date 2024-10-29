@@ -44,6 +44,8 @@ class DeleteExpeditionJob implements ShouldQueue
      */
     public function __construct(protected User $user, protected Expedition $expedition)
     {
+        $this->user = $user->withoutRelations();
+        $this->expedition = $expedition->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 

@@ -49,6 +49,7 @@ class ZooniversePusherJob implements ShouldQueue
      */
     public function __construct(protected Expedition $expedition, protected ?int $days = null)
     {
+        $this->expedition = $expedition->withoutRelations();
         $this->onQueue(config('config.queue.reconcile'));
     }
 

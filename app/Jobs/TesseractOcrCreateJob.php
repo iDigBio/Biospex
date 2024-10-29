@@ -45,6 +45,8 @@ class TesseractOcrCreateJob implements ShouldQueue
      */
     public function __construct(protected Project $project, protected ?Expedition $expedition = null)
     {
+        $this->project = $project->withoutRelations();
+        $this->expedition = $expedition?->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 

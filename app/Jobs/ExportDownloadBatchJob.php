@@ -45,6 +45,7 @@ class ExportDownloadBatchJob implements ShouldQueue
      */
     public function __construct(protected Download $download)
     {
+        $this->download = $this->download->withoutRelations();
         $this->onQueue(config('config.queue.export'));
     }
 

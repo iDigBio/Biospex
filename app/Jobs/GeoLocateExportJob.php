@@ -47,6 +47,8 @@ class GeoLocateExportJob implements ShouldQueue
      */
     public function __construct(protected Expedition $expedition, protected User $user)
     {
+        $this->expedition = $expedition->withoutRelations();
+        $this->user = $user->withoutRelations();
         $this->onQueue(config('config.queue.geolocate'));
     }
 

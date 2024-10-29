@@ -50,6 +50,7 @@ class ExpertReviewMigrateReconcilesJob implements ShouldQueue
      */
     public function __construct(protected Expedition $expedition)
     {
+        $this->expedition = $expedition->withoutRelations();
         $this->onQueue(config('config.queue.reconcile'));
     }
 

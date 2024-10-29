@@ -42,7 +42,7 @@ class DeleteGroupJob implements ShouldQueue
      */
     public function __construct(protected Group $group)
     {
-        $this->group = $group;
+        $this->group = $group->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 
