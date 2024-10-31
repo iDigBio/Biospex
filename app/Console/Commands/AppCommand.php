@@ -20,7 +20,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Ramsey\Uuid\Uuid;
 
 /**
  * Class AppCommand
@@ -48,56 +47,5 @@ class AppCommand extends Command
     /**
      * @return void
      */
-    public function handle()
-    {
-        echo Uuid::uuid4()->toString().PHP_EOL;
-        echo Uuid::uuid4()->toString().PHP_EOL;
-        echo Uuid::uuid4()->toString().PHP_EOL;
-
-        $expedition = \App\Models\Expedition::with('actors')->find(308);
-
-        $expedition->actors->each(function ($actor) {
-            if ($actor->id == config('zooniverse.actor_id')) {
-                $attributes = [
-                    'total' => 485,
-                ];
-
-                $actor->pivot->update($attributes);
-
-                //$actor->expeditions()->updateExistingPivot($expedition->id, $attributes);
-                dd($actor->pivot->id);
-            }
-        });
-        $this->info($expedition->actors->count());
-
-        /*
-        $results = Expedition::with(['panoptesProject', 'stat', 'zooniverseActor'])
-            ->has('panoptesProject')->whereHas('actors', function ($q) {
-                $q->zooniverse();
-            })->where('completed', 0)->find(308);
-
-        $this->info($results->zooActor->id);
-        */
-
-        /*
-        $results = Expedition::has('panoptesProject')->whereHas('actors', function ($q) {
-            $q->zooniverse();
-        })->where('completed', 0)->get();
-        */
-
-        //$this->info($results->count());
-        /*
-        $expedition = \App\Models\Expedition::with('zooActor')->find(17);
-        $this->info('Expedition: '.$expedition->zooActor->pivot->state);
-
-        $attributes = [
-            'state' => 3,
-            'error' => 0,
-        ];
-
-        $expedition->zooActor->pivot->update($attributes);
-
-        //$expedition->actors()->updateExistingPivot($expedition->zooActor->pivot->actor_id, $attributes);
-        */
-    }
+    public function handle() {}
 }

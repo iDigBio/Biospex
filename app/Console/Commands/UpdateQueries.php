@@ -203,7 +203,7 @@ class UpdateQueries extends Command
         });
 
         Schema::table('invites', function (Blueprint $table) {
-            DB::statement('RENAME TABLE `biospex`.`invites` TO `biospex`.`group_invites`;');
+            DB::statement('RENAME TABLE `invites` TO `group_invites`;');
             DB::statement('ALTER TABLE `group_invites` RENAME INDEX `invites_group_id_email_index` TO `group_invites_group_id_email_index`;');
             DB::statement('ALTER TABLE `group_invites` RENAME INDEX `invites_code_index` TO `group_invites_code_index`;');
         });
