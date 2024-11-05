@@ -26,8 +26,8 @@ use App\Events\TesseractOcrEvent;
 use Aws\Sns\Exception\InvalidSnsMessageException;
 use Aws\Sns\Message;
 use Aws\Sns\MessageValidator;
-use Cache;
-use Http;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class AwsSnsController
 {
