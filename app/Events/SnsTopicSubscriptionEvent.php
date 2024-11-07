@@ -21,6 +21,9 @@ namespace App\Events;
 
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class SnsTopicSubscriptionEvent
+ */
 class SnsTopicSubscriptionEvent
 {
     use SerializesModels;
