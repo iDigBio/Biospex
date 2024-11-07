@@ -28,13 +28,8 @@ class AwsLambdaApiService
     /**
      * Construct
      */
-    public function __construct($client = null, $region = null, $version = null, $profile = null)
+    public function __construct()
     {
-        if (gettype($client) == LambdaClient::class) {
-            $this->lambdaClient = $client;
-
-            return;
-        }
         $this->lambdaClient = new LambdaClient([
             'region' => config('config.aws.default_region'),
             'version' => 'latest',
@@ -47,9 +42,6 @@ class AwsLambdaApiService
      */
     public function lambdaInvokeAsync(string $function, array $data): void
     {
-        // Add environment variable to $data. Used in filtering Aws SNS subscriptions.
-        $data['env'] = config('config.env');
-
         $this->lambdaClient->invoke([
             // The name your created Lamda function
             'FunctionName' => $function,
@@ -63,11 +55,7 @@ class AwsLambdaApiService
      */
     public function lambdaInvoke(string $function, array $data): \Aws\Result
     {
-        // Add environment variable to $data. Used in filtering Aws SNS subscriptions.
-        $data['env'] = config('config.env');
-
         return $this->lambdaClient->invoke([
-            // The name your created Lamda function
             'FunctionName' => $function,
             'Payload' => json_encode($data),
         ]);
