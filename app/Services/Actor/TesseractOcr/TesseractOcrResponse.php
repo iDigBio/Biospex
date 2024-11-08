@@ -25,6 +25,7 @@ class TesseractOcrResponse
 {
     /**
      * Create a new instance.
+     * TODO: DI for storage facade
      */
     public function __construct(protected OcrQueueFile $ocrQueueFile) {}
 
@@ -33,10 +34,10 @@ class TesseractOcrResponse
      *
      * @see \App\Listeners\TesseractOcrListener
      */
-    public function process(array $payload): void
+    public function process(array $data): void
     {
-        $requestPayload = $payload['requestPayload'];
-        $responsePayload = $payload['responsePayload'];
+        $requestPayload = $data['requestPayload'];
+        $responsePayload = $data['responsePayload'];
 
         // If errorMessage, something really went bad with lambda function.
         isset($responsePayload['errorMessage']) ?

@@ -88,7 +88,7 @@ class AppLambdaCommand extends Command
     private function explainTest(): void
     {
         $attributes = [
-            'bucket' => 'biospex-dev',
+            'bucket' => config('filesystems.disks.s3.bucket'),
             'key' => 'zooniverse/classification/999999.csv',
             'explanations' => true,
         ];
@@ -106,7 +106,7 @@ class AppLambdaCommand extends Command
         \Storage::disk('s3')->copy($classification, $lambda_reconciliation);
     }
 
-    private function deleteTestFiles()
+    private function deleteTestFiles(): void
     {
         \Storage::disk('s3')->delete('zooniverse/transcript/999999.csv');
         \Storage::disk('s3')->delete('zooniverse/summary/999999.html');
@@ -114,7 +114,7 @@ class AppLambdaCommand extends Command
         \Storage::disk('s3')->delete('zooniverse/explained/999999.csv');
     }
 
-    private function tesseractTest()
+    private function tesseractTest(): void
     {
         $attributes = [
             'bucket' => config('filesystems.disks.s3.bucket'),

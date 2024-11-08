@@ -78,7 +78,7 @@ class RecordsetImportJob implements ShouldQueue
                 'html' => [
                     t('An error occurred while importing the Darwin Core Archive using a record set.'),
                     t('Project: %s', $project->title),
-                    t('ID: %s'.$project->id),
+                    t('ID: %s', $project->id),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),
                     t('Message: %s', $throwable->getMessage()),

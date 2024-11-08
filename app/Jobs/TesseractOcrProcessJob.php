@@ -113,7 +113,7 @@ class TesseractOcrProcessJob implements ShouldQueue
             'subject' => t('Ocr Process Error'),
             'html' => [
                 t('Queue Id: %s', $this->ocrQueue->id),
-                t('Project Id: %s'.$this->ocrQueue->project->id),
+                t('Project Id: %s', $this->ocrQueue->project->id),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),

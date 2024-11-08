@@ -62,15 +62,15 @@ class ExpertReconcileReviewPublishJob implements ShouldQueue
     /**
      * Handle a job failure.
      */
-    public function failed(Throwable $exception): void
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Expert Reconcile Publish Error'),
             'html' => [
                 t('An error occurred while importing the Darwin Core Archive.'),
-                t('File: %s', $exception->getFile()),
-                t('Line: %s', $exception->getLine()),
-                t('Message: %s', $exception->getMessage()),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
                 t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
             ],
         ];

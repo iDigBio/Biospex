@@ -71,7 +71,7 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
             'subject' => t('Ocr Process Error'),
             'html' => [
                 t('Queue Id: %s', $this->exportQueue->id),
-                t('Expedition Id: %s'.$this->exportQueue->expedition->id),
+                t('Expedition Id: %s', $this->exportQueue->expedition->id),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),

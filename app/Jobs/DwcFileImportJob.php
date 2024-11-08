@@ -122,7 +122,7 @@ class DwcFileImportJob implements ShouldQueue
                 'html' => [
                     t('An error occurred while importing the Darwin Core Archive.'),
                     t('Project: %s', $project->title),
-                    t('ID: %s'.$project->id),
+                    t('ID: %s', $project->id),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),
                     t('Message: %s', $throwable->getMessage()),
