@@ -20,6 +20,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ZooniverseTranscriptionJob;
+use App\Models\Expedition;
 use Illuminate\Console\Command;
 
 /**
@@ -54,12 +55,13 @@ class ZooniverseTranscriptionCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $expeditionIds = $this->argument('expeditionIds');
 
         foreach ($expeditionIds as $expeditionId) {
-            ZooniverseTranscriptionJob::dispatch($expeditionId);
+            $expedition = Expedition::find($expeditionId);
+            ZooniverseTranscriptionJob::dispatch($expedition);
         }
     }
 }
