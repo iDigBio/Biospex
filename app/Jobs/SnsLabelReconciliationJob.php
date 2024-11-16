@@ -66,11 +66,11 @@ class SnsLabelReconciliationJob implements ShouldQueue
         $expeditionId = (int) $responsePayload['body']['expeditionId'];
         $explanations = (bool) $responsePayload['body']['explanations'];
 
-        $expedition = $expedition->find($expeditionId);
+        $record = $expedition->find($expeditionId);
 
         $explanations ?
-            $reconcileProcessExplained->process($expedition) :
-            $reconcileProcessAll->process($expedition);
+            $reconcileProcessExplained->process($record) :
+            $reconcileProcessAll->process($record);
     }
 
     /**

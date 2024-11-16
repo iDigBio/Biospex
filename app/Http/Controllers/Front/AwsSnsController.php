@@ -77,6 +77,7 @@ class AwsSnsController
             return response(t('SNS Message Validation Error: Event Type Null'), 500);
         }
 
+        \Log::info('SNS Message Received', ['job' => $job, 'payload' => $payload]);
         $job::dispatch($payload);
 
         return response('OK', 200);

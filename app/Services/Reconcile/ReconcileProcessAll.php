@@ -47,7 +47,7 @@ class ReconcileProcessAll
         ZooniverseTranscriptionJob::withChain([
             new ZooniversePusherJob($expedition),
             new ZooniverseClassificationCountJob($expedition),
-        ])->dispatch($expedition->id);
+        ])->dispatch($expedition);
     }
 
     /**

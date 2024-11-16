@@ -38,18 +38,12 @@ class Workflow extends BaseEloquentModel
      */
     protected $fillable = ['title', 'enabled'];
 
-    /**
-     * @return mixed
-     */
-    public function actors()
+    public function actors(): mixed
     {
         return $this->belongsToMany(Actor::class)->using(ActorWorkflow::class)->withPivot('order');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function expedition()
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Expedition::class);
     }

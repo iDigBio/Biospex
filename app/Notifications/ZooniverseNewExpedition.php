@@ -39,6 +39,8 @@ class ZooniverseNewExpedition extends Notification implements ShouldQueue
     public function __construct(protected Project $project, protected Expedition $expedition)
     {
         $this->onQueue(config('config.queue.default'));
+        $this->project = $project->withoutRelations();
+        $this->expedition = $expedition->withoutRelations();
     }
 
     /**

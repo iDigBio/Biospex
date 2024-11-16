@@ -100,14 +100,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Actor relation.
-     */
-    public function actor(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
-    {
-        return $this->hasOneThrough(Actor::class, ActorExpedition::class, 'expedition_id', 'id', 'id', 'actor_id');
-    }
-
-    /**
      * Actors relation.
      */
     public function actors(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
