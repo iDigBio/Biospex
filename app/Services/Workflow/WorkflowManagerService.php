@@ -58,9 +58,9 @@ class WorkflowManagerService
         } else {
             // Only start process for Zooniverse Actor.
             $sync = [
-                $expedition->zooActor->id => [
-                    'order' => $expedition->zooActor->pivot->order,
-                    'state' => $expedition->zooActor->pivot->state === 1 ? 2 : $expedition->zooActor->pivot->state,
+                $expedition->zooActorExpedition->id => [
+                    'order' => $expedition->zooActorExpedition->order,
+                    'state' => $expedition->zooActorExpedition->state === 1 ? 2 : $expedition->zooActorExpedition->state,
                 ],
             ];
             $expedition->actors()->sync($sync, false);
@@ -78,8 +78,8 @@ class WorkflowManagerService
      */
     public function getWorkflowManagersForProcessing($expeditionId = null, array $attributes = ['*']): \Illuminate\Database\Eloquent\Collection|array
     {
-        $model = $this->model->with(['expedition.stat', 'expedition.actors' => function ($query) {
-            $query->where('state', '>', 0)->where('error', 0);
+        $model = $this->model->with(['expedition.stat', 'expedition.actorExpeditions' => function ($query) {
+            $query->with('actor')->where('state', '>', 0)->where('error', 0);
         }])->where('stopped', 0);
 
         return $expeditionId === null ?

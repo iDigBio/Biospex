@@ -31,9 +31,12 @@ class AwsLambdaApiService
     public function __construct()
     {
         $this->lambdaClient = new LambdaClient([
-            'region' => config('config.aws.default_region'),
+            'credentials' => [
+                'key' => config('config.aws.access_key'),
+                'secret' => config('config.aws.secret_key'),
+            ],
             'version' => 'latest',
-            'profile' => 'default',
+            'region' => config('config.aws.default_region'),
         ]);
     }
 

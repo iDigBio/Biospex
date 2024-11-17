@@ -60,13 +60,13 @@ class GeoLocateStatController extends Controller
     public function update(Expedition $expedition): RedirectResponse
     {
         try {
-            $expedition->load('project.group');
+            $expedition->load('project.group', 'geoActorExpedition');
 
             if (! CheckPermission::handle('updateProject', $expedition->project->group)) {
                 return Redirect::route('admin.expeditions.show', [$expedition]);
             }
 
-            GeoLocateStatsJob::dispatch($expedition, true);
+            GeoLocateStatsJob::dispatch($expedition->geoActorExpedition, true);
 
             return Redirect::route('admin.expeditions.show', [$expedition])
                 ->with('success', t('GeoLocate stats job is scheduled for processing. You will receive an email when the process is complete.'));

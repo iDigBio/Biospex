@@ -56,10 +56,11 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
      * Execute the job.
      *
      * @throws \League\Csv\Exception
+     * @throws \Exception
      */
     public function handle(ExpertReconcileService $expertReconcileService): void
     {
-        $this->expedition->load('project.group.owner', 'zooActor');
+        $this->expedition->load('project.group.owner', 'zooActorExpedition');
 
         if ($this->skipReconcile($this->expedition->id)) {
             throw new \Exception(t('Expert Review for Expedition (:id) ":title" was skipped. Please contact Biospex Administration', [
@@ -69,8 +70,8 @@ class ExpertReviewSetProblemsJob implements ShouldQueue
 
         $expertReconcileService->setReconcileProblems($this->expedition->id);
 
-        $this->expedition->zooActor->pivot->expert = 1;
-        $this->expedition->zooActor->pivot->save();
+        $this->expedition->zooActorExpedition->expert = 1;
+        $this->expedition->zooActorExpedition->save();
 
         $route = route('admin.reconciles.index', [$this->expedition]);
         $btn = $this->createButton($route, t('Expert Review Start'));

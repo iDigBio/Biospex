@@ -55,7 +55,7 @@ class ZooniverseClassificationCountJob implements ShouldQueue
         $this->expedition->load([
             'project.group.owner',
             'stat',
-            'zooActor',
+            'zooActorExpedition',
             'panoptesProject',
         ]);
 
@@ -112,8 +112,8 @@ class ZooniverseClassificationCountJob implements ShouldQueue
          *
          * @see \App\Services\Actor\Zooniverse\Zooniverse::actor()
          */
-        $expedition->zooActor->pivot->state = 3;
-        $expedition->zooActor->pivot->save();
+        $expedition->zooActorExpedition->state = 3;
+        $expedition->zooActorExpedition->save();
 
         // Todo: Change expedition->completed to actor_expedition table.
         $expedition->completed = 1;

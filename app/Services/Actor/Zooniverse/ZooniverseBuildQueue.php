@@ -19,7 +19,7 @@
 
 namespace App\Services\Actor\Zooniverse;
 
-use App\Models\Actor;
+use App\Models\ActorExpedition;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
 use App\Services\Subject\SubjectService;
@@ -43,18 +43,18 @@ class ZooniverseBuildQueue
      *
      * @throws \Exception
      */
-    public function process(Actor $actor): void
+    public function process(ActorExpedition $actorExpedition): void
     {
         $attributes = [
-            'expedition_id' => $actor->pivot->expedition_id,
-            'actor_id' => $actor->id,
+            'expedition_id' => $actorExpedition->expedition_id,
+            'actor_id' => $actorExpedition->actor_id,
         ];
 
         $queue = $this->exportQueue->firstOrNew($attributes);
         $queue->queued = 0;
         $queue->error = 0;
         $queue->stage = 0;
-        $queue->total = $actor->pivot->total;
+        $queue->total = $actorExpedition->total;
         $queue->save();
 
         $this->buildFiles($queue);

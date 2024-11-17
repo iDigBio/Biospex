@@ -92,16 +92,16 @@ class ZooniverseExportQueue
         // Set actor_expedition pivot state to 1 if currently 0.
         // Otherwise, it's a regeneration export and state stays the same
         $attributes = [
-            'state' => $expedition->zooActor->pivot->state === 0 ? 1 : $expedition->zooActor->pivot->state,
+            'state' => $expedition->zooActorExpedition->state === 0 ? 1 : $expedition->zooActorExpedition->state,
             'total' => $expedition->stat->local_subject_count,
         ];
 
-        $expedition->zooActor->pivot->update($attributes);
+        $expedition->zooActorExpedition->update($attributes);
 
         // Set state to 1 to handle regenerating exports without effecting database value.
-        $expedition->zooActor->pivot->state = 1;
+        $expedition->zooActorExpedition->state = 1;
 
-        ActorFactory::create($expedition->zooActor->class)->actor($expedition->zooActor);
+        ActorFactory::create($expedition->zooActorExpedition->actor->class)->process($expedition->zooActorExpedition);
     }
 
     /**

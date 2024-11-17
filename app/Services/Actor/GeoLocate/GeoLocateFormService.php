@@ -94,7 +94,7 @@ class GeoLocateFormService
             'user_reconciled' => $this->userReconciledFileExists,
             'expert_reconciled' => $this->expertReconciledFileExists,
             'expert_review' => $this->expertReviewExists,
-            'exported' => ! empty($expedition->geoActor->pivot->state),
+            'exported' => ! empty($expedition->geoActorExpedition->state),
             'geo' => $this->getGeoLocateFields(),
             'csv' => $this->getCsvHeader($expedition),
             'mismatch_source' => $this->mismatchSource,
@@ -126,7 +126,7 @@ class GeoLocateFormService
             'user_reconciled' => $this->userReconciledFileExists,
             'expert_reconciled' => $this->expertReconciledFileExists,
             'expert_review' => $this->expertReviewExists,
-            'exported' => ! empty($expedition->geoActor->pivot->state),
+            'exported' => ! empty($expedition->geoActorExpedition->state),
             'geo' => $this->getGeoLocateFields(),
             'csv' => $this->getCsvHeader($expedition),
             'mismatch_source' => $this->mismatchSource,
@@ -210,7 +210,7 @@ class GeoLocateFormService
     public function setExpertExistVars(Expedition $expedition): void
     {
         $this->expertReconciledFileExists = Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv');
-        $this->expertReviewExists = $expedition->zooActor->pivot->expert;
+        $this->expertReviewExists = $expedition->zooActorExpedition->expert;
     }
 
     /**

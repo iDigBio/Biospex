@@ -19,7 +19,6 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Events\ImageExportEvent;
 use App\Events\SnsTopicSubscriptionEvent;
 use App\Jobs\SnsImageExportJob;
 use App\Jobs\SnsLabelReconciliationJob;
@@ -77,7 +76,6 @@ class AwsSnsController
             return response(t('SNS Message Validation Error: Event Type Null'), 500);
         }
 
-        \Log::info('SNS Message Received', ['job' => $job, 'payload' => $payload]);
         $job::dispatch($payload);
 
         return response('OK', 200);

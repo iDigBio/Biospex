@@ -91,7 +91,7 @@ class ExpeditionService
             ->has('panoptesProject')->whereHas('actors', function ($q) {
                 $q->zooniverse();
             })
-            ->with('panoptesProject', 'stat', 'zooActor');
+            ->with('panoptesProject', 'stat', 'zooActorExpedition');
 
         $sortedResults = $this->sortRecords($query, $request);
 
@@ -322,7 +322,7 @@ class ExpeditionService
      */
     public function getExpeditionForZooniverseProcess(int $expeditionId): \Illuminate\Database\Eloquent\Model
     {
-        return $this->expedition->with(['panoptesProject', 'stat', 'zooActor'])
+        return $this->expedition->with(['panoptesProject'])
             ->has('panoptesProject')->whereHas('actors', function ($q) {
                 $q->zooniverse();
             })->where('completed', 0)->find($expeditionId);
@@ -333,6 +333,6 @@ class ExpeditionService
      */
     public function getExpeditionForQueueReset(int $expeditionId): Expedition
     {
-        return $this->expedition->with(['zooActor', 'stat', 'exportQueue'])->find($expeditionId);
+        return $this->expedition->with(['zooActorExpedition.actor', 'stat', 'exportQueue'])->find($expeditionId);
     }
 }

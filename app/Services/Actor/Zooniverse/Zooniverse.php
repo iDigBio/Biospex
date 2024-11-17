@@ -21,7 +21,7 @@ namespace App\Services\Actor\Zooniverse;
 
 use App\Jobs\ZooniverseCsvJob;
 use App\Jobs\ZooniverseExportBuildQueueJob;
-use App\Models\Actor;
+use App\Models\ActorExpedition;
 
 /**
  * Class Zooniverse
@@ -45,13 +45,13 @@ class Zooniverse
      *
      * @throws \Throwable
      */
-    public function actor(Actor $actor): void
+    public function process(ActorExpedition $actorExpedition): void
     {
-        if ($actor->pivot->state === 1) {
+        if ($actorExpedition->state === 1) {
             // @see \App\Console\Commands\ExportQueueCommand
-            ZooniverseExportBuildQueueJob::dispatch($actor);
-        } elseif ($actor->pivot->state === 2) {
-            ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);
+            ZooniverseExportBuildQueueJob::dispatch($actorExpedition);
+        } elseif ($actorExpedition->state === 2) {
+            ZooniverseCsvJob::dispatch($actorExpedition->expedition_id);
         }
     }
 }

@@ -195,7 +195,7 @@ class ProjectService
                 'expeditions' => function ($query) {
                     $query->has('panoptesProject')->whereHas('actors', function ($q) {
                         $q->zooniverse();
-                    })->with('panoptesProject', 'stat', 'zooActor');
+                    })->with('panoptesProject', 'stat', 'zooActorExpedition');
                 },
                 'events' => function ($q) {
                     $q->with('teams');

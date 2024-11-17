@@ -70,20 +70,22 @@ class WorkFlowManagerCommand extends Command
         }
 
         $managers->each(function ($manager) {
-            $this->processActors($manager->expedition);
+            $this->processExpeditions($manager->expedition);
         });
     }
 
     /**
-     * Decide what actor to include in the array and being processed.
+     * Process each Expedition send to actor classes.
      */
-    protected function processActors($expedition): void
+    protected function processExpeditions($expedition): void
     {
-        $expedition->actors->each(function ($actor) use ($expedition) {
-            $actor->pivot->total = $expedition->stat->local_subject_count;
-            $actor->pivot->save();
+        $count = $expedition->stat->local_subject_count;
 
-            ActorFactory::create($actor->class)->actor($actor);
+        $expedition->actorExpeditions->each(function ($actorExpedition) use ($count) {
+            $actorExpedition->total = $count;
+            $actorExpedition->save();
+
+            ActorFactory::create($actorExpedition->actor->class)->process($actorExpedition);
         });
     }
 }

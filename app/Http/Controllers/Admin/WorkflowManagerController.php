@@ -47,7 +47,7 @@ class WorkflowManagerController extends Controller
     {
         $expedition->load([
             'project.group',
-            'zooActor',
+            'zooActorExpedition',
             'panoptesProject',
             'workflowManager',
             'stat',

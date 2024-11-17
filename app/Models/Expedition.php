@@ -100,17 +100,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Actors relation.
-     */
-    public function actors(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
-    {
-        return $this->belongsToMany(Actor::class, 'actor_expedition')
-            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'error', 'order', 'expert')
-            ->orderBy('order')
-            ->withTimestamps();
-    }
-
-    /**
      * Relation used for wedigbio dashboard.
      */
     public function dashboard(): \MongoDB\Laravel\Relations\HasMany
@@ -200,24 +189,38 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * GeoActor relation.
+     * Actors relation.
      */
-    public function geoActor()
+    public function actors(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->hasOneThrough(Actor::class, ActorExpedition::class, 'expedition_id', 'id', 'id', 'actor_id')
-            ->with('pivot')
-            ->where('actor_id', config('geolocate.actor_id'));
+        return $this->belongsToMany(Actor::class, 'actor_expedition')
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'error', 'order', 'expert')
+            ->orderBy('order')
+            ->withTimestamps();
     }
 
     /**
-     * ZooActor relation.
-     * Example: $expedition->zooActor->pivot->expert = 1;
+     * ActorExpedition relation.
      */
-    public function zooActor()
+    public function actorExpeditions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasOneThrough(Actor::class, ActorExpedition::class, 'expedition_id', 'id', 'id', 'actor_id')
-            ->with('pivot')
-            ->where('actor_id', config('zooniverse.actor_id'));
+        return $this->hasMany(ActorExpedition::class);
+    }
+
+    /**
+     * GeoActorExpedition relation.
+     */
+    public function geoActorExpedition(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ActorExpedition::class)->where('actor_id', config('geolocate.actor_id'));
+    }
+
+    /**
+     * ZooActorExpedition relation.
+     */
+    public function zooActorExpedition(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ActorExpedition::class)->where('actor_id', config('zooniverse.actor_id'));
     }
 
     /**
@@ -226,14 +229,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public function panoptesProject(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(PanoptesProject::class);
-    }
-
-    /**
-     * PanoptesTranscription relation.
-     */
-    public function panoptesTranscriptions(): \MongoDB\Laravel\Relations\HasMany
-    {
-        return $this->hasMany(PanoptesTranscription::class, 'subject_expeditionId');
     }
 
     /**

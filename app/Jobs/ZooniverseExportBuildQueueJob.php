@@ -19,7 +19,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Actor;
+use App\Models\ActorExpedition;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Actor\Zooniverse\ZooniverseBuildQueue;
@@ -40,9 +40,9 @@ class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected Actor $actor)
+    public function __construct(protected ActorExpedition $actorExpedition)
     {
-        $this->actor = $actor->withoutRelations();
+        $this->actorExpedition = $actorExpedition->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 
@@ -53,7 +53,7 @@ class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(ZooniverseBuildQueue $zooniverseBuildQueue): void
     {
-        $zooniverseBuildQueue->process($this->actor);
+        $zooniverseBuildQueue->process($this->actorExpedition);
     }
 
     /**
@@ -65,8 +65,8 @@ class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
             'subject' => t('Zooniverse Export Build Queue Job Failed'),
             'html' => [
                 t('An error occurred building the export queue.'),
-                t('Actor Id: %s', $this->actor->id),
-                t('Expedition Id: %s', $this->actor->pivot->id),
+                t('Actor Id: %s', $this->actorExpedition->actor_id),
+                t('Expedition Id: %s', $this->actorExpedition->expedition_id),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),
