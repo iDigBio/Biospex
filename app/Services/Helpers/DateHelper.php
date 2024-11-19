@@ -29,6 +29,18 @@ use Illuminate\Support\Carbon;
 class DateHelper
 {
     /**
+     * Format date from mongo db.
+     *
+     * @param $date
+     * @param string $format
+     * @return mixed
+     */
+    public function formatMongoDbDate($date, $format = 'Y-m-d')
+    {
+        return $date->toDateTime()->format($format);
+    }
+
+    /**
      * Format date using timezone and format.
      *
      * @param  null  $format
