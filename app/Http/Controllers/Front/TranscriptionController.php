@@ -24,6 +24,7 @@ use App\Models\AmChart;
 use App\Models\Project;
 use File;
 use Response;
+use Throwable;
 
 /**
  * Class TranscriptionController
@@ -37,17 +38,21 @@ class TranscriptionController extends Controller
 
     /**
      * Return json data for transcription charts.
-     *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function __invoke(Project $project, string $year): \Illuminate\Http\JsonResponse
     {
-        $chart = $this->amChart->where('project_id', $project->id)->first();
+        try {
+            $chart = $this->amChart->where('project_id', $project->id)->first();
 
-        $file = json_decode(File::get(config('config.project_chart_config')), true);
-        $file['series'] = $chart->series[$year];
-        $file['data'] = $chart->data[$year];
+            $file = json_decode(File::get(config('config.project_chart_config')), true);
+            $file['series'] = $chart->series[$year];
+            $file['data'] = $chart->data[$year];
 
-        return Response::json($file);
+            return Response::json($file);
+        } catch (Throwable $throwable) {
+            \Log::info('Project: '.$project->id.' Message: '.$throwable->getMessage());
+
+            return Response::json(['error' => $throwable->getMessage()]);
+        }
     }
 }
