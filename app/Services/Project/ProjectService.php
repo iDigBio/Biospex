@@ -122,7 +122,6 @@ class ProjectService
     {
         $records = $this->project->withCount('expeditions')
             ->withSum('expeditionStats', 'transcriptions_completed')
-            ->withSum('expeditionStats', 'transcriber_count')
             ->with([
                 'group' => function ($q) use ($user) {
                     $q->whereHas('users', function ($q) use ($user) {
@@ -145,7 +144,6 @@ class ProjectService
     {
         $records = $this->project->withCount('expeditions')
             ->withSum('expeditionStats', 'transcriptions_completed')
-            ->withSum('expeditionStats', 'transcriber_count')
             ->withCount('events')->with('group')->has('panoptesProjects')->get();
 
         return $this->sortResults($records, $request);
@@ -185,7 +183,6 @@ class ProjectService
         return $this->project->withCount('events')
             ->withCount('expeditions')
             ->withSum('expeditionStats', 'transcriptions_completed')
-            ->withSum('expeditionStats', 'transcriber_count')
             ->with([
                 'amChart',
                 'group.users.profile',

@@ -131,7 +131,7 @@
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 <span class="text">{{ $project->expeditions_count }} {{ t('Expeditions') }}</span>
                 <span class="text">{{ $project->expedition_stats_sum_transcriptions_completed }} {{ t('Digitizations') }}</span>
-                <span class="text">{{ $project->expedition_stats_sum_transcriber_count }} {{ t('Participants') }}</span>
+                <span class="text">{{ get_project_transcriber_count($project->id) }} {{ t('Participants') }}</span>
             </div>
             <hr class="header mx-auto">
         </div>

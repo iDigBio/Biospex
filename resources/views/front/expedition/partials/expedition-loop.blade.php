@@ -11,12 +11,15 @@
 
         <div class="card-body card-body-img-top white text-center">
             <div class="d-flex justify-content-between">
-                <p>
-                    <small>{{ $expedition->stat->local_transcriptions_completed }} {{ t('Digitizations') }}</small>
-                </p>
-                <p>
-                    <small>{{ $expedition->stat->percent_completed }}% {{ t('Completed') }}</small>
-                </p>
+                <div class="col-12">
+                    <ul class="text text-left">
+                        <li>
+                            <small>{{ $expedition->stat->local_transcriptions_completed }} {{ t('Digitizations') }}</small>
+                        </li>
+                        <li><small>{{ $expedition->stat->transcriber_count }} {{ t('Participants') }}</small></li>
+                        <li><small>{{ $expedition->stat->percent_completed }}% {{ t('Completed') }}</small></li>
+                    </ul>
+                </div>
             </div>
             <hr>
             <div class="d-flex align-items-start justify-content-between mt-4 mx-auto">

@@ -83,4 +83,12 @@ class CountService
             return $this->panoptesTranscriptionService->getTranscriptionCountForTranscriber($projectId, $transcriber);
         });
     }
+
+    /**
+     * Return unique transcriber count for project.
+     */
+    public function projectTranscriberCount(int $projectId): mixed
+    {
+        return $this->panoptesTranscriptionService->getProjectTranscriberCount($projectId);
+    }
 }

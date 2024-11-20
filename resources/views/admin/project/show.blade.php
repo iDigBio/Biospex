@@ -22,7 +22,7 @@
             <div class="d-flex justify-content-between mt-4 mb-3">
                 <span>{{ $project->expeditions_count }} {{ t('Expeditions') }}</span>
                 <span>{{ $project->expedition_stats_sum_transcriptions_completed }} {{ t('Digitizations') }}</span>
-                <span>{{ $project->expedition_stats_sum_transcriber_count }} {{ t('Participants') }}</span>
+                <span>{{ get_project_transcriber_count($project->id) }} {{ t('Participants') }}</span>
             </div>
         </div>
         <div id="active-expeditions-main" class="col-sm-12 show">
