@@ -19,6 +19,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Header;
+use App\Services\MongoDbService;
 use Illuminate\Console\Command;
 
 /**
@@ -39,7 +41,7 @@ class AppCommand extends Command
     /**
      * Create a new command instance.
      */
-    public function __construct()
+    public function __construct(protected MongoDbService $service)
     {
         parent::__construct();
     }
@@ -47,5 +49,19 @@ class AppCommand extends Command
     /**
      * @return void
      */
-    public function handle() {}
+    public function handle()
+    {
+        $headers = Header::all();
+        $headers->each(function ($header) {
+            if (isset($header['image']['id'])) {
+                dd($header['image']['id']);
+            }
+        });
+        /*
+        echo 'Starting...'.PHP_EOL;
+        $this->service->setCollection('subjectsbk');
+        $this->service->updateMany([], ['$rename' => ['id' => 'imageId']]);
+        echo 'Done'.PHP_EOL;
+        */
+    }
 }
