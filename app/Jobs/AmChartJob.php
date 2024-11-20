@@ -31,7 +31,6 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Class AmChartJob
- * TODO: https://laravel.com/docs/11.x/queues#handling-relationships Check all jobs for relationships
  */
 class AmChartJob implements ShouldQueue
 {
