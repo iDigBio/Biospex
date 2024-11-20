@@ -83,6 +83,7 @@
       "Database\\Seeders\\": "database/seeders/"
     },
     "files": [
+      "app/Helpers/count_helper.php",
       "app/Helpers/date_helper.php",
       "app/Helpers/general_helper.php"
     ]

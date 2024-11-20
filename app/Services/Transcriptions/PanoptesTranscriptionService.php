@@ -253,4 +253,26 @@ class PanoptesTranscriptionService
     {
         return $this->model->where('subject_projectId', $projectId)->where('user_name', $transcriber)->count();
     }
+
+    /**
+     * Get transcriber count for project.
+     */
+    public function getProjectTranscriberCount(int $projectId): int
+    {
+        $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
+            return $this->model->raw(function ($collection) use ($projectId) {
+                return $collection->aggregate([
+                    [
+                        '$match' => ['subject_projectId' => (int) $projectId],
+                    ],
+                    [
+                        '$group' => ['_id' => '$user_name'],
+                    ],
+                    ['$count' => 'count'],
+                ]);
+            })->first();
+        });
+
+        return $result === null ? 0 : $result->count;
+    }
 }

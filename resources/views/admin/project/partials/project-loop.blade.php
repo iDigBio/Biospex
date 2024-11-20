@@ -13,7 +13,7 @@
                 <ul class="text">
                     <li class="smalltext">{{ $project->expeditions_count }} {{ t('Expeditions') }}</li>
                     <li class="smalltext">{{ $project->expedition_stats_sum_transcriptions_completed }} {{ t('Digitizations') }}</li>
-                    <li class="smalltext">{{ $project->expedition_stats_sum_transcriber_count }} {{ t('Participants') }}</li>
+                    <li class="smalltext">{{ get_project_transcriber_count($project->id) }} {{ t('Participants') }}</li>
                 </ul>
             </div>
         </div>
