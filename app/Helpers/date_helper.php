@@ -28,16 +28,6 @@ function format_date(mixed $date, string $format = 'Y-m-d', string $tz = 'UTC'):
 }
 
 /**
- * Return format for Mongo UTCDateTime milliseconds.
- */
-function format_mongo_date(\MongoDB\BSON\UTCDateTime $date, string $format = 'Y-m-d', string $tz = 'UTC'): \Carbon\Carbon|string
-{
-    $dateHelper = app(\App\Services\Helpers\DateService::class);
-
-    return $dateHelper->formatMongoDate($date, $format, $tz);
-}
-
-/**
  * Return timezone array for select box.
  *
  *

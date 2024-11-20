@@ -22,7 +22,6 @@ namespace App\Services\Helpers;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
-use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class DateService
@@ -37,16 +36,6 @@ class DateService
         if (! $date instanceof Carbon) {
             $date = is_string($date) ? Carbon::parse($date) : Carbon::now();
         }
-
-        return $date->shiftTimezone($tz)->format($format);
-    }
-
-    /**
-     * Return format for Mongo UTCDateTime.
-     */
-    public function formatMongoDate(UTCDateTime $date, string $format = 'Y-m-d', string $tz = 'UTC'): Carbon|string
-    {
-        $date = Carbon::instance($date->toDateTime());
 
         return $date->shiftTimezone($tz)->format($format);
     }
