@@ -21,12 +21,10 @@ namespace App\Models;
 
 class GeoLocateExport extends BaseMongoModel
 {
-    protected $connection = 'mongodb';
-
     /**
      * Set Collection
      */
-    protected $collection = 'geolocate_exports';
+    protected $table = 'geolocate_exports';
 
     /**
      * The attributes that should be cast.

@@ -36,11 +36,6 @@ class BaseMongoModel extends Model
     /**
      * {@inheritDoc}
      */
-    protected $primaryKey = '_id';
-
-    /**
-     * {@inheritDoc}
-     */
     protected $guarded = [];
 
     /**

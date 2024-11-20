@@ -53,10 +53,7 @@ class Reconcile extends BaseMongoModel
         ];
     }
 
-    /**
-     * @var string
-     */
-    protected $presenter = ReconcilePresenter::class;
+    protected string $presenter = ReconcilePresenter::class;
 
     /**
      * Subject relation.
@@ -68,10 +65,8 @@ class Reconcile extends BaseMongoModel
 
     /**
      * Expdition relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function expedition()
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class, 'expedition_id', 'id');
     }

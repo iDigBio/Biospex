@@ -348,6 +348,9 @@ class DarwinCoreCsvImport
     public function prepareSubject($row, $metaFields)
     {
         $occurrenceId = $this->mediaIsCore ? null : $row[$this->header[0]];
+
+        // Use this to set unique id for subjects besides the _id.
+        // TODO: With Mongodb/laravel 5.0, _id is aliased to id. Change in all documents and code.
         $row['id'] = $this->mediaIsCore ? $row[$this->header[0]] : $this->setUniqueId($row, $metaFields);
 
         if ($this->checkColumns($row)) {
@@ -373,6 +376,7 @@ class DarwinCoreCsvImport
      */
     private function checkColumns($row)
     {
+        // TODO: update to new id name in document.
         if (! trim($row['id'])) {
             $rejected = ['Reason' => t('Missing required ID value.')] + $row;
             $this->reject($rejected);
@@ -415,7 +419,7 @@ class DarwinCoreCsvImport
 
         $criteria = ['project_id' => (int) $this->projectId, 'occurrence.id' => $row[$this->header[0]]];
         $attributes = ['$set' => ['occurrence' => $row]];
-        $this->mongoDbService->updateMany($attributes, $criteria);
+        $this->mongoDbService->updateMany($criteria, $attributes);
     }
 
     /**

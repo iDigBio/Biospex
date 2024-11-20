@@ -55,34 +55,22 @@ class PanoptesTranscription extends BaseMongoModel
      */
     protected $orderBy = [[]];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function project()
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class, 'subject_projectId', 'id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function expedition()
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class, 'subject_expeditionId', 'id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function subject()
+    public function subject(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Subject::class, 'subject_subjectId', '_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function dashboard()
+    public function dashboard(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(PusherTranscription::class, 'classification_id', 'classification_id');
     }

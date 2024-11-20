@@ -120,6 +120,7 @@ class GridExportCsvJob implements ShouldQueue
      */
     private function buildHeader(): \Illuminate\Support\Collection
     {
+        // TODO: Change id name to new field name
         $header = Header::where('project_id', $this->data['projectId'])->first()->header['image'];
         array_unshift($header, '_id', 'project_id', 'id', 'expedition_ids', 'exported');
         array_push($header, 'ocr', 'occurrence', 'updated_at', 'created_at');
