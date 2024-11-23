@@ -345,19 +345,18 @@ class DarwinCoreCsvImport
     /**
      * Works under the assumption Occurrence is the core, not Media.
      */
-    public function prepareSubject($row, $metaFields)
+    public function prepareSubject($row, $metaFields): void
     {
         $occurrenceId = $this->mediaIsCore ? null : $row[$this->header[0]];
 
         // Use this to set unique id for subjects besides the _id.
-        // TODO: With Mongodb/laravel 5.0, _id is aliased to id. Change in all documents and code.
-        $row['id'] = $this->mediaIsCore ? $row[$this->header[0]] : $this->setUniqueId($row, $metaFields);
+        $row['imageId'] = $this->mediaIsCore ? $row[$this->header[0]] : $this->setUniqueId($row, $metaFields);
 
         if ($this->checkColumns($row)) {
             return;
         }
 
-        $fields = ['project_id' => (int) $this->projectId, 'ocr' => '', 'expedition_ids' => [], 'exported' => false];
+        $fields = ['project_id' => $this->projectId, 'ocr' => '', 'expedition_ids' => [], 'exported' => false];
 
         $occurrence = is_null($occurrenceId) ? [] : ['occurrence' => ['id' => (string) $occurrenceId]];
         $subject = $fields + $row + $occurrence;
@@ -376,9 +375,8 @@ class DarwinCoreCsvImport
      */
     private function checkColumns($row)
     {
-        // TODO: update to new id name in document.
-        if (! trim($row['id'])) {
-            $rejected = ['Reason' => t('Missing required ID value.')] + $row;
+        if (! trim($row['imageId'])) {
+            $rejected = ['Reason' => t('Missing required imageId value.')] + $row;
             $this->reject($rejected);
 
             return true;

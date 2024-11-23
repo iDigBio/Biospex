@@ -51,13 +51,13 @@ class GridModel
                 'assigned',
                 'expedition_ids',
                 'exported',
-                'id',
+                'imageId',
                 'accessURI',
                 'ocr',
             ];
         } else {
             $headers = $result->header;
-            array_unshift($headers['image'], 'assigned', 'exported', 'expedition_ids', 'id');
+            array_unshift($headers['image'], 'assigned', 'exported', 'expedition_ids', 'imageId');
             $headers['image'][] = 'ocr';
         }
 

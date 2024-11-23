@@ -177,7 +177,7 @@ class MongoDbService
     /**
      * Update many.
      */
-    public function updateMany(array $attributes, array $criteria): \MongoDB\UpdateResult
+    public function updateMany(array $criteria, array $attributes): \MongoDB\UpdateResult
     {
         return $this->clientCollection->updateMany($criteria, $attributes);
     }

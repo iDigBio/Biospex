@@ -40,8 +40,8 @@ return [
     ],
 
     'csv_map' => [
-        'subjectId' => '_id',
-        'imageName' => '_id',
+        'subjectId' => 'id',
+        'imageName' => 'id',
         'references' => ['occurrence' => 'references'],
         'scientificName' => ['occurrence' => 'scientificName'],
         'country' => ['occurrence' => 'country'],
@@ -55,7 +55,7 @@ return [
         '#catalogNumber' => ['occurrence' => 'catalogNumber'],
         '#occurrenceRecordId' => ['occurrence' => ['recordID', 'recordId']],
         '#occurrernceId' => ['occurrence' => 'id'],
-        '#imageId' => 'id',
+        '#imageId' => 'imageId',
         '#expeditionId' => '',
         '#expeditionTitle' => '',
     ],

@@ -19,8 +19,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Header;
-use App\Services\MongoDbService;
+use App\Services\Project\HeaderService;
 use Illuminate\Console\Command;
 
 /**
@@ -41,7 +40,7 @@ class AppCommand extends Command
     /**
      * Create a new command instance.
      */
-    public function __construct(protected MongoDbService $service)
+    public function __construct(protected HeaderService $headerService)
     {
         parent::__construct();
     }
@@ -51,17 +50,62 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $headers = Header::all();
-        $headers->each(function ($header) {
-            if (isset($header['image']['id'])) {
-                dd($header['image']['id']);
-            }
-        });
+        /*
+        $result = $this->headerService->getFirst('project_id', 13);
+        if (empty($result)) {
+            echo 'Empty'.PHP_EOL;
+            $headers['image'] = [
+                'assigned',
+                'expedition_ids',
+                'exported',
+                'id',
+                'accessURI',
+                'ocr',
+            ];
+        } else {
+            echo 'Not Empty'.PHP_EOL;
+            $headers = $result->header;
+            array_unshift($headers['image'], 'assigned', 'exported', 'expedition_ids', 'id');
+            $headers['image'][] = 'ocr';
+        }
+        dd($headers['image']);
+        */
+
         /*
         echo 'Starting...'.PHP_EOL;
         $this->service->setCollection('subjectsbk');
         $this->service->updateMany([], ['$rename' => ['id' => 'imageId']]);
         echo 'Done'.PHP_EOL;
         */
+    }
+
+    /**
+     * Decode fields from occurrence then encode to avoid errors.
+     *
+     * @return false|string
+     */
+    private function decodeAndEncode($occurrence)
+    {
+        unset($occurrence['_id'], $occurrence['updated_at'], $occurrence['created_at']);
+
+        foreach ($occurrence as $field => $value) {
+            if ($this->isJson($value)) {
+                $value = json_decode($value);
+            }
+
+            $occurrence[$field] = $value;
+        }
+
+        return json_encode($occurrence);
+    }
+
+    /**
+     * Check if value is json.
+     */
+    public function isJson($str): bool
+    {
+        $json = json_decode($str);
+
+        return $json !== false && ! is_null($json) && $str != $json;
     }
 }

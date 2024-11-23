@@ -152,13 +152,13 @@ return [
      * Columns used in select statement for grid.
      */
     'defaultGridVisible' => [
-        'id',
+        'imageId',
         'exported',
         'accessURI',
         'ocr',
     ],
     'defaultSubGridVisible' => [
-        'id',
+        'imageId',
         'institutionCode',
         'scientificName',
         'recordId',

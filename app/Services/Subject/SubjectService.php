@@ -245,7 +245,7 @@ class SubjectService
             $query->orderBy($field, $sort);
         }
 
-        return $query->orderBy('_id', 'desc')->lazy();
+        return $query->orderBy('id', 'desc')->lazy();
     }
 
     /**

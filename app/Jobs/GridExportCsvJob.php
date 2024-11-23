@@ -64,6 +64,7 @@ class GridExportCsvJob implements ShouldQueue
      * Execute the job.
      *
      * @throws \League\Csv\CannotInsertRecord
+     * @throws \Exception
      */
     public function handle(
         JqGridEncoder $jqGridEncoder,
@@ -83,7 +84,7 @@ class GridExportCsvJob implements ShouldQueue
 
         $cursor->each(function ($subject) use ($header, $awsS3CsvService, $generalService) {
             $subjectArray = $subject->getAttributes();
-            $subjectArray['_id'] = (string) $subject->_id;
+            $subjectArray['id'] = (string) $subject->id;
             $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
             $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
             $subjectArray['created_at'] = $subject->created_at->toDateTimeString();
@@ -120,9 +121,8 @@ class GridExportCsvJob implements ShouldQueue
      */
     private function buildHeader(): \Illuminate\Support\Collection
     {
-        // TODO: Change id name to new field name
         $header = Header::where('project_id', $this->data['projectId'])->first()->header['image'];
-        array_unshift($header, '_id', 'project_id', 'id', 'expedition_ids', 'exported');
+        array_unshift($header, '_id', 'project_id', 'imageId', 'expedition_ids', 'exported');
         array_push($header, 'ocr', 'occurrence', 'updated_at', 'created_at');
 
         return collect($header)->flip()->map(function ($value, $key) {

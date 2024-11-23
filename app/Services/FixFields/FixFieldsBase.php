@@ -104,7 +104,7 @@ class FixFieldsBase
 
         $attributes = ['$rename' => $renameFields];
 
-        return $this->mongoDbService->updateMany($attributes, $criteria)->isAcknowledged();
+        return $this->mongoDbService->updateMany($criteria, $attributes)->isAcknowledged();
     }
 
     /**
