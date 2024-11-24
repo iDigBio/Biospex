@@ -45,7 +45,15 @@ class TranscriptionController extends Controller
             $chart = $this->amChart->where('project_id', $project->id)->first();
 
             $file = json_decode(File::get(config('config.project_chart_config')), true);
+
+            if (! isset($chart->series[$year])) {
+                throw new \Exception('No data for this year');
+            }
             $file['series'] = $chart->series[$year];
+
+            if (! isset($chart->data[$year])) {
+                throw new \Exception('No data for this year');
+            }
             $file['data'] = $chart->data[$year];
 
             return Response::json($file);
