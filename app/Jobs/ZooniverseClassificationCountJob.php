@@ -103,19 +103,18 @@ class ZooniverseClassificationCountJob implements ShouldQueue
      */
     protected function checkFinishedAt(Expedition $expedition, ?string $finishedAt = null): void
     {
-        if ($finishedAt === null) {
+        if ($finishedAt === null || $expedition->stat->percent_completed === 100) {
             return;
         }
 
         /**
-         * State === 3 means Zooniverse actor completed.
+         * State 3 is the final state for Zooniverse.
          *
-         * @see \App\Services\Actor\Zooniverse\Zooniverse::actor()
+         * @see \App\Services\Actor\Zooniverse\Zooniverse::process()
          */
         $expedition->zooActorExpedition->state = 3;
         $expedition->zooActorExpedition->save();
 
-        // Todo: Change expedition->completed to actor_expedition table.
         $expedition->completed = 1;
         $expedition->save();
 

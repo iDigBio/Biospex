@@ -122,14 +122,6 @@ class ZooniverseCsvService
     }
 
     /**
-     * Check for errors field on zooniverse classification.
-     */
-    public function checkErrors(array $result): bool
-    {
-        return isset($result['errors']);
-    }
-
-    /**
      * Calculate time difference.
      * If errors, csv doesn't exist yet.
      * Hours must be greater than 24 hours for Zooniverse to create CSV.
