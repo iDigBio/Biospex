@@ -50,6 +50,7 @@ class TranscriptionController extends Controller
 
             return Response::json($file);
         } catch (Throwable $throwable) {
+            // TODO: Remove log error once the issue is fixed
             \Log::info('Project: '.$project->id.' Message: '.$throwable->getMessage());
 
             return Response::json(['error' => $throwable->getMessage()]);
