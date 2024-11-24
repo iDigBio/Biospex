@@ -265,5 +265,9 @@ class UpdateQueries extends Command
         Schema::table('project_resources', function (Blueprint $table) {
             DB::statement('ALTER TABLE `project_resources` ADD `download_created_at` TIMESTAMP NULL DEFAULT NULL AFTER `download_updated_at`;');
         });
+
+        Schema::table('expedition_stats', function (Blueprint $table) {
+            DB::statement('ALTER TABLE `expedition_stats` CHANGE `percent_completed` `percent_completed` INT NOT NULL DEFAULT 0;');
+        });
     }
 }
