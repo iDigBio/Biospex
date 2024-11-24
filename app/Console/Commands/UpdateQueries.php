@@ -116,8 +116,9 @@ class UpdateQueries extends Command
 
     public function createNewUuid(string $className): void
     {
+        \Artisan::call('lada-cache:flush');
         $class = \App::make($className);
-        $records = $class::get();
+        $records = $class::all();
         $records->each(function ($record) {
             $record->uuid = \Str::uuid();
             $record->save();
@@ -139,6 +140,7 @@ class UpdateQueries extends Command
 
     public function updateNewUuid(string $className): void
     {
+        \Artisan::call('lada-cache:flush');
         $class = \App::make($className);
         $records = $class::get();
         $records->each(function ($record) {
@@ -159,6 +161,8 @@ class UpdateQueries extends Command
     {
         //DB::statement('TRUNCATE `migrations`;');
         //DB::unprepared(File::get(storage_path('migrations.sql')));
+
+        \Artisan::call('lada-cache:flush');
 
         Schema::dropIfExists('project_old_workflow');
 
