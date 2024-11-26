@@ -21,7 +21,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Models\WeDigBioEventDate;
+use App\Models\WeDigBioEvent;
 use App\Services\WeDigBio\WeDigBioRateService;
 use Response;
 
@@ -35,7 +35,7 @@ class WeDigBioRateController extends Controller
     /**
      * Get WeDigBio event rate chart.
      */
-    public function __invoke(?WeDigBioEventDate $event = null): \Illuminate\Http\JsonResponse
+    public function __invoke(?WeDigBioEvent $event = null): \Illuminate\Http\JsonResponse
     {
         $result = $this->weDigBioRateService->getWeDigBioEventRateChart($event);
 

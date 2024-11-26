@@ -21,7 +21,7 @@
 namespace App\Jobs;
 
 use App\Events\WeDigBioProgressEvent;
-use App\Nova\WeDigBioEventDate;
+use App\Models\WeDigBioEvent;
 use App\Services\WeDigBio\WeDigBioService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -42,7 +42,7 @@ class WeDigBioEventProgressJob implements ShouldQueue
      * Null is passed to the event parameter if using Nav links that result in active WeDigBio Event.
      * Assigns zero to the channel.
      */
-    public function __construct(public ?WeDigBioEventDate $event = null)
+    public function __construct(public ?WeDigBioEvent $event = null)
     {
         $this->event = $event->withoutRelations();
         $this->onQueue(config('config.queue.event'));

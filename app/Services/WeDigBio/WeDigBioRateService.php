@@ -20,7 +20,7 @@
 
 namespace App\Services\WeDigBio;
 
-use App\Models\WeDigBioEventDate;
+use App\Models\WeDigBioEvent;
 use App\Services\Trait\RateChartTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -43,7 +43,7 @@ class WeDigBioRateService
     /**
      * Get wedigbio event transcription data for step chart.
      */
-    public function getWeDigBioEventRateChart(WeDigBioEventDate $event, ?string $timestamp = null): ?array
+    public function getWeDigBioEventRateChart(WeDigBioEvent $event, ?string $timestamp = null): ?array
     {
         $weDigBioDate = $this->weDigBioService->getActiveOrComplete($event);
 
@@ -151,13 +151,13 @@ class WeDigBioRateService
      * Get end load time. If wedigbio event is over, it will display all points from beginning to end.
      */
     protected function getEndLoad(
-        WeDigBioEventDate $weDigBioEventDate,
+        WeDigBioEvent $weDigBioEvent,
         Carbon $loadTime,
         ?string $timestamp = null
     ): Carbon {
         $now = $this->carbon::now('UTC');
-        if ($now->gt($weDigBioEventDate->end_date)) {
-            return $weDigBioEventDate->end_date;
+        if ($now->gt($weDigBioEvent->end_date)) {
+            return $weDigBioEvent->end_date;
         }
 
         return $timestamp === null ? $now->floorMinutes(5) : $loadTime->addMinutes(5);

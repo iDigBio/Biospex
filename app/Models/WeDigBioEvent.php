@@ -12,7 +12,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -27,16 +27,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Class WeDigBioEventDate
+ * Class WeDigBioEvent
  */
-class WeDigBioEventDate extends BaseEloquentModel
+class WeDigBioEvent extends BaseEloquentModel
 {
     use HasFactory, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}
      */
-    protected $table = 'wedigbio_event_dates';
+    protected $table = 'wedigbio_events';
 
     /**
      * {@inheritDoc}
@@ -85,7 +85,7 @@ class WeDigBioEventDate extends BaseEloquentModel
      */
     public function transcriptions(): HasMany
     {
-        return $this->hasMany(WeDigBioEventTranscription::class, 'date_id', 'id');
+        return $this->hasMany(WeDigBioEventTranscription::class, 'event_id', 'id');
     }
 
     /**

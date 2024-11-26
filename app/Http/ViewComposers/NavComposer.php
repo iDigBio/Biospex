@@ -20,7 +20,7 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Models\WeDigBioEventDate;
+use App\Models\WeDigBioEvent;
 use Illuminate\Contracts\View\View;
 
 class NavComposer
@@ -28,14 +28,14 @@ class NavComposer
     /**
      * Create a new view composer.
      */
-    public function __construct(protected WeDigBioEventDate $weDigBioEventDate) {}
+    public function __construct(protected WeDigBioEvent $weDigBioEvent) {}
 
     /**
      * Bind data to the view.
      */
     public function compose(View $view): void
     {
-        $event = $this->weDigBioEventDate->where('active', 1)->first();
+        $event = $this->weDigBioEvent->where('active', 1)->first();
 
         $view->with('event', $event);
     }

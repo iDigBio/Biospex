@@ -20,7 +20,7 @@
 
 namespace App\Services\WeDigBio;
 
-use App\Models\WeDigBioEventDate;
+use App\Models\WeDigBioEvent;
 use App\Models\WeDigBioEventTranscription;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -29,10 +29,10 @@ use Illuminate\Support\Facades\DB;
 class WeDigBioService
 {
     /**
-     * WeDigBioEventDateRepository constructor.
+     * WeDigBioEvent Service constructor.
      */
     public function __construct(
-        public WeDigBioEventDate $weDigBioEventDate,
+        public WeDigBioEvent $weDigBioEvent,
         public WeDigBioEventTranscription $weDigBioEventTranscription
     ) {}
 
@@ -41,13 +41,13 @@ class WeDigBioService
      */
     public function getWeDigBioPage(): Collection
     {
-        return $this->weDigBioEventDate->all()->sortByDesc('created_at');
+        return $this->weDigBioEvent->all()->sortByDesc('created_at');
     }
 
     /**
      * @return mixed|null
      */
-    public function getWeDigBioEventTranscriptions(?WeDigBioEventDate $event = null): mixed
+    public function getWeDigBioEventTranscriptions(?WeDigBioEvent $event = null): mixed
     {
         $activeEvent = $this->getActiveOrComplete($event);
 
@@ -55,7 +55,7 @@ class WeDigBioService
             return null;
         }
 
-        return $this->weDigBioEventDate->withCount('transcriptions')->with([
+        return $this->weDigBioEvent->withCount('transcriptions')->with([
             'transcriptions' => function ($q) {
                 $q->select('*', DB::raw('count(project_id) as total'))
                     ->with(['project' => function ($query) {
@@ -69,7 +69,7 @@ class WeDigBioService
     /**
      * Return project titles for WeDigBio Rate chart.
      */
-    public function getProjectsForWeDigBioRateChart(?WeDigBioEventDate $event = null): ?array
+    public function getProjectsForWeDigBioRateChart(?WeDigBioEvent $event = null): ?array
     {
         $activeEvent = $this->getActiveOrComplete($event);
 
@@ -77,7 +77,7 @@ class WeDigBioService
             return null;
         }
 
-        $result = $this->weDigBioEventDate->with(['transcriptions' => function ($q) {
+        $result = $this->weDigBioEvent->with(['transcriptions' => function ($q) {
             $q->with(['project' => function ($q2) {
                 $q2->select('id', 'title');
             }])->groupBy('project_id');
@@ -91,19 +91,19 @@ class WeDigBioService
     /**
      * Get WeDigBioDate by date or active.
      */
-    public function getActiveOrComplete(?WeDigBioEventDate $event = null): mixed
+    public function getActiveOrComplete(?WeDigBioEvent $event = null): mixed
     {
-        return is_null($event) ? $this->weDigBioEventDate->active()->first() : $this->weDigBioEventDate->find($event->id);
+        return is_null($event) ? $this->weDigBioEvent->active()->first() : $this->weDigBioEvent->find($event->id);
     }
 
     /**
      * Get transcriptions for WeDigBio project event step chart.
      */
-    public function getWeDigBioRateChartTranscriptions(int $dateId, Carbon $startLoad, Carbon $endLoad): ?Collection
+    public function getWeDigBioRateChartTranscriptions(int $eventId, Carbon $startLoad, Carbon $endLoad): ?Collection
     {
         return $this->weDigBioEventTranscription->with(['project:id,title'])
             ->selectRaw('project_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, count(id) as count')
-            ->where('date_id', $dateId)
+            ->where('event_id', $eventId)
             ->where('created_at', '>=', $startLoad->toDateTimeString())
             ->where('created_at', '<', $endLoad->toDateTimeString())
             ->groupBy('time', 'project_id')

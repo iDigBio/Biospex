@@ -21,7 +21,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Models\WeDigBioEventDate;
+use App\Models\WeDigBioEvent;
 use App\Services\WeDigBio\WeDigBioService;
 use Request;
 use View;
@@ -36,14 +36,14 @@ class WeDigBioProgressController extends Controller
     /**
      * Show progress for wedigbio events.
      */
-    public function __invoke(?WeDigBioEventDate $event = null): \Illuminate\Http\JsonResponse|\Illuminate\View\View
+    public function __invoke(?WeDigBioEvent $event = null): \Illuminate\Http\JsonResponse|\Illuminate\View\View
     {
         if (! Request::ajax()) {
             return response()->json(['html' => 'Error retrieving the WeDigBio Event']);
         }
 
-        $weDigBioDate = $this->weDigBioService->getWeDigBioEventTranscriptions($event);
+        $weDigBioEvent = $this->weDigBioService->getWeDigBioEventTranscriptions($event);
 
-        return View::make('common.wedigbio-progress-content', compact('weDigBioDate'));
+        return View::make('common.wedigbio-progress-content', compact('weDigBioEvent'));
     }
 }

@@ -21,7 +21,7 @@
 namespace App\Services\WeDigBio;
 
 use App\Jobs\WeDigBioEventProgressJob;
-use App\Models\WeDigBioEventDate;
+use App\Models\WeDigBioEvent;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Validator;
@@ -47,18 +47,18 @@ class WeDigBioTranscriptionService
         int $projectId,
         ?Carbon $date = null
     ): void {
-        $wedigbioDate = $this->weDigBioService->weDigBioEventDate->where('active', 1)->first();
+        $event = $this->weDigBioService->weDigBioEvent->where('active', 1)->first();
 
         $timestamp = ! isset($date) ? $this->carbon::now('UTC') : $date;
 
-        if ($wedigbioDate === null || ! $this->checkDate($wedigbioDate, $timestamp)) {
+        if ($event === null || ! $this->checkDate($event, $timestamp)) {
             return;
         }
 
         $attributes = [
             'classification_id' => $classification_id,
             'project_id' => $projectId,
-            'date_id' => $wedigbioDate->id,
+            'event_id' => $event->id,
         ];
 
         if ($this->validateClassification($attributes)) {
@@ -70,7 +70,7 @@ class WeDigBioTranscriptionService
         $this->weDigBioService->weDigBioEventTranscription->create($values);
         \Cache::forget('wedigbio-event-transcription');
 
-        WeDigBioEventProgressJob::dispatch($wedigbioDate);
+        WeDigBioEventProgressJob::dispatch($event);
     }
 
     /**
@@ -83,7 +83,7 @@ class WeDigBioTranscriptionService
                 return $query
                     ->where('classification_id', $attributes['classification_id'])
                     ->where('project_id', $attributes['project_id'])
-                    ->where('date_id', $attributes['date_id']);
+                    ->where('event_id', $attributes['event_id']);
             }),
         ]);
 
@@ -94,8 +94,8 @@ class WeDigBioTranscriptionService
     /**
      * Check date is between active WeDigbio Event Date.
      */
-    private function checkDate(WeDigBioEventDate $weDigBioEventDate, Carbon $timestamp): bool
+    private function checkDate(WeDigBioEvent $weDigBioEvent, Carbon $timestamp): bool
     {
-        return $timestamp->between($weDigBioEventDate->start_date, $weDigBioEventDate->end_date);
+        return $timestamp->between($weDigBioEvent->start_date, $weDigBioEvent->end_date);
     }
 }

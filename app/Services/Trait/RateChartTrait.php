@@ -21,7 +21,7 @@
 namespace App\Services\Trait;
 
 use App\Models\Event;
-use App\Models\WeDigBioEventDate;
+use App\Models\WeDigBioEvent;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -42,7 +42,7 @@ trait RateChartTrait
     /**
      * Get the load time given.
      */
-    protected function getLoadTime(Event|WeDigBioEventDate $event, Carbon $carbon, ?string $timestamp = null): \Carbon\Carbon
+    protected function getLoadTime(Event|WeDigBioEvent $event, Carbon $carbon, ?string $timestamp = null): \Carbon\Carbon
     {
         return $timestamp === null ?
             $event->start_date :

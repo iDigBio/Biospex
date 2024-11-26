@@ -18,27 +18,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Http\Controllers\Front;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
-use App\Http\Controllers\Controller;
-use App\Models\WeDigBioEvent;
-use App\Services\WeDigBio\WeDigBioService;
-use Request;
-use Response;
-
-class WeDigBioProjectsController extends Controller
+return new class extends Migration
 {
-    public function __construct(protected WeDigBioService $weDigBioService) {}
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::dropIfExists('project_old_workflow');
+    }
 
     /**
-     * Returns titles of projects that have transcriptions from WeDigBio.
+     * Reverse the migrations.
      */
-    public function __invoke(?WeDigBioEvent $event = null): \Illuminate\Http\JsonResponse
+    public function down(): void
     {
-        if (! Request::ajax()) {
-            return Response::json(['html' => 'Request must be ajax.']);
-        }
-
-        return Response::json($this->weDigBioService->getProjectsForWeDigBioRateChart($event));
+        //
     }
-}
+};

@@ -20,20 +20,20 @@
 
 namespace Database\Factories;
 
-use App\Models\WeDigBioEventDate;
+use App\Models\WeDigBioEvent;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\WeDigBioEventDate>
+ * @extends Factory<\App\Models\WeDigBioEvent>
  */
-final class WeDigBioEventDateFactory extends Factory
+final class WeDigBioEventFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = WeDigBioEventDate::class;
+    protected $model = WeDigBioEvent::class;
 
     /**
      * Define the model's default state.

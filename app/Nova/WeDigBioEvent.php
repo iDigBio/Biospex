@@ -28,14 +28,12 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 /**
  * Class WeDigBioProject
  */
-class WeDigBioEventDate extends Resource
+class WeDigBioEvent extends Resource
 {
     /**
      * The model the resource corresponds to.
-     *
-     * @var string
      */
-    public static $model = \App\Models\WeDigBioEventDate::class;
+    public static string $model = \App\Models\WeDigBioEvent::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -63,7 +61,7 @@ class WeDigBioEventDate extends Resource
      */
     public static function label()
     {
-        return t('WeDigBio Event Dates');
+        return t('WeDigBio Events');
     }
 
     /**

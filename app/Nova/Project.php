@@ -88,7 +88,7 @@ class Project extends Resource
     public function fields(NovaRequest $request)
     {
         return [
-            ID::make(t('Id'), 'id')->onlyOnDetail()->sortable(),
+            ID::make(t('Id'), 'id')->sortable(),
             Text::make(t('Uuid'), 'uuid')->onlyOnDetail(),
             BelongsTo::make('Group')->rules('required')->sortable(),
             Select::make(t('Status'), 'status')->rules('required')->hideFromIndex()->options([

@@ -18,32 +18,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Database\Factories;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-use App\Models\WeDigBioEventTranscription;
-use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends Factory<\App\Models\WeDigBioEventTranscription>
- */
-final class WeDigBioEventTranscriptionFactory extends Factory
+return new class extends Migration
 {
     /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
+     * Run the migrations.
      */
-    protected $model = WeDigBioEventTranscription::class;
+    public function up(): void
+    {
+        Schema::table('invites', function (Blueprint $table) {
+            DB::statement('RENAME TABLE `invites` TO `group_invites`;');
+            DB::statement('ALTER TABLE `group_invites` RENAME INDEX `invites_group_id_email_index` TO `group_invites_group_id_email_index`;');
+            DB::statement('ALTER TABLE `group_invites` RENAME INDEX `invites_code_index` TO `group_invites_code_index`;');
+        });
+    }
 
     /**
-     * Define the model's default state.
+     * Reverse the migrations.
      */
-    public function definition(): array
+    public function down(): void
     {
-        return [
-            'classification_id' => fake()->randomNumber(),
-            'project_id' => \App\Models\Project::factory(),
-            'event_id' => \App\Models\WeDigBioEvent::factory(),
-        ];
+        //
     }
-}
+};

@@ -18,27 +18,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Http\Controllers\Front;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-use App\Http\Controllers\Controller;
-use App\Models\WeDigBioEvent;
-use App\Services\WeDigBio\WeDigBioService;
-use Request;
-use Response;
-
-class WeDigBioProjectsController extends Controller
+return new class extends Migration
 {
-    public function __construct(protected WeDigBioService $weDigBioService) {}
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('faqs', function (Blueprint $table) {
+            DB::statement('ALTER TABLE `faqs` CHANGE `question` `question` VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL, CHANGE `answer` `answer` VARCHAR(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL; ');
+        });
+    }
 
     /**
-     * Returns titles of projects that have transcriptions from WeDigBio.
+     * Reverse the migrations.
      */
-    public function __invoke(?WeDigBioEvent $event = null): \Illuminate\Http\JsonResponse
+    public function down(): void
     {
-        if (! Request::ajax()) {
-            return Response::json(['html' => 'Request must be ajax.']);
-        }
-
-        return Response::json($this->weDigBioService->getProjectsForWeDigBioRateChart($event));
+        //
     }
-}
+};

@@ -42,7 +42,7 @@ class WeDigBioEventTranscription extends BaseEloquentModel
     protected $fillable = [
         'classification_id',
         'project_id',
-        'date_id',
+        'event_id',
         'created_at',
         'updated_at',
     ];
@@ -57,7 +57,7 @@ class WeDigBioEventTranscription extends BaseEloquentModel
         return [
             'classification_id' => 'int',
             'project_id' => 'int',
-            'date_id' => 'int',
+            'event_id' => 'int',
         ];
     }
 
@@ -82,7 +82,7 @@ class WeDigBioEventTranscription extends BaseEloquentModel
      */
     public function date(): BelongsTo
     {
-        return $this->belongsTo(WeDigBioEventDate::class);
+        return $this->belongsTo(WeDigBioEvent::class);
     }
 
     /**
@@ -90,6 +90,6 @@ class WeDigBioEventTranscription extends BaseEloquentModel
      */
     public function scopeDateId($query, $arg): mixed
     {
-        return $query->where('date_id', $arg);
+        return $query->where('event_id', $arg);
     }
 }
