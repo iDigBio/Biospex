@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -20,7 +21,6 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\BingoJob;
 use App\Models\Bingo;
 use App\Services\Bingo\BingoService;
 use View;
@@ -43,20 +43,6 @@ class BingoController extends Controller
         $bingos = $this->bingoService->getFrontIndex();
 
         return View::make('front.bingo.index', compact('bingos'));
-    }
-
-    /**
-     * Generate bingo card.
-     */
-    public function create(Bingo $bingo): \Illuminate\View\View
-    {
-        $bingo->load('project', 'words');
-
-        $rows = $this->bingoService->generateBingoCard($bingo);
-
-        BingoJob::dispatch($bingo);
-
-        return View::make('front.bingo.card', compact('bingo', 'rows'));
     }
 
     /**
