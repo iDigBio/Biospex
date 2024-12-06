@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -146,7 +147,6 @@ class GeoPlugin
      * Locate ip.
      *
      * @param  null  $ip
-     * @return bool
      */
     public function locate($ip = null): bool
     {
