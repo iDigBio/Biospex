@@ -23,7 +23,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
 use App\Models\Bingo;
-use App\Models\BingoMap;
+use App\Models\BingoUser;
 use Request;
 
 class BingoWinnerController extends Controller
@@ -31,10 +31,11 @@ class BingoWinnerController extends Controller
     /**
      * Trigger bingo winner.
      */
-    public function __invoke(Bingo $bingo, BingoMap $bingoMap): void
+    public function __invoke(Bingo $bingo, BingoUser $bingoUser): void
     {
         if (Request::ajax()) {
-            BingoJob::dispatch($bingo, $bingoMap);
+            \Log::info('Bingo winner: '.$bingo->uuid.' - '.$bingoUser->uuid);
+            BingoJob::dispatch($bingo, $bingoUser, true);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace App\Jobs;
 
 use App\Events\BingoEvent;
 use App\Models\Bingo;
-use App\Models\BingoMap;
+use App\Models\BingoUser;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Bingo\BingoService;
@@ -43,10 +43,10 @@ class BingoJob implements ShouldQueue
     /**
      * BingoJob constructor.
      */
-    public function __construct(protected Bingo $bingo, protected ?BingoMap $bingoMap = null)
+    public function __construct(protected Bingo $bingo, protected BingoUser $bingoUser, protected bool $winner = false)
     {
         $this->bingo = $bingo->withoutRelations();
-        $this->bingoMap = $bingoMap?->withoutRelations();
+        $this->bingoUser = $bingoUser->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 
@@ -55,22 +55,20 @@ class BingoJob implements ShouldQueue
      */
     public function handle(BingoService $bingoService): void
     {
-        $locations = $bingoService->getMapLocations($this->bingo->id);
-        $data['markers'] = $locations->map(function ($location) {
-            return [
-                'latitude' => $location->latitude,
-                'longitude' => $location->longitude,
-                'city' => $location->city,
-            ];
-        })->toArray();
+        $data['marker'] = [
+            'uuid' => $this->bingoUser->uuid,
+            'latitude' => $this->bingoUser->latitude,
+            'longitude' => $this->bingoUser->longitude,
+            'city' => $this->bingoUser->city,
+        ];
 
         $data['winner'] = null;
-        if (! is_null($this->bingoMap)) {
-            $data['winner']['city'] = $this->bingoMap->city;
-            $data['winner']['uuid'] = $this->bingoMap->uuid;
+        if ($this->winner) {
+            $data['winner']['city'] = $this->bingoUser->city;
+            $data['winner']['uuid'] = $this->bingoUser->uuid;
         }
 
-        BingoEvent::dispatch($this->bingo, $data);
+        BingoEvent::dispatch($this->bingo, json_encode($data, JSON_NUMERIC_CHECK));
     }
 
     /**

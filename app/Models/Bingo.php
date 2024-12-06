@@ -103,6 +103,6 @@ class Bingo extends BaseEloquentModel
      */
     public function maps()
     {
-        return $this->hasMany(BingoMap::class);
+        return $this->hasMany(BingoUser::class);
     }
 }

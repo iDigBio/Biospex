@@ -38,7 +38,7 @@ class EventTeamPresenter extends Presenter
             data-hover="tooltip"
             data-name="js-copy"
             data-value="'.route('front.events_team_user.create', [$this->model]).'">
-            <i class="fas fa-clipboard align-middle" aria-hidden="true"></i>
+            <i class="fas fa-clipboard align-middle"></i>
             <span class="align-middle">'.$this->model->title.'</span></a>';
     }
 }

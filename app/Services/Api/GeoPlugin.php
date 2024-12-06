@@ -20,8 +20,10 @@
 
 namespace App\Services\Api;
 
+use App\Models\City;
 use App\Services\Requests\HttpRequest;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Contracts\Container\Container as App;
 
 /**
  * Class GeoPlugin
@@ -141,15 +143,25 @@ class GeoPlugin
     /**
      * GeoHelper constructor.
      */
-    public function __construct(protected HttpRequest $request) {}
+    public function __construct(protected HttpRequest $request, protected App $app, protected City $cityModel) {}
 
     /**
      * Locate ip.
+     * If not production or development, return random city.
      *
      * @param  null  $ip
      */
     public function locate($ip = null): bool
     {
+        if ($this->app->environment() !== 'production' || \App::environment() !== 'development') {
+            $data = $this->cityModel->inRandomOrder()->first();
+            $this->city = $data->city;
+            $this->latitude = $data->latitude;
+            $this->longitude = $data->longitude;
+
+            return true;
+        }
+
         if (is_null($ip)) {
             if (! empty($_SERVER['HTTP_CLIENT_IP'])) {
                 //ip from share internet

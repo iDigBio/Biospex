@@ -33,17 +33,17 @@ class BingoEvent implements ShouldBroadcast
 {
     use Dispatchable, SerializesModels;
 
-    protected Bingo $bingo;
+    private Bingo $bingo;
 
-    protected string $data;
+    public string $data;
 
     /**
      * BingoEvent constructor.
      */
-    public function __construct(Bingo $bingo, array $data)
+    public function __construct(Bingo $bingo, string $data)
     {
-        $this->bingo = $bingo;
-        $this->data = json_encode($data);
+        $this->bingo = $bingo->withoutRelations();
+        $this->data = $data;
     }
 
     /**
@@ -59,6 +59,7 @@ class BingoEvent implements ShouldBroadcast
      */
     public function broadcastOn(): Channel
     {
-        return new Channel(config('config.poll_bingo_channel').'.'.$this->bingo->id);
+        return new Channel(config('config.poll_bingo_channel').'.'.$this->bingo->uuid);
+        //return new PresenceChannel(config('config.poll_bingo_channel').'.'.$this->bingo->uuid);
     }
 }

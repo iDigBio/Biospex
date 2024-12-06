@@ -21,13 +21,12 @@
 namespace App\Services\Bingo;
 
 use App\Models\Bingo;
-use App\Models\BingoMap;
+use App\Models\BingoUser;
 use App\Models\BingoWord;
 use App\Models\User;
 use App\Services\Api\GeoPlugin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use JavaScript;
 use Session;
 
 /**
@@ -40,7 +39,7 @@ class BingoService
      */
     public function __construct(
         protected Bingo $bingo,
-        protected BingoMap $bingoMap,
+        protected BingoUser $bingoUser,
         protected BingoWord $bingoWord,
         protected GeoPlugin $location
     ) {}
@@ -104,8 +103,10 @@ class BingoService
     /**
      * Create bingo map. Default Tallahassee if lat/long empty.
      */
-    private function createBingoMap(Bingo $bingo): Model|BingoMap
+    private function createBingoUser(Bingo $bingo): Model|BingoUser
     {
+        $this->location->locate();
+
         $values = [
             'bingo_id' => $bingo->id,
             'ip' => $this->location->ip,
@@ -132,16 +133,6 @@ class BingoService
      */
     public function generateBingoCard(Bingo $bingo): Collection
     {
-        $this->location->locate();
-
-        $bingoMap = $this->buildOrReturnMap($bingo);
-
-        JavaScript::put([
-            'channel' => config('config.poll_bingo_channel').'.'.$bingo->uuid,
-            'winnerUrl' => route('front.get.bingo-winner', [$bingo, $bingoMap]),
-            'mapUuid' => $bingoMap->uuid,
-        ]);
-
         $words = $bingo->words->pluck('definition', 'word')->shuffleWords();
         $words->splice(12, 0, [['logo', '']]);
 
@@ -158,15 +149,22 @@ class BingoService
     /**
      * Find bingo map by uuid.
      */
-    private function buildOrReturnMap(Bingo $bingo): BingoMap
+    public function getOrCreateBingoUser(Bingo $bingo): BingoUser
     {
-        $bingoMap = Session::get('bingoUuid') === null ?
-            $this->createBingoMap($bingo) :
-            $this->bingoMap->where('uuid', Session::get('bingoUuid'))->first();
+        if (Session::get('bingoUserUuid') === null) {
+            $bingoUser = $this->createBingoUser($bingo);
+            Session::put('bingoUserUuid', $bingoUser->uuid);
 
-        Session::put('bingoUuid', $bingoMap->uuid);
+            return $bingoUser;
+        }
 
-        return $bingoMap;
+        $bingoUser = $this->bingoUser->where('uuid', Session::get('bingoUserUuid'))->first();
+        if ($bingoUser === null) {
+            $bingoUser = $this->createBingoUser($bingo);
+            Session::put('bingoUserUuid', $bingoUser->uuid);
+        }
+
+        return $bingoUser;
     }
 
     /**
@@ -174,6 +172,22 @@ class BingoService
      */
     public function getMapLocations(int $bingoId): Collection
     {
-        return $this->bingoMap->where('bingo_id', $bingoId)->get();
+        return $this->bingoUser->where('bingo_id', $bingoId)->groupBy('city')->get();
+    }
+
+    /**
+     * Get bingo map markers.
+     */
+    public function getBingoUserData(Bingo $bingo): string
+    {
+        $locations = $this->getMapLocations($bingo->id);
+
+        return $locations->map(function ($location) {
+            return [
+                'latitude' => $location->latitude,
+                'longitude' => $location->longitude,
+                'city' => $location->city,
+            ];
+        })->toJson(JSON_NUMERIC_CHECK);
     }
 }

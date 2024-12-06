@@ -28,14 +28,14 @@
     "resolve-url-loader": "^5.0.0",
     "sass": "^1.72.0",
     "sass-loader": "14.1.1",
-    "summernote": "^0.8.20"
+    "summernote": "0.9.0"
   },
   "dependencies": {
     "@panzoom/panzoom": "^4.5.1",
     "axios": "^1.6.8",
     "image-type": "^5.2.0",
-    "laravel-echo": "^1.15.3",
-    "pusher-js": "^8.3.0",
+    "laravel-echo": "^1.17.1",
+    "pusher-js": "^8.4.0-rc2",
     "sharp": "^0.33.5",
     "webpack": "^5.91.0"
   },

@@ -1,6 +1,6 @@
 <!-- Modal -->
-<div class="modal global-modal" id="global-modal" data-size="" tabindex="-2" role="dialog" aria-labelledby="ModalCenterTitle"
-     aria-hidden="true">
+<div class="modal global-modal" id="global-modal" data-size="" tabindex="-2" role="dialog"
+     aria-labelledby="ModalCenterTitle">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,7 +8,7 @@
                 <div><h2 id="modal-title" class="color-action"></h2></div>
                 <div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i class="far fa-times-circle"></i></span>
+                        <span><i class="far fa-times-circle"></i></span>
                     </button>
                 </div>
             </div>
