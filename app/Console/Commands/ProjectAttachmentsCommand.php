@@ -25,8 +25,6 @@ use Storage;
 
 /**
  * Class ProjectAttachmentsCommand
- *
- * @package App\Console\Commands
  */
 class ProjectAttachmentsCommand extends Command
 {
@@ -51,8 +49,6 @@ class ProjectAttachmentsCommand extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param \App\Repositories\ProjectRepository $projectRepo
      */
     public function __construct(ProjectRepository $projectRepo)
     {
@@ -67,12 +63,12 @@ class ProjectAttachmentsCommand extends Command
     {
         $projects = $this->projectRepo->all();
 
-        $projects->each(function($project){
-            if ( ! $this->variantExists($project->logo)) {
+        $projects->each(function ($project) {
+            if (! $this->variantExists($project->logo)) {
                 $project->logo->setToBeDeleted();
             }
 
-            if ( ! $this->variantExists($project->banner)) {
+            if (! $this->variantExists($project->banner)) {
                 $project->banner->setToBeDeleted();
             }
 
@@ -81,8 +77,7 @@ class ProjectAttachmentsCommand extends Command
     }
 
     /**
-     * @param $attachment
-     * @param null $variant
+     * @param  null  $variant
      * @return bool
      */
     public function variantExists($attachment, $variant = null)

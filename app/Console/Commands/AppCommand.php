@@ -23,12 +23,9 @@ use Illuminate\Console\Command;
 
 /**
  * Class AppCommand
- *
- * @package App\Console\Commands
  */
 class AppCommand extends Command
 {
-
     /**
      * The console command name.
      */
@@ -47,11 +44,5 @@ class AppCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * @return void
-     */
-    public function handle()
-    {
-
-    }
+    public function handle(): void {}
 }
