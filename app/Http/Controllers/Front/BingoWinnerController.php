@@ -34,7 +34,6 @@ class BingoWinnerController extends Controller
     public function __invoke(Bingo $bingo, BingoUser $bingoUser): void
     {
         if (Request::ajax()) {
-            \Log::info('Bingo winner: '.$bingo->uuid.' - '.$bingoUser->uuid);
             BingoJob::dispatch($bingo, $bingoUser, true);
         }
     }
