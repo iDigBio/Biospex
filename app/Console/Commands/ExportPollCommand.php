@@ -26,6 +26,8 @@ use Illuminate\Console\Command;
 
 /**
  * Class ExportPollCommand
+ *
+ * @package App\Console\Commands
  */
 class ExportPollCommand extends Command
 {
@@ -43,6 +45,9 @@ class ExportPollCommand extends Command
      */
     protected $description = 'Command description';
 
+    /**
+     * @var \App\Repositories\ExportQueueRepository
+     */
     private ExportQueueRepository $exportQueueRepo;
 
     /**
@@ -52,6 +57,8 @@ class ExportPollCommand extends Command
 
     /**
      * ExportPollCommand constructor.
+     *
+     * @param \App\Repositories\ExportQueueRepository $exportQueueRepo
      */
     public function __construct(ExportQueueRepository $exportQueueRepo)
     {
@@ -72,7 +79,6 @@ class ExportPollCommand extends Command
 
         if ($queues->isEmpty()) {
             PollExportEvent::dispatch($data);
-
             return;
         }
 
@@ -80,10 +86,9 @@ class ExportPollCommand extends Command
         $data['payload'] = $queues->map(function ($queue) use (&$count) {
             $notice = $queue->queued ? $this->setProcessNotice($queue) : $this->setQueuedNotice($queue, $count);
             $count++;
-
             return [
                 'groupId' => $queue->expedition->project->group->id,
-                'notice' => $notice,
+                'notice'  => $notice,
             ];
         })->values();
 
@@ -93,6 +98,8 @@ class ExportPollCommand extends Command
     /**
      * Set notice if process is occurring.
      *
+     * @param \App\Models\ExportQueue $queue
+     * @return string
      * @throws \Throwable
      */
     private function setProcessNotice(ExportQueue $queue): string
@@ -103,7 +110,7 @@ class ExportPollCommand extends Command
 
         $processedRecords = $queue->stage === 1 ? t(' :processed of :total completed.', [
             ':processed' => $processed,
-            ':total' => $queue->total,
+            ':total'     => $queue->total,
         ]) : null;
 
         return \View::make('common.export-process', compact('stage', 'title', 'processedRecords'))->render();
@@ -112,11 +119,14 @@ class ExportPollCommand extends Command
     /**
      * Set notice message for remaining exports.
      *
+     * @param \App\Models\ExportQueue $queue
+     * @param int $count
+     * @return string
      * @throws \Throwable
      */
     private function setQueuedNotice(ExportQueue $queue, int $count): string
     {
-        $title = $queue->expedition->title;
+        $title =$queue->expedition->title;
         $remainingCount = $count === 0 ? t('Next in queue.') :
             t(n(':count export in queue before processing begins.', ':count exports in queue before processing begins.', $count), [':count' => $count]);
 

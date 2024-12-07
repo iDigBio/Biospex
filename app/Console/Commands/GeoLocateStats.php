@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\GeoLocateStatsJob;
+use App\Models\Actor;
 use App\Models\Expedition;
 use Illuminate\Console\Command;
 

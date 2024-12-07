@@ -23,16 +23,25 @@ class FixExpedition extends Command
      */
     protected $description = 'Temp command to fix Catherine reconcile files';
 
+    /**
+     * @var \App\Services\Csv\Csv
+     */
     private Csv $csv;
 
+    /**
+     * @var \App\Repositories\SubjectRepository
+     */
     private SubjectRepository $subjectRepo;
 
     private $fixDir;
-
+    
     private $birdImages;
-
+    
     private $birdOccurrences;
 
+    /**
+     * @var \App\Repositories\ReconcileRepository
+     */
     private ReconcileRepository $reconcileRepo;
 
     /**
@@ -54,21 +63,21 @@ class FixExpedition extends Command
      */
     public function handle()
     {
-        $this->csv->readerCreateFromPath($this->fixDir.'bird-images.csv');
+        $this->csv->readerCreateFromPath($this->fixDir . 'bird-images.csv');
         $this->csv->setHeaderOffset();
         $this->birdImages = $this->csv->getRecords();
 
-        $this->csv->readerCreateFromPath($this->fixDir.'bird-occurrences.csv');
+        $this->csv->readerCreateFromPath($this->fixDir . 'bird-occurrences.csv');
         $this->csv->setHeaderOffset();
         $this->birdOccurrences = $this->csv->getRecords();
 
-        $this->csv->readerCreateFromPath($this->fixDir.'reconcile-374.csv');
+        $this->csv->readerCreateFromPath($this->fixDir . 'reconcile-374.csv');
         $this->csv->setHeaderOffset();
         $header = $this->csv->getHeader();
         $header[] = 'subject_identifier';
         $reconcileReader = $this->csv->getReader();
 
-        $this->csv->writerCreateFromPath($this->fixDir.'expert-reconcile.csv');
+        $this->csv->writerCreateFromPath($this->fixDir . 'expert-reconcile.csv');
         $this->csv->insertOne($header);
 
         foreach ($reconcileReader as $offset => $record) {
@@ -79,15 +88,13 @@ class FixExpedition extends Command
 
             $birdImage = $this->findBirdImageRecord($identifier);
             if (empty($birdImage)) {
-                echo 'Missing bird image '.$identifier.PHP_EOL;
-
+                echo 'Missing bird image ' . $identifier . PHP_EOL;
                 continue;
             }
 
             $birdOccurrence = $this->findBirdOccurrenceRecord($birdImage['coreid']);
             if (empty($birdOccurrence)) {
-                echo 'Missing bird occurrence '.$birdImage['coreid'].PHP_EOL;
-
+                echo 'Missing bird occurrence ' . $birdImage['coreid'] . PHP_EOL;
                 continue;
             }
 
@@ -102,6 +109,7 @@ class FixExpedition extends Command
     /**
      * Find bird image record.
      *
+     * @param $identifier
      * @return mixed|void
      */
     private function findBirdImageRecord($identifier)
@@ -116,6 +124,7 @@ class FixExpedition extends Command
     /**
      * Search for bird occurrence.
      *
+     * @param $coreid
      * @return mixed|void
      */
     private function findBirdOccurrenceRecord($coreid)
