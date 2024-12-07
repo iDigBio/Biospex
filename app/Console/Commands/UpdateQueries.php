@@ -83,7 +83,7 @@ class UpdateQueries extends Command
     public function updateUuid(): void
     {
         $tablesUpdate = [
-            'bingo_maps' => 'App\Models\BingoUser',
+            'bingo_users' => 'App\Models\BingoUser',
             'downloads' => 'App\Models\Download',
             'event_teams' => 'App\Models\EventTeam',
             'expeditions' => 'App\Models\Expedition',
