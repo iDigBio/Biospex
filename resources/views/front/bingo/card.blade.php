@@ -39,7 +39,7 @@
 <script src="{{ mix('/js/vendor.js') }}"></script>
 <script src="{{ mix('/js/front.js') }}"></script>
 @include('common.amchart')
-<script src="{{ asset('js/amChartBingo.js')}}"></script>
+<script src="{{ asset('js/amChartBingo.min.js')}}"></script>
 <script>
     let bingoConfetti = new ConfettiGenerator({target: 'bingo-conffeti'});
     bingoConfetti.render();
