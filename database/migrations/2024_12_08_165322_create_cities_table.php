@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -12,29 +11,37 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Model;
-
-/**
- * Class City
- * Used for testing purposes when creating BingoUser markers.
- */
-class City extends Model
+return new class extends Migration
 {
     /**
-     * {@inheritDoc}
+     * Run the migrations.
      */
-    protected $table = 'cities';
+    public function up(): void
+    {
+        Schema::create('cities', function (Blueprint $table) {
+            $table->id();
+            $table->string('city');
+            $table->decimal('latitude', 10, 8);
+            $table->decimal('longitude', 11, 8);
+            $table->timestamps();
+        });
+    }
 
     /**
-     * {@inheritDoc}
+     * Reverse the migrations.
      */
-    protected $fillable = ['city', 'latitude', 'longitude'];
-}
+    public function down(): void
+    {
+        Schema::dropIfExists('cities');
+    }
+};
