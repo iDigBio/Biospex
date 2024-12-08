@@ -241,15 +241,15 @@ class ExpeditionService
      */
     public function update(Expedition $expedition, array $request): Expedition
     {
-        $this->setSubjectIds($request['subject-ids']);
-        $this->updateSubjects($expedition);
-        $this->syncActors($expedition);
-
         $expedition->completed = $this->setExpeditionCompleted($expedition, $request['workflow_id']);
 
         $expedition->fill($request)->save();
 
         $expedition->load(['actors', 'workflow.actors', 'workflowManager']);
+
+        $this->setSubjectIds($request['subject-ids']);
+        $this->updateSubjects($expedition);
+        $this->syncActors($expedition);
 
         return $expedition;
     }
