@@ -20,12 +20,6 @@
 
 namespace App\Console\Commands;
 
-use App\Events\BingoEvent;
-use App\Models\Bingo;
-use App\Models\City;
-use App\Services\Api\GeoPlugin;
-use App\Services\Bingo\BingoService;
-use App\Services\Csv\Csv;
 use Illuminate\Console\Command;
 
 /**
@@ -46,54 +40,13 @@ class AppCommand extends Command
     /**
      * Create a new command instance.
      */
-    public function __construct(protected BingoService $bingoService, protected Csv $csv, protected GeoPlugin $location)
+    public function __construct()
     {
         parent::__construct();
     }
 
     /**
      * @return void
-     *
-     * @throws \League\Csv\Exception
      */
-    public function handle()
-    {
-        $this->location->locate();
-        dd($this->location->city);
-
-        return;
-
-        $this->csv->readerCreateFromPath(storage_path('worldcities.csv'));
-        $this->csv->setHeaderOffset();
-        $rows = $this->csv->getRecords();
-        foreach ($rows as $row) {
-            City::create([
-                'city' => $row['city'],
-                'latitude' => $row['lat'],
-                'longitude' => $row['lng'],
-            ]);
-        }
-
-        return;
-
-        //dd(\Str::uuid());
-        $bingo = Bingo::find(7);
-        $locations = $this->bingoService->getMapLocations($bingo->id);
-
-        $data = [];
-
-        $data['markers'] = $locations->map(function ($location) {
-            return [
-                'latitude' => $location->latitude,
-                'longitude' => $location->longitude,
-                'city' => $location->city,
-            ];
-        })->toArray();
-
-        $data['winner'] = null;
-
-        \Log::info('BingoJob', $data);
-
-        BingoEvent::dispatch($bingo, json_encode($data));
-    }
+    public function handle() {}
 }
