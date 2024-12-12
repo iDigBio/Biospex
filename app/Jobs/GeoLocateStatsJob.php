@@ -50,10 +50,11 @@ class GeoLocateStatsJob implements ShouldQueue
      */
     public function handle(GeoLocateStatService $geoLocateStatService): void
     {
-        $this->actorExpedition->load(['expedition', 'expedition.geoLocateDataSource.geolocateCommunity']);
+        $this->actorExpedition->load(['expedition.project.group.owner', 'expedition.geoLocateDataSource.geolocateCommunity']);
 
-        $geoLocateDataSource = $this->actorExpedition->expedition->geoLocateDataSource;
-        $geoLocateCommunity = $this->actorExpedition->expedition->geoLocateDataSource->geoLocateCommunity;
+        $expedition = $this->actorExpedition->expedition;
+        $geoLocateDataSource = $expedition->geoLocateDataSource;
+        $geoLocateCommunity = $expedition->geoLocateDataSource->geoLocateCommunity;
 
         if (! $this->refresh && $geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
             return;
@@ -71,23 +72,23 @@ class GeoLocateStatsJob implements ShouldQueue
         // update geo_locate_data_sources data
         $geoLocateStatService->updateGeoLocateDataSourceStat($geoLocateDataSource->id, $dataSourceStats);
 
-        // download data source file if completed and notify user
-        if ($dataSourceStats['stats']['localityRecords'] === $dataSourceStats['stats']['correctedLocalityRecords']) {
-            $uri = $geoLocateStatService->buildDataSourceDownload($geoLocateCommunity->name, $geoLocateDataSource->data_source);
-            $geoLocateStatService->getDataSourceDownload($uri, $this->actorExpedition->expedition->id);
+        // Dispatch download job for kml and csv file.
+        GeoLocateDownloadJob::dispatch($this->actorExpedition, $geoLocateCommunity->name, $geoLocateDataSource->data_source);
 
+        // If completed and notify user.
+        if ($dataSourceStats['stats']['localityRecords'] === $dataSourceStats['stats']['correctedLocalityRecords']) {
             $this->actorExpedition->state = 3;
             $this->actorExpedition->save();
 
             $attributes = [
-                'subject' => t('GeoLocate stats for %s is complete.', $this->actorExpedition->expedition->title),
+                'subject' => t('GeoLocate stats for %s is complete.', $expedition->title),
                 'html' => [
                     t('The GeoLocate Stat process is complete and the KML file is ready for download.'),
                     t('You can download the file from the Downloads button of the Expedition.'),
                 ],
             ];
 
-            $this->actorExpedition->expedition->project->group->owner->notify(new Generic($attributes));
+            $expedition->project->group->owner->notify(new Generic($attributes));
         }
     }
 

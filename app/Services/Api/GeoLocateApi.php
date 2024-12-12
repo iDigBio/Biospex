@@ -56,9 +56,9 @@ class GeoLocateApi extends HttpRequest
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getDataSourceDownload(string $uri, int $expeditionId): void
+    public function getDataSourceDownload(string $uri, int $expeditionId, string $type): void
     {
-        $filePath = config('geolocate.dir.result').'/'.$expeditionId.'.kml';
+        $filePath = config('geolocate.dir.'.$type).'/'.$expeditionId.'.'.$type;
         $stream = $this->awsS3ApiService->createS3BucketStream(config('filesystems.disks.s3.bucket'), $filePath, 'w', false);
         $opts = [
             'sink' => $stream,
@@ -80,8 +80,8 @@ class GeoLocateApi extends HttpRequest
     /**
      * Build Downloads uri.
      */
-    public function buildDownloadUri(string $cname, string $dname): string
+    public function buildDownloadUri(string $cname, string $dname, string $fmt): string
     {
-        return $this->geolocateDownloadUri.'&cname='.$cname.'&dname='.$dname;
+        return $this->geolocateDownloadUri.'&cname='.$cname.'&dname='.$dname.'&fmt='.$fmt;
     }
 }

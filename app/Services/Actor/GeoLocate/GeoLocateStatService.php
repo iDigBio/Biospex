@@ -135,31 +135,4 @@ class GeoLocateStatService
 
         return $response;
     }
-
-    /**
-     * Get community and data source by expedition id.
-     */
-    public function getCommunityAndDataSourceByExpeditionId(int $expeditionId): \App\Models\GeoLocateDataSource
-    {
-        return $this->geoLocateDataSource->where('expedition_id', $expeditionId)->with(['geoLocateCommunity'])->first();
-    }
-
-    /**
-     * Build datasource download file.
-     */
-    public function buildDataSourceDownload(string $cname, string $dname): string
-    {
-        return $this->geoLocateApi->buildDownloadUri($cname, $dname);
-    }
-
-    /**
-     * Get DataSource download file.
-     *
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function getDataSourceDownload(string $uri, int $expeditionId): void
-    {
-        $this->geoLocateApi->setHttpProvider();
-        $this->geoLocateApi->getDataSourceDownload($uri, $expeditionId);
-    }
 }
