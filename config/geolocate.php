@@ -14,5 +14,6 @@ return [
         'parent' => env('GEOLOCATE_DIR', 'geolocate'),
         'export' => env('GEOLOCATE_DIR', 'geolocate').'/export',
         'kml' => env('GEOLOCATE_DIR', 'geolocate').'/kml',
+        'csv' => env('GEOLOCATE_DIR', 'geolocate').'/csv',
     ],
 ];
