@@ -77,6 +77,7 @@ class UpdateQueries extends Command
             $this->addUuidToTable($tableName);
             $this->createNewUuid($className);
             $this->setUuidNotNull($tableName);
+            echo $tableName.' uuid added'.PHP_EOL;
         });
     }
 
@@ -97,6 +98,7 @@ class UpdateQueries extends Command
             $this->updateNewUuid($className);
             $this->dropOldUuidAndRename($tableName);
             $this->setUuidNotNull($tableName);
+            echo $tableName.' uuid updated'.PHP_EOL;
         });
     }
 
