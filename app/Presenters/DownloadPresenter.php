@@ -52,9 +52,10 @@ class DownloadPresenter extends Presenter
     {
         $filename = "{$this->model->type}-{$this->model->file}";
 
-        return $this->model->actor_id == config('zooniverse.actor_id') ?
-            Storage::disk('s3')->temporaryUrl(config('config.export_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename=zooniverse-'.$filename]) :
-            Storage::disk('s3')->temporaryUrl(config('geolocate.dir.export').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename=geolocate-'.$filename]);
+        return $this->model->actor_id == config('zooniverse.actor_id') ? Storage::disk('s3')->temporaryUrl(config('config.export_dir').'/'.$this->model->file,
+            now()->addMinutes(30),
+            ['ResponseContentDisposition' => 'attachment;filename=zooniverse-'.$filename]) : Storage::disk('s3')->temporaryUrl(config('geolocate.dir.export').'/'.$this->model->file,
+                now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename=geolocate-'.$filename]);
     }
 
     /**
@@ -62,7 +63,8 @@ class DownloadPresenter extends Presenter
      */
     public function reportDownload(): string
     {
-        return Storage::disk('s3')->temporaryUrl(config('config.report_dir').'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
+        return Storage::disk('s3')->temporaryUrl(config('config.report_dir').'/'.$this->model->file,
+            now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment']);
     }
 
     /**
@@ -72,6 +74,10 @@ class DownloadPresenter extends Presenter
     {
         $filename = "{$this->model->type}-{$this->model->file}";
 
-        return Storage::disk('s3')->temporaryUrl(config('zooniverse.directory.'.$this->model->type).'/'.$this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename='.$filename]);
+        return $this->model->actor_id == config('zooniverse.actor_id') ?
+            Storage::disk('s3')->temporaryUrl(config('zooniverse.directory.'.$this->model->type).'/'.
+                $this->model->file, now()->addMinute(30), ['ResponseContentDisposition' => 'attachment;filename='.$filename]) :
+            Storage::disk('s3')->temporaryUrl(config('geolocate.dir.parent').'/'.$this->model->type.'/'.
+                $this->model->file, now()->addMinutes(30), ['ResponseContentDisposition' => 'attachment;filename='.$filename]);
     }
 }
