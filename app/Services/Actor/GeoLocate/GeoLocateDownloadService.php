@@ -31,6 +31,10 @@ class GeoLocateDownloadService
 {
     private string $formatType = '';
 
+    private string $kmlOptions = '';
+
+    private string $csvOptions = '';
+
     public function __construct(protected GeoLocateApi $geoLocateApi, protected Download $download) {}
 
     /**
@@ -42,6 +46,22 @@ class GeoLocateDownloadService
     }
 
     /**
+     * Set uri options for kml
+     */
+    public function setKmlOptions(string $options): void
+    {
+        $this->kmlOptions = $options;
+    }
+
+    /**
+     * Set uri options csv
+     */
+    public function setCsvOptions(string $options): void
+    {
+        $this->csvOptions = $options;
+    }
+
+    /**
      * Download file.
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -50,6 +70,7 @@ class GeoLocateDownloadService
     {
         $this->geoLocateApi->setHttpProvider();
         $uri = $this->geoLocateApi->buildDownloadUri($community, $dataSource, $this->formatType);
+        $uri .= $this->setFormatOptions();
         $this->geoLocateApi->getDataSourceDownload($uri, $expeditionId, $this->formatType);
     }
 
@@ -58,11 +79,22 @@ class GeoLocateDownloadService
      */
     public function saveDownload(ActorExpedition $actorExpedition): void
     {
-        $this->download->create([
-            'expedition_id' => $actorExpedition->expedition_id,
-            'actor_id' => $actorExpedition->actor_id,
-            'file' => $actorExpedition->expedition_id.'.'.$this->formatType,
-            'type' => $this->formatType,
+        $this->download->updateOrCreate([
+            'expedition_id' => $actorExpedition->expedition_id, 'actor_id' => $actorExpedition->actor_id,
+            'file' => $actorExpedition->expedition_id.'.'.$this->formatType, 'type' => $this->formatType,
+        ], [
+            'expedition_id' => $actorExpedition->expedition_id, 'actor_id' => $actorExpedition->actor_id,
+            'file' => $actorExpedition->expedition_id.'.'.$this->formatType, 'type' => $this->formatType,
         ]);
+    }
+
+    /**
+     * Sets the format options based on the specified format type.
+     *
+     * @return string The corresponding format options for 'kml' or 'csv'.
+     */
+    private function setFormatOptions(): string
+    {
+        return $this->formatType === 'kml' ? $this->kmlOptions : $this->csvOptions;
     }
 }

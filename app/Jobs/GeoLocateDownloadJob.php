@@ -69,8 +69,9 @@ class GeoLocateDownloadJob implements ShouldQueue
     private function getDownload(GeoLocateDownloadService $service, string $formatType): void
     {
         try {
-            $format = $formatType === 'kml' ? 'kml' : 'csv&rec=spm|skp|cor|lst';
-            $service->setFormatType($format);
+            $options = $formatType === 'kml' ? '' : '&rec=spm|skp|cor|lst';
+            $service->setFormatType($formatType);
+            $service->setCsvOptions($options);
             $service->downloadFile($this->actorExpedition->expedition_id, $this->community, $this->dataSource);
             $service->saveDownload($this->actorExpedition);
         } catch (Throwable $throwable) {
