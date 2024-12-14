@@ -72,6 +72,9 @@ class GeoLocateStatsJob implements ShouldQueue
         // update geo_locate_data_sources data
         $geoLocateStatService->updateGeoLocateDataSourceStat($geoLocateDataSource->id, $dataSourceStats);
 
+        // Touch for updated_at
+        $geoLocateDataSource->touch();
+
         // Dispatch download job for kml and csv file.
         GeoLocateDownloadJob::dispatch($this->actorExpedition, $geoLocateCommunity->name, $geoLocateDataSource->data_source);
 
