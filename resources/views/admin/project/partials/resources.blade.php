@@ -43,7 +43,8 @@
                     <input type="file"
                            class="form-control custom-file-input {{ ($errors->has("resources.$i.download")) ? 'is-invalid' : '' }}"
                            name="resources[{{ $i }}][download]"
-                           id="resources[{{ $i }}][download]">
+                           id="resources[{{ $i }}][download]"
+                           accept=".txt,.doc,.csv,.pdf">
                     <span class="invalid-feedback">{{ $errors->first("resources.$i.download") }}</span>
                 </div>
 
