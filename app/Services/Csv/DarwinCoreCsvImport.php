@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -439,7 +440,7 @@ class DarwinCoreCsvImport
     public function validateDoc($subject)
     {
         $rules = ['project_id' => Rule::unique('mongodb.subjects')->where(function ($query) use ($subject) {
-            return $query->where('project_id', $subject['project_id'])->where('id', $subject['id']);
+            return $query->where('project_id', $subject['project_id'])->where('imageId', $subject['imageId']);
         })];
 
         $validator = $this->factory->make($subject, $rules);
