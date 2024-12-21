@@ -105,7 +105,7 @@ class DwcFileImportJob implements ShouldQueue
 
             Notification::send($users, new Generic($attributes));
 
-            TesseractOcrCreateJob::dispatch($project->id);
+            TesseractOcrCreateJob::dispatch($project);
             File::cleanDirectory($scratchFileDir);
             File::deleteDirectory($scratchFileDir);
             File::delete($importFilePath);
