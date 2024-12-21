@@ -25,7 +25,6 @@ use App\Models\Bingo;
 use App\Models\BingoUser;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Bingo\BingoService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -57,7 +56,7 @@ class BingoJob implements ShouldQueue
     /**
      * Job handle.
      */
-    public function handle(BingoService $bingoService): void
+    public function handle(): void
     {
         $data['marker'] = [
             'uuid' => $this->bingoUser->uuid,
