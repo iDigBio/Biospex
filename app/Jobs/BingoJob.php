@@ -25,6 +25,7 @@ use App\Models\Bingo;
 use App\Models\BingoUser;
 use App\Models\User;
 use App\Notifications\Generic;
+use App\Services\Bingo\BingoService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -39,14 +40,10 @@ class BingoJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected Bingo $bingo;
-
-    protected BingoUser $bingoUser;
-
     /**
      * BingoJob constructor.
      */
-    public function __construct(Bingo $bingo, BingoUser $bingoUser, protected bool $winner = false)
+    public function __construct(protected Bingo $bingo, protected BingoUser $bingoUser, protected bool $winner = false)
     {
         $this->bingo = $bingo->withoutRelations();
         $this->bingoUser = $bingoUser->withoutRelations();
@@ -56,7 +53,7 @@ class BingoJob implements ShouldQueue
     /**
      * Job handle.
      */
-    public function handle(): void
+    public function handle(BingoService $bingoService): void
     {
         $data['marker'] = [
             'uuid' => $this->bingoUser->uuid,
@@ -85,6 +82,7 @@ class BingoJob implements ShouldQueue
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),
+                t('Trace: %s', $throwable->getTraceAsString()),
             ],
         ];
 
