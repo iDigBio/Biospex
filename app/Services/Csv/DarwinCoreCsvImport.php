@@ -338,7 +338,7 @@ class DarwinCoreCsvImport
      */
     public function checkIdentifierUuid($value)
     {
-        $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i';
+        $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}?$/i';
 
         return preg_match($pattern, $value, $matches) ? $matches[0] : $value;
     }
