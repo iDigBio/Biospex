@@ -29,5 +29,3 @@ Route::get('bingos/{bingo}/join', [BingoJoinController::class, 'index'])->name('
 Route::post('bingos/{bingo}/create', [BingoJoinController::class, 'create'])->name('front.bingos.create');
 
 Route::get('bingos/{bingo}/winner/{bingoUser}', BingoWinnerController::class)->name('front.get.bingo-winner');
-
-Route::post('/soketi-webhook', \App\Http\Controllers\Front\BingoWebHookController::class)->name('front.post.soketi-webhook');

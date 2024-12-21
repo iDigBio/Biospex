@@ -40,10 +40,13 @@ class BingoJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected Bingo $bingo;
+    protected BingoUser $bingoUser;
+
     /**
      * BingoJob constructor.
      */
-    public function __construct(protected Bingo $bingo, protected BingoUser $bingoUser, protected bool $winner = false)
+    public function __construct(Bingo $bingo, BingoUser $bingoUser, protected bool $winner = false)
     {
         $this->bingo = $bingo->withoutRelations();
         $this->bingoUser = $bingoUser->withoutRelations();
