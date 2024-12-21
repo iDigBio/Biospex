@@ -171,11 +171,3 @@ function copyToClipboard(el) {
         window.prompt('Copy to clipboard: Ctrl+C or Command+C, Enter', text)
     }
 }
-
-function showHideJqGrid(selected) {
-    if (selected === '7') {
-        $('#jqGridDiv').hide()
-    } else {
-        $('#jqGridDiv').show()
-    }
-}
