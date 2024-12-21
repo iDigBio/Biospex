@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -57,7 +58,7 @@ class TesseractOcrBuild
     {
         return $this->ocrQueue->firstOrCreate([
             'project_id' => $project->id,
-            'expedition_id' => $expedition->id,
+            'expedition_id' => $expedition?->id,
         ], $data);
     }
 

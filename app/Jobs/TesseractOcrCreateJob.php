@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -82,7 +83,7 @@ class TesseractOcrCreateJob implements ShouldQueue
             'subject' => t('Error creating OCR job.'),
             'html' => [
                 t('Project Id: %s', $this->project->id),
-                t('Expedition Id: %s', $this->expedition->id),
+                t('Expedition Id: %s', $this->expedition?->id),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),
