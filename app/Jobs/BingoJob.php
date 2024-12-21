@@ -41,6 +41,7 @@ class BingoJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected Bingo $bingo;
+
     protected BingoUser $bingoUser;
 
     /**
