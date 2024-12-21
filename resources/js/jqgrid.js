@@ -172,7 +172,7 @@ $(function () {
                 total: "total",
                 records: "records",
                 cell: "",
-                id: "_id"
+                id: "id"
             },
             url: dataUrl,
             mtype: "GET",
@@ -186,7 +186,7 @@ $(function () {
             page: isColState ? myColumnsState.page : 1,
             search: isColState ? myColumnsState.search : false,
             postData: isColState ? {filters: myColumnsState.filters} : {},
-            sortname: isColState ? myColumnsState.sortname : '_id',
+            sortname: isColState ? myColumnsState.sortname : 'id',
             sortorder: isColState ? myColumnsState.sortorder : 'desc',
             autoResizing: {compact: true},
             autoWidthColumns: true,
