@@ -139,8 +139,8 @@ function renumber_resource() {
     $('.controls').children('.entry').each(function (index) {
         $(this).find('legend').html('Resource ' + (index + 1))
         $(this).find(':input').each(function () {
-            $(this).attr('id', $(this).attr('id').replace(/\[[0-9]+/g, '[' + index + ']'))
-            $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+/g, '[' + index + ']'))
+            $(this).attr('id', $(this).attr('id').replace(/\[[0-9]+\]/g, '[' + index + ']'))
+            $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'))
         })
     })
 }
