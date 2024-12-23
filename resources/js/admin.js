@@ -1,5 +1,7 @@
 $(function () {
 
+    let clipboard = new ClipboardJS('.clipboard');
+
     let userGroup = $('#user-group')
     let groupInput = $('#group-input')
     userGroup.change(function () {
@@ -33,10 +35,6 @@ $(function () {
             ]
         })
     }
-
-    $('[data-name="js-copy"]').on('click', function () {
-        copyToClipboard($(this))
-    })
 
     $.datetimepicker.setLocale('en')
     $('.date-time-picker').datetimepicker({
@@ -141,33 +139,8 @@ function renumber_resource() {
     $('.controls').children('.entry').each(function (index) {
         $(this).find('legend').html('Resource ' + (index + 1))
         $(this).find(':input').each(function () {
-            $(this).attr('id', $(this).attr('id').replace(/\[[0-9]+\]/g, '[' + index + ']'))
-            $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'))
+            $(this).attr('id', $(this).attr('id').replace(/\[[0-9]+/g, '[' + index + ']'))
+            $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+/g, '[' + index + ']'))
         })
     })
-}
-
-function copyToClipboard(el) {
-    let copyTest = document.queryCommandSupported('copy')
-    let copyText = el.attr('data-value')
-    let titleText = el.attr('data-original-title')
-
-    if (copyTest === true) {
-        let copyTextArea = document.createElement('textarea')
-        copyTextArea.value = copyText
-        document.body.appendChild(copyTextArea)
-        copyTextArea.select()
-        try {
-            let successful = document.execCommand('copy')
-            let msg = successful ? 'Copied!' : 'Whoops, not copied!'
-            el.attr('data-original-title', msg).tooltip('show')
-        } catch (err) {
-            alert('Oops, unable to copy')
-        }
-        document.body.removeChild(copyTextArea)
-        el.attr('data-original-title', titleText)
-    } else {
-        // Fallback if browser doesn't support .execCommand('copy')
-        window.prompt('Copy to clipboard: Ctrl+C or Command+C, Enter', text)
-    }
 }

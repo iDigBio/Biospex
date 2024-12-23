@@ -33,11 +33,10 @@ class EventTeamPresenter extends Presenter
     public function teamJoinUrlIcon()
     {
         return '<a href="'.route('front.events_team_user.create', [$this->model]).'" 
-            class="btn btn-primary p-2 m-1 prevent-default"
+            class="btn btn-primary p-2 m-1 prevent-default clipboard"
             title="'.t('Copy To Clipboard').'" 
             data-hover="tooltip"
-            data-name="js-copy"
-            data-value="'.route('front.events_team_user.create', [$this->model]).'">
+            data-clipboard-text="'.route('front.events_team_user.create', [$this->model]).'">
             <i class="fas fa-clipboard align-middle"></i>
             <span class="align-middle">'.$this->model->title.'</span></a>';
     }
