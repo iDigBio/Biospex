@@ -153,8 +153,9 @@ class GeoPlugin
      */
     public function locate($ip = null): bool
     {
-        if ($this->app->environment() !== 'production' || \App::environment() !== 'development') {
+        if ($this->app->environment() !== 'production') {
             $data = $this->cityModel->inRandomOrder()->first();
+            $this->ip = '0.0.0.0';
             $this->city = $data->city;
             $this->latitude = $data->latitude;
             $this->longitude = $data->longitude;
@@ -190,10 +191,8 @@ class GeoPlugin
 
     /**
      * Fetch geo data.
-     *
-     * @return mixed
      */
-    private function fetch($host)
+    private function fetch($host): mixed
     {
         try {
             $this->request->setHttpProvider();
