@@ -75,7 +75,8 @@ class GeolocateFormController extends Controller
             }
 
             $form = $this->geoLocateFormService->getFormData($expedition, Request::all());
-            $disabled = $form['exported'] && $this->generalService->downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
+
+            $disabled = $this->geoLocateFormService->checkDisabled($expedition, $form);
 
             return View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'));
         } catch (Throwable $throwable) {

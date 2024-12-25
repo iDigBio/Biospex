@@ -24,7 +24,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Expedition;
 use App\Services\Actor\GeoLocate\GeoLocateFormService;
 use App\Services\Permission\CheckPermission;
-use Illuminate\Http\Request;
+use Request;
 use Response;
 use Throwable;
 use View;

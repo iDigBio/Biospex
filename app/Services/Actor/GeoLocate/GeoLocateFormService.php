@@ -72,11 +72,22 @@ class GeoLocateFormService
      */
     public function getFormFields(Expedition $expedition, array $form): string
     {
-        $disabled = is_null($expedition->geoLocateExport) ? $form['exported'] :
-            $form['exported'] &&
-                $this->generalService->downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
+        $disabled = $this->checkDisabled($expedition, $form);
 
         return view('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'))->render();
+    }
+
+    /**
+     * Check if button disabled.
+     */
+    public function checkDisabled(Expedition $expedition, array $form): bool
+    {
+        if ($expedition->geo_locate_form_id === null) {
+            return true;
+        }
+
+        return is_null($expedition->geoLocateExport) ? $form['exported'] : $form['exported'] &&
+            $this->generalService->downloadFileExists($expedition->geoLocateExport->file, $expedition->geoLocateExport->type, $expedition->geoLocateExport->actor_id);
     }
 
     /**
@@ -95,7 +106,7 @@ class GeoLocateFormService
             'user_reconciled' => $this->userReconciledFileExists,
             'expert_reconciled' => $this->expertReconciledFileExists,
             'expert_review' => $this->expertReviewExists,
-            'exported' => ! empty($expedition->geoActorExpedition->state),
+            'exported' => $expedition->geoActorExpedition->state >= 1,
             'geo' => $this->getGeoLocateFields(),
             'csv' => $this->getCsvHeader($expedition),
             'mismatch_source' => $this->mismatchSource,
@@ -127,7 +138,7 @@ class GeoLocateFormService
             'user_reconciled' => $this->userReconciledFileExists,
             'expert_reconciled' => $this->expertReconciledFileExists,
             'expert_review' => $this->expertReviewExists,
-            'exported' => ! empty($expedition->geoActorExpedition->state),
+            'exported' => $expedition->geoActorExpedition->state >= 1,
             'geo' => $this->getGeoLocateFields(),
             'csv' => $this->getCsvHeader($expedition),
             'mismatch_source' => $this->mismatchSource,

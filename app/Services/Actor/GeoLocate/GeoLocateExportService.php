@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -47,7 +48,7 @@ class GeoLocateExportService
     /**
      * Process GeoLocate export.
      *
-     * @throws \Exception
+     * @throws \Throwable
      */
     public function process(Expedition $expedition): void
     {
@@ -75,7 +76,7 @@ class GeoLocateExportService
                 Storage::disk('efs')->delete($csvFilePath);
             }
 
-            throw new Exception(t('Could not export GeoLocate data for Expedition %s', $expedition->title));
+            throw $throwable;
         }
     }
 
