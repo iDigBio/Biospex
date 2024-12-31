@@ -56,7 +56,7 @@ class TesseractOcrCreateJob implements ShouldQueue
      */
     public function handle(TesseractOcrBuild $tesseractOcrBuild): void
     {
-        if (config('config.ocr_disable')) {
+        if (config('config.ocr_enabled')) {
             return;
         }
 

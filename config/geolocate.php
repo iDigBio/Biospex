@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'enabled' => env('GEOLOCATE_ENABLED', true),
     'actor_id' => env('GEOLOCATE_ACTOR_ID'),
     'workflow_id' => env('GEOLOCATE_WORKFLOW_ID'),
     'fields_file' => resource_path('json/geolocate-fields.json'),

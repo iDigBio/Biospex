@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -36,7 +37,7 @@ class GeoLocate
      */
     public function process(ActorExpedition $actorExpedition): void
     {
-        if ($actorExpedition->state === 2) {
+        if ($actorExpedition->state === 2 && config('geolocate.enabled')) {
             GeoLocateStatsJob::dispatch($actorExpedition);
         }
     }

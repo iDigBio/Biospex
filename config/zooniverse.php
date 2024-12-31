@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'enabled' => env('ZOONIVERSE_ENABLED', true),
     'actor_id' => env('ZOONIVERSE_ACTOR_ID'),
     'project_url' => env('ZOONIVERSE_PROJECT_URL'),
     'reconcile_problem_regex' => env('ZOONIVERSE_RECONCILE_PROBLEM_REGEX'),

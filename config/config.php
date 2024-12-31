@@ -53,7 +53,8 @@ return [
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
     'project_chart_config' => resource_path('json/projectChartConfig.json'),
 
-    'ocr_disable' => env('OCR_DISABLE', false),
+    // Whether OCR is enabled for overnight scripts.
+    'ocr_enabled' => env('OCR_ENABLED', true),
 
     'poll_ocr_channel' => env('POLL_OCR_CHANNEL'),
     'poll_export_channel' => env('POLL_EXPORT_CHANNEL'),

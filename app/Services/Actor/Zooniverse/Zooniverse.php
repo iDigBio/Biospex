@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -50,7 +51,7 @@ class Zooniverse
         if ($actorExpedition->state === 1) {
             // @see \App\Console\Commands\ExportQueueCommand
             ZooniverseExportBuildQueueJob::dispatch($actorExpedition);
-        } elseif ($actorExpedition->state === 2) {
+        } elseif ($actorExpedition->state === 2 && config('zooniverse.enabled')) {
             ZooniverseCsvJob::dispatch($actorExpedition->expedition_id);
         }
     }
