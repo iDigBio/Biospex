@@ -24,7 +24,9 @@ use App\Services\Api\AwsS3ApiService;
 use App\Services\Api\PanoptesApiService;
 use App\Services\Expedition\ExpeditionService;
 use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Database\Eloquent\Model;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /**
@@ -44,7 +46,7 @@ class ZooniverseCsvService
     /**
      * Get expedition for processing.
      */
-    public function getExpedition(int $expeditionId): mixed
+    public function getExpedition(int $expeditionId): Model
     {
         return $this->expeditionService->getExpeditionForZooniverseProcess($expeditionId);
     }
@@ -56,12 +58,12 @@ class ZooniverseCsvService
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
-    public function createCsvRequest(int $expeditionId)
+    public function createCsvRequest(int $expeditionId): void
     {
         $expedition = $this->getExpedition($expeditionId);
 
         if ($this->panoptesApiService->checkForRequiredVariables($expedition)) {
-            throw new \Exception(t('Missing required expedition variables for Zooniverse classification create. Expedition %s', $expeditionId));
+            throw new Exception(t('Missing required expedition variables for Zooniverse classification create. Expedition %s', $expeditionId));
         }
 
         $this->sendWorkflowRequest($expedition->panoptesProject->panoptes_workflow_id, 'POST', ['body' => '{"media":{"content_type":"text/csv"}}']);
@@ -78,12 +80,12 @@ class ZooniverseCsvService
         $expedition = $this->getExpedition($expeditionId);
 
         if ($this->panoptesApiService->checkForRequiredVariables($expedition)) {
-            throw new \Exception(t('Missing required expedition variables for Zooniverse classification check for Expedition ID %s.', $expeditionId));
+            throw new Exception(t('Missing required expedition variables for Zooniverse classification check for Expedition ID %s.', $expeditionId));
         }
 
         try {
             return $this->sendWorkflowRequest($expedition->panoptesProject->panoptes_workflow_id, 'GET');
-        } catch (GuzzleException|IdentityProviderException $e) {
+        } catch (GuzzleException|IdentityProviderException) {
             return false;
         }
     }
