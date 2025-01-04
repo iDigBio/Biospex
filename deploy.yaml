@@ -32,16 +32,17 @@ tasks:
   deploy:
     - deploy:prepare
     - deploy:vendors
-    - artisan:storage:link
-    - artisan:view:cache
-    - artisan:config:cache
+    #- artisan:storage:link
+    #- artisan:view:cache
+    #- artisan:config:cache
+    #- artisan:optimize
     - yarn:install:prod
     #- artisan:migrate
     #- artisan:update:queries
     - artisan:deploy:files
-    - deploy:publish
     - set:permissions
-    - supervisor:reload
+    - deploy:publish
+    #- supervisor:reload
 
   yarn:install:prod:
     - run: 'cd {{release_path}} && yarn install --prod --ignore-engines'
