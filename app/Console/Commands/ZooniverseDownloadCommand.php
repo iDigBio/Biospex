@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -25,8 +26,6 @@ use Illuminate\Console\Command;
 
 /**
  * Class ZooniverseDownloadCommand
- *
- * @package App\Console\Commands
  */
 class ZooniverseDownloadCommand extends Command
 {
@@ -56,8 +55,6 @@ class ZooniverseDownloadCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @param \App\Services\Csv\ZooniverseCsvService $service
      */
     public function handle(ZooniverseCsvService $service)
     {
@@ -67,19 +64,18 @@ class ZooniverseDownloadCommand extends Command
             $result = $service->checkCsvRequest($expeditionId);
 
             if ($result['media'][0]['metadata']['state'] === 'creating') {
-                echo t('CSV returned state of creating.') . PHP_EOL;
+                echo t('CSV returned state of creating.').PHP_EOL;
+
                 return;
             }
 
-            if ($result['media'][0]['metadata']['state'] === 'ready' && !isset($result['media'][0]['src'])) {
+            if ($result['media'][0]['metadata']['state'] === 'ready' && ! isset($result['media'][0]['src'])) {
                 throw new \Exception(t('Uri is not available at this time.'));
             }
 
             ZooniverseCsvDownloadJob::dispatch($expeditionId, $result['media'][0]['src']);
-        }
-        catch (\Throwable $throwable)
-        {
-            echo $throwable->getMessage() . PHP_EOL;
+        } catch (\Throwable $throwable) {
+            echo $throwable->getMessage().PHP_EOL;
         }
     }
 }

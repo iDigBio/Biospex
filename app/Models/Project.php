@@ -20,23 +20,22 @@
 namespace App\Models;
 
 use App\Facades\DateHelper;
+use App\Models\Traits\Presentable;
+use App\Models\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
-use MongoDB\Laravel\Eloquent\HybridRelations;
-use Illuminate\Support\Facades\Config;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
-use Cviebrock\EloquentSluggable\Sluggable;
-use App\Models\Traits\UuidTrait;
-use App\Models\Traits\Presentable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Config;
+use MongoDB\Laravel\Eloquent\HybridRelations;
+use Str;
 
 /**
  * Class Project
- *
- * @package App\Models
  */
 class Project extends BaseEloquentModel implements AttachableInterface
 {
-    use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, Presentable;
+    use HasFactory, HybridRelations, PaperclipTrait, Presentable, UuidTrait;
 
     /**
      * @var string
@@ -44,12 +43,12 @@ class Project extends BaseEloquentModel implements AttachableInterface
     protected $connection = 'mysql';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'projects';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'uuid',
@@ -80,8 +79,25 @@ class Project extends BaseEloquentModel implements AttachableInterface
         'target_fields',
         'status',
         'advertise',
-        'geolocate_community'
+        'geolocate_community',
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * @var string
@@ -90,13 +106,11 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Project constructor.
-     *
-     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
         $this->hasAttachedFile('logo', [
-            'url'  => config('config.missing_project_logo')
+            'url' => config('config.missing_project_logo'),
         ]);
 
         parent::__construct($attributes);
@@ -111,27 +125,10 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
         static::bootUuidTrait();
 
-        static::creating(function ($model) {
+        static::saving(function ($model) {
+            $model->slug = Str::slug($model->title);
             $model->advertise = $model->attributes;
         });
-
-        static::updating(function ($model) {
-            $model->advertise = $model->attributes;
-        });
-    }
-
-    /**
-     * Return the sluggable configuration array for this model test.
-     *
-     * @return array
-     */
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'title'
-            ]
-        ];
     }
 
     /**
@@ -176,18 +173,14 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Expedition Stat relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function expeditionStats()
+    public function expeditionStats(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(ExpeditionStat::class, Expedition::class);
     }
 
     /**
      * GeoLocateCommunity relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function geoLocateCommunity(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -266,8 +259,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Panoptes transcription relation.
-     *
-     * @return \MongoDB\Laravel\Relations\HasMany
      */
     public function panoptesTranscriptions(): \MongoDB\Laravel\Relations\HasMany
     {
@@ -284,11 +275,8 @@ class Project extends BaseEloquentModel implements AttachableInterface
         return $this->hasMany(ProjectResource::class);
     }
 
-
     /**
      * Subject relation.
-     *
-     * @return \MongoDB\Laravel\Relations\HasMany
      */
     public function subjects(): \MongoDB\Laravel\Relations\HasMany
     {
@@ -327,11 +315,13 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Mutator for target_fields.
-     *
-     * @param $input
      */
     public function setTargetFieldsAttribute($input)
     {
+        if (empty($input)) {
+            return;
+        }
+
         $target_fields = [];
 
         if (isset($input['targetCount']) && $input['targetCount'] > 0) {
@@ -341,11 +331,11 @@ class Project extends BaseEloquentModel implements AttachableInterface
                 }
 
                 $fields = [
-                    'target_core'              => $input['target_core'][$i],
-                    'target_name'              => $input['target_name'][$i],
-                    'target_description'       => $input['target_description'][$i],
-                    'target_valid_response'    => $input['target_valid_response'][$i],
-                    'target_inference'         => $input['target_inference'][$i],
+                    'target_core' => $input['target_core'][$i],
+                    'target_name' => $input['target_name'][$i],
+                    'target_description' => $input['target_description'][$i],
+                    'target_valid_response' => $input['target_valid_response'][$i],
+                    'target_inference' => $input['target_inference'][$i],
                     'target_inference_example' => $input['target_inference_example'][$i],
                 ];
                 $target_fields[$i] = $fields;
@@ -363,7 +353,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
     /**
      * Accessor for target_fields.
      *
-     * @param $value
      * @return mixed
      */
     public function getTargetFieldsAttribute($value)
@@ -373,11 +362,13 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Set attribute for advertise.
-     *
-     * @param $input
      */
     public function setAdvertiseAttribute($input)
     {
+        if (empty($input)) {
+            return;
+        }
+
         $extra = isset($input['advertiseExtra']) ? $input['advertiseExtra'] : '';
 
         $build = [];
@@ -395,31 +386,36 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
                 if ($type === 'column') {
                     $build[$field] = $input[$value];
+
                     continue;
                 }
 
                 if ($type === 'value') {
                     $build[$field] = $value;
+
                     continue;
                 }
 
                 if ($type === 'array') {
                     $combined = '';
                     foreach ($value as $col) {
-                        $combined .= $input[$col].", ";
+                        $combined .= $input[$col].', ';
                     }
                     $build[$field] = rtrim($combined, ', ');
+
                     continue;
                 }
 
                 if ($type === 'url') {
                     if ($value === 'slug') {
-                        $build[$field] = env('APP_URL').'/'.$this->{$value};
+                        $build[$field] = config('app.url').'/'.$this->{$value};
+
                         continue;
                     }
 
                     if ($value === 'logo') {
-                        $build[$field] = env('APP_URL').$this->{$value}->url();
+                        $build[$field] = config('app.url').$this->{$value}->url();
+
                         continue;
                     }
                 }
@@ -434,7 +430,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
     /**
      * Advertise attribute.
      *
-     * @param $value
      * @return mixed
      */
     public function getAdvertiseAttribute($value)

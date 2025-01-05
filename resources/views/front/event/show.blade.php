@@ -22,7 +22,7 @@
     <div class="d-flex align-items-center justify-content-center ">
         @include('front.event.partials.event-loop')
     </div>
-    @if(DateHelper::eventBefore($event) || DateHelper::eventActive($event))
+    @if(event_before($event) || event_active($event))
         <div class="row">
             <p class="text-center col-6 mx-auto mt-4">{!! $event->project->lastPanoptesProject->present()->project_link !!}</p>
         </div>
@@ -37,7 +37,7 @@
 @endsection
 
 @push('scripts')
-    @if( ! DateHelper::eventBefore($event))
+    @if( ! event_before($event))
         <script src="{{ asset('js/amChartEventRate.min.js')}}"></script>
     @endif
 @endpush

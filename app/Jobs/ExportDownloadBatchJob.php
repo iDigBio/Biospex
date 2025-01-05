@@ -19,8 +19,8 @@
 
 namespace App\Jobs;
 
+use App\Models\Download;
 use App\Notifications\Generic;
-use App\Repositories\DownloadRepository;
 use App\Services\Actor\Zooniverse\ZooniverseExportBatch;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -30,8 +30,6 @@ use Throwable;
 
 /**
  * Class ExportDownloadBatchJob
- *
- * @package App\Jobs
  */
 class ExportDownloadBatchJob implements ShouldQueue
 {
@@ -39,54 +37,46 @@ class ExportDownloadBatchJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 3600;
 
     /**
-     * @var int
-     */
-    private int $downloadId;
-
-    /**
      * ExportDownloadBatchJob constructor.
-     *
-     * @param int $downloadId
      */
-    public function __construct(int $downloadId)
+    public function __construct(protected Download $download)
     {
-        $this->downloadId = $downloadId;
+        $this->download = $this->download->withoutRelations();
         $this->onQueue(config('config.queue.export'));
     }
 
     /**
      * Handle download batch job.
      *
-     * @param \App\Repositories\DownloadRepository $downloadRepository
-     * @param \App\Services\Actor\Zooniverse\ZooniverseExportBatch $zooniverseExportBatch
+     * @throws \Exception
      */
-    public function handle(DownloadRepository $downloadRepository, ZooniverseExportBatch $zooniverseExportBatch): void
+    public function handle(ZooniverseExportBatch $zooniverseExportBatch): void
     {
-        $download = $downloadRepository->findWith($this->downloadId, ['expedition.project.group.owner', 'actor']);
+        $this->download->load(['expedition.project.group.owner', 'actor']);
 
-        try {
-            $zooniverseExportBatch->process($download);
-        }
-        catch (Throwable $throwable) {
-            $attributes = [
-                'subject' => t('Export Download Batch Error'),
-                'html'    => [
-                    t('The batch export for Expedition %s has failed.', $download->expedition->title),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ]
-            ];
+        $zooniverseExportBatch->process($this->download);
+    }
 
-            $download->expedition->project->group->owner->notify(new Generic($attributes, true));
-            $this->delete();
-        }
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $attributes = [
+            'subject' => t('Export Download Batch Error'),
+            'html' => [
+                t('The batch export for Expedition %s has failed.', $this->download->expedition->title),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
+        ];
+
+        $this->download->expedition->project->group->owner->notify(new Generic($attributes, true));
     }
 }

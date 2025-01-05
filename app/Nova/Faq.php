@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Nova;
 
 use Laravel\Nova\Fields\BelongsTo;
@@ -26,8 +27,6 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 /**
  * Class Faq
- *
- * @package App\Nova
  */
 class Faq extends Resource
 {
@@ -53,13 +52,12 @@ class Faq extends Resource
     public static $search = [
         'id',
         'question',
-        'answer'
+        'answer',
     ];
 
     /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
     public function fields(NovaRequest $request)
@@ -68,17 +66,16 @@ class Faq extends Resource
             ID::make()->sortable(),
             BelongsTo::make('FaqCategory'),
             Text::make('Question')->resolveUsing(function ($title) {
-                return strlen($title) > 75 ? substr($title, 0, 75) . '...' : $title;
+                return strlen($title) > 75 ? substr($title, 0, 75).'...' : $title;
             })->sortable()->onlyOnIndex(),
             Text::make('Question')->hideFromIndex(),
-            Textarea::make('Answer')->hideFromIndex()
+            Textarea::make('Answer')->hideFromIndex(),
         ];
     }
 
     /**
      * Get the cards available for the request.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
     public function cards(NovaRequest $request)
@@ -89,7 +86,6 @@ class Faq extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
     public function filters(NovaRequest $request)
@@ -100,7 +96,6 @@ class Faq extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
     public function lenses(NovaRequest $request)
@@ -111,7 +106,6 @@ class Faq extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
     public function actions(NovaRequest $request)

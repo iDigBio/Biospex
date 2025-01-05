@@ -146,16 +146,18 @@ $(function () {
                     selected.push(id);
                 }
             },
-            setMultipleSelect = function () {
+            setSelected = function () {
                 if (!checkbox) return;
-                //$grid.jqGrid("resetSelection");
+
+                // Necessary to reset the selection so it works on first loading of page.
+                $grid.jqGrid("resetSelection");
+
                 let ids = $grid.jqGrid('getDataIDs');
-                for (let i = 0; i < ids.length; i++) {
-                    if ($.inArray(ids[i], selected) !== -1){
-                        //$grid.jqGrid('setSelection', ids[i], false);
-                        $grid.setSelection(ids[i], false);
+                $.each(ids, function (index, rowId) {
+                    if ($.inArray(rowId, selected) > -1) {
+                        $grid.jqGrid('setSelection', rowId, false);
                     }
-                }
+                });
             },
             firstLoad = true;
 
@@ -170,7 +172,7 @@ $(function () {
                 total: "total",
                 records: "records",
                 cell: "",
-                id: "_id"
+                id: "id"
             },
             url: dataUrl,
             mtype: "GET",
@@ -184,7 +186,7 @@ $(function () {
             page: isColState ? myColumnsState.page : 1,
             search: isColState ? myColumnsState.search : false,
             postData: isColState ? {filters: myColumnsState.filters} : {},
-            sortname: isColState ? myColumnsState.sortname : '_id',
+            sortname: isColState ? myColumnsState.sortname : 'id',
             sortorder: isColState ? myColumnsState.sortorder : 'desc',
             autoResizing: {compact: true},
             autoWidthColumns: true,
@@ -218,7 +220,7 @@ $(function () {
                     }
                 }
                 saveColumnState.call($(this), this.p.remapColumns);
-                setMultipleSelect();
+                setSelected();
                 setSelectedCount();
             }
         })
@@ -261,6 +263,9 @@ $(function () {
                 return false;
             }
 
+            // clear any form settings on submit
+            eraseSettings();
+
             $('#subject-ids').val(selected);
         });
     }
@@ -277,8 +282,8 @@ function mapFormatter(column) {
         "imagePreview": function (cellValue) {
             let url = encodeURIComponent(cellValue);
             return '<a href="' + cellValue + '" target="_new">View Image</a>&nbsp;&nbsp;'
-                + '<a href="#" class="thumb-view" data-url="'+ Laravel.imagePreviewPath + url + '" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="Preview Thumbnail" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'
-                + '<a href="#" class="url-view" data-url="'+ Laravel.imagePreviewPath  + cellValue + '&url-view=true" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="View URL" title="Preview URL">View URL</a>'
+                + '<a href="#" class="thumb-view" data-url="' + Laravel.imagePreviewPath + url + '" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="Preview Thumbnail" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'
+                + '<a href="#" class="url-view" data-url="' + Laravel.imagePreviewPath + cellValue + '&url-view=true" data-toggle="modal" data-dismiss="modal" data-toggle="modal" data-size="modal-lg" data-target="#global-modal" data-hover="tooltip" data-title="View URL" title="Preview URL">View URL</a>'
         }
     };
 

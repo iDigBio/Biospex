@@ -19,24 +19,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class WorkflowManager
- *
- * @package App\Models
  */
 class WorkflowManager extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'workflow_managers';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'expedition_id',
-        'stopped'
+        'stopped',
     ];
 
     /**

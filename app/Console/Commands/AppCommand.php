@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -23,12 +24,9 @@ use Illuminate\Console\Command;
 
 /**
  * Class AppCommand
- *
- * @package App\Console\Commands
  */
 class AppCommand extends Command
 {
-
     /**
      * The console command name.
      */
@@ -50,8 +48,5 @@ class AppCommand extends Command
     /**
      * @return void
      */
-    public function handle()
-    {
-
-    }
+    public function handle() {}
 }

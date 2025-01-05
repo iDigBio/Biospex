@@ -18,6 +18,8 @@
  */
 
 use App\Http\Controllers\Front\ExpeditionController;
+use App\Http\Controllers\Front\ExpeditionSortController;
 
-Route::get('expeditions', [ExpeditionController::class, 'index'])->name('front.expeditions.index');
-Route::post('expeditions/sort', [ExpeditionController::class, 'sort'])->name('front.expeditions.sort');
+Route::get('expeditions', ExpeditionController::class)->name('front.expeditions.index');
+
+Route::post('expeditions/sort', ExpeditionSortController::class)->name('front.expeditions.sort');

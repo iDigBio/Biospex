@@ -4,12 +4,12 @@ am4core.ready(function () {
 
     $('#wedigbio-rate-modal').on('show.bs.modal', function (e) {
         let $div = $(this).find('#weDigBioRateChartDiv');
+        let projectsUrl = $(e.relatedTarget).data('projects');
         let url = $(e.relatedTarget).data('href');
-        let dateId = $(e.relatedTarget).data('date');
 
         let createChart = function () {
             am4core.disposeAllCharts();
-            $.get('/ajax/wedigbio-projects/' + dateId).fail(function () {
+            $.get(projectsUrl).fail(function () {
                 $div.html('<p class="d-flex justify-content-center">Failed to load projects</p>');
             }).done(function (projects) {
                 if (!projects) {
@@ -20,6 +20,9 @@ am4core.ready(function () {
             });
         }
         createChart();
+        // Refresh chart every 5 minutes. TODO: can this be handled by amCharts?
+        // https://www.amcharts.com/docs/v4/concepts/data/loading-external-data/
+        // chart.dataSource.reloadFrequency = 300000;
         setInterval(createChart, 300000);
     }).on('hidden.bs.modal', function () {
         am4core.disposeAllCharts();
@@ -28,9 +31,6 @@ am4core.ready(function () {
 
 }); // end am4core.ready()
 
-function getProjects(dateId) {
-    return $.get('/ajax/wedigbio-projects/' + dateId);
-}
 
 function buildChart(url, projects) {
     weDigBioRateChart = am4core.create("weDigBioRateChartDiv", am4charts.XYChart);

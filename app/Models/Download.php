@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -22,23 +23,22 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\DownloadPresenter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Download
- *
- * @package App\Models
  */
 class Download extends BaseEloquentModel
 {
-    use UuidTrait, Presentable;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'downloads';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'uuid',
@@ -46,8 +46,25 @@ class Download extends BaseEloquentModel
         'actor_id',
         'file',
         'type',
-        'updated_at'
+        'updated_at',
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * @var string
@@ -55,8 +72,18 @@ class Download extends BaseEloquentModel
     protected $presenter = DownloadPresenter::class;
 
     /**
+     * Model Boot
+     */
+    public static function boot(): void
+    {
+        parent::boot();
+        static::bootUuidTrait();
+
+    }
+
+    /**
      * Expedition relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition()
@@ -66,7 +93,7 @@ class Download extends BaseEloquentModel
 
     /**
      * Actor relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function actor()

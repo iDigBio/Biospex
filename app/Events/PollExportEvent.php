@@ -20,19 +20,16 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Class PollExportEvent
- *
- * @package App\Events
  */
 class PollExportEvent extends Event implements ShouldBroadcast
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
@@ -42,7 +39,6 @@ class PollExportEvent extends Event implements ShouldBroadcast
 
     /**
      * PollExportEvent constructor.
-     * @param $data
      */
     public function __construct($data)
     {
@@ -51,8 +47,6 @@ class PollExportEvent extends Event implements ShouldBroadcast
 
     /**
      * The name of the queue on which to place the broadcasting job.
-     *
-     * @return string
      */
     public function broadcastQueue(): string
     {
@@ -61,8 +55,6 @@ class PollExportEvent extends Event implements ShouldBroadcast
 
     /**
      * Get the channels the event should be broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel
      */
     public function broadcastOn(): Channel
     {

@@ -23,8 +23,6 @@ use League\Fractal\Serializer\ArraySerializer;
 
 /**
  * Class DataArraySerializer
- *
- * @package App\Serializers
  */
 class DataArraySerializer extends ArraySerializer
 {
@@ -33,6 +31,7 @@ class DataArraySerializer extends ArraySerializer
         if ($resourceKey === null) {
             return ['data' => $data];
         }
+
         return [$resourceKey => $data];
     }
 
@@ -41,6 +40,7 @@ class DataArraySerializer extends ArraySerializer
         if ($resourceKey === null) {
             return ['data' => $data];
         }
+
         return [$resourceKey => $data];
     }
 }

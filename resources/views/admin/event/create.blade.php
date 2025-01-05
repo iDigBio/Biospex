@@ -100,7 +100,7 @@
                                 <select name="timezone" id="timezone"
                                         class="form-control custom-select {{ ($errors->has('timezone')) ? 'is-invalid' : '' }}"
                                         required>
-                                    @foreach($timezones as $key => $value)
+                                    @foreach(time_zone_select() as $key => $value)
                                         <option {{ $key == old('timezone', 'America/New_York') ?
                                         ' selected=selected' : '' }} value="{{ $key }}">{{ $value }}</option>
                                     @endforeach
@@ -111,7 +111,7 @@
                         <div class="form-group">
                             <label for="teams" class="col-form-label">{{ t('Teams') }}:</label>
                             <div class="controls col-sm-12">
-                                @include('admin.event.partials.teams', ['teams' => null, 'teamsCount' => $teamsCount])
+                                @include('admin.event.partials.teams', ['teams' => null, 'teamsCount' => old('entries', 1)])
                             </div>
                         </div>
                         @include('common.cancel-submit-buttons')

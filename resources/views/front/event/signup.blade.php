@@ -42,9 +42,9 @@
                         @endforeach
                     @endif
                 </div>
-                <form action="{{ route('front.events.join', [$team->uuid]) }}" method="post" role="form" class="recaptcha">
+                <form action="{{ route('front.events_team_user.store', [$team]) }}" method="post" role="form"
+                      class="recaptcha">
                     @csrf
-                    <input type="hidden" name="team_id" value="{{ $team->id }}">
                     <div class="form-group {{ ($errors->has('nfn_user')) ? 'has-error' : '' }}">
                         <label for="name" class="col-form-label required">{{ t('Zooniverse Username') }}:</label>
                         @if($active)

@@ -23,12 +23,9 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Class InviteFormRequest
- *
- * @package App\Http\Requests
  */
 class InviteFormRequest extends Request
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -49,12 +46,10 @@ class InviteFormRequest extends Request
         return ['invites.*.email' => 'email'];
     }
 
-
     public function messages()
     {
         return [
-            'invites.*.email' => 'Please enter valid email addresses'
+            'invites.*.email' => 'Please enter valid email addresses',
         ];
     }
-
 }

@@ -20,49 +20,28 @@
 namespace App\Services\Transcriptions;
 
 use App\Models\PusherClassification;
-use App\Repositories\PusherClassificationRepository;
-use App\Repositories\PusherTranscriptionRepository;
 use Validator;
 
 /**
  * Class CreatePusherTranscriptionService
- *
- * @package App\Services\Transcriptions
  */
 class CreatePusherTranscriptionService
 {
-    /**
-     * @var \App\Repositories\PusherClassificationRepository
-     */
-    private PusherClassificationRepository $pusherClassificationRepo;
-
-    /**
-     * @var \App\Repositories\PusherTranscriptionRepository
-     */
-    private PusherTranscriptionRepository $pusherTranscriptionRepository;
-
-    /**
-     * @param \App\Repositories\PusherClassificationRepository $pusherClassificationRepo
-     * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepository
-     */
     public function __construct(
-        PusherClassificationRepository $pusherClassificationRepo,
-        PusherTranscriptionRepository $pusherTranscriptionRepository)
-    {
-
-        $this->pusherClassificationRepo = $pusherClassificationRepo;
-        $this->pusherTranscriptionRepository = $pusherTranscriptionRepository;
-    }
+        protected PusherClassification $pusherClassification,
+        protected PusherTranscriptionService $pusherTranscriptionService
+    ) {}
 
     /**
      * Method called to start processing pusher classifications held in the MySql database to MongoDb
      *
      * @see \App\Jobs\PusherTranscriptionJob
+     *
      * @return void
      */
     public function process()
     {
-        $this->pusherClassificationRepo->model->chunkById(50, function ($chunk) {
+        $this->pusherClassification->chunkById(50, function ($chunk) {
             $chunk->each(function ($record) {
                 $this->createDashboardRecord($record);
                 $record->delete();
@@ -73,8 +52,6 @@ class CreatePusherTranscriptionService
     /**
      * Create dashboard item.
      * Uses classifications stored in database to relieve traffic on MongoDB.
-     *
-     * @param \App\Models\PusherClassification $pusherClassification
      */
     public function createDashboardRecord(PusherClassification $pusherClassification)
     {
@@ -83,14 +60,11 @@ class CreatePusherTranscriptionService
             return;
         }
 
-        $this->pusherTranscriptionRepository->create($pusherClassification->data);
+        $this->pusherTranscriptionService->create($pusherClassification->data);
     }
 
     /**
      * Validate transcription to prevent duplicates.
-     *
-     * @param $classification_id
-     * @return mixed
      */
     public function validateTranscription($classification_id): mixed
     {

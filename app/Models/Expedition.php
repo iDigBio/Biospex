@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -24,6 +25,7 @@ use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
@@ -31,7 +33,7 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
  */
 class Expedition extends BaseEloquentModel implements AttachableInterface
 {
-    use HybridRelations, PaperclipTrait, Presentable, UuidTrait;
+    use HasFactory, HybridRelations, PaperclipTrait, Presentable, UuidTrait;
 
     protected $table = 'expeditions';
 
@@ -51,13 +53,29 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     protected string $presenter = ExpeditionPresenter::class;
 
     /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    /**
      * Model Boot
      */
     public static function boot(): void
     {
         parent::boot();
         static::bootUuidTrait();
-
     }
 
     /**
@@ -83,6 +101,46 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * Relation used for wedigbio dashboard.
+     */
+    public function dashboard(): \MongoDB\Laravel\Relations\HasMany
+    {
+        return $this->hasMany(PusherTranscription::class, 'expedition_id');
+    }
+
+    /**
+     * Download relation.
+     */
+    public function downloads(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Download::class);
+    }
+
+    /**
+     * ExportQueue relation.
+     */
+    public function exportQueue(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ExportQueue::class);
+    }
+
+    /**
+     * Download GeoLocate Export relation
+     */
+    public function geoLocateExport(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Download::class)->where('actor_id', config('geolocate.actor_id'))->where('type', 'export');
+    }
+
+    /**
+     * Ocr Queue relation.
+     */
+    public function ocrQueue(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(OcrQueue::class);
+    }
+
+    /**
      * Project relationship.
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -96,14 +154,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public function stat(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(ExpeditionStat::class);
-    }
-
-    /**
-     * Return expedition stat transcriptions have started.
-     */
-    public function statWithTranscriptions(): \Illuminate\Database\Eloquent\Relations\HasOne
-    {
-        return $this->hasOne(ExpeditionStat::class)->where('transcriptions_completed', '>', 0);
     }
 
     /**
@@ -131,35 +181,12 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
         return $this->hasOne(WorkflowManager::class);
     }
 
-    public function downloads(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Download::class);
-    }
-
     /**
      * Download Zooniverse Export relation
      */
     public function zooniverseExport(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Download::class)->where('actor_id', config('zooniverse.actor_id'))->where('type', 'export');
-    }
-
-    /**
-     * Download GeoLocate Export relation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function geoLocateExport()
-    {
-        return $this->hasOne(Download::class)->where('actor_id', config('geolocate.actor_id'))->where('type', 'export');
-    }
-
-    /**
-     * Ocr Queue relation.
-     */
-    public function ocrQueue(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(OcrQueue::class);
     }
 
     /**
@@ -174,77 +201,28 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Return zooniverse actor relation.
+     * ActorExpedition relation.
      */
-    public function zooniverseActor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function actorExpeditions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        $pivot = [
-            'id',
-            'expedition_id',
-            'actor_id',
-            'state',
-            'total',
-            'error',
-            'order',
-            'expert',
-        ];
-
-        return $this->belongsToMany(Actor::class, 'actor_expedition')
-            ->withPivot($pivot)
-            ->wherePivot('actor_id', config('zooniverse.actor_id'));
+        return $this->hasMany(ActorExpedition::class);
     }
 
     /**
-     * Return zooniverseActor attribute.
-     * $expedition->zooniverseActor
-     *
-     * @return int
+     * GeoActorExpedition relation.
      */
-    public function getZooniverseActorAttribute()
+    public function geoActorExpedition(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->getRelationValue('zooniverseActor')->first();
+        return $this->hasOne(ActorExpedition::class)->where('actor_id', config('geolocate.actor_id'));
     }
 
     /**
-     * GeoLocate actor relation.
+     * ZooActorExpedition relation.
      */
-    public function geoLocateActor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function zooActorExpedition(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        $pivot = [
-            'id',
-            'expedition_id',
-            'actor_id',
-            'state',
-            'total',
-            'error',
-            'order',
-            'expert',
-        ];
-
-        return $this->belongsToMany(Actor::class, 'actor_expedition')
-            ->withPivot($pivot)
-            ->wherePivot('actor_id', config('geolocate.actor_id'));
+        return $this->hasOne(ActorExpedition::class)->where('actor_id', config('zooniverse.actor_id'));
     }
-
-    /**
-     * Return geoLocateActor attribute.
-     * $expedition->geoLocateActor
-     *
-     * @return int
-     */
-    public function getGeoLocateActorAttribute()
-    {
-        return $this->getRelationValue('geoLocateActor')->first();
-    }
-
-    /*
-    TODO: This is a HasOneThrough relationship to access the actor but not pull back the pivot table. See if we can use it instead of attribute.
-    public function geoLocateActor(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
-    {
-        return $this->hasOneThrough(Actor::class, ActorExpedition::class, 'expedition_id', 'id', 'id', 'actor_id')
-            ->where('actor_id', 4);
-    }
-     */
 
     /**
      * PanoptesProject
@@ -252,38 +230,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public function panoptesProject(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(PanoptesProject::class);
-    }
-
-    /**
-     * PanoptesTranscription relation.
-     */
-    public function panoptesTranscriptions(): \MongoDB\Laravel\Relations\HasMany
-    {
-        return $this->hasMany(PanoptesTranscription::class, 'subject_expeditionId');
-    }
-
-    /**
-     * Relation used for wedigbio dashboard.
-     */
-    public function dashboard(): \MongoDB\Laravel\Relations\HasMany
-    {
-        return $this->hasMany(PusherTranscription::class, 'expedition_id');
-    }
-
-    /**
-     * ExportQueue relation.
-     */
-    public function exportQueue(): \Illuminate\Database\Eloquent\Relations\HasOne
-    {
-        return $this->hasOne(ExportQueue::class);
-    }
-
-    /**
-     * GeoLocateExport relation with mongodb
-     */
-    public function geoLocateExports(): \MongoDB\Laravel\Relations\HasMany
-    {
-        return $this->hasMany(GeoLocateExport::class, 'subject_expeditionId');
     }
 
     /**

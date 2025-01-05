@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -16,28 +17,60 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Models;
 
+use App\Models\Traits\UuidTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GeoLocateForm extends BaseEloquentModel
 {
+    use HasFactory, UuidTrait;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'geo_locate_forms';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'group_id',
         'name',
         'source',
         'hash',
-        'fields'
+        'fields',
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Boot functions.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::bootUuidTrait();
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * The attributes that should be cast.
@@ -54,17 +87,12 @@ class GeoLocateForm extends BaseEloquentModel
 
     /**
      * Group relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function expeditions(): HasMany
     {
         return $this->hasMany(Expedition::class);

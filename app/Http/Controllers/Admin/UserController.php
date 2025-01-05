@@ -22,141 +22,48 @@ namespace App\Http\Controllers\Admin;
 use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EditUserFormRequest;
-use App\Http\Requests\PasswordFormRequest;
-use App\Repositories\UserRepository;
-use Illuminate\Foundation\Auth\ResetsPasswords;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Services\Permission\CheckPermission;
+use Redirect;
+use View;
 
 /**
  * Class UserController
- *
- * @package App\Http\Controllers\Admin
  */
 class UserController extends Controller
 {
-    use ResetsPasswords;
-    
-    /**
-     * @var \App\Repositories\UserRepository
-     */
-    public $userRepo;
-
-    /**
-     * UserController constructor.
-     *
-     * @param \App\Repositories\UserRepository $userRepo
-     */
-    public function __construct(UserRepository $userRepo)
-    {
-        $this->userRepo = $userRepo;
-    }
-
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function index()
-    {
-        return \Redirect::route('admin.users.edit', [\Request::user()->id]);
-    }
-
-    /**
-     * Redirect to edit page.
-     *
-     * @param $userId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function show($userId)
-    {
-        return \Redirect::route('admin.users.edit', [$userId]);
-    }
-
     /**
      * Show the form for user edit.
      *
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function edit(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function edit(User $user): mixed
     {
-        $user = $this->userRepo->findWith(\Request::user()->id, ['profile']);
-
-        if ($user->cannot('update', $user))
-        {
-            \Flash::warning( t('You do not have sufficient permissions.'));
-
-            return \Redirect::route('admin.projects.index');
+        if (! CheckPermission::handle('edit', $user)) {
+            return Redirect::route('admin.projects.index');
         }
 
         $timezones = DateHelper::timeZoneSelect();
-        $cancel = route('admin.projects.index');
 
-        return \View::make('admin.user.edit', compact('user', 'timezones', 'cancel'));
+        return View::make('admin.user.edit', compact('user', 'timezones'));
     }
 
     /**
      * Update the specified resource in storage
-     * @param EditUserFormRequest $request
-     * @param $userId
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(EditUserFormRequest $request, $userId)
+    public function update(User $user, EditUserFormRequest $request): mixed
     {
-        $user = $this->userRepo->findWith($userId, ['profile']);
-
-        if ($user->cannot('update', $user))
-        {
-            \Flash::warning( t('You do not have sufficient permissions.'));
-
-            return \Redirect::route('admin.projects.index');
+        if (! CheckPermission::handle('update', $user)) {
+            return Redirect::route('admin.projects.index');
         }
 
-        $input = $request->all();
-        $input['notification'] = $request->exists('notification') ? 1 : 0;
-        $result = $this->userRepo->update($input, $user->id);
+        $request['notification'] = isset($request['notification']) ? 1 : 0;
 
-        $user->profile->fill($request->all());
-        $user->profile()->save($user->profile);
+        $result = $user->fill($request->all())->save();
+        $user->profile->fill($request->all())->save();
 
-        if ($result)
-        {
-            \Flash::success(t('Record was updated successfully.'));
-        }
-        else
-        {
-            \Flash::error(t('Error while updating record.'));
-        }
-
-        return \Redirect::route('admin.users.edit', [$user->id]);
-    }
-
-    /**
-     * Process a password change request.
-     *
-     * @param PasswordFormRequest $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function pass(PasswordFormRequest $request)
-    {
-        $user = $this->userRepo->find($request->route('id'));
-
-        if ( ! policy($user)->pass($user))
-        {
-            \Flash::warning( t('You do not have sufficient permissions.'));
-
-            return \Redirect::route('admin.projects.index');
-        }
-
-        if ( ! Hash::check($request->input('oldPassword'), $user->password))
-        {
-            \Flash::error(t('You did not provide the correct original password.'));
-
-            return \Redirect::route('admin.users.edit', [$user->id]);
-        }
-
-        $this->resetPassword($user, $request->input('newPassword'));
-
-        \Flash::success(t('Your password has been changed.'));
-
-        return \Redirect::route('admin.users.edit', [$user->id]);
+        return $result === true ?
+            Redirect::route('admin.users.edit', [$user])->with('success', t('User profile updated.')) :
+            Redirect::route('admin.users.edit', [$user])->with('error', t('User profile could not be updated.'));
     }
 }

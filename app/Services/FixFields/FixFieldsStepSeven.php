@@ -28,7 +28,7 @@ class FixFieldsStepSeven extends FixFieldsBase
      */
     public function start()
     {
-        echo "Starting to match dup occurrence and update fields to project id." . PHP_EOL;
+        echo 'Starting to match dup occurrence and update fields to project id.'.PHP_EOL;
 
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
@@ -37,6 +37,7 @@ class FixFieldsStepSeven extends FixFieldsBase
 
         \Artisan::call('lada-cache:enable');
     }
+
     /**
      * Start process.
      *
@@ -50,7 +51,7 @@ class FixFieldsStepSeven extends FixFieldsBase
 
         $this->writeToFile('step7-dupOccurrences-properties.json', $mappedFieldsToProjects);
 
-        $mappedFieldsToProjects->each(function ($fields, $projectId){
+        $mappedFieldsToProjects->each(function ($fields, $projectId) {
             $matched = $fields['matched'] ?? [];
             $this->updateFields($projectId, $matched, 'occurrence');
 

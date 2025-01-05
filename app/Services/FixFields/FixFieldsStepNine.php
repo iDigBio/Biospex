@@ -28,7 +28,7 @@ class FixFieldsStepNine extends FixFieldsBase
      */
     public function start()
     {
-        echo "Starting to match dup mixed occurrence fields to project id." . PHP_EOL;
+        echo 'Starting to match dup mixed occurrence fields to project id.'.PHP_EOL;
 
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
@@ -54,7 +54,7 @@ class FixFieldsStepNine extends FixFieldsBase
         $matched = [];
         $fieldsTwo = [];
 
-        $mappedOccurrenceFieldsToProjects->each(function($array, $id) use(&$fieldsOne, &$matched, &$fieldsTwo) {
+        $mappedOccurrenceFieldsToProjects->each(function ($array, $id) use (&$fieldsOne, &$matched, &$fieldsTwo) {
             if (isset($array['matched'])) {
                 $matched[$id] = $array['matched'];
             }
@@ -63,15 +63,15 @@ class FixFieldsStepNine extends FixFieldsBase
         });
 
         $type = 'occurrence';
-        collect($matched)->each(function ($fields, $projectId) use ($type){
+        collect($matched)->each(function ($fields, $projectId) use ($type) {
             $this->updateFields($projectId, $fields, $type);
         });
 
-        collect($fieldsOne)->each(function ($fields, $projectId) use ($type){
+        collect($fieldsOne)->each(function ($fields, $projectId) use ($type) {
             $this->updateFields($projectId, $fields, $type);
         });
 
-        collect($fieldsTwo)->each(function ($fields, $projectId) use ($type){
+        collect($fieldsTwo)->each(function ($fields, $projectId) use ($type) {
             $this->updateFields($projectId, $fields, $type);
         });
     }

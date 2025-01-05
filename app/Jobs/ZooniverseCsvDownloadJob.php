@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Jobs;
 
 use App\Models\User;
@@ -31,43 +32,25 @@ use Throwable;
 
 /**
  * Class ZooniverseCsvDownloadJob
- *
- * @package App\Jobs
  */
 class ZooniverseCsvDownloadJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var int
-     */
-    private int $expeditionId;
-
-    /**
-     * @var string
-     */
-    private string $uri;
-
-    /**
      * Create a new job instance.
-     *
-     * @param int $expeditionId
-     * @param string $uri
      */
-    public function __construct(int $expeditionId, string $uri)
+    public function __construct(protected int $expeditionId, protected string $uri)
     {
         $this->onQueue(config('config.queue.reconcile'));
-        $this->expeditionId = $expeditionId;
-        $this->uri = $uri;
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Csv\ZooniverseCsvService $service
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(ZooniverseCsvService $service)
+    public function handle(ZooniverseCsvService $service): void
     {
         $service->downloadCsv($this->expeditionId, $this->uri);
     }
@@ -84,15 +67,12 @@ class ZooniverseCsvDownloadJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @param  \Throwable  $throwable
-     * @return void
      */
     public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Zooniverse CSV Download Failed'),
-            'html'    => [
+            'html' => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),

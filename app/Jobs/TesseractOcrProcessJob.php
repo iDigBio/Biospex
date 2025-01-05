@@ -22,32 +22,29 @@ namespace App\Jobs;
 use App\Models\OcrQueue;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Actor\TesseractOcr\TesseractOcrComplete;
-use App\Services\Actor\TesseractOcr\TesseractOcrProcess;
+use App\Services\Actor\TesseractOcr\TesseractOcrService;
 use App\Services\Api\AwsLambdaApiService;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Storage;
+use Throwable;
 
+/**
+ * Class TesseractOcrProcessJob
+ */
 class TesseractOcrProcessJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Models\OcrQueue
-     */
-    private OcrQueue $ocrQueue;
-
-    /**
      * Create a new job instance.
-     *
-     * @param \App\Models\OcrQueue $ocrQueue
      */
-    public function __construct(OcrQueue $ocrQueue)
+    public function __construct(protected OcrQueue $ocrQueue)
     {
-        $this->ocrQueue = $ocrQueue;
+        $this->ocrQueue = $ocrQueue->withoutRelations();
         $this->onQueue(config('config.queue.lambda_ocr'));
     }
 
@@ -55,78 +52,74 @@ class TesseractOcrProcessJob implements ShouldQueue
      * Execute the job.
      */
     public function handle(
-        TesseractOcrProcess $tesseractOcrProcess,
-        AwsLambdaApiService $awsLambdaApiService,
-        TesseractOcrComplete $tesseractOcrComplete): void
-    {
-        try {
-            $files = $tesseractOcrProcess->getUnprocessedOcrQueueFiles($this->ocrQueue->id);
+        TesseractOcrService $tesseractOcrService,
+        AwsLambdaApiService $awsLambdaApiService
+    ): void {
 
-            // If processed files count is 0, update subjects in mongodb, send notification to user, and delete the queue
-            if ($files->count() === 0) {
-                $tesseractOcrComplete->ocrCompleted($this->ocrQueue);
-                $this->delete();
+        $files = $tesseractOcrService->getUnprocessedOcrQueueFiles($this->ocrQueue->id, 100);
 
-                return;
-            }
-
-            $files->each(function ($file) use ($tesseractOcrProcess, $awsLambdaApiService) {
-                $filePath = config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt';
-                if (\Storage::disk('s3')->exists($filePath)) {
-                    $file->processed = 1;
-                    $file->save();
-
-                    return;
-                }
-
-                if ($file->tries < 3) {
-                    $file->increment('tries');
-                    $this->invoke($awsLambdaApiService, $file);
-
-                    return;
-                }
-
-                \Storage::disk('s3')->put($filePath, t('Error: Exceeded maximum tries trying to read OCR.'));
-                $file->processed = 1;
-                $file->save();
-            });
-
-            return;
-        } catch (\Throwable $throwable) {
-            $this->ocrQueue->error = 1;
-            $this->ocrQueue->save();
-
-            $attributes = [
-                'subject' => t('Ocr Process Error'),
-                'html'    => [
-                    t('Queue Id: %s', $this->ocrQueue->id),
-                    t('Project Id: %s'.$this->ocrQueue->project->id),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                ],
-            ];
-            $user = User::find(config('config.admin.user_id'));
-            $user->notify(new Generic($attributes));
-
+        // If processed files count is 0, update subjects in mongodb, send notification to user, and delete the queue
+        if ($files->count() === 0) {
+            TesseractOcrCompleteJob::dispatch($this->ocrQueue);
             $this->delete();
 
             return;
         }
+
+        $files->each(function ($file) use ($awsLambdaApiService) {
+            $filePath = config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt';
+            if (Storage::disk('s3')->exists($filePath)) {
+                $file->processed = 1;
+                $file->save();
+
+                return;
+            }
+
+            if ($file->tries < 3) {
+                $file->increment('tries');
+                $this->invoke($awsLambdaApiService, $file);
+
+                return;
+            }
+
+            Storage::disk('s3')->put($filePath, t('Error: Exceeded maximum tries trying to read OCR.'));
+            $file->processed = 1;
+            $file->save();
+        });
     }
 
     /**
-     * @param \App\Services\Api\AwsLambdaApiService $awsLambdaApiService
-     * @param $file
-     * @return void
+     * Invoke the lambda function.
      */
-    function invoke(AwsLambdaApiService $awsLambdaApiService, $file): void
+    public function invoke(AwsLambdaApiService $awsLambdaApiService, $file): void
     {
         $awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), [
-            'bucket'     => config('filesystems.disks.s3.bucket'),
-            'key'        => config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt',
-            'file'    => $file->id,
+            'bucket' => config('filesystems.disks.s3.bucket'),
+            'key' => config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt',
+            'file' => $file->id,
             'uri' => $file->access_uri,
         ]);
+    }
+
+    /**
+     * The job failed to process.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $this->ocrQueue->error = 1;
+        $this->ocrQueue->save();
+
+        $attributes = [
+            'subject' => t('Ocr Process Error'),
+            'html' => [
+                t('Queue Id: %s', $this->ocrQueue->id),
+                t('Project Id: %s', $this->ocrQueue->project->id),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
+        ];
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

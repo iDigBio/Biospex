@@ -20,37 +20,36 @@
 namespace App\Models;
 
 use App\Models\Traits\HasGroup;
+use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\UserPresenter;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Traits\Presentable;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 use Laravel\Sanctum\HasApiTokens;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class User
- *
- * @package App\Models
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasGroup, UuidTrait, Notifiable, Presentable, LadaCacheTrait, HasApiTokens;
+    use HasApiTokens, HasFactory, HasGroup, LadaCacheTrait, Notifiable, Presentable, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'users';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'uuid',
         'email',
         'password',
-        'notification'
+        'notification',
     ];
 
     /**
@@ -61,14 +60,14 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime'
+            'email_verified_at' => 'datetime',
         ];
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['id', 'password', 'remember_token'];
 
     /**
      * Attributes that should be hashed.
@@ -83,6 +82,14 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $presenter = UserPresenter::class;
 
     /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    /**
      * Boot functions.
      */
     public static function boot()
@@ -90,15 +97,6 @@ class User extends Authenticatable implements MustVerifyEmail
         parent::boot();
 
         static::bootUuidTrait();
-
-        static::created(function ($model) {
-            $profile = new Profile;
-            $profile->user_id = $model->id;
-            $profile->first_name = \Request::input('first_name');
-            $profile->last_name = \Request::input('last_name');
-            $profile->timezone = \Request::input('timezone');
-            $model->profile()->save($profile);
-        });
     }
 
     /**

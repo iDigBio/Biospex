@@ -24,8 +24,6 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 
 /**
  * Class ResetPasswordController
- *
- * @package App\Http\Controllers\Auth
  */
 class ResetPasswordController extends Controller
 {
@@ -44,7 +42,7 @@ class ResetPasswordController extends Controller
 
     /**
      * Where to redirect users after resetting their password.
-     * TODO Check if it needs to be '/login'
+     *
      * @var string
      */
     protected $redirectTo = '/';

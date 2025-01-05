@@ -1,4 +1,4 @@
-<form action="{{ route('admin.geolocates.store', [$expedition->project_id, $expedition->id]) }}" method="post"
+<form action="{{ route('admin.geolocates.store', [$expedition]) }}" method="post"
       role="form" id="geolocate-form">
     @csrf
     <input type="hidden" id="group_id" name="group_id" value="{{ $form['group_id'] }}">
@@ -23,7 +23,7 @@
                     data-width="350"
                     data-hide-disabled="true"
                     data-style="btn-primary"
-                    data-url="{{ route('admin.geolocates.fields', [$expedition->project->id, $expedition->id]) }}"
+                    data-url="{{ route('admin.geolocate-field.index', [$expedition]) }}"
                     required>
                 <option value="reconciled"
                         {{ $form['source'] === 'reconciled' ? 'selected' : '' }}>{{ t('Reconciled') }}</option>
@@ -41,7 +41,7 @@
                 data-toggle="modal"
                 data-target="#global-modal"
                 data-size="modal-lg"
-                data-url="{{ route('admin.reconciles.uploadShow', [$expedition->project->id, $expedition->id]) }}"
+                data-url="{{ route('admin.reconcile-user-form.edit', [$expedition]) }}"
                 data-title="{{ t('Upload Reconciled With User Opinion') }}"></button>
     </div>
     <div class="form-group col-sm-10 mx-auto text-center">
@@ -82,7 +82,7 @@
                     class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto" {{ $disabled ? '' : '' }}>{{ t('Save') }}</button>
             @isset($form['fields'])
                 <button type="button" id="deleteExport" class="btn btn-primary pl-4 pr-4"
-                        data-href=" {{ route('admin.geolocates.delete', [$expedition->project_id, $expedition->id]) }}"
+                        data-href=" {{ route('admin.geolocates.destroy', [$expedition]) }}"
                         data-hover="tooltip"
                         data-method="delete"
                         data-confirm="confirmation"
@@ -93,7 +93,7 @@
             @endisset
             @if($form['fields'])
                 <button type="button" id="export"
-                        data-url="{{ route('admin.geolocates.export', [$expedition->project_id, $expedition->id]) }}"
+                        data-url="{{ route('admin.geolocate-export.index', [$expedition]) }}"
                         class="btn btn-primary pl-4 pr-4 mt-5 text-uppercase m-auto" {{ $disabled ? 'disabled' : '' }}>{{ t('Export') }}</button>
             @endif
         </div>
@@ -104,7 +104,7 @@
         <select class="geolocate-field-default" name="fields[999][geo]"
                 data-live-search="true"
                 data-actions-box="true"
-                data-header="{{ t('Select Geo Locate Field ( * required)') }}"
+                data-header="{{ t('Select GeoLocate Field ( * required)') }}"
                 data-width="80%"
                 data-style="btn-primary">
             <option value="">{{ t('None') }}</option>

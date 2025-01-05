@@ -1,7 +1,7 @@
 <div class="row">
     <div class="controls col-sm-10 mx-auto mt-3 text-center">
         <select id="geolocate-form-select" class="selectpicker" name="geolocate-form-select"
-                data-url="{{ $route }}"
+                data-url="{{ route('admin.geolocate-form.show', [$expedition]) }}"
                 data-live-search="true"
                 data-actions-box="true"
                 title="{{ t('New') }}"

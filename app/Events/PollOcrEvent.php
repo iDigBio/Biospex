@@ -20,15 +20,13 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Class PollOcrEvent
- *
- * @package App\Events
  */
 class PollOcrEvent extends Event implements ShouldBroadcast
 {
@@ -41,7 +39,6 @@ class PollOcrEvent extends Event implements ShouldBroadcast
 
     /**
      * PollOcrEvent constructor.
-     * @param $data
      */
     public function __construct($data)
     {
@@ -50,8 +47,6 @@ class PollOcrEvent extends Event implements ShouldBroadcast
 
     /**
      * The name of the queue on which to place the broadcasting job.
-     *
-     * @return string
      */
     public function broadcastQueue(): string
     {

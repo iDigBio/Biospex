@@ -9,7 +9,7 @@
 @section('content')
     @include('admin.expedition.partials.panel')
     <form id="gridForm" method="post"
-          action="{{ route('admin.expeditions.update', [$expedition->project->id, $expedition->id]) }}"
+          action="{{ route('admin.expeditions.update', [$expedition]) }}"
           role="form" enctype="multipart/form-data">
         {!! method_field('put') !!}
         @csrf
@@ -92,7 +92,15 @@
     <div id="jqGridDiv" class="row">
         <h3 class="mx-auto">{{ t('Subjects currently assigned') }}
             <span id="max">{{ t('(%s max. per Expedition)', Config::get('config.expedition_size')) }}</span>:
-            <span id="subject-count-html"></span></h3>
+            <span id="subject-count-html"></span>
+        </h3>
+        @if(Route::currentRouteName() === 'admin.expeditions.edit'  && $expedition->workflowManager === null)
+            <div class="col-sm-8 mx-auto">
+                <div class="alert alert-info text-center">
+                    {{ t('Checked rows are Subjects currently assigned to this particular Expedition.') }}
+                </div>
+            </div>
+        @endif
         <div class="col-md-12">
             <table class="table table-bordered" id="jqGridTable"></table>
         </div>

@@ -26,8 +26,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
  * Class ZooniverseClassificationCount
- *
- * @package App\Console\Commands
  */
 class ZooniverseClassificationCount extends Command
 {
@@ -36,9 +34,10 @@ class ZooniverseClassificationCount extends Command
     /**
      * The name and signature of the console command.
      * zooniverse:count 20 30 40
+     *
      * @var string
      */
-    protected $signature = 'zooniverse:count {expeditionIds?*}';
+    protected $signature = 'zooniverse:count {expeditionIds?*} {--update}';
 
     /**
      * The console command description.
@@ -66,7 +65,11 @@ class ZooniverseClassificationCount extends Command
             $this->getExpeditionIds() : $this->argument('expeditionIds');
 
         foreach ($expeditionIds as $expeditionId) {
-            ZooniverseClassificationCountJob::dispatch((int) $expeditionId);
+            $expedition = Expedition::find($expeditionId);
+
+            $this->option('update') ?
+                ZooniverseClassificationCountJob::dispatch($expedition, true) :
+                ZooniverseClassificationCountJob::dispatch($expedition);
         }
     }
 

@@ -21,16 +21,12 @@ namespace App\Policies;
 
 /**
  * Class EventPolicy
- *
- * @package App\Policies
  */
 class EventPolicy
 {
-
     /**
      * Allow admins.
      *
-     * @param $user
      * @return bool|null
      */
     public function before($user)
@@ -41,8 +37,6 @@ class EventPolicy
     /**
      * Is owner of event.
      *
-     * @param $user
-     * @param $event
      * @return bool
      */
     public function isOwner($user, $event)
@@ -52,7 +46,7 @@ class EventPolicy
 
     /**
      * Check if user can create event
-     * @param $user
+     *
      * @return bool
      */
     public function create($user)
@@ -62,7 +56,7 @@ class EventPolicy
 
     /**
      * Check if user can store event
-     * @param $user
+     *
      * @return bool
      */
     public function store($user)
@@ -73,8 +67,6 @@ class EventPolicy
     /**
      * Check if user can read event.
      *
-     * @param $user
-     * @param $event
      * @return bool|string
      */
     public function read($user, $event)
@@ -84,8 +76,7 @@ class EventPolicy
 
     /**
      * Check if user can update event
-     * @param $user
-     * @param $event
+     *
      * @return mixed
      */
     public function update($user, $event)
@@ -95,8 +86,7 @@ class EventPolicy
 
     /**
      * Check if user can delete event
-     * @param $user
-     * @param $event
+     *
      * @return bool
      */
     public function delete($user, $event)

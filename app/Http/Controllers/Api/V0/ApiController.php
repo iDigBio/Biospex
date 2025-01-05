@@ -19,28 +19,31 @@
 
 namespace App\Http\Controllers\Api\V0;
 
-use Illuminate\Routing\Controller as BaseController;
 use App\Serializers\DataArraySerializer;
-use Illuminate\Support\Facades\Response;
+use Illuminate\Routing\Controller as BaseController;
+use League\Fractal\Manager;
 use League\Fractal\Pagination\Cursor;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
-use League\Fractal\Manager;
+use Response;
 
 /**
  * Class ApiController
- *
- * @package Api\Http\Controllers\V1
  */
 class ApiController extends BaseController
 {
     protected $statusCode = 200;
 
     const CODE_WRONG_ARGS = 'GEN-WRONG-ARGUMENTS';
+
     const CODE_NOT_FOUND = 'GEN-NOT-FOUND';
+
     const CODE_INTERNAL_ERROR = 'GEN-INTERNAL_ERROR';
+
     const CODE_UNAUTHORIZED = 'GEN-UNAUTHORIZED';
+
     const CODE_FORBIDDEN = 'GEN-FORBIDDEN';
+
     const CODE_INVALID_MIME_TYPE = 'GEN-INVALID-MIME-TYPE';
 
     /**
@@ -58,8 +61,8 @@ class ApiController extends BaseController
      */
     public function setManager()
     {
-        $this->fractal = new Manager();
-        $this->fractal->setSerializer(new DataArraySerializer());
+        $this->fractal = new Manager;
+        $this->fractal->setSerializer(new DataArraySerializer);
     }
 
     /**
@@ -75,13 +78,13 @@ class ApiController extends BaseController
     /**
      * Setter for statusCode
      *
-     * @param int $statusCode Value to set
-     *
+     * @param  int  $statusCode  Value to set
      * @return self
      */
     public function setStatusCode($statusCode)
     {
         $this->statusCode = $statusCode;
+
         return $this;
     }
 
@@ -98,9 +101,7 @@ class ApiController extends BaseController
     /**
      * Respond with single item.
      *
-     * @param $item
-     * @param $callback
-     * @param null $resourceKey
+     * @param  null  $resourceKey
      * @return mixed
      */
     protected function respondWithItem($item, $callback, $resourceKey = null)
@@ -117,10 +118,7 @@ class ApiController extends BaseController
     /**
      * Respond with PusherTranscription Collection.
      *
-     * @param $collection
-     * @param $callback
-     * @param $totalCount
-     * @param null $resourceKey
+     * @param  null  $resourceKey
      * @return mixed
      */
     protected function respondWithPusherCollection($collection, $callback, $totalCount, $resourceKey = null)
@@ -145,9 +143,7 @@ class ApiController extends BaseController
     /**
      * Respond with Collection.
      *
-     * @param $collection
-     * @param $callback
-     * @param null $resourceKey
+     * @param  null  $resourceKey
      * @return mixed
      */
     protected function respondWithCollection($collection, $callback, $resourceKey = null)
@@ -166,8 +162,6 @@ class ApiController extends BaseController
     /**
      * Respond with array.
      *
-     * @param array $array
-     * @param array $headers
      * @return mixed
      */
     protected function respondWithArray(array $array, array $headers = [])
@@ -180,11 +174,6 @@ class ApiController extends BaseController
 
     /**
      * Paginate results.
-     *
-     * @param $current
-     * @param $previous
-     * @param $next
-     * @param $count
      */
     protected function paginate($current, $previous, $next, $count)
     {
@@ -194,15 +183,13 @@ class ApiController extends BaseController
     /**
      * Respond with error.
      *
-     * @param $message
-     * @param $errorCode
      * @return mixed
      */
     protected function respondWithError($message, $errorCode)
     {
         if ($this->statusCode === 200) {
             trigger_error(
-                "You better have a really good reason for erroring on a 200...",
+                'You better have a really good reason for erroring on a 200...',
                 E_USER_WARNING
             );
         }
@@ -212,14 +199,14 @@ class ApiController extends BaseController
                 'code' => $errorCode,
                 'http_code' => $this->statusCode,
                 'message' => $message,
-            ]
+            ],
         ]);
     }
 
     /**
      * Generates a Response with a 403 HTTP header and a given message.
      *
-     * @param string $message
+     * @param  string  $message
      * @return Response
      */
     public function errorForbidden($message = 'Forbidden')
@@ -231,7 +218,7 @@ class ApiController extends BaseController
     /**
      * Generates a Response with a 500 HTTP header and a given message.
      *
-     * @param string $message
+     * @param  string  $message
      * @return Response
      */
     public function errorInternalError($message = 'Internal Error')
@@ -243,7 +230,7 @@ class ApiController extends BaseController
     /**
      * Generates a Response with a 404 HTTP header and a given message.
      *
-     * @param string $message
+     * @param  string  $message
      * @return Response
      */
     public function errorNotFound($message = 'Resource Not Found')
@@ -255,7 +242,7 @@ class ApiController extends BaseController
     /**
      * Generates a Response with a 401 HTTP header and a given message.
      *
-     * @param string $message
+     * @param  string  $message
      * @return Response
      */
     public function errorUnauthorized($message = 'Unauthorized')
@@ -267,7 +254,7 @@ class ApiController extends BaseController
     /**
      * Generates a Response with a 400 HTTP header and a given message.
      *
-     * @param string $message
+     * @param  string  $message
      * @return Response
      */
     public function errorWrongArgs($message = 'Wrong Arguments')

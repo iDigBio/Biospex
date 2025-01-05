@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -20,19 +21,19 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class UpdateQueries
- *
- * @package App\Console\Commands
  */
 class UpdateQueries extends Command
 {
     /**
      * The console command name.
      */
-    protected $signature = 'update:queries {method?}';
+    protected $signature = 'update:queries';
 
     /**
      * The console command description.
@@ -52,6 +53,109 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
+        $this->addUuid();
+        $this->updateUuid();
 
+        \Artisan::call('zooniverse:count --update');
+    }
+
+    private function addUuid()
+    {
+        $tablesAdd = [
+            'bingos' => 'App\Models\Bingo',
+            'events' => 'App\Models\Event',
+            'event_users' => 'App\Models\EventUser',
+            'geo_locate_communities' => 'App\Models\GeoLocateCommunity',
+            'geo_locate_data_sources' => 'App\Models\GeoLocateDataSource',
+            'geo_locate_forms' => 'App\Models\GeoLocateForm',
+            'group_invites' => 'App\Models\GroupInvite',
+            'resources' => 'App\Models\Resource',
+            'wedigbio_events' => 'App\Models\WeDigBioEvent',
+        ];
+
+        collect($tablesAdd)->each(function ($className, $tableName) {
+            $this->addUuidToTable($tableName);
+            $this->createNewUuid($className);
+            $this->setUuidNotNull($tableName);
+            echo $tableName.' uuid added'.PHP_EOL;
+        });
+    }
+
+    public function updateUuid(): void
+    {
+        $tablesUpdate = [
+            'bingo_users' => 'App\Models\BingoUser',
+            'downloads' => 'App\Models\Download',
+            'event_teams' => 'App\Models\EventTeam',
+            'expeditions' => 'App\Models\Expedition',
+            'groups' => 'App\Models\Group',
+            'projects' => 'App\Models\Project',
+            'users' => 'App\Models\User',
+        ];
+
+        collect($tablesUpdate)->each(function ($className, $tableName) {
+            $this->addUuidNewToTable($tableName);
+            $this->updateNewUuid($className);
+            $this->dropOldUuidAndRename($tableName);
+            $this->setUuidNotNull($tableName);
+            echo $tableName.' uuid updated'.PHP_EOL;
+        });
+    }
+
+    private function getUuid($value): string
+    {
+        $uuid = bin2hex($value);
+
+        return substr($uuid, 0, 8).'-'.substr($uuid, 8, 4).'-'.substr($uuid, 12, 4).'-'.substr($uuid, 16, 4).'-'.substr($uuid, 20);
+    }
+
+    public function addUuidToTable(string $tableName): void
+    {
+        Schema::table($tableName, function (Blueprint $table) use ($tableName) {
+            DB::statement('ALTER TABLE `'.$tableName.'` ADD `uuid` CHAR(36) NULL AFTER `id`;');
+        });
+    }
+
+    public function createNewUuid(string $className): void
+    {
+        \Artisan::call('lada-cache:flush');
+        $class = \App::make($className);
+        $records = $class::all();
+        $records->each(function ($record) {
+            $record->uuid = \Str::uuid();
+            $record->save();
+        });
+    }
+
+    public function setUuidNotNull(string $tableName): void
+    {
+        Schema::table($tableName, function (Blueprint $table) use ($tableName) {
+            DB::statement('ALTER TABLE `'.$tableName.'` CHANGE `uuid` `uuid` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;');
+            DB::statement('ALTER TABLE `'.$tableName.'` ADD UNIQUE `'.$tableName.'_uuid_unique` (`uuid`);');
+        });
+    }
+
+    public function addUuidNewToTable(string $tableName): void
+    {
+        DB::statement('ALTER TABLE `'.$tableName.'` ADD `uuid_new` CHAR(36) NULL AFTER `uuid`;');
+    }
+
+    public function updateNewUuid(string $className): void
+    {
+        \Artisan::call('lada-cache:flush');
+        $class = \App::make($className);
+        $records = $class::get();
+        $records->each(function ($record) {
+            $uuid = $this->getUuid($record->uuid);
+            $record->uuid_new = $uuid;
+            $record->save();
+        });
+    }
+
+    public function dropOldUuidAndRename(string $tableName)
+    {
+        Schema::table($tableName, function (Blueprint $table) use ($tableName) {
+            DB::statement('ALTER TABLE `'.$tableName.'` DROP COLUMN `uuid`, CHANGE `uuid_new` `uuid` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;');
+        });
     }
 }

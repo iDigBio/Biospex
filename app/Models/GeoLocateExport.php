@@ -21,12 +21,10 @@ namespace App\Models;
 
 class GeoLocateExport extends BaseMongoModel
 {
-    protected $connection = 'mongodb';
-
     /**
      * Set Collection
      */
-    protected $collection = 'geolocate_exports';
+    protected $table = 'geolocate_exports';
 
     /**
      * The attributes that should be cast.
@@ -36,15 +34,13 @@ class GeoLocateExport extends BaseMongoModel
     protected function casts(): array
     {
         return [
-            'subject_id'           => 'integer',
+            'subject_id' => 'integer',
             'subject_expeditionId' => 'integer',
         ];
     }
 
     /**
      * Expedition relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

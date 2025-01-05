@@ -20,28 +20,21 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 /**
  * Class GroupInvite
- *
- * @package App\Notifications
  */
 class GroupInvite extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * @var
-     */
     public $group;
 
     /**
      * Create a new notification instance.
-     *
-     * @param $group
      */
     public function __construct($group)
     {
@@ -62,12 +55,11 @@ class GroupInvite extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail(mixed $notifiable)
     {
-        $url = route('app.get.register', ['code' => $notifiable->code]);
+        $url = route('app.get.register', [$notifiable]);
 
         return (new MailMessage)
             ->subject(t('Bisopex Group Invite'))

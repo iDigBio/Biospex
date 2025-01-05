@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -16,110 +17,93 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Jobs;
 
-use App\Models\Actor;
-use App\Models\Expedition;
+use App\Models\ActorExpedition;
 use App\Notifications\Generic;
-use App\Repositories\ExpeditionRepository;
-use App\Services\Actor\GeoLocate\GeoLocateStat;
+use App\Services\Actor\GeoLocate\GeoLocateStatService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Throwable;
 
 class GeoLocateStatsJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
-
-    /**
-     * @var \App\Models\Actor $actor
-     */
-    private Actor $actor;
-
-    /**
-     * @var \App\Models\Expedition $expedition
-     */
-    private Expedition $expedition;
-
-    /**
-     * @var bool $refresh
-     */
-    private bool $refresh;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
-     *
-     * @param \App\Models\Actor $actor
-     * @param bool $refresh
      */
-    public function __construct(Actor $actor, bool $refresh = false)
+    public function __construct(protected ActorExpedition $actorExpedition, protected bool $refresh = false)
     {
-        $this->actor = $actor;
-        $this->refresh = $refresh;
+        $this->actorExpedition = $actorExpedition->withoutRelations();
         $this->onQueue(config('config.queue.geolocate'));
     }
 
     /**
+     * Execute the job.
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(GeoLocateStat $geoLocateStat, ExpeditionRepository $expeditionRepository): void
+    public function handle(GeoLocateStatService $geoLocateStatService): void
     {
+        $this->actorExpedition->load(['expedition.project.group.owner', 'expedition.geoLocateDataSource.geolocateCommunity']);
 
-        $this->expedition = $expeditionRepository->findWith($this->actor->pivot->expedition_id, ['project.group.owner']);
-        $geoLocateDataSource = $geoLocateStat->getCommunityAndDataSourceByExpeditionId($this->actor->pivot->expedition_id);
+        $expedition = $this->actorExpedition->expedition;
+        $geoLocateDataSource = $expedition->geoLocateDataSource;
+        $geoLocateCommunity = $expedition->geoLocateDataSource->geoLocateCommunity;
 
-        if (!$this->refresh && $geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
+        if (! $this->refresh && $geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
             return;
         }
 
-        // get community stats first
-        $communityStats = $geoLocateStat->getCommunityDataSource($geoLocateDataSource->geoLocateCommunity->name);
+        // get community stats
+        $communityStats = $geoLocateStatService->getCommunityDataSource($geoLocateCommunity->name);
 
         // get dataSource stats
-        $dataSourceStats = $geoLocateStat->getCommunityDataSource($geoLocateDataSource->geoLocateCommunity->name, $geoLocateDataSource->data_source);
+        $dataSourceStats = $geoLocateStatService->getCommunityDataSource($geoLocateCommunity->name, $geoLocateDataSource->data_source);
 
         // update geo_locate_communities data
-        $geoLocateStat->updateGeoLocateCommunityStat($geoLocateDataSource->geoLocateCommunity->id, $communityStats);
+        $geoLocateStatService->updateGeoLocateCommunityStat($geoLocateCommunity->id, $communityStats);
 
         // update geo_locate_data_sources data
-        $geoLocateStat->updateGeoLocateDataSourceStat($geoLocateDataSource->id, $dataSourceStats);
+        $geoLocateStatService->updateGeoLocateDataSourceStat($geoLocateDataSource->id, $dataSourceStats);
 
-        // download data source file if completed and notify user
+        // Touch for updated_at
+        $geoLocateDataSource->touch();
+
+        // Dispatch download job for kml and csv file.
+        GeoLocateDownloadJob::dispatch($this->actorExpedition, $geoLocateCommunity->name, $geoLocateDataSource->data_source);
+
+        // If completed and notify user.
         if ($dataSourceStats['stats']['localityRecords'] === $dataSourceStats['stats']['correctedLocalityRecords']) {
-            $uri = $geoLocateStat->buildDataSourceDownload($geoLocateDataSource->geoLocateCommunity->name, $geoLocateDataSource->data_source);
-            $geoLocateStat->getDataSourceDownload($uri, $this->actor->pivot->expedition_id);
-
-            $this->actor->pivot->expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
-                'state' => 3,
-            ]);
+            $this->actorExpedition->state = 3;
+            $this->actorExpedition->save();
 
             $attributes = [
-                'subject' => t('GeoLocate stats for %s is complete.', $this->expedition->title),
-                'html'    => [
+                'subject' => t('GeoLocate stats for %s is complete.', $expedition->title),
+                'html' => [
                     t('The GeoLocate Stat process is complete and the KML file is ready for download.'),
-                    t('You can download the file from the Downloads button of the Expedition.')
-                ]
+                    t('You can download the file from the Downloads button of the Expedition.'),
+                ],
             ];
 
-
-            $this->expedition->project->group->owner->notify(new Generic($attributes));
+            $expedition->project->group->owner->notify(new Generic($attributes));
         }
     }
 
     /**
      * Handle a job failure.
-     *
-     * @param  \Throwable  $throwable
-     * @return void
      */
     public function failed(Throwable $throwable): void
     {
-        $subject = t('GeoLocate stats for %s failed.', $this->expedition->title);
+        $subject = t('GeoLocate stats for %s failed.', $this->actorExpedition->expedition->title);
         $attributes = [
             'subject' => $subject,
-            'html'    => [
+            'html' => [
                 t('Error: %s', $subject),
                 t('Error: %s', $throwable->getMessage()),
                 t('File: %s', $throwable->getFile()),
@@ -127,6 +111,6 @@ class GeoLocateStatsJob implements ShouldQueue
             ],
         ];
 
-        $this->expedition->project->group->owner->notify(new Generic($attributes, true));
+        $this->actorExpedition->expedition->project->group->owner->notify(new Generic($attributes, true));
     }
 }

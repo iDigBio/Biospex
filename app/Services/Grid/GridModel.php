@@ -19,64 +19,45 @@
 
 namespace App\Services\Grid;
 
-use App\Repositories\HeaderRepository;
+use App\Services\Project\HeaderService;
 
 /**
  * Class GridModel
- *
- * @package App\Services\Grid
  */
 class GridModel
 {
-    /**
-     * @var \App\Repositories\HeaderRepository
-     */
-    private $headerRepo;
+    private mixed $defaultGridVisible;
 
-    /**
-     * @var
-     */
-    private $defaultGridVisible;
-
-    /**
-     * @var
-     */
-    private $defaultSubGridVisible;
+    private mixed $defaultSubGridVisible;
 
     /**
      * GridModel constructor.
-     *
-     * @param \App\Repositories\HeaderRepository $headerRepo
      */
-    public function __construct(HeaderRepository $headerRepo)
+    public function __construct(protected HeaderService $headerService)
     {
-        $this->headerRepo = $headerRepo;
         $this->defaultGridVisible = config('config.defaultGridVisible');
         $this->defaultSubGridVisible = config('config.defaultSubGridVisible');
     }
 
     /**
      * Create the grid model.
-     *
-     * @param int $projectId
-     * @return false|string
      */
-    public function createGridModel(int $projectId)
+    public function createGridModel(int $projectId): false|string
     {
-        $result = $this->headerRepo->findBy('project_id', $projectId);
+        $result = $this->headerService->getFirst('project_id', $projectId);
 
         if (empty($result)) {
             $headers['image'] = [
                 'assigned',
                 'expedition_ids',
                 'exported',
-                'id',
+                'imageId',
                 'accessURI',
-                'ocr'
+                'ocr',
             ];
         } else {
             $headers = $result->header;
-            array_unshift($headers['image'], 'assigned', 'exported', 'expedition_ids', 'id');
+            array_unshift($headers['image'], 'assigned', 'exported', 'expedition_ids', 'imageId');
             $headers['image'][] = 'ocr';
         }
 
@@ -91,7 +72,7 @@ class GridModel
 
         $data = [
             'colNames' => $colNamesResult,
-            'colModel' => $colModelResult
+            'colModel' => $colModelResult,
         ];
 
         return json_encode($data);
@@ -100,7 +81,6 @@ class GridModel
     /**
      * Set column names.
      *
-     * @param $fields
      * @return array
      */
     public function setColNames($fields)
@@ -116,7 +96,6 @@ class GridModel
     /**
      * Build column model for grid.
      *
-     * @param $colNames
      * @return array
      */
     protected function setColModel($colNames)
@@ -132,13 +111,11 @@ class GridModel
     /**
      * Format the given column for grid model.
      *
-     * @param $column
      * @return array
      */
     protected function formatGridColumn($column)
     {
-        if ($column === 'assigned')
-        {
+        if ($column === 'assigned') {
             return $this->buildAssigned();
         }
 
@@ -150,8 +127,8 @@ class GridModel
 
         if ($column === 'ocr') {
             $col = array_merge($col, [
-                'title'    => false,
-                'classes'  => 'ocrPreview',
+                'title' => false,
+                'classes' => 'ocrPreview',
                 'cellattr' => 'addDataAttr',
             ]);
         }
@@ -165,19 +142,20 @@ class GridModel
 
     /**
      * Build expedition checkbox.
+     *
      * @return array
      */
     protected function buildAssigned()
     {
         return [
-            'name'          => 'assigned',
-            'index'         => 'assigned',
-            'width'         => 35,
-            'align'         => 'center',
-            'hidedlg'       => false,
-            'stype'         => 'select',
-            'sortable'      => false,
-            'searchoptions' => ['defaultValue' => 'all', 'sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No']
+            'name' => 'assigned',
+            'index' => 'assigned',
+            'width' => 35,
+            'align' => 'center',
+            'hidedlg' => false,
+            'stype' => 'select',
+            'sortable' => false,
+            'searchoptions' => ['defaultValue' => 'all', 'sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No'],
         ];
     }
 
@@ -189,11 +167,11 @@ class GridModel
     protected function buildExportedColumn()
     {
         return [
-            'name'          => 'exported',
-            'index'         => 'exported',
-            'width'         => 40,
-            'align'         => 'center',
-            'stype'         => 'select',
+            'name' => 'exported',
+            'index' => 'exported',
+            'width' => 40,
+            'align' => 'center',
+            'stype' => 'select',
             'searchoptions' => ['defaultValue' => 'all', 'sopt' => ['eq'], 'value' => 'all:All;true:true;false:false'],
         ];
     }
@@ -203,22 +181,22 @@ class GridModel
         $default = $image ? $this->defaultGridVisible : $this->defaultSubGridVisible;
 
         return [
-            'name'          => $column,
-            'index'         => $column,
-            'key'           => false,
-            'resizable'     => true,
-            'search'        => $column === 'accessURI' ? false : true,
-            'sortable'      => true,
-            'editable'      => false,
-            'hidden'        => in_array($column, $default) ? false : true,
-            'searchoptions' => $this->searchOps($column)
+            'name' => $column,
+            'index' => $column,
+            'key' => false,
+            'resizable' => true,
+            'search' => $column === 'accessURI' ? false : true,
+            'sortable' => true,
+            'editable' => false,
+            'hidden' => in_array($column, $default) ? false : true,
+            'searchoptions' => $this->searchOps($column),
         ];
     }
 
     protected function searchOps($column)
     {
         if ($column === 'expedition_ids') {
-            return ['sopt' => ['eq','ne']];
+            return ['sopt' => ['eq', 'ne']];
         }
 
         return ['sopt' => ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn']];
@@ -227,13 +205,12 @@ class GridModel
     /**
      * Add uri link.
      *
-     * @param $col
      * @return array
      */
     protected function addUriLink($col)
     {
         return array_merge($col, [
-            'classes'   => 'thumbPreview',
+            'classes' => 'thumbPreview',
             'formatter' => 'imagePreview',
         ]);
     }

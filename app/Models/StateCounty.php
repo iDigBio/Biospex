@@ -19,20 +19,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class StateCounty
- *
- * @package App\Models
  */
 class StateCounty extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'state_counties';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'county_name',

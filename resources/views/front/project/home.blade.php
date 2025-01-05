@@ -130,22 +130,22 @@
             </div>
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 <span class="text">{{ $project->expeditions_count }} {{ t('Expeditions') }}</span>
-                <span class="text">{{ $transcriptionsCount }} {{ t('Digitizations') }}</span>
-                <span class="text">{{ $transcribersCount }} {{ t('Participants') }}</span>
+                <span class="text">{{ $project->expedition_stats_sum_transcriptions_completed }} {{ t('Digitizations') }}</span>
+                <span class="text">{{ get_project_transcriber_count($project->id) }} {{ t('Participants') }}</span>
             </div>
             <hr class="header mx-auto">
         </div>
         <div id="active-expeditions-main" class="col-sm-12 show">
             @include('common.expedition-sort', ['type' => 'active', 'route' => route('front.expeditions.sort'), 'id' => $project->id])
             <div id="active-expeditions" class="row col-sm-12 mx-auto justify-content-center">
-                @include('front.expedition.partials.expedition',['expeditions', 'project' => true])
+                @include('front.expedition.partials.expedition',['expeditions'])
             </div>
         </div>
         <div id="completed-expeditions-main" class="col-sm-12 collapse">
             @include('common.expedition-sort', ['type' => 'completed', 'route' => route('front.expeditions.sort'), 'id' => $project->id])
             <canvas id="expedition-conffeti" style="z-index: -1; position:fixed; top:0;left:0;"></canvas>
             <div id="completed-expeditions" class="row col-sm-12 mx-auto justify-content-center">
-                @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted, 'project' => true])
+                @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
             </div>
         </div>
     </div>
@@ -203,7 +203,7 @@
                 <div class="text-center mt-4 mb-4">
                     @foreach($years as $year)
                         <button class="btn btn-primary btn-transcription" id="year{{ $year }}"
-                                data-href="{{ route('front.projects.transcriptions', [$project->id, $year]) }}">{{ $year }}
+                                data-href="{{ route('front.projects.transcriptions', [$project, $year]) }}">{{ $year }}
                         </button>
                     @endforeach
                 </div>
@@ -224,7 +224,7 @@
                     <div id="mapDiv" class="d-flex" style="width:100%; height: 500px"></div>
                     <div id="mapLegendDiv" style="width:100%; height: 100px"></div>
                     <div class="hide" id="projectUrl"
-                         data-href="{{ route('front.projects.state', [$project->id]) }}"></div>
+                         data-href="{{ route('front.projects.state', [$project]) }}"></div>
                 </div>
             </div>
         </div>
@@ -239,10 +239,10 @@
     @endif
     <script src="{{ asset('js/amChartEventRate.min.js')}}"></script>
     <script>
-        let expeditionConfetti = new ConfettiGenerator({ target: 'expedition-conffeti' });
+        let expeditionConfetti = new ConfettiGenerator({target: 'expedition-conffeti'});
         expeditionConfetti.render();
 
-        let eventConfetti = new ConfettiGenerator({ target: 'event-conffeti' });
+        let eventConfetti = new ConfettiGenerator({target: 'event-conffeti'});
         eventConfetti.render();
     </script>
 @endpush

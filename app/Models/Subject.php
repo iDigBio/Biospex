@@ -21,11 +21,14 @@ namespace App\Models;
 
 /**
  * Class Subject
- *
- * @package App\Models
  */
 class Subject extends BaseMongoModel
 {
+    /**
+     * Set Collection
+     */
+    protected $table = 'subjects';
+
     /**
      * The attributes that should be cast.
      *
@@ -35,7 +38,7 @@ class Subject extends BaseMongoModel
     {
         return [
             'project_id' => 'integer',
-            'exported' => 'boolean'
+            'exported' => 'boolean',
         ];
     }
 
@@ -55,31 +58,18 @@ class Subject extends BaseMongoModel
         return $this->hasMany(PanoptesTranscription::class, 'subject_subjectId');
     }
 
-    /**
-     * @return mixed
-     */
-    public function occurrence()
+    public function occurrence(): mixed
     {
         return $this->embedsOne(Occurrence::class, 'occurrence');
     }
 
-    /**
-     * @param $query
-     * @param $projectId
-     * @return mixed
-     */
-    public function scopeProjectId($query, $projectId)
+    public function scopeProjectId($query, $projectId): mixed
     {
         return $query->where('project_id', (int) $projectId);
     }
 
-    /**
-     * @param $query
-     * @param $subjectId
-     * @return mixed
-     */
-    public function scopeSubjectId($query, $subjectId)
+    public function scopeSubjectId($query, $subjectId): mixed
     {
-        return $query->where('_id', $subjectId);
+        return $query->where('id', $subjectId);
     }
 }

@@ -20,93 +20,114 @@
 namespace App\Services\Image;
 
 use Exception;
-use Illuminate\Support\Facades\File;
-use Storage;
+use Illuminate\Contracts\Filesystem\Factory as Storage;
+use Illuminate\Filesystem\Filesystem as File;
+use Throwable;
 
 /**
  * Class Thumbnail
- *
- * @package App\Services\Image
  */
 class Thumbnail
 {
+    private mixed $defaultThumbImg;
 
-    /**
-     * @var mixed
-     */
-    public mixed $defaultThumbImg;
+    private string $tnWidth;
 
-    /**
-     * @var string
-     */
-    public string $tnWidth;
+    private string $tnHeight;
 
-    /**
-     * @var string
-     */
-    public string $tnHeight;
+    private string $thumbDirectory;
 
-    /**
-     * @var string
-     */
-    public string $thumbDirectory;
-
-    /**
-     * @var string
-     */
-    public string $imageProcessFile;
+    private string $imageProcessFile;
 
     /**
      * Thumbnail constructor.
      */
-    public function __construct()
+    public function __construct(protected Storage $storage, protected File $file)
     {
-        $this->defaultThumbImg = Storage::disk('public')->path(config('config.thumb_default_img'));
+        $this->setVariables();
+    }
+
+    /**
+     * Set variables.
+     */
+    private function setVariables(): void
+    {
+        $this->setDefaultThumbnailImage();
+        $this->setThumbnailWidthHeight();
+        $this->setThumbnailDir();
+        $this->setImageProcessFile();
+    }
+
+    /**
+     * Set default thumbnail image.
+     */
+    private function setDefaultThumbnailImage(): void
+    {
+        $this->defaultThumbImg = $this->storage->disk('public')->path(config('config.thumb_default_img'));
+    }
+
+    /**
+     * Set thumbnail width and height.
+     */
+    private function setThumbnailWidthHeight(): void
+    {
         $this->tnWidth = config('config.thumb_width');
         $this->tnHeight = config('config.thumb_height');
-        $this->thumbDirectory = Storage::disk('public')->path(config('config.thumb_output_dir').'/'.$this->tnWidth.'_'.$this->tnHeight);
-        $this->imageProcessFile = config('config.image_process_file');
+    }
+
+    /**
+     * Set thumbnail directory.
+     */
+    private function setThumbnailDir(): void
+    {
+
+        $this->thumbDirectory = $this->storage->disk('public')
+            ->path(config('config.thumb_output_dir').'/'.$this->tnWidth.'_'.$this->tnHeight);
+    }
+
+    /**
+     * Set image process file.
+     */
+    private function setImageProcessFile(): void
+    {
+        $this->imageProcessFile = config('config.image_process_file'); //image-process.js
     }
 
     /**
      * Return thumbnail or create if not exists.
      *
-     * @param $url
-     * @return string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getThumbnail($url): string
     {
         $thumbName = md5($url).'.jpg';
-        $thumbFile = $this->thumbDirectory.'/'.$thumbName;
+        $thumbFilePath = $this->thumbDirectory.'/'.$thumbName;
 
         try {
-            if (! File::isFile($thumbFile)) {
-                $this->processImage($url, $thumbName);
+            if (! $this->file->isFile($thumbFilePath)) {
+                $this->processImage($url, $thumbFilePath);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
+
             return $this->getFile($this->defaultThumbImg);
         }
 
-        return $this->getFile($thumbFile);
+        return $this->getFile($thumbFilePath);
     }
 
     /**
      * Get image and create thumbnail.
      *
-     * @param string $url
-     * @param string $fileName
-     * @return void
      * @throws \Exception
      */
-    protected function processImage(string $url, string $fileName)
+    protected function processImage(string $url, string $filePath): void
     {
         $output = null;
-        $command = "node {$this->imageProcessFile} $fileName $url";
+        $command = "node {$this->imageProcessFile} $filePath $url";
 
         exec($command, $output);
 
-        if (!$output[0]) {
+        if (! $output[0]) {
             throw new Exception('Could not retrieve image for thumbnail.');
         }
     }
@@ -114,16 +135,14 @@ class Thumbnail
     /**
      * Get thumbnail file or default file.
      *
-     * @param $thumbFile
-     * @return string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function getFile($thumbFile): string
     {
-        if (File::isFile($thumbFile)) {
-            return File::get($thumbFile);
+        if ($this->file->isFile($thumbFile)) {
+            return $this->file->get($thumbFile);
         }
 
-        return File::get($this->defaultThumbImg);
+        return $this->file->get($this->defaultThumbImg);
     }
 }

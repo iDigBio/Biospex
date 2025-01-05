@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * Class TranscriptionMapHelper
- * @package App\Facades
  */
 class TranscriptionMapHelper extends Facade
 {

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -20,32 +21,49 @@
 namespace App\Models;
 
 use App\Models\Traits\Presentable;
+use App\Models\Traits\UuidTrait;
 use App\Presenters\BingoPresenter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Bingo
- *
- * @package App\Models
  */
 class Bingo extends BaseEloquentModel
 {
-    use Presentable;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'bingos';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'user_id',
         'project_id',
         'title',
         'directions',
-        'contact'
+        'contact',
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * @var string
@@ -54,8 +72,6 @@ class Bingo extends BaseEloquentModel
 
     /**
      * User relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -64,8 +80,6 @@ class Bingo extends BaseEloquentModel
 
     /**
      * Project relation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -89,6 +103,6 @@ class Bingo extends BaseEloquentModel
      */
     public function maps()
     {
-        return $this->hasMany(BingoMap::class);
+        return $this->hasMany(BingoUser::class);
     }
 }

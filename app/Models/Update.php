@@ -16,25 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Models;
 
 use Carbon\Carbon;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Update extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'updates';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'title',
-        'message'
+        'message',
     ];
 
     /**
@@ -46,14 +49,12 @@ class Update extends BaseEloquentModel
     {
         return [
             'created_at' => 'datetime',
-            'updated_at' => 'datetime'
+            'updated_at' => 'datetime',
         ];
     }
 
     /**
      * Date mutator.
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
     protected function CreatedAt(): Attribute
     {

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -19,13 +20,13 @@
 
 namespace App\Jobs;
 
-use App\Facades\GeneralHelper;
 use App\Models\Header;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Grid\JqGridEncoder;
+use App\Services\Helpers\GeneralService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,160 +35,105 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * Class GridExportCsvJob
- *
- * @package App\Jobs
  */
 class GridExportCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
+    use ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
-    public $timeout = 1800;
+    public int $timeout = 1800;
 
-    /**
-     * @var User
-     */
-    private $user;
-
-    /**
-     * @var int
-     */
-    private $projectId;
-
-    /**
-     * @var int|null
-     */
-    private $expeditionId;
-
-    /**
-     * @var array
-     */
-    private $postData;
-
-    /**
-     * @var string
-     */
-    private $route;
+    private string $csvName;
 
     /**
      * Create a new job instance.
-     *
-     * @param User $user
-     * @param array $data
      */
-    public function __construct(User $user, array $data)
+    public function __construct(public User $user, public array $data)
     {
-        $this->user = $user;
-        $this->projectId = $data['projectId'];
-        $this->expeditionId = $data['expeditionId'];
-        $this->postData = $data['postData'];
-        $this->route = $data['route'];
+        $this->user = $user->withoutRelations();
         $this->onQueue(config('config.queue.default'));
+        $this->csvName = Str::random().'.csv';
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Grid\JqGridEncoder $jqGridEncoder
-     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
-     * @return void
+     * @throws \League\Csv\CannotInsertRecord
+     * @throws \Exception
      */
-    public function handle(JqGridEncoder $jqGridEncoder, AwsS3CsvService $awsS3CsvService)
+    public function handle(
+        JqGridEncoder $jqGridEncoder,
+        AwsS3CsvService $awsS3CsvService,
+        GeneralService $generalService): void
     {
-        $csvName = Str::random().'.csv';
+        $cursor = $jqGridEncoder->encodeGridExportData($this->data);
 
-        try {
+        $header = $this->buildHeader();
 
-            $cursor = $jqGridEncoder->encodeGridExportData($this->postData, $this->route, $this->projectId, $this->expeditionId);
+        $bucket = config('filesystems.disks.s3.bucket');
+        $filePath = config('config.report_dir').'/'.$this->csvName;
 
-            $header = $this->buildHeader();
+        $awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
+        $awsS3CsvService->createCsvWriterFromStream();
+        $awsS3CsvService->csv->insertOne($header->keys()->toArray());
 
-            $bucket = config('filesystems.disks.s3.bucket');
-            $filePath = config('config.report_dir') . '/' . $csvName;
+        $cursor->each(function ($subject) use ($header, $awsS3CsvService, $generalService) {
+            $subjectArray = $subject->getAttributes();
+            $subjectArray['id'] = (string) $subject->id;
+            $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
+            $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
+            $subjectArray['created_at'] = $subject->created_at->toDateTimeString();
+            $subjectArray['ocr'] = $generalService->forceUtf8($subject->ocr);
+            $subjectArray['occurrence'] = $this->decodeAndEncode($subject['occurrence']->getAttributes());
 
-            $awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
-            $awsS3CsvService->createCsvWriterFromStream();
-            $awsS3CsvService->csv->insertOne($header->keys()->toArray());
+            $merged = $header->merge($subjectArray);
 
-            $cursor->each(function ($subject) use ($header, $awsS3CsvService) {
-                $subjectArray = $subject->getAttributes();
-                $subjectArray['_id'] = (string) $subject->_id;
-                $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
-                $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
-                $subjectArray['created_at'] = $subject->created_at->toDateTimeString();;
-                $subjectArray['ocr'] = GeneralHelper::forceUtf8($subject->ocr);
-                $subjectArray['occurrence'] = $this->decodeAndEncode($subject->occurrence->getAttributes());
+            $awsS3CsvService->csv->insertOne($merged->toArray());
+        });
+        $awsS3CsvService->closeBucketStream();
 
-                $merged = $header->merge($subjectArray);
-
-                $awsS3CsvService->csv->insertOne($merged->toArray());
-            });
-            $awsS3CsvService->closeBucketStream();
-
-            if (!Storage::disk('s3')->exists($filePath)) {
-                throw new Exception(t('Csv export file is missing: %s', $filePath));
-            }
-
-            $route = route('admin.downloads.report', ['file' => base64_encode($csvName)]);
-            $btn = $this->createButton($route, t('Download CSV'));
-            $html = $this->expeditionId !== 0 ?
-                t('Your grid export for Expedition Id %s is complete. Click the button provided to download:', $this->expeditionId) :
-                t('Your grid export for Project Id %s is complete. Click the button provided to download:', $this->projectId);
-
-            $attributes = [
-                'subject' => t('Grid Export to CSV Complete'),
-                'html'    => [$html],
-                'buttons' => $btn
-            ];
-
-            $this->user->notify(new Generic($attributes));
-
-        } catch (Exception $e) {
-
-            $idMessage = $this->expeditionId !== 0 ? t('Expedition Id: %s', $this->expeditionId) : t('Project Id: %s', $this->projectId);
-            $attributes = [
-                'subject' => t('Grid Export to CSV Error'),
-                'html'    => [
-                    t('An error occurred during csv export from the grid.'),
-                    $idMessage,
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ],
-            ];
-
-            $this->user->notify(new Generic($attributes, true));
-            Storage::disk('s3')->delete(config('config.report_dir').'/'.$csvName);
+        if (! Storage::disk('s3')->exists($filePath)) {
+            throw new Exception(t('Csv export file is missing: %s', $filePath));
         }
+
+        $route = route('admin.downloads.report', ['file' => base64_encode($this->csvName)]);
+        $btn = $this->createButton($route, t('Download CSV'));
+        $html = ! is_null($this->data['expeditionId']) ?
+            t('Your grid export for Expedition Id %s is complete. Click the button provided to download:', $this->data['expeditionId']) :
+            t('Your grid export for Project Id %s is complete. Click the button provided to download:', $this->data['projectId']);
+
+        $attributes = [
+            'subject' => t('Grid Export to CSV Complete'),
+            'html' => [$html],
+            'buttons' => $btn,
+        ];
+
+        $this->user->notify(new Generic($attributes));
     }
 
     /**
      * Build the header for export.
-     *
-     * @return \Illuminate\Support\Collection
      */
-    private function buildHeader()
+    private function buildHeader(): \Illuminate\Support\Collection
     {
-        $header = Header::where('project_id', $this->projectId)->first()->header['image'];
-        array_unshift($header, '_id', 'project_id', 'id', 'expedition_ids', 'exported');
+        $header = Header::where('project_id', $this->data['projectId'])->first()->header['image'];
+        array_unshift($header, '_id', 'project_id', 'imageId', 'expedition_ids', 'exported');
         array_push($header, 'ocr', 'occurrence', 'updated_at', 'created_at');
-        return collect($header)->flip()->map(function($value, $key) {
-            return "";
+
+        return collect($header)->flip()->map(function ($value, $key) {
+            return '';
         });
     }
 
     /**
      * Decode fields from occurrence then encode to avoid errors.
      *
-     * @param $occurrence
      * @return false|string
      */
     private function decodeAndEncode($occurrence)
@@ -207,14 +153,37 @@ class GridExportCsvJob implements ShouldQueue
 
     /**
      * Check if value is json.
-     *
-     * @param $str
-     * @return bool
      */
     public function isJson($str): bool
     {
         $json = json_decode($str);
 
         return $json !== false && ! is_null($json) && $str != $json;
+    }
+
+    /**
+     * The job failed to process.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $idMessage = ! is_null($this->data['expeditionId']) ?
+            t('Expedition Id: %s', $this->data['expeditionId']) :
+            t('Project Id: %s', $this->data['projectId']);
+
+        $attributes = [
+            'subject' => t('Grid Export to CSV Error'),
+            'html' => [
+                t('An error occurred during csv export from the grid.'),
+                $idMessage,
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('Code: %s', $throwable->getTrace()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
+        ];
+
+        $this->user->notify(new Generic($attributes, true));
+        Storage::disk('s3')->delete(config('config.report_dir').'/'.$this->csvName);
     }
 }

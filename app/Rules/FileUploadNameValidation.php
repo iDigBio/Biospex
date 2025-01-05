@@ -23,8 +23,6 @@ use Illuminate\Contracts\Validation\Rule;
 
 /**
  * Class FileUploadNameValidation
- *
- * @package App\Rules
  */
 class FileUploadNameValidation implements Rule
 {
@@ -32,7 +30,6 @@ class FileUploadNameValidation implements Rule
      * messages
      */
     public $message;
-
 
     /**
      * Create a new rule instance.
@@ -47,8 +44,8 @@ class FileUploadNameValidation implements Rule
     /**
      * Determine if the validation rule passes.
      *
-     * @param string $attribute field name
-     * @param mixed $value field value
+     * @param  string  $attribute  field name
+     * @param  mixed  $value  field value
      * @return bool
      */
     public function passes($attribute, $value)

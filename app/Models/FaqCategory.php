@@ -19,27 +19,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class FaqCategory
- *
- * @package App\Models
  */
 class FaqCategory extends BaseEloquentModel
 {
+    use HasFactory;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'faq_categories';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = ['name'];
 
     /**
      * Faq relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function faqs()

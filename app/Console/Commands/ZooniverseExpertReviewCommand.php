@@ -21,7 +21,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ExpertReviewMigrateReconcilesJob;
 use App\Jobs\ExpertReviewSetProblemsJob;
-use App\Services\Reconcile\ReconcileService;
+use App\Services\Reconcile\ReconcileLambdaService;
 use Illuminate\Console\Command;
 
 /**
@@ -40,26 +40,25 @@ class ZooniverseExpertReviewCommand extends Command
 
     /**
      * The console command description.
-     * @see \App\Http\Controllers\Admin\ReconcileController::create()
+     *
+     * @see \App\Http\Controllers\Admin\ExpertReconcileController::create()
      *
      * @var string
      */
     protected $description = 'Runs an expedition through creating expert review migrations';
 
-   /**
+    /**
      * Execute command to create explained for expert review.
+     *
      * @see \App\Listeners\LabelReconciliationListener for result processing.
      * Will process explained and then chain:
      * @see ExpertReviewMigrateReconcilesJob
      * @see ExpertReviewSetProblemsJob
-     *
-     * @param \App\Services\Reconcile\ReconcileService $reconcileService
-     * @return void
      */
-    public function handle(ReconcileService $reconcileService): void
+    public function handle(ReconcileLambdaService $reconcileLambdaService): void
     {
         $expeditionId = $this->argument('expeditionId');
 
-        $reconcileService->invokeLambdaExplained($expeditionId);
+        $reconcileLambdaService->invokeLambdaExplained($expeditionId);
     }
 }

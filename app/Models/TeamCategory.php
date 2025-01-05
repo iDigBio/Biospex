@@ -19,16 +19,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class TeamCategory
- *
- * @package App\Models
  */
 class TeamCategory extends BaseEloquentModel
 {
+    use HasFactory;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'team_categories';
 
@@ -39,7 +40,7 @@ class TeamCategory extends BaseEloquentModel
 
     /**
      * Faq relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function teams()

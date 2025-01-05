@@ -11,7 +11,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -19,37 +19,46 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<\App\Models\User>
  */
-class UserFactory extends Factory
+final class UserFactory extends Factory
 {
     /**
-     * Define the model's default state.
+     * The name of the factory's corresponding model.
      *
-     * @return array<string, mixed>
+     * @var string
+     */
+    protected $model = User::class;
+
+    /**
+     * Define the model's default state.
      */
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'uuid' => fake()->uuid,
+            'email' => fake()->safeEmail,
+            'password' => bcrypt(fake()->password),
+            'email_verified_at' => fake()->optional()->datetime(),
+            'notification' => fake()->randomNumber(1),
             'remember_token' => Str::random(10),
         ];
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Indicate user is verified.
      */
-    public function unverified(): static
+    public function verified(): Factory
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        return $this->state(function (array $attributes) {
+            return [
+                'email_verified_at' => now(),
+            ];
+        });
     }
 }

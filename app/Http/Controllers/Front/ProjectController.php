@@ -19,122 +19,63 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
-use App\Repositories\ProjectRepository;
-use App\Repositories\StateCountyRepository;
-use App\Services\Chart\TranscriptionChartService;
-use CountHelper;
-use Flash;
+use App\Services\Project\ProjectService;
+use App\Services\Transcriptions\StateCountyService;
 use JavaScript;
+use Redirect;
+use View;
 
 /**
  * Class ProjectController
- *
- * @package App\Http\Controllers\Front
  */
 class ProjectController extends Controller
 {
     /**
-     * @var \App\Repositories\ProjectRepository
-     */
-    private $projectRepo;
-
-    /**
      * ProjectController constructor.
-     *
-     * @param \App\Repositories\ProjectRepository $projectRepo
      */
-    public function __construct(ProjectRepository $projectRepo)
-    {
-
-        $this->projectRepo = $projectRepo;
-    }
+    public function __construct(
+        protected ProjectService $projectService,
+        protected StateCountyService $stateCountyService) {}
 
     /**
      * Public Projects page.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(): \Illuminate\Contracts\View\View
     {
-        $projects = $this->projectRepo->getPublicProjectIndex();
+        $projects = $this->projectService->getPublicIndex();
 
-        return \View::make('front.project.index', compact('projects'));
-    }
-
-    /**
-     * Public Projects page sort and order.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function sort()
-    {
-        if (! \Request::ajax()) {
-            return null;
-        }
-
-        $sort = \Request::get('sort');
-        $order = \Request::get('order');
-        $projects = $this->projectRepo->getPublicProjectIndex($sort, $order);
-
-        return \View::make('front.project.partials.project', compact('projects'));
+        return View::make('front.project.index', compact('projects'));
     }
 
     /**
      * Show public project page.
-     *
-     * @param \App\Services\Chart\TranscriptionChartService $chartService
-     * @param \App\Repositories\StateCountyRepository $stateCountyRepo
-     * @param $slug
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function project(
-        TranscriptionChartService $chartService,
-        StateCountyRepository $stateCountyRepo,
-        $slug
-    ) {
-        $project = $this->projectRepo->getProjectPageBySlug($slug);
+    public function show($slug): \Illuminate\Http\RedirectResponse|\Illuminate\Contracts\View\View
+    {
+        $project = $this->projectService->getProjectPageBySlug($slug);
 
         if ($project === null) {
-            \Flash::error(t('Unable to locate project. Please alert the Admin.'));
-
-            return \Redirect::route('front.projects.index');
+            return Redirect::route('front.projects.index')->with('danger', t('Unable to locate project. Please alert the Admin.'));
         }
 
-        $expeditions = null;
-        $expeditionsCompleted = null;
-        if (isset($project->expeditions)) {
-            [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
-                return $expedition->completed === 0;
-            });
-        }
+        [$expeditions, $expeditionsCompleted] = $this->projectService->partitionExpeditions($project->expeditions);
 
-        $events = null;
-        $eventsCompleted = null;
-        if (isset($project->events)) {
-            [$events, $eventsCompleted] = $project->events->partition(function ($event) {
-                return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
-            });
-        }
+        [$events, $eventsCompleted] = $this->projectService->partitionEvents($project->events);
 
-        // TODO change to stat table count
-        $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
-        $transcribersCount = CountHelper::projectTranscriberCount($project->id);
-
-        $years = !isset($project->amChart) || is_null($project->amChart->data) ?
+        $years = ! isset($project->amChart) || is_null($project->amChart->data) ?
             null : array_keys($project->amChart->data);
 
-        $states = $stateCountyRepo->getStateTranscriptCount($project->id);
+        $states = $this->stateCountyService->getStateTranscriptCount($project->id);
         $max = abs(round(($states->max('value') + 500), -3));
 
         JavaScript::put([
-            'max'     => $max,
-            'states'  => $states->toJson(),
-            'years'   => $years,
+            'max' => $max,
+            'states' => $states->toJson(),
+            'years' => $years,
             'project' => $project->id,
         ]);
 
-        return \View::make('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
+        return View::make('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted'));
     }
 }

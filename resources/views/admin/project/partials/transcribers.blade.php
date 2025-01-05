@@ -2,5 +2,5 @@
     <td>{{ $transcriber['user_name'] }}</td>
     <td>{{ $transcriber['expeditionCount'] }}</td>
     <td>{{ $transcriber['transcriptionCount'] }}</td>
-    <td>{{ DateHelper::formatMongoDbDate($transcriber['last_date']) }}</td>
+    <td>{{ format_date($transcriber['last_date'], 'Y-m-d', auth()->user()->profile->timezone) }}</td>
 </tr>

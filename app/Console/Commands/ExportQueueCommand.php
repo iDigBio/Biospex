@@ -25,8 +25,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
  * Class ExportQueueCommand
- *
- * @package App\Console\Commands
  */
 class ExportQueueCommand extends Command
 {
@@ -47,18 +45,11 @@ class ExportQueueCommand extends Command
     protected $description = 'Fire export queue process. Expedition Id resets the Expedition.';
 
     /**
-     * @var \App\Services\Actor\Zooniverse\ZooniverseExportQueue
-     */
-    private ZooniverseExportQueue $zooniverseExportQueue;
-
-    /**
      * ExportQueueCommand constructor.
-     *
-     * @param \App\Services\Actor\Zooniverse\ZooniverseExportQueue $zooniverseExportQueue
      */
-    public function __construct(ZooniverseExportQueue $zooniverseExportQueue) {
+    public function __construct(protected ZooniverseExportQueue $zooniverseExportQueue)
+    {
         parent::__construct();
-        $this->zooniverseExportQueue = $zooniverseExportQueue;
     }
 
     /**

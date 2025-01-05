@@ -20,66 +20,39 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class UserPolicy
- *
- * @package App\Policies
  */
 class UserPolicy
 {
-    /**
-     * @param \App\Models\User $user
-     * @return bool|null
-     */
-    public function before(User $user)
+    public function before(User $loggedInUser): ?bool
     {
-        return $user->isAdmin() ? true : null;
+        return $loggedInUser->isAdmin() ? true : null;
     }
 
-    /**
-     * @param \App\Models\User $user
-     * @return bool|null
-     */
-    public function isAdmin(User $user)
+    public function isAdmin(User $loggedInUser): ?bool
     {
-        return $user->isAdmin() ? true : null;
+        return $loggedInUser->isAdmin() ? true : null;
     }
 
-    /**
-     * @param \App\Models\User $user
-     * @return bool
-     */
-    public function edit(User $user)
+    public function edit(User $loggedInUser, User $user): bool
     {
-        return $user === null ? false : Auth::id() === $user->id;
+        return $loggedInUser->id === $user->id;
     }
 
-    /**
-     * @param \App\Models\User $user
-     * @return bool
-     */
-    public function update(User $user)
+    public function update(User $loggedInUser, User $user): bool
     {
-        return $user === null ? false : Auth::id() === $user->id;
+        return $loggedInUser->id === $user->id;
     }
 
-    /**
-     * @param \App\Models\User $user
-     * @return bool
-     */
-    public function pass(User $user)
+    public function password(User $loggedInUser, User $user): bool
     {
-        return $user === null ? false : Auth::id() === $user->id;
+        return $loggedInUser->id === $user->id;
     }
 
-    /**
-     * @param \App\Models\User $user
-     * @return bool|null
-     */
-    public function delete(User $user)
+    public function delete(User $loggedInUser): ?bool
     {
-        return $user === null ? false : ($user->isAdmin() ? true : null);
+        return $loggedInUser->isAdmin() ? false : null;
     }
 }

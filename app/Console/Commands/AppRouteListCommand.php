@@ -8,8 +8,6 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
  * Class AppRouteListCommand
- *
- * @package App\Console\Commands
  */
 class AppRouteListCommand extends Command
 {
@@ -39,11 +37,10 @@ class AppRouteListCommand extends Command
 
     /**
      * Execute the console command.
-     *
      */
     public function handle()
     {
-        $output = new BufferedOutput();
+        $output = new BufferedOutput;
         Artisan::call('route:list --json', [], $output);
         \File::put(storage_path('routes.json'), Artisan::output());
     }

@@ -19,14 +19,12 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\WorkflowManagerRepository;
 use App\Services\Actor\ActorFactory;
+use App\Services\Workflow\WorkflowManagerService;
 use Illuminate\Console\Command;
 
 /**
  * Class WorkFlowManagerCommand
- *
- * @package App\Console\Commands
  */
 class WorkFlowManagerCommand extends Command
 {
@@ -42,71 +40,52 @@ class WorkFlowManagerCommand extends Command
      *
      * @var string
      */
-    protected $description = "Workflow manager";
+    protected $description = 'Workflow manager';
 
-    /**
-     * @var \App\Repositories\WorkflowManagerRepository
-     */
-    protected WorkflowManagerRepository $workflowManagerRepo;
-
-    /**
-     * @var mixed
-     */
     public mixed $tube;
 
     /**
      * WorkFlowManagerCommand constructor.
-     *
-     * @param \App\Repositories\WorkflowManagerRepository $workflowManagerRepo
      */
-    public function __construct(WorkflowManagerRepository $workflowManagerRepo)
+    public function __construct(protected WorkflowManagerService $workflowManagerService)
     {
         parent::__construct();
         $this->tube = config('config.queue.workflow');
-        $this->workflowManagerRepo = $workflowManagerRepo;
     }
 
     /**
      * Execute the console command.
      *
      * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
-     * @return void
      * @see WorkflowManagerRepository::getWorkflowManagersForProcessing() Filters out error, queued, completed.
      */
-    public function handle()
+    public function handle(): void
     {
         $expeditionId = $this->argument('expeditionId');
 
-        $managers = $this->workflowManagerRepo->getWorkflowManagersForProcessing($expeditionId);
+        $managers = $this->workflowManagerService->getWorkflowManagersForProcessing($expeditionId);
 
-        if ($managers->isEmpty())
-        {
+        if ($managers->isEmpty()) {
             return;
         }
 
-        $managers->each(function ($manager)
-        {
-            $this->processActors($manager->expedition);
+        $managers->each(function ($manager) {
+            $this->processExpeditions($manager->expedition);
         });
     }
 
     /**
-     * Decide what actor to include in the array and being processed.
-     *
-     * @param $expedition
+     * Process each Expedition send to actor classes.
      */
-    protected function processActors($expedition): void
+    protected function processExpeditions($expedition): void
     {
-        $expedition->actors->each(function ($actor) use ($expedition) {
-            if ($actor->id == config('zooniverse.actor_id')) {
-                $attributes = [
-                    'total' => $expedition->stat->local_subject_count,
-                ];
+        $count = $expedition->stat->local_subject_count;
 
-                $actor->expeditions()->updateExistingPivot($expedition->id, $attributes);
-            }
+        $expedition->actorExpeditions->each(function ($actorExpedition) use ($count) {
+            $actorExpedition->total = $count;
+            $actorExpedition->save();
 
-            ActorFactory::create($actor->class)->actor($actor);
+            ActorFactory::create($actorExpedition->actor->class)->process($actorExpedition);
         });
     }
 }

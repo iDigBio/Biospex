@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -19,19 +20,18 @@
 
 namespace App\Providers;
 
-use App\Repositories\PanoptesTranscriptionRepository;
-use App\Services\Helpers\CountHelper;
-use App\Services\Helpers\DateHelper;
-use App\Services\Helpers\FlashHelper;
-use App\Services\Helpers\GeneralHelper;
-use App\Services\Helpers\TranscriptionMapHelper;
+use App\Services\Helpers\CountService;
+use App\Services\Helpers\DateService;
+use App\Services\Helpers\TranscriptionMapService;
+use App\Services\Transcriptions\PanoptesTranscriptionService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
+use Laracasts\Utilities\JavaScript\LaravelViewBinder;
+use Laracasts\Utilities\JavaScript\Transformers\Transformer;
+use View;
 
 /**
  * Class BiospexServiceProvider
- *
- * @package App\Providers
  */
 class BiospexServiceProvider extends ServiceProvider
 {
@@ -40,15 +40,26 @@ class BiospexServiceProvider extends ServiceProvider
         $this->setViewComposers();
     }
 
-    public function register()
+    public function register(): void
     {
         $this->registerFacades();
 
         Collection::macro('shuffleWords', function () {
             $keys = $this->keys()->shuffle();
-            return $keys->map(function($key) {
+
+            return $keys->map(function ($key) {
                 return [$key, $this[$key]];
             });
+        });
+
+        $this->app->bind(Transformer::class, function ($app) {
+            return new Transformer(
+                new LaravelViewBinder(
+                    $app['events'],
+                    config('javascript.bind_js_vars_to_this_view')
+                ),
+                config('javascript.js_namespace')
+            );
         });
     }
 
@@ -57,11 +68,9 @@ class BiospexServiceProvider extends ServiceProvider
      */
     public function setViewComposers(): void
     {
-        \View::composer(
-            'common.notices', 'App\Http\ViewComposers\NoticesComposer'
-        );
-
-        \View::composer(['common.process-modal', 'common.modal', 'common.project-modal'], 'App\Http\ViewComposers\PhpVarsComposer');
+        View::composer('common.notices', 'App\Http\ViewComposers\NoticesComposer');
+        View::composer(['common.process-modal', 'common.modal'], 'App\Http\ViewComposers\PhpVarsComposer');
+        View::composer('common.nav', 'App\Http\ViewComposers\NavComposer');
     }
 
     /**
@@ -69,25 +78,16 @@ class BiospexServiceProvider extends ServiceProvider
      */
     public function registerFacades(): void
     {
-        $this->app->singleton('flash', function ()
-        {
-            return new FlashHelper();
+        $this->app->singleton('counthelper', function () {
+            return new CountService(app(PanoptesTranscriptionService::class));
         });
 
-        $this->app->singleton('datehelper', function(){
-            return new DateHelper();
+        $this->app->singleton('datehelper', function () {
+            return new DateService;
         });
 
-        $this->app->singleton('generalhelper', function(){
-            return new GeneralHelper();
-        });
-
-        $this->app->singleton('counthelper', function(){
-            return new CountHelper(app(PanoptesTranscriptionRepository::class));
-        });
-
-        $this->app->singleton('transcriptionmaphelper', function() {
-            return new TranscriptionMapHelper(
+        $this->app->singleton('transcriptionmaphelper', function () {
+            return new TranscriptionMapService(
                 $this->app['config']->get('zooniverse.reserved_encoded'),
                 $this->app['config']->get('zooniverse.mapped_transcription_fields')
             );

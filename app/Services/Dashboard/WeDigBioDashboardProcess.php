@@ -19,39 +19,24 @@
 
 namespace App\Services\Dashboard;
 
-use App\Repositories\PusherTranscriptionRepository;
+use App\Services\Transcriptions\PusherTranscriptionService;
 
 /**
  * Class WeDigBioDashboardProcess
- *
- * @package App\Services\Process
  */
 class WeDigBioDashboardProcess
 {
     /**
-     * @var \App\Repositories\PusherTranscriptionRepository
-     */
-    private $pusherTranscriptionRepo;
-
-    /**
      * WeDigBioDashboardProcess constructor.
-     *
-     * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepo
      */
-    public function __construct(PusherTranscriptionRepository $pusherTranscriptionRepo)
-    {
-
-        $this->pusherTranscriptionRepo = $pusherTranscriptionRepo;
-    }
+    public function __construct(protected PusherTranscriptionService $pusherTranscriptionService) {}
 
     /**
      * Set dashboard query
-     *
-     * @param array $request
      */
     public function setDashboardQuery(array $request)
     {
-        $this->pusherTranscriptionRepo->setQueryForDashboard($request);
+        $this->pusherTranscriptionService->setQueryForDashboard($request);
     }
 
     /**
@@ -61,26 +46,21 @@ class WeDigBioDashboardProcess
      */
     public function getTotalCount()
     {
-        return $this->pusherTranscriptionRepo->getWeDigBioDashboardCount();
+        return $this->pusherTranscriptionService->getWeDigBioDashboardCount();
     }
 
     /**
      * Get dashboard items.
      *
-     * @param int $limit
-     * @param int $offset
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getItems(int $limit, int $offset)
     {
-        return $this->pusherTranscriptionRepo->getWeDigBioDashboardItems($limit, $offset);
+        return $this->pusherTranscriptionService->getWeDigBioDashboardItems($limit, $offset);
     }
 
     /**
      * Set limit on rows returned.
-     *
-     * @param array $request
-     * @return int
      */
     public function setLimit(array $request): int
     {
@@ -90,7 +70,6 @@ class WeDigBioDashboardProcess
     /**
      * Set current page.
      *
-     * @param array $request
      * @return int
      */
     public function setOffset(array $request)
@@ -101,11 +80,10 @@ class WeDigBioDashboardProcess
     /**
      * Show single resource.
      *
-     * @param $guid
      * @return mixed
      */
     public function showApiDashboard($guid)
     {
-        return $this->pusherTranscriptionRepo->findBy('guid', $guid);
+        return $this->pusherTranscriptionService->findBy('guid', $guid);
     }
 }

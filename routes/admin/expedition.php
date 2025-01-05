@@ -17,22 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use App\Http\Controllers\Admin\ExpeditionCloneController;
 use App\Http\Controllers\Admin\ExpeditionController;
-use App\Http\Controllers\Admin\OcrController;
+use App\Http\Controllers\Admin\ExpeditionExportController;
+use App\Http\Controllers\Admin\ExpeditionSortController;
+use App\Http\Controllers\Admin\ExpeditionToolController;
 
-Route::get('expeditions', [ExpeditionController::class, 'index'])->name('admin.expeditions.index');
-Route::post('expeditions/sort', [ExpeditionController::class, 'sort'])->name('admin.expeditions.sort');
-Route::get('projects/{projects}/expeditions/create', [ExpeditionController::class, 'create'])->name('admin.expeditions.create');
-Route::post('projects/{projects}/expeditions', [ExpeditionController::class, 'store'])->name('admin.expeditions.store');
-Route::get('projects/{projects}/expeditions/{expeditions}', [ExpeditionController::class, 'show'])->name('admin.expeditions.show');
+Route::resource('expeditions', ExpeditionController::class)->except(['create', 'store'])->names([
+    'index' => 'admin.expeditions.index',
+    'show' => 'admin.expeditions.show',
+    'edit' => 'admin.expeditions.edit',
+    'update' => 'admin.expeditions.update',
+    'destroy' => 'admin.expeditions.delete',
+]);
 
+Route::get('expeditions/{project}/create', [ExpeditionController::class, 'create'])->name('admin.expeditions.create');
+Route::post('expeditions/{project}/store', [ExpeditionController::class, 'store'])->name('admin.expeditions.store');
 
-Route::get('projects/{projects}/expeditions/{expeditions}/edit', [ExpeditionController::class, 'edit'])->name('admin.expeditions.edit');
-Route::put('projects/{projects}/expeditions/{expeditions}', [ExpeditionController::class, 'update'])->name('admin.expeditions.update');
-Route::delete('projects/{projects}/expeditions/{expeditions}', [ExpeditionController::class, 'delete'])->name('admin.expeditions.delete');
+//# New
+Route::get('expeditions/{expedition}/clone', ExpeditionCloneController::class)->name('admin.expeditions.clone');
+Route::get('expeditions/{expedition}/tools', ExpeditionToolController::class)->name('admin.expeditions.tools');
+Route::post('expeditions/sort', ExpeditionSortController::class)->name('admin.expeditions.sort');
 
-Route::get('projects/{projects}/expeditions/{expeditions}/clone', [ExpeditionController::class, 'clone'])->name('admin.expeditions.clone');
-Route::post('projects/{projects}/expeditions/{expeditions}/process', [ExpeditionController::class, 'process'])->name('admin.expeditions.process');
-Route::delete('projects/{projects}/expeditions/{expeditions}/stop', [ExpeditionController::class, 'stop'])->name('admin.expeditions.stop');
-
-Route::get('projects/{projects}/expeditions/{expeditions}/tools', [ExpeditionController::class, 'tools'])->name('admin.expeditions.tools');
+Route::get('expeditions/{expedition}/export', ExpeditionExportController::class)->name('admin.expeditions.export');

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -22,56 +23,38 @@ namespace App\Jobs;
 use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Repositories\SubjectRepository;
 use App\Services\MongoDbService;
+use App\Services\Subject\SubjectService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Class DeleteExpeditionJob
- *
- * @package App\Jobs
  */
 class DeleteExpeditionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Models\User
-     */
-    private User $user;
-
-    /**
-     * @var \App\Models\Expedition
-     */
-    private Expedition $expedition;
-
-    /**
      * Create a new job instance.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Expedition $expedition
      */
-    public function __construct(User $user, Expedition $expedition)
+    public function __construct(protected User $user, protected Expedition $expedition)
     {
-        $this->user = $user;
-        $this->expedition = $expedition;
+        $this->user = $user->withoutRelations();
+        $this->expedition = $expedition->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
-     *
-     * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Services\MongoDbService $mongoDbService
-     * @return void
      */
     public function handle(
-        SubjectRepository $subjectRepo,
+        SubjectService $subjectService,
         MongoDbService $mongoDbService
     ): void {
 
@@ -87,19 +70,19 @@ class DeleteExpeditionJob implements ShouldQueue
         $mongoDbService->setCollection('panoptes_transcriptions');
         $mongoDbService->deleteMany(['subject_expeditionId' => $this->expedition->id]);
 
-        $subjectIds = $subjectRepo->findByExpeditionId((int) $this->expedition->id, ['_id'])->pluck('_id');
+        $subjectIds = $subjectService->findByExpeditionId((int) $this->expedition->id, ['_id'])->pluck('_id');
 
         if ($subjectIds->isNotEmpty()) {
-            $subjectRepo->detachSubjects($subjectIds, $this->expedition->id);
+            $subjectService->detachSubjects($subjectIds, $this->expedition->id);
         }
 
         $this->expedition->delete();
 
         $attributes = [
             'subject' => t('Records Deleted'),
-            'html'    => [
-                t('Expedition `%s` and all corresponding records have been deleted.', $this->expedition->title)
-            ]
+            'html' => [
+                t('Expedition `%s` and all corresponding records have been deleted.', $this->expedition->title),
+            ],
         ];
 
         $this->user->notify(new Generic($attributes));
@@ -107,15 +90,12 @@ class DeleteExpeditionJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
-    public function failed(\Throwable $throwable): void
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Delete Expedition Job Failed'),
-            'html'    => [
+            'html' => [
                 t('Error: Could not delete Expedition %s', $this->expedition->title),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),

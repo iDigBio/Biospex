@@ -10,12 +10,14 @@
 <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav ml-auto">
         <li class="nav-item mr-2 dropdown">
-            <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown00" data-toggle="dropdown" aria-haspopup="true"
+            <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown00" data-toggle="dropdown"
+               aria-haspopup="true"
                aria-expanded="false">{{ t('About') }}</a>
             <div class="dropdown-menu" aria-labelledby="dropdown00">
                 <a class="dropdown-item text-uppercase" href="{{ route('front.teams.index') }}">{{ t('Team') }}</a>
                 <a class="dropdown-item text-uppercase" href="{{ route('front.faqs.index') }}">{{ t('FAQ') }}</a>
-                <a class="dropdown-item text-uppercase" href="{{ route('front.resources.index') }}">{{ t('Resources') }}</a>
+                <a class="dropdown-item text-uppercase"
+                   href="{{ route('front.resources.index') }}">{{ t('Resources') }}</a>
             </div>
         </li>
         <li class="nav-item active">
@@ -28,27 +30,33 @@
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.events.index') }}">{{ t('Events') }}</a>
         </li>
-        @if(Auth::check())
+
         <li class="nav-item mr-2 dropdown">
-            <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
+            <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown01" data-toggle="dropdown"
+               aria-haspopup="true"
                aria-expanded="false">{{ t('WeDigBio') }}</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-                <a class="dropdown-item text-uppercase" href="#"
-                   data-toggle="modal"
-                   data-target="#wedigbio-progress-modal"
-                   data-href="{{ route('ajax.get.wedigbio-progress', ['dateId' => 0]) }}"
-                   data-channel="{{ config('config.poll_wedigbio_progress_channel') . '.' . 0 }}"
-                   data-date="0">{{ t('Progress') }}</a>
-                <a class="dropdown-item text-uppercase" href="#"
-                   data-toggle="modal"
-                   data-target="#wedigbio-rate-modal"
-                   data-date="0"
-                   data-href="{{ route('ajax.get.wedigbio-rate', ['dateId' => 0]) }}">{{ t('Rates') }}</a>
-                <a class="dropdown-item text-uppercase" href="{{ route('front.wedigbio.index') }}">{{ t('Past Events') }}</a>
-                <a class="dropdown-item text-uppercase" href="https://wedigbio.org" target="_blank">{{ t('WeDigBio Website') }}</a>
+                @isset($event)
+                    <a class="dropdown-item text-uppercase" href="#"
+                       data-toggle="modal"
+                       data-target="#wedigbio-progress-modal"
+                       data-href="{{ route('front.wedigbio-progress', [$event]) }}"
+                       data-channel="{{ config('config.poll_wedigbio_progress_channel') . '.' . $event->uuid }}"
+                       data-uuid="{{ $event->uuid }}">{{ t('Progress') }}</a>
+                    <a class="dropdown-item text-uppercase" href="#"
+                       data-toggle="modal"
+                       data-target="#wedigbio-rate-modal"
+                       data-projects="{{ route('front.get.wedigbio-projects', [$event]) }}"
+                       data-uuid="{{ $event->uuid }}"
+                       data-href="{{ route('front.get.wedigbio-rate', [$event]) }}">{{ t('Rates') }}</a>
+                @endisset
+                <a class="dropdown-item text-uppercase"
+                   href="{{ route('front.wedigbio.index') }}">{{ t('Past Events') }}</a>
+                <a class="dropdown-item text-uppercase" href="https://wedigbio.org"
+                   target="_blank">{{ t('WeDigBio Website') }}</a>
             </div>
         </li>
-        @endif
+
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.bingos.index') }}">{{ t('Games') }}</a>
         </li>
@@ -57,7 +65,8 @@
         </li>
         @if(Auth::check())
             <li class="nav-item nav-btn dropdown">
-                <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true"
+                <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown02" data-toggle="dropdown"
+                   aria-haspopup="true"
                    aria-expanded="false">{{ t('Admin') }}</a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown02">
                     <a href="{{ route('admin.groups.index') }}" class="dropdown-item text-uppercase"
@@ -82,7 +91,7 @@
                     @endcan
                     <a href="{{ route('admin.update.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Updates') }}</a>
-                    <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"
+                    <a href="{{ route('admin.users.edit', [Auth::user()]) }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Account') }}</a>
                     <a href="{{ route('app.get.logout') }}" class="dropdown-item text-uppercase"
                        type="button">{{ t('Logout') }}</a>

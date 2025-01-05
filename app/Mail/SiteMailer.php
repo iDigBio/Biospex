@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
@@ -24,8 +25,6 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Class SiteMailer
- *
- * @package App\Mail
  */
 class SiteMailer extends Mailable
 {
@@ -43,9 +42,6 @@ class SiteMailer extends Mailable
 
     /**
      * Create a new message instance.
-     *
-     * @param string $subject
-     * @param string $message
      */
     public function __construct(string $subject, string $message)
     {

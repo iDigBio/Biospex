@@ -19,21 +19,13 @@
 
 namespace App\Providers;
 
-use App\Events\ImageExportEvent;
-use App\Events\LabelReconciliationEvent;
-use App\Events\TesseractOcrEvent;
 use App\Listeners\GroupEventSubscriber;
-use App\Listeners\ImageExportListener;
-use App\Listeners\LabelReconciliationListener;
-use App\Listeners\TesseractOcrListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 /**
  * Class EventServiceProvider
- *
- * @package App\Providers
  */
 class EventServiceProvider extends ServiceProvider
 {
@@ -43,18 +35,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        Registered::class               => [
+        Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        LabelReconciliationEvent::class => [
-            LabelReconciliationListener::class,
-        ],
-        ImageExportEvent::class         => [
-            ImageExportListener::class,
-        ],
-        TesseractOcrEvent::class        => [
-            TesseractOcrListener::class,
-        ]
     ];
 
     /**

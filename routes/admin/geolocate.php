@@ -17,20 +17,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use App\Http\Controllers\Admin\GeolocateCommunityController;
 use App\Http\Controllers\Admin\GeoLocateController;
+use App\Http\Controllers\Admin\GeolocateExportController;
+use App\Http\Controllers\Admin\GeolocateFieldsController;
+use App\Http\Controllers\Admin\GeolocateFormController;
+use App\Http\Controllers\Admin\GeoLocateStatController;
 
-Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/', [GeoLocateController::class, 'index'])->name('admin.geolocates.stats');
-Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/show', [GeoLocateController::class, 'show'])->name('admin.geolocates.show');
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/form', [GeoLocateController::class, 'form'])->name('admin.geolocates.form');
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/fields', [GeoLocateController::class, 'fields'])->name('admin.geolocates.fields');
+Route::post('geolocates/{expedition}/store', [GeoLocateController::class, 'store'])->name('admin.geolocates.store');
+Route::delete('geolocates/{expedition}/destroy', [GeoLocateController::class, 'destroy'])->name('admin.geolocates.destroy');
 
-Route::get('projects/{projects}/expeditions/{expeditions}/geolocates/community', [GeoLocateController::class, 'communityForm'])->name('admin.geolocates.communityForm');
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/community', [GeoLocateController::class, 'community'])->name('admin.geolocates.community');
+Route::get('geolocates/stat/{expedition}', [GeoLocateStatController::class, 'index'])->name('admin.geolocate-stat.index');
+Route::post('geolocates/stat/{expedition}/update', [GeoLocateStatController::class, 'update'])->name('admin.geolocate-stat.update');
 
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/store', [GeoLocateController::class, 'store'])->name('admin.geolocates.store');
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/export', [GeoLocateController::class, 'export'])->name('admin.geolocates.export');
-Route::delete('projects/{projects}/expeditions/{expeditions}/geolocates/delete', [GeoLocateController::class, 'delete'])->name('admin.geolocates.delete');
+Route::get('geolocates/form/{expedition}', [GeoLocateFormController::class, 'index'])->name('admin.geolocate-form.index');
+Route::post('geolocates/form/{expedition}/show', [GeoLocateFormController::class, 'show'])->name('admin.geolocate-form.show');
 
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/refresh', [GeoLocateController::class, 'refresh'])->name('admin.geolocates.refresh');
+Route::post('geolocates/field/{expedition}', GeoLocateFieldsController::class)->name('admin.geolocate-field.index');
 
-Route::post('projects/{projects}/expeditions/{expeditions}/geolocates/source', [GeoLocateController::class, 'source'])->name('admin.geolocates.source-upload');
+Route::get('geolocates/community/{expedition}/edit', [GeoLocateCommunityController::class, 'edit'])->name('admin.geolocate-community.edit');
+Route::post('geolocates/community/{expedition}/update', [GeoLocateCommunityController::class, 'update'])->name('admin.geolocate-community.update');
+
+Route::post('geolocates/{expedition}/export', GeoLocateExportController::class)->name('admin.geolocate-export.index');

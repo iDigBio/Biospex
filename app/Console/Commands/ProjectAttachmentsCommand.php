@@ -19,14 +19,12 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\ProjectRepository;
+use App\Models\Project;
 use Illuminate\Console\Command;
 use Storage;
 
 /**
  * Class ProjectAttachmentsCommand
- *
- * @package App\Console\Commands
  */
 class ProjectAttachmentsCommand extends Command
 {
@@ -45,19 +43,11 @@ class ProjectAttachmentsCommand extends Command
     protected $description = 'Command description';
 
     /**
-     * @var \App\Repositories\ProjectRepository
-     */
-    private $projectRepo;
-
-    /**
      * Create a new command instance.
-     *
-     * @param \App\Repositories\ProjectRepository $projectRepo
      */
-    public function __construct(ProjectRepository $projectRepo)
+    public function __construct(protected Project $project)
     {
         parent::__construct();
-        $this->projectRepo = $projectRepo;
     }
 
     /**
@@ -65,14 +55,14 @@ class ProjectAttachmentsCommand extends Command
      */
     public function handle()
     {
-        $projects = $this->projectRepo->all();
+        $projects = $this->project->all();
 
-        $projects->each(function($project){
-            if ( ! $this->variantExists($project->logo)) {
+        $projects->each(function ($project) {
+            if (! $this->variantExists($project->logo)) {
                 $project->logo->setToBeDeleted();
             }
 
-            if ( ! $this->variantExists($project->banner)) {
+            if (! $this->variantExists($project->banner)) {
                 $project->banner->setToBeDeleted();
             }
 
@@ -81,8 +71,7 @@ class ProjectAttachmentsCommand extends Command
     }
 
     /**
-     * @param $attachment
-     * @param null $variant
+     * @param  null  $variant
      * @return bool
      */
     public function variantExists($attachment, $variant = null)

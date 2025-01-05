@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -22,72 +23,51 @@ namespace App\Services\Chart;
 use App\Models\AmChart;
 use App\Models\Expedition;
 use App\Models\Project;
-use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Transcriptions\PanoptesTranscriptionService;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use File;
-use Illuminate\Support\Carbon;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
 /**
  * Class TranscriptionChartService
- *
- * @package App\Services\Process
  */
 class TranscriptionChartService
 {
-    /**
-     * @var \App\Repositories\PanoptesTranscriptionRepository
-     */
-    private $panoptesTranscriptionRepo;
+    private mixed $amChartData;
 
-    /**
-     * @var mixed
-     */
-    private $amChartData;
+    private mixed $projectChartSeries;
 
-    /**
-     * @var mixed
-     */
-    private $projectChartSeries;
+    private mixed $projectChartSeriesFile;
 
-    /**
-     * @var mixed
-     */
-    private $projectChartSeriesFile;
+    private mixed $begin;
 
-    /**
-     * @var
-     */
-    private $begin;
+    private mixed $end;
 
-    /**
-     * @var
-     */
-    private $end;
-
-    /**
-     * @var
-     */
-    private $yearDaysArray;
+    private mixed $yearDaysArray;
 
     /**
      * TranscriptionChartService constructor.
-     *
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      */
     public function __construct(
-        PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-    ) {
-        $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
-    }
+        protected PanoptesTranscriptionService $panoptesTranscriptionService,
+        protected Carbon $carbon,
+        protected Filesystem $filesystem
+    ) {}
 
     /**
      * Process project for amchart.
-     *
-     * @param \App\Models\Project $project
      */
-    public function process(Project $project)
+    public function process(Project $project): void
     {
+        $project->load([
+            'amChart',
+            'expeditions' => function ($q) {
+                $q->with('stat')->has('stat');
+                $q->with('panoptesProject')->has('panoptesProject');
+            },
+        ]);
+
         $this->checkNewChart($project);
 
         $this->resetTemplates();
@@ -98,7 +78,7 @@ class TranscriptionChartService
         }
 
         $years->reject(function ($year) use ($project) {
-            return isset($project->amChart['series'][$year]) && $year !== Carbon::now()->year;
+            return isset($project->amChart['series'][$year]) && $year !== $this->carbon::now()->year;
         })->each(function ($year) use ($project) {
             $this->setBeginEndOfYear($year);
             $this->setAmChartData($year);
@@ -122,13 +102,11 @@ class TranscriptionChartService
 
     /**
      * Check if this is a new chart. Create and load if new.
-     *
-     * @param \App\Models\Project $project
      */
-    protected function checkNewChart(Project &$project)
+    protected function checkNewChart(Project &$project): void
     {
         if ($project->amChart === null) {
-            $amChart = new AmChart();
+            $amChart = new AmChart;
             $amChart->data = [];
             $amChart->series = [];
             $project->amChart()->save($amChart);
@@ -139,19 +117,16 @@ class TranscriptionChartService
     /**
      * Reset the templates for each project.
      */
-    protected function resetTemplates()
+    protected function resetTemplates(): void
     {
         $this->amChartData = collect();
         $this->projectChartSeries = [];
         $file = config('config.project_chart_series');
-        $this->projectChartSeriesFile = json_decode(File::get($file), true);
+        $this->projectChartSeriesFile = json_decode($this->filesystem->get($file), true);
     }
 
     /**
      * Build complete series and data for chart for year.
-     *
-     * @param $project
-     * @param $year
      */
     protected function buildCompleteChartData($project, $year): void
     {
@@ -175,21 +150,18 @@ class TranscriptionChartService
 
     /**
      * Set years array.
-     * Carbon::parse('first day of January next year')->subSecond();
-     *
-     * @param int $projectId
-     * @return \Illuminate\Support\Collection|null
+     * $this->carbon::parse('first day of January next year')->subSecond();
      */
-    public function setYearsArray(int $projectId)
+    public function setYearsArray(int $projectId): ?Collection
     {
-        $earliest_date = $this->panoptesTranscriptionRepo->getMinFinishedAtDateByProjectId($projectId);
-        $latest_date = $this->panoptesTranscriptionRepo->getMaxFinishedAtDateByProjectId($projectId);
+        $earliest_date = $this->panoptesTranscriptionService->getMinFinishedAtDateByProjectId($projectId);
+        $latest_date = $this->panoptesTranscriptionService->getMaxFinishedAtDateByProjectId($projectId);
 
-        if (null === $earliest_date || null === $latest_date) {
+        if ($earliest_date === null || $latest_date === null) {
             return null;
         }
 
-        $years = range(Carbon::parse($earliest_date)->year, Carbon::parse($latest_date)->year);
+        $years = range($this->carbon::parse($earliest_date)->year, $this->carbon::parse($latest_date)->year);
         rsort($years);
 
         return collect($years);
@@ -197,21 +169,17 @@ class TranscriptionChartService
 
     /**
      * Return first day and last day of given year, or if current year, get today.
-     *
-     * @param int $year
      */
-    protected function setBeginEndOfYear(int $year)
+    protected function setBeginEndOfYear(int $year): void
     {
-        $this->begin = Carbon::parse('first day of January '.$year);
-        $this->end = $year === Carbon::now()->year ? Carbon::parse('today')->addDay()->subSecond() : Carbon::parse('last day of December '.$year)->addDay()->subSecond();
+        $this->begin = $this->carbon::parse('first day of January '.$year);
+        $this->end = $year === $this->carbon::now()->year ? $this->carbon::parse('today')->addDay()->subSecond() : $this->carbon::parse('last day of December '.$year)->addDay()->subSecond();
     }
 
     /**
      * Builds the amChartData for all years and days.
-     *
-     * @param int $year
      */
-    protected function setAmChartData(int $year)
+    protected function setAmChartData(int $year): void
     {
         $period = collect(CarbonPeriod::create($this->begin, 'P1D', $this->end));
         $this->amChartData[$year] = $period->mapWithKeys(function ($date) {
@@ -221,20 +189,14 @@ class TranscriptionChartService
 
     /**
      * Set yearDaysArray for merging expedition dates and counts.
-     *
-     * @param $year
      */
-    protected function setYearDaysArray(int $year)
+    protected function setYearDaysArray(int $year): void
     {
         $this->yearDaysArray = collect(array_fill_keys($this->amChartData[$year]->keys()->toArray(), []));
     }
 
     /**
      * Process expedition and return completed date collections.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @param int $year
-     * @return \Illuminate\Support\Collection
      */
     protected function processExpedition(Expedition $expedition, int $year, mixed $dateCount = null): Collection
     {
@@ -253,23 +215,16 @@ class TranscriptionChartService
 
     /**
      * Get transcriptions per workflow for the given year.
-     *
-     * @param int $workflowId
-     * @return mixed
      */
     protected function transcriptionCountPerDate(int $workflowId): mixed
     {
-        return $this->panoptesTranscriptionRepo->getTranscriptionCountPerDate($workflowId, $this->begin, $this->end);
+        return $this->panoptesTranscriptionService->getTranscriptionCountPerDate($workflowId, $this->begin, $this->end);
     }
 
     /**
      * Map date counts for expedition transcriptions.
-     *
-     * @param \Illuminate\Support\Collection $dateCount
-     * @param string $record
-     * @return \Illuminate\Support\Collection
      */
-    protected function mapDateCounts(Collection $dateCount, string $record)
+    protected function mapDateCounts(Collection $dateCount, string $record): Collection
     {
         return $dateCount->mapWithKeys(function ($value, $key) use ($record) {
             return [$key => [$record => $value]];
@@ -280,12 +235,8 @@ class TranscriptionChartService
 
     /**
      * Add empty values for missing date fields for expedition.
-     *
-     * @param \Illuminate\Support\Collection $mergedDates
-     * @param string $record
-     * @return \Illuminate\Support\Collection
      */
-    protected function addEmptyDateCounts(Collection $mergedDates, string $record)
+    protected function addEmptyDateCounts(Collection $mergedDates, string $record): Collection
     {
         return $mergedDates->mapWithKeys(function ($count, $date) use ($record) {
             if (empty($count)) {
@@ -298,11 +249,8 @@ class TranscriptionChartService
 
     /**
      * Calculate the count totals per date for Expeditioni.
-     *
-     * @param \Illuminate\Support\Collection $completeDates
-     * @param string $record
      */
-    protected function calculateCountTotals(Collection &$completeDates, string $record)
+    protected function calculateCountTotals(Collection &$completeDates, string $record): void
     {
         $total = 0;
         $completeDates->transform(function ($value, $key) use ($record, &$total) {
@@ -314,11 +262,8 @@ class TranscriptionChartService
 
     /**
      * Build expedition series and add to chart series.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @param int $year
      */
-    public function buildExpeditionSeries(Expedition $expedition, int $year)
+    public function buildExpeditionSeries(Expedition $expedition, int $year): void
     {
         $this->projectChartSeriesFile['dataFields']['valueY'] = 'expedition'.$expedition->id;
         $this->projectChartSeriesFile['name'] = $expedition->title;

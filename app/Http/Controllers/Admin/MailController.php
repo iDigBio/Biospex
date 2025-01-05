@@ -22,58 +22,40 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MailFormRequest;
 use App\Mail\SiteMailer;
-use App\Repositories\UserRepository;
-use Illuminate\Support\Facades\Mail;
+use App\Services\User\UserService;
+use Mail;
+use Redirect;
+use View;
 
 /**
  * Class MailController
- *
- * @package App\Http\Controllers\Admin
  */
 class MailController extends Controller
 {
     /**
-     * @var \App\Repositories\UserRepository
-     */
-    private $userRepo;
-
-    /**
      * UserController constructor.
-     *
-     * @param \App\Repositories\UserRepository $userRepo
      */
-    public function __construct(UserRepository $userRepo)
-    {
-        $this->userRepo = $userRepo;
-    }
+    public function __construct(protected UserService $userService) {}
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Show mail form
      */
-    public function index()
+    public function index(): \Illuminate\View\View
     {
-        return \View::make('admin.mail.index');
+        return View::make('admin.mail.index');
     }
 
     /**
      * Show the form for user edit.
-     *
-     * @param \App\Http\Requests\MailFormRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function send(MailFormRequest $request)
+    public function send(MailFormRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $users = $this->userRepo->getUsersForMailer($request->get('recipients'));
-        $recipients = $users->reject(function($user){
-            return $user->email === config('mail.from.address');
-        })->pluck('email');
+        $recipients = $this->userService->getUsersForMailer($request->get('recipients'));
 
         Mail::to(config('mail.from.address'))
             ->bcc($recipients)
             ->send(new SiteMailer($request->get('subject'), $request->get('message')));
 
-        \Flash::success(t('Your message has been sent.'));
-
-        return \Redirect::route('admin.mail.index');
+        return Redirect::route('admin.mail.index')->with('success', t('Your message has been sent.'));
     }
 }

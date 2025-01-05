@@ -26,52 +26,38 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RetryMiddleware;
 use Illuminate\Support\Facades\Cache;
 use League\OAuth2\Client\Provider\GenericProvider;
-use GuzzleHttp\Pool;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Psr\Http\Message\RequestInterface;
 
 /**
  * Class HttpRequest
- *
- * @package App\Services\Requests
  */
 class HttpRequest
 {
-    /**
-     * @var GenericProvider
-     */
     protected GenericProvider $provider;
 
-    /**
-     * @var AccessTokenInterface
-     */
     protected AccessTokenInterface $accessToken;
 
-    /**
-     * @var int
-     */
     protected int $maxRetries = 3;
 
     /**
      * Set authentication provider
-     *
-     * @param array $config
-     * @return GenericProvider
      */
     public function setHttpProvider(array $config = []): GenericProvider
     {
-        $handlerStack = HandlerStack::create(new CurlHandler());
+        $handlerStack = HandlerStack::create(new CurlHandler);
         $handlerStack->push(Middleware::retry($this->retryDecider(), $this->retryDelay()));
 
-        $reqOpts = null === $config ? ['handler' => $handlerStack] : array_merge([
-            'handler'                 => $handlerStack,
-            'urlAccessToken'          => '',
-            'urlAuthorize'            => '',
+        $reqOpts = $config === null ? ['handler' => $handlerStack] : array_merge([
+            'handler' => $handlerStack,
+            'urlAccessToken' => '',
+            'urlAuthorize' => '',
             'urlResourceOwnerDetails' => '',
         ], $config);
 
@@ -80,8 +66,6 @@ class HttpRequest
 
     /**
      * Get http client.
-     *
-     * @return \GuzzleHttp\ClientInterface
      */
     public function getHttpClient(): ClientInterface
     {
@@ -91,8 +75,8 @@ class HttpRequest
     /**
      * Set access token.
      *
-     * @param $token
      * @return void
+     *
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
     protected function setAccessToken($token)
@@ -104,12 +88,11 @@ class HttpRequest
     /**
      * Check access token
      *
-     * @param $token
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
     public function checkAccessToken($token)
     {
-        if (null === Cache::get($token) || Cache::get($token)->hasExpired()) {
+        if (Cache::get($token) === null || Cache::get($token)->hasExpired()) {
             $this->setAccessToken($token);
         }
 
@@ -118,11 +101,6 @@ class HttpRequest
 
     /**
      * Build authenticated request
-     *
-     * @param string $method
-     * @param string $uri
-     * @param array $options
-     * @return \Psr\Http\Message\RequestInterface
      */
     protected function buildAuthenticatedRequest(string $method, string $uri, array $options = []): RequestInterface
     {
@@ -137,18 +115,16 @@ class HttpRequest
      * - fulfilled: (callable) Function to invoke when a request completes.
      * - rejected: (callable) Function to invoke when a request is rejected.
      *
-     * @param \Iterator|array $requests $requests
-     * @param int $concurrency
-     * @return array
+     * @param  \Iterator|array  $requests  $requests
      */
     public function poolBatchRequest(\Iterator|array $requests, int $concurrency = 10): array
     {
         return Pool::batch($this->getHttpClient(), $requests, [
             'concurrency' => $concurrency,
-            'fulfilled'   => function (Response $response, $index) {
+            'fulfilled' => function (Response $response, $index) {
                 return [$index => $response];
             },
-            'rejected'    => function (RequestException $reason, $index) {
+            'rejected' => function (RequestException $reason, $index) {
                 return [$index => $reason];
             },
         ]);
@@ -156,10 +132,6 @@ class HttpRequest
 
     /**
      * Create pool and return.
-     *
-     * @param \Generator $promises
-     * @param array $poolConfig
-     * @return \GuzzleHttp\Pool
      */
     public function pool(Generator $promises, array $poolConfig): Pool
     {
@@ -168,20 +140,16 @@ class HttpRequest
 
     /**
      * Retry decider
-     *
-     * @return \Closure
      */
     public function retryDecider(): \Closure
     {
-        return function (int $retries, Request $request, Response $response = null) {
-            return $retries < $this->maxRetries && null !== $response && 429 === $response->getStatusCode();
+        return function (int $retries, Request $request, ?Response $response = null) {
+            return $retries < $this->maxRetries && $response !== null && $response->getStatusCode() === 429;
         };
     }
 
     /**
      * Retry delay.
-     *
-     * @return \Closure
      */
     public function retryDelay(): \Closure
     {

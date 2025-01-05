@@ -22,33 +22,59 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\EventTeamPresenter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class EventTeam
- *
- * @package App\Models
  */
 class EventTeam extends BaseEloquentModel
 {
-    use UuidTrait, Presentable;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'event_teams';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'title',
-        'users'
+        'users',
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * @var string
      */
     protected $presenter = EventTeamPresenter::class;
+
+    /**
+     * Model Boot
+     */
+    public static function boot(): void
+    {
+        parent::boot();
+        static::bootUuidTrait();
+
+    }
 
     /**
      * Event relationship.

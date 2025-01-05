@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -19,17 +20,15 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\BingoMapRepository;
+use App\Models\BingoUser;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 
 /**
  * Class BingoCleanCommand
- *
- * @package App\Console\Commands
  */
 class BingoCleanCommand extends Command
 {
-
     /**
      * The console command name.
      *
@@ -42,22 +41,11 @@ class BingoCleanCommand extends Command
      *
      * @var string
      */
-    protected $description = "Remove expired bingo maps.";
+    protected $description = 'Remove expired bingo users.';
 
-    /**
-     * @var \App\Repositories\BingoMapRepository
-     */
-    private $bingoMapRepo;
-
-    /**
-     * BingoCleanCommand constructor.
-     *
-     * @param \App\Repositories\BingoMapRepository $bingoMapRepo
-     */
-    public function __construct(BingoMapRepository $bingoMapRepo)
+    public function __construct(protected BingoUser $bingoUser)
     {
         parent::__construct();
-        $this->bingoMapRepo = $bingoMapRepo;
     }
 
     /**
@@ -65,15 +53,12 @@ class BingoCleanCommand extends Command
      *
      * @throws \Exception
      */
-    public function handle()
+    public function handle(): void
     {
-        $records = $this->bingoMapRepo->getBingoMapForCleaning();
+        $records = $this->bingoUser->where('created_at', '<', Carbon::now()->subDays(1))->get();
 
-        $records->each(function($record){
+        $records->each(function ($record) {
             $record->delete();
         });
     }
 }
-
-
-

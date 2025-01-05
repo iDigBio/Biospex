@@ -21,13 +21,11 @@ namespace App\Http\Requests;
 
 use App\Rules\FileUploadNameValidation;
 use App\Rules\ResourceDownloadValidation;
-use Illuminate\Support\Facades\Auth;
 use App\Rules\ResourceNameValidation;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class ProjectFormRequest
- *
- * @package App\Http\Requests
  */
 class ProjectFormRequest extends Request
 {
@@ -43,27 +41,29 @@ class ProjectFormRequest extends Request
      */
     public function rules()
     {
+        $projectId = isset($this->route('project')->id) ? $this->route('project')->id : null;
+
         return [
-            'group_id'                => 'required|integer|min:1',
-            'title'                   => 'required|between:6,140|unique:projects,title,'.$this->route('projects'),
-            'contact'                 => 'required',
-            'contact_email'           => 'required|min:4|max:32|email',
-            'contact_title'           => 'required',
-            'description_short'       => 'required|between:6,140',
-            'description_long'        => 'required',
-            'keywords'                => 'required',
-            'organization_website'    => 'nullable|url',
-            'blog_url'                => 'nullable|url',
-            'facebook'                => 'nullable|url',
-            'twitter'                 => 'nullable|url',
-            'logo'                    => [
+            'group_id' => 'required|integer|min:1',
+            'title' => 'required|between:6,140|unique:projects,title,'.$projectId,
+            'contact' => 'required',
+            'contact_email' => 'required|min:4|max:32|email',
+            'contact_title' => 'required',
+            'description_short' => 'required|between:6,140',
+            'description_long' => 'required',
+            'keywords' => 'required',
+            'organization_website' => 'nullable|url',
+            'blog_url' => 'nullable|url',
+            'facebook' => 'nullable|url',
+            'twitter' => 'nullable|url',
+            'logo' => [
                 'image',
-                new FileUploadNameValidation(),
+                new FileUploadNameValidation,
             ],
-            'resources.*.type'        => [new ResourceDownloadValidation()],
-            'resources.*.name'        => ['required_with:resources.*.type', new ResourceNameValidation()],
+            'resources.*.type' => [new ResourceDownloadValidation],
+            'resources.*.name' => ['required_with:resources.*.type', new ResourceNameValidation],
             'resources.*.description' => 'required_with:resources.*.type',
-            'resources.*.download'    => 'mimes:txt,doc,csv,pdf',
+            'resources.*.download' => 'mimes:txt,doc,csv,pdf',
         ];
     }
 
@@ -84,10 +84,10 @@ class ProjectFormRequest extends Request
     public function messages()
     {
         return [
-            'resources.*.name.required_with'        => 'Required when Type selected',
+            'resources.*.name.required_with' => 'Required when Type selected',
             'resources.*.description.required_with' => 'Required when Type selected',
-            'resources.*.download.required_if'      => 'Required when Type selected',
-            'resources.*.download.mimes'            => 'Accepted files: txt,doc,csv,pdf',
+            'resources.*.download.required_if' => 'Required when Type selected',
+            'resources.*.download.mimes' => 'Accepted files: txt,doc,csv,pdf',
         ];
     }
 }

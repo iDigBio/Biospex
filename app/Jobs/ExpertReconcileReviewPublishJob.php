@@ -19,70 +19,61 @@
 
 namespace App\Jobs;
 
+use App\Models\Expedition;
 use App\Notifications\Generic;
-use App\Repositories\ExpeditionRepository;
 use App\Services\Reconcile\ExpertReconcilePublishService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Csv\CannotInsertRecord;
+use Throwable;
 
 /**
  * Class ExpertReconcileReviewPublishJob
- *
- * @package App\Jobs
  */
 class ExpertReconcileReviewPublishJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var int
-     */
-    private int $expeditionId;
-
-    /**
      * ExpertReconcileReviewPublishJob constructor.
-     *
-     * @param int $expeditionId
      */
-    public function __construct(int $expeditionId)
+    public function __construct(protected Expedition $expedition)
     {
-        $this->expeditionId = $expeditionId;
+        $this->expedition = $expedition->withoutRelations();
         $this->onQueue(config('config.queue.reconcile'));
     }
 
     /**
      * Handle Job.
      *
-     * @param \App\Services\Reconcile\ExpertReconcilePublishService $expertReconcilePublishService
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
+     * @throws \Exception
      */
-    public function handle(
-        ExpertReconcilePublishService $expertReconcilePublishService,
-        ExpeditionRepository $expeditionRepository
-    ): void {
-        $expedition = $expeditionRepository->findWith($this->expeditionId, ['project.group.owner']);
+    public function handle(ExpertReconcilePublishService $expertReconcilePublishService): void
+    {
+        $this->expedition->load(['project.group.owner']);
 
-        try {
-            $expertReconcilePublishService->publishReconciled($this->expeditionId);
-        } catch (CannotInsertRecord|Exception $e) {
-            $attributes = [
-                'subject' => t('Expert Reconcile Publish Error'),
-                'html'    => [
-                    t('An error occurred while importing the Darwin Core Archive.'),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ],
-            ];
-            $expedition->project->group->owner->notify(new Generic($attributes, true));
-        }
+        $expertReconcilePublishService->publishReconciled($this->expedition);
 
         $this->delete();
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $attributes = [
+            'subject' => t('Expert Reconcile Publish Error'),
+            'html' => [
+                t('An error occurred while importing the Darwin Core Archive.'),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
+        ];
+        $this->expedition->project->group->owner->notify(new Generic($attributes, true));
     }
 }

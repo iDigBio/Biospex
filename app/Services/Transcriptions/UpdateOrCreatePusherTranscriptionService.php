@@ -20,72 +20,30 @@
 namespace App\Services\Transcriptions;
 
 use App\Facades\TranscriptionMapHelper;
-use App\Repositories\ExpeditionRepository;
-use App\Repositories\PanoptesTranscriptionRepository;
-use App\Repositories\PusherTranscriptionRepository;
 use Ramsey\Uuid\Uuid;
 use Validator;
 
 /**
  * Class UpdateOrCreatePusherTranscriptionService
- *
- * @package App\Services\Transcriptions
  */
 class UpdateOrCreatePusherTranscriptionService
 {
     /**
-     * @var \App\Repositories\PusherTranscriptionRepository
-     */
-    private PusherTranscriptionRepository $pusherTranscriptionRepo;
-
-    /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
-     * @var \App\Repositories\PanoptesTranscriptionRepository
-     */
-    private PanoptesTranscriptionRepository $panoptesTranscriptionRepo;
-
-    /**
      * UpdateOrCreatePusherTranscriptionService constructor.
-     *
-     * @param \App\Repositories\PusherTranscriptionRepository $pusherTranscriptionRepo
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
      */
     public function __construct(
-        PusherTranscriptionRepository $pusherTranscriptionRepo,
-        ExpeditionRepository $expeditionRepo,
-        PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-    ) {
-        $this->pusherTranscriptionRepo = $pusherTranscriptionRepo;
-        $this->expeditionRepo = $expeditionRepo;
-        $this->panoptesTranscriptionRepo = $panoptesTranscriptionRepo;
-    }
-
-    /**
-     * Get expedition.
-     *
-     * @param $expeditionId
-     * @return \Illuminate\Support\Collection
-     */
-    public function getExpedition($expeditionId)
-    {
-        return $this->expeditionRepo->findWith($expeditionId, ['panoptesProject']);
-    }
+        protected PusherTranscriptionService $pusherTranscriptionService,
+        protected PanoptesTranscriptionService $panoptesTranscriptionService
+    ) {}
 
     /**
      * Get transcriptions.
      *
-     * @param int $expeditionId
-     * @param null $timestamp
-     * @return mixed
+     * @param  null  $timestamp
      */
     public function getTranscriptions(int $expeditionId, $timestamp = null): mixed
     {
-        return $this->panoptesTranscriptionRepo->getTranscriptionForDashboardJob($expeditionId, $timestamp);
+        return $this->panoptesTranscriptionService->getTranscriptionsForDashboardJob($expeditionId, $timestamp);
     }
 
     /**
@@ -93,13 +51,11 @@ class UpdateOrCreatePusherTranscriptionService
      * Uses transcriptions from overnight job to update any existing,
      * or create new, pusher transcriptions.
      *
-     * @param $transcription
-     * @param $expedition
      * @throws \Exception
      */
     public function processTranscripts($transcription, $expedition)
     {
-        $classification = $this->pusherTranscriptionRepo->findBy('classification_id', $transcription->classification_id);
+        $classification = $this->pusherTranscriptionService->findBy('classification_id', $transcription->classification_id);
         $classification === null ?
             $this->createClassification($transcription, $expedition) :
             $this->updateClassification($transcription, $classification, $expedition);
@@ -108,8 +64,6 @@ class UpdateOrCreatePusherTranscriptionService
     /**
      * Create classification if it doesn't exist.
      *
-     * @param $transcription
-     * @param $expedition
      * @throws \Exception
      */
     private function createClassification($transcription, $expedition)
@@ -123,88 +77,81 @@ class UpdateOrCreatePusherTranscriptionService
         }
 
         $item = [
-            'classification_id'    => $classification_id,
-            'expedition_uuid'      => $expedition->uuid,
-            'project'              => $expedition->panoptesProject->title,
-            'description'          => $expedition->description,
-            'guid'                 => Uuid::uuid4()->toString(),
-            'timestamp'            => $transcription->classification_finished_at,
-            'subject'              => [
-                'link'         => $transcription->subject_references,
+            'classification_id' => $classification_id,
+            'expedition_uuid' => $expedition->uuid,
+            'project' => $expedition->panoptesProject->title,
+            'description' => $expedition->description,
+            'guid' => Uuid::uuid4()->toString(),
+            'timestamp' => $transcription->classification_finished_at,
+            'subject' => [
+                'link' => $transcription->subject_references,
                 'thumbnailUri' => $thumbnailUri,
             ],
-            'contributor'          => [
-                'decimalLatitude'  => '',
+            'contributor' => [
+                'decimalLatitude' => '',
                 'decimalLongitude' => '',
-                'ipAddress'        => '',
-                'transcriber'      => $transcription->user_name,
+                'ipAddress' => '',
+                'transcriber' => $transcription->user_name,
                 'physicalLocation' => [
-                    'country'      => '',
-                    'province'     => '',
-                    'county'       => '',
+                    'country' => '',
+                    'province' => '',
+                    'county' => '',
                     'municipality' => '',
-                    'locality'     => '',
+                    'locality' => '',
                 ],
             ],
             'transcriptionContent' => [
-                'lat'          => '',
-                'long'         => '',
-                'country'      => $transcription->Country,
-                'province'     => TranscriptionMapHelper::mapTranscriptionField('province', $transcription),
-                'county'       => $transcription->County,
+                'lat' => '',
+                'long' => '',
+                'country' => $transcription->Country,
+                'province' => TranscriptionMapHelper::mapTranscriptionField('province', $transcription),
+                'county' => $transcription->County,
                 'municipality' => '',
-                'locality'     => $transcription->Location,
-                'date'         => '', // which date to use? transcription date is messy
-                'collector'    => TranscriptionMapHelper::mapTranscriptionField('collector', $transcription),
-                'taxon'        => TranscriptionMapHelper::mapTranscriptionField('taxon', $transcription),
+                'locality' => $transcription->Location,
+                'date' => '', // which date to use? transcription date is messy
+                'collector' => TranscriptionMapHelper::mapTranscriptionField('collector', $transcription),
+                'taxon' => TranscriptionMapHelper::mapTranscriptionField('taxon', $transcription),
             ],
-            'discretionaryState'   => 'Transcribed',
+            'discretionaryState' => 'Transcribed',
         ];
 
-        $this->pusherTranscriptionRepo->create($item);
+        $this->pusherTranscriptionService->create($item);
     }
 
     /**
      * Update Classification.
-     *
-     * @param $transcription
-     * @param $classification
-     * @param $expedition
      */
     private function updateClassification($transcription, $classification, $expedition)
     {
         $thumbnailUri = $this->setThumbnailUri($transcription);
 
         $subject = [
-            'link'         => ! empty ($transcription->subject_references) ? $transcription->subject_references : $classification->subject['link'],
-            'thumbnailUri' => ! empty ($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri'],
+            'link' => ! empty($transcription->subject_references) ? $transcription->subject_references : $classification->subject['link'],
+            'thumbnailUri' => ! empty($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri'],
         ];
 
         $transcriptionContent = [
-            'country'   => ! empty($transcription->Country) ? $transcription->Country : $classification->country,
-            'province'  => TranscriptionMapHelper::mapTranscriptionField('province', $transcription, $classification),
-            'county'    => ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'],
-            'locality'  => ! empty($transcription->Location) ? $transcription->Location : '',
+            'country' => ! empty($transcription->Country) ? $transcription->Country : $classification->country,
+            'province' => TranscriptionMapHelper::mapTranscriptionField('province', $transcription, $classification),
+            'county' => ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'],
+            'locality' => ! empty($transcription->Location) ? $transcription->Location : '',
             'collector' => TranscriptionMapHelper::mapTranscriptionField('collector', $transcription, $classification),
-            'taxon'     => TranscriptionMapHelper::mapTranscriptionField('taxon', $transcription, $classification),
+            'taxon' => TranscriptionMapHelper::mapTranscriptionField('taxon', $transcription, $classification),
         ];
 
         $attributes = [
-            'expedition_uuid'      => $expedition->uuid,
-            'timestamp'            => $transcription->classification_finished_at,
-            'subject'              => array_merge($classification->subject, $subject),
-            'contributor'          => array_merge($classification->contributor, ['transcriber' => $transcription->user_name]),
+            'expedition_uuid' => $expedition->uuid,
+            'timestamp' => $transcription->classification_finished_at,
+            'subject' => array_merge($classification->subject, $subject),
+            'contributor' => array_merge($classification->contributor, ['transcriber' => $transcription->user_name]),
             'transcriptionContent' => array_merge($classification->transcriptionContent, $transcriptionContent),
         ];
 
-        $this->pusherTranscriptionRepo->update($attributes, $classification->_id);
+        $this->pusherTranscriptionService->update($attributes, $classification->_id);
     }
 
     /**
      * Determine image url.
-     *
-     * @param $transcription
-     * @return mixed
      */
     private function setThumbnailUri($transcription): mixed
     {
@@ -213,9 +160,6 @@ class UpdateOrCreatePusherTranscriptionService
 
     /**
      * Validate transcription to prevent duplicates.
-     *
-     * @param $classification_id
-     * @return mixed
      */
     public function validateTranscription($classification_id): mixed
     {

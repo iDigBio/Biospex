@@ -23,8 +23,6 @@ use Illuminate\Contracts\Validation\Rule;
 
 /**
  * Class ResourceNameValidation
- *
- * @package App\Rules
  */
 class ResourceNameValidation implements Rule
 {
@@ -32,7 +30,6 @@ class ResourceNameValidation implements Rule
      * messages
      */
     public $message;
-
 
     /**
      * Create a new rule instance.
@@ -47,6 +44,7 @@ class ResourceNameValidation implements Rule
     /**
      * Determine if the validation rule passes.
      * attribute = resource.*.name
+     *
      * @param  string  $attribute
      * @param  mixed  $value
      * @return bool
@@ -56,8 +54,7 @@ class ResourceNameValidation implements Rule
         $parts = explode('.', $attribute);
         $resources = \Request::get('resources');
 
-        if ($resources[$parts[1]]['type'] === 'Website URL' || $resources[$parts[1]]['type'] === 'Video URL')
-        {
+        if ($resources[$parts[1]]['type'] === 'Website URL' || $resources[$parts[1]]['type'] === 'Video URL') {
             return filter_var($value, FILTER_VALIDATE_URL);
         }
 

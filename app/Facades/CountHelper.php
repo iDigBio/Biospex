@@ -23,8 +23,6 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * Class CountHelper
- *
- * @package App\Facades
  */
 class CountHelper extends Facade
 {

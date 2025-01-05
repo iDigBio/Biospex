@@ -19,12 +19,10 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource ;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Class ExpeditionResource
- *
- * @package App\Http\Resources
  */
 class ExpeditionResource extends JsonResource
 {

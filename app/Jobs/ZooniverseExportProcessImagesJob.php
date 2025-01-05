@@ -24,44 +24,29 @@ use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Actor\Zooniverse\ZooniverseExportProcessImages;
+use Artisan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 class ZooniverseExportProcessImagesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Models\ExportQueue
-     */
-    private ExportQueue $exportQueue;
-
-    /**
-     * @var \App\Services\Actor\ActorDirectory
-     */
-    private ActorDirectory $actorDirectory;
-
-    /**
      * Create a new job instance.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      */
-    public function __construct(ExportQueue $exportQueue, ActorDirectory $actorDirectory)
+    public function __construct(protected ExportQueue $exportQueue, protected ActorDirectory $actorDirectory)
     {
-        $this->exportQueue = $exportQueue;
-        $this->actorDirectory = $actorDirectory;
+        $this->exportQueue = $exportQueue->withoutRelations();
         $this->onQueue(config('config.queue.export'));
     }
 
     /**
      * Execute the job.
-     *
-     * @param \App\Services\Actor\Zooniverse\ZooniverseExportProcessImages $zooniverseExportProcessImages
-     * @return void
      */
     public function handle(ZooniverseExportProcessImages $zooniverseExportProcessImages): void
     {
@@ -69,30 +54,30 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
         $this->exportQueue->load('expedition');
         $this->exportQueue->stage = 1;
         $this->exportQueue->save();
-        \Artisan::call('export:poll');
+        Artisan::call('export:poll');
 
-        try {
-            $zooniverseExportProcessImages->process($this->exportQueue, $this->actorDirectory);
-        } catch (\Throwable $throwable) {
-            $this->exportQueue->error = 1;
-            $this->exportQueue->save();
+        $zooniverseExportProcessImages->process($this->exportQueue, $this->actorDirectory);
+    }
 
-            $attributes = [
-                'subject' => t('Ocr Process Error'),
-                'html'    => [
-                    t('Queue Id: %s', $this->exportQueue->id),
-                    t('Expedition Id: %s'.$this->exportQueue->expedition->id),
-                    t('File: %s', $throwable->getFile()),
-                    t('Line: %s', $throwable->getLine()),
-                    t('Message: %s', $throwable->getMessage()),
-                ],
-            ];
-            $user = User::find(config('config.admin.user_id'));
-            $user->notify(new Generic($attributes));
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $this->exportQueue->error = 1;
+        $this->exportQueue->save();
 
-            $this->delete();
-
-            return;
-        }
+        $attributes = [
+            'subject' => t('Expedition Export Process Error'),
+            'html' => [
+                t('Queue Id: %s', $this->exportQueue->id),
+                t('Expedition Id: %s', $this->exportQueue->expedition->id),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
+        ];
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

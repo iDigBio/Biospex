@@ -20,49 +20,37 @@
 namespace App\Jobs;
 
 use App\Events\ScoreboardEvent;
-use App\Repositories\EventRepository;
+use App\Services\Event\EventService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use View;
 
 /**
  * Class ScoreboardJob
- *
- * @package App\Jobs
  */
 class ScoreboardJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    /**
-     * @var int
-     */
-    private int $projectId;
+    use Dispatchable, Queueable;
 
     /**
      * ScoreBoardJob constructor.
-     *
-     * @param int $projectId
      */
-    public function __construct(int $projectId)
+    public function __construct(protected int $projectId)
     {
-        $this->projectId = $projectId;
         $this->onQueue(config('config.queue.event'));
     }
 
     /**
      * Job handle.
      *
-     * @param \App\Repositories\EventRepository $eventRepo
      * @throws \Throwable
      */
-    public function handle(EventRepository $eventRepo)
+    public function handle(EventService $eventService): void
     {
-        $events = $eventRepo->getEventsByProjectId($this->projectId);
-        $data = $events->mapWithKeys(function($event) {
-            return [$event->id => \View::make('common.scoreboard-content', ['event' => $event])->render()];
+        $events = $eventService->getEventsByProjectId($this->projectId);
+        $data = $events->mapWithKeys(function ($event) {
+            return [$event->uuid => View::make('common.scoreboard-content', ['event' => $event])->render()];
         });
 
         ScoreboardEvent::dispatch($this->projectId, $data->toArray());

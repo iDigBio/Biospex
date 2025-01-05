@@ -21,8 +21,6 @@ namespace App\Http\Requests;
 
 /**
  * Class WorkflowFormRequest
- *
- * @package App\Http\Requests
  */
 class WorkflowFormRequest extends Request
 {
@@ -44,8 +42,8 @@ class WorkflowFormRequest extends Request
     public function rules()
     {
         return [
-            'title' => 'required|between:3,60|unique:workflows,title,' . $this->route('workflows'),
-            'actors.*.id' => 'required'
+            'title' => 'required|between:3,60|unique:workflows,title,'.$this->route('workflows'),
+            'actors.*.id' => 'required',
         ];
     }
 }

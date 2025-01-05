@@ -21,8 +21,6 @@ namespace App\Http\Requests;
 
 /**
  * Class FaqCategoryFormRequest
- *
- * @package App\Http\Requests
  */
 class FaqCategoryFormRequest extends Request
 {
@@ -44,7 +42,7 @@ class FaqCategoryFormRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'required|between:3,60|unique:faq_categories,name,' . $this->route('categories')
+            'name' => 'required|between:3,60|unique:faq_categories,name,'.$this->route('categories'),
         ];
     }
 }

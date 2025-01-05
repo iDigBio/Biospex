@@ -23,7 +23,7 @@ use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Services\Csv\GeoLocateExportService;
+use App\Services\Actor\GeoLocate\GeoLocateExportService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -32,52 +32,29 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Class RapidExportJob
- *
- * @package App\Jobs
  */
 class GeoLocateExportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
-
-    /**
-     * @var \App\Models\Expedition
-     */
-    private Expedition $expedition;
-
-    /**
-     * @var \App\Models\User
-     */
-    private User $user;
-
-    /**
-     * @var \App\Services\Csv\GeoLocateExportService
-     */
-    private GeoLocateExportService $geoLocateExportService;
+    use ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 1800;
 
     /**
      * Create a new job instance.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @param \App\Models\User $user
      */
-    public function __construct(Expedition $expedition, User $user)
+    public function __construct(protected Expedition $expedition, protected User $user)
     {
+        $this->expedition = $expedition->withoutRelations();
+        $this->user = $user->withoutRelations();
         $this->onQueue(config('config.queue.geolocate'));
-        $this->expedition = $expedition;
-        $this->user = $user;
     }
 
     /**
      * Execute job.
      *
-     * @param \App\Services\Csv\GeoLocateExportService $geoLocateExportService
      * @throws \Throwable
      */
     public function handle(GeoLocateExportService $geoLocateExportService): void
@@ -85,17 +62,12 @@ class GeoLocateExportJob implements ShouldQueue
         $this->expedition->load('geoLocateForm');
 
         $geoLocateExportService->process($this->expedition);
-        $csvFilePath = $geoLocateExportService->getCsvFilePath();
-
-        $route = route('admin.downloads.geolocate', ['file' => base64_encode($csvFilePath)]);
-        $btn = $this->createButton($route, t('Download GeoLocateExport CSV'));
 
         $attributes = [
             'subject' => t('GeoLocateExport Csv Export'),
-            'html'    => [
-                t('Your GeoLocateExport csv export is completed. You may click the download button to download the file or visit the Expedition and use the download section.')
+            'html' => [
+                t('Your GeoLocate csv export is completed. Please visit the Expedition Download section to download.'),
             ],
-            'buttons' => $btn
         ];
 
         $this->user->notify(new Generic($attributes));
@@ -103,15 +75,12 @@ class GeoLocateExportJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
     public function failed(\Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('GeoLocate Form Export Error'),
-            'html'    => [
+            'html' => [
                 'Error: '.$throwable->getMessage(),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),

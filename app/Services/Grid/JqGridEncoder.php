@@ -23,39 +23,17 @@ use Illuminate\Support\LazyCollection;
 
 /**
  * Class JqGridEncoder
- *
- * @package App\Services\Grid
  */
 class JqGridEncoder
 {
     /**
-     * @var \App\Services\Grid\GridModel
-     */
-    private $gridModel;
-
-    /**
-     * @var \App\Services\Grid\GridData
-     */
-    private $gridData;
-
-    /**
      * JqGridEncoder constructor.
-     *
-     * @param \App\Services\Grid\GridModel $gridModel
-     * @param \App\Services\Grid\GridData $gridData
      */
-    public function __construct(
-        GridModel $gridModel,
-        GridData  $gridData
-    ) {
-        $this->gridModel = $gridModel;
-        $this->gridData = $gridData;
-    }
+    public function __construct(protected GridModel $gridModel, protected GridData $gridData) {}
 
     /**
      * Load grid model.
      *
-     * @param int $projectId
      * @return false|string
      */
     public function loadGridModel(int $projectId)
@@ -66,16 +44,13 @@ class JqGridEncoder
     /**
      * Get grid data.
      *
-     * @param $postedData
-     * @param $route
-     * @param $projectId
-     * @param null $expeditionId
-     * @return array
+     * @param  null  $expeditionId
+     *
      * @throws \Exception
      */
-    public function encodeGridRequestedData($postedData, $route, $projectId, $expeditionId = null)
+    public function encodeGridRequestedData($postedData, $route, $projectId, $expeditionId = null): array
     {
-        $vars = $this->gridData->buildVariables($postedData, $route, $projectId, $expeditionId);
+        $vars = $this->gridData->buildVariables($postedData, $route, (int) $projectId, $expeditionId);
 
         $this->gridData->getTotalRows($vars);
 
@@ -88,24 +63,23 @@ class JqGridEncoder
         $this->gridData->prefixOccurrence($rows);
 
         return [
-            'page'    => $vars['page'],
-            'total'   => $vars['total'],
+            'page' => $vars['page'],
+            'total' => $vars['total'],
             'records' => $vars['count'],
-            'rows'    => $rows,
+            'rows' => $rows,
         ];
     }
 
     /**
      * Return query for processing exports.
-     *
-     * @param $postedData
-     * @param $route
-     * @param $projectId
-     * @param null $expeditionId
-     * @return \Illuminate\Support\LazyCollection
      */
-    public function encodeGridExportData($postedData, $route, $projectId, $expeditionId = null): LazyCollection
+    public function encodeGridExportData(array $data): LazyCollection
     {
+        $postedData = $data['postData'];
+        $route = $data['route'];
+        $projectId = $data['projectId'];
+        $expeditionId = $data['expeditionId'];
+
         $vars = $this->gridData->buildVariables($postedData, $route, $projectId, $expeditionId);
         $this->gridData->setOrderBy($vars);
 

@@ -19,10 +19,10 @@ Route::post('/resend')->uses('RegisterController@postResendActivation')->name('a
 Route::get('/users/{id}/activate/{code}')->uses('RegisterController@getActivate')->name('app.get.activate');
 */
 
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('app.get.login');
@@ -36,8 +36,8 @@ Route::get('password/reset/{token}', [ResetPasswordController::class, 'showReset
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Registration Routes...
-Route::get('register/{code?}', [RegisterController::class, 'showRegistrationForm'])->name('app.get.register');
-Route::post('register', [RegisterController::class, 'register'])->name('app.post.register');
+Route::get('register/{invite?}', [RegisterController::class, 'showRegistrationForm'])->name('app.get.register');
+Route::post('register/{invite?}', [RegisterController::class, 'register'])->name('app.post.register');
 
 // Register email
 Route::get('email/verify', [VerificationController::class, 'show'])->name('verification.notice');

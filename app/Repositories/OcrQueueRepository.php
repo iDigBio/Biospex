@@ -20,50 +20,39 @@
 namespace App\Repositories;
 
 use App\Models\OcrQueue;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 
 /**
  * Class OcrQueueRepository
- *
- * @package App\Repositories
  */
 class OcrQueueRepository extends BaseRepository
 {
     /**
      * OcrQueueRepository constructor.
-     *
-     * @param \App\Models\OcrQueue $ocrQueue
      */
     public function __construct(OcrQueue $ocrQueue)
     {
-
         $this->model = $ocrQueue;
     }
 
     /**
      * Get ocr queue for poll command.
-     *
-     * @return \Illuminate\Support\Collection
      */
-    public function getOcrQueuesForPollCommand(): Collection
+    public function getOcrQueuesForPollCommand(): mixed
     {
         return $this->model->withCount([
             'files' => function ($q) {
                 $q->where('processed', 1);
             },
-        ])->with(['project.group', 'expedition'])->orderBy('id', 'asc')->get();
+        ])->with(['project.group', 'expedition'])->where('error', 0)->orderBy('id', 'asc')->get();
     }
 
     /**
      * Get ocr queue for process command.
-     *
-     * @param bool $reset
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null
      */
-    public function getFirstQueue(bool $reset = false): Model|Builder|null
+    public function getFirstQueue(bool $reset = false): ?OcrQueue
     {
-        return $reset ? $this->model->orderBy('id', 'asc')->first() : $this->model->where('error', 0)->orderBy('id', 'asc')->first();
+        return $reset ?
+            $this->model->orderBy('id')->first() :
+            $this->model->where('error', 0)->where('status', 0)->orderBy('id', 'asc')->first();
     }
 }

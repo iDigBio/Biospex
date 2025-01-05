@@ -26,8 +26,6 @@ use Illuminate\Http\Request;
 
 /**
  * Class ForgotPasswordController
- *
- * @package App\Http\Controllers\Auth
  */
 class ForgotPasswordController extends Controller
 {
@@ -56,14 +54,11 @@ class ForgotPasswordController extends Controller
 
     /**
      * Validate the email for the given request.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return void
      */
     protected function validateEmail(Request $request): void
     {
         $request->validate([
-            'email'                => 'required|email',
+            'email' => 'required|email',
             'g-recaptcha-response' => ['required', new ReCaptcha],
         ]);
     }

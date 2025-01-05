@@ -24,8 +24,6 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Class EditUserFormRequest
- *
- * @package App\Http\Requests
  */
 class EditUserFormRequest extends Request
 {
@@ -47,10 +45,10 @@ class EditUserFormRequest extends Request
     public function rules()
     {
         return [
-            'first_name'            => 'required',
-            'last_name'             => 'required',
-            'email'                 => 'required|min:4|max:32|email|unique:users,email,' . $this->route('users'),
-            'avatar' => ['required_without:current_avatar', 'image', new FileUploadNameValidation()]
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|min:4|max:32|email|unique:users,email,'.Auth::user()->id,
+            'avatar' => ['image', new FileUploadNameValidation],
         ];
     }
 }

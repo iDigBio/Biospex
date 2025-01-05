@@ -7,8 +7,8 @@
                 {{ t('for') }}<br>
                 {{ $project->title }}
             </h5>
-            <a href="{{ route('front.bingos.generate', [$bingo->id]) }}"
-               onclick="return !window.open(this.href, 'com_Biospex_Bingo_Card', 'width=700,height=800')"
+            <a href="{{ route('front.bingos.join', [$bingo]) }}"
+               onclick="return !window.open(this.href, 'Biospex_Bingo_Card', 'width=700,height=800')"
                target="_blank"
                class="btn btn-primary my-4 ml-2 text-uppercase">{{ t('Generate Card') }}</a>
         </div>

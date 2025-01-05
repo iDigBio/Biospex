@@ -20,12 +20,11 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ZooniversePusherJob;
+use App\Models\Expedition;
 use Illuminate\Console\Command;
 
 /**
  * Class ZooniversePusherCommand
- *
- * @package App\Console\Commands
  */
 class ZooniversePusherCommand extends Command
 {
@@ -62,7 +61,8 @@ class ZooniversePusherCommand extends Command
         $days = $this->option('days') === null ? null : (int) $this->option('days');
 
         foreach ($expeditionIds as $expeditionId) {
-            ZooniversePusherJob::dispatch($expeditionId, $days);
+            $expedition = Expedition::find($expeditionId);
+            ZooniversePusherJob::dispatch($expedition, $days);
         }
     }
 }

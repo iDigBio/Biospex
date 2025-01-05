@@ -19,41 +19,25 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Repositories\NoticeRepository;
+use App\Models\Notice;
 use Illuminate\Contracts\View\View;
 
 /**
  * Class NoticesComposer
- *
- * @package App\Http\ViewComposers
  */
 class NoticesComposer
 {
-
-    /**
-     * @var \App\Repositories\NoticeRepository
-     */
-    private $noticeRepo;
-
     /**
      * Create a new profile composer.
-     *
-     * @param \App\Repositories\NoticeRepository $noticeRepo
      */
-    public function __construct(NoticeRepository $noticeRepo)
-    {
-        $this->noticeRepo = $noticeRepo;
-    }
+    public function __construct(protected Notice $notice) {}
 
     /**
      * Bind data to the view.
-     *
-     * @param  View  $view
-     * @return void
      */
-    public function compose(View $view)
+    public function compose(View $view): void
     {
-        $notices = $this->noticeRepo->getBy('enabled', 1);
+        $notices = $this->notice->where('enabled', 1)->get();
         $notices = $notices->isEmpty() ? null : $notices;
 
         $view->with('notices', $notices);

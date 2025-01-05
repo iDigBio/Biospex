@@ -20,22 +20,14 @@
 namespace App\Console\Commands;
 
 use App\Jobs\DwcFileImportJob;
-use App\Repositories\ImportRepository;
+use App\Models\Import;
 use Illuminate\Console\Command;
 
 /**
  * Class DarwinCoreFileImportCommand
- *
- * @package App\Console\Commands
  */
 class DarwinCoreFileImportCommand extends Command
 {
-
-    /**
-     * @var \App\Repositories\ImportRepository
-     */
-    private $importRepo;
-
     /**
      * The console command name.
      *
@@ -48,18 +40,14 @@ class DarwinCoreFileImportCommand extends Command
      *
      * @var string
      */
-    protected $description = "Command to re-queue dwc import after a failure.";
+    protected $description = 'Command to re-queue dwc import after a failure.';
 
     /**
      * DarwinCoreFileImportCommand constructor.
-     * 
-     * @param \App\Repositories\ImportRepository $importRepo
      */
-    public function __construct(ImportRepository $importRepo)
+    public function __construct(protected Import $import)
     {
         parent::__construct();
-
-        $this->importRepo = $importRepo;
     }
 
     /**
@@ -69,14 +57,15 @@ class DarwinCoreFileImportCommand extends Command
      */
     public function handle()
     {
-        $import = $this->importRepo->findBy('error', 0);
+        $import = $this->import->where('error', 0)->first();
 
-        if ($import === null)
+        if ($import === null) {
             return;
+        }
 
         DwcFileImportJob::dispatch($import);
 
-        echo "Import added to Queue." . PHP_EOL;
+        echo 'Import added to Queue.'.PHP_EOL;
 
     }
 }

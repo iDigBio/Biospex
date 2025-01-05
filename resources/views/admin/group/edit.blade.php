@@ -11,7 +11,7 @@
         <div class="col-sm-8 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <form method="post"
-                      action="{{ route('admin.groups.update', [$group->id]) }}"
+                      action="{{ route('admin.groups.update', [$group]) }}"
                       role="form" enctype="multipart/form-data">
                     {!! method_field('put') !!}
                     @csrf

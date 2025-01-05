@@ -32,65 +32,49 @@ use Throwable;
 
 /**
  * Class ZooniverseCsvJob
- *
- * @package App\Jobs
  */
 class ZooniverseCsvJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SkipZooniverse;
 
     /**
-     * @var int
-     */
-    private int $expeditionId;
-
-    /**
-     * @var bool
-     */
-    private bool $noDelay;
-
-    /**
      * Create a new job instance.
-     * noDelay is used to skip the delay in the job.
-     *
-     * @param int $expeditionId
-     * @param bool $noDelay
+     * noDelay is used to skip the delay in the job when using commands.
      */
-    public function __construct(int $expeditionId, bool $noDelay = false)
+    public function __construct(protected int $expeditionId, protected bool $noDelay = false)
     {
         $this->onQueue(config('config.queue.classification'));
-        $this->expeditionId = $expeditionId;
-        $this->noDelay = $noDelay;
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Csv\ZooniverseCsvService $service
-     * @return void
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      * @throws \Exception
      */
-    public function handle(ZooniverseCsvService $service)
+    public function handle(ZooniverseCsvService $service): void
     {
         if ($this->skipApi($this->expeditionId)) {
             $this->delete();
+
             return;
         }
 
         $result = $service->checkCsvRequest($this->expeditionId);
 
-        if (!$result || $service->checkDateTime($result)) {
+        if (! $result || $service->checkDateTime($result)) {
             $service->createCsvRequest($this->expeditionId);
         }
 
         if ($this->noDelay) {
             $this->delete();
+
             return;
         }
 
-        ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addHours(3));
+        ZooniverseProcessCsvJob::dispatch($this->expeditionId)->delay(now()->addHours(6));
     }
 
     /**
@@ -105,18 +89,15 @@ class ZooniverseCsvJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @param  \Throwable  $throwable
-     * @return void
      */
-    public function failed(Throwable $throwable)
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Zooniverse CSV Job Failed'),
-            'html'    => [
+            'html' => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage())
+                t('Message: %s', $throwable->getMessage()),
             ],
         ];
 

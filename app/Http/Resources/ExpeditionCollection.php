@@ -23,8 +23,6 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 /**
  * Class ExpeditionCollection
- *
- * @package App\Http\Resources
  */
 class ExpeditionCollection extends ResourceCollection
 {

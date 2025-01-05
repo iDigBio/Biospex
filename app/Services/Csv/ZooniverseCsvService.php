@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -19,79 +20,50 @@
 
 namespace App\Services\Csv;
 
-use App\Repositories\ExpeditionRepository;
 use App\Services\Api\AwsS3ApiService;
 use App\Services\Api\PanoptesApiService;
+use App\Services\Expedition\ExpeditionService;
 use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Model;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /**
  * Class ZooniverseCsvService
- *
- * @package App\Services\Csv
  */
 class ZooniverseCsvService
 {
     /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepo;
-
-    /**
-     * @var \App\Services\Api\PanoptesApiService
-     */
-    private PanoptesApiService $panoptesApiService;
-
-    /**
-     * @var \App\Services\Api\AwsS3ApiService
-     */
-    private AwsS3ApiService $awsS3ApiService;
-
-    /**
      * ZooniverseCsvService constructor.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @param \App\Services\Api\AwsS3ApiService $awsS3ApiService
      */
     public function __construct(
-        ExpeditionRepository $expeditionRepo,
-        PanoptesApiService $panoptesApiService,
-        AwsS3ApiService $awsS3ApiService
-    )
-    {
-        $this->expeditionRepo = $expeditionRepo;
-        $this->panoptesApiService = $panoptesApiService;
-        $this->awsS3ApiService = $awsS3ApiService;
-    }
+        protected ExpeditionService $expeditionService,
+        protected PanoptesApiService $panoptesApiService,
+        protected AwsS3ApiService $awsS3ApiService
+    ) {}
 
     /**
      * Get expedition for processing.
-     *
-     * @param int $expeditionId
-     * @return mixed
      */
-    public function getExpedition(int $expeditionId): mixed
+    public function getExpedition(int $expeditionId): Model
     {
-        return $this->expeditionRepo->getExpeditionForZooniverseProcess($expeditionId);
+        return $this->expeditionService->getExpeditionForZooniverseProcess($expeditionId);
     }
 
     /**
      * Create and send request for csv creation.
      *
-     * @param int $expeditionId
      * @throws \Exception
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
-    public function createCsvRequest(int $expeditionId)
+    public function createCsvRequest(int $expeditionId): void
     {
         $expedition = $this->getExpedition($expeditionId);
 
         if ($this->panoptesApiService->checkForRequiredVariables($expedition)) {
-            throw new \Exception(t('Missing required expedition variables for Zooniverse classification create. Expedition %s', $expeditionId));
+            throw new Exception(t('Missing required expedition variables for Zooniverse classification create. Expedition %s', $expeditionId));
         }
 
         $this->sendWorkflowRequest($expedition->panoptesProject->panoptes_workflow_id, 'POST', ['body' => '{"media":{"content_type":"text/csv"}}']);
@@ -101,8 +73,6 @@ class ZooniverseCsvService
     /**
      * Build and send request to check csv file creating or ready.
      *
-     * @param int $expeditionId
-     * @return mixed
      * @throws \Exception
      */
     public function checkCsvRequest(int $expeditionId): mixed
@@ -110,31 +80,29 @@ class ZooniverseCsvService
         $expedition = $this->getExpedition($expeditionId);
 
         if ($this->panoptesApiService->checkForRequiredVariables($expedition)) {
-            throw new \Exception(t('Missing required expedition variables for Zooniverse classification check for Expedition ID %s.', $expeditionId));
+            throw new Exception(t('Missing required expedition variables for Zooniverse classification check for Expedition ID %s.', $expeditionId));
         }
 
         try {
             return $this->sendWorkflowRequest($expedition->panoptesProject->panoptes_workflow_id, 'GET');
-        } catch (GuzzleException | IdentityProviderException $e) {
+        } catch (GuzzleException|IdentityProviderException) {
             return false;
         }
     }
 
     /**
      * Download csv file to S3 lambda-reconciliation and trigger reconciliation.
+     *
      * @see \App\Listeners\LabelReconciliationListener for returned data.
      *
-     * @param int $expeditionId
-     * @param string $uri
-     * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function downloadCsv(int $expeditionId, string $uri): void
     {
-        $filePath = config('zooniverse.directory.lambda-reconciliation') . '/' . $expeditionId . '.csv';
+        $filePath = config('zooniverse.directory.lambda-reconciliation').'/'.$expeditionId.'.csv';
         $stream = $this->awsS3ApiService->createS3BucketStream(config('filesystems.disks.s3.bucket'), $filePath, 'w', false);
         $opts = [
-            'sink' => $stream
+            'sink' => $stream,
         ];
         $this->panoptesApiService->setHttpProvider();
         $this->panoptesApiService->getHttpClient()->request('GET', $uri, $opts);
@@ -143,10 +111,6 @@ class ZooniverseCsvService
     /**
      * Send request.
      *
-     * @param int $workflowId
-     * @param string $method
-     * @param array $extra
-     * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
@@ -161,23 +125,9 @@ class ZooniverseCsvService
     }
 
     /**
-     * Check for errors field on zooniverse classification.
-     *
-     * @param array $result
-     * @return bool
-     */
-    public function checkErrors(array $result): bool
-    {
-        return isset($result['errors']);
-    }
-
-    /**
      * Calculate time difference.
      * If errors, csv doesn't exist yet.
      * Hours must be greater than 24 hours for Zooniverse to create CSV.
-     *
-     * @param array $result
-     * @return bool
      */
     public function checkDateTime(array $result): bool
     {
@@ -188,9 +138,6 @@ class ZooniverseCsvService
 
     /**
      * Parse time.
-     *
-     * @param string $date
-     * @return int
      */
     public function parseTime(string $date): int
     {

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -29,42 +30,19 @@ use Storage;
 
 /**
  * Class ZooniverseExportBatch
- *
- * @package App\Services\Actor
  */
 class ZooniverseExportBatch
 {
-    /**
-     * @var array
-     */
     private array $fileNames = [];
 
     /**
-     * @var \App\Services\Csv\Csv
-     */
-    private Csv $csv;
-
-    /**
-     * @var \App\Services\Actor\ActorBatchDirectory
-     */
-    private ActorBatchDirectory $actorBatchDirectory;
-
-    /**
      * Construct
-     *
-     * @param \App\Services\Csv\Csv $csv
-     * @param \App\Services\Actor\ActorBatchDirectory $actorBatchDirectory
      */
-    public function __construct(Csv $csv, ActorBatchDirectory $actorBatchDirectory)
-    {
-        $this->csv = $csv;
-        $this->actorBatchDirectory = $actorBatchDirectory;
-    }
+    public function __construct(protected Csv $csv, protected ActorBatchDirectory $actorBatchDirectory) {}
 
     /**
      * Process download into batches.
      *
-     * @param \App\Models\Download $download
      * @throws \Exception
      */
     public function process(Download $download): void
@@ -86,11 +64,11 @@ class ZooniverseExportBatch
 
         $attributes = [
             'subject' => t('Zooniverse Batch Export Completed'),
-            'html'    => [
+            'html' => [
                 t('The export batches for %s are completed.', $download->expedition->title),
                 t('The links provided below will be valid for 72 hours. Click the links to download each batch file. You must be logged into your account on Biospex.'),
-                $links
-            ]
+                implode('<br>', $links),
+            ],
         ];
 
         $download->expedition->project->group->owner->notify(new Generic($attributes));
@@ -99,8 +77,6 @@ class ZooniverseExportBatch
     /**
      * Copy existing export file to efs batch directory.
      *
-     * @param \App\Services\Actor\ActorBatchDirectory $actorBatchDirectory
-     * @return void
      * @throws \Exception
      */
     private function copyExistingFile(ActorBatchDirectory $actorBatchDirectory): void
@@ -142,9 +118,6 @@ class ZooniverseExportBatch
 
     /**
      * Set command based on extension type.
-     *
-     * @param \App\Services\Actor\ActorBatchDirectory $actorBatchDirectory
-     * @return string
      */
     private function setCommand(ActorBatchDirectory $actorBatchDirectory): string
     {
@@ -196,9 +169,6 @@ class ZooniverseExportBatch
 
     /**
      * Move image file to tmp directory.
-     *
-     * @param string $fileName
-     * @param \App\Services\Actor\ActorBatchDirectory $actorBatchDirectory
      */
     private function moveFile(string $fileName, ActorBatchDirectory $actorBatchDirectory): void
     {
@@ -210,9 +180,6 @@ class ZooniverseExportBatch
     /**
      * Create csv file for batch.
      *
-     * @param array $chunk
-     * @param string $fileName
-     * @param \App\Services\Actor\ActorBatchDirectory $actorBatchDirectory
      * @throws \League\Csv\CannotInsertRecord
      */
     private function createCsv(array $chunk, string $fileName, ActorBatchDirectory $actorBatchDirectory): void
@@ -228,8 +195,6 @@ class ZooniverseExportBatch
     /**
      * Create zip file for batch.
      *
-     * @param string $fileName
-     * @param \App\Services\Actor\ActorBatchDirectory $actorBatchDirectory
      * @throws \Exception
      */
     private function createZipFile(string $fileName, ActorBatchDirectory $actorBatchDirectory): void
@@ -249,9 +214,6 @@ class ZooniverseExportBatch
     /**
      * Upload batch zip to s3 bucket.
      *
-     * @param string $fileName
-     * @param \App\Services\Actor\ActorBatchDirectory $actorBatchDirectory
-     * @return void
      * @throws \Exception
      */
     private function uploadZipToS3(string $fileName, ActorBatchDirectory $actorBatchDirectory): void
@@ -267,14 +229,12 @@ class ZooniverseExportBatch
 
     /**
      * Build links for download files.
-     *
-     * @return array
      */
     private function buildLinks(): array
     {
         $links = [];
         foreach ($this->fileNames as $fileName) {
-            $url = Storage::disk('s3')->temporaryUrl(config('config.batch_dir').'/'.$fileName . '.zip', now()->addHours(72), ['ResponseContentDisposition' => 'attachment']);
+            $url = Storage::disk('s3')->temporaryUrl(config('config.batch_dir').'/'.$fileName.'.zip', now()->addHours(72), ['ResponseContentDisposition' => 'attachment']);
 
             $links[] = '<a href="'.$url.'">'.$fileName.'</a>';
         }

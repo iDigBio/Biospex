@@ -20,40 +20,24 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\FaqCategoryRepository;
+use App\Models\FaqCategory;
+use View;
 
 /**
  * Class FaqController
- *
- * @package App\Http\Controllers\Front
  */
 class FaqController extends Controller
 {
-
-    /**
-     * @var \App\Repositories\FaqCategoryRepository
-     */
-    public $faqCategoryRepo;
-
-    /**
-     * FaqController constructor.
-     *
-     * @param \App\Repositories\FaqCategoryRepository $faqCategoryRepo
-     */
-    public function __construct(FaqCategoryRepository $faqCategoryRepo)
-    {
-        $this->faqCategoryRepo = $faqCategoryRepo;
-    }
-
     /**
      * Show categories.
-     * 
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function __invoke(FaqCategory $faqCategory): \Illuminate\View\View
     {
-        $categories = $this->faqCategoryRepo->getCategoriesWithFaqOrdered();
+        $categories = $faqCategory->with('faqs')
+            ->groupBy('id')
+            ->orderBy('id', 'asc')
+            ->get();
 
-        return \View::make('front.faq.index', compact('categories'));
+        return View::make('front.faq.index', compact('categories'));
     }
 }

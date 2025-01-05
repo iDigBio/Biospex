@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -29,21 +30,21 @@ class WeDigBioEventTranscription extends BaseEloquentModel
     use HasFactory, HybridRelations;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'wedigbio_event_transcriptions';
 
     /**
      * Dates are fillable to accommodate adding missed records overnight.
      *
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'classification_id',
         'project_id',
-        'date_id',
+        'event_id',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -56,24 +57,20 @@ class WeDigBioEventTranscription extends BaseEloquentModel
         return [
             'classification_id' => 'int',
             'project_id' => 'int',
-            'date_id' => 'int'
+            'event_id' => 'int',
         ];
     }
 
     /**
      * Transcription relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function transcription(): HasOne
     {
-        return $this->hasOne(PanoptesTranscription::class,'_id', 'classification_id');
+        return $this->hasOne(PanoptesTranscription::class, '_id', 'classification_id');
     }
 
     /**
      * Project relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): BelongsTo
     {
@@ -82,23 +79,17 @@ class WeDigBioEventTranscription extends BaseEloquentModel
 
     /**
      * Date relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function date(): BelongsTo
     {
-        return $this->belongsTo(WeDigBioEventDate::class);
+        return $this->belongsTo(WeDigBioEvent::class);
     }
 
     /**
      * DateId scope.
-     *
-     * @param $query
-     * @param $arg
-     * @return mixed
      */
     public function scopeDateId($query, $arg): mixed
     {
-        return $query->where('date_id', $arg);
+        return $query->where('event_id', $arg);
     }
 }

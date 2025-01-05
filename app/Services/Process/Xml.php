@@ -25,20 +25,14 @@ use RuntimeException;
 
 /**
  * Class Xml
- *
- * @package App\Services\Process
  */
 class Xml
 {
-
     /**
      * @var null
      */
     private $xml;
 
-    /**
-     * @var
-     */
     private $xpath;
 
     /**
@@ -54,8 +48,8 @@ class Xml
     /**
      * Load xml string and return
      *
-     * @param $input_xml
      * @return string
+     *
      * @throws RuntimeException
      */
     public function load($input_xml)
@@ -79,13 +73,12 @@ class Xml
     /**
      * Perform query on dom document
      *
-     * @param $query
-     * @param bool $get
+     * @param  bool  $get
      * @return mixed
      */
     public function xpathQuery($query, $get = false)
     {
-        if ( ! $get) {
+        if (! $get) {
             return $this->xpath->query($query);
         }
 
@@ -95,8 +88,6 @@ class Xml
     /**
      * Perform xpath evaluate on query.
      *
-     * @param $query
-     * @param $element
      * @return mixed
      */
     public function evaluate($query, $element)
@@ -107,7 +98,6 @@ class Xml
     /**
      * Convert an XML to Array
      *
-     * @param $xml
      * @return mixed
      */
     public function &createArray($xml)
@@ -121,7 +111,7 @@ class Xml
     /**
      * Convert an Array to XML
      *
-     * @param mixed $node - XML as a string or as an object of DOMDocument
+     * @param  mixed  $node  - XML as a string or as an object of DOMDocument
      * @return mixed
      */
     private function &convert($node)

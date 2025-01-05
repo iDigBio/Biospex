@@ -19,8 +19,8 @@
 
 namespace App\Jobs;
 
-use App\Repositories\PanoptesProjectRepository;
-use App\Repositories\WeDigBioProjectRepository;
+use App\Models\PanoptesProject;
+use App\Models\WeDigBioProject;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -32,22 +32,15 @@ class ZooniversePusherHandlerJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 60;
-
-    /**
-     * @var array
-     */
-    private array $data;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(array $data)
+    public function __construct(protected array $data)
     {
         $this->data = $data;
         $this->onQueue(config('config.queue.pusher_handler'));
@@ -59,28 +52,31 @@ class ZooniversePusherHandlerJob implements ShouldQueue
      * @return void
      */
     public function handle(
-        PanoptesProjectRepository $panoptesProjectRepo,
-        WeDigBioProjectRepository $weDigBioprojectRepo,
+        PanoptesProject $panoptesProject,
+        WeDigBioProject $weDigBioProject,
     ) {
-        $panoptesProject = $panoptesProjectRepo->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
-        $weDigBioProject = $weDigBioprojectRepo->findByProjectIdAndWorkflowId($this->data['project_id'], $this->data['workflow_id']);
+        $panoptesProject = $panoptesProject->where('panoptes_project_id', $this->data['project_id'])
+            ->where('panoptes_workflow_id', $this->data['workflow_id'])->first();
 
-        if ($panoptesProject === null && $weDigBioProject === null) {
+        $record = $weDigBioProject->where('panoptes_project_id', $this->data['project_id'])
+            ->where('panoptes_workflow_id', $this->data['workflow_id'])->first();
+
+        if ($panoptesProject === null && $record === null) {
             $this->delete();
 
             return;
         }
 
-        $title = $weDigBioProject === null ? $panoptesProject->title : $weDigBioProject->title;
+        $title = $record === null ? $panoptesProject->title : $record->title;
 
         ZooniverseClassificationJob::dispatch($this->data, $title);
 
         if (isset($panoptesProject->expedition_id)) {
-            ZooniverseBiospexEventJob::dispatch($this->data, $panoptesProject->expedition_id);
+            EventTranscriptionJob::dispatch($this->data, $panoptesProject->expedition_id);
         }
 
         if (isset($panoptesProject->project_id)) {
-            ZooniverseWeDigBioEventJob::dispatch($this->data, $panoptesProject->project_id);
+            WeDigBioEventTranscriptionJob::dispatch($this->data, $panoptesProject->project_id);
         }
     }
 }

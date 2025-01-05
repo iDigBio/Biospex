@@ -19,75 +19,65 @@
 
 namespace App\Services\Actor\Zooniverse;
 
-use App\Models\Actor;
+use App\Models\ActorExpedition;
 use App\Models\ExportQueue;
-use App\Repositories\ExportQueueFileRepository;
-use App\Repositories\ExportQueueRepository;
-use App\Repositories\SubjectRepository;
+use App\Models\ExportQueueFile;
+use App\Services\Subject\SubjectService;
 
 /**
  * Class ZooniverseBuildQueue
- *
- * @package App\Services\Actor
  */
 class ZooniverseBuildQueue
 {
     /**
-     * @var \App\Repositories\ExportQueueRepository
-     */
-    private ExportQueueRepository $exportQueueRepository;
-
-    /**
-     * @var \App\Repositories\ExportQueueFileRepository
-     */
-    private ExportQueueFileRepository $exportQueueFileRepository;
-
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    private SubjectRepository $subjectRepository;
-
-    /**
      * Construct.
-     *
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
-     * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
-     * @param \App\Repositories\SubjectRepository $subjectRepository
      */
     public function __construct(
-        ExportQueueRepository $exportQueueRepository,
-        ExportQueueFileRepository $exportQueueFileRepository,
-        SubjectRepository $subjectRepository
-    ) {
-        $this->exportQueueRepository = $exportQueueRepository;
-        $this->exportQueueFileRepository = $exportQueueFileRepository;
-        $this->subjectRepository = $subjectRepository;
-    }
+        protected ExportQueue $exportQueue,
+        protected ExportQueueFile $exportQueueFile,
+        protected SubjectService $subjectService
+    ) {}
 
     /**
      * Process actor.
      *
-     * @param \App\Models\Actor $actor
      * @throws \Exception
      */
-    public function process(Actor $actor): void
+    public function process(ActorExpedition $actorExpedition): void
     {
-        $queue = $this->exportQueueRepository->createQueue($actor->pivot->expedition_id, $actor->id, $actor->pivot->total);
+        $attributes = [
+            'expedition_id' => $actorExpedition->expedition_id,
+            'actor_id' => $actorExpedition->actor_id,
+        ];
+
+        $queue = $this->exportQueue->firstOrNew($attributes);
+        $queue->queued = 0;
+        $queue->error = 0;
+        $queue->stage = 0;
+        $queue->total = $actorExpedition->total;
+        $queue->save();
+
         $this->buildFiles($queue);
     }
 
     /**
      * Build queue files table.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @return void
      */
     public function buildFiles(ExportQueue $exportQueue): void
     {
-        $subjects = $this->subjectRepository->getSubjectCursorForExport($exportQueue->expedition_id);
+        $subjects = $this->subjectService->getSubjectCursorForExport($exportQueue->expedition_id);
 
         $subjects->each(function ($subject) use ($exportQueue) {
-            $this->exportQueueFileRepository->createQueueFile($exportQueue, $subject);
+            $attributes = [
+                'queue_id' => $exportQueue->id,
+                'subject_id' => (string) $subject->_id,
+            ];
+
+            $file = $this->exportQueueFile->firstOrNew($attributes);
+            $file->access_uri = $subject->accessURI;
+            $file->processed = 0;
+            $file->message = null;
+            $file->save();
         });
     }
 }

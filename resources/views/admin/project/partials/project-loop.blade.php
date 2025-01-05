@@ -12,14 +12,15 @@
             <div class="col-12">
                 <ul class="text">
                     <li class="smalltext">{{ $project->expeditions_count }} {{ t('Expeditions') }}</li>
-                    <li class="smalltext">{{ CountHelper::projectTranscriberCount($project->id) }} {{ t('Participants') }}</li>
-                    <li class="smalltext">{{ CountHelper::projectTranscriptionCount($project->id) }} {{ t('Digitizations') }}</li>
+                    <li class="smalltext">{{ $project->expedition_stats_sum_transcriptions_completed }} {{ t('Digitizations') }}</li>
+                    <li class="smalltext">{{ get_project_transcriber_count($project->id) }} {{ t('Participants') }}</li>
                 </ul>
             </div>
         </div>
 
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
+                {!! $project->group->present()->group_project_icon !!}
                 {!! $project->present()->project_page_icon !!}
                 {!! $project->present()->project_show_icon !!}
                 {!! $project->present()->project_edit_icon !!}

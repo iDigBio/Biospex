@@ -19,41 +19,28 @@
 
 namespace App\Notifications;
 
+use App\Models\Expedition;
+use App\Models\Project;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 /**
  * Class ZooniverseNewExpedition
- *
- * @package App\Notifications
  */
 class ZooniverseNewExpedition extends Notification implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * @var
-     */
-    private $project;
-
-    /**
-     * @var mixed
-     */
-    private mixed $expedition;
-
-    /**
      * Create a new notification instance.
-     *
-     * @param $project
-     * @param $expedition
      */
-    public function __construct($project, $expedition)
+    public function __construct(protected Project $project, protected Expedition $expedition)
     {
-        $this->project = $project;
-        $this->expedition = $expedition;
         $this->onQueue(config('config.queue.default'));
+        $this->project = $project->withoutRelations();
+        $this->expedition = $expedition->withoutRelations();
     }
 
     /**
@@ -74,10 +61,10 @@ class ZooniverseNewExpedition extends Notification implements ShouldQueue
     public function toMail()
     {
         $vars = [
-            'contact'               => $this->project->contact,
-            'email'                 => $this->project->contact_email,
-            'projectTitle'          => $this->project->title,
-            'expeditionTitle'       => $this->expedition->title,
+            'contact' => $this->project->contact,
+            'email' => $this->project->contact_email,
+            'projectTitle' => $this->project->title,
+            'expeditionTitle' => $this->expedition->title,
             'expeditionDescription' => $this->expedition->description,
         ];
 

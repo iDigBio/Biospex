@@ -27,47 +27,21 @@ use Psr\Http\Message\RequestInterface;
 
 /**
  * Class PanoptesApiService
- *
- * @package App\Services\Api
  */
 class PanoptesApiService extends HttpRequest
 {
-    const CONFIG_SHAPE = [
-        'clientId'       => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-        'clientSecret'   => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-        'redirectUri'    => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-        'urlAccessToken' => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-        'scope'          => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-    ];
-
-    /**
-     * @var \Illuminate\Config\Repository
-     */
     private mixed $apiUri;
 
-    /**
-     * @var int
-     */
     private int $subject_count;
 
-    /**
-     * @var int
-     */
     private int $transcriptions_completed;
 
-    /**
-     * @var int
-     */
     private int $transcriptions_goal;
 
-    /**
-     * @var int
-     */
     private int $local_transcriptions_completed;
 
-    /**
-     * @var float
-     */
+    private int $transcriber_count;
+
     private float $percent_completed;
 
     /**
@@ -80,34 +54,27 @@ class PanoptesApiService extends HttpRequest
 
     /**
      * Set config values.
-     *
-     * @return array
      */
     public function getConfig(): array
     {
         return [
-            'clientId'       => config('zooniverse.panoptes.client_id'),
-            'clientSecret'   => config('zooniverse.panoptes.client_secret'),
-            'redirectUri'    => config('zooniverse.panoptes.redirect_uri'),
+            'clientId' => config('zooniverse.panoptes.client_id'),
+            'clientSecret' => config('zooniverse.panoptes.client_secret'),
+            'redirectUri' => config('zooniverse.panoptes.redirect_uri'),
             'urlAccessToken' => config('zooniverse.panoptes.token_uri'),
-            'scope'          => config('zooniverse.panoptes.scopes'),
+            'scope' => config('zooniverse.panoptes.scopes'),
         ];
     }
 
     /**
      * Build authorized request.
-     *
-     * @param string $method
-     * @param string $uri
-     * @param array $extra
-     * @return \Psr\Http\Message\RequestInterface
      */
     public function buildAuthorizedRequest(string $method, string $uri, array $extra = []): RequestInterface
     {
         $options = array_merge([
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Accept'       => 'application/vnd.api+json; version=1',
+                'Accept' => 'application/vnd.api+json; version=1',
             ],
         ], $extra);
 
@@ -117,8 +84,6 @@ class PanoptesApiService extends HttpRequest
     /**
      * Send authorized request.
      *
-     * @param $request
-     * @return mixed
      * @throws GuzzleException
      */
     public function sendAuthorizedRequest($request): mixed
@@ -130,11 +95,6 @@ class PanoptesApiService extends HttpRequest
 
     /**
      * Get resource uri: projects, workflows, subjects, classifications, users
-     *
-     * @param $resource
-     * @param $id
-     * @param bool $export
-     * @return string
      */
     public function getPanoptesResourceUri($resource, $id, bool $export = false): string
     {
@@ -143,9 +103,6 @@ class PanoptesApiService extends HttpRequest
 
     /**
      * Get panoptes project.
-     *
-     * @param $projectId
-     * @return array
      */
     public function getPanoptesProject($projectId): array
     {
@@ -162,9 +119,6 @@ class PanoptesApiService extends HttpRequest
 
     /**
      * Get panoptes workflow.
-     *
-     * @param $workflowId
-     * @return mixed
      */
     public function getPanoptesWorkflow($workflowId): mixed
     {
@@ -182,7 +136,6 @@ class PanoptesApiService extends HttpRequest
     /**
      * Get panoptes subject.
      *
-     * @param $subjectId
      * @return null
      */
     public function getPanoptesSubject($subjectId)
@@ -200,9 +153,6 @@ class PanoptesApiService extends HttpRequest
 
     /**
      * Get panoptes user.
-     *
-     * @param $userId
-     * @return mixed
      */
     public function getPanoptesUser($userId): mixed
     {
@@ -219,46 +169,37 @@ class PanoptesApiService extends HttpRequest
 
     /**
      * Check needed variables.
-     *
-     * @param $expedition
-     * @return bool
      */
     public function checkForRequiredVariables($expedition): bool
     {
-        return null === $expedition || ! isset($expedition->panoptesProject) || null === $expedition->panoptesProject->panoptes_workflow_id || null === $expedition->panoptesProject->panoptes_project_id;
+        return $expedition === null || ! isset($expedition->panoptesProject) || $expedition->panoptesProject->panoptes_workflow_id === null || $expedition->panoptesProject->panoptes_project_id === null;
     }
 
     /**
      * Calculates totals for transcripts and sets properties.
-     *
-     * @param $workflow
-     * @param $expeditionId
      */
-    public function calculateTotals($workflow, $expeditionId)
+    public function calculateTotals($workflow, $expeditionId): void
     {
         $this->subject_count = (int) $workflow['subjects_count'];
         $this->transcriptions_goal = (int) $workflow['subjects_count'] * (int) $workflow['retirement']['options']['count'];
         $this->transcriptions_completed = (int) $workflow['classifications_count'];
         $this->local_transcriptions_completed = CountHelper::expeditionTranscriptionCount($expeditionId);
+        $this->transcriber_count = CountHelper::expeditionTranscriberCount($expeditionId);
         $this->percent_completed = $this->percentCompleted();
     }
 
     /**
      * Calculate percent complete for transcriptsions.
-     *
-     * @return false|float|int
      */
-    private function percentCompleted(): float|bool|int
+    private function percentCompleted(): int
     {
         $value = ($this->local_transcriptions_completed === 0) ? 0 : ($this->local_transcriptions_completed / $this->transcriptions_goal) * 100;
 
-        return ($value > 100) ? 100 : round($value, 2);
+        return ($value > 100) ? 100 : round($value);
     }
 
     /**
      * Return subject count.
-     *
-     * @return int
      */
     public function getSubjectCount(): int
     {
@@ -267,8 +208,6 @@ class PanoptesApiService extends HttpRequest
 
     /**
      * Return transcriptions completed.
-     *
-     * @return int
      */
     public function getTranscriptionsCompleted(): int
     {
@@ -277,8 +216,6 @@ class PanoptesApiService extends HttpRequest
 
     /**
      * Return transcriptions_goal.
-     *
-     * @return int
      */
     public function getTranscriptionsGoal(): int
     {
@@ -287,8 +224,6 @@ class PanoptesApiService extends HttpRequest
 
     /**
      * Return local_transcriptions_completed.
-     *
-     * @return int
      */
     public function getLocalTranscriptionsCompleted(): int
     {
@@ -296,9 +231,15 @@ class PanoptesApiService extends HttpRequest
     }
 
     /**
+     * Return transcriber count.
+     */
+    public function getExpeditionTranscriberCount(): int
+    {
+        return $this->transcriber_count;
+    }
+
+    /**
      * Return percent completed.
-     *
-     * @return float
      */
     public function getPercentCompleted(): float
     {
@@ -308,7 +249,6 @@ class PanoptesApiService extends HttpRequest
     /**
      * Get image url for subject.
      *
-     * @param $subjectId
      * @return mixed|null
      */
     public function getSubjectImageLocation($subjectId): mixed

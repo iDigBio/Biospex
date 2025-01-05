@@ -19,35 +19,31 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class Workflow
- *
- * @package App\Models
  */
 class Workflow extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'workflows';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = ['title', 'enabled'];
 
-    /**
-     * @return mixed
-     */
-    public function actors()
+    public function actors(): mixed
     {
         return $this->belongsToMany(Actor::class)->using(ActorWorkflow::class)->withPivot('order');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function expedition()
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Expedition::class);
     }

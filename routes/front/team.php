@@ -19,4 +19,4 @@
 
 use App\Http\Controllers\Front\TeamController;
 
-Route::get('team', [TeamController::class, 'index'])->name('front.teams.index');
+Route::get('team', TeamController::class)->name('front.teams.index');

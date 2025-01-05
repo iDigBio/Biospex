@@ -22,251 +22,120 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
 use App\Jobs\DeleteGroupJob;
-use App\Repositories\GroupRepository;
-use App\Repositories\UserRepository;
-use App\Services\Actor\GeoLocate\GeoLocateExportForm;
+use App\Models\Group;
+use App\Services\Group\GroupService;
+use App\Services\Permission\CheckPermission;
 use Auth;
-use Exception;
+use Redirect;
+use Throwable;
+use View;
 
 /**
  * Class GroupController
- *
- * @package App\Http\Controllers\Admin
  */
 class GroupController extends Controller
 {
     /**
-     * @var \App\Repositories\GroupRepository
-     */
-    private $groupRepo;
-
-    /**
      * GroupController constructor.
-     *
-     * @param \App\Repositories\GroupRepository $groupRepo
      */
-    public function __construct(GroupRepository $groupRepo)
-    {
-        $this->groupRepo = $groupRepo;
-    }
+    public function __construct(protected GroupService $groupService) {}
 
     /**
      * Display groups.
-     *
-     * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(): mixed
     {
-        $groups = $this->groupRepo->getGroupsByUserId(Auth::id());
+        $groups = $this->groupService->getAdminIndex();
 
-        return \View::make('admin.group.index', compact('groups'));
+        return View::make('admin.group.index', compact('groups'));
     }
 
     /**
      * Show create group form.
-     *
-     * @return \Illuminate\View\View
      */
-    public function create()
+    public function create(): mixed
     {
-        return \View::make('admin.group.create');
+        return View::make('admin.group.create');
     }
 
     /**
      * Store a newly created group.
-     *
-     * @param GroupFormRequest $request
-     * @param \App\Repositories\UserRepository $userRepo
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(GroupFormRequest $request, UserRepository $userRepo)
+    public function store(GroupFormRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $user = Auth::user();
-        $group = $this->groupRepo->create(['user_id' => $user->id, 'title' => $request->get('title')]);
+        try {
+            $this->groupService->storeGroup(Auth::user(), $request->all());
 
-        if ($group) {
-            $user->assignGroup($group);
-            $admin = $userRepo->find(1);
-            $admin->assignGroup($group);
-
-            event('group.saved');
-
-            \Flash::success(t('Record was created successfully.'));
-
-            return \Redirect::route('admin.groups.index');
+            return Redirect::route('admin.groups.index')->with('success', t('Group successfully created.'));
+        } catch (Throwable $throwable) {
+            return Redirect::back()->with('danger', t('Failed to create Group.'));
         }
-
-        \Flash::warning(t('Login field required'));
-
-        return back();
     }
 
     /**
-     * how group page.
-     *
-     * @param $groupId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     * @throws \Exception
+     * Show a group.
      */
-    public function show($groupId)
+    public function show(Group $group): mixed
     {
-        $group = $this->groupRepo->getGroupShow($groupId);
-
-        if (! $this->checkPermissions('read', $group)) {
-            return back();
+        if (! CheckPermission::handle('read', $group)) {
+            return Redirect::back();
         }
 
-        return \View::make('admin.group.show', compact('group'));
+        $this->groupService->showGroup($group);
+
+        return View::make('admin.group.show', compact('group'));
     }
 
     /**
      * Show group edit form.
-     *
-     * @param $groupId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function edit($groupId)
+    public function edit(Group $group): mixed
     {
-        $group = $this->groupRepo->findWith($groupId, ['owner', 'users.profile']);
-
-        if (! $this->checkPermissions('isOwner', $group)) {
-            return back();
+        if (! CheckPermission::handle('isOwner', $group)) {
+            return Redirect::back();
         }
 
-        $users = $group->users->mapWithKeys(function ($user) {
-            return [$user->id => $user->profile->full_name];
-        });
+        $users = $this->groupService->editGroup($group);
 
-        return \View::make('admin.group.edit', compact('group', 'users'));
+        return View::make('admin.group.edit', compact('group', 'users'));
     }
 
     /**
      * Update group.
-     *
-     * @param GroupFormRequest $request
-     * @param $groupId
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(GroupFormRequest $request, $groupId)
+    public function update(Group $group, GroupFormRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $group = $this->groupRepo->find($groupId);
-
-        if (! $this->checkPermissions('isOwner', $group)) {
-            return back();
+        if (! CheckPermission::handle('isOwner', $group)) {
+            return Redirect::back();
         }
 
-        $this->groupRepo->update($request->all(), $groupId) ? \Flash::success(t('Record was updated successfully.')) : \Flash::error(t('Error while updating record.'));
-
-        return \Redirect::route('admin.groups.show', [$groupId]);
+        return $group->fill($request->all())->save() ?
+            Redirect::route('admin.groups.show', [$group])->with('success', t('Record was updated successfully.')) :
+            Redirect::route('admin.groups.show', [$group])->with('danger', t('Error while updating record.'));
     }
 
     /**
-     * Soft delete the specified resource from storage.
-     *
-     * @param $groupId
-     * @return \Illuminate\Http\RedirectResponse
+     * Delete group.
      */
-    public function delete($groupId)
+    public function destroy(Group $group): \Illuminate\Http\RedirectResponse
     {
-        $group = $this->groupRepo->findWith($groupId, ['projects.panoptesProjects', 'projects.workflowManagers']);
-
-        if (! $this->checkPermissions('isOwner', $group)) {
-            return back();
+        if (! CheckPermission::handle('isOwner', $group)) {
+            return Redirect::back();
         }
 
         try {
-            foreach ($group->projects as $project) {
-                if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                    \Flash::error(t('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
-
-                    return \Redirect::route('admin.groups.index');
-                }
-            }
+            $this->groupService->deleteGroup($group);
 
             DeleteGroupJob::dispatch($group);
 
             event('group.deleted', $group->id);
 
-            \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
+            return Redirect::route('admin.groups.index')
+                ->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
-            return \Redirect::route('admin.groups.index');
-        } catch (Exception $e) {
-            \Flash::error(t('An error occurred when deleting record.'));
+        } catch (Throwable $throwable) {
 
-            return \Redirect::route('admin.groups.index');
-        }
-    }
-
-    /**
-     * Delete user from group.
-     *
-     * @param \App\Repositories\UserRepository $userRepo
-     * @param $groupId
-     * @param $userId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function deleteUser(UserRepository $userRepo, $groupId, $userId)
-    {
-        $group = $this->groupRepo->find($groupId);
-
-        if (! $this->checkPermissions('isOwner', $group)) {
-            return \Redirect::route('admin.groups.index');
-        }
-
-        try {
-            if ($group->user_id === (int) $userId) {
-                \Flash::error(t('You cannot delete the owner until another owner is selected.'));
-
-                return \Redirect::route('admin.groups.show', [$groupId]);
-            }
-
-            $user = $userRepo->find($userId);
-            $user->detachGroup($group->id);
-
-            \Flash::success(t('User was removed from the group'));
-
-            return \Redirect::route('admin.groups.show', [$groupId]);
-        } catch (Exception $e) {
-            \Flash::error(t('There was an error removing user from the group'));
-
-            return \Redirect::route('admin.groups.show', [$groupId]);
-        }
-    }
-
-    /**
-     * Delete geolocate form.
-     *
-     * @param \App\Services\Actor\GeoLocate\GeoLocateExportForm $geoLocateExportForm
-     * @param int $groupId
-     * @param int $formId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function deleteForm(GeoLocateExportForm $geoLocateExportForm, int $groupId, int $formId): \Illuminate\Http\RedirectResponse
-    {
-        try {
-            $group = $this->groupRepo->findWith($groupId);
-
-            if (! $this->checkPermissions('isOwner', $group)) {
-                return \Redirect::back();
-            }
-
-            $geoLocateForm = $geoLocateExportForm->findGeoLocateFormByIdWithExpeditionCount($formId);
-
-            if ($geoLocateForm->expeditions_count > 0) {
-                \Flash::error(t('GeoLocateExport Form cannot be deleted while still being used by Expeditions.'));
-
-                return \Redirect::route('admin.groups.show', [$groupId]);
-            }
-
-            $geoLocateForm->delete();
-
-            \Flash::success(t('GeoLocateExport Form was deleted.'));
-
-            return \Redirect::route('admin.groups.show', [$groupId]);
-        } catch (Exception $e) {
-            \Flash::error(t('There was an error deleteing the GeoLocateExport Form.'));
-
-            return \Redirect::route('admin.groups.show', [$groupId]);
+            return Redirect::route('admin.groups.index')->with('danger', t('An error occurred when deleting record.'));
         }
     }
 }

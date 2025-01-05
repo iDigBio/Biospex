@@ -23,6 +23,7 @@ use App\Models\ExportQueue;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Actor\Traits\ZooniverseErrorNotification;
 use App\Services\Actor\Zooniverse\ZooniverseBuildZip;
+use Artisan;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -35,58 +36,37 @@ use Throwable;
 /**
  * Class ZooniverseExportBuildZipJob
  */
-class ZooniverseExportBuildZipJob implements ShouldQueue, ShouldBeUnique
+class ZooniverseExportBuildZipJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
 
-    /**
-     * @var \App\Models\ExportQueue
-     */
-    private ExportQueue $exportQueue;
-
-    /**
-     * @var int
-     */
     public int $timeout = 1800;
 
     /**
-     * @var \App\Services\Actor\ActorDirectory
-     */
-    private ActorDirectory $actorDirectory;
-
-    /**
      * Create a new job instance.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      */
-    public function __construct(ExportQueue $exportQueue, ActorDirectory $actorDirectory)
+    public function __construct(protected ExportQueue $exportQueue, protected ActorDirectory $actorDirectory)
     {
-        $this->exportQueue = $exportQueue;
-        $this->actorDirectory = $actorDirectory;
+        $this->exportQueue = $exportQueue->withoutRelations();
         $this->onQueue(config('config.queue.export'));
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\Zooniverse\ZooniverseBuildZip $zooniverseBuildZip
      * @throws \Exception
      */
     public function handle(ZooniverseBuildZip $zooniverseBuildZip): void
     {
         $this->exportQueue->increment('stage');
-        \Artisan::call('export:poll');
+        Artisan::call('export:poll');
         $zooniverseBuildZip->process($this->exportQueue, $this->actorDirectory);
     }
 
     /**
      * Handle a job failure.
-     *
-     * @param  \Throwable  $throwable
-     * @return void
      */
-    public function failed(Throwable $throwable)
+    public function failed(Throwable $throwable): void
     {
         $this->sendErrorNotification($this->exportQueue, $throwable);
     }

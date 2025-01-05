@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -20,62 +20,48 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\AmChartRepository;
-use App\Repositories\StateCountyRepository;
+use App\Models\AmChart;
+use App\Models\Project;
 use File;
+use Response;
+use Throwable;
 
 /**
  * Class TranscriptionController
- *
- * @package App\Http\Controllers\Front
  */
 class TranscriptionController extends Controller
 {
     /**
-     * Return json data for transcription charts.
-     *
-     * @param \App\Repositories\AmChartRepository $amChartRepo
-     * @param int $projectId
-     * @param string $year
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * Create a new controller instance.
      */
-    public function transcriptions(AmChartRepository $amChartRepo, int $projectId, string $year): \Illuminate\Http\JsonResponse
-    {
-        $chart = $amChartRepo->findBy('project_id', $projectId);
-
-        $file = json_decode(File::get(config('config.project_chart_config')), true);
-        $file['series'] = $chart->series[$year];
-        $file['data'] = $chart->data[$year];
-
-        return response()->json($file);
-    }
+    public function __construct(protected AmChart $amChart) {}
 
     /**
-     * State counties for project map.
-     *
-     * @param $projectId
-     * @param $stateId
-     * @param \App\Repositories\StateCountyRepository $stateCountyRepo
-     * @return array|\Illuminate\Http\JsonResponse
+     * Return json data for transcription charts.
      */
-    public function state($projectId, $stateId, StateCountyRepository $stateCountyRepo)
+    public function __invoke(Project $project, string $year): \Illuminate\Http\JsonResponse
     {
-        if (! \Request::ajax()) {
-            return response()->json(['html' => 'Error retrieving the counties.']);
+        try {
+            $chart = $this->amChart->where('project_id', $project->id)->first();
+
+            $file = json_decode(File::get(config('config.project_chart_config')), true);
+
+            if (! isset($chart->series[$year])) {
+                throw new \Exception('No data for this year');
+            }
+            $file['series'] = $chart->series[$year];
+
+            if (! isset($chart->data[$year])) {
+                throw new \Exception('No data for this year');
+            }
+            $file['data'] = $chart->data[$year];
+
+            return Response::json($file);
+        } catch (Throwable $throwable) {
+            // TODO: Remove log error once the issue is fixed
+            \Log::info('Project: '.$project->id.' Message: '.$throwable->getMessage());
+
+            return Response::json(['error' => $throwable->getMessage()]);
         }
-
-        $counties = $stateCountyRepo->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
-            return [
-                'id'    => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
-                'value' => $item->transcription_locations_count,
-                'name'  => $item->state_county,
-            ];
-        });
-
-        return [
-            'max'      => abs(round(($counties->max('value') + 500), -3)),
-            'counties' => $counties->toJson(),
-        ];
     }
 }

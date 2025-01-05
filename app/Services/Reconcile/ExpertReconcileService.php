@@ -20,9 +20,9 @@
 namespace App\Services\Reconcile;
 
 use App\Facades\TranscriptionMapHelper;
-use App\Repositories\ReconcileRepository;
-use App\Repositories\SubjectRepository;
+use App\Models\Reconcile;
 use App\Services\Csv\AwsS3CsvService;
+use App\Services\Subject\SubjectService;
 use Exception;
 use File;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -32,26 +32,9 @@ use Validator;
 
 /**
  * Class ExpertReconcileService
- *
- * @package App\Services\Process
  */
 class ExpertReconcileService
 {
-    /**
-     * @var \App\Repositories\ReconcileRepository
-     */
-    private ReconcileRepository $reconcileRepo;
-
-    /**
-     * @var SubjectRepository
-     */
-    private SubjectRepository $subjectRepo;
-
-    /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvService;
-
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
@@ -59,21 +42,12 @@ class ExpertReconcileService
 
     /**
      * ExpertReconcileService constructor.
-     *
-     * @param \App\Repositories\ReconcileRepository $reconcileRepo
-     * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
      */
     public function __construct(
-        ReconcileRepository $reconcileRepo,
-        SubjectRepository $subjectRepo,
-        AwsS3CsvService $awsS3CsvService
+        protected Reconcile $reconcile,
+        protected SubjectService $subjectService,
+        protected AwsS3CsvService $awsS3CsvService
     ) {
-
-        $this->reconcileRepo = $reconcileRepo;
-        $this->subjectRepo = $subjectRepo;
-        $this->awsS3CsvService = $awsS3CsvService;
-
         $this->problemRegex = config('zooniverse.reconcile_problem_regex');
     }
 
@@ -81,10 +55,10 @@ class ExpertReconcileService
      * Migrate reconcile csv to mongodb using first or create.
      *
      * Transcription fields are encoded to prevent field name errors while saving to db.
-     * @param string $expeditionId
+     *
      * @throws \League\Csv\Exception|\Exception
      */
-    public function migrateReconcileCsv(string $expeditionId)
+    public function migrateReconcileCsv(string $expeditionId): void
     {
         $file = config('zooniverse.directory.reconciled').'/'.$expeditionId.'.csv';
 
@@ -106,15 +80,13 @@ class ExpertReconcileService
                 $newRecord['subject_problem'] = 0;
                 $newRecord['subject_columns'] = '';
             }
-            $this->reconcileRepo->create($newRecord);
+            $this->reconcile->create($newRecord);
         });
     }
 
     /**
      * Get csv rows from file.
      *
-     * @param string $file
-     * @return \Illuminate\Support\Collection
      * @throws \League\Csv\Exception
      */
     public function getCsvRows(string $file): Collection
@@ -128,37 +100,31 @@ class ExpertReconcileService
 
     /**
      * Get pagination results.
-     *
-     * @param int $expeditionId
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function getPagination(int $expeditionId): LengthAwarePaginator
     {
-        return $this->reconcileRepo->paging($expeditionId);
+        return $this->reconcile->with(['transcriptions'])
+            ->where('subject_expeditionId', $expeditionId)
+            ->where('subject_problem', 1)
+            ->orderBy('subject_id', 'asc')
+            ->paginate(1);
     }
 
     /**
      * Get image url from api or accessURI.
-     *
-     * @param string $imageName
-     * @param string|null $location
-     * @return mixed
      */
-    public function getImageUrl(string $imageName, string $location = null): mixed
+    public function getImageUrl(string $imageName, ?string $location = null): mixed
     {
         return $location !== null ? $location : $this->getAccessUri($imageName);
     }
 
     /**
      * Get image from accessURI.
-     *
-     * @param $imageName
-     * @return mixed
      */
     public function getAccessUri($imageName): mixed
     {
         $id = File::name($imageName);
-        $subject = $this->subjectRepo->find($id, ['accessURI']);
+        $subject = $this->subjectService->find($id, ['accessURI']);
 
         return $subject->accessURI;
     }
@@ -167,9 +133,6 @@ class ExpertReconcileService
      * Update reconciled record.
      *
      * Unset unneeded variables and decode columns. Use str_place for some columns with spaces.
-     *
-     * @param array $request
-     * @return mixed
      */
     public function updateRecord(array $request): mixed
     {
@@ -182,16 +145,18 @@ class ExpertReconcileService
         }
         $attributes['reviewed'] = 1;
 
-        return $this->reconcileRepo->update($attributes, $id);
+        $model = $this->reconcile->find($id);
+        $result = $model->fill($attributes)->save();
+
+        return $result ? $model : false;
     }
 
     /**
      * Set problem columns in reconcile documents.
      *
-     * @param int $expeditionId
      * @throws \League\Csv\Exception|\Exception
      */
-    public function setReconcileProblems(int $expeditionId)
+    public function setReconcileProblems(int $expeditionId): void
     {
         $file = config('zooniverse.directory.explained').'/'.$expeditionId.'.csv';
 
@@ -220,7 +185,7 @@ class ExpertReconcileService
 
             return [$subjectId => $string];
         })->each(function ($columns, $subjectId) {
-            $reconcile = $this->reconcileRepo->findBy('subject_id', $subjectId);
+            $reconcile = $this->reconcile->where('subject_id', $subjectId)->first();
             if ($reconcile === null) {
                 return;
             }
@@ -234,10 +199,6 @@ class ExpertReconcileService
      * Check columns for problems.
      *
      * Regex match = /No (?:select|text) match on|Only 1 transcript in|There was 1 number in/i
-     *
-     * @param string $value
-     * @param string $field
-     * @return bool
      */
     private function checkForProblem(string $value, string $field): bool
     {
@@ -246,9 +207,6 @@ class ExpertReconcileService
 
     /**
      * Validate transcription to prevent duplicates.
-     *
-     * @param $subject_id
-     * @return bool
      */
     private function validateReconcile($subject_id): bool
     {

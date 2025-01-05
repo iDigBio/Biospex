@@ -20,13 +20,11 @@
 namespace App\Console\Commands;
 
 use App\Jobs\PanoptesProjectUpdateJob;
-use App\Repositories\PanoptesProjectRepository;
+use App\Models\PanoptesProject;
 use Illuminate\Console\Command;
 
 /**
  * Class PanoptesProjectUpdate
- *
- * @package App\Console\Commands
  */
 class PanoptesProjectUpdate extends Command
 {
@@ -45,11 +43,6 @@ class PanoptesProjectUpdate extends Command
     protected $description = 'Update expedition panoptes_projects. Accepts comma separated ids or empty.';
 
     /**
-     * @var
-     */
-    private $expeditionIds;
-
-    /**
      * PanoptesProjectUpdate constructor.
      */
     public function __construct()
@@ -59,28 +52,18 @@ class PanoptesProjectUpdate extends Command
 
     /**
      * Execute the console command.
-     *
-     * @param \App\Repositories\PanoptesProjectRepository $panoptesProjectRepo
      */
-    public function handle(PanoptesProjectRepository $panoptesProjectRepo)
+    public function handle(PanoptesProject $panoptesProject): void
     {
-        $this->setIds();
+        $expeditionIds = $this->argument('expeditionIds') === null ? null :
+            explode(',', $this->argument('expeditionIds'));
 
-        $projects = $this->expeditionIds === null ?
-            $panoptesProjectRepo->all() :
-            $panoptesProjectRepo->whereIn('expedition_id', $this->expeditionIds);
+        $projects = $expeditionIds === null ?
+            $panoptesProject->all() :
+            $panoptesProject->whereIn('expedition_id', $expeditionIds)->get();
 
-        $projects->each(function($project){
+        $projects->each(function ($project) {
             PanoptesProjectUpdateJob::dispatch($project);
         });
-    }
-
-    /**
-     * Set expedition ids if passed via argument.
-     */
-    private function setIds()
-    {
-        $this->expeditionIds = null ===  $this->argument('expeditionIds') ? null :
-            explode(',', $this->argument('expeditionIds'));
     }
 }

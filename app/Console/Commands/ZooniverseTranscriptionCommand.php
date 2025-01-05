@@ -16,15 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Console\Commands;
 
 use App\Jobs\ZooniverseTranscriptionJob;
+use App\Models\Expedition;
 use Illuminate\Console\Command;
 
 /**
  * Class ZooniverseTranscriptionCommand
- *
- * @package App\Console\Commands
  */
 class ZooniverseTranscriptionCommand extends Command
 {
@@ -55,12 +55,13 @@ class ZooniverseTranscriptionCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $expeditionIds = $this->argument('expeditionIds');
 
         foreach ($expeditionIds as $expeditionId) {
-            ZooniverseTranscriptionJob::dispatch($expeditionId);
+            $expedition = Expedition::find($expeditionId);
+            ZooniverseTranscriptionJob::dispatch($expedition);
         }
     }
 }

@@ -20,51 +20,49 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\ExpeditionRepository;
-use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Expedition\ExpeditionService;
+use App\Services\Transcriptions\PanoptesTranscriptionService;
+use Response;
+use Storage;
+use View;
 
 /**
  * Class HomeController
- *
- * @package App\Http\Controllers\Front
  */
 class HomeController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-     * @return \Illuminate\Contracts\View\View
      */
-    public function index(ExpeditionRepository $expeditionRepo, PanoptesTranscriptionRepository $panoptesTranscriptionRepo): \Illuminate\Contracts\View\View
-    {
-        $expedition = $expeditionRepo->getHomePageProjectExpedition();
-        $contributorCount = $panoptesTranscriptionRepo->getContributorCount();
-        $transcriptionCount = $panoptesTranscriptionRepo->getTotalTranscriptions();
+    public function index(
+        ExpeditionService $expeditionService,
+        PanoptesTranscriptionService $panoptesTranscriptionService
+    ): \Illuminate\Contracts\View\View {
 
-        return \View::make('front.home', compact('expedition', 'contributorCount', 'transcriptionCount'));
+        $expedition = $expeditionService->getHomePageProjectExpedition();
+        $contributorCount = $panoptesTranscriptionService->getContributorCount();
+        $transcriptionCount = $panoptesTranscriptionService->getTotalTranscriptions();
+
+        return View::make('front.home', compact('expedition', 'contributorCount', 'transcriptionCount'));
     }
 
     /**
      * Get tmp images for fossil project.
-     * TODO remove after project 115 completed.
-     * @param string $name
-     * @return \Illuminate\Http\Response|void
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * TODO: These images are hosted on Biospex for Project 115: "Digitizing the Biology Collection of the Science Museum of Minnesota".
      */
-    public function tmpimage(string $name)
+    public function tmpimage(string $name): \Illuminate\Http\Response
     {
-        $exists = \Storage::disk('public')->exists('tmpimage/'.$name);
+        $exists = Storage::disk('public')->exists('tmpimage/'.$name);
 
-        if($exists) {
+        if ($exists) {
             //get content of image
-            $content = \Storage::get('public/tmpimage/'.$name);
+            $content = Storage::get('public/tmpimage/'.$name);
 
             //get mime type of image
-            $mime = \Storage::mimeType('public/tmpimage/'.$name);      //prepare response with image content and response code
-            $response = \Response::make($content, 200);      //set header
-            $response->header("Content-Type", $mime);      // return response
+            $mime = Storage::mimeType('public/tmpimage/'.$name);      //prepare response with image content and response code
+            $response = Response::make($content, 200);      //set header
+            $response->header('Content-Type', $mime);      // return response
+
             return $response;
         } else {
             abort(404);

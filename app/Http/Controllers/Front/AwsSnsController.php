@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2022. Biospex
  * biospex@gmail.com
@@ -19,15 +20,15 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Events\ImageExportEvent;
-use App\Events\LabelReconciliationEvent;
-use App\Events\TesseractOcrEvent;
+use App\Events\SnsTopicSubscriptionEvent;
+use App\Jobs\SnsImageExportJob;
+use App\Jobs\SnsLabelReconciliationJob;
+use App\Jobs\SnsTesseractOcrJob;
 use Aws\Sns\Exception\InvalidSnsMessageException;
 use Aws\Sns\Message;
 use Aws\Sns\MessageValidator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use App\Events\SnsTopicSubscriptionEvent;
 
 class AwsSnsController
 {
@@ -37,20 +38,17 @@ class AwsSnsController
      *
      * @see ImageExportEvent
      * @see LabelReconciliationEvent
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function handle(): \Illuminate\Http\Response
+    public function __invoke(): \Illuminate\Http\Response
     {
-        $message = Message::fromRawPostData();
-
-        $validator = new MessageValidator(function ($certUrl) {
-            return Cache::rememberForever($certUrl, function () use ($certUrl) {
-                return Http::get($certUrl)->body();
-            });
-        });
-
         try {
+            $message = Message::fromRawPostData();
+
+            $validator = new MessageValidator(function ($certUrl) {
+                return Cache::rememberForever($certUrl, function () use ($certUrl) {
+                    return Http::get($certUrl)->body();
+                });
+            });
             $validator->validate($message);
         } catch (InvalidSnsMessageException $e) {
             // Return 404 to pretend we are not here for SNS if invalid request
@@ -66,24 +64,21 @@ class AwsSnsController
             return response('OK', 200);
         }
 
-        if (isset($message['Type']) && $message['Type'] === 'Notification') {
-            $payload = json_decode($message['Message'], true);
+        $payload = json_decode($message['Message'], true);
 
-            $eventType = match (true) {
-                str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_reconciliation_function')) => LabelReconciliationEvent::class,
-                str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_ocr_function')) => TesseractOcrEvent::class,
-                str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_export_function')) => ImageExportEvent::class,
-                default => null,
-            };
+        $job = match (true) {
+            str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_reconciliation_function')) => SnsLabelReconciliationJob::class,
+            str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_ocr_function')) => SnsTesseractOcrJob::class,
+            str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_export_function')) => SnsImageExportJob::class,
+            default => null,
+        };
 
-            if ($eventType === null) {
-                return response(t('SNS Message Validation Error: Event Type Null'), 500);
-            }
-
-            event(new $eventType($payload));
+        if ($job === null) {
+            return response(t('SNS Message Validation Error: Event Type Null'), 500);
         }
+
+        $job::dispatch($payload);
 
         return response('OK', 200);
     }
 }
-

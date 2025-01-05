@@ -30,16 +30,12 @@ abstract class Presenter
      */
     protected $model;
 
-    /**
-     * @param \Illuminate\Database\Eloquent\Model $model
-     */
     public function __construct(Model $model)
     {
         $this->model = $model;
     }
 
     /**
-     * @param $property
      * @return bool
      */
     public function __isset($property)
@@ -48,7 +44,6 @@ abstract class Presenter
     }
 
     /**
-     * @param $property
      * @return mixed
      */
     public function __get($property)
@@ -63,8 +58,8 @@ abstract class Presenter
     }
 
     /**
-     * @param \Czim\Paperclip\Attachment\Attachment $attachment
-     * @param null $variant
+     * @param  \Czim\Paperclip\Attachment\Attachment  $attachment
+     * @param  null  $variant
      * @return bool
      */
     public function variantExists($attachment, $variant = null)

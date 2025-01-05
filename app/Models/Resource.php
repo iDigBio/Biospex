@@ -20,33 +20,50 @@
 namespace App\Models;
 
 use App\Models\Traits\Presentable;
+use App\Models\Traits\UuidTrait;
 use App\Presenters\ResourcePresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Resource
- *
- * @package App\Models
  */
 class Resource extends BaseEloquentModel implements AttachableInterface
 {
-    use PaperclipTrait, Presentable;
+    use HasFactory, PaperclipTrait, Presentable, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'resources';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'title',
         'description',
         'document',
-        'order'
+        'order',
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * @var string
@@ -54,9 +71,17 @@ class Resource extends BaseEloquentModel implements AttachableInterface
     protected $presenter = ResourcePresenter::class;
 
     /**
+     * Boot functions.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::bootUuidTrait();
+    }
+
+    /**
      * Resource constructor.
-     *
-     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -64,5 +89,4 @@ class Resource extends BaseEloquentModel implements AttachableInterface
 
         parent::__construct($attributes);
     }
-
 }

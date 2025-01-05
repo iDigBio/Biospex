@@ -21,15 +21,12 @@ namespace App\Traits;
 
 /**
  * Trait SkipZooniverse
- *
- * @package App\Jobs\Traits
  */
 trait SkipZooniverse
 {
     /**
      * Used to skip reconcile process.
      *
-     * @param $expeditionId
      * @return bool
      */
     protected function skipReconcile($expeditionId)
@@ -46,7 +43,6 @@ trait SkipZooniverse
     /**
      * Skip expedition for panoptes api.
      *
-     * @param $expeditionId
      * @return bool
      */
     protected function skipApi($expeditionId)

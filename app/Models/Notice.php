@@ -19,20 +19,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class Notice
- *
- * @package App\Models
  */
 class Notice extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'notices';
 
     protected $fillable = [
         'message',
-        'enabled'
+        'enabled',
     ];
 }

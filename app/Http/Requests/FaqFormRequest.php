@@ -21,12 +21,9 @@ namespace App\Http\Requests;
 
 /**
  * Class FaqFormRequest
- *
- * @package App\Http\Requests
  */
 class FaqFormRequest extends Request
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -46,8 +43,8 @@ class FaqFormRequest extends Request
     {
         return [
             'faq_category_id' => 'required',
-            'question'        => 'required',
-            'answer'          => 'required'
+            'question' => 'required',
+            'answer' => 'required',
         ];
     }
 }

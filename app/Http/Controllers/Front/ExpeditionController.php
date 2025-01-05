@@ -20,57 +20,21 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\ExpeditionRepository;
+use App\Services\Expedition\ExpeditionService;
+use View;
 
 /**
  * Class ExpeditionController
- *
- * @package App\Http\Controllers\Front
  */
 class ExpeditionController extends Controller
 {
     /**
      * Displays Expeditions on public page.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(ExpeditionRepository $expeditionRepo)
+    public function __invoke(ExpeditionService $expeditionService): \Illuminate\View\View
     {
-        $results = $expeditionRepo->getExpeditionPublicIndex();
-        //$project = $results->first()->project;
+        [$expeditions, $expeditionsCompleted] = $expeditionService->getPublicIndex();
 
-        [$expeditions, $expeditionsCompleted] = $results->partition(function($expedition) {
-            return $expedition->completed === 0;
-        });
-
-        return \View::make('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
-    }
-
-    /**
-     * Displays Completed Expeditions on public page.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     */
-    public function sort(ExpeditionRepository $expeditionRepo)
-    {
-        if ( ! \Request::ajax()) {
-            return null;
-        }
-
-        $type = \Request::get('type');
-        $sort = \Request::get('sort');
-        $order = \Request::get('order');
-        $projectId = \Request::get('id');
-
-        [$active, $completed] = $expeditionRepo->getExpeditionPublicIndex($sort, $order, $projectId)
-            ->partition(function($expedition) {
-                return $expedition->completed === 0;
-        });
-
-        $expeditions = $type === 'active' ? $active : $completed;
-        $project = false;
-
-        return \View::make('front.expedition.partials.expedition', compact('expeditions', 'project'));
+        return View::make('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
     }
 }

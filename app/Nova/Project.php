@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2022. Biospex
  * biospex@gmail.com
@@ -16,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Nova;
 
 use Laravel\Nova\Fields\BelongsTo;
@@ -25,33 +27,32 @@ use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
+
 use function t;
 
 /**
  * Class Project
- *
- * @package App\Nova
  */
 class Project extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var  string
+     * @var string
      */
     public static $model = \App\Models\Project::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
-     * @var  string
+     * @var string
      */
     public static $title = 'title';
 
     /**
      * The columns that should be searched.
      *
-     * @var  array
+     * @var array
      */
     public static $search = [
         'id',
@@ -62,7 +63,7 @@ class Project extends Resource
     /**
      * Get the displayable label of the resource.
      *
-     * @return  string
+     * @return string
      */
     public static function label()
     {
@@ -72,7 +73,7 @@ class Project extends Resource
     /**
      * Get the displayable singular label of the resource.
      *
-     * @return  string
+     * @return string
      */
     public static function singularLabel()
     {
@@ -82,20 +83,19 @@ class Project extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function fields(NovaRequest $request)
     {
         return [
-            ID::make(t('Id'), 'id')->onlyOnDetail()->sortable(),
+            ID::make(t('Id'), 'id')->sortable(),
             Text::make(t('Uuid'), 'uuid')->onlyOnDetail(),
             BelongsTo::make('Group')->rules('required')->sortable(),
             Select::make(t('Status'), 'status')->rules('required')->hideFromIndex()->options([
                 'starting' => 'Starting',
-                'active'   => 'Active',
+                'active' => 'Active',
                 'complete' => 'Complete',
-                'hiatus'   => 'Hiatus',
+                'hiatus' => 'Hiatus',
             ]),
             Text::make(t('Title'), 'title')->rules('required')->sortable(),
             Text::make(t('Slug'), 'slug')->onlyOnDetail(),
@@ -125,8 +125,7 @@ class Project extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function cards(NovaRequest $request)
     {
@@ -136,8 +135,7 @@ class Project extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function filters(NovaRequest $request)
     {
@@ -147,8 +145,7 @@ class Project extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function lenses(NovaRequest $request)
     {
@@ -158,8 +155,7 @@ class Project extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function actions(NovaRequest $request)
     {

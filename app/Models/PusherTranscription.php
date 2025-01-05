@@ -21,15 +21,13 @@ namespace App\Models;
 
 /**
  * Class PusherTranscription
- *
- * @package App\Models
  */
 class PusherTranscription extends BaseMongoModel
 {
     /**
      * Set Collection
      */
-    protected $collection = 'pusher_transcriptions';
+    protected $table = 'pusher_transcriptions';
 
     /**
      * The attributes that should be cast.
@@ -48,18 +46,12 @@ class PusherTranscription extends BaseMongoModel
         ];
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function expedition()
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class, 'expedition_id', 'id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
-     */
-    public function transcription()
+    public function transcription(): \Illuminate\Database\Eloquent\Relations\belongsTo
     {
         return $this->belongsTo(PanoptesTranscription::class, 'classification_id', 'classification_id');
     }

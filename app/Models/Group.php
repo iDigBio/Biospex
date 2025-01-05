@@ -22,29 +22,45 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\GroupPresenter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Group
- *
- * @package App\Models
  */
 class Group extends BaseEloquentModel
 {
-    use UuidTrait, Presentable;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'groups';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'uuid',
         'user_id',
-        'title'
+        'title',
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * @var string
@@ -73,7 +89,7 @@ class Group extends BaseEloquentModel
 
     /**
      * Users relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users()
@@ -92,7 +108,18 @@ class Group extends BaseEloquentModel
     }
 
     /**
+     * PanoptesProjects relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function panoptesProjects()
+    {
+        return $this->hasManyThrough(PanoptesProject::class, Project::class);
+    }
+
+    /**
      * Expeditions relationship
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function expeditions()
@@ -102,12 +129,12 @@ class Group extends BaseEloquentModel
 
     /**
      * Invites relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function invites()
     {
-        return $this->hasMany(Invite::class);
+        return $this->hasMany(GroupInvite::class);
     }
 
     /**

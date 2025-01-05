@@ -19,32 +19,31 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class Actor
- *
- * @package App\Models
  */
 class Actor extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'actors';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'title',
         'url',
-        'class'
+        'class',
     ];
 
     /**
      * Scope for active.
-     *
-     * @param $query
-     * @return mixed
      */
     public function scopeActive($query): mixed
     {
@@ -52,8 +51,23 @@ class Actor extends BaseEloquentModel
     }
 
     /**
+     * Scope for zooniverse.
+     */
+    public function scopeZooniverse($query): mixed
+    {
+        return $query->where('actors.id', config('zooniverse.actor_id'));
+    }
+
+    /**
+     * Scope for geolocate.
+     */
+    public function scopeGeolocate($query): mixed
+    {
+        return $query->where('actors.id', config('geolocate.actor_id'));
+    }
+
+    /**
      * Workflows relationship.
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function workflows(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -62,17 +76,12 @@ class Actor extends BaseEloquentModel
 
     /**
      * Download relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function downloads(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Download::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function contacts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ActorContact::class);
@@ -80,8 +89,6 @@ class Actor extends BaseEloquentModel
 
     /**
      * Expedition relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function expeditions(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -89,13 +96,5 @@ class Actor extends BaseEloquentModel
             ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'error', 'order', 'expert')
             ->orderBy('order')
             ->withTimestamps();
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function exportQueues()
-    {
-        return $this->hasMany(ExportQueue::class);
     }
 }

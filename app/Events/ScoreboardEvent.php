@@ -20,45 +20,23 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
 
 /**
  * Class ScoreboardEvent
- *
- * @package App\Events
  */
 class ScoreboardEvent extends Event implements ShouldBroadcast
 {
-
     use Dispatchable;
 
     /**
-     * @var array
-     */
-    public array $data = [];
-
-    /**
-     * @var
-     */
-    public $projectId;
-
-    /**
      * ScoreboardEvent constructor.
-     *
-     * @param $projectId
-     * @param $data
      */
-    public function __construct($projectId, $data)
-    {
-        $this->projectId = $projectId;
-        $this->data = $data;
-    }
+    public function __construct(public $projectId, public array $data = []) {}
 
     /**
      * The name of the queue on which to place the broadcasting job.
-     *
-     * @return string
      */
     public function broadcastQueue(): string
     {
@@ -67,11 +45,9 @@ class ScoreboardEvent extends Event implements ShouldBroadcast
 
     /**
      * Get the channels the event should be broadcast on.
-     *
-     * @return Channel
      */
-    public function broadcastOn()
+    public function broadcastOn(): Channel
     {
-        return new Channel(config('config.poll_board_channel') . '.' . $this->projectId);
+        return new Channel(config('config.poll_scoreboard_channel').'.'.$this->projectId);
     }
 }

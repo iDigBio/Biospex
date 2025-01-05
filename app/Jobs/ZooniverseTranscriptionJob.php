@@ -19,6 +19,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Transcriptions\CreatePanoptesTranscriptionService;
@@ -34,8 +35,6 @@ use Throwable;
 
 /**
  * Class ZooniverseTranscriptionJob
- *
- * @package App\Jobs
  */
 class ZooniverseTranscriptionJob implements ShouldQueue
 {
@@ -43,57 +42,47 @@ class ZooniverseTranscriptionJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 300;
 
     /**
-     * @var int
-     */
-    private int $expeditionId;
-
-    /**
      * Create a new job instance.
-     *
-     * @param int $expeditionId
      */
-    public function __construct(int $expeditionId)
+    public function __construct(protected Expedition $expedition)
     {
+        $this->expedition = $expedition->withoutRelations();
         $this->onQueue(config('config.queue.reconcile'));
-        $this->expeditionId = $expeditionId;
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Transcriptions\CreatePanoptesTranscriptionService $createPanoptesTranscriptionService
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function handle(CreatePanoptesTranscriptionService $createPanoptesTranscriptionService)
+    public function handle(CreatePanoptesTranscriptionService $createPanoptesTranscriptionService): void
     {
-        if ($this->skipReconcile($this->expeditionId)) {
+        if ($this->skipReconcile($this->expedition->id)) {
             $this->delete();
 
             return;
         }
 
-        $csvFilePath = config('zooniverse.directory.transcript') . "/{$this->expeditionId}.csv";
+        $csvFilePath = config('zooniverse.directory.transcript')."/{$this->expedition->id}.csv";
         if (! Storage::disk('s3')->exists($csvFilePath)) {
             $this->delete();
 
             return;
         }
 
-        $createPanoptesTranscriptionService->process($csvFilePath, $this->expeditionId);
+        $createPanoptesTranscriptionService->process($csvFilePath, $this->expedition->id);
 
         $fileName = $createPanoptesTranscriptionService->checkCsvError();
         if ($fileName !== null) {
             $attributes = [
                 'subject' => t('Zooniverse Transcription Job Error'),
-                'html'    => [
+                'html' => [
                     t('File: %s', __FILE__),
-                    t('Line: %s', 91)
+                    t('Line: %s', 91),
                 ],
             ];
 
@@ -109,20 +98,17 @@ class ZooniverseTranscriptionJob implements ShouldQueue
      */
     public function middleware(): array
     {
-        return [new WithoutOverlapping($this->expeditionId)];
+        return [new WithoutOverlapping($this->expedition->id)];
     }
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
     public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Zooniverse Transcription Job Failed'),
-            'html'    => [
+            'html' => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),

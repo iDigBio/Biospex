@@ -19,24 +19,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class PusherClassification
- *
- * @package App\Models
  */
 class PusherClassification extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'pusher_classifications';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'classification_id',
-        'data'
+        'data',
     ];
 
     /**
@@ -47,7 +49,7 @@ class PusherClassification extends BaseEloquentModel
     protected function casts(): array
     {
         return [
-            'data' => 'array'
+            'data' => 'array',
         ];
     }
 }

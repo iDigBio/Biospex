@@ -21,8 +21,6 @@ namespace App\Presenters;
 
 /**
  * Class TeamPresenter
- *
- * @package App\Presenters
  */
 class TeamPresenter extends Presenter
 {
@@ -31,7 +29,8 @@ class TeamPresenter extends Presenter
      *
      * @return string
      */
-    public function fullName() {
-        return $this->model->first_name . ' ' . $this->model->last_name;
+    public function fullName()
+    {
+        return $this->model->first_name.' '.$this->model->last_name;
     }
 }

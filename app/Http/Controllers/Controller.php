@@ -1,36 +1,39 @@
 <?php
+/*
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 namespace App\Http\Controllers;
 
-use Flash;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
 
+/*
+ * index
+ * create
+ * store
+ * show
+ * edit
+ * update
+ * destroy
+ */
 abstract class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
-    /**
-     * Check permissions.
-     *
-     * @param $ability
-     * @param $object
-     * @return bool
-     */
-    public function checkPermissions($ability, $object = null): bool
-    {
-        try{
-            $this->authorize($ability, $object);
-        }
-        catch (\Throwable $throwable)
-        {
-            \Flash::warning(t('You do not have sufficient permissions.'));
-
-            return false;
-        }
-
-        return true;
-    }
 }

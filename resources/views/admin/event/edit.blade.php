@@ -15,11 +15,12 @@
                     <h2 class="text-center content-header text-uppercase mb-4">{{ t('Edit Event') }}</h2>
 
                     <form method="post"
-                          action="{{ route('admin.events.update', [$event->id]) }}"
+                          action="{{ route('admin.events.update', [$event]) }}"
                           role="form" enctype="multipart/form-data">
                         {!! method_field('put') !!}
                         @csrf
-                        <input type="hidden" name="entries" value="{{ old('entries', $teamsCount) }}">
+                        <input type="hidden" name="entries"
+                               value="{{ old('entries', old('entries', $event->teams->count() ?: 1)) }}">
                         <input type="hidden" name="owner_id" value="{{ old('owner_id', $event->owner_id)  }}">
                         <div class="form-group">
                             <div class="col-12 p-0">
@@ -75,45 +76,45 @@
                             <span class="invalid-feedback">{{ $errors->first('hashtag') }}</span>
                         </div>
                         <div class="form-row">
-                        <div class="col-sm-4 form-group">
-                            <label for="start_date"
-                                   class="col-form-label required">{{ t('Start Date') }}
-                                :</label>
-                            <input type="text"
-                                   class="form-control date-time-picker {{ ($errors->has('start_date')) ? 'is-invalid' : '' }}"
-                                   id="start_date" name="start_date"
-                                   value="{{ old('start_date', $event->start_date->setTimezone($event->timezone)->format('Y-m-d H:i')) }}"
-                                   required>
-                            <span class="invalid-feedback">{{ $errors->first('start_date') }}</span>
-                        </div>
-                        <div class="col-sm-4 form-group">
-                            <label for="end_date"
-                                   class="col-form-label required">{{ t('End Date') }}:</label>
-                            <input type="text"
-                                   class="form-control date-time-picker {{ ($errors->has('end_date')) ? 'is-invalid' : '' }}"
-                                   id="end_date" name="end_date"
-                                   value="{{ old('end_date', $event->end_date->setTimezone($event->timezone)->format('Y-m-d H:i')) }}"
-                                   required>
-                            <span class="invalid-feedback">{{ $errors->first('end_date') }}</span>
-                        </div>
-                        <div class="col-sm-4 form-group">
-                            <label for="timezone"
-                                   class="col-form-label required">{{ t('Timezone') }}:</label>
-                            <select name="timezone" id="timezone"
-                                    class="form-control custom-select {{ ($errors->has('timezone')) ? 'is-invalid' : '' }}"
-                                    required>
-                                @foreach($timezones as $key => $value)
-                                    <option {{ $key == old('timezone', $event->timezone) ?
+                            <div class="col-sm-4 form-group">
+                                <label for="start_date"
+                                       class="col-form-label required">{{ t('Start Date') }}
+                                    :</label>
+                                <input type="text"
+                                       class="form-control date-time-picker {{ ($errors->has('start_date')) ? 'is-invalid' : '' }}"
+                                       id="start_date" name="start_date"
+                                       value="{{ old('start_date', $event->start_date->setTimezone($event->timezone)->format('Y-m-d H:i')) }}"
+                                       required>
+                                <span class="invalid-feedback">{{ $errors->first('start_date') }}</span>
+                            </div>
+                            <div class="col-sm-4 form-group">
+                                <label for="end_date"
+                                       class="col-form-label required">{{ t('End Date') }}:</label>
+                                <input type="text"
+                                       class="form-control date-time-picker {{ ($errors->has('end_date')) ? 'is-invalid' : '' }}"
+                                       id="end_date" name="end_date"
+                                       value="{{ old('end_date', $event->end_date->setTimezone($event->timezone)->format('Y-m-d H:i')) }}"
+                                       required>
+                                <span class="invalid-feedback">{{ $errors->first('end_date') }}</span>
+                            </div>
+                            <div class="col-sm-4 form-group">
+                                <label for="timezone"
+                                       class="col-form-label required">{{ t('Timezone') }}:</label>
+                                <select name="timezone" id="timezone"
+                                        class="form-control custom-select {{ ($errors->has('timezone')) ? 'is-invalid' : '' }}"
+                                        required>
+                                    @foreach(time_zone_select() as $key => $value)
+                                        <option {{ $key == old('timezone', $event->timezone) ?
                                         ' selected=selected' : '' }} value="{{ $key }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
                         <div class="form-group">
                             <label for="teams" class="col-form-label">{{ t('Teams') }}:</label>
                             <div class="controls col-sm-12">
-                                @include('admin.event.partials.teams', ['teams' => $event->teams, 'teamsCount' => $teamsCount])
+                                @include('admin.event.partials.teams', ['teams' => $event->teams, 'teamsCount' => old('entries', $event->teams->count() ?: 1)])
                             </div>
                         </div>
                         @include('common.cancel-submit-buttons')

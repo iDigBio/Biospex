@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Providers;
 
 use App\Models\Bingo;
@@ -24,15 +25,12 @@ use App\Models\Group;
 use App\Models\User;
 use App\Policies\BingoPolicy;
 use App\Policies\EventPolicy;
-use App\Policies\UserPolicy;
 use App\Policies\GroupPolicy;
-use Illuminate\Contracts\Auth\Access\Gate as GateContract;
+use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 /**
  * Class AuthServiceProvider
- *
- * @package App\Providers
  */
 class AuthServiceProvider extends ServiceProvider
 {
@@ -45,7 +43,7 @@ class AuthServiceProvider extends ServiceProvider
         Group::class => GroupPolicy::class,
         User::class => UserPolicy::class,
         Event::class => EventPolicy::class,
-        Bingo::class => BingoPolicy::class
+        Bingo::class => BingoPolicy::class,
     ];
 
     /**
@@ -53,8 +51,5 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
-    {
-
-    }
+    public function boot() {}
 }

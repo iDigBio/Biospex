@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -20,88 +21,68 @@
 namespace App\Jobs;
 
 use App\Events\BingoEvent;
+use App\Models\Bingo;
+use App\Models\BingoUser;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Repositories\BingoMapRepository;
+use App\Services\Bingo\BingoService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class BingoJob
- *
- * @package App\Jobs
  */
 class BingoJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var string
-     */
-    private string $bingoId;
-
-    /**
-     * @var string|null
-     */
-    private ?string $mapId;
-
-    /**
      * BingoJob constructor.
-     *
-     * @param string $bingoId
-     * @param string|null $mapId
      */
-    public function __construct(string $bingoId, string $mapId = null)
+    public function __construct(protected Bingo $bingo, protected BingoUser $bingoUser, protected bool $winner = false)
     {
-        $this->bingoId = $bingoId;
-        $this->mapId = $mapId;
+        $this->bingo = $bingo->withoutRelations();
+        $this->bingoUser = $bingoUser->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Job handle.
-     *
-     * @param \App\Repositories\BingoMapRepository $bingoMapRepo
      */
-    public function handle(BingoMapRepository $bingoMapRepo): void
+    public function handle(BingoService $bingoService): void
     {
-        $locations = $bingoMapRepo->getBy('bingo_id', $this->bingoId);
-        $data['markers'] = $locations->map(function($location) {
-            return [
-                'latitude' => $location->latitude,
-                'longitude' => $location->longitude,
-                'city' => $location->city
-            ];
-        })->toArray();
+        $data['marker'] = [
+            'uuid' => $this->bingoUser->uuid,
+            'latitude' => $this->bingoUser->latitude,
+            'longitude' => $this->bingoUser->longitude,
+            'city' => $this->bingoUser->city,
+        ];
 
         $data['winner'] = null;
-        if ($this->mapId !== null) {
-            $map = $bingoMapRepo->find($this->mapId);
-            $data['winner']['city'] = $map->city;
-            $data['winner']['uuid'] = $map->uuid;
+        if ($this->winner) {
+            $data['winner']['city'] = $this->bingoUser->city;
+            $data['winner']['uuid'] = $this->bingoUser->uuid;
         }
 
-
-        BingoEvent::dispatch($this->bingoId, $data);
+        BingoEvent::dispatch($this->bingo, json_encode($data, JSON_NUMERIC_CHECK));
     }
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
-    public function failed(\Throwable $throwable): void
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Bingo Job Failed'),
-            'html'    => [
+            'html' => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage())
+                t('Message: %s', $throwable->getMessage()),
+                t('Trace: %s', $throwable->getTraceAsString()),
             ],
         ];
 

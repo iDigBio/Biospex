@@ -19,8 +19,29 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
-class ActorExpedition extends Pivot
+class ActorExpedition extends BaseEloquentModel
 {
-    public  $incrementing = true;
+    public $incrementing = true;
+
+    protected $table = 'actor_expedition';
+
+    protected $fillable = [
+        'actor_id',
+        'expedition_id',
+        'state',
+        'total',
+        'error',
+        'order',
+        'expert',
+    ];
+
+    public function actor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Actor::class);
+    }
+
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Expedition::class);
+    }
 }

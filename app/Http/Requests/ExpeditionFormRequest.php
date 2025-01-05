@@ -20,13 +20,10 @@
 namespace App\Http\Requests;
 
 use App\Rules\FileUploadNameValidation;
-use Config;
 use Illuminate\Support\Facades\Auth;
 
 /**
  * Class ExpeditionFormRequest
- *
- * @package App\Http\Requests
  */
 class ExpeditionFormRequest extends Request
 {
@@ -42,15 +39,17 @@ class ExpeditionFormRequest extends Request
      */
     public function rules()
     {
+        $expeditionId = isset($this->route('expedition')->id) ? $this->route('expedition')->id : null;
+
         return [
-            'title' => 'required|between:6,140|unique:expeditions,title,' . $this->route('expeditions'),
+            'title' => 'required|between:6,140|unique:expeditions,title,'.$expeditionId,
             'description' => 'required|between:6,140',
             'keywords' => 'required',
-            'logo'                    => [
+            'logo' => [
                 'image',
-                new FileUploadNameValidation(),
+                new FileUploadNameValidation,
             ],
-            'workflow_id' => 'required'
+            'workflow_id' => 'required',
         ];
     }
 

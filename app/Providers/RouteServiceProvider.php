@@ -24,8 +24,6 @@ use Illuminate\Support\Facades\Route;
 
 /**
  * Class RouteServiceProvider
- *
- * @package App\Providers
  */
 class RouteServiceProvider extends ServiceProvider
 {
@@ -50,10 +48,8 @@ class RouteServiceProvider extends ServiceProvider
 
     /**
      * Define the routes for the application.
-     *
-     * @return void
      */
-    public function map()
+    public function map(): void
     {
         $this->mapWebRoutes();
         $this->mapApiRoutes();
@@ -63,10 +59,8 @@ class RouteServiceProvider extends ServiceProvider
      * Define the "api" routes for the application.
      *
      * These routes are typically stateless.
-     *
-     * @return void
      */
-    protected function mapApiRoutes()
+    protected function mapApiRoutes(): void
     {
         Route::domain(config('config.api.domain'))->group(function () {
             Route::middleware(['web'])->group(base_path('routes/api/index.php'));
@@ -81,7 +75,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('v1')->middleware([
                 'api',
                 'auth:sanctum',
-                'ability:panoptes-pusher:read,panoptes-pusher:create,wedigbio-dashboard:read,lambda:update'
+                'ability:panoptes-pusher:read,panoptes-pusher:create,wedigbio-dashboard:read,lambda:update',
             ])->group(function () {
                 $this->require_files('routes/api/v1');
             });
@@ -92,10 +86,8 @@ class RouteServiceProvider extends ServiceProvider
      * Define the "web" routes for the application.
      *
      * These routes all receive session state, CSRF protection, etc.
-     *
-     * @return void
      */
-    protected function mapWebRoutes()
+    protected function mapWebRoutes(): void
     {
         Route::domain(config('config.app_domain'))->middleware('web')->group(function () {
             $this->require_files('routes/front');
@@ -112,10 +104,8 @@ class RouteServiceProvider extends ServiceProvider
 
     /**
      * Load required files.
-     *
-     * @param $dir
      */
-    protected function require_files($dir)
+    protected function require_files($dir): void
     {
         $files = \File::files(base_path($dir));
         foreach ($files as $file) {

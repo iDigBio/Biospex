@@ -21,20 +21,19 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\ReconcilePresenter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Reconcile
- *
- * @package App\Models
  */
 class Reconcile extends BaseMongoModel
 {
-    use Presentable;
+    use HasFactory, Presentable;
 
     /**
      * Set Collection
      */
-    protected $collection = 'reconciles';
+    protected $table = 'reconciles';
 
     /**
      * The attributes that should be cast.
@@ -44,25 +43,20 @@ class Reconcile extends BaseMongoModel
     protected function casts(): array
     {
         return [
-            'subject_id'           => 'integer',
-            'subject_projectId'    => 'integer',
+            'subject_id' => 'integer',
+            'subject_projectId' => 'integer',
             'subject_expeditionId' => 'integer',
-            'problem'              => 'integer',
-            'created_at'           => 'datetime',
-            'updated_at'           => 'datetime',
-            'timestamp'            => 'datetime',
+            'problem' => 'integer',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'timestamp' => 'datetime',
         ];
     }
 
-    /**
-     * @var string
-     */
-    protected $presenter = ReconcilePresenter::class;
+    protected string $presenter = ReconcilePresenter::class;
 
     /**
      * Subject relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -71,18 +65,14 @@ class Reconcile extends BaseMongoModel
 
     /**
      * Expdition relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function expedition()
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class, 'expedition_id', 'id');
     }
 
     /**
      * Subject relation.
-     *
-     * @return \MongoDB\Laravel\Relations\HasMany
      */
     public function transcriptions(): \MongoDB\Laravel\Relations\HasMany
     {

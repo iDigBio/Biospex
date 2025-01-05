@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -20,7 +21,7 @@
 namespace App\Services\Actor\GeoLocate;
 
 use App\Jobs\GeoLocateStatsJob;
-use App\Models\Actor;
+use App\Models\ActorExpedition;
 
 class GeoLocate
 {
@@ -32,13 +33,12 @@ class GeoLocate
      *  State = 2: GeoLocate community and datasource added.
      *  State = 3: GeoLocate with stats completed
      *
-     * @param \App\Models\Actor $actor
      * @throws \Throwable
      */
-    public function actor(Actor $actor): void
+    public function process(ActorExpedition $actorExpedition): void
     {
-        if ($actor->pivot->state === 2) {
-            GeoLocateStatsJob::dispatch($actor);
+        if ($actorExpedition->state === 2 && config('geolocate.enabled')) {
+            GeoLocateStatsJob::dispatch($actorExpedition);
         }
     }
 }

@@ -11,20 +11,14 @@ class Generic extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    private array $attributes;
-
-    private bool $admin;
-
     /**
      * Create a new notification instance.
      *
-     * @param array $attributes ['subject' => '', 'html' => '', 'buttons' => ['url' => ['color' => ''', 'text' => '']]]
-     * color can be primary, success, and error
+     * @param  array  $attributes  ['subject' => '', 'html' => '', 'buttons' => ['url' => ['color' => ''', 'text' => '']]]
+     *                             color can be primary, success, and error
      */
-    public function __construct(array $attributes, bool $admin = false)
+    public function __construct(protected array $attributes, protected bool $admin = false)
     {
-        $this->attributes = $attributes;
-        $this->admin = $admin;
         $this->onQueue(config('config.queue.default'));
     }
 

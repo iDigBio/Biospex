@@ -1,7 +1,8 @@
 <hr class="header mx-auto" style="width:300px;">
 <h4>{{ $actor->title }}</h4>
 @if($expedition->stat->local_subject_count > 0)
-    <a href="{{ route('admin.downloads.export', [$expedition->project->id, $expedition->id]) }}" class="prevent-default btn btn-primary rounded-0 mb-1"
+    <a href="{{ route('admin.expeditions.export', [$expedition]) }}"
+       class="prevent-default btn btn-primary rounded-0 mb-1"
        data-method="get"
        data-confirm="confirmation"
        data-title="{{ t('Generate Export File') }}"
@@ -13,13 +14,13 @@
    data-toggle="modal"
    data-target="#global-modal"
    data-size="modal-lg"
-   data-url="{{ route('admin.zooniverse.workflowShowForm', [$expedition->project->id, $expedition->id]) }}"
+   data-url="{{ route('admin.panoptes-workflow.edit', [$expedition]) }}"
    data-title="{{ t('Edit Workflow Id') }}"> {{ t('Edit Workflow Id') }}</a>
-@if(\App\Facades\GeneralHelper::zooniverseExportFileCheck($expedition))
-    @if(\App\Facades\GeneralHelper::checkPanoptesWorkflow($expedition))
+@if(zooniverse_export_file_check($expedition))
+    @if(check_panoptes_workflow($expedition))
         @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
             @unless($expedition->stat->local_subject_count === 0)
-                <a href="{{ route('admin.zooniverse.process', [$expedition->project_id, $expedition->id]) }}"
+                <a href="{{ route('admin.workflow-manager.create', [$expedition]) }}"
                    class="prevent-default btn btn-primary rounded-0 mb-1 green"
                    data-method="post"
                    data-confirm="confirmation"
@@ -28,7 +29,7 @@
                     {{ t('Start Expedition Processing') }}</a>
             @endunless
         @else
-            <a href="{{ route('admin.zooniverse.stop', [$expedition->project_id, $expedition->id]) }}"
+            <a href="{{ route('admin.workflow-manager.destroy', [$expedition]) }}"
                class="prevent-default btn btn-primary rounded-0 mb-1"
                data-method="delete"
                data-confirm="confirmation"
@@ -40,7 +41,7 @@
 @endif
 @if($actor->pivot->state === 3  && $actor->id === 2)
     <a class="btn btn-primary rounded-0 mb-1{{ $actor->pivot->expert ? ' green' : '' }}"
-       href="{{ route($actor->pivot->expert ? 'admin.reconciles.index' : 'admin.reconciles.create', [$actor->pivot->expedition_id]) }}">
+       href="{{ route($actor->pivot->expert ? 'admin.reconciles.index' : 'admin.reconciles.create', [$expedition]) }}">
         {{ t('Expert Review Ambiguities') }}</a>
 
     <a href="" class="prevent-default btn btn-primary rounded-0 mb-1"
@@ -48,6 +49,6 @@
        data-toggle="modal"
        data-target="#global-modal"
        data-size="modal-lg"
-       data-url="{{ route('admin.reconciles.uploadShow', [$expedition->project->id, $expedition->id]) }}"
+       data-url="{{ route('admin.reconcile-user-form.edit', [$expedition]) }}"
        data-title="{{ t('Upload Reconciled With User Opinion') }}"> {{ t('Upload Reconciled With User Opinion') }}</a>
 @endif

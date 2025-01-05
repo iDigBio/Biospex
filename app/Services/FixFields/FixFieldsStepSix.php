@@ -28,7 +28,7 @@ class FixFieldsStepSix extends FixFieldsBase
      */
     public function start()
     {
-        echo "Starting to match dup image and update fields to project id." . PHP_EOL;
+        echo 'Starting to match dup image and update fields to project id.'.PHP_EOL;
 
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
@@ -51,7 +51,7 @@ class FixFieldsStepSix extends FixFieldsBase
 
         $this->writeToFile('step6-dupImages-properties.json', $mappedFieldsToProjects);
 
-        $mappedFieldsToProjects->each(function ($fields, $projectId){
+        $mappedFieldsToProjects->each(function ($fields, $projectId) {
             $matched = $fields['matched'] ?? [];
             $this->updateFields($projectId, $matched, 'image');
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -19,10 +20,10 @@
 
 namespace App\Services\Csv;
 
-use App\Repositories\HeaderRepository;
-use App\Repositories\PropertyRepository;
-use App\Repositories\SubjectRepository;
+use App\Models\Property;
 use App\Services\MongoDbService;
+use App\Services\Project\HeaderService;
+use App\Services\Subject\SubjectService;
 use Carbon\Carbon;
 use Exception;
 use ForceUTF8\Encoding;
@@ -32,72 +33,38 @@ use MongoDB\BSON\ObjectId;
 
 /**
  * Class DarwinCoreCsvImport
- *
- * @package App\Services\Csv
  */
 class DarwinCoreCsvImport
 {
     /**
-     * @var \App\Repositories\PropertyRepository
-     */
-    public PropertyRepository $propertyRepo;
-
-    /**
-     * @var \App\Repositories\SubjectRepository
-     */
-    public SubjectRepository $subjectRepo;
-
-    /**
-     * @var \App\Repositories\HeaderRepository
-     */
-    public HeaderRepository $headerRepo;
-
-    /**
      * Array for meta file fields: core and extension
-     *
-     * @var array
      */
     public array $metaFields;
 
     /**
      * Whether media is core or extension in meta file
-     *
-     * @var bool
      */
     public bool $mediaIsCore;
 
     /**
      * Type: core or extension
-     *
-     * @var string
      */
     public string $type;
 
     /**
      * Id of project
-     *
-     * @var int
      */
     public int $projectId;
 
     /**
      * Rejected multimedia array
-     *
-     * @var array
      */
     public array $rejectedMultimedia = [];
 
     /**
      * Duplicate images array
-     *
-     * @var array
      */
     public array $duplicateArray = [];
-
-    /**
-     * @var Validation
-     */
-    public Validation $factory;
 
     /**
      * @var array
@@ -105,59 +72,29 @@ class DarwinCoreCsvImport
     public $identifiers;
 
     /**
-     * @var \App\Services\Csv\Csv
-     */
-    public $csv;
-
-    /**
      * @var int
      */
     public $subjectCount = 0;
 
-    /**
-     * @var
-     */
     public $header;
 
     /**
-     * @var MongoDbService
-     */
-    private $mongoDbService;
-
-    /**
      * Construct
-     *
-     * @param \App\Repositories\PropertyRepository $propertyRepo
-     * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @param \App\Repositories\HeaderRepository $headerRepo
-     * @param Validation $factory
-     * @param \App\Services\Csv\Csv $csv
-     * @param MongoDbService $mongoDbService
      */
     public function __construct(
-        PropertyRepository $propertyRepo,
-        SubjectRepository $subjectRepo,
-        HeaderRepository $headerRepo,
-        Validation $factory,
-        Csv $csv,
-        MongoDbService $mongoDbService
+        protected Property $property,
+        protected SubjectService $subjectService,
+        protected HeaderService $headerService,
+        protected Validation $factory,
+        protected Csv $csv,
+        protected MongoDbService $mongoDbService
     ) {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
-        $this->propertyRepo = $propertyRepo;
-        $this->subjectRepo = $subjectRepo;
-        $this->headerRepo = $headerRepo;
-        $this->factory = $factory;
-        $this->csv = $csv;
-        $this->mongoDbService = $mongoDbService;
         $this->mongoDbService->setCollection('subjects');
     }
 
     /**
      * Set meta properties ascertained in dwc and needed for processing csv file
-     *
-     * @param $mediaIsCore
-     * @param $metaFields
-     * @param $projectId
      */
     public function setCsvMetaProperties($mediaIsCore, $metaFields, $projectId)
     {
@@ -169,11 +106,6 @@ class DarwinCoreCsvImport
     /**
      * Load a csv file
      *
-     * @param $file
-     * @param $delimiter
-     * @param $enclosure
-     * @param $type
-     * @param $loadMedia
      * @throws \Exception
      */
     public function loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia)
@@ -199,9 +131,6 @@ class DarwinCoreCsvImport
     /**
      * Process an individual row.
      *
-     * @param $row
-     * @param $type
-     * @param $loadMedia
      * @throws \Exception
      */
     public function processRow($row, $type, $loadMedia)
@@ -218,9 +147,6 @@ class DarwinCoreCsvImport
     /**
      * Process a csv header
      *
-     * @param $header
-     * @param $type
-     * @return array
      * @throws \Exception
      */
     public function processCsvHeader($header, $type): array
@@ -235,7 +161,6 @@ class DarwinCoreCsvImport
     /**
      * Test header and row count are equal for combine
      *
-     * @param $row
      * @throws \Exception
      */
     public function testHeaderRowCount($row)
@@ -243,7 +168,7 @@ class DarwinCoreCsvImport
         if (count($this->header) !== count($row)) {
             throw new Exception(t('Header column count does not match row count. :headers headers / :rows rows', [
                 ':headers' => count($this->header),
-                ':rows'    => count($row),
+                ':rows' => count($row),
             ]));
         }
     }
@@ -251,8 +176,6 @@ class DarwinCoreCsvImport
     /**
      * Filters the array by matching meta file index with key so number of columns match.
      *
-     * @param $row
-     * @param $type
      * @return array
      */
     public function filterByMetaFileIndex($row, $type)
@@ -263,9 +186,6 @@ class DarwinCoreCsvImport
     /**
      * Build header from csv file so it matches qualified short names
      *
-     * @param $row
-     * @param $type
-     * @return array
      * @throws \Exception
      */
     public function buildHeaderUsingShortNames($row, $type): array
@@ -281,10 +201,6 @@ class DarwinCoreCsvImport
     /**
      * Create a short name for header
      *
-     * @param $row
-     * @param $key
-     * @param $qualified
-     * @param $header
      * @throws \Exception
      */
     public function createShortNameForHeader($row, $key, $qualified, &$header)
@@ -299,11 +215,6 @@ class DarwinCoreCsvImport
 
     /**
      * Check property for correct short name
-     *
-     * @param $qualified
-     * @param $ns_short
-     * @param $header
-     * @return string
      */
     public function checkProperty($qualified, $ns_short, &$header): string
     {
@@ -323,9 +234,6 @@ class DarwinCoreCsvImport
 
     /**
      * Splits given namespace into namespace and short name
-     *
-     * @param string $ns_short
-     * @return string
      */
     protected function splitNameSpaceShort(string $ns_short): string
     {
@@ -337,38 +245,32 @@ class DarwinCoreCsvImport
     /**
      * Save short name property to database.
      *
-     * @param string $short
      * @return void
      */
     protected function setShortName(string $short)
     {
-        $checkShort = $this->propertyRepo->findBy('short', $short);
+        $checkShort = $this->property->where('short', $short)->first();
         if ($checkShort === null) {
-            $this->propertyRepo->create(['short' => $short]);
+            $this->property->create(['short' => $short]);
         }
     }
 
     /**
      * Save qualified and short name to Property table
-     *
-     * @param $qualified
-     * @param $short
-     * @param $namespace
      */
     protected function saveProperty($qualified, $short, $namespace)
     {
         $array = [
             'qualified' => $qualified,
-            'short'     => $short,
+            'short' => $short,
             'namespace' => $namespace,
         ];
-        $this->propertyRepo->create($array);
+        $this->property->create($array);
     }
 
     /**
      * Set the identifier column
      *
-     * @param $type
      * @throws \Exception
      */
     public function checkForIdentifierColumn($type)
@@ -389,8 +291,6 @@ class DarwinCoreCsvImport
     /**
      * Set the unique id for each record.
      *
-     * @param $row
-     * @param $metaFields
      * @return mixed
      */
     public function setUniqueId($row, $metaFields)
@@ -403,8 +303,6 @@ class DarwinCoreCsvImport
     /**
      * Get the identifier column we are using.
      *
-     * @param $row
-     * @param $metaFields
      * @return bool
      */
     public function getIdentifierValue($row, $metaFields)
@@ -419,7 +317,7 @@ class DarwinCoreCsvImport
                 }
 
                 return false;
-            })->map(function($identifier, $key) use ($row) {
+            })->map(function ($identifier, $key) use ($row) {
                 return $row[$this->header[$key]];
             });
 
@@ -436,32 +334,30 @@ class DarwinCoreCsvImport
     /**
      * If identifier is a uuid, strip the namespace. Otherwise return value.
      *
-     * @param $value
      * @return mixed
      */
     public function checkIdentifierUuid($value)
     {
-        $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i';
+        $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}?$/i';
 
         return preg_match($pattern, $value, $matches) ? $matches[0] : $value;
     }
 
     /**
      * Works under the assumption Occurrence is the core, not Media.
-     *
-     * @param $row
-     * @param $metaFields
      */
-    public function prepareSubject($row, $metaFields)
+    public function prepareSubject($row, $metaFields): void
     {
         $occurrenceId = $this->mediaIsCore ? null : $row[$this->header[0]];
-        $row['id'] = $this->mediaIsCore ? $row[$this->header[0]] : $this->setUniqueId($row, $metaFields);
+
+        // Use this to set unique id for subjects besides the _id.
+        $row['imageId'] = $this->mediaIsCore ? $row[$this->header[0]] : $this->setUniqueId($row, $metaFields);
 
         if ($this->checkColumns($row)) {
             return;
         }
 
-        $fields = ['project_id' => (int) $this->projectId, 'ocr' => '', 'expedition_ids' => [], 'exported' => false];
+        $fields = ['project_id' => $this->projectId, 'ocr' => '', 'expedition_ids' => [], 'exported' => false];
 
         $occurrence = is_null($occurrenceId) ? [] : ['occurrence' => ['id' => (string) $occurrenceId]];
         $subject = $fields + $row + $occurrence;
@@ -476,13 +372,12 @@ class DarwinCoreCsvImport
     /**
      * Check if id and accessURI exists.
      *
-     * @param $row
      * @return bool
      */
     private function checkColumns($row)
     {
-        if (! trim($row['id'])) {
-            $rejected = ['Reason' => t('Missing required ID value.')] + $row;
+        if (! trim($row['imageId'])) {
+            $rejected = ['Reason' => t('Missing required imageId value.')] + $row;
             $this->reject($rejected);
 
             return true;
@@ -500,8 +395,6 @@ class DarwinCoreCsvImport
 
     /**
      * Build subject and save to database.
-     *
-     * @param $subject
      */
     public function saveSubject($subject)
     {
@@ -510,33 +403,28 @@ class DarwinCoreCsvImport
             unset($subject['language']);
         }
 
-        $this->subjectRepo->create($subject);
+        $this->subjectService->create($subject);
         $this->subjectCount++;
     }
 
     /**
      * Save Occurrence
-     *
-     * @param $row
      */
     public function saveOccurrence($row)
     {
-        $row['_id'] = new ObjectId();
+        $row['_id'] = new ObjectId;
         $row['updated_at'] = Carbon::now();
         $row['created_at'] = Carbon::now();
 
         $criteria = ['project_id' => (int) $this->projectId, 'occurrence.id' => $row[$this->header[0]]];
         $attributes = ['$set' => ['occurrence' => $row]];
-        $this->mongoDbService->updateMany($attributes, $criteria);
+        $this->mongoDbService->updateMany($criteria, $attributes);
     }
 
     /**
      * Add to rejected media if subject id is not determined
-     *
-     * @param $row
-     * @return bool
      */
-    public function reject($row)
+    public function reject($row): bool
     {
         $this->rejectedMultimedia[] = $row;
 
@@ -547,13 +435,12 @@ class DarwinCoreCsvImport
      * Validate if subject exists using project_id and id
      * Validator->fails() returns true if validation fails
      *
-     * @param $subject
      * @return bool
      */
     public function validateDoc($subject)
     {
-        $rules = ['project_id' => Rule::unique('mongodb.subjects')->where(function ($query) use($subject) {
-            return $query->where('project_id', $subject['project_id'])->where('id', $subject['id']);
+        $rules = ['project_id' => Rule::unique('mongodb.subjects')->where(function ($query) use ($subject) {
+            return $query->where('project_id', $subject['project_id'])->where('imageId', $subject['imageId']);
         })];
 
         $validator = $this->factory->make($subject, $rules);
@@ -570,8 +457,6 @@ class DarwinCoreCsvImport
 
     /**
      * Unset unnecessary variables when creating csv
-     *
-     * @param $subject
      */
     public function unsetSubjectVariables(&$subject)
     {
@@ -601,35 +486,31 @@ class DarwinCoreCsvImport
     /**
      * Set header array and update/save
      *
-     * @param $header
-     * @param $loadMedia
      * @internal param $type
      */
     public function saveHeaderArray($header, $loadMedia)
     {
         $type = $loadMedia ? 'image' : 'occurrence';
 
-        $result = $this->headerRepo->findBy('project_id', $this->projectId);
+        $result = $this->headerService->getFirst('project_id', $this->projectId);
 
         if (empty($result)) {
             $insert = [
                 'project_id' => $this->projectId,
-                'header'     => [$type => $header],
+                'header' => [$type => $header],
             ];
-            $this->headerRepo->create($insert);
+            $this->headerService->create($insert);
         } else {
             $existingHeader = $result->header;
             $existingHeader[$type] = isset($existingHeader[$type]) ? $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
             $result->header = $existingHeader;
-            $this->headerRepo->update($result->toArray(), $result->id);
+            $result->save();
         }
     }
 
     /**
      * Combine saved header with new header
      *
-     * @param $resHeader
-     * @param $newHeader
      * @return array
      */
     public function combineHeader($resHeader, $newHeader)

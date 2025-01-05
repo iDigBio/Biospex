@@ -129,8 +129,8 @@
                             <div class="col-12">
                                 <ul class="text">
                                     <li class="mt-3">{{ $expedition->project->expeditions_count }} {{ t('Expeditions') }}</li>
-                                    <li>{{ CountHelper::projectTranscriberCount($expedition->project->id) }} {{ t('Participants') }}</li>
-                                    <li>{{ CountHelper::projectTranscriptionCount($expedition->project->id) }} {{ t('Digitizations') }}</li>
+                                    <li>{{ $expedition->project->expedition_stats_sum_transcriptions_completed }} {{ t('Digitizations') }}</li>
+                                    <li>{{ get_project_transcriber_count($expedition->project->id) }} {{ t('Participants') }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -185,6 +185,9 @@
                             <div class="d-flex justify-content-between">
                                 <div class="p-2">
                                     <p>{{ $expedition->stat->local_transcriptions_completed }} {{ t('Digitizations') }}</p>
+                                </div>
+                                <div class="p-2">
+                                    <p>{{ $expedition->stat->transcriber_count }} {{ t('Participants') }}</p>
                                 </div>
                                 <div class="p-2"><p>{{ $expedition->stat->percent_completed }}
                                         % {{ t('Completed') }}</p>

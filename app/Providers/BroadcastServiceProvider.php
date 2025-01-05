@@ -16,15 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\ServiceProvider;
 
 /**
  * Class BroadcastServiceProvider
- *
- * @package App\Providers
  */
 class BroadcastServiceProvider extends ServiceProvider
 {
@@ -37,6 +36,6 @@ class BroadcastServiceProvider extends ServiceProvider
     {
         Broadcast::routes();
 
-        require base_path() . '/routes/broadcast/channels.php';
+        require base_path().'/routes/broadcast/channels.php';
     }
 }

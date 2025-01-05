@@ -19,94 +19,75 @@
 
 namespace App\Jobs;
 
-use App\Models\Actor;
 use App\Models\Expedition;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Repositories\ExpeditionRepository;
 use App\Services\Api\PanoptesApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Queue\SerializesModels;
 use Throwable;
 
 /**
  * Class ZooniverseClassificationCountJob
- *
- * @package App\Jobs
  */
 class ZooniverseClassificationCountJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
-
-    /**
-     * @var int
-     */
-    private int $expeditionId;
-
-    /**
-     * @var \App\Models\Actor|null
-     */
-    private ?Actor $actor;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
-     *
-     * @param int $expeditionId
      */
-    public function __construct(int $expeditionId)
+    public function __construct(protected Expedition $expedition, protected bool $update = false)
     {
-        $this->expeditionId = $expeditionId;
+        $this->expedition = $expedition->withoutRelations();
         $this->onQueue(config('config.queue.classification'));
     }
 
     /**
      * Execute the job.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepo
-     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @return void
      */
-    public function handle(
-        ExpeditionRepository $expeditionRepo,
-        PanoptesApiService $panoptesApiService
-    ) {
-        $expedition = $expeditionRepo->findWith($this->expeditionId, [
+    public function handle(PanoptesApiService $panoptesApiService): void
+    {
+        $this->expedition->load([
             'project.group.owner',
             'stat',
-            'zooniverseActor',
+            'zooActorExpedition',
             'panoptesProject',
         ]);
 
-        if ($expedition === null || $this->workflowIdDoesNotExist($expedition)) {
+        if ($this->workflowIdDoesNotExist($this->expedition)) {
             $this->delete();
 
             return;
         }
 
-        $workflow = $panoptesApiService->getPanoptesWorkflow($expedition->panoptesProject->panoptes_workflow_id);
-        $panoptesApiService->calculateTotals($workflow, $expedition->id);
+        $workflow = $panoptesApiService->getPanoptesWorkflow($this->expedition->panoptesProject->panoptes_workflow_id);
+        $panoptesApiService->calculateTotals($workflow, $this->expedition->id);
 
-        $expedition->stat->subject_count = $panoptesApiService->getSubjectCount();
-        $expedition->stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
-        $expedition->stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
-        $expedition->stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
-        $expedition->stat->percent_completed = $panoptesApiService->getPercentCompleted();
+        $this->expedition->stat->subject_count = $panoptesApiService->getSubjectCount();
+        $this->expedition->stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
+        $this->expedition->stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
+        $this->expedition->stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
+        $this->expedition->stat->transcriber_count = $panoptesApiService->getExpeditionTranscriberCount();
+        $this->expedition->stat->percent_completed = $panoptesApiService->getPercentCompleted();
 
-        $expedition->stat->save();
+        $this->expedition->stat->save();
 
-        $this->checkFinishedAt($expedition, $workflow['finished_at']);
+        if ($this->update) {
+            return;
+        }
 
-        AmChartJob::dispatch($expedition->project_id);
+        $this->checkFinishedAt($this->expedition, $workflow['finished_at']);
+
+        AmChartJob::dispatch($this->expedition->project);
     }
 
     /**
      * Check if workflow id exists.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @return bool
      */
     protected function workflowIdDoesNotExist(Expedition $expedition): bool
     {
@@ -119,32 +100,29 @@ class ZooniverseClassificationCountJob implements ShouldQueue
 
     /**
      * Check if finished_at date and set percentage.
-     *
-     * @param \App\Models\Expedition $expedition
-     * @param string|null $finishedAt
-     * @return void
      */
-    protected function checkFinishedAt(Expedition $expedition, string $finishedAt = null): void
+    protected function checkFinishedAt(Expedition $expedition, ?string $finishedAt = null): void
     {
-        if ($finishedAt === null) {
+        if ($finishedAt === null || $expedition->stat->percent_completed === 100) {
             return;
         }
 
         /**
-         * State === 3 means Zooniverse actor completed.
-         * @see \App\Services\Actor\Zooniverse\Zooniverse::actor()
+         * State 3 is the final state for Zooniverse.
+         *
+         * @see \App\Services\Actor\Zooniverse\Zooniverse::process()
          */
-        $attributes = [
-            'state' => 3,
-        ];
+        $expedition->zooActorExpedition->state = 3;
+        $expedition->zooActorExpedition->save();
 
-        $expedition->zooniverseActor()->updateExistingPivot($expedition->zooniverseActor->pivot->actor_id, $attributes);
+        $expedition->completed = 1;
+        $expedition->save();
 
         $attributes = [
             'subject' => t('Zooniverse Transcriptions Completed'),
-            'html'    => [
-                t('The Zooniverse digitization process for "%s" has been completed.', $expedition->title)
-            ]
+            'html' => [
+                t('The Zooniverse digitization process for "%s" has been completed.', $expedition->title),
+            ],
         ];
 
         $expedition->project->group->owner->notify(new Generic($attributes));
@@ -157,23 +135,20 @@ class ZooniverseClassificationCountJob implements ShouldQueue
      */
     public function middleware(): array
     {
-        return [new WithoutOverlapping($this->expeditionId)];
+        return [new WithoutOverlapping($this->expedition->id)];
     }
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
-    public function failed(Throwable $throwable)
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Zooniverse Classification Count Job Failed'),
-            'html'    => [
+            'html' => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage())
+                t('Message: %s', $throwable->getMessage()),
             ],
         ];
 

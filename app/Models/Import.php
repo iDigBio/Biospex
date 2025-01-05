@@ -19,31 +19,33 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Class Import
- *
- * @package App\Models
  */
 class Import extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'imports';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'user_id',
         'project_id',
         'file',
-        'error'
+        'error',
     ];
 
     /**
      * Project relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()
@@ -53,7 +55,7 @@ class Import extends BaseEloquentModel
 
     /**
      * User relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()

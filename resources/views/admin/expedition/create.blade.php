@@ -9,10 +9,9 @@
 @section('content')
     @include('admin.project.partials.project-panel', ['project' => $project])
     <form id="gridForm" method="post"
-          action="{{ route('admin.expeditions.store', [$project->id]) }}"
+          action="{{ route('admin.expeditions.store', [$project]) }}"
           role="form" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="project_id" value="{{ $project->id }}">
         <input type="hidden" name="subject-ids" id="subject-ids">
         <div class="row">
             <div class="col-sm-10 mx-auto">
@@ -56,11 +55,13 @@
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
-                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;" src="{{ GeneralHelper::expeditionDefaultLogo() }}" alt="logo"/>
+                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
+                                     src="{{ expedition_default_logo() }}" alt="logo"/>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="workflow-id" class="col-form-label col-12 required">{{ t('Workflows') }}:</label>
+                            <label for="workflow-id" class="col-form-label col-12 required">{{ t('Workflows') }}
+                                :</label>
                             <select name="workflow_id" id="workflow-id"
                                     class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
                                     required>

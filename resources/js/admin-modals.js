@@ -73,7 +73,7 @@ $(function () {
             $ajaxResults.html('<div class="mt-5 loader mx-auto"></div>')
             $.post($(this).data('url'), {
                 formId: $('#geolocate-form-select').val(),
-                source: $("input:radio.source:checked").val()
+                source: $("#geolocate-source-select").val()
             }, function (data) {
                 $ajaxResults.html(data).find("div.entry").each(function () {
                     makeSelect($(this))

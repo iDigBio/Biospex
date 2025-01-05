@@ -20,30 +20,20 @@
 namespace App\Services\Csv;
 
 use League\Csv\CharsetConverter;
-use League\Csv\Writer;
 use League\Csv\Reader;
+use League\Csv\Writer;
 
 /**
  * Class Csv
- *
- * @package App\Services\Csv
  */
 class Csv
 {
-    /**
-     * @var Reader
-     */
     public Reader $reader;
 
-    /**
-     * @var Writer
-     */
     public Writer $writer;
 
     /**
      * Return Reader.
-     *
-     * @return \League\Csv\Reader
      */
     public function getReader(): Reader
     {
@@ -52,8 +42,6 @@ class Csv
 
     /**
      * Return writer.
-     *
-     * @return \League\Csv\Writer
      */
     public function getWriter(): Writer
     {
@@ -62,8 +50,6 @@ class Csv
 
     /**
      * Create reader using file path.
-     *
-     * @param $file
      */
     public function readerCreateFromPath($file)
     {
@@ -73,7 +59,6 @@ class Csv
     /**
      * Create reader from stream.
      *
-     * @param $stream
      * @return void
      */
     public function readerCreateFromStream($stream)
@@ -83,8 +68,6 @@ class Csv
 
     /**
      * Create writer from file path.
-     *
-     * @param $filePath
      */
     public function writerCreateFromPath($filePath)
     {
@@ -94,7 +77,6 @@ class Csv
     /**
      * Create writer from stream.
      *
-     * @param $stream
      * @return void
      */
     public function writerCreateFromStream($stream)
@@ -105,7 +87,6 @@ class Csv
     /**
      * Set delimiter.
      *
-     * @param string $delimiter
      * @throws \League\Csv\Exception
      */
     public function setDelimiter(string $delimiter = ',')
@@ -116,7 +97,6 @@ class Csv
     /**
      * Set enclosure.
      *
-     * @param string $enclosure
      * @throws \League\Csv\Exception
      */
     public function setEnclosure(string $enclosure = '"')
@@ -127,7 +107,6 @@ class Csv
     /**
      * Set escape.
      *
-     * @param string $escape
      * @throws \League\Csv\Exception
      */
     public function setEscape(string $escape = '\\')
@@ -138,8 +117,8 @@ class Csv
     /**
      * Set header offset.
      *
-     * @param int $offset
      * @return void
+     *
      * @throws \League\Csv\Exception
      */
     public function setHeaderOffset(int $offset = 0)
@@ -159,9 +138,6 @@ class Csv
 
     /**
      * Fetch all rows.
-     *
-     * @param array $header
-     * @return \Iterator
      */
     public function getRecords(array $header = []): \Iterator
     {
@@ -171,7 +147,6 @@ class Csv
     /**
      * Insert one row.
      *
-     * @param $row
      * @throws \League\Csv\CannotInsertRecord
      */
     public function insertOne($row)
@@ -182,7 +157,6 @@ class Csv
     /**
      * Insert all rows.
      *
-     * @param $rows
      * @throws \TypeError
      */
     public function insertAll($rows)
@@ -192,21 +166,18 @@ class Csv
 
     /**
      * Return the count. If header is offset, then header not counted.
-     *
-     * @return int
      */
-    public function getReaderCount(): int {
+    public function getReaderCount(): int
+    {
         return count($this->reader);
     }
 
     /**
      * Set encoding.
-     *
-     * @return \League\Csv\CharsetConverter
      */
     public function setEncoding(): CharsetConverter
     {
-        return (new CharsetConverter())
+        return (new CharsetConverter)
             ->inputEncoding('utf-8')
             ->outputEncoding('utf-8');
     }

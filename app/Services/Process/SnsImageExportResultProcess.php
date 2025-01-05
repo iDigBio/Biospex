@@ -19,8 +19,7 @@
 
 namespace App\Services\Process;
 
-use App\Repositories\ExportQueueFileRepository;
-use App\Repositories\ExportQueueRepository;
+use App\Models\ExportQueueFile;
 
 /**
  * Class SnsImageExportResultProcess
@@ -28,26 +27,13 @@ use App\Repositories\ExportQueueRepository;
 class SnsImageExportResultProcess
 {
     /**
-     * @var \App\Repositories\ExportQueueFileRepository
-     */
-    private ExportQueueFileRepository $exportQueueFileRepository;
-
-    /**
      * Construct.
-     *
-     * @param \App\Repositories\ExportQueueFileRepository $exportQueueFileRepository
      */
-    public function __construct(ExportQueueFileRepository $exportQueueFileRepository) {
-        $this->exportQueueFileRepository = $exportQueueFileRepository;
-    }
+    public function __construct(protected ExportQueueFile $exportQueueFile) {}
 
     /**
      * Handle hard failure of lambda function.
      * Do not update queue if hard error.
-     *
-     * @param array $requestPayload
-     * @param string $errorMessage
-     * @return void
      */
     public function handleErrorMessage(array $requestPayload, string $errorMessage): void
     {
@@ -56,10 +42,6 @@ class SnsImageExportResultProcess
 
     /**
      * Handle response for success or failure.
-     *
-     * @param int $statusCode
-     * @param array $body
-     * @return void
      */
     public function handleResponse(int $statusCode, array $body): void
     {
@@ -69,19 +51,17 @@ class SnsImageExportResultProcess
     /**
      * Update queue file with result.
      * Response status can be 200 or 500. If 200, message is blank. If 500, there is an error message.
-     *
-     * @param string $subjectId
-     * @param string|null $message
-     * @return void
      */
-    private function updateQueueFile(string $subjectId, string $message = null): void
+    private function updateQueueFile(string $subjectId, ?string $message = null): void
     {
         $attributes = [
             'subject_id' => $subjectId,
-            'processed'  => 1,
-            'message'    => $message,
+            'processed' => 1,
+            'message' => $message,
         ];
-        $this->exportQueueFileRepository->updateBy($attributes, 'subject_id', $subjectId);
+
+        $exportQueueFile = $this->exportQueueFile->where('subject_id', $subjectId)->first();
+        $exportQueueFile->fill($attributes)->save();
     }
 }
 

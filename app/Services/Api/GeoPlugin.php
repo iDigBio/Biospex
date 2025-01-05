@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -19,21 +20,16 @@
 
 namespace App\Services\Api;
 
+use App\Models\City;
 use App\Services\Requests\HttpRequest;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Contracts\Container\Container as App;
 
 /**
  * Class GeoPlugin
- *
- * @package App\Services\Api
  */
 class GeoPlugin
 {
-    /**
-     * @var \App\Services\Requests\HttpRequest
-     */
-    private $request;
-
     /**
      * Plugin server.
      *
@@ -146,22 +142,27 @@ class GeoPlugin
 
     /**
      * GeoHelper constructor.
-     *
-     * @param \App\Services\Requests\HttpRequest $request
      */
-    public function __construct(HttpRequest $request)
-    {
-        $this->request = $request;
-    }
+    public function __construct(protected HttpRequest $request, protected App $app, protected City $cityModel) {}
 
     /**
      * Locate ip.
+     * If not production or development, return random city.
      *
-     * @param null $ip
-     * @return bool
+     * @param  null  $ip
      */
-    public function locate($ip = null)
+    public function locate($ip = null): bool
     {
+        if ($this->app->environment() !== 'production') {
+            $data = $this->cityModel->inRandomOrder()->first();
+            $this->ip = '0.0.0.0';
+            $this->city = $data->city;
+            $this->latitude = $data->latitude;
+            $this->longitude = $data->longitude;
+
+            return true;
+        }
+
         if (is_null($ip)) {
             if (! empty($_SERVER['HTTP_CLIENT_IP'])) {
                 //ip from share internet
@@ -190,11 +191,8 @@ class GeoPlugin
 
     /**
      * Fetch geo data.
-     *
-     * @param $host
-     * @return mixed
      */
-    private function fetch($host)
+    private function fetch($host): mixed
     {
         try {
             $this->request->setHttpProvider();
@@ -208,8 +206,6 @@ class GeoPlugin
 
     /**
      * Set data.
-     *
-     * @param $data
      */
     private function setData($data)
     {

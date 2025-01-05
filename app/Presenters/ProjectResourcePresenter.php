@@ -21,8 +21,6 @@ namespace App\Presenters;
 
 /**
  * Class ProjectResourcePresenter
- *
- * @package App\Presenters
  */
 class ProjectResourcePresenter extends Presenter
 {

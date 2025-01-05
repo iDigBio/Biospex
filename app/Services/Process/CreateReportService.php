@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2022. Biospex
  * biospex@gmail.com
@@ -19,8 +20,8 @@
 
 namespace App\Services\Process;
 
+use App\Models\Download;
 use App\Models\ExportQueue;
-use App\Repositories\DownloadRepository;
 use App\Services\Csv\AwsS3CsvService;
 
 /**
@@ -29,36 +30,13 @@ use App\Services\Csv\AwsS3CsvService;
 class CreateReportService
 {
     /**
-     * @var \App\Services\Csv\AwsS3CsvService
-     */
-    private AwsS3CsvService $awsS3CsvService;
-
-    /**
-     * @var \App\Repositories\DownloadRepository
-     */
-    private DownloadRepository $downloadRepository;
-
-    /**
      * Construct.
-     *
-     * @param \App\Services\Csv\AwsS3CsvService $awsS3CsvService
-     * @param \App\Repositories\DownloadRepository $downloadRepository
      */
-    public function __construct(
-        AwsS3CsvService $awsS3CsvService,
-        DownloadRepository $downloadRepository
-    )
-    {
-        $this->awsS3CsvService = $awsS3CsvService;
-        $this->downloadRepository = $downloadRepository;
-    }
+    public function __construct(protected AwsS3CsvService $awsS3CsvService, protected Download $download) {}
 
     /**
      * Create csv report.
      *
-     * @param string $csvName
-     * @param array $data
-     * @return string|null
      * @throws \League\Csv\CannotInsertRecord
      */
     public function createCsvReport(string $csvName, array $data): ?string
@@ -70,7 +48,7 @@ class CreateReportService
         $header = array_keys($data[0]);
 
         $bucket = config('filesystems.disks.s3.bucket');
-        $filePath = config('config.report_dir') . '/' . $csvName;
+        $filePath = config('config.report_dir').'/'.$csvName;
 
         $this->awsS3CsvService->createBucketStream($bucket, $filePath, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();
@@ -82,24 +60,21 @@ class CreateReportService
 
     /**
      * Save report.
-     *
-     * @param \App\Models\ExportQueue $exportQueue
-     * @param string $csvName
      */
     public function saveReport(ExportQueue $exportQueue, string $csvName)
     {
         $attributes = [
             'expedition_id' => $exportQueue->expedition_id,
             'actor_id' => $exportQueue->actor_id,
-            'type' => 'report'
+            'type' => 'report',
         ];
         $values = [
             'expedition_id' => $exportQueue->expedition_id,
             'actor_id' => $exportQueue->actor_id,
             'file' => $csvName,
-            'type' => 'report'
+            'type' => 'report',
         ];
 
-        $this->downloadRepository->updateOrCreate($attributes, $values);
+        $this->download->updateOrCreate($attributes, $values);
     }
 }

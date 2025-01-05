@@ -113,7 +113,7 @@ $(function () {
         let $button = $(e.relatedTarget); // Button that triggered the modal
 
         let channel = $button.data('channel');
-        let dateId = $button.data('date');
+        let uuid = $button.data('uuid');
 
         $modal.html('<div class="loader mx-auto"></div>');
 
@@ -122,11 +122,12 @@ $(function () {
             if (deadline === null) {
                 return;
             }
-
+            // UUID is matched with the event uuid from WeDigBioEventProgressJob
+            // WeDigBioEventProgressJob called from WeDigBioTranscriptionService
             Echo.channel(channel)
                 .listen('WeDigBioProgressEvent', (e) => {
                     $.each(e.data, function (id, val) {
-                        if (Number(id) === Number(dateId)) {
+                        if (uuid === uuid) {
                             $modal.html(val);
                         }
                     });
@@ -139,12 +140,12 @@ $(function () {
 });
 
 // Fetch poll data
-fetchPoll = function(){
-    $.get( "/poll");
+fetchPoll = function () {
+    $.get("/poll");
 }
 
 // Loop data from polling
-polling_data = function(data) {
+polling_data = function (data) {
     let groupIds = $.parseJSON(Laravel.groupIds);
     let groupData = '';
     $.each(data['payload'], function (index) {
@@ -161,7 +162,7 @@ polling_data = function(data) {
  * data attributes: project-id, type (active, completed), sort, order, url, target
  * @param element
  */
-sortPage = function(element) {
+sortPage = function (element) {
     let data = element.data();
     let $target = $('#' + data.target); // target container
 
@@ -175,7 +176,7 @@ sortPage = function(element) {
         });
 }
 
-setOrder = function(order, element) {
+setOrder = function (order, element) {
     let $icon = element.find('i');
     element.siblings('span').data('order', 'asc').find('i').removeClass().addClass('fas fa-sort');
 
@@ -197,7 +198,7 @@ setOrder = function(order, element) {
 
 let timeInterval;
 
-getTimeRemaining = function(endTime) {
+getTimeRemaining = function (endTime) {
     let t = Date.parse(endTime) - Date.parse(new Date());
     let seconds = Math.floor((t / 1000) % 60);
     let minutes = Math.floor((t / 1000 / 60) % 60);
@@ -212,14 +213,14 @@ getTimeRemaining = function(endTime) {
     };
 }
 
-clockDiv = function() {
+clockDiv = function () {
     $('.clockdiv').each(function () {
         let deadline = $(this).data('value'); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
         initializeClock($(this), deadline);
     });
 }
 
-initializeClock = function($clock, endTime) {
+initializeClock = function ($clock, endTime) {
 
     let daysSpan = $clock.find('.days');
     let hoursSpan = $clock.find('.hours');
@@ -242,7 +243,7 @@ initializeClock = function($clock, endTime) {
     timeInterval = setInterval(updateClock, 1000);
 }
 
-notify = function(icon, msg, type) {
+notify = function (icon, msg, type) {
     $.notify({
         icon: 'fas fa-' + icon + ' fa-2x',
         message: msg

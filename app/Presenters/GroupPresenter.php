@@ -21,11 +21,31 @@ namespace App\Presenters;
 
 /**
  * Class GroupPresenter
- *
- * @package App\Presenters
  */
 class GroupPresenter extends Presenter
 {
+    public function groupProjectIcon()
+    {
+        // <i class="fas fa-users"></i>
+        $route = route('admin.groups.show', [$this->model]);
+
+        return '<a href="'.$route.'" 
+            data-hover="tooltip" 
+            title="'.t('View Group').'">
+            <i class="fas fa-users"></i></a>';
+    }
+
+    public function groupProjectIconLrg()
+    {
+        // <i class="fas fa-users"></i>
+        $route = route('admin.groups.show', [$this->model]);
+
+        return '<a href="'.$route.'" 
+            data-hover="tooltip" 
+            title="'.t('View Group').'">
+            <i class="fas fa-users fa-2x"></i></a>';
+    }
+
     /**
      * Return show icon.
      *
@@ -33,9 +53,9 @@ class GroupPresenter extends Presenter
      */
     public function groupShowIcon()
     {
-        return '<a href="'.route('admin.groups.show', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('View Group').'">
+        return '<a href="'.route('admin.groups.show', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('View Group').'">
             <i class="fas fa-eye"></i></a>';
     }
 
@@ -46,9 +66,9 @@ class GroupPresenter extends Presenter
      */
     public function groupEditIcon()
     {
-        return '<a href="'.route('admin.groups.edit', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Edit Group').'">
+        return '<a href="'.route('admin.groups.edit', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('Edit Group').'">
             <i class="fas fa-edit"></i></a>';
     }
 
@@ -59,9 +79,9 @@ class GroupPresenter extends Presenter
      */
     public function groupEditIconLrg()
     {
-        return '<a href="'.route('admin.groups.edit', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'. t('Edit Group').'">
+        return '<a href="'.route('admin.groups.edit', [$this->model]).'" 
+            data-hover="tooltip" 
+            title="'.t('Edit Group').'">
             <i class="fas fa-edit fa-2x"></i></a>';
     }
 
@@ -72,14 +92,14 @@ class GroupPresenter extends Presenter
      */
     public function groupDeleteIcon()
     {
-        return '<a href="'.route('admin.groups.delete', [
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Delete Group').'" 
+        return '<a href="'.route('admin.users.destroy', [
+            $this->model,
+        ]).'" class="prevent-default"
+            title="'.t('Delete Group').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Delete Group').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
+            data-title="'.t('Delete Group').'?" data-content="'.t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -90,14 +110,14 @@ class GroupPresenter extends Presenter
      */
     public function groupDeleteIconLrg()
     {
-        return '<a href="'.route('admin.groups.delete', [
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'. t('Delete Group').'" 
+        return '<a href="'.route('admin.users.destroy', [
+            $this->model,
+        ]).'" class="prevent-default"
+            title="'.t('Delete Group').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'. t('Delete Group').'?" data-content="'. t('This will permanently delete the record and all associated records.').'">
+            data-title="'.t('Delete Group').'?" data-content="'.t('This will permanently delete the record and all associated records.').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -108,7 +128,7 @@ class GroupPresenter extends Presenter
      */
     public function groupInviteIcon()
     {
-        $route = route('admin.invites.index', [$this->model->id]);
+        $route = route('admin.invites.create', [$this->model]);
 
         return '<a href="#" class="prevent-default" data-toggle="modal" data-url="'.$route.'" 
                     data-target="#global-modal" data-size="modal-lg" data-dismiss="modal" data-toggle="modal"
@@ -124,7 +144,7 @@ class GroupPresenter extends Presenter
      */
     public function groupInviteIconLrg()
     {
-        $route = route('admin.invites.index', [$this->model->id]);
+        $route = route('admin.invites.create', [$this->model]);
 
         return '<a href="#" class="prevent-default" data-toggle="modal" data-url="'.$route.'" 
                     data-target="#global-modal" data-size="modal-lg" data-dismiss="modal" data-toggle="modal"

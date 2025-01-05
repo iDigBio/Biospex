@@ -19,31 +19,24 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
-use App\Repositories\WeDigBioEventDateRepository;
+use App\Services\WeDigBio\WeDigBioService;
+use View;
 
 class WeDigBioController extends Controller
 {
-
-    public function __construct()
-    {
-        
-    }
+    /**
+     * WeDigBioController constructor.
+     */
+    public function __construct(protected WeDigBioService $weDigBioService) {}
 
     /**
      * Index page.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index(WeDigBioEventDateRepository $weDigBioEventDateRepository)
+    public function __invoke(): mixed
     {
-        $results = $weDigBioEventDateRepository->all()->sortBy('created_at');
+        $events = $this->weDigBioService->getWeDigBioPage();
 
-        [$events, $eventsCompleted] = $results->partition(function ($event) {
-            return $event->active;
-        });
-
-        return \View::make('front.wedigbio.index', compact('events', 'eventsCompleted'));
+        return View::make('front.wedigbio.index', compact('events'));
     }
 }

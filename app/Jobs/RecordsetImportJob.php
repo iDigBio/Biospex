@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -19,9 +20,9 @@
 
 namespace App\Jobs;
 
+use App\Models\Import;
 use App\Notifications\Generic;
-use App\Repositories\ImportRepository;
-use App\Repositories\ProjectRepository;
+use App\Services\Project\ProjectService;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
@@ -31,11 +32,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Notification;
 use Storage;
+use Throwable;
 
 /**
  * Class RecordsetImportJob
- *
- * @package App\Jobs
  */
 class RecordsetImportJob implements ShouldQueue
 {
@@ -43,66 +43,46 @@ class RecordsetImportJob implements ShouldQueue
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
-    public $timeout = 1800;
+    public int $timeout = 1800;
 
-    /**
-     * @var
-     */
-    public $data;
+    public Import $import;
 
-    /**
-     * @var \App\Repositories\ImportRepository
-     */
-    public $importRepo;
-
-    /**
-     * Curl response
-     *
-     * @var
-     */
-    public $response;
+    public string $response;
 
     /**
      * Create a new job instance.
-     *
-     * @param $data
      */
-    public function __construct($data)
+    public function __construct(protected array $data)
     {
-        $this->data = $data;
         $this->onQueue(config('config.queue.import'));
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\ImportRepository $importRepo
-     * @param \App\Repositories\ProjectRepository $projectRepo
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(ImportRepository $importRepo, ProjectRepository $projectRepo): void
+    public function handle(Import $import, ProjectService $projectService): void
     {
-        $this->importRepo = $importRepo;
-        $project = $projectRepo->getProjectForDarwinImportJob($this->data['id']);
+        $this->import = $import;
+        $project = $projectService->getProjectForDarwinImportJob($this->data['id']);
         $users = $project->group->users->push($project->group->owner);
 
         try {
             $url = $this->setUrl();
             $this->send($url);
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
 
             $attributes = [
                 'subject' => 'DWC Record Set Import Error',
-                'html'    => [
+                'html' => [
                     t('An error occurred while importing the Darwin Core Archive using a record set.'),
                     t('Project: %s', $project->title),
-                    t('ID: %s'.$project->id),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
+                    t('ID: %s', $project->id),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
                     t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
                 ],
             ];
@@ -112,8 +92,6 @@ class RecordsetImportJob implements ShouldQueue
 
     /**
      * Set url for request.
-     *
-     * @return string
      */
     private function setUrl(): string
     {
@@ -127,17 +105,16 @@ class RecordsetImportJob implements ShouldQueue
     /**
      * Send request to url.
      *
-     * @param $url
      * @throws \Exception|\GuzzleHttp\Exception\GuzzleException
      */
     public function send($url): void
     {
-        $client = new Client();
+        $client = new Client;
         $response = $client->get($url, ['headers' => ['Accept' => 'application/json']]);
 
         if ($response->getStatusCode() !== 200) {
-            throw new Exception(t('Http call to :url returned status code :code', [':url'  => $url,
-                                                                                   ':code' => $response->getStatusCode(),
+            throw new Exception(t('Http call to :url returned status code :code', [':url' => $url,
+                ':code' => $response->getStatusCode(),
             ]));
         }
 
@@ -156,7 +133,6 @@ class RecordsetImportJob implements ShouldQueue
     /**
      * Download zip file.
      *
-     * @return mixed
      * @throws \Exception
      */
     public function download(): mixed
@@ -169,10 +145,10 @@ class RecordsetImportJob implements ShouldQueue
             throw new Exception(t('Unable to complete zip download for Darwin Core Archive.'));
         }
 
-        return $this->importRepo->create([
-            'user_id'    => $this->data['user_id'],
+        return $this->import->create([
+            'user_id' => $this->data['user_id'],
             'project_id' => $this->data['project_id'],
-            'file'       => $filePath,
+            'file' => $filePath,
         ]);
     }
 }

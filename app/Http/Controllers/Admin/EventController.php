@@ -19,246 +19,131 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
-use App\Jobs\EventTranscriptionExportCsvJob;
-use App\Jobs\EventUserExportCsvJob;
-use App\Repositories\EventRepository;
-use App\Repositories\ProjectRepository;
+use App\Models\Event;
+use App\Services\Event\EventService;
+use App\Services\Permission\CheckPermission;
+use App\Services\Project\ProjectService;
 use Auth;
-use Flash;
+use Redirect;
+use Throwable;
+use View;
 
 /**
  * Class EventController
- *
- * @package App\Http\Controllers\Admin
  */
 class EventController extends Controller
 {
     /**
-     * @var \App\Repositories\EventRepository
-     */
-    private EventRepository $eventRepo;
-
-    /**
      * EventController constructor.
-     *
-     * @param \App\Repositories\EventRepository $eventRepo
      */
-    public function __construct(EventRepository $eventRepo)
-    {
-        $this->eventRepo = $eventRepo;
-    }
+    public function __construct(
+        protected EventService $eventService,
+        protected ProjectService $projectService
+    ) {}
 
     /**
-     * Displays Events on public page.
-     *
-     * @return \Illuminate\View\View
+     * Display events.
      */
-    public function index(): \Illuminate\View\View
+    public function index(): mixed
     {
-        $results = $this->eventRepo->getEventAdminIndex(Auth::user());
+        try {
+            [$events, $eventsCompleted] = $this->eventService->getAdminIndex(Auth::user());
 
-        [$events, $eventsCompleted] = $results->partition(function ($event) {
-            return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
-        });
+            return View::make('admin.event.index', compact('events', 'eventsCompleted'));
+        } catch (Throwable $throwable) {
 
-        return \View::make('admin.event.index', compact('events', 'eventsCompleted'));
-    }
-
-    /**
-     * Displays Completed Events on public page.
-     *
-     * @return \Illuminate\Contracts\View\View|null
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    public function sort(): ?\Illuminate\Contracts\View\View
-    {
-        if ( ! \Request::ajax()) {
-            return null;
+            return Redirect::route('admin.projects.index')
+                ->with('error', t('An error occurred when retrieving Event records.'));
         }
-
-        $results = $this->eventRepo->getEventPublicIndex(\Request::get('sort'), \Request::get('order'));
-
-        [$active, $completed] = $results->partition(function ($event) {
-            return DateHelper::eventBefore($event) || DateHelper::eventActive($event);
-        });
-
-        $events = \Request::get('type') === 'active' ? $active : $completed;
-
-        return \View::make('front.event.partials.event', compact('events'));
-    }
-
-    /**
-     * Show event.
-     *
-     * @param $eventId
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     */
-    public function show($eventId)
-    {
-        $event = $this->eventRepo->getEventShow($eventId);
-
-        if ( ! $this->checkPermissions('read', $event))
-        {
-            return \Redirect::route('admin.events.index');
-        }
-
-        return \View::make('admin.event.show', compact('event'));
     }
 
     /**
      * Create event.
-     *
-     * @param \App\Repositories\ProjectRepository $projectRepo
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @throws \Exception
      */
-    public function create(ProjectRepository $projectRepo)
+    public function create(): mixed
     {
-        $projects = $projectRepo->getProjectEventSelect();
-        $timezones = DateHelper::timeZoneSelect();
-        $teamsCount = old('entries', 1);
+        $projects = $this->projectService->getProjectEventSelect();
 
-        return \View::make('admin.event.create', compact('projects', 'timezones', 'teamsCount'));
+        return View::make('admin.event.create', compact('projects'));
     }
 
     /**
      * Store Event.
-     *
-     * @param \App\Http\Requests\EventFormRequest $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(EventFormRequest $request)
+    public function store(EventFormRequest $request): mixed
     {
-        $event = $this->eventRepo->createEvent($request->all());
+        try {
+            $event = $this->eventService->store($request->all());
 
-        if ($event) {
-            \Flash::success(t('Record was created successfully.'));
+            return Redirect::route('admin.events.show', [$event])->with('success', t('Record was created successfully.'));
+        } catch (Throwable $throwable) {
 
-            return \Redirect::route('admin.events.show', [$event->id]);
+            return Redirect::route('admin.events.index')->with('error', t('An error occurred when saving record.'));
+        }
+    }
+
+    /**
+     * Show event.
+     */
+    public function show(Event $event): mixed
+    {
+        if (! CheckPermission::handle('read', $event)) {
+            return Redirect::route('admin.events.index');
         }
 
-        \Flash::error(t('An error occurred when saving record.'));
+        $this->eventService->getAdminShow($event);
 
-        return \Redirect::route('admin.events.index');
+        return View::make('admin.event.show', compact('event'));
     }
 
     /**
      * Edit event.
-     *
-     * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param $eventId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     * @throws \Exception
      */
-    public function edit(ProjectRepository $projectRepo, $eventId)
+    public function edit(Event $event): mixed
     {
-        $event = $this->eventRepo->getEventShow($eventId);
-
-        if ( ! $this->checkPermissions('update', $event))
-        {
+        if (! CheckPermission::handle('update', $event)) {
             return back();
         }
 
-        $projects = $projectRepo->getProjectEventSelect();
-        $timezones = DateHelper::timeZoneSelect();
-        $teamsCount = old('entries', $event->teams->count() ?: 1);
+        $this->eventService->edit($event);
+        $projects = $this->projectService->getProjectEventSelect();
 
-        return \View::make('admin.event.edit', compact('event', 'projects', 'timezones', 'teamsCount'));
+        return View::make('admin.event.edit', compact('event', 'projects'));
     }
 
     /**
      * Update Event.
-     *
-     * @param $eventId
-     * @param \App\Http\Requests\EventFormRequest $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update($eventId, EventFormRequest $request)
+    public function update(Event $event, EventFormRequest $request): mixed
     {
-        $event = $this->eventRepo->findWith($eventId, ['teams']);
-
-        if ( ! $this->checkPermissions('update', $event))
-        {
-            return \Redirect::route('admin.events.index');
+        if (! CheckPermission::handle('update', $event)) {
+            return Redirect::route('admin.events.index');
         }
 
-        $result = $this->eventRepo->updateEvent($request->all(), $eventId);
+        $result = $this->eventService->update($request->all(), $event);
 
         if ($result) {
-            \Flash::success(t('Record was updated successfully.'));
-
-            return \Redirect::route('admin.events.show', [$eventId]);
+            return Redirect::route('admin.events.show', [$event])->with('success', t('Record was updated successfully.'));
         }
 
-        \Flash::error(t('Error while updating record.'));
-
-        return \Redirect::route('admin.events.edit', [$eventId]);
+        return Redirect::route('admin.events.edit', [$event])->with('error', t('Error while updating record.'));
     }
 
     /**
      * Delete Event.
-     *
-     * @param $eventId
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($eventId)
+    public function destroy(Event $event): mixed
     {
-        $event = $this->eventRepo->find($eventId);
-
-        if ( ! $this->checkPermissions('delete', $event))
-        {
-            return \Redirect::route('admin.events.index');
+        if (! CheckPermission::handle('delete', $event)) {
+            return Redirect::route('admin.events.index');
         }
 
-        $result = $event->delete();
-
-        if ($result)
-        {
-            \Flash::success(t('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
-
-            return \Redirect::route('admin.events.index');
-        }
-
-        \Flash::error(t('An error occurred when deleting record.'));
-
-        return \Redirect::route('admin.events.edit', [$eventId]);
-    }
-
-    /**
-     * Export transcription csv from event.
-     *
-     * @param $eventId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function exportTranscriptions($eventId)
-    {
-        if ( ! \Request::ajax()) {
-            return response()->json(false);
-        }
-
-        EventTranscriptionExportCsvJob::dispatch(Auth::user(), $eventId);
-
-        return response()->json(true);
-    }
-
-    /**
-     * Export users csv from event.
-     *
-     * @param $eventId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function exportUsers($eventId)
-    {
-        if ( ! \Request::ajax()) {
-            return response()->json(false);
-        }
-
-        EventUserExportCsvJob::dispatch(Auth::user(), $eventId);
-
-        return response()->json(true);
+        return $event->delete() ?
+            Redirect::route('admin.events.index')
+                ->with('success', t('Record has been scheduled for deletion and changes will take effect in a few minutes.')) :
+            Redirect::route('admin.events.edit', [$event])
+                ->with('error', t('An error occurred when deleting record.'));
     }
 }

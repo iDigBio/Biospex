@@ -20,13 +20,11 @@
 namespace App\Console\Commands;
 
 use App\Events\PollOcrEvent;
-use App\Repositories\OcrQueueRepository;
+use App\Models\OcrQueue;
 use Illuminate\Console\Command;
 
 /**
  * Class OcrPollCommand
- *
- * @package App\Console\Commands
  */
 class OcrPollCommand extends Command
 {
@@ -45,20 +43,11 @@ class OcrPollCommand extends Command
     protected $description = 'Processes information for OCR Polling event.';
 
     /**
-     * @var \App\Repositories\OcrQueueRepository
-     */
-    private $ocrQueueRepo;
-
-    /**
      * OcrPollCommand constructor.
-     *
-     * @param \App\Repositories\OcrQueueRepository $ocrQueueRepo
      */
-    public function __construct(OcrQueueRepository $ocrQueueRepo)
+    public function __construct(protected OcrQueue $ocrQueue)
     {
         parent::__construct();
-
-        $this->ocrQueueRepo = $ocrQueueRepo;
     }
 
     /**
@@ -66,7 +55,11 @@ class OcrPollCommand extends Command
      */
     public function handle()
     {
-        $records = $this->ocrQueueRepo->getOcrQueuesForPollCommand();
+        $records = $this->ocrQueue->withCount([
+            'files' => function ($q) {
+                $q->where('processed', 1);
+            },
+        ])->with(['project.group', 'expedition'])->orderBy('id', 'asc')->get();
 
         $data = ['message' => t('No processes running at this time'), 'payload' => []];
 
@@ -91,7 +84,7 @@ class OcrPollCommand extends Command
 
             return [
                 'groupId' => $record->project->group->id,
-                'notice'  => $notice,
+                'notice' => $notice,
             ];
         })->toArray();
 

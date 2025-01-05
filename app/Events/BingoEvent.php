@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -19,46 +20,34 @@
 
 namespace App\Events;
 
+use App\Models\Bingo;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Class BingoEvent
- *
- * @package App\Events
  */
 class BingoEvent implements ShouldBroadcast
 {
+    use Dispatchable, SerializesModels;
 
-    use Dispatchable;
+    private Bingo $bingo;
 
-    /**
-     * @var false|string
-     */
-    public string|false $data;
-
-    /**
-     * @var int
-     */
-    public int $bingoId;
+    public string $data;
 
     /**
      * BingoEvent constructor.
-     *
-     * @param int $bingoId
-     * @param array $data
      */
-    public function __construct(int $bingoId, array $data)
+    public function __construct(Bingo $bingo, string $data)
     {
-        $this->bingoId = $bingoId;
-        $this->data = json_encode($data);
+        $this->bingo = $bingo->withoutRelations();
+        $this->data = $data;
     }
 
     /**
      * The name of the queue on which to place the broadcasting job.
-     *
-     * @return string
      */
     public function broadcastQueue(): string
     {
@@ -67,11 +56,10 @@ class BingoEvent implements ShouldBroadcast
 
     /**
      * Get the channels the event should be broadcast on.
-     *
-     * @return Channel
      */
     public function broadcastOn(): Channel
     {
-        return new Channel(config('config.poll_bingo_channel') . '.' . $this->bingoId);
+        return new Channel(config('config.poll_bingo_channel').'.'.$this->bingo->uuid);
+        //return new PresenceChannel(config('config.poll_bingo_channel').'.'.$this->bingo->uuid);
     }
 }

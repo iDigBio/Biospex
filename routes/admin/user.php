@@ -18,9 +18,17 @@
  */
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserPasswordController;
 
-Route::get('users', [UserController::class, 'index'])->name('admin.users.index');
-Route::get('users/{users}', [UserController::class, 'show'])->name('admin.users.show');
-Route::get('users/{users}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-Route::put('users/{users}', [UserController::class, 'update'])->name('admin.users.update');
-Route::put('password/{id}/pass', [UserController::class, 'pass'])->name('admin.users.password');
+Route::get('users', function () {
+    return redirect()->route('admin.users.edit', [Auth::user()]);
+})->name('admin.users.index');
+
+Route::get('users/{user}', function () {
+    return redirect()->route('admin.users.edit', [Auth::user()]);
+})->name('admin.users.show');
+
+Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+Route::put('users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+
+Route::put('password/{user}/pass', UserPasswordController::class)->name('admin.users.password');

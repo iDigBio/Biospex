@@ -33,7 +33,20 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @each('admin.group.partials.member-loop', $group->users, 'user')
+                            @foreach($group->users as $user)
+                                <tr>
+                                    <td><a href="{{ route('admin.groups-user.destroy', [$group, $user]) }}"
+                                           class="prevent-default"
+                                           title="{{ t('Delete Member') }}"
+                                           data-hover="tooltip"
+                                           data-method="delete"
+                                           data-confirm="confirmation"
+                                           data-title="{{ t('Delete Member') }}?"
+                                           data-content="{{ t('This will permanently delete the member') }}">
+                                            <i class="fas fa-trash-alt"></i></a></td>
+                                    <td>{{ $user->present()->full_name_or_email }}</td>
+                                </tr>
+                            @endforeach
                             </tbody>
                         </table>
                     @endif

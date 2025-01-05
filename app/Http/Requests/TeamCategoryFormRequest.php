@@ -21,12 +21,9 @@ namespace App\Http\Requests;
 
 /**
  * Class TeamCategoryFormRequest
- *
- * @package App\Http\Requests
  */
 class TeamCategoryFormRequest extends Request
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -45,7 +42,7 @@ class TeamCategoryFormRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'required|between:3,30|unique:team_categories,name,' . $this->route('categories'),
+            'name' => 'required|between:3,30|unique:team_categories,name,'.$this->route('categories'),
         ];
     }
 }

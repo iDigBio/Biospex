@@ -20,5 +20,4 @@
 use App\Http\Controllers\Admin\MailController;
 
 Route::get('mail', [MailController::class, 'index'])->name('admin.mail.index');
-Route::post('mail', [MailController::class, 'send'])->name('admin.mail.send');
-
+Route::post('mail', [MailController::class, 'create'])->name('admin.mail.create');

@@ -21,24 +21,17 @@ namespace App\Services\Api;
 
 use Cache;
 use Illuminate\Support\Facades\Http;
-use League\OAuth2\Client\Provider\GenericProvider;
 
 /**
  * Class ZooniverseTalkApiService
- *
- * @package App\Services\Api
  */
 class ZooniverseTalkApiService
 {
-
     /**
      * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
      */
     public mixed $talk_api_uri;
 
-    /**
-     * @var string
-     */
     public string $resource_uri;
 
     /**
@@ -52,8 +45,6 @@ class ZooniverseTalkApiService
     /**
      * Get talk comments for project and subject.
      *
-     * @param int $projectId
-     * @param int $subjectId
      * @return mixed
      */
     public function getComments(int $projectId, int $subjectId)
@@ -71,14 +62,10 @@ class ZooniverseTalkApiService
 
     /**
      * Set resource uri with project id and subject id.
-     *
-     * @param int $projectId
-     * @param int $subjectId
      */
     private function setResourceUri(int $projectId, int $subjectId)
     {
         $trans = ['PROJECT_ID' => $projectId, 'SUBJECT_ID' => $subjectId];
         $this->resource_uri = strtr($this->talk_api_uri, $trans);
     }
-
 }

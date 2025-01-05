@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -22,9 +23,9 @@ namespace App\Jobs;
 use App\Models\Import;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Repositories\ProjectRepository;
 use App\Services\Process\CreateReportService;
 use App\Services\Process\DarwinCore;
+use App\Services\Project\ProjectService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,53 +35,38 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Notification;
+use Throwable;
 
 /**
  * Class DwcFileImportJob
- *
- * @package App\Jobs
  */
 class DwcFileImportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
+    use ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
     public int $timeout = 1800;
 
     /**
-     * @var Import
-     */
-    public Import $import;
-
-    /**
      * Create a new job instance.
-     *
-     * @param Import $import
      */
-    public function __construct(Import $import)
+    public function __construct(protected Import $import)
     {
-        $this->import = $import;
+        $this->import = $import->withoutRelations();
         $this->onQueue(config('config.queue.import'));
     }
 
-    /**
-     * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param \App\Services\Process\DarwinCore $dwcProcess
-     * @param \App\Services\Process\CreateReportService $createReportService
-     */
     public function handle(
-        ProjectRepository $projectRepo,
+        ProjectService $projectService,
         DarwinCore $dwcProcess,
         CreateReportService $createReportService
-    ) {
+    ): void {
         $scratchFileDir = Storage::disk('efs')->path(config('config.scratch_dir').'/'.md5($this->import->file));
         $importFilePath = Storage::disk('efs')->path($this->import->file);
 
-        $project = $projectRepo->getProjectForDarwinImportJob($this->import->project_id);
+        $project = $projectService->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
 
         try {
@@ -110,23 +96,23 @@ class DwcFileImportJob implements ShouldQueue
 
             $attributes = [
                 'subject' => t('DWC File Import Complete'),
-                'html'    => [
+                'html' => [
                     t('The subject import for %s has been completed.', $project->title),
-                    t('OCR processing may take longer and you will receive an email when it is complete.')
+                    t('OCR processing may take longer and you will receive an email when it is complete.'),
                 ],
-                'buttons' => $buttons
+                'buttons' => $buttons,
             ];
 
             Notification::send($users, new Generic($attributes));
 
-            TesseractOcrCreateJob::dispatch($project->id);
+            TesseractOcrCreateJob::dispatch($project);
             File::cleanDirectory($scratchFileDir);
             File::deleteDirectory($scratchFileDir);
             File::delete($importFilePath);
             $this->import->delete();
             $this->delete();
 
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             $this->import->error = 1;
             $this->import->save();
             File::cleanDirectory($scratchFileDir);
@@ -134,13 +120,13 @@ class DwcFileImportJob implements ShouldQueue
 
             $attributes = [
                 'subject' => t('DWC File Import Error'),
-                'html'    => [
+                'html' => [
                     t('An error occurred while importing the Darwin Core Archive.'),
                     t('Project: %s', $project->title),
-                    t('ID: %s'.$project->id),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
+                    t('ID: %s', $project->id),
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
                     t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
                 ],
             ];
@@ -151,10 +137,9 @@ class DwcFileImportJob implements ShouldQueue
     }
 
     /**
-     * @param $dir
      * @throws \Exception
      */
-    private function makeDirectory($dir)
+    private function makeDirectory($dir): void
     {
         if (! File::isDirectory($dir) && ! File::makeDirectory($dir, 0775, true)) {
             throw new Exception(t('Unable to create directory: :directory', [':directory' => $dir]));
@@ -167,11 +152,8 @@ class DwcFileImportJob implements ShouldQueue
 
     /**
      * Unzip file in directory.
-     *
-     * @param $zipFile
-     * @param $dir
      */
-    private function unzip($zipFile, $dir)
+    private function unzip($zipFile, $dir): void
     {
         shell_exec("unzip $zipFile -d $dir");
     }

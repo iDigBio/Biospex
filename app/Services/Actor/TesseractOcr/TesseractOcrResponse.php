@@ -19,35 +19,25 @@
 
 namespace App\Services\Actor\TesseractOcr;
 
-use App\Repositories\OcrQueueFileRepository;
+use App\Models\OcrQueueFile;
 
 class TesseractOcrResponse
 {
     /**
-     * @var \App\Repositories\OcrQueueFileRepository
-     */
-    private OcrQueueFileRepository $ocrQueueFileRepo;
-
-    /**
      * Create a new instance.
-     * @param \App\Repositories\OcrQueueFileRepository $ocrQueueFileRepo
+     * TODO: DI for storage facade
      */
-    public function __construct(OcrQueueFileRepository $ocrQueueFileRepo)
-    {
-        $this->ocrQueueFileRepo = $ocrQueueFileRepo;
-    }
+    public function __construct(protected OcrQueueFile $ocrQueueFile) {}
 
     /**
      * Process ocr payload.
      *
-     * @param array $payload
-     * @return void
      * @see \App\Listeners\TesseractOcrListener
      */
-    public function process(array $payload): void
+    public function process(array $data): void
     {
-        $requestPayload = $payload['requestPayload'];
-        $responsePayload = $payload['responsePayload'];
+        $requestPayload = $data['requestPayload'];
+        $responsePayload = $data['responsePayload'];
 
         // If errorMessage, something really went bad with lambda function.
         isset($responsePayload['errorMessage']) ?
@@ -58,17 +48,13 @@ class TesseractOcrResponse
     /**
      * Handle error message.
      * $requestPayload['id'] is the ocr_queue_files id.
-     *
-     * @param array $requestPayload
-     * @param string $errorMessage
-     * @return void
      */
     public function handleErrorMessage(array $requestPayload, string $errorMessage): void
     {
-        $message = empty($errorMessage) ? 'Error: Unable to complete OCR.' : 'Error: ' . $errorMessage;
+        $message = empty($errorMessage) ? 'Error: Unable to complete OCR.' : 'Error: '.$errorMessage;
         \Storage::disk('s3')->put($requestPayload['key'], $message);
 
-        $file = $this->ocrQueueFileRepo->find($requestPayload['file']);
+        $file = $this->ocrQueueFile->find($requestPayload['file']);
         $file->processed = 1;
         $file->save();
     }
@@ -76,15 +62,13 @@ class TesseractOcrResponse
     /**
      * Handle response for success or failure.
      * $body['id'] is the ocr_queue_files id.
-     *
-     * @param array $body
-     * @return void
      */
     public function handleResponse(array $body): void
     {
         $attributes = [
             'processed' => 1,
         ];
-        $this->ocrQueueFileRepo->update($attributes, $body['file']);
+        $ocrQueueFile = $this->ocrQueueFile->find($body['file']);
+        $ocrQueueFile->fill($attributes)->save();
     }
 }

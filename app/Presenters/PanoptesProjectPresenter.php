@@ -21,8 +21,6 @@ namespace App\Presenters;
 
 /**
  * Class PanoptesProjectPresenter
- *
- * @package App\Presenters
  */
 class PanoptesProjectPresenter extends Presenter
 {
@@ -36,7 +34,7 @@ class PanoptesProjectPresenter extends Presenter
         $url = $this->classifyReplace();
 
         return $this->model->panoptes_workflow_id === null ? '#' :
-            '<a href="'.$url.'" data-hover="tooltip" title="'. t('Participate').'" target="_blank">
+            '<a href="'.$url.'" data-hover="tooltip" title="'.t('Participate').'" target="_blank">
                 <i class="fas fa-keyboard"></i></a>';
     }
 
@@ -50,7 +48,7 @@ class PanoptesProjectPresenter extends Presenter
         $url = $this->projectReplace();
 
         return $this->model->panoptes_workflow_id === null ? '#' :
-            '<a href="'.$url.'" data-hover="tooltip" title="'. t('Participate').'" target="_blank">
+            '<a href="'.$url.'" data-hover="tooltip" title="'.t('Participate').'" target="_blank">
                 <i class="fas fa-keyboard"></i></a>';
     }
 
@@ -64,7 +62,7 @@ class PanoptesProjectPresenter extends Presenter
         $url = $this->projectReplace();
 
         return $this->model->panoptes_workflow_id === null ? '#' :
-            '<a href="'.$url.'" data-hover="tooltip" title="'. t('Participate').'" target="_blank">
+            '<a href="'.$url.'" data-hover="tooltip" title="'.t('Participate').'" target="_blank">
                 <i class="fas fa-keyboard fa-2x"></i></a>';
     }
 
@@ -78,7 +76,7 @@ class PanoptesProjectPresenter extends Presenter
         $url = $this->projectReplace();
 
         return $this->model->panoptes_workflow_id === null ? '#' :
-            '<a href="'.$url.'" title="'. t('Participate').'" target="_blank">'. t('Click here to participate').'</a>';
+            '<a href="'.$url.'" title="'.t('Participate').'" target="_blank">'.t('Click here to participate').'</a>';
     }
 
     /**
@@ -91,7 +89,7 @@ class PanoptesProjectPresenter extends Presenter
         $url = $this->classifyReplace();
 
         return $this->model->panoptes_workflow_id === null ? '#' :
-            '<a href="'.$url.'" data-hover="tooltip" title="'. t('Participate').'" target="_blank">
+            '<a href="'.$url.'" data-hover="tooltip" title="'.t('Participate').'" target="_blank">
                 <i class="fas fa-keyboard fa-2x"></i></a>';
     }
 

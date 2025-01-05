@@ -23,30 +23,29 @@ use App\Models\Traits\Presentable;
 use App\Presenters\ProjectResourcePresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class ProjectResource
- *
- * @package App\Models
  */
 class ProjectResource extends BaseEloquentModel implements AttachableInterface
 {
-    use PaperclipTrait, Presentable;
+    use HasFactory, PaperclipTrait, Presentable;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'project_resources';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'project_id',
         'type',
         'name',
         'description',
-        'download'
+        'download',
     ];
 
     /**
@@ -56,8 +55,6 @@ class ProjectResource extends BaseEloquentModel implements AttachableInterface
 
     /**
      * Project constructor.
-     *
-     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {

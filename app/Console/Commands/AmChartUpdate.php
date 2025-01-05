@@ -20,13 +20,12 @@
 namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
-use App\Repositories\AmChartRepository;
+use App\Models\AmChart;
+use App\Models\Project;
 use Illuminate\Console\Command;
 
 /**
  * Class AmChartUpdate
- *
- * @package App\Console\Commands
  */
 class AmChartUpdate extends Command
 {
@@ -45,34 +44,24 @@ class AmChartUpdate extends Command
     protected $description = 'Update AmChart data for projects.';
 
     /**
-     * @var \App\Repositories\AmChartRepository
+     * AmChartUpdate constructor.
      */
-    private AmChartRepository $amChartRepo;
-
-    /**
-     * AmChartNew constructor.
-     *
-     * @param \App\Repositories\AmChartRepository $amChartRepo
-     */
-    public function __construct(
-        AmChartRepository $amChartRepo
-    )
+    public function __construct(protected AmChart $amChart, protected Project $project)
     {
         parent::__construct();
-
-        $this->amChartRepo = $amChartRepo;
     }
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $projectIds = empty($this->argument('projectIds')) ?
-            $this->amChartRepo->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
+            $this->amChart->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
 
-        $projectIds->each(function($projectId) {
-            AmChartJob::dispatch((int) $projectId);
+        $projectIds->each(function ($projectId) {
+            $project = $this->project->find($projectId);
+            AmChartJob::dispatch($project);
         });
     }
 }

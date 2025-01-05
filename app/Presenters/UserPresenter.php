@@ -21,8 +21,6 @@ namespace App\Presenters;
 
 /**
  * Class UserPresenter
- *
- * @package App\Presenters
  */
 class UserPresenter extends Presenter
 {
@@ -37,7 +35,7 @@ class UserPresenter extends Presenter
         $lastName = $this->model->profile->last_name;
         $email = $this->model->email;
 
-        $isNull = null === $firstName || null === $lastName;
+        $isNull = $firstName === null || $lastName === null;
 
         return $isNull ? $email : $firstName.' '.$lastName;
     }
@@ -54,24 +52,5 @@ class UserPresenter extends Presenter
             data-hover="tooltip" 
             title="'.t('Contact').'">
             <i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>';
-    }
-
-    /**
-     * Return return delete icon.
-     *
-     * @return string
-     */
-    public function deleteGroupUserIcon()
-    {
-        return '<a href="'.route('admin.groups.deleteUser', [
-                $this->model->pivot->group_id,
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'.t('Delete Member').'" 
-            data-hover="tooltip"        
-            data-method="delete"
-            data-confirm="confirmation"
-            data-title="'.t('Delete Member').'?" data-content="'.t('This will permanently delete the member').'">
-            <i class="fas fa-trash-alt"></i></a>';
     }
 }

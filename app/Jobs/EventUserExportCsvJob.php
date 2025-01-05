@@ -19,72 +19,52 @@
 
 namespace App\Jobs;
 
+use App\Models\Event;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Repositories\EventRepository;
+use App\Services\Event\EventService;
 use App\Services\Process\CreateReportService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Str;
+use Throwable;
 
 /**
  * Class EventUserExportCsvJob
- *
- * @package App\Jobs
  */
 class EventUserExportCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
+    use ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
-    public $timeout = 1800;
-
-    /**
-     * @var User
-     */
-    private $user;
-
-    /**
-     * @var
-     */
-    private $eventId;
+    public int $timeout = 1800;
 
     /**
      * Create a new job instance.
-     *
-     * @param User $user
-     * @param null $eventId
      */
-    public function __construct(User $user, $eventId)
+    public function __construct(protected User $user, protected Event $event)
     {
-        $this->user = $user;
-        $this->eventId = $eventId;
+        $this->user = $user->withoutRelations();
+        $this->event = $event->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
-     *
-     * @param \App\Repositories\EventRepository $eventRepo
-     * @param \App\Services\Process\CreateReportService $createReportService
-     * @return void
      */
     public function handle(
-        EventRepository $eventRepo,
+        EventService $eventService,
         CreateReportService $createReportService,
-    ) {
+    ): void {
         try {
-            $event = $eventRepo->getEventShow($this->eventId);
-            $rows = $event->teams->flatMap(function ($team) {
+            $eventService->getAdminShow($this->event);
+            $rows = $this->event->teams->flatMap(function ($team) {
                 return $team->users->map(function ($user) use ($team) {
                     return [
                         'Team' => $team->title,
@@ -104,24 +84,24 @@ class EventUserExportCsvJob implements ShouldQueue
 
             $attributes = [
                 'subject' => t('Event User Export Complete'),
-                'html'    => [
+                'html' => [
                     t('Your export is completed. If a report was generated, you may click the download button to download the file. If no button is included, it is due to no records being located for the export. Some records require overnight processing before they are available.'),
-                    t('If you believe this is an error, please contact the Administration.')
+                    t('If you believe this is an error, please contact the Administration.'),
                 ],
-                'buttons' => $fileButton
+                'buttons' => $fileButton,
             ];
 
             $this->user->notify(new Generic($attributes));
 
-        } catch (Exception $e) {
+        } catch (Throwable $throwable) {
             $attributes = [
                 'subject' => t('Event User Export Error'),
-                'html'    => [
+                'html' => [
                     t('There was an error while exporting the csv file. The Administration has been copied on this error and will investigate.'),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage())
-                ]
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                ],
             ];
             $this->user->notify(new Generic($attributes, true));
         }

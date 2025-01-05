@@ -9,7 +9,7 @@
     </div>
 
     <form id="geolocate-community-form" class="modal-form" method="post"
-          action="{{ route('admin.geolocates.community', [$expedition->project_id, $expedition->id]) }}"
+          action="{{ route('admin.geolocate-community.update', [$expedition]) }}"
           role="form">
         @csrf
         <div class="form-row justify-content-center">

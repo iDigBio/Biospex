@@ -19,80 +19,84 @@
 
 namespace App\Jobs;
 
+use App\Models\ExpeditionStat;
 use App\Models\PanoptesProject;
-use App\Repositories\ExpeditionStatRepository;
+use App\Models\User;
+use App\Notifications\Generic;
 use App\Services\Api\PanoptesApiService;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class PanoptesProjectUpdateJob
- *
- * @package App\Jobs
  */
 class PanoptesProjectUpdateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Models\PanoptesProject
-     */
-    private $panoptesProject;
-
-    /**
      * PanoptesProjectUpdateJob constructor.
-     *
-     * @param \App\Models\PanoptesProject $panoptesProject
      */
-    public function __construct(PanoptesProject $panoptesProject)
+    public function __construct(protected PanoptesProject $panoptesProject)
     {
+        $this->panoptesProject = $panoptesProject->withoutRelations();
         $this->onQueue(config('config.queue.classification'));
-        $this->panoptesProject = $panoptesProject;
     }
 
     /**
      * Execute job.
-     *
-     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
-     * @param \App\Repositories\ExpeditionStatRepository $expeditionStatRepo
      */
-    public function handle(PanoptesApiService $panoptesApiService, ExpeditionStatRepository $expeditionStatRepo)
+    public function handle(PanoptesApiService $panoptesApiService, ExpeditionStat $expeditionStat)
     {
-        try {
-            $workflow = $panoptesApiService->getPanoptesWorkflow($this->panoptesProject->panoptes_workflow_id);
 
-            $panoptesApiService->calculateTotals($workflow, $this->panoptesProject->expedition_id);
+        $workflow = $panoptesApiService->getPanoptesWorkflow($this->panoptesProject->panoptes_workflow_id);
 
-            $stat = $expeditionStatRepo->findBy('expedition_id', $this->panoptesProject->expedition_id);
-            $stat->subject_count = $panoptesApiService->getSubjectCount();
-            $stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
-            $stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
-            $stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
-            $stat->percent_completed = $panoptesApiService->getPercentCompleted();
-            $stat->save();
+        $panoptesApiService->calculateTotals($workflow, $this->panoptesProject->expedition_id);
 
-            $panoptes_project_id = $workflow['links']['project'];
-            $subject_sets = isset($workflow['links']['subject_sets']) ? $workflow['links']['subject_sets'] : '';
+        $stat = $expeditionStat->where('expedition_id', $this->panoptesProject->expedition_id)->first();
+        $stat->subject_count = $panoptesApiService->getSubjectCount();
+        $stat->transcriptions_goal = $panoptesApiService->getTranscriptionsGoal();
+        $stat->local_transcriptions_completed = $panoptesApiService->getLocalTranscriptionsCompleted();
+        $stat->transcriptions_completed = $panoptesApiService->getTranscriptionsCompleted();
+        $stat->percent_completed = $panoptesApiService->getPercentCompleted();
+        $stat->save();
 
-            $project = $panoptesApiService->getPanoptesProject($panoptes_project_id);
+        $panoptes_project_id = $workflow['links']['project'];
+        $subject_sets = $workflow['links']['subject_sets'] ?? '';
 
-            $values = [
-                'panoptes_project_id'      => $panoptes_project_id,
-                'subject_sets' => $subject_sets,
-                'slug'         => $project['slug'],
-            ];
+        $project = $panoptesApiService->getPanoptesProject($panoptes_project_id);
 
-            $this->panoptesProject->fill($values);
-            $this->panoptesProject->save();
+        $values = [
+            'panoptes_project_id' => $panoptes_project_id,
+            'subject_sets' => $subject_sets,
+            'slug' => $project['slug'],
+        ];
 
-        } catch (Exception $e) {
-            $this->delete();
-        }
+        $this->panoptesProject->fill($values);
+        $this->panoptesProject->save();
 
         $this->delete();
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $attributes = [
+            'subject' => t('Panoptes Project Update Job Failed: %s', $this->panoptesProject->id),
+            'html' => [
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+            ],
+        ];
+
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

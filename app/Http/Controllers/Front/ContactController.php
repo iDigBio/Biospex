@@ -19,43 +19,34 @@
 
 namespace App\Http\Controllers\Front;
 
-use Flash;
 use App\Http\Controllers\Controller;
-use App\Mail\ContactForm;
 use App\Http\Requests\ContactFormRequest;
+use App\Mail\ContactForm;
 use Mail;
+use Redirect;
 
 /**
  * Class ContactController
- *
- * @package App\Http\Controllers\Front
  */
 class ContactController extends Controller
 {
     /**
      * Display contact form.
-     *
-     * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         return \View::make('front.contact');
     }
 
     /**
      * Send contact form.
-     *
-     * @param ContactFormRequest $request
-     * @return mixed
      */
-    public function create(ContactFormRequest $request): mixed
+    public function create(ContactFormRequest $request): \Illuminate\Http\RedirectResponse
     {
         $contact = $request->only('name', 'email', 'message');
 
         Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
 
-        \Flash::success(t('Your message has been sent. Thank you.'));
-
-        return \Redirect::route('home');
+        return Redirect::route('home')->with('success', t('Your message has been sent. Thank you.'));
     }
 }

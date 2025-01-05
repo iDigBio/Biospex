@@ -32,8 +32,6 @@ use Throwable;
 
 /**
  * Class ZooniverseProcessCsvJob
- *
- * @package App\Jobs
  */
 class ZooniverseProcessCsvJob implements ShouldQueue
 {
@@ -41,35 +39,26 @@ class ZooniverseProcessCsvJob implements ShouldQueue
 
     /**
      * The number of times the job may be attempted.
-     *
-     * @var int
      */
     public int $tries = 4;
-
-    /**
-     * @var int
-     */
-    private int $expeditionId;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(int $expeditionId)
+    public function __construct(protected int $expeditionId)
     {
         $this->onQueue(config('config.queue.classification'));
-        $this->expeditionId = $expeditionId;
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Csv\ZooniverseCsvService $service
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      * @throws \Exception
      */
-    public function handle(ZooniverseCsvService $service)
+    public function handle(ZooniverseCsvService $service): void
     {
         $result = $service->checkCsvRequest($this->expeditionId);
         if ($result['media'][0]['metadata']['state'] === 'creating') {
@@ -77,7 +66,7 @@ class ZooniverseProcessCsvJob implements ShouldQueue
                 throw new \Exception(t('Zooniverse csv creation for Expedition Id %s exceeded number of tries.', $this->expeditionId));
             }
 
-            $this->release(1800);
+            $this->release(7200);
 
             return;
         }
@@ -102,15 +91,12 @@ class ZooniverseProcessCsvJob implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @param \Throwable $throwable
-     * @return void
      */
-    public function failed(Throwable $throwable)
+    public function failed(Throwable $throwable): void
     {
         $attributes = [
             'subject' => t('Zooniverse Process CSV Failed'),
-            'html'    => [
+            'html' => [
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),

@@ -19,86 +19,65 @@
 
 namespace App\Jobs;
 
+use App\Models\Event;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Repositories\EventTranscriptionRepository;
-use App\Repositories\PanoptesTranscriptionRepository;
+use App\Services\Event\EventTranscriptionService;
 use App\Services\Process\CreateReportService;
-use Exception;
+use App\Services\Transcriptions\PanoptesTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Str;
+use Throwable;
 
 /**
  * Class EventTranscriptionExportCsvJob
- *
- * @package App\Jobs
  */
 class EventTranscriptionExportCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ButtonTrait;
+    use ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
-     *
-     * @var int
      */
-    public $timeout = 1800;
-
-    /**
-     * @var User
-     */
-    private User $user;
-
-    /**
-     * @var
-     */
-    private int $eventId;
+    public int $timeout = 1800;
 
     /**
      * Create a new job instance.
-     *
-     * @param User $user
-     * @param int $eventId
      */
-    public function __construct(User $user, int $eventId)
+    public function __construct(protected User $user, protected Event $event)
     {
-        $this->user = $user;
-        $this->eventId = $eventId;
+        $this->user = $user->withoutRelations();
+        $this->event = $event->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
-     *
-     * @param \App\Repositories\EventTranscriptionRepository $eventTranscriptionRepo
-     * @param \App\Repositories\PanoptesTranscriptionRepository $panoptesTranscriptionRepo
-     * @param \App\Services\Process\CreateReportService $createReportService
-     * @return void
      */
     public function handle(
-        EventTranscriptionRepository $eventTranscriptionRepo,
-        PanoptesTranscriptionRepository $panoptesTranscriptionRepo,
+        EventTranscriptionService $eventTranscriptionService,
+        PanoptesTranscriptionService $panoptesTranscriptionService,
         CreateReportService $createReportService,
-    )
-    {
-        try
-        {
-            $ids = $eventTranscriptionRepo->getEventClassificationIds($this->eventId);
+    ): void {
 
-            $transcriptions = $ids->map(function($id) use($panoptesTranscriptionRepo) {
-                $transcript = $panoptesTranscriptionRepo->findBy('classification_id', $id);
+        try {
+            $ids = $eventTranscriptionService->getEventClassificationIds($this->event->id);
+
+            $transcriptions = $ids->map(function ($id) use ($panoptesTranscriptionService) {
+                $transcript = $panoptesTranscriptionService->getFirst('classification_id', $id);
                 unset($transcript['_id']);
+
                 return $transcript;
-            })->reject(function($transcription){
-                return $transcription === null;
+            })->reject(function ($transcription) {
+                return empty($transcription);
             });
 
-            $csvFileName = Str::random() . '.csv';
+            $csvFileName = Str::random().'.csv';
             $fileName = $createReportService->createCsvReport($csvFileName, $transcriptions->toArray());
             $fileButton = [];
             if ($fileName !== null) {
@@ -108,25 +87,23 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
 
             $attributes = [
                 'subject' => t('Event Transcription Export Complete'),
-                'html'    => [
+                'html' => [
                     t('Your export is completed. If a report was generated, you may click the download button to download the file. If no button is included, it is due to no records being located for the export. Some records require overnight processing before they are available.'),
-                    t('If you believe this is an error, please contact the Administration.')
+                    t('If you believe this is an error, please contact the Administration.'),
                 ],
-                'buttons' => $fileButton
+                'buttons' => $fileButton,
             ];
 
             $this->user->notify(new Generic($attributes));
-        }
-        catch (Exception $e)
-        {
+        } catch (Throwable $throwable) {
             $attributes = [
                 'subject' => t('Event Transcription Export Error'),
-                'html'    => [
+                'html' => [
                     t('There was an error while exporting the csv file. The Administration has been copied on this error and will investigate.'),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage())
-                ]
+                    t('File: %s', $throwable->getFile()),
+                    t('Line: %s', $throwable->getLine()),
+                    t('Message: %s', $throwable->getMessage()),
+                ],
             ];
             $this->user->notify(new Generic($attributes, true));
         }

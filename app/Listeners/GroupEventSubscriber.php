@@ -19,7 +19,7 @@
 
 namespace App\Listeners;
 
-use App\Repositories\GroupRepository;
+use App\Services\Group\GroupService;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Auth;
@@ -27,31 +27,16 @@ use Illuminate\Support\Facades\Session;
 
 /**
  * Class GroupEventSubscriber
- *
- * @package App\Listeners
  */
 class GroupEventSubscriber
 {
-
-    /**
-     * @var \App\Repositories\GroupRepository
-     */
-    private $groupRepo;
-
     /**
      * GroupSessionEventListener constructor.
-     *
-     * @param \App\Repositories\GroupRepository $groupRepo
      */
-    public function __construct(GroupRepository $groupRepo)
-    {
-        $this->groupRepo = $groupRepo;
-    }
+    public function __construct(protected GroupService $groupService) {}
 
     /**
      * Register the listeners for the subscriber.
-     *
-     * @param $events
      */
     public function subscribe($events)
     {
@@ -79,8 +64,6 @@ class GroupEventSubscriber
 
     /**
      * Handle user login events.
-     *
-     * @param $event
      */
     public function onUserLogin($event)
     {
@@ -89,8 +72,6 @@ class GroupEventSubscriber
 
     /**
      * Handle user logout.
-     *
-     * @param $event
      */
     public function onUserLogout($event)
     {
@@ -100,11 +81,11 @@ class GroupEventSubscriber
     /**
      * Set the user groups inside a session variable.
      *
-     * @param null $groupId
+     * @param  null  $groupId
      */
-    public function setUserGroupSession($groupId = null)
+    public function setUserGroupSession($groupId = null): void
     {
-        $groupIds = $this->groupRepo->getUserGroupIds(Auth::id());
+        $groupIds = $this->groupService->getUserGroupIds(Auth::id());
 
         $groups = $groupId === null ? $groupIds : $groupIds->diff([$groupId]);
 

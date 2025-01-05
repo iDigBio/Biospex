@@ -1,5 +1,7 @@
 $(function () {
 
+    let clipboard = new ClipboardJS('.clipboard');
+
     let userGroup = $('#user-group')
     let groupInput = $('#group-input')
     userGroup.change(function () {
@@ -34,10 +36,6 @@ $(function () {
         })
     }
 
-    $('[data-name="js-copy"]').on('click', function () {
-        copyToClipboard($(this))
-    })
-
     $.datetimepicker.setLocale('en')
     $('.date-time-picker').datetimepicker({
         format: 'Y-m-d H:i',
@@ -61,7 +59,12 @@ $(function () {
         newEntry.find(':input').each(function () {
             $(this).val('')
         })
-        newEntry.find('.fileName').html('')
+        newEntry.find('.custom-file-label').each(function () {
+            $(this).text('')
+        });
+        newEntry.find(':file').each(function () {
+            $(this).val('')
+        });
         controls.find('.entry:last span.btn-add')
             .removeClass('btn-add').addClass('btn-remove')
             .html('<i class="fas fa-minus"></i>')
@@ -140,37 +143,4 @@ function renumber_resource() {
             $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'))
         })
     })
-}
-
-function copyToClipboard(el) {
-    let copyTest = document.queryCommandSupported('copy')
-    let copyText = el.attr('data-value')
-    let titleText = el.attr('data-original-title')
-
-    if (copyTest === true) {
-        let copyTextArea = document.createElement('textarea')
-        copyTextArea.value = copyText
-        document.body.appendChild(copyTextArea)
-        copyTextArea.select()
-        try {
-            let successful = document.execCommand('copy')
-            let msg = successful ? 'Copied!' : 'Whoops, not copied!'
-            el.attr('data-original-title', msg).tooltip('show')
-        } catch (err) {
-            alert('Oops, unable to copy')
-        }
-        document.body.removeChild(copyTextArea)
-        el.attr('data-original-title', titleText)
-    } else {
-        // Fallback if browser doesn't support .execCommand('copy')
-        window.prompt('Copy to clipboard: Ctrl+C or Command+C, Enter', text)
-    }
-}
-
-function showHideJqGrid(selected) {
-    if (selected === '7') {
-        $('#jqGridDiv').hide()
-    } else {
-        $('#jqGridDiv').show()
-    }
 }

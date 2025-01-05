@@ -25,15 +25,11 @@ use Illuminate\Http\Response;
 
 /**
  * Class PanoptesPusherController
- *
- * @package App\Http\Controllers\Api\V1
  */
 class PanoptesPusherController extends ApiController
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(): Response
     {
@@ -42,8 +38,6 @@ class PanoptesPusherController extends ApiController
 
     /**
      * Process Panoptes data from pusher stream.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function store(): Response
     {
@@ -53,7 +47,7 @@ class PanoptesPusherController extends ApiController
 
         $data = json_decode(\Request::getContent(), true);
 
-        if ( ! isset($data['workflow_id'])) {
+        if (! isset($data['workflow_id'])) {
             return $this->errorWrongArgs(t('Missing workflow_id'));
         }
 
@@ -64,8 +58,6 @@ class PanoptesPusherController extends ApiController
 
     /**
      * Display the specified resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function show(): Response
     {
@@ -74,8 +66,6 @@ class PanoptesPusherController extends ApiController
 
     /**
      * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function update(): Response
     {
@@ -84,8 +74,6 @@ class PanoptesPusherController extends ApiController
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function destroy(): Response
     {

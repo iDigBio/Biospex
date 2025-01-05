@@ -20,23 +20,16 @@
 namespace App\Services;
 
 use Illuminate\Database\DatabaseManager;
-use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
-use MongoDB\Collection;
 use MongoDB\BSON\Regex;
+use MongoDB\Client;
+use MongoDB\Collection;
 
 /**
  * Class MongoDbService
- *
- * @package App\Services
  */
 class MongoDbService
 {
-    /**
-     * @var DatabaseManager
-     */
-    private $databaseManager;
-
     /**
      * @var Client
      */
@@ -51,18 +44,12 @@ class MongoDbService
 
     /**
      * MongoDbService constructor.
-     *
-     * @param DatabaseManager $databaseManager
      */
-    public function __construct(DatabaseManager $databaseManager)
-    {
-        $this->databaseManager = $databaseManager;
-    }
+    public function __construct(protected DatabaseManager $databaseManager) {}
 
     /**
      * Return cursor as array.
      *
-     * @param $cursor
      * @return mixed
      */
     public function getArray($cursor)
@@ -83,19 +70,18 @@ class MongoDbService
     /**
      * Set database dynamically.
      *
-     * @param null $database
+     * @param  null  $database
      * @return null
      */
     public function setDatabase($database = null)
     {
-        return null === $database ? config('database.connections.mongodb.database') : $database;
+        return $database === null ? config('database.connections.mongodb.database') : $database;
     }
 
     /**
      * Set mongo collection.
      *
-     * @param $collection
-     * @param null $database
+     * @param  null  $database
      */
     public function setCollection($collection, $database = null)
     {
@@ -109,7 +95,6 @@ class MongoDbService
     /**
      * Set a mongo id object.
      *
-     * @param $value
      * @return \MongoDB\BSON\ObjectId
      */
     public function setMongoObjectId($value)
@@ -120,7 +105,6 @@ class MongoDbService
     /**
      * Set regex value.
      *
-     * @param $value
      * @return \MongoDB\BSON\Regex
      */
     public function setRegex($value)
@@ -128,11 +112,6 @@ class MongoDbService
         return new Regex($value, 'i');
     }
 
-    /**
-     * @param array $filter
-     * @param array $options
-     * @return int
-     */
     public function count(array $filter = [], array $options = []): int
     {
         return $this->clientCollection->countDocuments($filter, $options);
@@ -141,8 +120,6 @@ class MongoDbService
     /**
      * Find all matching query.
      *
-     * @param array $query
-     * @param array $options
      * @return mixed
      */
     public function find(array $query = [], array $options = [])
@@ -153,7 +130,6 @@ class MongoDbService
     /**
      * Find one matching query.
      *
-     * @param array $query
      * @return array|null|object
      */
     public function findOne(array $query = [])
@@ -164,9 +140,7 @@ class MongoDbService
     /**
      * Find one and replace.
      *
-     * @param $filter
-     * @param $replacement
-     * @param array $options
+     * @param  array  $options
      * @return array|null|object
      */
     public function findOneAndReplace($filter, $replacement, $options = [])
@@ -177,7 +151,6 @@ class MongoDbService
     /**
      * Insert one record.
      *
-     * @param array $attributes
      * @return \MongoDB\InsertOneResult
      */
     public function insertOne(array $attributes = [])
@@ -187,8 +160,6 @@ class MongoDbService
 
     /**
      * Insert many documents.
-     *
-     * @param array $data
      */
     public function insertMany(array $data = [])
     {
@@ -197,9 +168,6 @@ class MongoDbService
 
     /**
      * Update single record.
-     *
-     * @param array $attributes
-     * @param $resourceId
      */
     public function updateOneById(array $attributes, $resourceId)
     {
@@ -208,19 +176,12 @@ class MongoDbService
 
     /**
      * Update many.
-     *
-     * @param array $attributes
-     * @param array $criteria
-     * @return \MongoDB\UpdateResult
      */
-    public function updateMany(array $attributes, array $criteria): \MongoDB\UpdateResult
+    public function updateMany(array $criteria, array $attributes): \MongoDB\UpdateResult
     {
         return $this->clientCollection->updateMany($criteria, $attributes);
     }
 
-    /**
-     * @param array $criteria
-     */
     public function deleteMany(array $criteria)
     {
         $this->clientCollection->deleteMany($criteria);
@@ -234,7 +195,6 @@ class MongoDbService
     /**
      * Return only id from results.
      *
-     * @param $cursor
      * @return array
      */
     public function pluckId($cursor)

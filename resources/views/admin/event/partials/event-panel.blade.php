@@ -7,7 +7,7 @@
                 <div class="col-md-6">
                     <p>{{ t('Project') }}
                         :
-                        <a href="{{ route('front.projects.slug', ['slug' => $event->project->slug]) }}">{{ $event->project->title }}</a>
+                        <a href="{{ route('front.projects.show', ['slug' => $event->project->slug]) }}">{{ $event->project->title }}</a>
                     </p>
                     {{ t('Start Date') }}
                     : {{ $event->present()->start_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}
@@ -25,7 +25,7 @@
             </div>
             <div class="col-md-12 d-flex justify-content-between mt-4 mb-3">
                 {!! $event->project->present()->project_page_icon_lrg !!}
-                @if(DateHelper::eventActive($event))
+                @if(event_active($event))
                     {!! $event->project->lastPanoptesProject->present()->project_icon_lrg !!}
                 @endif
                 {!! $event->present()->event_download_users_icon_lrg !!}

@@ -10,6 +10,7 @@ try {
 
     window.$ = window.jQuery = require('jquery');
     window.Panzoom = require('@panzoom/panzoom/dist/panzoom.min');
+    window.ClipboardJS = require('clipboard');
 
     require('bootstrap');
 

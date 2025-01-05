@@ -25,8 +25,6 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AppCommand
- *
- * @package App\Console\Commands
  */
 class AppLambdaCommand extends Command
 {
@@ -40,18 +38,17 @@ class AppLambdaCommand extends Command
      */
     protected $description = 'Used to test sqs lambda code';
 
-    /**
-     * @var \App\Services\Api\AwsLambdaApiService
-     */
-    private AwsLambdaApiService $awsLambdaApiService;
+    protected string $bucket;
+
+    protected int $expeditionId = 9999; // can be any expedition id
 
     /**
      * AppCommand constructor.
      */
-    public function __construct(AwsLambdaApiService $awsLambdaApiService)
+    public function __construct(protected AwsLambdaApiService $awsLambdaApiService)
     {
         parent::__construct();
-        $this->awsLambdaApiService = $awsLambdaApiService;
+        $this->bucket = config('filesystems.disks.s3.bucket');
     }
 
     /**
@@ -68,7 +65,7 @@ class AppLambdaCommand extends Command
         } elseif ($this->argument('method') === 'reconcile') {
             $this->reconcileTest();
         } elseif ($this->argument('method') === 'delete') {
-            $this->deleteTestFiles();
+            $this->deleteFiles();
         } elseif ($this->argument('method') === 'tesseract') {
             $this->tesseractTest();
         }
@@ -76,28 +73,28 @@ class AppLambdaCommand extends Command
 
     private function exportTest(): void
     {
-        $workingDir = "scratch/folderName-queueId-actorId-expeditionUuid";
+        $workingDir = 'scratch/folderName-queueId-actorId-expeditionUuid';
         $attributes = [
-            'bucket'    => config('filesystems.disks.s3.bucket'),
-            'queueId'   => 999999,
-            'subjectId' => "615da36c65b16554e4781ed9",
-            'url'       => "https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg",
-            'dir'       => $workingDir,
+            'bucket' => $this->bucket,
+            'queueId' => $this->expeditionId,
+            'subjectId' => '615da36c65b16554e4781ed9',
+            'url' => 'https://cdn.floridamuseum.ufl.edu/Herbarium/45719006-8575-430c-9cd3-18a6ec63f8ed',
+            'dir' => $workingDir,
         ];
 
         Storage::disk('s3')->makeDirectory($workingDir);
 
-        //$result = $this->awsLambdaApiService->lambdaInvoke(config('config.aws.lambda_export_function'), $attributes);
-        //echo $result['Payload']->getContents();
+        $result = $this->awsLambdaApiService->lambdaInvoke(config('config.aws.lambda_export_function'), $attributes);
+        echo $result['Payload']->getContents();
 
-        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_export_function'), $attributes);
+        //$this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_export_function'), $attributes);
     }
 
     private function explainTest(): void
     {
         $attributes = [
-            'bucket'       => 'biospex-dev',
-            'key'          => 'zooniverse/classification/999999.csv',
+            'bucket' => $this->bucket,
+            'key' => 'zooniverse/classification/'.$this->expeditionId.'.csv',
             'explanations' => true,
         ];
 
@@ -109,26 +106,27 @@ class AppLambdaCommand extends Command
 
     private function reconcileTest(): void
     {
-        $classification = config('zooniverse.directory.classification').'/999999.csv';
-        $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation').'/999999.csv';
-        \Storage::disk('s3')->copy($classification, $lambda_reconciliation);
+
+        $classification = config('zooniverse.directory.classification').'/'.$this->expeditionId.'.csv';
+        $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation').'/'.$this->expeditionId.'.csv';
+        Storage::disk('s3')->copy($classification, $lambda_reconciliation);
     }
 
-    private function deleteTestFiles()
+    private function deleteFiles(): void
     {
-        \Storage::disk('s3')->delete('zooniverse/transcript/999999.csv');
-        \Storage::disk('s3')->delete('zooniverse/summary/999999.html');
-        \Storage::disk('s3')->delete('zooniverse/reconciled/999999.csv');
-        \Storage::disk('s3')->delete('zooniverse/explained/999999.csv');
+        Storage::disk('s3')->delete(config('zooniverse.directory.transcript').'/'.$this->expeditionId.'.csv');
+        Storage::disk('s3')->delete(config('zooniverse.directory.summary').'/'.$this->expeditionId.'.csv');
+        Storage::disk('s3')->delete(config('zooniverse.directory.reconciled').'/'.$this->expeditionId.'.csv');
+        Storage::disk('s3')->delete(config('zooniverse.directory.explained').'/'.$this->expeditionId.'.csv');
     }
 
-    private function tesseractTest()
+    private function tesseractTest(): void
     {
         $attributes = [
             'bucket' => config('filesystems.disks.s3.bucket'),
-            'key'    => config('zooniverse.directory.lambda-ocr').'/615da36c65b16554e4781ed9.txt',
-            'file'   => 999,
-            'uri'    => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
+            'key' => config('zooniverse.directory.lambda-ocr').'/615da36c65b16554e4781ed9.txt',
+            'file' => 999,
+            'uri' => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
         ]; //https://sernecportal.org/imglib/seinet/sernec/FTU/FTU0016/FTU0016693.jpg
 
         $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), $attributes);

@@ -69,7 +69,7 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
-        ]
+        ],
     ],
 
     /*
@@ -92,7 +92,7 @@ return [
             'provider' => 'users',
             'table' => 'password_resets',
             'expire' => 60,
-        ]
+        ],
     ],
 
 ];

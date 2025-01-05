@@ -18,8 +18,11 @@
  */
 
 use App\Http\Controllers\Admin\ImportController;
+use App\Http\Controllers\Admin\ImportDwcFileController;
+use App\Http\Controllers\Admin\ImportDwcUriController;
+use App\Http\Controllers\Admin\ImportRecordSetController;
 
-Route::get('projects/{projects}/import', [ImportController::class, 'index'])->name('admin.imports.index');
-Route::post('projects/dwcfile', [ImportController::class, 'dwcFile'])->name('admin.imports.dwcfile');
-Route::post('projects/recordset', [ImportController::class, 'recordSet'])->name('admin.imports.recordset');
-Route::post('projects/dwcuri', [ImportController::class, 'dwcUri'])->name('admin.imports.dwcuri');
+Route::get('projects/{project}/import', ImportController::class)->name('admin.imports.index');
+Route::post('projects/dwcfile', ImportDwcFileController::class)->name('admin.imports.dwcfile');
+Route::post('projects/recordset', ImportRecordSetController::class)->name('admin.imports.recordset');
+Route::post('projects/dwcuri', ImportDwcUriController::class)->name('admin.imports.dwcuri');

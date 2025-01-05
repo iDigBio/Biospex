@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Nova;
 
 use Laravel\Nova\Fields\BelongsToMany;
@@ -26,29 +27,27 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 /**
  * Class Workflow
- *
- * @package App\Nova
  */
 class Workflow extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var  string
+     * @var string
      */
     public static $model = \App\Models\Workflow::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
-     * @var  string
+     * @var string
      */
     public static $title = 'title';
 
     /**
      * The columns that should be searched.
      *
-     * @var  array
+     * @var array
      */
     public static $search = [
         'id',
@@ -58,7 +57,7 @@ class Workflow extends Resource
     /**
      * Get the displayable label of the resource.
      *
-     * @return  string
+     * @return string
      */
     public static function label()
     {
@@ -68,7 +67,7 @@ class Workflow extends Resource
     /**
      * Get the displayable singular label of the resource.
      *
-     * @return  string
+     * @return string
      */
     public static function singularLabel()
     {
@@ -78,8 +77,7 @@ class Workflow extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function fields(NovaRequest $request)
     {
@@ -87,15 +85,14 @@ class Workflow extends Resource
             ID::make(t('Id'), 'id')->sortable(),
             Text::make(t('Title'), 'title')->rules('required')->sortable(),
             Boolean::make(t('Enabled'), 'enabled')->sortable(),
-            BelongsToMany::make('Actors')
+            BelongsToMany::make('Actors'),
         ];
     }
 
     /**
      * Get the cards available for the request.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function cards(NovaRequest $request)
     {
@@ -105,8 +102,7 @@ class Workflow extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function filters(NovaRequest $request)
     {
@@ -116,8 +112,7 @@ class Workflow extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function lenses(NovaRequest $request)
     {
@@ -127,8 +122,7 @@ class Workflow extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @return  array
+     * @return array
      */
     public function actions(NovaRequest $request)
     {

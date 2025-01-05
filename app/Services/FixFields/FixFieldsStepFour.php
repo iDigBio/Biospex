@@ -28,7 +28,7 @@ class FixFieldsStepFour extends FixFieldsBase
      */
     public function start()
     {
-        echo "Starting to remove unused fields on properties" . PHP_EOL;
+        echo 'Starting to remove unused fields on properties'.PHP_EOL;
 
         \Artisan::call('lada-cache:flush');
         \Artisan::call('lada-cache:disable');
@@ -47,7 +47,7 @@ class FixFieldsStepFour extends FixFieldsBase
     {
         $properties = collect($this->getPropertiesFile('step3-properties.json'));
 
-        $filtered = $properties->reject(function($property, $key){
+        $filtered = $properties->reject(function ($property, $key) {
             return empty($property['fields']);
         });
 

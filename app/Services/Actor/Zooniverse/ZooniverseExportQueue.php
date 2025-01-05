@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -20,63 +21,32 @@
 namespace App\Services\Actor\Zooniverse;
 
 use App\Jobs\ZooniverseExportProcessImagesJob;
+use App\Models\Download;
 use App\Models\Expedition;
 use App\Models\ExportQueue;
-use App\Repositories\DownloadRepository;
-use App\Repositories\ExpeditionRepository;
-use App\Repositories\ExportQueueRepository;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Actor\ActorFactory;
+use App\Services\Expedition\ExpeditionService;
 use Illuminate\Support\Facades\Storage;
 
 class ZooniverseExportQueue
 {
     /**
-     * @var \App\Repositories\ExpeditionRepository
-     */
-    private ExpeditionRepository $expeditionRepository;
-
-    /**
-     * @var \App\Repositories\DownloadRepository
-     */
-    private DownloadRepository $downloadRepository;
-
-    /**
-     * @var \App\Repositories\ExportQueueRepository
-     */
-    private ExportQueueRepository $exportQueueRepository;
-
-    /**
-     * @var \App\Services\Actor\ActorDirectory
-     */
-    private ActorDirectory $actorDirectory;
-
-    /**
      * ExportQueueCommand constructor.
-     *
-     * @param \App\Repositories\ExpeditionRepository $expeditionRepository
-     * @param \App\Repositories\DownloadRepository $downloadRepository
-     * @param \App\Repositories\ExportQueueRepository $exportQueueRepository
-     * @param \App\Services\Actor\ActorDirectory $actorDirectory
      */
     public function __construct(
-        ExpeditionRepository $expeditionRepository,
-        DownloadRepository $downloadRepository,
-        ExportQueueRepository $exportQueueRepository,
-        ActorDirectory $actorDirectory
-    ) {
-        $this->expeditionRepository = $expeditionRepository;
-        $this->downloadRepository = $downloadRepository;
-        $this->exportQueueRepository = $exportQueueRepository;
-        $this->actorDirectory = $actorDirectory;
-    }
+        protected ExpeditionService $expeditionService,
+        protected ExportQueue $exportQueue,
+        protected ActorDirectory $actorDirectory,
+        protected Download $download
+    ) {}
 
     /**
      * Process export queue.
      */
     public function processQueue(): void
     {
-        $exportQueue = $this->exportQueueRepository->findExportQueueFirst();
+        $exportQueue = $this->exportQueue->with('expedition')->where('error', 0)->first();
 
         if ($exportQueue === null || $exportQueue->queued === 1) {
             return;
@@ -93,34 +63,28 @@ class ZooniverseExportQueue
 
     /**
      * Get export queue for stage command.
-     *
-     * @param int $queueId
-     * @return \App\Models\ExportQueue
      */
     public function getExportQueueForStageCommand(int $queueId): ExportQueue
     {
-        return $this->exportQueueRepository->findWith($queueId, ['expedition']);
+        return $this->exportQueue->with(['expedition'])->find($queueId);
     }
 
     /**
      * Handles resetting Expedition attributes from command line.
-     *
-     * @param int $expeditionId
-     * @return void
      */
     public function resetExpeditionExport(int $expeditionId): void
     {
-        $expedition = $this->getExpedition($expeditionId);
+        $expedition = $this->expeditionService->getExpeditionForQueueReset($expeditionId);
 
-        if (!is_null($expedition->exportQueue)) $expedition->exportQueue->delete();
+        if (! is_null($expedition->exportQueue)) {
+            $expedition->exportQueue->delete();
+        }
 
         $this->resetExpeditionData($expedition);
     }
 
     /**
      * Reset data for expedition when regenerating export.
-     *
-     * @param \App\Models\Expedition $expedition
      */
     public function resetExpeditionData(Expedition $expedition): void
     {
@@ -129,26 +93,27 @@ class ZooniverseExportQueue
         // Set actor_expedition pivot state to 1 if currently 0.
         // Otherwise, it's a regeneration export and state stays the same
         $attributes = [
-            'state' => $expedition->zooniverseActor->pivot->state === 0 ? 1 : $expedition->zooniverseActor->pivot->state,
+            'state' => $expedition->zooActorExpedition->state === 0 ? 1 : $expedition->zooActorExpedition->state,
             'total' => $expedition->stat->local_subject_count,
         ];
 
-        $expedition->zooniverseActor->expeditions()->updateExistingPivot($expedition->id, $attributes);
+        $expedition->zooActorExpedition->update($attributes);
 
         // Set state to 1 to handle regenerating exports without effecting database value.
-        $expedition->zooniverseActor->pivot->state = 1;
+        $expedition->zooActorExpedition->state = 1;
 
-        ActorFactory::create($expedition->zooniverseActor->class)->actor($expedition->zooniverseActor);
+        ActorFactory::create($expedition->zooActorExpedition->actor->class)->process($expedition->zooActorExpedition);
     }
 
     /**
      * Delete existing exports files for expedition.
-     *
-     * @param string $expeditionId
      */
     public function deleteExportFiles(string $expeditionId): void
     {
-        $downloads = $this->downloadRepository->getZooniverseExportFiles($expeditionId);
+        $downloads = $this->download->where('actor_id', config('zooniverse.actor_id'))
+            ->where('expedition_id', $expeditionId)
+            ->where('type', 'export')
+            ->get();
 
         $downloads->each(function ($download) {
             if (Storage::disk('s3')->exists(config('config.export_dir').'/'.$download->file)) {
@@ -161,16 +126,5 @@ class ZooniverseExportQueue
 
             $download->delete();
         });
-    }
-
-    /**
-     * Get expedition with zooniverseActor and stat.
-     *
-     * @param int $expeditionId
-     * @return \App\Models\Expedition
-     */
-    private function getExpedition(int $expeditionId): Expedition
-    {
-        return $this->expeditionRepository->findWith($expeditionId, ['zooniverseActor', 'stat', 'exportQueue']);
     }
 }

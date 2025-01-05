@@ -20,11 +20,10 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Request;
 
 /**
  * Class ResourceDownloadValidation
- *
- * @package App\Rules
  */
 class ResourceDownloadValidation implements Rule
 {
@@ -61,23 +60,23 @@ class ResourceDownloadValidation implements Rule
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string $attribute
-     * @param  mixed $value
+     * @param  string  $attribute
+     * @param  mixed  $value
      * @return bool
      */
     public function passes($attribute, $value)
     {
         $parts = explode('.', $attribute);
-        $resources = \Request::get('resources');
-        $fileUpload = \Request::hasFile('resources.'.$parts[1].'.download');
+        $resources = Request::get('resources');
+        $fileUpload = Request::hasFile('resources.'.$parts[1].'.download');
 
-        if ($resources[$parts[1]]['type'] !== 'File Download'||
+        if ($resources[$parts[1]]['type'] !== 'File Download' ||
             $resources[$parts[1]]['type'] === 'delete' ||
             ! $fileUpload) {
             return true;
         }
 
-        $file = \Request::file('resources.'.$parts[1].'.download');
+        $file = Request::file('resources.'.$parts[1].'.download');
 
         return preg_match('/^[\w\-.]+$/', $file->getClientOriginalName()) === 1;
     }

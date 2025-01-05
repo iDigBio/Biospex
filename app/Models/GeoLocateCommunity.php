@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -19,22 +20,53 @@
 
 namespace App\Models;
 
+use App\Models\Traits\UuidTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class GeoLocateCommunity extends BaseEloquentModel
 {
+    use HasFactory, UuidTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'geo_locate_communities';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'project_id',
         'name',
-        'data'
+        'data',
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    /**
+     * Boot functions.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::bootUuidTrait();
+    }
 
     /**
      * The attributes that should be cast.
@@ -44,14 +76,12 @@ class GeoLocateCommunity extends BaseEloquentModel
     protected function casts(): array
     {
         return [
-            'data' => 'array'
+            'data' => 'array',
         ];
     }
 
     /**
      * Project relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

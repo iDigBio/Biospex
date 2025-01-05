@@ -20,21 +20,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class WeDigBioProject
- *
- * @package App\Models
  */
 class WeDigBioProject extends BaseEloquentModel
 {
+    use HasFactory;
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $table = 'wedigbio_projects';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected $fillable = [
         'panoptes_project_id',
@@ -45,8 +46,8 @@ class WeDigBioProject extends BaseEloquentModel
     protected function subjectSets(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => json_decode($value),
-            set: fn($value) => json_encode($value)
+            get: fn ($value) => json_decode($value),
+            set: fn ($value) => json_encode($value)
         );
     }
 }

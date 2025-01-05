@@ -24,9 +24,6 @@ use Illuminate\Support\Facades\Storage;
 
 class AwsS3ApiService
 {
-    /**
-     * @var \Aws\S3\S3Client
-     */
     private S3Client $client;
 
     /**
@@ -40,10 +37,6 @@ class AwsS3ApiService
     /**
      * Create a seekable stream to read file from bucket.
      *
-     * @param string $bucket
-     * @param string $filePath
-     * @param string $mode
-     * @param bool $seekable
      * @return false|resource
      */
     public function createS3BucketStream(string $bucket, string $filePath, string $mode, bool $seekable = true)
@@ -54,12 +47,12 @@ class AwsS3ApiService
         if ($seekable) {
             $context = stream_context_create([
                 's3' => [
-                    'seekable' => true
-                ]
+                    'seekable' => true,
+                ],
             ]);
         }
 
-        $s3Path = 's3://' . $bucket . '/' . $filePath;
+        $s3Path = 's3://'.$bucket.'/'.$filePath;
 
         return fopen($s3Path, $mode, false, $context);
     }
@@ -68,17 +61,13 @@ class AwsS3ApiService
      * Get file count in bucket directory.
      *
      * Count returns top directory so subtract 1.
-     *
-     * @param string $bucket
-     * @param string $dirPath
-     * @return int
      */
     public function getFileCount(string $bucket, string $dirPath): int
     {
-        $objects = $this->client->getIterator('ListObjects', array(
+        $objects = $this->client->getIterator('ListObjects', [
             'Bucket' => $bucket,
-            'Prefix' => $dirPath . '/'
-        ));
+            'Prefix' => $dirPath.'/',
+        ]);
 
         return count(iterator_to_array($objects, false)) - 1;
     }

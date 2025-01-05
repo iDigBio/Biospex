@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -20,46 +21,43 @@
 namespace App\Jobs;
 
 use App\Events\WeDigBioProgressEvent;
-use App\Repositories\WeDigBioEventDateRepository;
+use App\Models\WeDigBioEvent;
+use App\Services\WeDigBio\WeDigBioService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use View;
 
+/**
+ * Class WeDigBioEventProgressJob
+ */
 class WeDigBioEventProgressJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var int
-     */
-    private int $dateId;
-
-    /**
      * Create a new job instance.
-     *
-     * @param int $dateId
+     * Null is passed to the event parameter if using Nav links that result in active WeDigBio Event.
+     * Assigns zero to the channel.
      */
-    public function __construct(int $dateId)
+    public function __construct(public ?WeDigBioEvent $event = null)
     {
-        $this->dateId = $dateId;
+        $this->event = $event->withoutRelations();
         $this->onQueue(config('config.queue.event'));
     }
 
     /**
      * Handle Job.
-     *
-     * @param \App\Repositories\WeDigBioEventDateRepository $weDigBioEventDateRepository
-     * @return void
      */
-    public function handle(WeDigBioEventDateRepository $weDigBioEventDateRepository)
+    public function handle(WeDigBioService $weDigBioService): void
     {
-        $weDigBioDate = $weDigBioEventDateRepository->getWeDigBioEventTranscriptions($this->dateId);
-        $id = $weDigBioDate->active ? 0 : $weDigBioDate->id;
+        $weDigBioDate = $weDigBioService->getWeDigBioEventTranscriptions($this->event);
+        $uuid = is_null($this->event) ? 0 : $weDigBioDate->uuid;
 
-        $data = [$id => \View::make('common.wedigbio-progress-content', compact('weDigBioDate'))->render()];
+        $data = [$uuid => View::make('common.wedigbio-progress-content', compact('weDigBioDate'))->render()];
 
-        WeDigBioProgressEvent::dispatch($id, $data);
+        WeDigBioProgressEvent::dispatch($uuid, $data);
     }
 }

@@ -4,6 +4,7 @@
             <h1 class="text-center project-wide text-uppercase">{{ $project->title }}</h1>
             <div class="col-12">
                 <div class="d-flex justify-content-between mt-4 mb-3">
+                    {!! $project->group->present()->group_project_icon_lrg !!}
                     {!! $project->present()->project_page_icon_lrg !!}
                     {!! $project->present()->project_show_icon_lrg !!}
                     {!! $project->present()->project_import_icon_lrg !!}
@@ -20,8 +21,9 @@
                     @endcan
                 </div>
                 <div class="text-center mt-4">
-                <a href="{{ route('admin.expeditions.create', [$project->id]) }}" class="btn btn-primary text-uppercase">
-                    <i class="fas fa-plus-circle"></i> {{ t('New Expedition') }}</a>
+                    <a href="{{ route('admin.expeditions.create', [$project]) }}"
+                       class="btn btn-primary text-uppercase">
+                        <i class="fas fa-plus-circle"></i> {{ t('New Expedition') }}</a>
                 </div>
             </div>
         </div>

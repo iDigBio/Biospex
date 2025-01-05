@@ -20,12 +20,12 @@ return [
         // Mark which columns should be filled on the model by default.
         // These attributes are prefixed by <attribute name>_.
         'attributes' => [
-            'size'         => true,
+            'size' => true,
             'content_type' => true,
-            'updated_at'   => true,
-            'created_at'   => false,
+            'updated_at' => true,
+            'created_at' => false,
             // JSON information about stored variants.
-            'variants'     => false,
+            'variants' => false,
         ],
 
     ],
@@ -46,7 +46,7 @@ return [
 
         // Per disk, the base URL where attachments are stored at
         'base-urls' => [
-            'public' => config('app.url') . '/storage',
+            'public' => config('app.url').'/storage',
         ],
     ],
 
@@ -71,7 +71,7 @@ return [
 
         // If the structure for variant filenames should differ from the
         // original, it may be defined here.
-        'variant'  => null,
+        'variant' => null,
     ],
 
     /*
@@ -92,7 +92,7 @@ return [
 
         'aliases' => [
             'auto-orient' => ImageAutoOrientStrategy::class,
-            'resize'      => ImageResizeStrategy::class,
+            'resize' => ImageResizeStrategy::class,
         ],
 
         // If no specific variants are set for a clipped file on a Model, these

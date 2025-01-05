@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -21,12 +22,10 @@ namespace App\Services\Actor\Zooniverse;
 
 use App\Jobs\ZooniverseCsvJob;
 use App\Jobs\ZooniverseExportBuildQueueJob;
-use App\Models\Actor;
+use App\Models\ActorExpedition;
 
 /**
  * Class Zooniverse
- *
- * @package App\Services\Actor
  */
 class Zooniverse
 {
@@ -35,7 +34,7 @@ class Zooniverse
      *
      * State = 0: Expedition created.
      * State = 1: Export for Expedition. Set to 1 when export called and performed. @see \App\Console\Commands\ExportQueueCommand
-     * State = 2: Will not run until process started and set to 2, added to WorkflowManager. @see \App\Http\Controllers\Admin\ZooniverseController
+     * State = 2: Will not run until process started and set to 2, added to WorkflowManager. @see \App\Http\Controllers\Admin\WorkflowManagerController
      * State = 3: Zooniverse classifications completed. @see \App\Console\Commands\ZooniverseClassificationCount
      *
      * Stages of export
@@ -45,16 +44,15 @@ class Zooniverse
      * Creating Report // 4
      * Deleting Working Files // 5
      *
-     * @param \App\Models\Actor $actor
      * @throws \Throwable
      */
-    public function actor(Actor $actor): void
+    public function process(ActorExpedition $actorExpedition): void
     {
-        if ($actor->pivot->state === 1) {
+        if ($actorExpedition->state === 1) {
             // @see \App\Console\Commands\ExportQueueCommand
-            ZooniverseExportBuildQueueJob::dispatch($actor);
-        } elseif ($actor->pivot->state === 2) {
-            ZooniverseCsvJob::dispatch($actor->pivot->expedition_id);
+            ZooniverseExportBuildQueueJob::dispatch($actorExpedition);
+        } elseif ($actorExpedition->state === 2 && config('zooniverse.enabled')) {
+            ZooniverseCsvJob::dispatch($actorExpedition->expedition_id);
         }
     }
 }

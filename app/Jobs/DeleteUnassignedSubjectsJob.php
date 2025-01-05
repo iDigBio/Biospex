@@ -16,90 +16,75 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Jobs;
 
+use App\Models\Project;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Repositories\SubjectRepository;
-use Exception;
+use App\Services\Subject\SubjectService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class DeleteUnassignedSubjectsJob
- *
- * @package App\Jobs
  */
 class DeleteUnassignedSubjectsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var int
-     */
-    private int $projectId;
-
-    /**
-     * @var \App\Models\User
-     */
-    private User $user;
-
-    /**
      * Create a new job instance.
-     *
-     * @param \App\Models\User $user
-     * @param int $projectId
      */
-    public function __construct(User $user, int $projectId)
+    public function __construct(protected User $user, protected Project $project)
     {
-        $this->user = $user;
-        $this->projectId = $projectId;
+        $this->user = $user->withoutRelations();
+        $this->project = $project->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 
     /**
      * Execute the job.
-     *
-     * @param \App\Repositories\SubjectRepository $subjectRepo
-     * @return void
      */
-    public function handle(SubjectRepository $subjectRepo): void
+    public function handle(SubjectService $subjectService): void
     {
-        try {
-            $cursor = $subjectRepo->deleteUnassignedByProject($this->projectId);
-            $cursor->each(function($subject) {
-                $subject->delete();
-            });
+        $cursor = $subjectService->deleteUnassignedByProject($this->project->id);
+        $cursor->each(function ($subject) {
+            $subject->delete();
+        });
 
-            $attributes = [
-                'subject' => t('Delete Unassigned Subjects Complete'),
-                'html'    => [
-                    t('All unassigned subjects for Project Id %s have been deleted.', $this->projectId)
-                ]
-            ];
+        $attributes = [
+            'subject' => t('Delete Unassigned Subjects Complete'),
+            'html' => [
+                t('All unassigned subjects for Project Id %s have been deleted.', $this->project->id),
+            ],
+        ];
 
-            $this->user->notify(new Generic($attributes));
+        $this->user->notify(new Generic($attributes));
 
-            $this->delete();
-        }
-        catch (Exception $e) {
-            $attributes = [
-                'subject' => t('Delete Unassigned Subjects Error'),
-                'html'    => [
-                    t('Error: Could not delete unassigned subjects for Project Id %s.', $this->projectId),
-                    t('An error occurred while importing the Darwin Core Archive.'),
-                    t('File: %s', $e->getFile()),
-                    t('Line: %s', $e->getLine()),
-                    t('Message: %s', $e->getMessage()),
-                    t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
-                ],
-            ];
-            $this->user->notify(new Generic($attributes, true));
+        $this->delete();
+    }
 
-            $this->delete();
-        }
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        $attributes = [
+            'subject' => t('Delete Unassigned Subjects Error'),
+            'html' => [
+                t('Error: Could not delete unassigned subjects for Project Id %s.', $this->project->id),
+                t('An error occurred while importing the Darwin Core Archive.'),
+                t('File: %s', $throwable->getFile()),
+                t('Line: %s', $throwable->getLine()),
+                t('Message: %s', $throwable->getMessage()),
+                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+            ],
+        ];
+        $this->user->notify(new Generic($attributes, true));
     }
 }

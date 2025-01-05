@@ -19,102 +19,86 @@
 
 namespace App\Policies;
 
+use App\Models\Group;
+use App\Models\User;
+
 /**
  * Class GroupPolicy
- *
- * @package App\Policies
  */
 class GroupPolicy
 {
     /**
      * Allow admins.
-     *
-     * @param $user
-     * @return bool|null
      */
-    public function before($user)
+    public function before(User $user, string $ability): ?bool
     {
-        return $user->isAdmin() ? true : null;
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        return null;
     }
 
     /**
      * Is group owner.
-     *
-     * @param $user
-     * @param $group
-     * @return bool
      */
-    public function isOwner($user, $group)
+    public function isOwner(User $user, Group $group): bool
     {
         return $user->id === $group->user_id;
     }
 
     /**
      * Check if user can create group
-     *
-     * @param $user
-     * @return bool
      */
-    public function create($user)
+    public function create(User $user, Group $group): bool
     {
         return true;
     }
 
     /**
      * Check if user can store group
-     *
-     * @param $user
-     * @return bool
      */
-    public function store($user)
+    public function store(User $user, Group $group): bool
+    {
+        return true;
+    }
+
+    /**
+     * Check if user can store group
+     */
+    public function update(User $user, Group $group): bool
     {
         return true;
     }
 
     /**
      * Check if user can read group.
-     *
-     * @param $user
-     * @param $group
-     * @return bool|string
      */
-    public function read($user, $group)
+    public function read(User $user, Group $group): ?true
     {
         return $user->hasGroup($group) ? true : null;
     }
 
     /**
      * Check if user can read project for this group.
-     *
-     * @param $user
-     * @param $group
-     * @return bool|null
      */
-    public function readProject($user, $group)
+    public function readProject(User $user, Group $group): bool
     {
         return $user->hasGroup($group);
     }
 
     /**
      * Check if user can create project in group.
-     *
-     * @param $user
-     * @param $group
-     * @return bool|null
      */
-    public function createProject($user, $group)
+    public function createProject(User $user, Group $group): bool
     {
         return $user->hasGroup($group);
     }
 
     /**
      * Check if user can create project in group.
-     *
-     * @param $user
-     * @param $group
-     * @return bool|null
      */
-    public function updateProject($user, $group)
+    public function updateProject(User $user, Group $group): bool
     {
         return $user->hasGroup($group);
     }

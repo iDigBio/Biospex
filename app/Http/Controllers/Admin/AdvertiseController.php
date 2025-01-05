@@ -20,37 +20,30 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\ProjectRepository;
-use Illuminate\Contracts\Routing\ResponseFactory;
+use App\Models\Project;
+use App\Services\Permission\CheckPermission;
+use Redirect;
+use Response;
 
 /**
  * Class AdvertiseController
- *
- * @package App\Http\Controllers\Admin
  */
 class AdvertiseController extends Controller
 {
-
     /**
      * Show advertise page.
-     *
-     * @param \Illuminate\Contracts\Routing\ResponseFactory $response
-     * @param \App\Repositories\ProjectRepository $projectRepo
-     * @param $projectId
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function index(ResponseFactory $response, ProjectRepository $projectRepo, $projectId)
+    public function __invoke(Project $project): \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
     {
-        $project = $projectRepo->findWith($projectId, ['group']);
+        $project->load('group');
 
-        if ( ! $this->checkPermissions('readProject', $project->group))
-        {
-            return \Redirect::route('webauth.projects.index');
+        if (! CheckPermission::handle('readProject', $project->group)) {
+            return Redirect::route('webauth.projects.index');
         }
 
-        return $response->make(json_encode($project->advertise, JSON_UNESCAPED_SLASHES), '200', [
-            'Content-Type'        => 'application/json',
-            'Content-Disposition' => 'attachment; filename="' . $project->uuid . '.json"'
+        return Response::make(json_encode($project->advertise, JSON_UNESCAPED_SLASHES), '200', [
+            'Content-Type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="'.$project->uuid.'.json"',
         ]);
     }
 }
