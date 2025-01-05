@@ -2,8 +2,7 @@ import:
   - recipe/laravel.php
   - contrib/php-fpm.php
   - contrib/yarn.php
-  - deploy/artisan.php
-  - deploy/server-commands.php
+  - deploy/custom.php
 
 config:
   repository: 'https://github.com/iDigBio/Biospex.git'
@@ -25,20 +24,29 @@ hosts:
   #    branch: 'development'
   staging:
     hostname: '3.142.169.134'
-    deploy_path: '{{base_deploy_path}}/staging.biospex'
+    deploy_path: '{{base_deploy_path}}/stage.biospex'
     branch: 'Biospex-296=Deployer'
 
 tasks:
   deploy:
     - deploy:prepare
+    - upload:env
     - deploy:vendors
-    #- artisan:storage:link
-    #- artisan:view:cache
-    #- artisan:config:cache
-    #- artisan:optimize
-    - yarn:install:prod
+    - artisan:storage:link
+    - artisan:cache:clear
+    - artisan:config:clear
+    - artisan:event:clear
+    - artisan:optimize:clear
+    - artisan:route:clear
+    - artisan:view:clear
+    - artisan:config:cache
+    - artisan:route:cache
+    - artisan:view:cache
+    - artisan:event:cache
+    - artisan:optimize
     #- artisan:migrate
     #- artisan:update:queries
+    - yarn:install:prod
     - artisan:deploy:files
     - set:permissions
     - deploy:publish

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -28,3 +29,25 @@ task('artisan:deploy:files', function () {
     cd('{{release_or_current_path}}');
     run('php artisan deploy:files');
 })->desc('Running update queries...');
+
+task('set:permissions', function () {
+    run('sudo chown -R ubuntu.www-data {{deploy_path}}');
+    run('sudo truncate -s 0 {{release_or_current_path}}/storage/logs/laravel.log');
+})->desc('Setting permissions...');
+
+task('supervisor:reload', function () {
+    run('sudo supervisorctl reread');
+    run('sudo supervisorctl update');
+    run('sudo systemctl restart supervisor.service');
+    run('sudo service beanstalkd restart');
+})->desc('Reloading Supervisor...');
+
+task('upload:env', function () {
+    $alias = currentHost()->get('alias');
+    $file = match ($alias) {
+        'production' => '.env.aws.prod',
+        'development' => '.env.aws.dev',
+        'staging' => '.env.aws.stage',
+    };
+    upload($file, '{{deploy_path}}/shared/.env');
+});
