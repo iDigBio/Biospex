@@ -39,7 +39,6 @@ task('supervisor:reload', function () {
     run('sudo supervisorctl reread');
     run('sudo supervisorctl update');
     run('sudo systemctl restart supervisor.service');
-    run('sudo service beanstalkd restart');
 })->desc('Reloading Supervisor...');
 
 task('upload:env', function () {
