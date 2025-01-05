@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "639d5ec39e24df4252ab25ae48ec4278",
+    "content-hash": "0555dbbed58d0ede0c5f5af5d34ca5dd",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -4972,21 +4972,21 @@
         },
         {
             "name": "pda/pheanstalk",
-            "version": "v5.0.9",
+            "version": "v6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pheanstalk/pheanstalk.git",
-                "reference": "5deb29e4fc9b738bed0ae7b60dfeab4fd49abb16"
+                "reference": "d073283f9d276e16f965415944df018dfbb833c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pheanstalk/pheanstalk/zipball/5deb29e4fc9b738bed0ae7b60dfeab4fd49abb16",
-                "reference": "5deb29e4fc9b738bed0ae7b60dfeab4fd49abb16",
+                "url": "https://api.github.com/repos/pheanstalk/pheanstalk/zipball/d073283f9d276e16f965415944df018dfbb833c3",
+                "reference": "d073283f9d276e16f965415944df018dfbb833c3",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": ">=8.1.0"
+                "php": ">=8.3.0"
             },
             "require-dev": {
                 "captainhook/plugin-composer": "^5.3",
@@ -4994,10 +4994,9 @@
                 "phpstan/phpstan": "^1",
                 "phpstan/phpstan-phpunit": "^1.0",
                 "phpstan/phpstan-strict-rules": "^1.1",
-                "phpunit/phpunit": "^10",
+                "phpunit/phpunit": "^11",
                 "ramsey/conventional-commits": "^1.2",
-                "symplify/easy-coding-standard": "^12",
-                "vimeo/psalm": "^5"
+                "symplify/easy-coding-standard": "^12"
             },
             "suggest": {
                 "ext-sockets": "Socket implementation works best for long running processes"
@@ -5032,9 +5031,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pheanstalk/pheanstalk/issues",
-                "source": "https://github.com/pheanstalk/pheanstalk/tree/v5.0.9"
+                "source": "https://github.com/pheanstalk/pheanstalk/tree/v6.0.0"
             },
-            "time": "2025-01-02T16:22:04+00:00"
+            "time": "2025-01-02T16:25:08+00:00"
         },
         {
             "name": "phpoption/phpoption",

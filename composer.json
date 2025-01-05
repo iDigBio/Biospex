@@ -33,7 +33,7 @@
     "mongodb/laravel-mongodb": "^5.0",
     "neitanod/forceutf8": "~2.0",
     "outl1ne/nova-sortable": "^3.4",
-    "pda/pheanstalk": "^5.0",
+    "pda/pheanstalk": "^6.0",
     "pusher/pusher-php-server": "^7.0",
     "ramsey/uuid": "^4.1",
     "spatie/eloquent-sortable": "^4.0",
@@ -51,7 +51,7 @@
     "pestphp/pest": "^v3.0",
     "pestphp/pest-plugin-faker": "^3.0",
     "pestphp/pest-plugin-laravel": "^3.0",
-    "phpunit/phpunit": "^11.0.0",
+    "phpunit/phpunit": "^11.0",
     "spatie/laravel-ignition": "^2.0"
   },
   "repositories": {
