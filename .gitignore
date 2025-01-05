@@ -44,3 +44,5 @@ panoptes-pusher.js
 /.env
 /.env.*
 hooks
+deploy.yaml
+deploy

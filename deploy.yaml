@@ -21,11 +21,7 @@ hosts:
   development:
     hostname: '3.142.169.134'
     deploy_path: '{{base_deploy_path}}/dev.biospex'
-    branch: 'master-refactor'
-  staging:
-    hostname: '3.142.169.134'
-    deploy_path: '{{base_deploy_path}}/stage.biospex'
-    branch: 'master-refactor'
+    branch: 'development'
 
 tasks:
   deploy:
