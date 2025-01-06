@@ -30,7 +30,7 @@ class AppCommand extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'test:test';
+    protected $signature = 'app:test';
 
     /**
      * The console command description.
