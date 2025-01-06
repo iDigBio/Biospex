@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -34,7 +35,7 @@ class AppFileDeployment extends Command
      *
      * @var string
      */
-    protected $signature = 'deploy:files';
+    protected $signature = 'app:deploy-files';
 
     /**
      * The console command description.
