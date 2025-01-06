@@ -33,7 +33,7 @@ class UpdateQueries extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'update:queries';
+    protected $signature = 'app:update-queries';
 
     /**
      * The console command description.
