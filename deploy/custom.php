@@ -35,19 +35,13 @@ task('artisan:app:deploy-files', function () {
 desc('Setting permissions...');
 task('set:permissions', function () {
     run('sudo chown -R ubuntu.www-data {{deploy_path}}');
-    run('sudo truncate -s 0 {{release_or_current_path}}/storage/logs/laravel.log');
+    run('sudo truncate -s 0 {{release_or_current_path}}/storage/logs/*.log');
 });
 
 desc('Install project dependencies');
 task('yarn:run-install', function () {
     cd('{{release_path}}');
     run('yarn install --ignore-engines');
-});
-
-desc('Build project');
-task('npm:run-build', function () {
-    cd('{{release_path}}');
-    run('npm run build');
 });
 
 desc('Upload env file depending on the host');
@@ -58,4 +52,12 @@ task('upload:env', function () {
         'development' => '.env.aws.dev'
     };
     upload($file, '{{deploy_path}}/shared/.env');
+});
+
+desc('Reload Supervisor');
+task('supervisor:reload', function () {
+    cd('{{release_path}}');
+    run('sudo supervisorctl reread');
+    run('sudo supervisorctl update');
+    run('sudo supervisorctl restart supervisor.service');
 });
