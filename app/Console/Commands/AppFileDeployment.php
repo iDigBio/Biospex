@@ -75,7 +75,7 @@ class AppFileDeployment extends Command
         parent::__construct();
 
         $this->resPath = base_path('resources/');
-        $this->supPath = Storage::path('supervisord');
+        $this->supPath = Storage::path('supervisor');
         $this->setAppsConfigs();
     }
 
@@ -84,7 +84,7 @@ class AppFileDeployment extends Command
      */
     public function handle()
     {
-        $supFiles = File::files($this->resPath.'files/supervisord');
+        $supFiles = File::files($this->resPath.'files/supervisor');
         collect($supFiles)->map(function ($file) {
             $string = File::get($file);
             $this->apps->each(function ($search) use (&$string) {
