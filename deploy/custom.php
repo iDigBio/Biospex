@@ -40,7 +40,7 @@ task('set:permissions', function () {
 
 desc('Install project dependencies');
 task('yarn:run-install', function () {
-    cd('{{release_path}}');
+    cd('{{release_or_current_path}}');
     run('yarn install --ignore-engines');
 });
 
@@ -56,8 +56,8 @@ task('upload:env', function () {
 
 desc('Reload Supervisor');
 task('supervisor:reload', function () {
-    cd('{{release_path}}');
     run('sudo supervisorctl reread');
     run('sudo supervisorctl update');
-    run('sudo supervisorctl restart supervisor.service');
+    run('sudo systemctl restart supervisor');
 });
+
