@@ -53,11 +53,6 @@ class AppFileDeployment extends Command
     /**
      * @var string
      */
-    private $appPath;
-
-    /**
-     * @var string
-     */
     private $storagePath;
 
     /**
@@ -80,8 +75,6 @@ class AppFileDeployment extends Command
         parent::__construct();
 
         $this->resPath = base_path('resources/');
-        $this->appPath = base_path();
-        $this->storagePath = Storage::path('');
         $this->supPath = Storage::path('supervisord');
         $this->setAppsConfigs();
     }
@@ -110,7 +103,7 @@ class AppFileDeployment extends Command
      */
     private function configureReplace($search)
     {
-        if ($search === 'APP_URL' || $search === 'APP_ENV') {
+        if ($search === 'APP_URL' || $search === 'APP_ENV' || $search === 'APP_DOMAIN') {
             return config(str_replace('_', '.', strtolower($search)));
         }
 
@@ -130,6 +123,7 @@ class AppFileDeployment extends Command
     {
         $this->apps = collect([
             'APP_ENV',
+            'APP_DOMAIN',
             'SERVER_USER',
             'CURRENT_PATH',
             'NUM_PROCS',

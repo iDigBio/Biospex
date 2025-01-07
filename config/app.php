@@ -2,6 +2,8 @@
 
 return [
 
+    'domain' => env('APP_DOMAIN', 'rapid.biospex.org'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name
