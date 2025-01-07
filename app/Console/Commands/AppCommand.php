@@ -32,7 +32,7 @@ class AppCommand extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'test:test {ids?}';
+    protected $signature = 'app:test {ids?}';
 
     /**
      * The console command description.
