@@ -33,10 +33,10 @@ set('writable_mode', 'chmod');
 set('keep_releases', 3);
 
 // Hosts
-/*host('production')
+host('production')
     ->setHostname('3.142.169.134')
     ->setDeployPath('{{base_path}}/biospex')
-    ->set('branch', 'master');*/
+    ->set('branch', 'master');
 
 host('development')
     ->setHostname('3.142.169.134')
@@ -47,14 +47,14 @@ host('development')
 desc('Deploys your project');
 task('deploy', [
     'deploy:prepare',
+    'upload:env',
     'deploy:vendors',
     'artisan:storage:link',
-    'upload:env',
     'yarn:run-install',
     'artisan:nova:publish',
     'artisan:app:deploy-files',
-    'artisan:migrate',
-    'artisan:app:update-queries',
+    // 'artisan:migrate',
+    // 'artisan:app:update-queries',
     'artisan:cache:clear',
     'artisan:config:clear',
     'artisan:event:clear',
@@ -67,7 +67,7 @@ task('deploy', [
     'artisan:event:cache',
     'artisan:optimize',
     'set:permissions',
-    'supervisor:reload',
+    // 'supervisor:reload',
     'artisan:queue:restart',
     'deploy:publish',
 ]);

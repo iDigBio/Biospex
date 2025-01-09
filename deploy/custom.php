@@ -60,4 +60,3 @@ task('supervisor:reload', function () {
     run('sudo supervisorctl update');
     run('sudo systemctl restart supervisor');
 });
-
