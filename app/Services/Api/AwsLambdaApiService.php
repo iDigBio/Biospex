@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2022. Biospex
  * biospex@gmail.com
@@ -19,6 +20,7 @@
 
 namespace App\Services\Api;
 
+use Aws\Credentials\CredentialProvider;
 use Aws\Lambda\LambdaClient;
 
 class AwsLambdaApiService
@@ -30,11 +32,9 @@ class AwsLambdaApiService
      */
     public function __construct()
     {
+        $provider = CredentialProvider::defaultProvider();
         $this->lambdaClient = new LambdaClient([
-            'credentials' => [
-                'key' => config('config.aws.access_key'),
-                'secret' => config('config.aws.secret_key'),
-            ],
+            'credentials' => $provider,
             'version' => 'latest',
             'region' => config('config.aws.default_region'),
         ]);
