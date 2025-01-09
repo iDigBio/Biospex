@@ -53,6 +53,8 @@ task('deploy', [
     'yarn:run-install',
     'artisan:nova:publish',
     'artisan:app:deploy-files',
+    'artisan:migrate',
+    'artisan:app:update-queries',
     'artisan:cache:clear',
     'artisan:config:clear',
     'artisan:event:clear',
@@ -64,12 +66,10 @@ task('deploy', [
     'artisan:view:cache',
     'artisan:event:cache',
     'artisan:optimize',
-    'artisan:migrate',
-    'artisan:app:update-queries',
     'set:permissions',
-    'deploy:publish',
     'supervisor:reload',
     'artisan:queue:restart',
+    'deploy:publish',
 ]);
 
 // Hooks
