@@ -61,7 +61,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            //'throttle:60,1',
+            // 'throttle:60,1',
             'bindings',
         ],
     ];
@@ -84,6 +84,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
-        //'authenticate-bingoUser' => \App\Http\Middleware\AuthenticateBingoUser::class,
+        // 'authenticate-bingoUser' => \App\Http\Middleware\AuthenticateBingoUser::class,
     ];
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -87,7 +88,7 @@ class AppLambdaCommand extends Command
         $result = $this->awsLambdaApiService->lambdaInvoke(config('config.aws.lambda_export_function'), $attributes);
         echo $result['Payload']->getContents();
 
-        //$this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_export_function'), $attributes);
+        // $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_export_function'), $attributes);
     }
 
     private function explainTest(): void
@@ -98,8 +99,8 @@ class AppLambdaCommand extends Command
             'explanations' => true,
         ];
 
-        //$result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
-        //echo $result['Payload']->getContents();
+        // $result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
+        // echo $result['Payload']->getContents();
 
         $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_reconciliation_function'), $attributes);
     }
@@ -127,10 +128,10 @@ class AppLambdaCommand extends Command
             'key' => config('zooniverse.directory.lambda-ocr').'/615da36c65b16554e4781ed9.txt',
             'file' => 999,
             'uri' => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
-        ]; //https://sernecportal.org/imglib/seinet/sernec/FTU/FTU0016/FTU0016693.jpg
+        ]; // https://sernecportal.org/imglib/seinet/sernec/FTU/FTU0016/FTU0016693.jpg
 
         $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), $attributes);
-        //$result = $this->awsLambdaApiService->lambdaInvoke('tesseractOcr', $attributes);
-        //echo $result['Payload']->getContents();
+        // $result = $this->awsLambdaApiService->lambdaInvoke('tesseractOcr', $attributes);
+        // echo $result['Payload']->getContents();
     }
 }

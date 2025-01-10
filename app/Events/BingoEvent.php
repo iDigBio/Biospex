@@ -60,6 +60,6 @@ class BingoEvent implements ShouldBroadcast
     public function broadcastOn(): Channel
     {
         return new Channel(config('config.poll_bingo_channel').'.'.$this->bingo->uuid);
-        //return new PresenceChannel(config('config.poll_bingo_channel').'.'.$this->bingo->uuid);
+        // return new PresenceChannel(config('config.poll_bingo_channel').'.'.$this->bingo->uuid);
     }
 }

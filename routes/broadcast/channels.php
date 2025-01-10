@@ -22,7 +22,7 @@ Broadcast::routes([
 
 Broadcast::channel(config('config.poll_bingo_channel').'.{bingo}', function (BingoUser $bingoUser) {
     return true;
-    //return ['id' => $bingoUser->id, 'uuid' => $bingoUser->uuid];
+    // return ['id' => $bingoUser->id, 'uuid' => $bingoUser->uuid];
 });
 
 Broadcast::channel(config('config.poll_ocr_channel'), function () {

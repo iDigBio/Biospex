@@ -227,7 +227,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        //### Packages
+        // ### Packages
         'CountHelper' => CountHelper::class,
         'DateHelper' => DateHelper::class,
         'TranscriptionMapHelper' => TranscriptionMapHelper::class,

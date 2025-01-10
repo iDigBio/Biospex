@@ -95,7 +95,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
                 'medium' => config('config.missing_expedition_logo'),
             ],
         ]);
-        //$this->hasAttachedFile('logo', ['resize' => ['dimensions' => '318x208']]);
+        // $this->hasAttachedFile('logo', ['resize' => ['dimensions' => '318x208']]);
 
         parent::__construct($attributes);
     }

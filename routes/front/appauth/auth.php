@@ -1,4 +1,5 @@
 <?php
+
 /*
 // Begin AuthController
 Route::get('/login')->uses('LoginController@showLoginForm')->name('app.get.login');

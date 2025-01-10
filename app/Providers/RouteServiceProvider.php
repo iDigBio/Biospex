@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -67,7 +68,7 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware([
                 'api',
-                //'auth:sanctum',
+                // 'auth:sanctum',
             ])->group(function () {
                 $this->require_files('routes/api/v0');
             });

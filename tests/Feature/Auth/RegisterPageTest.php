@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -63,7 +64,7 @@ it('can not register new user with invalid recaptcha', function () {
         'timezone' => $timezone,
         'g-recaptcha-response' => 'VALID_RESPONSE',
     ])->assertRedirect('/');
-    //->assertSessionHasErrors('g-recaptcha-response');
+    // ->assertSessionHasErrors('g-recaptcha-response');
 
     $this->assertDatabaseMissing('users', [
         'email' => 'test@yahoo.com',

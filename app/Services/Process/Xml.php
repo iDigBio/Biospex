@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -104,7 +105,7 @@ class Xml
     {
         $array[$this->xml->documentElement->tagName] = self::convert($this->xml->documentElement);
 
-        //$this->xml = null;    // clear the xml node in the class for 2nd time use.
+        // $this->xml = null;    // clear the xml node in the class for 2nd time use.
         return $array;
     }
 
@@ -142,7 +143,7 @@ class Xml
                         }
                         $output[$t][] = $v;
                     } else {
-                        //check if it is not an empty text node
+                        // check if it is not an empty text node
                         if ($v !== '') {
                             $output = $v;
                         }
@@ -157,7 +158,7 @@ class Xml
                         }
                     }
                     if (empty($output)) {
-                        //for empty nodes
+                        // for empty nodes
                         $output = '';
                     }
                 }

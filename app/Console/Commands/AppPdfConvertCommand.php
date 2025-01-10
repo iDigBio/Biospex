@@ -59,11 +59,11 @@ class AppPdfConvertCommand extends Command
      */
     public function handle()
     {
-        //$this->convertPdf();
-        //echo "complete" . PHP_EOL;
-        //$this->renameFiles(); 5:45  1.046    1256 takes 20 minutes, 30 hours for 100K images
-        //$this->renameCsv('fossils/mammal/images.csv','fossils/mammal/imagesNew.csv');
-        //$this->renameCsv('fossils/bird/images.csv','fossils/bird/imagesNew.csv');
+        // $this->convertPdf();
+        // echo "complete" . PHP_EOL;
+        // $this->renameFiles(); 5:45  1.046    1256 takes 20 minutes, 30 hours for 100K images
+        // $this->renameCsv('fossils/mammal/images.csv','fossils/mammal/imagesNew.csv');
+        // $this->renameCsv('fossils/bird/images.csv','fossils/bird/imagesNew.csv');
     }
 
     public function convertPdf()

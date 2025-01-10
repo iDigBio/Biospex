@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -34,7 +35,7 @@ Route::resource('expeditions', ExpeditionController::class)->except(['create', '
 Route::get('expeditions/{project}/create', [ExpeditionController::class, 'create'])->name('admin.expeditions.create');
 Route::post('expeditions/{project}/store', [ExpeditionController::class, 'store'])->name('admin.expeditions.store');
 
-//# New
+// # New
 Route::get('expeditions/{expedition}/clone', ExpeditionCloneController::class)->name('admin.expeditions.clone');
 Route::get('expeditions/{expedition}/tools', ExpeditionToolController::class)->name('admin.expeditions.tools');
 Route::post('expeditions/sort', ExpeditionSortController::class)->name('admin.expeditions.sort');

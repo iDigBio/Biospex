@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -60,7 +61,7 @@ class PusherTranscriptionsController extends ApiController
         $data = $this->listApiDashboard($request);
 
         $count = $request->has('rows') ? (int) $request->input('rows') : 200;
-        $count = $count > 500 ? 200 : $count;                                              //count
+        $count = $count > 500 ? 200 : $count;                                              // count
         $current = $request->has('start') ? (int) $request->input('start') : 0; // current
 
         $next = (int) ($current + $count); // current + count
@@ -152,7 +153,7 @@ class PusherTranscriptionsController extends ApiController
     private function listApiDashboard(Request $request)
     {
         $count = $request->has('rows') ? (int) $request->input('rows') : 200;
-        $count = $count > 500 ? 200 : $count;                                              //count
+        $count = $count > 500 ? 200 : $count;                                              // count
         $current = $request->has('start') ? (int) $request->input('start') : 0; // current
 
         return PusherTranscription::where(function ($query) use ($request) {

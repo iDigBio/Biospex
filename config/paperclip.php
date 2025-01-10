@@ -42,7 +42,7 @@ return [
     'storage' => [
 
         // The Laravel storage disk to use.
-        'disk' => 'public', //'paperclip',
+        'disk' => 'public', // 'paperclip',
 
         // Per disk, the base URL where attachments are stored at
         'base-urls' => [
@@ -66,7 +66,7 @@ return [
 
         // The path to the original file to be interpolated. This will also\
         // be used for variant paths if the variant key is unset.
-        //'original' => ':class/:attachment/:id_partition/:attribute/:variant/:filename',
+        // 'original' => ':class/:attachment/:id_partition/:attribute/:variant/:filename',
         'original' => '/paperclip/:class/:attachment/:id_partition/:variant/:filename',
 
         // If the structure for variant filenames should differ from the

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -90,7 +91,7 @@ class Thumbnail
      */
     private function setImageProcessFile(): void
     {
-        $this->imageProcessFile = config('config.image_process_file'); //image-process.js
+        $this->imageProcessFile = config('config.image_process_file'); // image-process.js
     }
 
     /**

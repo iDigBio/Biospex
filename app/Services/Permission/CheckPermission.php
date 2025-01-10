@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\Session;
 
 class CheckPermission
 {
-    //use AuthorizesRequests;
+    // use AuthorizesRequests;
     /**
      * Check if the user can update the user.
      */
