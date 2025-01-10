@@ -39,9 +39,9 @@ host('rapid')
 desc('Deploying project');
 task('deploy', [
     'deploy:prepare',
+    'upload:env',
     'deploy:vendors',
     'artisan:storage:link',
-    'upload:env',
     'yarn:run-install',
     'artisan:app:deploy-files',
     'artisan:cache:clear',
