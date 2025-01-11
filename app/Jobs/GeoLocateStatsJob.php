@@ -79,7 +79,7 @@ class GeoLocateStatsJob implements ShouldQueue
         GeoLocateDownloadJob::dispatch($this->actorExpedition, $geoLocateCommunity->name, $geoLocateDataSource->data_source);
 
         // If completed and notify user.
-        if ($dataSourceStats['stats']['localityRecords'] === $dataSourceStats['stats']['correctedLocalityRecords']) {
+        if ($dataSourceStats['stats']['correctedLocalityRecords'] >= $dataSourceStats['stats']['localityRecords']) {
             $this->actorExpedition->state = 3;
             $this->actorExpedition->save();
 
