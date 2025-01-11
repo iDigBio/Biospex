@@ -24,6 +24,8 @@ class GeoLocateExport extends BaseMongoModel
 {
     /**
      * Set Collection
+     *
+     * @note CatalogNumber from GeoLocate CSV results equals _id
      */
     protected $table = 'geolocate_exports';
 
