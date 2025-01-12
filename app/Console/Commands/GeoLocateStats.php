@@ -45,9 +45,8 @@ class GeoLocateStats extends Command
      */
     public function handle(): void
     {
-        \Log::info('GeoLocateStats command started');
         $expedition = Expedition::with('geoActorExpedition')->find($this->argument('expeditionId'));
 
-        GeoLocateStatsJob::dispatch($expedition->geoActorExpedition);
+        GeoLocateStatsJob::dispatch($expedition->geoActorExpedition, true);
     }
 }

@@ -42,7 +42,10 @@ class GeoLocateDownloadJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected ActorExpedition $actorExpedition, protected string $community, protected string $dataSource)
+    public function __construct(
+        protected ActorExpedition $actorExpedition,
+        protected string $community,
+        protected string $dataSource)
     {
         $this->onQueue(config('config.queue.geolocate'));
     }
@@ -55,8 +58,6 @@ class GeoLocateDownloadJob implements ShouldQueue
      */
     public function handle(GeoLocateDownloadService $service): void
     {
-        \Log::info('GeoLocateDownloadJob: '.$this->actorExpedition->expedition_id);
-
         // Download kml and csv files.
         collect(['kml', 'csv'])->each(function ($formatType) use ($service) {
             $this->getDownload($service, $formatType);
