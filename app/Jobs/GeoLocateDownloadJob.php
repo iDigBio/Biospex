@@ -55,6 +55,8 @@ class GeoLocateDownloadJob implements ShouldQueue
      */
     public function handle(GeoLocateDownloadService $service): void
     {
+        \Log::info('GeoLocateDownloadJob: '.$this->actorExpedition->expedition_id);
+
         // Download kml and csv files.
         collect(['kml', 'csv'])->each(function ($formatType) use ($service) {
             $this->getDownload($service, $formatType);
