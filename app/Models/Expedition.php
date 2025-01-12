@@ -29,7 +29,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
- * Class Expedition
+ * Class representing an expedition model for the application.
+ * Implements several relationships and utility functions for managing expeditions.
  */
 class Expedition extends BaseEloquentModel implements AttachableInterface
 {
@@ -62,7 +63,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     ];
 
     /**
-     * Get the route key for the model.
+     * Get the route key name for the model.
      */
     public function getRouteKeyName(): string
     {
@@ -70,7 +71,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Model Boot
+     * Boot method to initialize the model's functionality and traits.
      */
     public static function boot(): void
     {
@@ -79,7 +80,10 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Expedition constructor.
+     * Constructor.
+     *
+     * @param  array  $attributes  An array of attributes to initialize the object with.
+     * @return void
      */
     public function __construct(array $attributes = [])
     {
@@ -101,7 +105,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Relation used for wedigbio dashboard.
+     * Dashboard relation.
      */
     public function dashboard(): \MongoDB\Laravel\Relations\HasMany
     {
@@ -109,11 +113,19 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Download relation.
+     * Downloads relation.
      */
     public function downloads(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Download::class);
+    }
+
+    /**
+     * GeoLocateCsvDownload relation.
+     */
+    public function geoLocateCsvDownload(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Download::class)->where('actor_id', config('geolocate.actor_id'))->where('type', 'csv');
     }
 
     /**
