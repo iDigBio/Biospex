@@ -31,7 +31,7 @@ class GeoLocateStats extends Command
      *
      * @var string
      */
-    protected $signature = 'app:geolocatestats {expeditionId}';
+    protected $signature = 'app:geolocate-stats {expeditionId}';
 
     /**
      * The console command description.
