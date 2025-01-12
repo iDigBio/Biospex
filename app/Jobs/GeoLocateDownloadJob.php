@@ -22,6 +22,7 @@ namespace App\Jobs;
 
 use App\Models\ActorExpedition;
 use App\Models\Expedition;
+use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Actor\GeoLocate\GeoLocateDownloadService;
 use Illuminate\Bus\Queueable;
@@ -47,24 +48,28 @@ class GeoLocateDownloadJob implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Manages the download process for multiple format types using the GeoLocateDownloadService
+     * and dispatches the result processing.
      *
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Throwable
+     * @param  GeoLocateDownloadService  $service  An instance of the GeoLocateDownloadService for handling the download operations.
      */
     public function handle(GeoLocateDownloadService $service): void
     {
+        \Log::info('GeoLocateDownloadJob: '.$this->actorExpedition->expedition_id);
+
         // Download kml and csv files.
         collect(['kml', 'csv'])->each(function ($formatType) use ($service) {
             $this->getDownload($service, $formatType);
         });
+
+        GeoLocateResultCsv::dispatch($this->actorExpedition);
     }
 
     /**
-     * Get download.
-     * Download kml and csv files. Format string takes options see: https://coge.geo-locate.org/api/
+     * Handles the download process for a specified format type using the GeoLocateDownloadService.
      *
-     * @throws \Throwable
+     * @param  GeoLocateDownloadService  $service  An instance of the GeoLocateDownloadService to manage the download process.
+     * @param  string  $formatType  The format type of the file to be downloaded (e.g., 'kml').
      */
     private function getDownload(GeoLocateDownloadService $service, string $formatType): void
     {
@@ -75,7 +80,7 @@ class GeoLocateDownloadJob implements ShouldQueue
             $service->downloadFile($this->actorExpedition->expedition_id, $this->community, $this->dataSource);
             $service->saveDownload($this->actorExpedition);
         } catch (Throwable $throwable) {
-            $expedition = Expedition::with('project.group.owner')->find($this->actorExpedition->expedition_id);
+            $expedition = Expedition::find($this->actorExpedition->expedition_id);
             $subject = t('GeoLocate :format download for :title failed.', [':format' => $formatType, ':title' => $expedition->title]);
             $attributes = [
                 'subject' => $subject,
@@ -87,7 +92,8 @@ class GeoLocateDownloadJob implements ShouldQueue
                 ],
             ];
 
-            $expedition->project->group->owner->notify(new Generic($attributes, true));
+            $user = User::find(config('config.admin.user_id'));
+            $user->notify(new Generic($attributes));
         }
     }
 }

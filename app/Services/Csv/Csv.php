@@ -118,11 +118,10 @@ class Csv
     /**
      * Set header offset.
      *
-     * @return void
      *
      * @throws \League\Csv\Exception
      */
-    public function setHeaderOffset(int $offset = 0)
+    public function setHeaderOffset(int $offset = 0): void
     {
         $this->reader->setHeaderOffset($offset);
     }
@@ -131,6 +130,8 @@ class Csv
      * Return header row.
      *
      * @return string[]
+     *
+     * @throws \League\Csv\SyntaxError
      */
     public function getHeader(): array
     {
@@ -139,6 +140,8 @@ class Csv
 
     /**
      * Fetch all rows.
+     *
+     * @throws \League\Csv\Exception
      */
     public function getRecords(array $header = []): \Iterator
     {
@@ -148,9 +151,9 @@ class Csv
     /**
      * Insert one row.
      *
-     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\CannotInsertRecord|\League\Csv\Exception
      */
-    public function insertOne($row)
+    public function insertOne($row): void
     {
         $this->writer->insertOne($row);
     }
@@ -160,7 +163,7 @@ class Csv
      *
      * @throws \TypeError
      */
-    public function insertAll($rows)
+    public function insertAll($rows): void
     {
         $this->writer->insertAll($rows);
     }

@@ -21,6 +21,7 @@
 namespace App\Jobs;
 
 use App\Models\ActorExpedition;
+use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Actor\GeoLocate\GeoLocateStatService;
 use Illuminate\Bus\Queueable;
@@ -30,35 +31,51 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Throwable;
 
+/**
+ * Job class responsible for processing GeoLocate statistics for an actor expedition.
+ * This includes managing community and data source statistics, updating relevant records,
+ * dispatching file downloads, and notifying the user upon completion or failure.
+ */
 class GeoLocateStatsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * Create a new job instance.
+     * Constructor method for initializing the ActorExpedition instance and setting up the queue.
+     *
+     * @param  ActorExpedition  $actorExpedition  The actor expedition instance to be processed.
+     * @return void
      */
-    public function __construct(protected ActorExpedition $actorExpedition, protected bool $refresh = false)
+    public function __construct(protected ActorExpedition $actorExpedition)
     {
         $this->actorExpedition = $actorExpedition->withoutRelations();
         $this->onQueue(config('config.queue.geolocate'));
+        \Log::info('GeoLocateStatsJob instantiated');
     }
 
     /**
-     * Execute the job.
+     * Handles the GeoLocate process, including fetching and updating data for GeoLocate communities and data sources.
+     * It also dispatches a download job for KML and CSV files and notifies the user upon completion.
      *
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @param  GeoLocateStatService  $geoLocateStatService  The service used for processing GeoLocate statistics and updates.
      */
     public function handle(GeoLocateStatService $geoLocateStatService): void
     {
+        \Log::info('GeoLocateStatsJob handle');
+
+        /*
         $this->actorExpedition->load(['expedition.project.group.owner', 'expedition.geoLocateDataSource.geolocateCommunity']);
 
         $expedition = $this->actorExpedition->expedition;
         $geoLocateDataSource = $expedition->geoLocateDataSource;
         $geoLocateCommunity = $expedition->geoLocateDataSource->geoLocateCommunity;
 
-        if (! $this->refresh && $geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
+        if ($geoLocateDataSource->updated_at->diffInDays(now()) < 2) {
+            \Log::info('GeoLocateStatsJob: '.$this->actorExpedition->id.' skipped');
+
             return;
         }
+
 
         // get community stats
         $communityStats = $geoLocateStatService->getCommunityDataSource($geoLocateCommunity->name);
@@ -93,13 +110,17 @@ class GeoLocateStatsJob implements ShouldQueue
 
             $expedition->project->group->owner->notify(new Generic($attributes));
         }
+        */
     }
 
     /**
-     * Handle a job failure.
+     * Handles the failed execution of the job and sends a notification with error details.
+     *
+     * @param  Throwable  $throwable  The exception instance containing the error details.
      */
     public function failed(Throwable $throwable): void
     {
+        \Log::error('GeoLocateStatsJob failed: '.$this->actorExpedition->id);
         $subject = t('GeoLocate stats for %s failed.', $this->actorExpedition->expedition->title);
         $attributes = [
             'subject' => $subject,
@@ -111,6 +132,7 @@ class GeoLocateStatsJob implements ShouldQueue
             ],
         ];
 
-        $this->actorExpedition->expedition->project->group->owner->notify(new Generic($attributes, true));
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }
