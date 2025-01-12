@@ -63,7 +63,7 @@ class GeoLocateDownloadJob implements ShouldQueue
             $this->getDownload($service, $formatType);
         });
 
-        GeoLocateResultCsv::dispatch($this->actorExpedition);
+        GeoLocateResultCsvJob::dispatch($this->actorExpedition);
     }
 
     /**

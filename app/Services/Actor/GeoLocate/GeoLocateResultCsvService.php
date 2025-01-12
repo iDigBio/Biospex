@@ -20,6 +20,7 @@
 
 namespace App\Services\Actor\GeoLocate;
 
+use App\Models\ActorExpedition;
 use App\Models\Download;
 use App\Models\GeoLocateExport;
 use App\Services\Csv\AwsS3CsvService;
@@ -33,6 +34,29 @@ use App\Services\Csv\AwsS3CsvService;
  */
 class GeoLocateResultCsvService
 {
+    /**
+     * Refers to the file path or location from which data or a file is being sourced or read.
+     */
+    public string $sourceFile;
+
+    /**
+     * Represents the target file path or location where data or a file will be saved.
+     */
+    protected string $destinationFile;
+
+    /**
+     * Defines the header structure of a GeoCSV file, typically containing column names or field identifiers.
+     */
+    protected array $geoCsvHeader;
+
+    /**
+     * Initializes the class with required service dependencies.
+     *
+     * @param  AwsS3CsvService  $awsS3CsvService  The service for handling AWS S3 CSV operations.
+     * @param  GeoLocateExport  $geoLocateExport  The service responsible for geolocation export functionality.
+     * @param  Download  $download  The service for handling file download operations.
+     * @return void
+     */
     public function __construct(
         protected AwsS3CsvService $awsS3CsvService,
         protected GeoLocateExport $geoLocateExport,
@@ -40,55 +64,84 @@ class GeoLocateResultCsvService
     ) {}
 
     /**
-     * Processes the download of a CSV file from an S3 bucket, cleans the header,
-     * and processes the records in the CSV file.
+     * Sets the source file path based on the actor expedition provided.
      *
-     * @param  string  $sourceFile  The name of the CSV file to be downloaded from the S3 bucket.
-     * @param  array  $fields  The list of fields to be used to clean and map the header of the CSV file.
+     * @param  ActorExpedition  $actorExpedition  The ActorExpedition instance containing expedition details.
+     */
+    public function setSourceFile(ActorExpedition $actorExpedition): void
+    {
+        $this->sourceFile = config('geolocate.dir.csv').'/'.$actorExpedition->expedition->geoLocateCsvDownload->file;
+    }
+
+    /**
+     * Sets the destination file path based on the actor expedition provided.
+     *
+     * @param  ActorExpedition  $actorExpedition  The ActorExpedition instance containing expedition details.
+     */
+    public function setDestinationFile(ActorExpedition $actorExpedition): void
+    {
+        $this->destinationFile = config('geolocate.dir.geo-reconciled').'/'.$actorExpedition->expedition_id.'.csv';
+    }
+
+    /**
+     * Processes the download of a CSV file from an S3 bucket and cleans its header based on the provided fields.
+     *
+     * @param  array  $fields  The GeoLocate Form fields used to clean and adjust the header of the CSV file.
      *
      * @throws \League\Csv\Exception
      * @throws \League\Csv\SyntaxError
      */
-    public function processCsvDownload(string $sourceFile, array $fields): void
+    public function processCsvDownload(array $fields): void
     {
-        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $sourceFile, 'r');
+        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $this->sourceFile, 'r');
         $this->awsS3CsvService->createCsvReaderFromStream();
         $this->awsS3CsvService->csv->setHeaderOffset();
         $header = $this->awsS3CsvService->csv->getHeader();
-        $cleanHeader = $this->cleanHeader($header, $fields);
-        $this->processRecords($cleanHeader);
+        $this->geoCsvHeader = $this->filterGeoCsvHeader($header, $fields);
+        $this->processRecords();
         $this->awsS3CsvService->closeBucketStream();
     }
 
     /**
-     * Creates or updates a geo-reconciled data file in a specified destination.
-     * The method generates a CSV file from geo-located export data filtered by the expedition ID
-     * and uploads it to an AWS S3 bucket.
+     * Creates or updates a Geo Reconciled download file for a specified expedition ID.
      *
-     * @param  string  $destinationFile  The name of the file to be created or updated.
-     * @param  int  $expeditionId  The ID of the expedition to filter the geo-located export data.
+     * @param  int  $expeditionId  The ID of the expedition for which the Geo Reconciled download is being created or updated.
      *
      * @throws \League\Csv\CannotInsertRecord
      * @throws \League\Csv\Exception
      */
-    public function createUpdateGeoReconciledDownload(string $destinationFile, int $expeditionId): void
+    public function createUpdateGeoReconciledDownload(int $expeditionId): void
     {
-        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $destinationFile, 'w');
+        $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $this->destinationFile, 'w');
         $this->awsS3CsvService->createCsvWriterFromStream();
 
+        $recordHeader = [];
         $counter = 0;
         foreach ($this->geoLocateExport->where('subject_expeditionId', $expeditionId)->lazy() as $record) {
             unset($record->id, $record->updated_at, $record->created_at);
             if ($counter === 0) {
-                $this->awsS3CsvService->csv->insertOne(array_keys($record->toArray()));
+                $mergedHeader = $this->setMergedHeader($record);
+                $this->awsS3CsvService->csv->insertOne($mergedHeader);
+                $recordHeader = array_fill_keys(array_keys(array_flip($mergedHeader)), null);
                 $counter++;
-
-                continue;
             }
-            $this->awsS3CsvService->csv->insertOne($record->toArray());
+
+            $this->awsS3CsvService->csv->insertOne(array_merge($recordHeader, $record->toArray()));
         }
 
         $this->awsS3CsvService->closeBucketStream();
+    }
+
+    /**
+     * Creates a merged header array by combining keys from the record and an existing geoCsvHeader,
+     * then removing the 'CatalogNumber' key.
+     *
+     * @param  GeoLocateExport  $record  The GeoLocateExport instance containing record data for processing.
+     * @return array The resulting array after merging and removing specific keys.
+     */
+    private function setMergedHeader(GeoLocateExport $record): array
+    {
+        return array_diff(array_merge(array_keys($record->toArray()), $this->geoCsvHeader), ['CatalogNumber']);
     }
 
     /**
@@ -99,7 +152,7 @@ class GeoLocateResultCsvService
      * @param  array  $fields  The fields to be removed from the CSV header.
      * @return array The cleaned CSV header with specified fields removed.
      */
-    public function cleanHeader(array $csvHeader, array $fields): array
+    public function filterGeoCsvHeader(array $csvHeader, array $fields): array
     {
         $flatFields = collect($fields)->flatten()->toArray();
 
@@ -112,17 +165,16 @@ class GeoLocateResultCsvService
      * Processes the records retrieved from the CSV, finds the corresponding geo-location export record based on the catalog number,
      * updates the found record with the remaining data, and removes the catalog number from the data array.
      *
-     * @param  array  $cleanHeader  The cleaned header array used during the processing of records.
-     *
      * @throws \League\Csv\Exception
      */
-    public function processRecords(array $cleanHeader): void
+    public function processRecords(): void
     {
         $records = $this->awsS3CsvService->csv->getRecords();
         foreach ($records as $record) {
-            $geoLocateExport = $this->geoLocateExport->find($record['CatalogNumber']);
-            unset($record['CatalogNumber']);
-            $geoLocateExport->update($record);
+            $filteredRecord = $this->getFilteredRecord($record);
+            $geoLocateExport = $this->geoLocateExport->find($filteredRecord['CatalogNumber']);
+            unset($filteredRecord['CatalogNumber']);
+            $geoLocateExport->update($filteredRecord);
         }
     }
 
@@ -144,5 +196,16 @@ class GeoLocateResultCsvService
             'file' => $expeditionId.'.csv',
             'type' => 'geo-reconciled',
         ]);
+    }
+
+    /**
+     * Filters the given record array to include only the keys specified in the geoCsvHeader property.
+     *
+     * @param  array  $record  The input array to be filtered.
+     * @return array The filtered array containing only allowed keys.
+     */
+    private function getFilteredRecord(array $record): array
+    {
+        return array_filter($record, fn ($key) => in_array($key, $this->geoCsvHeader), ARRAY_FILTER_USE_KEY);
     }
 }

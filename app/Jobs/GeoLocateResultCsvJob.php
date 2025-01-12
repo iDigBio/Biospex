@@ -39,7 +39,7 @@ use Throwable;
  * and updates system records to reflect the outcome of the GeoLocation process.
  * It also handles potential job failures by notifying an administrative user.
  */
-class GeoLocateResultCsv implements ShouldQueue
+class GeoLocateResultCsvJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -69,17 +69,16 @@ class GeoLocateResultCsv implements ShouldQueue
             $q->with('geoLocateForm', 'geoLocateCsvDownload');
         }]);
 
-        $sourceFile = config('geolocate.dir.csv').'/'.$this->actorExpedition->expedition->geoLocateCsvDownload->file;
+        $service->setSourceFile($this->actorExpedition);
 
-        if (! Storage::disk('s3')->exists($sourceFile)) {
+        if (! Storage::disk('s3')->exists($service->sourceFile)) {
             $this->failed(new \Exception('File not found'));
         }
 
-        $service->processCsvDownload($sourceFile, $this->actorExpedition->expedition->geoLocateForm->fields);
+        $service->processCsvDownload($this->actorExpedition->expedition->geoLocateForm->fields);
 
-        $destinationFile = config('geolocate.dir.geo-reconciled').'/'.$this->actorExpedition->expedition_id.'.csv';
-        $service->createUpdateGeoReconciledDownload($destinationFile, $this->actorExpedition->expedition_id);
-
+        $service->setDestinationFile($this->actorExpedition);
+        $service->createUpdateGeoReconciledDownload($this->actorExpedition->expedition_id);
         $service->createOrUpdateDownload($this->actorExpedition->expedition_id);
     }
 
