@@ -257,6 +257,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      */
     public function geoLocateDataSource(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(GeoLocateDataSource::class);
+        return $this->hasOne(GeoLocateDataSource::class, 'expedition_id');
     }
 }

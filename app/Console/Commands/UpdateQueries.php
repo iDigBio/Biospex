@@ -20,6 +20,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Download;
+use App\Models\GeoLocateDataSource;
+use App\Models\GeoLocateForm;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +58,7 @@ class UpdateQueries extends Command
     {
         $this->addUuid();
         $this->updateUuid();
+        $this->fixGeoLocateForms();
 
         \Artisan::call('zooniverse:count --update');
     }
@@ -156,6 +160,33 @@ class UpdateQueries extends Command
     {
         Schema::table($tableName, function (Blueprint $table) use ($tableName) {
             DB::statement('ALTER TABLE `'.$tableName.'` DROP COLUMN `uuid`, CHANGE `uuid_new` `uuid` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;');
+        });
+    }
+
+    private function fixGeoLocateForms(): void
+    {
+        $records = GeoLocateDataSource::with('expedition')->get();
+        $records->each(function ($record) {
+
+            $form = GeoLocateForm::find($record->expedition->geo_locate_form_id);
+
+            $download = Download::where('expedition_id', $record->expedition_id)
+                ->where('type', $form->source)->first();
+
+            $record->form_id = $form->id;
+            $record->download_id = $download->id;
+            $record->save();
+        });
+
+        Schema::table('expeditions', function (Blueprint $table) {
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
+            $table->dropForeign('expeditions_geo_locate_form_id_foreign');
+            $table->dropColumn('geo_locate_form_id');
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
+        });
+
+        Schema::table('geo_locate_forms', function (Blueprint $table) {
+            $table->dropColumn('source');
         });
     }
 }

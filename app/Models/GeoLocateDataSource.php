@@ -22,7 +22,12 @@ namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * Class GeoLocateDataSource
+ */
 class GeoLocateDataSource extends BaseEloquentModel
 {
     use HasFactory, UuidTrait;
@@ -38,7 +43,9 @@ class GeoLocateDataSource extends BaseEloquentModel
     protected $fillable = [
         'project_id',
         'expedition_id',
-        'geo_locate_community_id',
+        'fom_id',
+        'community_id',
+        'download_id',
         'data_source',
         'data',
     ];
@@ -85,7 +92,7 @@ class GeoLocateDataSource extends BaseEloquentModel
     /**
      * Project relation
      */
-    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
@@ -93,16 +100,32 @@ class GeoLocateDataSource extends BaseEloquentModel
     /**
      * Expedition relation.
      */
-    public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function expedition(): BelongsTo
     {
         return $this->belongsTo(Expedition::class);
     }
 
     /**
+     * Download relation.
+     */
+    public function download(): HasOne
+    {
+        return $this->hasOne(Download::class);
+    }
+
+    /**
      * GeoLocate community relation.
      */
-    public function geoLocateCommunity(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function geoLocateCommunity(): BelongsTo
     {
-        return $this->belongsTo(GeoLocateCommunity::class);
+        return $this->belongsTo(GeoLocateCommunity::class, 'community_id');
+    }
+
+    /**
+     * GeoLocate form relation.
+     */
+    public function geoLocateForm(): BelongsTo
+    {
+        return $this->belongsTo(GeoLocateForm::class, 'form_id');
     }
 }

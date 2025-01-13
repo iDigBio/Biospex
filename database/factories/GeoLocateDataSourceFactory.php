@@ -45,7 +45,7 @@ final class GeoLocateDataSourceFactory extends Factory
         return [
             'project_id' => \App\Models\Project::factory(),
             'expedition_id' => \App\Models\Expedition::factory(),
-            'geo_locate_community_id' => \App\Models\GeoLocateCommunity::factory(),
+            'community_id' => \App\Models\GeoLocateCommunity::factory(),
             'data_source' => fake()->word,
             'data' => fake()->word,
         ];

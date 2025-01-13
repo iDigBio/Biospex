@@ -22,6 +22,8 @@ namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GeoLocateCommunity extends BaseEloquentModel
 {
@@ -83,18 +85,16 @@ class GeoLocateCommunity extends BaseEloquentModel
     /**
      * Project relation.
      */
-    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
     /**
      * GeoLocateDataSource relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function geoLocateDataSources()
+    public function geoLocateDataSources(): HasMany
     {
-        return $this->hasMany(GeoLocateDataSource::class);
+        return $this->hasMany(GeoLocateDataSource::class, 'community_id');
     }
 }

@@ -93,7 +93,7 @@ class GeoLocateStatService
         $values = [
             'project_id' => $expedition->project_id,
             'expedition_id' => $expedition->id,
-            'geo_locate_community_id' => $communityId,
+            'community_id' => $communityId,
             'data_source' => $dataSource,
         ];
 

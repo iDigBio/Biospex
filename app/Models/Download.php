@@ -24,6 +24,7 @@ use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\DownloadPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class Download
@@ -83,21 +84,25 @@ class Download extends BaseEloquentModel
 
     /**
      * Expedition relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function expedition()
+    public function expedition(): BelongsTo
     {
         return $this->belongsTo(Expedition::class);
     }
 
     /**
      * Actor relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function actor()
+    public function actor(): BelongsTo
     {
         return $this->belongsTo(Actor::class);
+    }
+
+    /**
+     * GeoLocateForm relationship.
+     */
+    public function geoLocateDataSource(): BelongsTo
+    {
+        return $this->belongsTo(GeoLocateDataSource::class);
     }
 }

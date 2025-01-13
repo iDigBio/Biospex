@@ -25,6 +25,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Class GeoLocateForm
+ */
 class GeoLocateForm extends BaseEloquentModel
 {
     use HasFactory, UuidTrait;
@@ -93,8 +96,19 @@ class GeoLocateForm extends BaseEloquentModel
         return $this->belongsTo(Group::class);
     }
 
+    /**
+     * Expeditions relation.
+     */
     public function expeditions(): HasMany
     {
         return $this->hasMany(Expedition::class);
+    }
+
+    /**
+     * GeoLocateDataSource relation.
+     */
+    public function geoLocateDataSources(): HasMany
+    {
+        return $this->hasMany(GeoLocateDataSource::class, 'form_id');
     }
 }
