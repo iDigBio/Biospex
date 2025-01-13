@@ -20,8 +20,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\GeoLocateCommunity;
-use App\Models\GeoLocateDataSource;
 use Illuminate\Console\Command;
 
 /**
@@ -50,31 +48,5 @@ class AppCommand extends Command
     /**
      * @return void
      */
-    public function handle()
-    {
-        $records = GeoLocateDataSource::with('geoLocateCommunity')->get();
-        $records->each(function ($record) {
-            $this->info($record->geoLocateCommunity->name);
-        });
-
-        $records = GeoLocateCommunity::with('geoLocateDataSources')->find(1);
-        $records->geoLocateDataSources->each(function ($source) {
-            $this->info($source->data_source);
-        });
-
-        /*
-        $records = GeoLocateDataSource::with('expedition')->get();
-        $records->each(function ($record) {
-
-            $form = GeoLocateForm::find($record->expedition->geo_locate_form_id);
-
-            $download = Download::where('expedition_id', $record->expedition_id)
-                ->where('type', $form->source)->first();
-
-            $record->form_id = $form->id;
-            $record->download_id = $download->id;
-            $record->save();
-        });
-        */
-    }
+    public function handle() {}
 }
