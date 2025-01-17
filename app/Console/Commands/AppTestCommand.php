@@ -20,7 +20,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\GeoLocateCommunity;
 use Illuminate\Console\Command;
 
 /**
@@ -49,9 +48,5 @@ class AppTestCommand extends Command
     /**
      * @return void
      */
-    public function handle()
-    {
-        $community = GeoLocateCommunity::with('geoLocateDataSources')->find(1);
-        $this->info($community->geoLocateDataSources);
-    }
+    public function handle() {}
 }
