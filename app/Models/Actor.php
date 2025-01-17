@@ -74,8 +74,6 @@ class Actor extends BaseEloquentModel
 
     /**
      * Workflow relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function workflows(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
