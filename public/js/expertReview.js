@@ -16,31 +16,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-$(function () {
-    const elem = document.getElementById('panzoom');
-    const panzoom = Panzoom(elem);
-    const parent = elem.parentElement
-    // No function bind needed
-    parent.addEventListener('wheel', panzoom.zoomWithWheel)
+const elem = document.getElementById('panzoom');
+const panzoom = Panzoom(elem);
+const parent = elem.parentElement
+// No function bind needed
+parent.addEventListener('wheel', panzoom.zoomWithWheel)
 
-    $('#btnZoomIn').on('click', panzoom.zoomIn);
-    $('#btnZoomOut').on('click', panzoom.zoomOut);
-    $('#btnZoomReset').on('click', panzoom.reset);
+$('#btnZoomIn').on('click', panzoom.zoomIn);
+$('#btnZoomOut').on('click', panzoom.zoomOut);
+$('#btnZoomReset').on('click', panzoom.reset);
 
-    $("form input:radio").on("change", function () {
-        let id = $(this).data("column");
-        $("[id='"+id+"']").text($(this).val());
-    });
+$("form input:radio").on("change", function () {
+    let id = $(this).data("column");
+    $("[id='" + id + "']").text($(this).val());
+});
 
-    $("img.lazy").one("load", function () {
-        $(".loader").remove();
-    }).each(function () {
-        if (this.complete) {
-            $(this).trigger("load");
-        }
-    });
+$("img.lazy").one("load", function () {
+    $(".loader").remove();
+}).each(function () {
+    if (this.complete) {
+        $(this).trigger("load");
+    }
+});
 
-    $('#pagination').on('change', function() {
-        window.location.replace($(this).val());
-    });
+$('#pagination').on('change', function () {
+    window.location.replace($(this).val());
 });

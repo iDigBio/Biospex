@@ -9,7 +9,6 @@ require("./app.js");
 try {
 
     window.$ = window.jQuery = require('jquery');
-    window.Panzoom = require('@panzoom/panzoom/dist/panzoom.min');
     window.ClipboardJS = require('clipboard');
 
     require('bootstrap');
@@ -25,7 +24,6 @@ try {
 
     require("./ui.multiselect");
     require("free-jqgrid/js/jquery.jqgrid.min");
-
     require("summernote/dist/summernote-bs4.min");
 
     window.bootbox = require("./bootbox");
