@@ -23,19 +23,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * Class Actor
+ * Represents the Actor model with various relationships and query scopes.
+ * Provides functionalities to manage and interact with actors within
+ * the application database.
  */
 class Actor extends BaseEloquentModel
 {
     use HasFactory;
 
     /**
-     * {@inheritDoc}
+     * The name of the database table associated with the model.
      */
     protected $table = 'actors';
 
     /**
-     * {@inheritDoc}
+     * The attributes that are mass assignable.
      */
     protected $fillable = [
         'title',
@@ -44,7 +46,10 @@ class Actor extends BaseEloquentModel
     ];
 
     /**
-     * Scope for active.
+     * Scope a query to only include active records.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query  The query builder instance.
+     * @return mixed The modified query builder.
      */
     public function scopeActive($query): mixed
     {
@@ -68,7 +73,9 @@ class Actor extends BaseEloquentModel
     }
 
     /**
-     * Workflows relationship.
+     * Workflow relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function workflows(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
