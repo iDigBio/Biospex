@@ -27,48 +27,79 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class GeoLocateForm
+ *
+ * Represents a form used to record geographic location data. This model class
+ * is associated with the `geo_locate_forms` database table and includes
+ * relationships with associated groups, expeditions, and data sources.
+ *
+ * Key Features:
+ * - Supports UUID for unique identification.
+ * - Provides attribute-level casts for custom data formats.
+ * - Tracks form-level data like `group_id`, `fields`, and `hash`.
+ * - Maintains relationships to `Group`, `Expedition`, and `GeoLocateDataSource`.
  */
 class GeoLocateForm extends BaseEloquentModel
 {
     use HasFactory, UuidTrait;
 
     /**
-     * {@inheritDoc}
+     * Table associated with this model.
+     *
+     * @var string
      */
     protected $table = 'geo_locate_forms';
 
     /**
-     * {@inheritDoc}
+     * Attributes that are mass assignable.
+     *
+     * @var string[]
      */
     protected $fillable = [
-        'group_id',
-        'name',
-        'source',
-        'hash',
-        'fields',
+        'group_id',    // Reference to the related Group model
+        'name',        // Name of the form
+        'hash',        // A unique hash for the form (e.g., for validation)
+        'fields',      // Form field data in array format
     ];
 
     /**
-     * The attributes that should be hidden for arrays.
+     * Attributes that should be hidden for arrays.
      *
-     * @var array
+     * @var string[]
      */
     protected $hidden = [
         'id',
     ];
 
     /**
-     * Boot functions.
+     * The attributes that should be cast to native types.
+     *
+     * @return string[]
      */
-    public static function boot()
+    protected function casts(): array
     {
-        parent::boot();
-
-        static::bootUuidTrait();
+        return [
+            'fields' => 'array',            // Casts the `fields` attribute to an array
+            'created_at' => 'datetime:Y-m-d', // Formats the `created_at` field as 'Y-m-d'
+        ];
     }
 
     /**
-     * Get the route key for the model.
+     * Boot method for the model.
+     *
+     * Automatically initializes the UUID trait functionality during model boot.
+     */
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::bootUuidTrait(); // Enables UUID trait upon model initialization
+    }
+
+    /**
+     * Defines the route key name for the model.
+     *
+     * This ensures that the UUID is used as a unique identifier when
+     * resolving model instances via route model bindings.
      */
     public function getRouteKeyName(): string
     {
@@ -76,20 +107,9 @@ class GeoLocateForm extends BaseEloquentModel
     }
 
     /**
-     * The attributes that should be cast.
+     * Defines a "belongs to" relationship with the Group model.
      *
-     * @return string[]
-     */
-    protected function casts(): array
-    {
-        return [
-            'fields' => 'array',
-            'created_at' => 'datetime:Y-m-d',
-        ];
-    }
-
-    /**
-     * Group relation.
+     * A GeoLocateForm belongs to a single Group.
      */
     public function group(): BelongsTo
     {
@@ -97,18 +117,28 @@ class GeoLocateForm extends BaseEloquentModel
     }
 
     /**
-     * Expeditions relation.
+     * Defines a "has many" relationship with the Expedition model.
+     *
+     * A GeoLocateForm can have multiple associated Expeditions.
      */
-    public function expeditions(): HasMany
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this->hasMany(Expedition::class);
+        return $this->hasManyThrough(Expedition::class, GeoLocateDataSource::class);
+        //    'expedition_id',
+        //    'id',
+        //    'id',
+        //    'geo_locate_form_id'
+        // );
     }
 
     /**
-     * GeoLocateDataSource relation.
+     * Defines a "has many" relationship with the GeoLocateDataSource model.
+     *
+     * A GeoLocateForm can be associated with multiple data sources
+     * via this relationship.
      */
     public function geoLocateDataSources(): HasMany
     {
-        return $this->hasMany(GeoLocateDataSource::class, 'form_id');
+        return $this->haMany(GeoLocateDataSource::class);
     }
 }

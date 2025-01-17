@@ -8,7 +8,7 @@
                 <div><h2 class="color-action">WINNER</h2></div>
                 <div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i class="far fa-times-circle"></i></span>
+                        <span ><i class="far fa-times-circle"></i></span>
                     </button>
                 </div>
             </div>

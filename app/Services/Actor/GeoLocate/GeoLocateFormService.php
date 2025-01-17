@@ -20,6 +20,7 @@
 
 namespace App\Services\Actor\GeoLocate;
 
+use App\Models\Download;
 use App\Models\Expedition;
 use App\Models\GeoLocateForm;
 use App\Services\Csv\AwsS3CsvService;
@@ -28,61 +29,110 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Storage;
 
+/**
+ * GeoLocateFormService provides various methods to handle GeoLocate forms,
+ * including loading relations, building forms, checking states, saving data,
+ * and parsing related files. It interacts with external storage and services.
+ */
 class GeoLocateFormService
 {
+    /**
+     * Reconcile file source.
+     */
     private string $source;
 
+    /**
+     * User reconciled file exists.
+     */
     private bool $userReconciledFileExists;
 
+    /**
+     * Expert reconciled file exists.
+     */
     private bool $expertReconciledFileExists;
 
+    /**
+     * Expert review has been started or completed.
+     */
     private bool $expertReviewExists;
 
-    private bool $mismatchSource = false;
-
     /**
-     * Construct.
+     * Constructor method to initialize dependencies.
+     *
+     * @param  GeoLocateForm  $geoLocateForm  Instance of GeoLocateForm for geolocation-related functionalities.
+     * @param  AwsS3CsvService  $awsS3CsvService  Instance of AwsS3CsvService for handling CSV operations on AWS S3.
+     * @param  GeneralService  $generalService  Instance of GeneralService for general-purpose service methods.
      */
     public function __construct(
         protected GeoLocateForm $geoLocateForm,
         protected AwsS3CsvService $awsS3CsvService,
-        protected GeneralService $generalService
+        protected GeneralService $generalService,
+        protected Download $download,
     ) {}
 
     /**
-     * Get the form based on new or existing.
+     * Load related models for the given expedition.
+     *
+     * @param  Expedition  $expedition  The expedition instance to load relations for, passed by reference.
+     */
+    public function loadExpeditionRelations(Expedition &$expedition): void
+    {
+        $expedition->load([
+            'project.group',
+            'geoLocateExport',
+            'zooActorExpedition',
+            'geoActorExpedition',
+            'geoLocateDataSource' => function ($query) {
+                $query->with('geoLocateForm', 'download');
+            },
+        ]);
+    }
+
+    /**
+     * Retrieve form data based on expedition and request parameters.
+     *
+     * @param  Expedition  $expedition  The expedition instance to retrieve form data for.
+     * @param  array  $request  Optional request parameters for additional data handling.
+     * @return array The resulting form data.
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getFormData(Expedition $expedition, array $request): array
+    public function getFormData(Expedition $expedition, array $request = []): array
     {
-        $record = isset($request['formId']) ? $this->findGeoLocateFormById($request['formId']) : null;
-
         $this->setUserReconciledVar($expedition);
 
         $this->setExpertExistVars($expedition);
 
-        $this->setSource($request, $record);
+        $this->setSource($expedition, $request);
 
-        return $record === null ? $this->newForm($expedition) : $this->existingForm($record, $expedition);
+        return isset($expedition->geoLocateDataSource->geoLocateForm) ||
+                isset($request['formId']) ? $this->existingForm($expedition, $request) : $this->newForm($expedition);
     }
 
     /**
-     * Get form fields for view.
+     * Build and render form fields for the given expedition and form data.
+     *
+     * @param  Expedition  $expedition  The expedition object used to build form fields.
+     * @param  array  $form  The array of form data to be used.
+     * @return string The rendered HTML of the form fields.
      */
-    public function getFormFields(Expedition $expedition, array $form): string
+    public function buildFormFields(Expedition $expedition, array $form): string
     {
-        $disabled = $this->checkDisabled($expedition, $form);
+        $disabled = $this->checkExportDisabled($expedition, $form);
 
         return view('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'))->render();
     }
 
     /**
-     * Check if button disabled.
+     * Check if the export is disabled for the given expedition and form data.
+     *
+     * @param  Expedition  $expedition  The expedition instance being checked.
+     * @param  array  $form  The form data containing export details.
+     * @return bool Returns true if the export is disabled, false otherwise.
      */
-    public function checkDisabled(Expedition $expedition, array $form): bool
+    public function checkExportDisabled(Expedition $expedition, array $form): bool
     {
-        if ($expedition->geo_locate_form_id === null) {
+        if ($expedition->geoLocateForm === null) {
             return true;
         }
 
@@ -91,7 +141,10 @@ class GeoLocateFormService
     }
 
     /**
-     * Return form for selected destination.
+     * Generate a new form structure based on the given expedition data.
+     *
+     * @param  Expedition  $expedition  The expedition instance used to generate the form structure.
+     * @return array An associative array representing the new form structure.
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -109,71 +162,47 @@ class GeoLocateFormService
             'exported' => $expedition->geoActorExpedition->state >= 1,
             'geo' => $this->getGeoLocateFields(),
             'csv' => $this->getCsvHeader($expedition),
-            'mismatch_source' => $this->mismatchSource,
             'created_at' => '',
         ];
     }
 
     /**
-     * Return form from existing form.
+     * Generate an array containing the existing geo-location form data for the given expedition.
+     *
+     * @param  Expedition  $expedition  The expedition instance associated with the form.
+     * @param  array  $request  An optional array containing request parameters, including the formId.
+     * @return array An associative array with data about the geo-location form and its related fields.
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function existingForm(GeoLocateForm $record, Expedition $expedition): array
+    public function existingForm(Expedition $expedition, array $request = []): array
     {
-        if ($record->source !== $this->source) {
-            $this->mismatchSource = true;
+        $geoLocateForm = isset($request['formId']) ? $this->findGeoLocateFormById($request['formId']) : null;
 
-            return $this->newForm($expedition);
-        }
+        $form = isset($geoLocateForm->fields) ? $geoLocateForm : $expedition->geoLocateDataSource->geoLocateForm;
 
-        $entries = count($record->fields);
+        $entries = count($form->fields);
 
         return [
-            'group_id' => $record->group_id,
-            'name' => $record->name,
+            'group_id' => $form->group_id,
+            'name' => $form->name,
             'source' => $this->source,
             'entries' => $entries,
-            'fields' => $record->fields,
+            'fields' => $form->fields,
             'user_reconciled' => $this->userReconciledFileExists,
             'expert_reconciled' => $this->expertReconciledFileExists,
             'expert_review' => $this->expertReviewExists,
             'exported' => $expedition->geoActorExpedition->state >= 1,
             'geo' => $this->getGeoLocateFields(),
             'csv' => $this->getCsvHeader($expedition),
-            'mismatch_source' => $this->mismatchSource,
-            'created_at' => $record->created_at,
+            'created_at' => $form->created_at,
         ];
     }
 
     /**
-     * Save the export form data.
-     */
-    public function saveForm(array $request, Expedition $expedition): void
-    {
-        unset($request['_token']);
-        $hash = md5(json_encode($request));
-
-        $attributes = [
-            'group_id' => $request['group_id'],
-            'name' => $request['name'],
-            'source' => $request['source'],
-            'hash' => $hash,
-        ];
-        $values = [
-            'group_id' => $request['group_id'],
-            'name' => $request['name'],
-            'source' => $request['source'],
-            'hash' => $hash,
-            'fields' => $request['fields'],
-        ];
-
-        $geoLocateForm = $this->geoLocateForm->updateOrCreate($attributes, $values);
-        $expedition->geoLocateForm()->associate($geoLocateForm)->save();
-    }
-
-    /**
-     * Get GeoLocateExport fields from file.
+     * Retrieve the geolocate fields from a configuration file.
+     *
+     * @return array The decoded geolocate fields as an associative array.
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -183,22 +212,25 @@ class GeoLocateFormService
     }
 
     /**
-     * Set source by using formData.
+     * Set the reconcile file source based on the expedition's geolocation data or provided request parameters.
+     *
+     * @param  Expedition  $expedition  The expedition instance containing geolocation data.
+     * @param  array  $request  Optional. An array of request parameters that may include a source key.
      */
-    public function setSource(array $request = [], ?GeoLocateForm $record = null): void
+    public function setSource(Expedition $expedition, array $request = []): void
     {
-        if (isset($record->source)) {
-            $this->source = match ($record->source) {
-                'reconciled-with-user' => $this->userReconciledFileExists ? 'reconciled-with-user' : 'reconciled',
-                'reconciled-with-expert' => ($this->expertReconciledFileExists && $this->expertReviewExists) ? 'reconciled-with-expert' : 'reconciled',
-                default => 'reconciled',
-            };
+        if (isset($request['source'])) {
+            $this->source = $request['source'];
 
             return;
         }
 
-        if (isset($request['source'])) {
-            $this->source = $request['source'];
+        if (isset($expedition->geoLocateDataSource->download)) {
+            $this->source = match ($expedition->geoLocateDataSource->download->type) {
+                'reconciled-with-user' => $this->userReconciledFileExists ? 'reconciled-with-user' : 'reconciled',
+                'reconciled-with-expert' => ($this->expertReconciledFileExists && $this->expertReviewExists) ? 'reconciled-with-expert' : 'reconciled',
+                default => 'reconciled',
+            };
 
             return;
         }
@@ -209,7 +241,9 @@ class GeoLocateFormService
     }
 
     /**
-     * Set var for if user reconciled exists.
+     * Sets the userReconciledFileExists property to indicate whether the reconciled file exists for the given expedition.
+     *
+     * @param  Expedition  $expedition  The expedition whose reconciled file existence needs to be checked.
      */
     public function setUserReconciledVar(Expedition $expedition): void
     {
@@ -217,16 +251,24 @@ class GeoLocateFormService
     }
 
     /**
-     * Set vars for if expert review exists.
+     * Sets the properties to indicate the existence of the expert reconciled file
+     * and expert review for the given expedition.
+     *
+     * @param  Expedition  $expedition  The expedition whose expert-related files and reviews need to be checked.
      */
     public function setExpertExistVars(Expedition $expedition): void
     {
-        $this->expertReconciledFileExists = Storage::disk('s3')->exists(config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv');
+        $this->expertReconciledFileExists = Storage::disk('s3')
+            ->exists(config('zooniverse.directory.reconciled-with-expert').'/'.$expedition->id.'.csv');
         $this->expertReviewExists = $expedition->zooActorExpedition->expert;
     }
 
     /**
-     * Find project header for subjects.
+     * Retrieves the CSV header for the given expedition based on the source type.
+     * Filters out any headers with the value 'subject_id'.
+     *
+     * @param  Expedition  $expedition  The expedition for which the CSV header needs to be retrieved.
+     * @return array An array of header fields from the CSV file, excluding the 'subject_id' field.
      */
     private function getCsvHeader(Expedition $expedition): array
     {
@@ -251,10 +293,63 @@ class GeoLocateFormService
     }
 
     /**
-     * Find GeoLocateForm by id.
+     * Save the form data and associate it with the expedition.
+     *
+     * @param  array  $request  The form data to be saved.
+     * @param  Expedition  $expedition  The expedition instance to associate with the form data.
+     */
+    public function saveForm(array $request, Expedition $expedition): void
+    {
+        $download = $this->getDownload($expedition, $request);
+
+        $hash = md5(json_encode([$request['group_id'], $request['name'], $request['fields']]));
+
+        $attributes = [
+            'group_id' => $request['group_id'],
+            'name' => $request['name'],
+            'hash' => $hash,
+        ];
+        $values = [
+            'group_id' => $request['group_id'],
+            'name' => $request['name'],
+            'hash' => $hash,
+            'fields' => $request['fields'],
+        ];
+
+        $geoLocateForm = $this->geoLocateForm->updateOrCreate($attributes, $values);
+        $expedition->geoLocateDataSource()->updateOrCreate([
+            'project_id' => $expedition->project_id,
+            'expedition_id' => $expedition->id,
+        ], [
+            'project_id' => $expedition->project_id,
+            'expedition_id' => $expedition->id,
+            'geo_locate_form_id' => $geoLocateForm->id,
+            'download_id' => $download->id,
+        ]);
+    }
+
+    /**
+     * Retrieves a GeoLocateForm by its unique identifier.
+     *
+     * @param  int  $id  The unique identifier of the GeoLocateForm to be retrieved.
+     * @return GeoLocateForm The GeoLocateForm instance corresponding to the provided identifier.
      */
     public function findGeoLocateFormById(int $id): GeoLocateForm
     {
         return $this->geoLocateForm->find($id);
+    }
+
+    /**
+     * Retrieves a download record associated with the specified expedition and request parameters.
+     *
+     * @param  Expedition  $expedition  The expedition for which the download record is being retrieved.
+     * @param  array  $request  Additional request parameters to filter the download, such as the source type.
+     * @return Download|null The download record if found, or null if no matching record exists.
+     */
+    public function getDownload(Expedition $expedition, array $request = []): ?Download
+    {
+        return $this->download->where('expedition_id', $expedition->id)
+            ->where('actor_id', config('zooniverse.actor_id'))
+            ->where('type', $request['source'])->first();
     }
 }

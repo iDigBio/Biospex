@@ -66,8 +66,9 @@
                             <label for="workflow-id" class="col-form-label col-12 required">{{ t('Workflows') }}:
                                 <i class="fa fa-question-circle-o"
                                    data-hover="tooltip"
-                                   title="{{ t("Workflow can only be set once. If a mistake is made, please contact administration via email.") }}"
-                                   aria-hidden="true"></i></label>
+                                   title="{{ t("Workflow can only be set once. If a mistake is made, please contact administration via email.") }}">
+
+                                </i></label>
                             <select name="workflow_id" id="workflow-idd"
                                     class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
                                     {{ $expedition->locked === 1 ? 'disabled' : '' }}

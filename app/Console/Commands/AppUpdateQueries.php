@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Class UpdateQueries
  */
-class UpdateQueries extends Command
+class AppUpdateQueries extends Command
 {
     /**
      * The console command name.
@@ -71,13 +71,19 @@ class UpdateQueries extends Command
             $download = Download::where('expedition_id', $record->expedition_id)
                 ->where('type', $form->source)->first();
 
-            $record->form_id = $form->id;
+            $record->geo_locate_form_id = $form->id;
             $record->download_id = $download->id;
             $record->save();
         });
 
         Schema::table('expeditions', function (Blueprint $table) {
             DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
+            DB::statement('ALTER TABLE `geo_locate_data_sources` CHANGE `geo_locate_form_id` `geo_locate_form_id` BIGINT UNSIGNED NOT NULL;');
+
+            DB::statement('ALTER TABLE `geo_locate_data_sources` CHANGE `geo_locate_community_id` `geo_locate_community_id` BIGINT UNSIGNED NULL DEFAULT NULL;');
+            DB::statement('ALTER TABLE `geo_locate_data_sources` CHANGE `data_source` `data_source` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;');
+            DB::statement('ALTER TABLE `geo_locate_data_sources` CHANGE `data` `data` JSON NULL DEFAULT NULL;');
+
             $table->dropForeign('expeditions_geo_locate_form_id_foreign');
             $table->dropColumn('geo_locate_form_id');
             DB::statement('SET FOREIGN_KEY_CHECKS = 1;');

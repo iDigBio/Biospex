@@ -69,21 +69,13 @@ $(function () {
                 return;
             }
 
+            let formId = $(this).val();
+            let source = $("#geolocate-source-select").val();
+
             let $ajaxResults = $('#geolocate-form-results')
             $ajaxResults.html('<div class="mt-5 loader mx-auto"></div>')
-            $.post($(this).data('url'), {
-                formId: $('#geolocate-form-select').val(),
-                source: $("#geolocate-source-select").val()
-            }, function (data) {
-                $ajaxResults.html(data).find("div.entry").each(function () {
-                    makeSelect($(this))
-                })
-                renumber_geolocate()
-            }).fail(function (response) {
-                let json = JSON.parse(response.responseText)
-                $globalModal.modal('hide');
-                notify("exclamation-circle", json.message, "warning")
-            })
+
+            postGeoLocateFormSelect($(this).data('url'), formId, source, $ajaxResults, $globalModal)
         })
         .on('click', '.geolocate-btn-add', function () {
             $('#warning').html('').collapse('hide')
@@ -131,22 +123,12 @@ $(function () {
                 return;
             }
 
-            let selected = $(this).find('option:selected');
+            let formId = $('#geolocate-form-select').val();
+            let source = $(this).val();
             let $ajaxResults = $('#geolocate-fields')
             $ajaxResults.html('<div class="loader mx-auto"></div>')
 
-            $.post($(this).data('url'), {
-                source: selected.val()
-            }, function (data) {
-                $ajaxResults.html(data).find("div.entry").each(function () {
-                    makeSelect($(this))
-                })
-                renumber_geolocate()
-            }).fail(function (response) {
-                let json = JSON.parse(response.responseText)
-                $globalModal.modal('hide');
-                notify("exclamation-circle", json.message, "warning")
-            })
+            postGeoLocateFormSelect($(this).data('url'), formId, source, $ajaxResults, $globalModal)
         })
 })
 
@@ -227,4 +209,19 @@ checkRequiredValues = function () {
     });
 
     return list;
+}
+
+
+// Sends post request for geolocate form and source file.
+function postGeoLocateFormSelect(url, formId, source, $ajaxResults, $globalModal) {
+    $.post(url, {formId: formId, source: source}, function (data) {
+        $ajaxResults.html(data).find("div.entry").each(function () {
+            makeSelect($(this))
+        })
+        renumber_geolocate()
+    }).fail(function (response) {
+        let json = JSON.parse(response.responseText)
+        $globalModal.modal('hide');
+        notify("exclamation-circle", json.message, "warning")
+    })
 }

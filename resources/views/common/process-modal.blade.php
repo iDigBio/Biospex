@@ -1,6 +1,6 @@
 <!-- Modal -->
 <div class="modal fade" id="process-modal" tabindex="-1" role="dialog" aria-labelledby="process-modal-label"
-     aria-hidden="true">
+     >
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,7 +8,7 @@
                 <div><h2 class="color-action">{{ t('Processes') }}</h2></div>
                 <div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i class="far fa-times-circle"></i></span>
+                        <span ><i class="far fa-times-circle"></i></span>
                     </button>
                 </div>
             </div>

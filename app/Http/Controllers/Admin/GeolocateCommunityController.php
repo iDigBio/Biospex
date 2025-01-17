@@ -49,7 +49,7 @@ class GeolocateCommunityController extends Controller
             return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
-        $expedition->load('project.group', 'project.geoLocateCommunity', 'geoLocateDataSource');
+        $expedition->load('project.group', 'project.geoLocateCommunities', 'geoLocateDataSource');
 
         if (! CheckPermission::handle('isOwner', $expedition->project->group)) {
             return Redirect::route('admin.expeditions.show', [$expedition]);

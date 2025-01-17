@@ -68,7 +68,7 @@ class GroupService
         $group->load([
             'projects',
             'expeditions',
-            'geoLocateForms.expeditions:id,project_id,geo_locate_form_id',
+            'geoLocateForms.expedition',
             'owner.profile',
             'users.profile',
         ])->loadCount('expeditions');

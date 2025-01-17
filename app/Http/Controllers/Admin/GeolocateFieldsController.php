@@ -38,21 +38,19 @@ class GeolocateFieldsController extends Controller
      */
     public function __invoke(Expedition $expedition): mixed
     {
-        if (! Request::ajax()) {
-            return Response::json(['message' => t('Request must be ajax.')], 400);
-        }
+        // if (! Request::ajax()) {
+        //    return Response::json(['message' => t('Request must be ajax.')], 400);
+        // }
 
         try {
-            $expedition->load('project.group.geoLocateForms', 'zooActorExpedition', 'geoActorExpedition');
+            $this->geoLocateFormService->loadExpeditionRelations($expedition);
 
             if (! CheckPermission::handle('readProject', $expedition->project->group)) {
                 return Response::json(['message' => t('You do not have permission.')], 401);
             }
 
-            $form = $this->geoLocateFormService->getFormData($expedition, [
-                'formId' => $expedition->geo_locate_form_id,
-                'source' => Request::input('source'),
-            ]);
+            // Request will contain formId and source
+            $form = $this->geoLocateFormService->getFormData($expedition, Request::all());
 
             return View::make('admin.geolocate.partials.geolocate-fields', compact('expedition', 'form'))->render();
         } catch (Throwable $throwable) {

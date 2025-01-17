@@ -11,9 +11,6 @@
         @if(!$form['expert_reconciled'] && $form['expert_review'])
             <div class="col-sm-8 mb-3 ml-auto mr-auto text-center text-danger">{{ t('Reconciled Expert Review exists but csv file is not published.') }}</div>
         @endif
-        @if($form['mismatch_source'])
-            <div class="col-sm-8 mb-3 ml-auto mr-auto text-center text-danger">{{ t('The source for the form selected does not exist for this Expedition. Saving this form will create a new form.') }}</div>
-        @endif
     </div>
     <div class="form-group col-sm-10 mx-auto text-center">
         <div class="form-row mt-2 entry">
@@ -29,7 +26,8 @@
                         {{ $form['source'] === 'reconciled' ? 'selected' : '' }}>{{ t('Reconciled') }}</option>
                 <option value="reconciled-with-expert"
                         {{ $form['source'] === 'reconciled-with-expert' ? 'selected' : '' }}
-                        {{ $form['expert_reconciled'] && $form['expert_review'] ? '' : 'disabled' }}>{{ t('Reconciled With Expert Opinion') }}</option>
+                        {{ $form['expert_reconciled'] && $form['expert_review'] ? '' : 'disabled' }}>
+                    {{ t('Reconciled With Expert Opinion') }}</option>
                 <option value="reconciled-with-user"
                         {{ $form['source'] === 'reconciled-with-user' ? 'selected' : '' }}
                         {{ $form['user_reconciled'] ? '' : 'disabled' }}>{{ t('Reconciled With User Opinion') }}</option>

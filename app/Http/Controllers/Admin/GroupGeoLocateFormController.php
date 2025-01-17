@@ -37,6 +37,7 @@ class GroupGeoLocateFormController extends Controller
 
         try {
             $form->loadCount('expeditions');
+            dd($form);
 
             if ($form->expeditions_count > 0) {
                 return Redirect::route('admin.groups.show', [$group])

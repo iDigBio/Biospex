@@ -30,6 +30,9 @@ use Response;
 use Throwable;
 use View;
 
+/**
+ * This controller handles the rendering and processing of GeoLocate forms.
+ */
 class GeolocateFormController extends Controller
 {
     public function __construct(
@@ -38,21 +41,24 @@ class GeolocateFormController extends Controller
     ) {}
 
     /**
-     * Show export form in modal.
+     * Display the form details and render specific fields for the expedition.
+     *
+     * @param  Expedition  $expedition  The expedition instance containing necessary data.
+     * @return mixed Returns the rendered view with form fields, or a JSON response detailing any errors that occur.
      */
     public function index(Expedition $expedition): mixed
     {
-        if (! Request::ajax()) {
-            return Response::json(['message' => t('Request must be ajax.')], 400);
-        }
+        // if (! Request::ajax()) {
+        //    return Response::json(['message' => t('Request must be ajax.')], 400);
+        // }
 
         try {
-            $expedition->load('project.group', 'geoLocateExport', 'zooActorExpedition', 'geoActorExpedition');
+            $this->geoLocateFormService->loadExpeditionRelations($expedition);
+            $form = $this->geoLocateFormService->getFormData($expedition);
+            $formFields = $this->geoLocateFormService->buildFormFields($expedition, $form);
+            $selectedForm = isset($expedition->geoLocateDataSource->geoLocateForm) ? $expedition->geoLocateDataSource->geoLocateForm->id : null;
 
-            $form = $this->geoLocateFormService->getFormData($expedition, ['formId' => $expedition->geo_locate_form_id]);
-            $formFields = $this->geoLocateFormService->getFormFields($expedition, $form);
-
-            return View::make('admin.geolocate.partials.form-show', compact('expedition', 'formFields'));
+            return View::make('admin.geolocate.partials.form-show', compact('expedition', 'formFields', 'selectedForm'));
         } catch (Throwable $throwable) {
             return Response::json(['message' => $throwable->getMessage().$throwable->getFile().$throwable->getLine()], 500);
         }
@@ -63,20 +69,21 @@ class GeolocateFormController extends Controller
      */
     public function show(Expedition $expedition): mixed
     {
-        if (! Request::ajax()) {
-            return Response::json(['message' => t('Request must be ajax.')], 400);
-        }
+        // if (! Request::ajax()) {
+        //    return Response::json(['message' => t('Request must be ajax.')], 400);
+        // }
 
         try {
-            $expedition->load('project.group', 'geoLocateExport', 'zooActorExpedition', 'geoActorExpedition');
+            $this->geoLocateFormService->loadExpeditionRelations($expedition);
 
             if (! CheckPermission::handle('readProject', $expedition->project->group)) {
                 return Response::json(['message' => t('You do not have permissions for this action.')], 401);
             }
 
+            // Request will contain formId and source
             $form = $this->geoLocateFormService->getFormData($expedition, Request::all());
 
-            $disabled = $this->geoLocateFormService->checkDisabled($expedition, $form);
+            $disabled = $this->geoLocateFormService->checkExportDisabled($expedition, $form);
 
             return View::make('admin.geolocate.partials.form-fields', compact('expedition', 'form', 'disabled'));
         } catch (Throwable $throwable) {

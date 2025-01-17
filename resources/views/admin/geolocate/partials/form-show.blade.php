@@ -10,7 +10,7 @@
                 data-style="btn-primary">
             <option value="" class="text-uppercase">{{ t('New') }}</option>
             @foreach($expedition->project->group->geoLocateForms as $form)
-                <option value="{{ $form->id }}" {{ $expedition->geo_locate_form_id === $form->id ? 'selected' : ''}}>
+                <option value="{{ $form->id }}" {{ $selectedForm === $form->id ? 'selected' : ''}}>
                     {{ $form->name }}: {{ $form->created_at }}</option>
             @endforeach
         </select>

@@ -26,18 +26,32 @@ use App\Presenters\ExpeditionPresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
- * Class representing an expedition model for the application.
- * Implements several relationships and utility functions for managing expeditions.
+ * Class Expedition
+ *
+ * Represents an expedition with various attributes and relationships,
+ * encapsulating functionality for data management and workflow integrations.
  */
 class Expedition extends BaseEloquentModel implements AttachableInterface
 {
     use HasFactory, HybridRelations, PaperclipTrait, Presentable, UuidTrait;
 
+    /**
+     * The name of the database table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'expeditions';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'uuid',
         'project_id',
@@ -46,11 +60,13 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
         'keywords',
         'logo',
         'workflow_id',
-        'geo_locate_form_id',
         'completed',
         'locked',
     ];
 
+    /**
+     * @var string Presenter for expedition.
+     */
     protected string $presenter = ExpeditionPresenter::class;
 
     /**
@@ -155,7 +171,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * Project relationship.
      */
-    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
@@ -180,7 +196,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * Workflow relation.
      */
-    public function workflow(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function workflow(): BelongsTo
     {
         return $this->belongsTo(Workflow::class);
     }
@@ -247,16 +263,23 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * GeoLocateForm relation in mysql.
      */
-    public function geoLocateForm(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function geoLocateForm(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
     {
-        return $this->belongsTo(GeoLocateForm::class);
+
+        return $this->hasOneThrough(GeoLocateForm::class, GeoLocateDataSource::class, 'expedition_id',
+            // Foreign key on GeoLocateDataSource table
+            'id', // Foreign key on GeoLocateForm table
+            'id', // Local key on the Expedition model
+            'geo_locate_form_id' // Local key on the GeoLocateDataSource model
+        );
+        // return $this->belongsToThrough(GeoLocateForm::class);
     }
 
     /**
      * GeoLocateDataSource relation.
      */
-    public function geoLocateDataSource(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function geoLocateDataSource(): HasOne
     {
-        return $this->hasOne(GeoLocateDataSource::class, 'expedition_id');
+        return $this->hasOne(GeoLocateDataSource::class);
     }
 }

@@ -27,6 +27,7 @@ use App\Presenters\ProjectPresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Config;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 use Str;
@@ -133,41 +134,41 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * AmChart relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * Group relation.
      */
-    public function amChart()
+    public function group(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id');
+    }
+
+    /**
+     * AmChart relation.
+     */
+    public function amChart(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(AmChart::class);
     }
 
     /**
      * Bingos relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function bingos()
+    public function bingos(): HasMany
     {
         return $this->hasMany(Bingo::class);
     }
 
     /**
      * Events relations.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function events()
+    public function events(): HasMany
     {
         return $this->hasMany(Event::class);
     }
 
     /**
      * Expedition relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function expeditions()
+    public function expeditions(): HasMany
     {
         return $this->hasMany(Expedition::class);
     }
@@ -183,19 +184,17 @@ class Project extends BaseEloquentModel implements AttachableInterface
     /**
      * GeoLocateCommunity relation.
      */
-    public function geoLocateCommunity(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function geoLocateCommunities(): HasMany
     {
         return $this->hasMany(GeoLocateCommunity::class);
     }
 
     /**
-     * Group relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Establishes a one-to-many relationship with the GeoLocateDataSource model.
      */
-    public function group()
+    public function geoLocateDataSources(): HasMany
     {
-        return $this->belongsTo(Group::class, 'group_id');
+        return $this->hasMany(GeoLocateDataSource::class);
     }
 
     /**

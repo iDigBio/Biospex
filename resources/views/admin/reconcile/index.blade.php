@@ -72,7 +72,7 @@
                                                value="{{ $transcription->{$encodedColumn} }}">
                                         <label class="form-check-label" for="{{ $transcription->_id }}">
                                             <i class="fa fa-flag {{ $count < 500 ? 'fa-flag-grey' : 'fa-flag-green' }}"
-                                               aria-hidden="true" data-hover="tooltip"
+                                                data-hover="tooltip"
                                                title="{{ $transcription->user_name }} has {{ $count }} transcriptions"></i>
                                             {!! $transcription->{$encodedColumn} ?: '<i>'.t('participant left blank').'</i>' !!}
                                         </label>

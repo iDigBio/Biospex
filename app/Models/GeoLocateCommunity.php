@@ -25,17 +25,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Represents a GeoLocateCommunity model that interacts with the 'geo_locate_communities' database table.
+ * This model includes relationships, casting attributes, and bootable functions to extend its behavior.
+ */
 class GeoLocateCommunity extends BaseEloquentModel
 {
     use HasFactory, UuidTrait;
 
     /**
-     * {@inheritDoc}
+     * The name of the database table associated with the model.
+     *
+     * @var string
      */
     protected $table = 'geo_locate_communities';
 
     /**
-     * {@inheritDoc}
+     * The attributes that are mass assignable.
+     *
+     * @var array
      */
     protected $fillable = [
         'project_id',
@@ -44,24 +52,16 @@ class GeoLocateCommunity extends BaseEloquentModel
     ];
 
     /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
+     * Specifies attributes that should be hidden from JSON serialization output.
      */
     protected $hidden = [
         'id',
     ];
 
     /**
-     * Get the route key for the model.
-     */
-    public function getRouteKeyName(): string
-    {
-        return 'uuid';
-    }
-
-    /**
-     * Boot functions.
+     * Boot the model and its traits.
+     *
+     * @return void
      */
     public static function boot()
     {
@@ -71,9 +71,17 @@ class GeoLocateCommunity extends BaseEloquentModel
     }
 
     /**
-     * The attributes that should be cast.
+     * Get the route key name for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    /**
+     * Get the casts for the model's attributes.
      *
-     * @return string[]
+     * @return array The attribute casts configuration.
      */
     protected function casts(): array
     {
@@ -83,7 +91,9 @@ class GeoLocateCommunity extends BaseEloquentModel
     }
 
     /**
-     * Project relation.
+     * Defines the relationship indicating that this model belongs to a single Project model.
+     *
+     * @return BelongsTo The relationship object representing the association to the Project model.
      */
     public function project(): BelongsTo
     {
@@ -91,10 +101,12 @@ class GeoLocateCommunity extends BaseEloquentModel
     }
 
     /**
-     * GeoLocateDataSource relation.
+     * Establishes a one-to-many relationship with the GeoLocateDataSource model, where multiple geo-location data sources are associated with a specific community.
+     *
+     * @return HasMany The relationship object representing the collection of GeoLocateDataSource models related to this community.
      */
     public function geoLocateDataSources(): HasMany
     {
-        return $this->hasMany(GeoLocateDataSource::class, 'community_id');
+        return $this->hasMany(GeoLocateDataSource::class);
     }
 }

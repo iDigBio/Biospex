@@ -24,21 +24,33 @@ use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\GroupPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
- * Class Group
+ * Represents a group entity in the system.
+ *
+ * Defines various relationships and traits associated with the group. This model is responsible
+ * for interacting with the database table defined by the `$table` property and uses
+ * UUID-based identification.
  */
 class Group extends BaseEloquentModel
 {
     use HasFactory, Presentable, UuidTrait;
 
     /**
-     * {@inheritDoc}
+     * The name of the table associated with the model.
+     *
+     * @var string
      */
     protected $table = 'groups';
 
     /**
-     * {@inheritDoc}
+     * The attributes that are mass assignable.
+     *
+     * @var array
      */
     protected $fillable = [
         'uuid',
@@ -56,7 +68,12 @@ class Group extends BaseEloquentModel
     ];
 
     /**
-     * Get the route key for the model.
+     * The presenter class associated with the group.
+     */
+    protected string $presenter = GroupPresenter::class;
+
+    /**
+     * Get the route key name for the model.
      */
     public function getRouteKeyName(): string
     {
@@ -64,14 +81,9 @@ class Group extends BaseEloquentModel
     }
 
     /**
-     * @var string
+     * Boots the model and applies additional initialization logic.
      */
-    protected $presenter = GroupPresenter::class;
-
-    /**
-     * Boot functions.
-     */
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 
@@ -79,71 +91,57 @@ class Group extends BaseEloquentModel
     }
 
     /**
-     * User as owner relationship
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Owner relationship.
      */
-    public function owner()
+    public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
      * Users relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withPivot('group_id');
     }
 
     /**
      * Projects relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function projects()
+    public function projects(): HasMany
     {
         return $this->hasMany(Project::class)->orderBy('title');
     }
 
     /**
      * PanoptesProjects relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function panoptesProjects()
+    public function panoptesProjects(): HasManyThrough
     {
         return $this->hasManyThrough(PanoptesProject::class, Project::class);
     }
 
     /**
      * Expeditions relationship
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function expeditions()
+    public function expeditions(): HasManyThrough
     {
         return $this->hasManyThrough(Expedition::class, Project::class);
     }
 
     /**
      * Invites relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function invites()
+    public function invites(): HasMany
     {
         return $this->hasMany(GroupInvite::class);
     }
 
     /**
      * GeoLocateForm relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function geoLocateForms()
+    public function geoLocateForms(): HasMany
     {
         return $this->hasMany(GeoLocateForm::class);
     }

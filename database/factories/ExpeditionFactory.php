@@ -49,7 +49,6 @@ final class ExpeditionFactory extends Factory
             'description' => fake()->text,
             'keywords' => fake()->word,
             'workflow_id' => \App\Models\Workflow::factory(),
-            'geo_locate_form_id' => \App\Models\GeoLocateForm::factory(),
             'completed' => fake()->randomNumber(1),
             'locked' => fake()->randomNumber(1),
             'logo_file_name' => fake()->optional()->word,
