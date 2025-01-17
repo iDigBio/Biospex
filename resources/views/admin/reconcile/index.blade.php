@@ -1,4 +1,4 @@
-@extends('admin.layout.popup')
+@extends('admin.layout.default')
 {{-- Web site Title --}}
 @section('title')
     {{ t('Expert Review') }}
@@ -144,6 +144,7 @@
 @stop
 
 @push('scripts')
-    <script src="{{ secure_asset('js/jquery.form.min.js') }}"></script>
+    <script src="https://unpkg.com/@panzoom/panzoom@4.6.0/dist/panzoom.min.js"></script>
     <script src="{{ secure_asset('js/expertReview.min.js') }}"></script>
+    <script src="{{ secure_asset('js/jquery.form.min.js') }}"></script>
 @endpush
