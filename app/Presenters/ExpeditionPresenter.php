@@ -200,4 +200,19 @@ class ExpeditionPresenter extends Presenter
             data-content="'.t('This action will reprocess all ocr for the Expedition.').'">
             '.t('Reprocess Subject OCR').'</a>';
     }
+
+    /**
+     * Return expedition link.
+     *
+     * @return string
+     */
+    public function titleLink()
+    {
+        return '<a href="'.route('admin.expeditions.show', [$this->model]).'">'.$this->model->title.'</a>';
+    }
+
+    public function completed()
+    {
+        return $this->model->completed ? 'Completed' : 'In Progress';
+    }
 }

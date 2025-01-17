@@ -83,7 +83,6 @@ class GroupController extends Controller
         }
 
         $this->groupService->showGroup($group);
-        dd($group->geoLocateForms);
 
         return View::make('admin.group.show', compact('group'));
     }

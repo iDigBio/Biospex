@@ -1,3 +1,4 @@
 <tr>
-    <td>{{ $expedition->title }}</td>
+    <td>{!! $expedition->present()->title_link !!}</td>
+    <td>{{ $expedition->present()->completed }}</td>
 </tr>

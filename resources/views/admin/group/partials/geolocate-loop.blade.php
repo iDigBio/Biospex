@@ -12,7 +12,7 @@
     <td>{{ $form->name }}</td>
     <td>
         @foreach($form->expeditions as $expedition)
-            <a href="{{ route('admin.expeditions.show', [$expedition->project_id, $expedition->id]) }}">{{ $expedition->id }}</a>
+            <a href="{{ route('admin.expeditions.show', [$expedition]) }}">{{ $expedition->id }}</a>
             @if(!$loop->last)
                 {{ ', ' }}
             @endif

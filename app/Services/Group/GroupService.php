@@ -26,15 +26,29 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class GroupService
+ *
+ * This service handles operations related to groups and their associated data,
+ * such as retrieving, creating, updating, and deleting group resources.
+ */
 class GroupService
 {
+    /**
+     * Constructor method for initializing the class with dependencies.
+     *
+     * @param  Group  $group  An instance of the Group class.
+     * @param  User  $user  An instance of the User class.
+     * @return void
+     */
     public function __construct(
         public Group $group,
         public User $user
     ) {}
 
     /**
-     * Display groups.
+     * Retrieve a collection of groups with associated counts for projects, expeditions, and users,
+     * filtered by the authenticated user's association with the groups.
      */
     public function getAdminIndex(): Collection
     {
@@ -45,7 +59,11 @@ class GroupService
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Stores a new group associated with the given user and request data.
+     *
+     * @param  User  $user  The user creating the group.
+     * @param  array  $request  An array containing the group's creation details, including the title.
+     * @return Group The newly created group instance.
      */
     public function storeGroup(User $user, array $request): Group
     {
@@ -61,21 +79,26 @@ class GroupService
     }
 
     /**
-     * Show group.
+     * Display the specified group with its related data.
+     *
+     * @param  Group  &$group  The group instance to be displayed, with related data loaded.
      */
     public function showGroup(Group &$group): void
     {
         $group->load([
             'projects',
             'expeditions',
-            'geoLocateForms.expedition',
+            'geoLocateForms.expeditions',
             'owner.profile',
             'users.profile',
         ])->loadCount('expeditions');
     }
 
     /**
-     * Show group edit form.
+     * Edits the given group by loading related owner and user profile data, and maps user IDs to their full names.
+     *
+     * @param  Group  $group  The group to be edited, passed by reference to modify its data.
+     * @return Collection A collection mapping user IDs to their corresponding full names.
      */
     public function editGroup(Group &$group): Collection
     {
@@ -87,9 +110,12 @@ class GroupService
     }
 
     /**
-     * Delete the specified resource from storage.
+     * Deletes a specified group after performing necessary checks to ensure
+     * that no associated workflows or processes exist.
      *
-     * @throws \Exception
+     * @param  Group  $group  The group instance to be deleted, passed by reference.
+     *
+     * @throws Exception If the group contains associated workflows, processes, or dependencies.
      */
     public function deleteGroup(Group &$group): void
     {
@@ -105,7 +131,10 @@ class GroupService
     }
 
     /**
-     * Check group count for admin welcome/index page.
+     * Retrieves the total count of groups that the specified user is associated with.
+     *
+     * @param  int  $userId  The ID of the user whose group count is being retrieved.
+     * @return int The total number of groups the user is a member of.
      */
     public function getUserGroupCount($userId): int
     {
@@ -119,7 +148,10 @@ class GroupService
     }
 
     /**
-     * Get group select for user.
+     * Retrieves a list of groups the specified user belongs to, formatted for selection input.
+     *
+     * @param  User  $user  The user whose groups are to be retrieved.
+     * @return array An associative array where the keys are the group IDs and the values are the group titles.
      */
     public function getUsersGroupsSelect(User $user): array
     {
@@ -129,7 +161,11 @@ class GroupService
     }
 
     /**
-     * Get group ids for user session.
+     * Retrieves a collection of group IDs associated with the specified user.
+     * Used for user sessions.
+     *
+     * @param  int  $userId  The ID of the user for which to fetch associated group IDs.
+     * @return \Illuminate\Support\Collection A collection of group IDs linked to the user.
      */
     public function getUserGroupIds($userId): \Illuminate\Support\Collection
     {

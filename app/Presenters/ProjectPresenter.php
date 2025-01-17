@@ -434,4 +434,14 @@ class ProjectPresenter extends Presenter
             data-title="'.t('Reprocess Subject OCR').'?" data-content="'.t('This action will reprocess all ocr for the Project.').'">
             <i class="fas fa-redo-alt fa-2x"></i></a>';
     }
+
+    /**
+     * Return project link.
+     *
+     * @return string
+     */
+    public function titleLink()
+    {
+        return '<a href="'.route('admin.projects.show', [$this->model]).'">'.$this->model->title.'</a>';
+    }
 }

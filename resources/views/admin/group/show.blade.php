@@ -94,6 +94,7 @@
                             <thead>
                             <tr>
                                 <th>{{ t('Title') }}</th>
+                                <th>{{ t('Status') }}</th>
                             </tr>
                             </thead>
                             <tbody>

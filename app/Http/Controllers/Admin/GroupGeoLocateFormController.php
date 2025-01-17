@@ -37,11 +37,10 @@ class GroupGeoLocateFormController extends Controller
 
         try {
             $form->loadCount('expeditions');
-            dd($form);
 
             if ($form->expeditions_count > 0) {
                 return Redirect::route('admin.groups.show', [$group])
-                    ->with('danger', t('GeoLocateExport Form cannot be deleted while still being used by Expeditions.'));
+                    ->with('danger', t('Form cannot be deleted while associated with Expeditions.'));
             }
 
             $form->delete();
