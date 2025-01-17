@@ -30,7 +30,7 @@
             <div>
                 <div id="panzoom">
                     <div class="loader mx-auto"></div>
-                    <img src="{{ $imgUrl }}" class="img-fluid lazy">
+                    <img src="{{ $imgUrl }}" class="img-fluid lazy" alt="Image">
                 </div>
             </div>
         </div>
