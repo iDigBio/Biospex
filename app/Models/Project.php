@@ -33,7 +33,9 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
 use Str;
 
 /**
- * Class Project
+ * Class representing a Project entity, which extends the BaseEloquentModel and provides
+ * a wide variety of functionalities such as relationships, custom behaviors, and data transformations.
+ * This class includes attributes, relations, and mutators/accessors for handling project data.
  */
 class Project extends BaseEloquentModel implements AttachableInterface
 {

@@ -23,7 +23,6 @@ namespace App\Models;
 use App\Models\Traits\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class GeoLocateDataSource
@@ -111,19 +110,21 @@ class GeoLocateDataSource extends BaseEloquentModel
     }
 
     /**
-     * Defines a relationship to the associated Expedition model.
+     * Defines a relationship indicating that the current model belongs to an Expedition.
+     *
+     * @return BelongsTo The relationship object representing the association between the current model and the Expedition model.
      */
     public function expedition(): BelongsTo
     {
-        return $this->belongsTo(Expedition::class, 'id', 'expedition_id');
+        return $this->belongsTo(Expedition::class);
     }
 
     /**
-     * Defines a one-to-one relationship to the associated Download model.
+     * Establishes a relationship to the associated Download model.
      */
-    public function download(): HasOne
+    public function download(): BelongsTo
     {
-        return $this->hasOne(Download::class, 'id', 'download_id');
+        return $this->belongsTo(Download::class);
     }
 
     /**

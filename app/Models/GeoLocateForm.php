@@ -121,14 +121,14 @@ class GeoLocateForm extends BaseEloquentModel
      *
      * A GeoLocateForm can have multiple associated Expeditions.
      */
-    public function expedition(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    public function expeditions(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this->hasManyThrough(Expedition::class, GeoLocateDataSource::class);
-        //    'expedition_id',
-        //    'id',
-        //    'id',
-        //    'geo_locate_form_id'
-        // );
+        return $this->hasManyThrough(Expedition::class, GeoLocateDataSource::class,
+            'geo_locate_form_id',
+            'id',
+            'id',
+            'expedition_id'
+        );
     }
 
     /**
@@ -139,6 +139,6 @@ class GeoLocateForm extends BaseEloquentModel
      */
     public function geoLocateDataSources(): HasMany
     {
-        return $this->haMany(GeoLocateDataSource::class);
+        return $this->hasMany(GeoLocateDataSource::class);
     }
 }

@@ -25,6 +25,7 @@ use App\Models\Traits\UuidTrait;
 use App\Presenters\DownloadPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class Download
@@ -90,19 +91,15 @@ class Download extends BaseEloquentModel
     }
 
     /**
-     * The presenter class for this model.
+     * Defines the presenter class to be used for download-related actions.
+     * This can be utilized to manage the presentation logic.
      *
-     * This is used for preparing model data for proper display in the UI or other contexts.
-     *
-     * @var string
+     * @var class-string
      */
-    protected $presenter = DownloadPresenter::class;
+    protected string $presenter = DownloadPresenter::class;
 
     /**
-     * Boot the model and configure its events.
-     *
-     * This also initializes the `UuidTrait` functionality, ensuring that UUIDs
-     * are automatically generated for `Download` instances.
+     * Boots the model, initializing any traits or events required for the class.
      */
     public static function boot(): void
     {
@@ -111,11 +108,9 @@ class Download extends BaseEloquentModel
     }
 
     /**
-     * Defines a relationship with the `Expedition` model.
+     * Defines an inverse one-to-many relationship with the Expedition model.
      *
-     * This associates a downloadable object with a specific expedition.
-     * For example, files related to expeditions can be tracked or retrieved
-     * via this relationship.
+     * @return BelongsTo The related Expedition model.
      */
     public function expedition(): BelongsTo
     {
@@ -123,9 +118,9 @@ class Download extends BaseEloquentModel
     }
 
     /**
-     * Defines a relationship with the `Actor` model.
+     * Defines an inverse one-to-many relationship with the Actor model.
      *
-     * This links a downloadable object to the specific actor (user or system entity) responsible for the file.
+     * @return BelongsTo The related Actor model.
      */
     public function actor(): BelongsTo
     {
@@ -133,12 +128,12 @@ class Download extends BaseEloquentModel
     }
 
     /**
-     * Defines a relationship with the `GeoLocateDataSource` model.
+     * Establishes a one-to-one relationship with the GeoLocateDataSource model using the `download_id` as the foreign key and `id` as the local key.
      *
-     * This relates a downloadable object to geolocation data associated with the file.
+     * @return HasOne The related GeoLocateDataSource model.
      */
-    public function geoLocateDataSource(): BelongsTo
+    public function geoLocateDataSource(): HasOne
     {
-        return $this->belongsTo(GeoLocateDataSource::class, 'download_id', 'id');
+        return $this->hasOne(GeoLocateDataSource::class);
     }
 }
