@@ -53,7 +53,6 @@ class GeoLocateExportJob implements ShouldQueue
      *
      * @param  Expedition  $expedition  The expedition instance, relationships excluded.
      * @param  User  $user  The user instance, relationships excluded.
-     *
      * @return void
      */
     public function __construct(protected Expedition $expedition, protected User $user)
@@ -68,7 +67,6 @@ class GeoLocateExportJob implements ShouldQueue
      *
      * @param  GeoLocateExportService  $geoLocateExportService  The service responsible for handling the GeoLocate export process.
      *
-     * @return void
      * @throws \League\Csv\CannotInsertRecord
      * @throws \League\Csv\Exception
      * @throws \Throwable
@@ -95,8 +93,6 @@ class GeoLocateExportJob implements ShouldQueue
      * Handles failures by processing the given throwable and notifying the user.
      *
      * @param  \Throwable  $throwable  The throwable instance containing error details.
-     *
-     * @return void
      */
     public function failed(\Throwable $throwable): void
     {
