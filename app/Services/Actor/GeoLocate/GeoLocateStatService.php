@@ -27,6 +27,7 @@ use App\Services\Api\GeoLocateApi;
 
 /**
  * Class GeoLocateStatService
+ * Provides services for managing and updating geographic community and data source statistics.
  */
 class GeoLocateStatService
 {
@@ -40,11 +41,15 @@ class GeoLocateStatService
     ) {}
 
     /**
-     * Save community and data source.
+     * Saves the community data source by updating or creating the community and its corresponding data source.
+     * Updates the expedition actor's pivot state to reflect the changes.
+     *
+     * @param  array  $data  An associative array containing the community and data source details.
+     * @param  Expedition  $expedition  The expedition instance associated with the community and data source.
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function saveCommunityDataSource(array $data, Expedition &$expedition): void
+    public function saveCommunityDataSource(array $data, Expedition $expedition): void
     {
         if (! empty($data['community'])) {
             $this->getCommunityDataSource($data['community']);
@@ -65,9 +70,13 @@ class GeoLocateStatService
     }
 
     /**
-     * Create or update community.
+     * Updates an existing community or creates a new one based on the given project ID and community name.
+     *
+     * @param  int  $projectId  The ID of the project to which the community belongs.
+     * @param  string  $community  The name of the community to be updated or created.
+     * @return \App\Models\GeoLocateCommunity The updated or newly created GeoLocateCommunity instance.
      */
-    public function updateOrCreateCommunity(int $projectId, string $community): \App\Models\GeoLocateCommunity
+    public function updateOrCreateCommunity(int $projectId, string $community): GeoLocateCommunity
     {
         $attributes = [
             'project_id' => $projectId,
@@ -82,9 +91,14 @@ class GeoLocateStatService
     }
 
     /**
-     * Update or Create GeoLocateDataSource.
+     * Updates an existing data source or creates a new one for the given expedition and community.
+     *
+     * @param  Expedition  $expedition  The expedition instance associated with the data source.
+     * @param  int  $communityId  The ID of the community to which the data source belongs.
+     * @param  string  $dataSource  The name or identifier of the data source being updated or created.
+     * @return GeoLocateDataSource The created or updated data source instance.
      */
-    public function updateOrCreateDataSource(Expedition $expedition, int $communityId, string $dataSource): \App\Models\GeoLocateDataSource
+    public function updateOrCreateDataSource(Expedition $expedition, int $communityId, string $dataSource): GeoLocateDataSource
     {
         $attributes = [
             'project_id' => $expedition->project_id,
@@ -93,7 +107,7 @@ class GeoLocateStatService
         $values = [
             'project_id' => $expedition->project_id,
             'expedition_id' => $expedition->id,
-            'community_id' => $communityId,
+            'geo_locate_community_id' => $communityId,
             'data_source' => $dataSource,
         ];
 
@@ -101,7 +115,10 @@ class GeoLocateStatService
     }
 
     /**
-     * Update community stat.
+     * Updates or creates a GeoLocate community statistic using the provided ID and data.
+     *
+     * @param  int  $id  The unique identifier of the GeoLocate community.
+     * @param  array  $data  An associative array containing the data to be updated or created for the community.
      */
     public function updateGeoLocateCommunityStat(int $id, array $data): void
     {
@@ -110,7 +127,12 @@ class GeoLocateStatService
     }
 
     /**
-     * Update data source stat.
+     * Updates the GeoLocate data source record with the provided data.
+     *
+     * @param  int  $id  The unique identifier of the GeoLocate data source to be updated.
+     * @param  array  $data  An associative array containing the new data to update the data source.
+     *
+     * @throws \Exception
      */
     public function updateGeoLocateDataSourceStat(int $id, array $data): void
     {
@@ -118,9 +140,13 @@ class GeoLocateStatService
     }
 
     /**
-     * Get community and data source.
+     * Retrieves community data and optional data source information from the GeoLocate API.
      *
-     * @throws \Exception|\GuzzleHttp\Exception\GuzzleException
+     * @param  string  $cname  The name of the community to retrieve data for.
+     * @param  string|null  $dname  The optional name of the data source to retrieve specific details.
+     * @return array An associative array containing the retrieved community and data source data.
+     *
+     * @throws \Exception|\GuzzleHttp\Exception\GuzzleException If an error is returned in the API response.
      */
     public function getCommunityDataSource(string $cname, ?string $dname = null): array
     {

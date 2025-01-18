@@ -25,7 +25,7 @@
                         name="community_id">
                     <option value="" class="text-uppercase">{{ t('New') }}</option>
                     @foreach($expedition->project->geoLocateCommunities as $community)
-                        @php($selected = isset($expedition->geoLocateDataSource->community_id) && $expedition->geoLocateDataSource->community_id === $community->id ? 'selected' : '')
+                        @php($selected = isset($expedition->geoLocateDataSource->geo_locate_community_id) && $expedition->geoLocateDataSource->geo_locate_community_id === $community->id ? 'selected' : '')
                         <option value="{{ $community->id }}" {{ $selected }}>{{ $community->name }}</option>
                     @endforeach
                 </select>

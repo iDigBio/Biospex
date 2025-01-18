@@ -33,15 +33,36 @@ use Response;
 use Throwable;
 use View;
 
+/**
+ * Class GeolocateCommunityController
+ *
+ * This controller handles the display and updating of community
+ * and datasource forms related to expeditions. It ensures proper
+ * permissions and request handling for AJAX calls.
+ */
 class GeolocateCommunityController extends Controller
 {
+    /**
+     * Constructor method for initializing services.
+     *
+     * @param  GeoLocateFormService  $geoLocateFormService  The service responsible for handling geolocation form-related operations.
+     * @param  GeoLocateStatService  $geoLocateStatService  The service responsible for handling geolocation statistics operations.
+     * @param  GeneralService  $generalService  The general service used for common functionalities.
+     * @return void
+     */
     public function __construct(
         protected GeoLocateFormService $geoLocateFormService,
         protected GeoLocateStatService $geoLocateStatService,
         protected GeneralService $generalService) {}
 
     /**
-     * Show community and datasource form in modal.
+     * Handles the editing process for an expedition.
+     *
+     * @param  Expedition  $expedition  The expedition instance to be edited, including related loaded data and permission checks.
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     *                                                                                               Returns a view containing the expedition edit form if the request is valid and permissions are granted.
+     *                                                                                               Returns a JSON response with an error message if the request is not made via AJAX.
+     *                                                                                               Redirects to the expedition details page if the user lacks proper permissions.
      */
     public function edit(Expedition $expedition): \Illuminate\View\View|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
@@ -59,12 +80,15 @@ class GeolocateCommunityController extends Controller
     }
 
     /**
-     * Store community and datasource form.
+     * Updates the community data source for a given expedition based on the request data.
+     *
+     * @param  GeoLocateCommunityRequest  $request  The request object containing community data and source information.
+     * @param  Expedition  $expedition  The expedition being updated with the provided community data.
+     * @return \Illuminate\Http\JsonResponse A JSON response indicating the status of the operation.
      */
     public function update(GeoLocateCommunityRequest $request, Expedition $expedition): \Illuminate\Http\JsonResponse
     {
         try {
-
             if (! Request::ajax()) {
                 return Response::json(['message' => t('Request must be ajax.')], 400);
             }

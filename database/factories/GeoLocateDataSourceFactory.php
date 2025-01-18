@@ -22,7 +22,12 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Download;
+use App\Models\Expedition;
+use App\Models\GeoLocateCommunity;
 use App\Models\GeoLocateDataSource;
+use App\Models\GeoLocateForm;
+use App\Models\Project;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -43,9 +48,11 @@ final class GeoLocateDataSourceFactory extends Factory
     public function definition(): array
     {
         return [
-            'project_id' => \App\Models\Project::factory(),
-            'expedition_id' => \App\Models\Expedition::factory(),
-            'community_id' => \App\Models\GeoLocateCommunity::factory(),
+            'project_id' => Project::factory(),
+            'expedition_id' => Expedition::factory(),
+            'geo_locate_form_id' => GeoLocateForm::factory(),
+            'geo_locate_community_id' => GeoLocateCommunity::factory(),
+            'download_id' => Download::factory(),
             'data_source' => fake()->word,
             'data' => fake()->word,
         ];
