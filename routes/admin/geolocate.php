@@ -38,5 +38,6 @@ Route::post('geolocates/field/{expedition}', GeoLocateFieldsController::class)->
 
 Route::get('geolocates/community/{expedition}/edit', [GeoLocateCommunityController::class, 'edit'])->name('admin.geolocate-community.edit');
 Route::post('geolocates/community/{expedition}/update', [GeoLocateCommunityController::class, 'update'])->name('admin.geolocate-community.update');
+Route::delete('geolocates/community/{community}/destroy', [GeoLocateCommunityController::class, 'destroy'])->name('admin.geolocate-community.destroy');
 
 Route::post('geolocates/{expedition}/export', GeoLocateExportController::class)->name('admin.geolocate-export.index');

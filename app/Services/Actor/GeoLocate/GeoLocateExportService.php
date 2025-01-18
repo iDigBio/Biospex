@@ -30,14 +30,23 @@ use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 /**
- * Class CsvExportType
+ * Class GeoLocateExportService
+ *
+ * Service responsible for managing the GeoLocate export process,
+ * including generating, migrating, moving, and deleting export CSV files,
+ * as well as updating related records and associations.
  */
 class GeoLocateExportService
 {
     private string $csvFilePath;
 
     /**
-     * Construct
+     * Constructor for initializing the class with required dependencies.
+     *
+     * @param  GeoLocateExport  $geoLocateExport  An instance of GeoLocateExport for geographical data export operations.
+     * @param  AwsS3CsvService  $awsS3CsvService  Service instance for handling AWS S3 and CSV-related operations.
+     * @param  Download  $download  An instance for managing file download functionality.
+     * @return void
      */
     public function __construct(
         protected GeoLocateExport $geoLocateExport,
@@ -46,8 +55,14 @@ class GeoLocateExportService
     ) {}
 
     /**
-     * Process GeoLocate export.
+     * Processes the given expedition by performing a series of operations such as migrating records,
+     * building the expedition data, moving the CSV file, creating a download link, and updating the expedition's actor-pivot state.
+     * Handles exceptions by cleaning up files and resetting states if any error occurs during the process.
      *
+     * @param  Expedition  $expedition  The expedition to be processed.
+     *
+     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\Exception
      * @throws \Throwable
      */
     public function process(Expedition $expedition): void
@@ -81,7 +96,9 @@ class GeoLocateExportService
     }
 
     /**
-     * Migrate records to MongoDb.
+     * Migrates records from a source file to the database using provided expedition data.
+     *
+     * @param  Expedition  $expedition  The expedition entity used to determine the source file and associated records.
      *
      * @throws \League\Csv\Exception
      */
@@ -104,15 +121,20 @@ class GeoLocateExportService
     }
 
     /**
-     * Set file source path according to source type.
+     * Set the source file path for the expedition.
+     *
+     * @param  Expedition  $expedition  The expedition instance containing the required data.
+     * @return string Returns the file path of the source file.
      */
     private function setSourceFile(Expedition $expedition): string
     {
-        return config('zooniverse.directory.'.$expedition->geoLocateForm->source).'/'.$expedition->id.'.csv';
+        return config('zooniverse.directory.'.$expedition->geoLocateDataSource->download->type).'/'.$expedition->id.'.csv';
     }
 
     /**
-     * Set csv file paths.
+     * Sets the CSV file path for the specified expedition ID.
+     *
+     * @param  int  $expeditionId  The ID of the expedition to generate the CSV file path for.
      */
     public function setCsvFilePath(int $expeditionId): void
     {
@@ -120,7 +142,9 @@ class GeoLocateExportService
     }
 
     /**
-     * Get CSV file path.
+     * Retrieve the file path of the CSV file.
+     *
+     * @return string The file path of the CSV file.
      */
     public function getCsvFilePath(): string
     {
@@ -128,9 +152,12 @@ class GeoLocateExportService
     }
 
     /**
-     * Build Csv File for export inside efs directory.
+     * Builds and exports CSV data for the given expedition.
+     *
+     * @param  Expedition  $expedition  The expedition entity containing data and configurations for exporting.
      *
      * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\Exception
      * @throws \Exception
      */
     public function build(Expedition $expedition): void
@@ -143,7 +170,7 @@ class GeoLocateExportService
         $first = true;
         foreach ($cursor as $record) {
 
-            $csvData = $this->setDataArray($record, $expedition->geoLocateForm);
+            $csvData = $this->setDataArray($record, $expedition->geoLocateDataSource->geoLocateForm);
 
             if (! isset($csvData)) {
                 throw new Exception(t('Csv data returned empty while exporting.'));
@@ -159,7 +186,11 @@ class GeoLocateExportService
     }
 
     /**
-     * Set array for export fields.
+     * Converts form fields and record data into an associative array.
+     *
+     * @param  GeoLocateExport  $record  The GeoLocate export object containing the data to be mapped.
+     * @param  GeoLocateForm  $form  The form object that provides the mapping of fields.
+     * @return array An associative array where form field keys are mapped to corresponding record values.
      */
     public function setDataArray(GeoLocateExport $record, GeoLocateForm $form): array
     {
@@ -167,15 +198,19 @@ class GeoLocateExportService
             return [$field['geo'] => $record->{$field['csv']}];
         })->toArray();
 
-        $data['CatalogNumber'] = $record->_id;
+        $data['CatalogNumber'] = $record->id;
 
         return $data;
     }
 
     /**
-     * Move csv file to s3
+     * Moves a CSV file from the local EFS storage to AWS S3 storage.
      *
-     * @throws \Exception
+     * The method checks the existence of the CSV file in the EFS storage, transfers it to S3 storage, verifies the transfer,
+     * and deletes the file from the original location in EFS if the transfer is successful.
+     * Throws an exception if the file cannot be successfully transferred to S3.
+     *
+     * @throws Exception If the CSV file cannot be moved to AWS S3 storage.
      */
     public function moveCsvFile(): void
     {
@@ -191,7 +226,9 @@ class GeoLocateExportService
     }
 
     /**
-     * Create or update download file.
+     * Creates or updates a download record for the given expedition.
+     *
+     * @param  Expedition  $expedition  The expedition object for which the download record is created or updated.
      */
     public function createDownload(Expedition $expedition): void
     {
@@ -212,7 +249,9 @@ class GeoLocateExportService
     }
 
     /**
-     * Update actor expedition pivot.
+     * Updates the pivot table record for the actor associated with the given expedition.
+     *
+     * @param  Expedition  $expedition  The expedition instance whose actor pivot data is being updated.
      */
     public function updateActorExpeditionPivot(Expedition $expedition): void
     {
@@ -222,31 +261,25 @@ class GeoLocateExportService
     }
 
     /**
-     * Delete GeoLocateForm and associated data and file.
+     * Deletes GeoLocate-related data and dissociates the GeoLocate form from the expedition.
+     *
+     * @param  Expedition  $expedition  The expedition instance from which GeoLocate data will be removed.
      */
-    public function destroyGeoLocate(Expedition &$expedition): void
+    public function destroyGeoLocate(Expedition $expedition): void
     {
         $this->deleteGeoLocateFile($expedition->id);
         $this->deleteGeoLocateRecords($expedition->id);
+        $expedition->geoLocateDataSource->delete();
 
-        $expedition->geoLocateForm()->dissociate()->save();
         $expedition->actors()->updateExistingPivot(config('geolocate.actor_id'), [
             'state' => 0,
         ]);
     }
 
     /**
-     * Delete all geolocate records for expedition.
-     */
-    public function deleteGeoLocateRecords(int $expeditionId): void
-    {
-        $this->geoLocateExport->where('subject_expeditionId', '=', $expeditionId)->get()->each(function ($geoLocate) {
-            $geoLocate->delete();
-        });
-    }
-
-    /**
-     * Delete GeoLocateExport csv file.
+     * Deletes a GeoLocate file associated with the specified expedition ID from the storage.
+     *
+     * @param  int  $expeditionId  The ID of the expedition whose GeoLocate file needs to be deleted.
      */
     public function deleteGeoLocateFile(int $expeditionId): void
     {
@@ -254,5 +287,17 @@ class GeoLocateExportService
         if (Storage::disk('s3')->exists($filePath)) {
             Storage::disk('s3')->delete($filePath);
         }
+    }
+
+    /**
+     * Deletes all GeoLocate records associated with a specific expedition.
+     *
+     * @param  int  $expeditionId  The ID of the expedition whose GeoLocate records need to be deleted.
+     */
+    public function deleteGeoLocateRecords(int $expeditionId): void
+    {
+        $this->geoLocateExport->where('subject_expeditionId', '=', $expeditionId)->get()->each(function ($geoLocate) {
+            $geoLocate->delete();
+        });
     }
 }

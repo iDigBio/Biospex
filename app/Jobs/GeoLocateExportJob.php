@@ -32,19 +32,29 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Class RapidExportJob
+ * A job responsible for exporting GeoLocate data for a given expedition.
+ *
+ * This job queues and processes the GeoLocate data export, prepares the necessary data,
+ * and sends notifications to the user upon success or failure.
+ *
+ * Implements the ShouldQueue interface to allow asynchronous job handling.
  */
 class GeoLocateExportJob implements ShouldQueue
 {
     use ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * The number of seconds the job can run before timing out.
+     * The timeout duration in seconds.
      */
     public int $timeout = 1800;
 
     /**
-     * Create a new job instance.
+     * Constructor for initializing the Expedition and User instances.
+     *
+     * @param  Expedition  $expedition  The expedition instance, relationships excluded.
+     * @param  User  $user  The user instance, relationships excluded.
+     *
+     * @return void
      */
     public function __construct(protected Expedition $expedition, protected User $user)
     {
@@ -54,13 +64,20 @@ class GeoLocateExportJob implements ShouldQueue
     }
 
     /**
-     * Execute job.
+     * Handles the processing of a GeoLocate CSV export and notifies the user.
      *
+     * @param  GeoLocateExportService  $geoLocateExportService  The service responsible for handling the GeoLocate export process.
+     *
+     * @return void
+     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\Exception
      * @throws \Throwable
      */
     public function handle(GeoLocateExportService $geoLocateExportService): void
     {
-        $this->expedition->load('geoLocateForm');
+        $this->expedition->load(['geoLocateDataSource' => function ($query) {
+            $query->with(['geoLocateForm', 'download']);
+        }]);
 
         $geoLocateExportService->process($this->expedition);
 
@@ -75,7 +92,11 @@ class GeoLocateExportJob implements ShouldQueue
     }
 
     /**
-     * Handle a job failure.
+     * Handles failures by processing the given throwable and notifying the user.
+     *
+     * @param  \Throwable  $throwable  The throwable instance containing error details.
+     *
+     * @return void
      */
     public function failed(\Throwable $throwable): void
     {

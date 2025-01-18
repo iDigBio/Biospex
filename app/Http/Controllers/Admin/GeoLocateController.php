@@ -33,10 +33,21 @@ use Request;
 use Response;
 use Throwable;
 
+/**
+ * Class GeoLocateController
+ *
+ * This controller handles the actions related to GeoLocate form operations,
+ * including storing and deleting GeoLocate form data and associated resources.
+ */
 class GeoLocateController extends Controller
 {
     /**
-     * GeoLocateController constructor.
+     * Constructor method.
+     *
+     * @param  GeoLocateFormService  $geoLocateFormService  Service for handling form-related geo-location operations.
+     * @param  GeoLocateStatService  $geoLocateStatService  Service for handling statistical geo-location operations.
+     * @param  GeoLocateExportService  $geoLocateExportService  Service for handling export-related geo-location operations.
+     * @return void
      */
     public function __construct(
         protected GeoLocateFormService $geoLocateFormService,
@@ -45,7 +56,10 @@ class GeoLocateController extends Controller
     ) {}
 
     /**
-     * Store form data.
+     * Stores the GeoLocate export form data for the given expedition.
+     *
+     * @param  Expedition  $expedition  The expedition instance for which the form data is being stored.
+     * @return JsonResponse A JSON response indicating the result of the operation, including success or error messages.
      */
     public function store(Expedition $expedition): JsonResponse
     {
@@ -69,12 +83,15 @@ class GeoLocateController extends Controller
     }
 
     /**
-     * Delete GeoLocateForm and associated data and file.
+     * Deletes the GeoLocate export form data and associated file for the given expedition.
+     *
+     * @param  Expedition  $expedition  The expedition instance for which the GeoLocate export data is being deleted.
+     * @return JsonResponse|RedirectResponse A response indicating the result of the operation. On success, redirects with a success message. On failure, redirects with an error message.
      */
     public function destroy(Expedition $expedition): JsonResponse|RedirectResponse
     {
         try {
-            $expedition->load('project.group');
+            $expedition->load('project.group', 'geoLocateDataSource');
 
             if (! CheckPermission::handle('isOwner', $expedition->project->group)) {
                 return Redirect::route('admin.expeditions.show', [$expedition]);

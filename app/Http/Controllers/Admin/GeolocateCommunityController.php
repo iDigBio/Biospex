@@ -23,6 +23,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GeoLocateCommunityRequest;
 use App\Models\Expedition;
+use App\Models\GeoLocateCommunity;
 use App\Services\Actor\GeoLocate\GeoLocateFormService;
 use App\Services\Actor\GeoLocate\GeoLocateStatService;
 use App\Services\Helpers\GeneralService;
@@ -70,13 +71,15 @@ class GeolocateCommunityController extends Controller
             return Response::json(['message' => t('Request must be ajax.')], 400);
         }
 
-        $expedition->load('project.group', 'project.geoLocateCommunities', 'geoLocateDataSource');
+        $expedition->load('project.group', 'project.geoLocateCommunities.geoLocateDataSources', 'geoLocateDataSource');
 
         if (! CheckPermission::handle('isOwner', $expedition->project->group)) {
             return Redirect::route('admin.expeditions.show', [$expedition]);
         }
 
-        return View::make('admin.geolocate.partials.community-form-body', compact('expedition'));
+        $communities = $expedition->project->geoLocateCommunities;
+
+        return View::make('admin.geolocate.partials.community-form-body', compact('expedition', 'communities'));
     }
 
     /**
@@ -104,6 +107,37 @@ class GeolocateCommunityController extends Controller
             return Response::json(['message' => t('Community and data source added.')]);
         } catch (Throwable $throwable) {
             return Response::json(['message' => t($throwable->getMessage())], 400);
+        }
+    }
+
+    /**
+     * Deletes the specified community if conditions are met.
+     *
+     * @param  GeoLocateCommunity  $community  The community model instance to be deleted.
+     * @return \Illuminate\Http\RedirectResponse A redirect response with a success or error message.
+     */
+    public function destroy(GeoLocateCommunity $community)
+    {
+        try {
+            $community->load('project.group', 'geoLocateDataSources');
+
+            if (! CheckPermission::handle('updateProject', $community->project->group)) {
+                return Redirect::route('admin.projects.show', [$community->project])
+                    ->with('danger', t('You are not authorized for this action.'));
+            }
+
+            if ($community->geoLocateDataSources->count() > 0) {
+                return Redirect::route('admin.projects.show', [$community->project])
+                    ->with('danger', t('You cannot delete a community that has data sources attached.'));
+            }
+
+            $community->delete();
+
+            return Redirect::route('admin.projects.show', [$community->project])
+                ->with('success', t('Record was deleted successfully.'));
+        } catch (Throwable $throwable) {
+            return Redirect::route('admin.projects.show', [$community->project])
+                ->with('danger', t('Error %s.', $throwable->getMessage()));
         }
     }
 }
