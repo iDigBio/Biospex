@@ -22,7 +22,7 @@ namespace App\Services\Subject;
 
 use App\Models\Project;
 use App\Models\Subject;
-use App\Nova\Expedition;
+use App\Models\Expedition;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 

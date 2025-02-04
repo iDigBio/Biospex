@@ -20,10 +20,10 @@
 
 namespace App\Jobs;
 
+use App\Models\Expedition;
 use App\Models\Project;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Nova\Expedition;
 use App\Services\Actor\TesseractOcr\TesseractOcrBuild;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

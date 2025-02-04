@@ -20,11 +20,11 @@
 
 namespace App\Services\Actor\TesseractOcr;
 
+use App\Models\Expedition;
 use App\Models\OcrQueue;
 use App\Models\OcrQueueFile;
 use App\Models\Project;
 use App\Notifications\Traits\ButtonTrait;
-use App\Nova\Expedition;
 use App\Services\Subject\SubjectService;
 
 /**
