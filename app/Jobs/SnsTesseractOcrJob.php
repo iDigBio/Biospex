@@ -49,9 +49,9 @@ class SnsTesseractOcrJob implements ShouldQueue
             $tesseractOcrResponse->process($this->data);
         } catch (Throwable $throwable) {
             $attributes = [
-                'subject' => t('TesseractOcrListener Failed'),
+                'subject' => t('SnsTesseractOcrJob Failed'),
                 'html' => [
-                    t('TesseractOcrListener failed for Queue File ID: %s', $this->data['responsePayload']['body']['file']),
+                    t('SnsTesseractOcrJob failed for Queue File ID: %s', $this->data['responsePayload']['body']['file']),
                     t('Error: %s', $throwable->getMessage()),
                     t('File: %s', $throwable->getFile()),
                     t('Line: %s', $throwable->getLine()),

@@ -39,10 +39,11 @@ class TesseractOcrResponse
     {
         $requestPayload = $data['requestPayload'];
         $responsePayload = $data['responsePayload'];
+        $statusCode = (int) $responsePayload['statusCode'];
 
         // If errorMessage, something really went bad with lambda function.
-        isset($responsePayload['errorMessage']) ?
-            $this->handleErrorMessage($requestPayload, $responsePayload['errorMessage']) :
+        isset($responsePayload['errorMessage']) || $statusCode === 500 ?
+            $this->handleErrorMessage($requestPayload, $responsePayload, true) :
             $this->handleResponse($responsePayload['body']);
     }
 
@@ -50,9 +51,17 @@ class TesseractOcrResponse
      * Handle error message.
      * $requestPayload['id'] is the ocr_queue_files id.
      */
-    public function handleErrorMessage(array $requestPayload, string $errorMessage): void
+    public function handleErrorMessage(array $requestPayload, array $responsePayload, bool $statusCode = false): void
     {
-        $message = empty($errorMessage) ? 'Error: Unable to complete OCR.' : 'Error: '.$errorMessage;
+        if ($statusCode) {
+            $message = 'Error: Unable to complete OCR. 500 error from lambda function. ';
+            $message .= $responsePayload['body']['message']['message'];
+        } else {
+            $message = empty($responsePayload['errorMessage']) ?
+                'Error: Unable to complete OCR.' :
+                'Error: '.$responsePayload['errorMessage'];
+        }
+
         \Storage::disk('s3')->put($requestPayload['key'], $message);
 
         $file = $this->ocrQueueFile->find($requestPayload['file']);

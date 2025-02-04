@@ -80,9 +80,9 @@ class SnsLabelReconciliationJob implements ShouldQueue
     public function failed(Throwable $throwable): void
     {
         $attributes = [
-            'subject' => t('LabelReconciliationListener Failed'),
+            'subject' => t('SnsLabelReconciliationJob Failed'),
             'html' => [
-                t('LabelReconciliationListener failed'),
+                t('SnsLabelReconciliationJob failed'),
                 t('Error: %s', $throwable->getMessage()),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
