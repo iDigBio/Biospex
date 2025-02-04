@@ -32,7 +32,7 @@ class AppLambdaCommand extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'lambda:test {method}';
+    protected $signature = 'app:lambda-test {method}';
 
     /**
      * The console command description.
@@ -61,15 +61,31 @@ class AppLambdaCommand extends Command
     {
         if ($this->argument('method') === 'export') {
             $this->exportTest();
+
+            return;
         } elseif ($this->argument('method') === 'explain') {
             $this->explainTest();
+
+            return;
         } elseif ($this->argument('method') === 'reconcile') {
             $this->reconcileTest();
+
+            return;
         } elseif ($this->argument('method') === 'delete') {
             $this->deleteFiles();
+
+            return;
         } elseif ($this->argument('method') === 'tesseract') {
             $this->tesseractTest();
+
+            return;
+        } elseif ($this->argument('method') === 'ocr') {
+            $this->ocrTest();
+
+            return;
         }
+
+        echo 'No matching method found.'.PHP_EOL;
     }
 
     private function exportTest(): void
@@ -133,5 +149,27 @@ class AppLambdaCommand extends Command
         $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), $attributes);
         // $result = $this->awsLambdaApiService->lambdaInvoke('tesseractOcr', $attributes);
         // echo $result['Payload']->getContents();
+    }
+
+    private function ocrTest()
+    {
+        echo 'sending'.PHP_EOL;
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), [
+            'bucket' => config('filesystems.disks.s3.bucket'),
+            'key' => config('zooniverse.directory.lambda-ocr').'/67a157d456950022dc0c1965.txt',
+            'file' => 1,
+            'uri' => 'https://images.chrb.njaes.rutgers.edu/CyverseFern/2019_12_03/CHRB0074410.jpg',
+        ]);
+        echo 'sent'.PHP_EOL;
+
+        /*
+        $result = $this->awsLambdaApiService->lambdaInvoke(config('config.aws.lambda_ocr_function'), [
+            'bucket' => config('filesystems.disks.s3.bucket'),
+            'key' => config('zooniverse.directory.lambda-ocr').'/67a157d456950022dc0c1965.txt',
+            'file' => 1,
+            'uri' => 'https://images.chrb.njaes.rutgers.edu/CyverseFern/2019_12_03/CHRB0074410.jpg',
+        ]);
+        echo $result['Payload']->getContents();
+        */
     }
 }
