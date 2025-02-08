@@ -41,6 +41,8 @@ class SernecFileJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable;
 
+    public int $timeout = 3600;
+
     /**
      * Constructor method for initializing the class with a file path and setting up the queue.
      *
@@ -88,7 +90,7 @@ class SernecFileJob implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         $attributes = [
-            'subject' => t('AmChartJob failed'),
+            'subject' => t('SernecFileJob failed'),
             'html' => [
                 t('File: %s', $exception->getFile()),
                 t('Line: %s', $exception->getLine()),
