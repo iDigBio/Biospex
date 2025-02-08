@@ -119,6 +119,7 @@ return [
 
     /* Beanstalk Queues */
     'queue' => [
+        'custom_procs' => env('QUEUE_CUSTOM_PROCS'),
         'num_procs' => env('QUEUE_NUM_PROCS'),
         'chart' => env('QUEUE_CHART'),
         'classification' => env('QUEUE_CLASSIFICATION'),
@@ -138,6 +139,8 @@ return [
         'sns_reconciliation' => env('QUEUE_SNS_RECONCILIATION'),
         'sns_tesseract_ocr' => env('QUEUE_SNS_TESSERACT_OCR'),
         'workflow' => env('QUEUE_WORKFLOW'),
+        'sernec_file' => env('QUEUE_SERNEC_FILE'),
+        'sernec_row' => env('QUEUE_SERNEC_ROW'),
     ],
 
     /* Images */
@@ -202,6 +205,7 @@ return [
         'APP_SERVER_USER',
         'APP_CURRENT_PATH',
         'PUSHER_APP_CLUSTER',
+        'QUEUE_CUSTOM_PROCS',
         'QUEUE_NUM_PROCS',
         'QUEUE_CHART',
         'QUEUE_CLASSIFICATION',
@@ -221,6 +225,8 @@ return [
         'QUEUE_PUSHER_CLASSIFICATION',
         'QUEUE_PUSHER_HANDLER',
         'QUEUE_WEDIGBIO_EVENT',
+        'QUEUE_SERNEC_FILE',
+        'QUEUE_SERNEC_ROW',
         'REDIS_HOST',
         'ZOONIVERSE_PUSHER_ID',
     ],
