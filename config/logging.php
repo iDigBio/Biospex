@@ -56,5 +56,10 @@ return [
             'driver' => 'errorlog',
             'level' => 'debug',
         ],
+        'sernec' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/sernec.log'),
+            'level' => 'debug',
+        ],
     ],
 ];
