@@ -53,11 +53,6 @@ class SernecCyverseCommand extends Command
     {
         $files = \File::allFiles('/home/ubuntu/sernec', true);
         foreach ($files as $file) {
-            $fileName = $file->getFilename();
-            if ($fileName !== 'SERNEC_FSU_CROSSWALK.csv') {
-                continue;
-            }
-
             SernecFileJob::dispatch($file->getPathname());
         }
     }
