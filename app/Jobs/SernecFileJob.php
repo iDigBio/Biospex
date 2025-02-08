@@ -64,7 +64,7 @@ class SernecFileJob implements ShouldQueue
     public function handle(Csv $csv): void
     {
         if (! file_exists($this->filePath)) {
-            \Log::error("File not found: {$this->filePath}");
+            throw new \Exception("File not found: {$this->filePath}");
         }
 
         // Create a new batch instance

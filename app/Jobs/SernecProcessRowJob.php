@@ -21,6 +21,7 @@
 namespace App\Jobs;
 
 use App\Models\Subject;
+use App\Models\User;
 use Illuminate\Bus\Batchable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -51,5 +52,25 @@ class SernecProcessRowJob
         if ($subject) {
             $subject->update(['accessURI' => $this->data[2], 'oldAccessURI' => $this->data[1]]);
         }
+    }
+
+    /**
+     * Handle the failed job.
+     *
+     * This method is called when a job fails. It sends an email notification
+     * to the admin user with the details of the failed job.
+     *
+     * @param  \Throwable  $exception  The exception that caused the job to fail.
+     */
+    public function failed(\Throwable $exception): void
+    {
+        $data = json_encode($this->data);
+        $attributes = [
+            t('Data: %s', $data),
+            t('Message: %s', $exception->getMessage()),
+        ];
+        $data .= "\n".json_encode($attributes);
+
+        \Log::channel('sernec')->info($data);
     }
 }
