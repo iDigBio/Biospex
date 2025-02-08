@@ -51,7 +51,7 @@ class SernecCyverseCommand extends Command
      */
     public function handle(): void
     {
-        $files = \File::allFiles('/home/ubuntu/sernec', true);
+        $files = \File::allFiles('/efs/sernec', true);
         foreach ($files as $file) {
             SernecFileJob::dispatch($file->getPathname());
         }
