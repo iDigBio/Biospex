@@ -7,6 +7,7 @@ import Echo from "laravel-echo"
 
 window.Pusher = require('pusher-js');
 
+/*
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
@@ -17,6 +18,17 @@ window.Echo = new Echo({
     forceTLS: false,
     enabledTransports: ["ws", "wss"]
 });
+ */
+
+window.Echo = new Echo({
+    broadcaster: 'reverb',
+    key: process.env.REVERB_APP_KEY,
+    wsHost: process.env.REVERB_HOST,
+    wsPort: process.env.REVERB_PORT ?? 80,
+    wssPort: process.env.REVERB_PORT ?? 443,
+    forceTLS: (process.env.REVERB_SCHEME ?? 'https') === 'https',
+    enabledTransports: ['ws', 'wss'],
+})
 
 // window.Echo = new Echo({
 //     broadcaster: 'pusher',

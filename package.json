@@ -34,8 +34,8 @@
     "axios": "^1.6.8",
     "clipboard": "^2.0.11",
     "image-type": "^5.2.0",
-    "laravel-echo": "^1.17.1",
-    "pusher-js": "^8.4.0-rc2",
+    "laravel-echo": "^1.19.0",
+    "pusher-js": "^8.4.0",
     "sharp": "^0.33.5",
     "webpack": "^5.91.0"
   },
