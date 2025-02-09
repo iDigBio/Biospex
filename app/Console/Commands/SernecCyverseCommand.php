@@ -22,6 +22,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\SernecFileJob;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 
 /**
  * Class SernecCyverseCommand
@@ -51,9 +52,14 @@ class SernecCyverseCommand extends Command
      */
     public function handle(): void
     {
-        $files = \File::allFiles('/efs/sernec', true);
-        foreach ($files as $file) {
-            SernecFileJob::dispatch($file->getPathname());
+        $files = File::allFiles('/efs/sernec');
+        $firstFile = $files[0] ?? null;
+
+        if (! $firstFile) {
+            echo 'No files found'.PHP_EOL;
+            exit;
         }
+
+        SernecFileJob::dispatch($firstFile->getPathname());
     }
 }
