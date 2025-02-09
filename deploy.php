@@ -36,7 +36,7 @@ set('keep_releases', 3);
 host('production')
     ->setHostname('3.142.169.134')
     ->setDeployPath('{{base_path}}/biospex')
-    ->set('branch', 'master');
+    ->set('branch', 'main');
 
 host('development')
     ->setHostname('3.142.169.134')
