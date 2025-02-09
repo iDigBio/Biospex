@@ -22,6 +22,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\SernecFileJob;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 
 /**
  * Class SernecCyverseCommand
@@ -37,7 +38,7 @@ class SernecCyverseCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:sernec-cyverse {fileName}';
+    protected $signature = 'app:sernec-cyverse';
 
     /**
      * The console command description.
@@ -51,8 +52,14 @@ class SernecCyverseCommand extends Command
      */
     public function handle(): void
     {
-        $fileName = $this->argument('fileName');
-        $filePath = '/efs/sernec/'.$fileName;
-        SernecFileJob::dispatch($filePath);
+        $files = File::allFiles('/efs/sernec');
+        $firstFile = $files[0] ?? null;
+
+        if (! $firstFile) {
+            echo 'No files found'.PHP_EOL;
+            exit;
+        }
+
+        SernecFileJob::dispatch($firstFile->getPathname());
     }
 }
