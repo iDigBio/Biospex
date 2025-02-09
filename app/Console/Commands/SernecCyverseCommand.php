@@ -37,7 +37,7 @@ class SernecCyverseCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:sernec-cyverse';
+    protected $signature = 'app:sernec-cyverse {fileName}';
 
     /**
      * The console command description.
@@ -51,9 +51,8 @@ class SernecCyverseCommand extends Command
      */
     public function handle(): void
     {
-        $files = \File::allFiles('/efs/sernec', true);
-        foreach ($files as $file) {
-            SernecFileJob::dispatch($file->getPathname());
-        }
+        $fileName = $this->argument('fileName');
+        $filePath = '/efs/sernec/'.$fileName;
+        SernecFileJob::dispatch($filePath);
     }
 }
