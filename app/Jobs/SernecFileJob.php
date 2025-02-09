@@ -68,7 +68,10 @@ class SernecFileJob implements ShouldQueue
         }
 
         // Create a new batch instance
-        $batch = Bus::batch([])->name("Processing rows for file: {$this->filePath}")->onQueue(config('config.queue.sernec_row'));
+        $batch = Bus::batch([])->name("Processing rows for file: {$this->filePath}")
+            ->finally(function (Batch $batch) {
+                \File::delete($this->filePath);
+            })->onQueue(config('config.queue.sernec_row'));
 
         $csv->readerCreateFromPath($this->filePath);
         foreach ($csv->reader as $row) {
