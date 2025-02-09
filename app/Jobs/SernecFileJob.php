@@ -63,19 +63,20 @@ class SernecFileJob implements ShouldQueue
      */
     public function handle(Csv $csv): void
     {
-        if (! file_exists($this->filePath)) {
-            throw new \Exception("File not found: {$this->filePath}");
+        $filePath = $this->filePath;
+        if (! file_exists($filePath)) {
+            throw new \Exception("File not found: {$filePath}");
         }
 
         // Create a new batch instance
-        $batch = Bus::batch([])->name("Processing rows for file: {$this->filePath}")
-            ->finally(function (Batch $batch) {
-                \File::delete($this->filePath);
+        $batch = Bus::batch([])->name("Processing rows for file: {$filePath}")
+            ->finally(function (Batch $batch) use ($filePath) {
+                \File::delete($filePath);
 
                 $attributes = [
                     'subject' => t('SernecFileJob Complete'),
                     'html' => [
-                        t('File: %s', $this->filePath),
+                        t('File: %s', $filePath),
                         t('Process Completed'),
                     ],
                 ];
