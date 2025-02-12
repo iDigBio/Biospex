@@ -21,6 +21,7 @@
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         <div class="col-sm-12 mt-5">
+            <canvas id="event-conffeti" style="z-index: -1; position:fixed; top:0;left:0"></canvas>
             <div id="active-events" class="row col-sm-12 mx-auto justify-content-center">
                 @each('front.wedigbio.partials.event', $events, 'event')
             </div>
