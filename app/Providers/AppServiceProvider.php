@@ -51,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventAccessingMissingAttributes(! $this->app->isProduction());
 
+        /*
         // Check if the application is running in the local environment
         if (config('config.db_log') && $this->app->environment('local')) {
             // Register a listener for database queries
@@ -59,6 +60,7 @@ class AppServiceProvider extends ServiceProvider
                 Log::info($query->sql, $query->bindings);
             });
         }
+        */
     }
 
     /**
