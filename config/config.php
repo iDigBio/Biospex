@@ -20,7 +20,7 @@ return [
     'rapid_import_dir'      => 'imports/rapid',
     'rapid_export_dir'      => 'exports/rapid',
     'rapid_version_dir'     => 'exports/rapid/version',
-    'rapid_product_dir'     => 'exports/rapid/product',
+    'rapid_product_dir'     => 'exports/product',
 
     /**
      * Rapid field files
