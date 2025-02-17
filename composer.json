@@ -14,6 +14,7 @@
     "laravel/tinker": "^v2.9.0",
     "laravel/ui": "^v4.5.1",
     "league/csv": "^9.15",
+    "league/flysystem-aws-s3-v3": "^3.0",
     "league/oauth2-client": "^2.7",
     "mongodb/laravel-mongodb": "^5.1.1",
     "neitanod/forceutf8": "^2.0",
