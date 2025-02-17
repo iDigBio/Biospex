@@ -19,6 +19,9 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
+use App\Presenters\ProductPresenter;
+
 /**
  * Class Product
  *
@@ -26,6 +29,8 @@ namespace App\Models;
  */
 class Product extends BaseEloquentModel
 {
+    use Presentable;
+
     /**
      * @inheritDoc
      */
@@ -43,5 +48,10 @@ class Product extends BaseEloquentModel
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
+
+    /**
+     * @var string
+     */
+    protected string $presenter = ProductPresenter::class;
 
 }
