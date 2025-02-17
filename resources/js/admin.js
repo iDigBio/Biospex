@@ -58,7 +58,7 @@ $(function () {
             });
     });
 
-    $('.downloadProduct').click(function(){
+    $('table').on('click', '.downloadFile', function(){
         window.open($(this).data('url'));
     });
 
