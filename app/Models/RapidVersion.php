@@ -19,11 +19,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
+use App\Presenters\RapidVersionPresenter;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class RapidVersion extends BaseEloquentModel
 {
+    use Presentable;
+
     /**
      * @inheritDoc
      */
@@ -37,6 +41,11 @@ class RapidVersion extends BaseEloquentModel
         'user_id',
         'file_name'
     ];
+
+    /**
+     * @var string
+     */
+    protected string $presenter = RapidVersionPresenter::class;
 
     /**
      * Belongs to relation with Users.

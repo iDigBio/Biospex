@@ -44,17 +44,27 @@
             let table = $version.DataTable( {
                 "ajax": $version.data('route'),
                 "order": [[ 3, "desc" ]],
-                "columnDefs": [ {
-                    "targets": -1,
-                    "data": null,
-                    "defaultContent": '<button type="button" class="btn btn-primary pl-4 pr-4 text-uppercase">Download</button>'
-                } ]
+                "columns": [
+                    { data: "id" },
+                    { data: "user" },
+                    { data: "file" },
+                    { data: "created" },
+                    { data: "download" , render : function ( data, type, row, meta ) {
+                            return '<button type="button" class="btn btn-primary pl-4 pr-4 downloadFile" \
+                                    data-hover="tooltip" data-url="'+data+'" \
+                                    title="Download Version File">Download</button>';
+                        }},
+                    ]
             } );
 
+            /*
             $('#version tbody').on( 'click', 'button', function () {
                 let data = table.row( $(this).parents('tr') ).data();
+                alert(data[4])
                 window.location.href = data[4];
             } );
+
+             */
         });
     </script>
 

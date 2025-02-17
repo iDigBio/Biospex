@@ -47,26 +47,28 @@ class VersionController extends Controller
     /**
      * Return data for data tables.
      *
-     * @param \App\Services\Model\RapidVersionModelService $rapidVersionModelService
+     * @param  \App\Services\Model\RapidVersionModelService  $rapidVersionModelService
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(RapidVersionModelService $rapidVersionModelService): JsonResponse
     {
+        /*
         if (! request()->ajax()) {
             return response()->json(['error' => t('Request must be ajax')]);
         }
+        */
 
         $versions = $rapidVersionModelService->allWith(['user']);
 
-        $mapped = $versions->filter(function($version){
-            return \Storage::exists(config('config.rapid_version_dir') . '/' . $version->file_name);
-        })->map(function($version){
+        $mapped = $versions->filter(function ($version) {
+            return \Storage::disk('s3')->exists(config('config.rapid_version_dir').'/'.$version->file_name);
+        })->map(function ($version) {
             return [
-                $version->id,
-                $version->user->email,
-                $version->file_name,
-                $version->created_at->toDateTime()->format('Y-m-d h:m:s'),
-                route('admin.download.version', ['file' => base64_encode($version->file_name)])
+                'id'       => $version->id,
+                'user'     => $version->user->email,
+                'file'     => $version->file_name,
+                'created'  => $version->created_at->toDateTime()->format('Y-m-d h:m:s'),
+                'download' => $version->present()->download,
             ];
         });
 

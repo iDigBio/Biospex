@@ -32,7 +32,7 @@
                                     <td>{{ $product->key . '.zip' }}</td>
                                     <td>{{ \App\Facades\DateHelper::formatDate($product->updated_at, 'Y-m-d') }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-primary pl-4 pr-4 downloadProduct"
+                                        <button type="button" class="btn btn-primary pl-4 pr-4 downloadFile"
                                             data-hover="tooltip"
                                             data-url="{{ route('admin.download.product', ['file' => base64_encode($product->key . '.zip')]) }}"
                                             title="{{ t('Download Product File') }}">{{ t('Download') }}</button>

@@ -19,7 +19,7 @@ return [
     'reports_dir'           => 'reports',
     'rapid_import_dir'      => 'imports/rapid',
     'rapid_export_dir'      => 'exports/rapid',
-    'rapid_version_dir'     => 'exports/rapid/version',
+    'rapid_version_dir'     => 'exports/version',
     'rapid_product_dir'     => 'exports/product',
 
     /**
