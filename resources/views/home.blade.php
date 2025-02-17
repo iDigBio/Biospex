@@ -30,7 +30,7 @@
                                     <td>
                                         <button type="button" class="btn btn-primary pl-4 pr-4 downloadProduct"
                                                 data-hover="tooltip"
-                                                data-url="{{ route('front.download.product', ['file' => base64_encode($product->key . '.zip')]) }}"
+                                                data-url="{{ $product->present()->download }}"
                                                 title="{{ t('Download Product File') }}">{{ t('Download') }}</button>
                                     </td>
                                 </tr>
