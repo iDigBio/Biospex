@@ -47,7 +47,7 @@ class IndexController extends Controller
         $records = $productModelService->all();
 
         $products = $records->filter(function($record){
-            return Storage::exists(config('config.rapid_product_dir') . '/' . $record->key . '.zip');
+            return Storage::disk('s3')->exists(config('config.rapid_product_dir') . '/' . $record->key . '.zip');
         });
 
         return view('home', compact('products'));
