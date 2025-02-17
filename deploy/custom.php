@@ -34,7 +34,7 @@ task('set:permissions', function () {
 desc('Install project dependencies');
 task('yarn:run-install', function () {
     cd('{{release_or_current_path}}');
-    run('yarn install --prod --ignore-engines');
+    run('yarn install --ignore-engines');
 });
 
 desc('Upload env file depending on the host');

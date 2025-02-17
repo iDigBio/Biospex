@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2015  Biospex
  * biospex@gmail.com
@@ -11,7 +12,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -24,6 +25,7 @@ require 'deploy/custom.php';
 
 // Config
 set('repository', 'https://github.com/iDigBio/Biospex.git');
+set('base_path', '/data/web');
 set('remote_user', 'ubuntu');
 set('php_fpm_version', '8.3');
 set('ssh_multiplexing', true);
@@ -32,7 +34,7 @@ set('keep_releases', 3);
 
 host('rapid')
     ->setHostname('3.142.169.134')
-    ->setDeployPath('/data/web/rapid')
+    ->setDeployPath('{{base_path}}/rapid')
     ->set('branch', 'rapid');
 
 // Tasks
@@ -44,6 +46,8 @@ task('deploy', [
     'artisan:storage:link',
     'yarn:run-install',
     'artisan:app:deploy-files',
+    // 'artisan:migrate',
+    // 'artisan:app:update-queries',
     'artisan:cache:clear',
     'artisan:config:clear',
     'artisan:event:clear',
@@ -55,12 +59,11 @@ task('deploy', [
     'artisan:view:cache',
     'artisan:event:cache',
     'artisan:optimize',
-    'artisan:migrate',
     'set:permissions',
+    //'supervisor:reload',
+    //'artisan:queue:restart',
     'deploy:publish',
-    'artisan:queue:restart',
 ]);
 
 // Hooks
 after('deploy:failed', 'deploy:unlock');
-
