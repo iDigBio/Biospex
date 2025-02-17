@@ -59,6 +59,7 @@ $(function () {
     });
 
     $('table').on('click', '.downloadFile', function(){
+        console.log($(this).data('url'));
         window.open($(this).data('url'));
     });
 

@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col-sm-3 mx-auto text-center my-4">
             <a href="{{ route('admin.version.create') }}" type="submit"
-               class="btn btn-primary text-uppercase"><i class="fas fa-plus-circle"></i> {{ t('Create Version File') }}</a>
+               class="btn btn-primary text-uppercase disabled"><i class="fas fa-plus-circle"></i> {{ t('Create Version File') }}</a>
         </div>
     </div>
     <div class="row">

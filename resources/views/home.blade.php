@@ -28,7 +28,7 @@
                                     <td>{{ $product->key . '.zip' }}</td>
                                     <td>{{ \App\Facades\DateHelper::formatDate($product->updated_at, 'Y-m-d') }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-primary pl-4 pr-4 downloadFie"
+                                        <button type="button" class="btn btn-primary pl-4 pr-4 downloadFile"
                                                 data-hover="tooltip"
                                                 data-url="{{ $product->present()->download }}"
                                                 title="{{ t('Download Product File') }}">{{ t('Download') }}</button>

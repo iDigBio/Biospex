@@ -13,8 +13,8 @@
         <div class="col-12 m-auto">
             <div class="card white box-shadow py-5 my-5 p-sm-5">
                 <h3 class="mb-5 mx-auto">{{ t('Create DWC Product') }}:</h3>
-                <div class="row">
-                    @include('product.partials.create-product')
+                <div class="row d-none">
+                   @include('product.partials.create-product')
                 </div>
                 <div class="row mt-5">
                     <div class="col-sm-10 mx-auto">
@@ -34,7 +34,7 @@
                                     <td>
                                         <button type="button" class="btn btn-primary pl-4 pr-4 downloadFile"
                                             data-hover="tooltip"
-                                            data-url="{{ route('admin.download.product', ['file' => base64_encode($product->key . '.zip')]) }}"
+                                            data-url="{{ $product->present()->download }}"
                                             title="{{ t('Download Product File') }}">{{ t('Download') }}</button>
                                     </td>
                                 </tr>
