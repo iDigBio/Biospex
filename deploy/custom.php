@@ -44,6 +44,12 @@ task('yarn:run-install', function () {
     run('yarn install --production --frozen-lockfile --ignore-engines');
 });
 
+desc('Build project dependencies');
+task('npm:run-build', function () {
+    cd('{{release_or_current_path}}');
+    run('npm run production');
+});
+
 desc('Upload env file depending on the host');
 task('upload:env', function () {
     $alias = currentHost()->get('alias');

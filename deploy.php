@@ -50,7 +50,6 @@ task('deploy', [
     'upload:env',
     'deploy:vendors',
     'artisan:storage:link',
-    'yarn:run-install',
     'artisan:nova:publish',
     'artisan:app:deploy-files',
     // 'artisan:migrate',
@@ -67,10 +66,12 @@ task('deploy', [
     'artisan:event:cache',
     'artisan:optimize',
     'set:permissions',
-    'supervisor:reload',
+    //'supervisor:reload',
     // 'artisan:queue:restart',
     'deploy:publish',
 ]);
 
 // Hooks
+after('deploy:vendors', 'yarn:run-install');
+after('yarn:run-install', 'npm:run-build');
 after('deploy:failed', 'deploy:unlock');
