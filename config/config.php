@@ -12,6 +12,8 @@ return [
     'expedition_size' => env('EXPEDITION_SIZE'),
     'pusher_app_cluster' => env('PUSHER_APP_CLUSTER'),
 
+    'reverb_debug' => env('REVERB_DEBUG', false),
+
     'api' => [
         'domain' => env('API_DOMAIN'),
         'url' => env('API_URL'),
@@ -228,6 +230,7 @@ return [
         'QUEUE_SERNEC_FILE',
         'QUEUE_SERNEC_ROW',
         'REDIS_HOST',
+        'REVERB_DEBUG',
         'ZOONIVERSE_PUSHER_ID',
     ],
 ];

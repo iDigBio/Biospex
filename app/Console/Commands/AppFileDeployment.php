@@ -117,6 +117,10 @@ class AppFileDeployment extends Command
             return config('zooniverse.pusher_id');
         }
 
+        if ($search === 'REVERB_DEBUG') {
+            return config('config.reverb_debug') === 'true' ? '--debug' : '';
+        }
+
         if ($search === 'MAP_PRIVATE_KEY') {
             return json_encode(base64_decode(config('config.'.strtolower($search))));
         }
