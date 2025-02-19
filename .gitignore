@@ -3,6 +3,10 @@ node_modules
 /storage/*.key
 /vendor
 /public/vendor
+/public/css
+/public/js
+/public/fonts
+/public/images
 /A-Notes
 storage/cmd.txt
 storage/testing
