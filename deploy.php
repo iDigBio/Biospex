@@ -31,6 +31,9 @@ set('php_fpm_version', '8.3');
 set('ssh_multiplexing', true);
 set('writable_mode', 'chmod');
 set('keep_releases', 3);
+set('clear_paths', [
+    'node_modules',
+]);
 
 // Hosts
 host('production')
@@ -49,6 +52,9 @@ task('deploy', [
     'deploy:prepare',
     'upload:env',
     'deploy:vendors',
+    'yarn:run-install',
+    'npm:run-build',
+    'deploy:clear_paths',
     'artisan:storage:link',
     'artisan:nova:publish',
     'artisan:app:deploy-files',
@@ -72,6 +78,4 @@ task('deploy', [
 ]);
 
 // Hooks
-after('deploy:vendors', 'yarn:run-install');
-after('yarn:run-install', 'npm:run-build');
 after('deploy:failed', 'deploy:unlock');
