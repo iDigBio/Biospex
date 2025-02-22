@@ -3976,11 +3976,6 @@ minimist@^1.2.0:
   resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
-mix-env-file@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/mix-env-file/-/mix-env-file-0.1.1.tgz#64581bac4d70c7a12ff84dc2b3f5a71ff50555ca"
-  integrity sha512-bfeOoRlW4J4aS17Qu3XROkWXR/IN5/j/3aSKeQ2qBjFR8tXYbwY8wnO0w0Xhrfv9EHCbBUihNa0YBOAy2jm7dg==
-
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"

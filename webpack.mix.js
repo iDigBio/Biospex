@@ -1,11 +1,5 @@
 let mix = require("laravel-mix");
-require('mix-env-file');
 let path = require("path");
-
-// ENV_FILE=.env.aws.dev npm run prod
-// ENV_FILE=.env.aws.prod npm run prod
-// If ENV_FILE not set, this plugin won't do anything and the default .env variables will remain
-mix.env(process.env.ENV_FILE);
 
 /*
  |--------------------------------------------------------------------------
