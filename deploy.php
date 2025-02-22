@@ -58,8 +58,8 @@ task('deploy', [
     'artisan:storage:link',
     'artisan:nova:publish',
     'artisan:app:deploy-files',
-    // 'artisan:migrate',
-    // 'artisan:app:update-queries',
+    'artisan:migrate',
+    'artisan:app:update-queries',
     'artisan:cache:clear',
     'artisan:config:clear',
     'artisan:event:clear',
@@ -72,8 +72,8 @@ task('deploy', [
     'artisan:event:cache',
     'artisan:optimize',
     'set:permissions',
-    //'supervisor:reload',
-    // 'artisan:queue:restart',
+    'supervisor:reload',
+    'artisan:queue:restart',
     'deploy:publish',
 ]);
 
