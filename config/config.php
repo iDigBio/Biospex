@@ -41,7 +41,6 @@ return [
     'batch_dir' => env('BATCH_DIR', 'batch'),
     'export_dir' => env('EXPORT_DIR', 'export'),
     'import_dir' => env('IMPORT_DIR', 'import'),
-    'ocr_dir' => env('OCR_DIR', 'ocr'),
     'report_dir' => env('REPORT_DIR', 'report'),
     'scratch_dir' => env('SCRATCH_DIR', 'scratch'),
 
