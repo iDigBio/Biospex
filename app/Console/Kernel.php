@@ -49,9 +49,6 @@ class Kernel extends ConsoleKernel
 
         // $schedule->command('queue:prune-batches --hours=48 --unfinished=72')->daily();
 
-        // Clean efs directories for files over 72 hours old.
-        $schedule->command('app:clean-efs-dirs')->daily();
-
         // Run ocr every 2 minutes.
         $schedule->command('export:queue')->everyTwoMinutes();
         $schedule->command('tesseract:ocr-process')->everyTwoMinutes();
@@ -71,6 +68,9 @@ class Kernel extends ConsoleKernel
 
             // WeDigBio classification cron. Pulls pusher records from MySql table and enters into pusher_transcriptions
             $schedule->command('dashboard:records')->everyFiveMinutes();
+
+            // Clean efs directories for files over 72 hours old.
+            $schedule->command('app:clean-efs-dirs')->daily();
         }
     }
 
