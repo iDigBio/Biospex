@@ -102,6 +102,10 @@ class AppFileDeployment extends Command
     private function configureReplace($search): mixed
     {
         if (str_starts_with($search, 'APP_')) {
+            if (str_ends_with($search, '_ENV')) {
+                return config('app.env');
+            }
+
             return config('config.'.strtolower($search));
         }
 

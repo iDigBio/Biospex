@@ -199,6 +199,7 @@ return [
     'wedigbio_end_date' => env('WEDIGBIO_END_DATE'),
 
     'deployment_fields' => [
+        'APP_ENV',
         'API_URL',
         'API_VERSION',
         'API_TOKEN',
