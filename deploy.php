@@ -73,6 +73,7 @@ task('deploy', [
     'artisan:optimize',
     'set:permissions',
     'supervisor:reload',
+    'supervisor:restart-group',
     'artisan:queue:restart',
     'deploy:publish',
 ]);

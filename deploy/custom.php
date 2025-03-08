@@ -54,8 +54,8 @@ desc('Upload env file depending on the host');
 task('upload:env', function () {
     $alias = currentHost()->get('alias');
     $file = match ($alias) {
-        'production' => '.env.aws.prod',
-        'development' => '.env.aws.dev'
+        'production' => '/mnt/c/Users/bruhn/Cloud-Drive/Local-Dev-Install/env/.env.aws.prod',
+        'development' => '/mnt/c/Users/bruhn/Cloud-Drive/Local-Dev-Install/env/.env.aws.dev'
     };
     upload($file, '{{deploy_path}}/shared/.env');
 });
@@ -65,4 +65,10 @@ task('supervisor:reload', function () {
     run('sudo supervisorctl reread');
     run('sudo supervisorctl update');
     run('sudo systemctl restart supervisor');
+});
+
+desc('Reload Supervisor Restart Group');
+task('supervisor:restart-group', function () {
+    $alias = currentHost()->get('alias');
+    run('sudo supervisorctl restart '.$alias.':');
 });
