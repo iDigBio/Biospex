@@ -58,14 +58,9 @@ class WorkflowManagerService
             return t('The expedition has been removed from the process queue.');
         } else {
             // Only start process for Zooniverse Actor.
-            $sync = [
-                $expedition->zooActorExpedition->id => [
-                    'order' => $expedition->zooActorExpedition->order,
-                    'state' => $expedition->zooActorExpedition->state === 1 ? 2 : $expedition->zooActorExpedition->state,
-                ],
-            ];
-            $expedition->actors()->sync($sync, false);
-
+            $expedition->zooActorExpedition->state =
+                $expedition->zooActorExpedition->state === 1 ? 2 : $expedition->zooActorExpedition->state;
+            $expedition->zooActorExpedition->save();
             $this->create(['expedition_id' => $expedition->id]);
 
             return t('The expedition has been added to the process queue.');
