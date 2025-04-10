@@ -22,7 +22,7 @@ namespace App\Services\WeDigBio;
 
 use App\Jobs\WeDigBioEventProgressJob;
 use App\Models\WeDigBioEvent;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Validator;
 
