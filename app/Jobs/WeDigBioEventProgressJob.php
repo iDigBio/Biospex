@@ -53,10 +53,10 @@ class WeDigBioEventProgressJob implements ShouldQueue
      */
     public function handle(WeDigBioService $weDigBioService): void
     {
-        $weDigBioDate = $weDigBioService->getWeDigBioEventTranscriptions($this->event);
-        $uuid = is_null($this->event) ? 0 : $weDigBioDate->uuid;
+        $weDigBioEvent = $weDigBioService->getWeDigBioEventTranscriptions($this->event);
+        $uuid = is_null($this->event) ? 0 : $weDigBioEvent->uuid;
 
-        $data = [$uuid => View::make('common.wedigbio-progress-content', compact('weDigBioDate'))->render()];
+        $data = [$uuid => View::make('common.wedigbio-progress-content', compact('weDigBioEvent'))->render()];
 
         WeDigBioProgressEvent::dispatch($uuid, $data);
     }
