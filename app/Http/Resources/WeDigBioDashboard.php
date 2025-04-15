@@ -39,13 +39,23 @@ class WeDigBioDashboard extends JsonResource
      */
     public function toArray($request)
     {
+        $contributor = $this->contributor;
+
+        if (isset($contributor['decimalLatitude'])) {
+            $contributor['decimalLatitude'] = (float) $contributor['decimalLatitude'];
+        }
+
+        if (isset($contributor['decimalLongitude'])) {
+            $contributor['decimalLongitude'] = (float) $contributor['decimalLongitude'];
+        }
+
         return [
             'project' => $this->project,
             'description' => $this->description,
             'guid' => $this->guid,
             'timestamp' => $this->timestamp,
             'subject' => $this->subject,
-            'contributor' => $this->contributor,
+            'contributor' => $contributor,
             'transcriptionContent' => $this->transcriptionContent,
             'discretionaryState' => $this->discretionaryState,
             'links' => [

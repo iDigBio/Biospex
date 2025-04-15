@@ -92,8 +92,8 @@ class CreatePusherClassificationService
                 'thumbnailUri' => $thumbnailUri,
             ],
             'contributor' => [
-                'decimalLatitude' => $data['geo']['latitude'],
-                'decimalLongitude' => $data['geo']['longitude'],
+                'decimalLatitude' => empty($data['geo']['latitude']) ? 0 : $data['geo']['latitude'],
+                'decimalLongitude' => empty($data['geo']['longitude']) ? 0 : $data['geo']['longitude'],
                 'ipAddress' => '',
                 'transcriber' => $user === null ? '' : $user['login'],
                 'physicalLocation' => [
