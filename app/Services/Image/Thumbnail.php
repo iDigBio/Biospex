@@ -23,6 +23,7 @@ namespace App\Services\Image;
 use Exception;
 use Illuminate\Contracts\Filesystem\Factory as Storage;
 use Illuminate\Filesystem\Filesystem as File;
+use Intervention\Image\ImageManager;
 use Throwable;
 
 /**
@@ -38,12 +39,13 @@ class Thumbnail
 
     private string $thumbDirectory;
 
-    private string $imageProcessFile;
-
     /**
      * Thumbnail constructor.
      */
-    public function __construct(protected Storage $storage, protected File $file)
+    public function __construct(
+        protected Storage $storage,
+        protected File $file,
+        protected ImageManager $imageManager)
     {
         $this->setVariables();
     }
@@ -56,7 +58,6 @@ class Thumbnail
         $this->setDefaultThumbnailImage();
         $this->setThumbnailWidthHeight();
         $this->setThumbnailDir();
-        $this->setImageProcessFile();
     }
 
     /**
@@ -84,14 +85,6 @@ class Thumbnail
 
         $this->thumbDirectory = $this->storage->disk('public')
             ->path(config('config.thumb_output_dir').'/'.$this->tnWidth.'_'.$this->tnHeight);
-    }
-
-    /**
-     * Set image process file.
-     */
-    private function setImageProcessFile(): void
-    {
-        $this->imageProcessFile = config('config.image_process_file'); // image-process.js
     }
 
     /**
@@ -123,13 +116,11 @@ class Thumbnail
      */
     protected function processImage(string $url, string $filePath): void
     {
-        $output = null;
-        $command = "node {$this->imageProcessFile} $filePath $url";
-
-        exec($command, $output);
-
-        if (! $output[0]) {
-            throw new Exception('Could not retrieve image for thumbnail.');
+        try {
+            $this->imageManager->read(file_get_contents($url))
+                ->resize($this->tnWidth, $this->tnHeight)->save($filePath);
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage());
         }
     }
 

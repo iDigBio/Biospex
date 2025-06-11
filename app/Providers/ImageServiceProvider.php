@@ -12,38 +12,24 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Console\Commands;
+namespace App\Providers;
 
-use Illuminate\Console\Command;
+use Illuminate\Support\ServiceProvider;
+use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
+use Intervention\Image\ImageManager;
 
-/**
- * Class AppCommand
- */
-class AppTestCommand extends Command
+class ImageServiceProvider extends ServiceProvider
 {
-    /**
-     * The console command name.
-     */
-    protected $signature = 'app:test';
-
-    /**
-     * The console command description.
-     */
-    protected $description = 'Used to test code';
-
-    /**
-     * Create a new command instance.
-     */
-    public function __construct()
+    public function register(): void
     {
-        parent::__construct();
+        $this->app->singleton(ImageManager::class, function ($app) {
+            return new ImageManager(new ImagickDriver);
+        });
     }
-
-    public function handle(): void {}
 }

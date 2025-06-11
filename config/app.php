@@ -176,6 +176,7 @@ return [
         App\Providers\NovaServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\BiospexServiceProvider::class,
+        App\Providers\ImageServiceProvider::class,
     ],
 
     /*

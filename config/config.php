@@ -49,8 +49,6 @@ return [
     'missing_avatar_small' => env('APP_URL').'/images/avatars/small/missing.png',
     'missing_avatar_medium' => env('APP_URL').'/images/avatars/medium/missing.png',
 
-    'image_process_file' => base_path(env('IMAGE_PROCESS_FILE')),
-
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
     'project_chart_config' => resource_path('json/projectChartConfig.json'),
 
