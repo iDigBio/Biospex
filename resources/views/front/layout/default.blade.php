@@ -117,7 +117,7 @@ sub footer -->
     <!-- Footer Links -->
 
     <!-- Copyright -->
-    <div class="text-center py-3" style="color: #e1e1e1;">{{ t('© 2014–2020 Copyright') }}
+    <div class="text-center py-3" style="color: #e1e1e1;">{{ t('© 2014–%s Copyright', \Carbon\Carbon::now()->year) }}
         <a href="https://www.bio.fsu.edu/"> {{ t('FSU Department of Biological Science') }}</a>
     </div>
     <!-- Copyright -->
