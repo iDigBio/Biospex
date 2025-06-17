@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022. Biospex
+ * Copyright (C) 2014 - 2025, Biospex
  * biospex@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
