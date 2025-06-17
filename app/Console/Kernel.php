@@ -70,7 +70,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('dashboard:records')->everyFiveMinutes();
 
             // Clean efs directories for files over 72 hours old.
-            $schedule->command('app:clean-efs-dirs')->daily();
+            //$schedule->command('app:clean-efs-dirs')->daily();
         }
     }
 
