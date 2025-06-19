@@ -27,6 +27,15 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 
+/**
+ * Job to process WeDigBio event transcriptions.
+ *
+ * This job is responsible for creating WeDigBio event transcriptions from classification data.
+ * It works in conjunction with the WeDigBioTranscriptionService to process and store
+ * transcription data for WeDigBio events.
+ *
+ * @implements ShouldQueue
+ */
 class WeDigBioEventTranscriptionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
@@ -38,11 +47,13 @@ class WeDigBioEventTranscriptionJob implements ShouldQueue
 
     /**
      * Create a new job instance.
-     * Handles WeDigBio even transcriptions
+     * Handles WeDigBio event transcriptions
      *
-     * @see \App\Jobs\ZooniversePusherHandlerJob
-     *
+     * @param  array  $data  Classification data to be processed
+     * @param  int  $projectId  The ID of the project associated with the transcription
      * @return void
+     *
+     *@see \App\Jobs\ZooniversePusherHandlerJob
      */
     public function __construct(protected array $data, protected int $projectId)
     {
@@ -51,6 +62,12 @@ class WeDigBioEventTranscriptionJob implements ShouldQueue
 
     /**
      * Execute the job.
+     *
+     * Processes the classification data to create a WeDigBio event transcription.
+     * If the project is not found, the job will be deleted without processing.
+     *
+     * @param  Project  $project  The Project model instance for dependency injection
+     * @param  WeDigBioTranscriptionService  $weDigBioTranscriptionService  Service to handle transcription creation
      */
     public function handle(
         Project $project,

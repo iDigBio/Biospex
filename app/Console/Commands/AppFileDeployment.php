@@ -53,23 +53,8 @@ class AppFileDeployment extends Command
     {
         $this->setConfig();
 
-        // copy needed files to locations
-        $appFiles = File::files(base_path('resources').'/apps');
-        $appTargets = collect($appFiles)->reject(function ($file) {
-            return $this->rejectFiles($file);
-        })->map(function ($file) {
-            $target = base_path().'/'.$file->getBaseName();
-            if (File::exists($target)) {
-                File::delete($target);
-            }
-
-            File::copy($file->getPathname(), $target);
-
-            return $target;
-        });
-
         $supFiles = File::files(base_path('resources').'/supervisor');
-        $subTargets = collect($supFiles)->reject(function ($file) {
+        $supTargets = collect($supFiles)->reject(function ($file) {
             return $this->rejectFiles($file);
         })->map(function ($file) {
 
@@ -86,11 +71,9 @@ class AppFileDeployment extends Command
             return $target;
         });
 
-        $files = $appTargets->merge($subTargets);
-
-        $this->config->each(function ($search) use ($files) {
+        $this->config->each(function ($search) use ($supTargets) {
             $replace = $this->configureReplace($search);
-            $files->each(function ($file) use ($search, $replace) {
+            $supTargets->each(function ($file) use ($search, $replace) {
                 exec("sed -i 's*$search*$replace*g' $file");
             });
         });
@@ -109,24 +92,8 @@ class AppFileDeployment extends Command
             return config('config.'.strtolower($search));
         }
 
-        if ($search === 'PUSHER_APP_CLUSTER') {
-            return config('config.'.strtolower($search));
-        }
-
-        if ($search === 'REDIS_HOST') {
-            return config('database.redis.default.host');
-        }
-
-        if ($search === 'ZOONIVERSE_PUSHER_ID') {
-            return config('zooniverse.pusher_id');
-        }
-
         if ($search === 'REVERB_DEBUG') {
             return config('config.reverb_debug') === 'true' ? '--debug' : '';
-        }
-
-        if ($search === 'MAP_PRIVATE_KEY') {
-            return json_encode(base64_decode(config('config.'.strtolower($search))));
         }
 
         return config('config.'.strtolower(\Str::replaceFirst('_', '.', $search)));
@@ -145,12 +112,9 @@ class AppFileDeployment extends Command
      */
     private function rejectFiles($file): bool
     {
-        $files = [
-            'panoptes-pusher.conf',
-            'panoptes-pusher.js',
-        ];
+        $files = ['panoptes-listener.conf'];
 
-        $env = ['production'];
+        $env = ['production', 'local'];
 
         return ! in_array(config('app.env'), $env) && in_array($file->getBaseName(), $files);
     }

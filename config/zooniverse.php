@@ -12,7 +12,11 @@ return [
     'skip_api' => env('ZOONIVERSE_SKIP_API'),
     // Skip reconcile for expedition ids that cause issues
     'skip_reconcile' => env('ZOONIVERSE_SKIP_RECONCILE'),
-    'pusher_id' => env('ZOONIVERSE_PUSHER_ID'),
+    'pusher' => [
+        'id' => env('ZOONIVERSE_PUSHER_ID'),
+        'cluster' => env('ZOONIVERSE_PUSHER_CLUSTER'),
+        'channel' => env('ZOONIVERSE_PUSHER_CHANNEL'),
+    ],
 
     'directory' => [
         'parent' => env('ZOONIVERSE_DIRECTORY', 'zooniverse'),

@@ -37,6 +37,9 @@
     "pda/pheanstalk": "^6.0",
     "pusher/pusher-php-server": "^7.0",
     "ramsey/uuid": "^4.1",
+    "ratchet/pawl": "^0.4.3",
+    "react/event-loop": "^1.5",
+    "react/socket": "^1.16",
     "spatie/eloquent-sortable": "^4.0",
     "spiritix/lada-cache": "^5.1",
     "tio/laravel": "^1.10"

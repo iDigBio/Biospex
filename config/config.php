@@ -10,7 +10,6 @@ return [
     'db_log' => env('DB_LOG', false),
 
     'expedition_size' => env('EXPEDITION_SIZE'),
-    'pusher_app_cluster' => env('PUSHER_APP_CLUSTER'),
 
     'reverb_debug' => env('REVERB_DEBUG', false),
 
@@ -197,14 +196,9 @@ return [
     'wedigbio_end_date' => env('WEDIGBIO_END_DATE'),
 
     'deployment_fields' => [
-        'APP_ENV',
-        'API_URL',
-        'API_VERSION',
-        'API_TOKEN',
         'APP_DOMAIN',
         'APP_SERVER_USER',
         'APP_CURRENT_PATH',
-        'PUSHER_APP_CLUSTER',
         'QUEUE_CUSTOM_PROCS',
         'QUEUE_NUM_PROCS',
         'QUEUE_CHART',
@@ -227,8 +221,6 @@ return [
         'QUEUE_WEDIGBIO_EVENT',
         'QUEUE_SERNEC_FILE',
         'QUEUE_SERNEC_ROW',
-        'REDIS_HOST',
         'REVERB_DEBUG',
-        'ZOONIVERSE_PUSHER_ID',
     ],
 ];

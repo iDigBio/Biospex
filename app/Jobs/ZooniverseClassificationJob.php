@@ -27,6 +27,15 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Job to process Zooniverse classification data through Pusher.
+ *
+ * This job handles the processing of Zooniverse classification data by dispatching
+ * it to the Pusher classification service. It runs on a dedicated queue for
+ * classification processing.
+ *
+ * @implements ShouldQueue
+ */
 class ZooniverseClassificationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -38,6 +47,10 @@ class ZooniverseClassificationJob implements ShouldQueue
 
     /**
      * Create a new job instance.
+     *
+     * @param  array  $data  The classification data from Zooniverse to be processed
+     * @param  string  $title  The title of the project or expedition
+     * @return void
      */
     public function __construct(protected array $data, protected string $title)
     {
@@ -47,7 +60,13 @@ class ZooniverseClassificationJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @throws \Exception
+     * Processes the Zooniverse classification data using the Pusher classification service.
+     * The service handles the creation and distribution of classification data through
+     * the Pusher channels.
+     *
+     * @param  CreatePusherClassificationService  $createPusherClassificationService  Service to process classifications
+     *
+     * @throws \Exception If the classification processing fails
      */
     public function handle(CreatePusherClassificationService $createPusherClassificationService): void
     {
