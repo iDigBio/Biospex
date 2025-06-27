@@ -10,7 +10,7 @@
   "require": {
     "php": "^8.2",
     "laracasts/utilities": "^3.0",
-    "laravel/framework": "^11.0",
+    "laravel/framework": "^v12.19.3",
     "laravel/tinker": "^v2.9.0",
     "laravel/ui": "^v4.5.1",
     "league/csv": "^9.15",
@@ -18,12 +18,12 @@
     "league/oauth2-client": "^2.7",
     "mongodb/laravel-mongodb": "^5.1.1",
     "neitanod/forceutf8": "^2.0",
-    "pda/pheanstalk": "^v6.0.0",
-    "spiritix/lada-cache": "^v5.4",
+    "pda/pheanstalk": "^v7.0.1",
+    "spiritix/lada-cache": "dev-l12-compatibility",
     "symfony/http-client": "^7.0",
     "symfony/mailgun-mailer": "^7.0",
     "tio/laravel": "^v1.23",
-    "yajra/laravel-datatables-oracle": "^v11.0.0"
+    "yajra/laravel-datatables-oracle": "^v12.4.0"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.6",
@@ -33,7 +33,7 @@
     "fakerphp/faker": "^v1.23.0",
     "mockery/mockery": "^1.6.11",
     "nunomaduro/collision": "^v8.1.1",
-    "phpunit/phpunit": "^11.1.1"
+    "phpunit/phpunit": "^12.2.5"
   },
   "config": {
     "optimize-autoloader": true,
@@ -43,6 +43,12 @@
       "composer/package-versions-deprecated": true
     }
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/laravel-shift/lada-cache.git"
+    }
+  ],
   "extra": {
     "laravel": {
       "dont-discover": []

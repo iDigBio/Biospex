@@ -19,27 +19,75 @@
 
 namespace Deployer;
 
+/**
+ * Deploys application-specific files using a custom artisan command.
+ * Changes to the release directory and executes the app:deploy-files command
+ * to handle any specific file deployment requirements.
+ */
+/**
+ * Execute database update queries for the application
+ * Changes to the release or current path and runs the update-queries artisan command
+ */
+desc('Running update queries...');
+task('artisan:app:update-queries', function () {
+    cd('{{release_or_current_path}}');
+    run('php artisan app:update-queries');
+});
+
 desc('Deploying files...');
 task('artisan:app:deploy-files', function () {
     cd('{{release_or_current_path}}');
     run('php artisan app:deploy-files');
 });
 
+/**
+ * Sets appropriate ownership and permissions for deployment.
+ * Updates file ownership to ubuntu:www-data and clears log files
+ * to ensure proper application functioning and security.
+ */
 desc('Setting permissions...');
 task('set:permissions', function () {
     run('sudo chown -R ubuntu.www-data {{deploy_path}}');
     run('sudo truncate -s 0 {{release_or_current_path}}/storage/logs/*.log');
 });
 
+/**
+ * Install Yarn dependencies
+ * Runs yarn install in the release path, ignoring engine requirements
+ */
 desc('Install project dependencies');
 task('yarn:run-install', function () {
     cd('{{release_or_current_path}}');
     run('yarn install --ignore-engines');
 });
 
+/**
+ * Build production assets using NPM
+ * Executes npm run prod in the release path
+ */
+desc('Build project');
+task('npm:run-build', function () {
+    cd('{{release_path}}');
+    run('npm run prod');
+});
+
+/**
+ * Uploads the appropriate environment configuration file.
+ * Copies the AWS production environment file to the shared deployment directory
+ * where it will be symlinked as .env for the application.
+ */
 desc('Upload env file depending on the host');
 task('upload:env', function () {
     upload('.env.aws.prod', '{{deploy_path}}/shared/.env');
 });
 
-
+/**
+ * Reload Supervisor configuration
+ * Executes reread and update commands for Supervisor
+ */
+desc('Supervisor reread and update');
+task('supervisor:reread-update', function () {
+    cd('{{release_path}}');
+    run('sudo supervisorctl reread');
+    run('sudo supervisorctl update');
+});

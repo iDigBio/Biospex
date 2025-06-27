@@ -31,10 +31,14 @@ set('php_fpm_version', '8.3');
 set('ssh_multiplexing', true);
 set('writable_mode', 'chmod');
 set('keep_releases', 3);
+set('clear_paths', [
+    'node_modules',
+]);
 
 host('rapid')
     ->setHostname('3.142.169.134')
     ->setDeployPath('{{base_path}}/rapid')
+    ->set('domain_name', 'rapid.biospex.org')
     ->set('branch', 'rapid');
 
 // Tasks
@@ -45,9 +49,13 @@ task('deploy', [
     'deploy:vendors',
     'artisan:storage:link',
     'yarn:run-install',
+    'npm:run-build',
+    'artisan:nova:publish',
+    'artisan:horizon:publish',
+    'artisan:sweetalert:publish',
     'artisan:app:deploy-files',
-    // 'artisan:migrate',
-    // 'artisan:app:update-queries',
+    //'artisan:migrate',
+    //'artisan:app:update-queries',
     'artisan:cache:clear',
     'artisan:config:clear',
     'artisan:event:clear',
@@ -60,8 +68,8 @@ task('deploy', [
     'artisan:event:cache',
     'artisan:optimize',
     'set:permissions',
-    //'supervisor:reload',
-    //'artisan:queue:restart',
+    //'supervisor:reread-update',
+    'deploy:clear_paths',
     'deploy:publish',
 ]);
 
