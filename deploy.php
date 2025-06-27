@@ -50,8 +50,6 @@ task('deploy', [
     'artisan:storage:link',
     'yarn:run-install',
     'npm:run-build',
-    'artisan:nova:publish',
-    'artisan:horizon:publish',
     'artisan:app:deploy-files',
     //'artisan:migrate',
     //'artisan:app:update-queries',
