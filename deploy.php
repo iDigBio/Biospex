@@ -52,7 +52,6 @@ task('deploy', [
     'npm:run-build',
     'artisan:nova:publish',
     'artisan:horizon:publish',
-    'artisan:sweetalert:publish',
     'artisan:app:deploy-files',
     //'artisan:migrate',
     //'artisan:app:update-queries',
