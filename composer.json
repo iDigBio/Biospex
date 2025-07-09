@@ -36,7 +36,6 @@
     "outl1ne/nova-sortable": "^3.4",
     "pda/pheanstalk": "^v7.0.0",
     "pusher/pusher-php-server": "^7.0",
-    "ramsey/uuid": "^4.1",
     "ratchet/pawl": "^0.4.3",
     "react/event-loop": "^1.5",
     "react/socket": "^1.16",

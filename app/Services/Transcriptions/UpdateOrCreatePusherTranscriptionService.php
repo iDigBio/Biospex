@@ -21,7 +21,6 @@
 namespace App\Services\Transcriptions;
 
 use App\Facades\TranscriptionMapHelper;
-use Ramsey\Uuid\Uuid;
 use Validator;
 
 /**
@@ -82,7 +81,7 @@ class UpdateOrCreatePusherTranscriptionService
             'expedition_uuid' => $expedition->uuid,
             'project' => $expedition->panoptesProject->title,
             'description' => $expedition->description,
-            'guid' => Uuid::uuid4()->toString(),
+            'guid' => \Str::uuid()->toString(),
             'timestamp' => $transcription->classification_finished_at,
             'subject' => [
                 'link' => $transcription->subject_references,

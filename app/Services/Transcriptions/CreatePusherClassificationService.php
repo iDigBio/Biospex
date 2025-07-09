@@ -24,7 +24,6 @@ use App\Models\PusherClassification;
 use App\Services\Api\PanoptesApiService;
 use Carbon\Carbon;
 use JetBrains\PhpStorm\ArrayShape;
-use Ramsey\Uuid\Uuid;
 
 /**
  * Class CreatePusherClassificationService
@@ -85,7 +84,7 @@ class CreatePusherClassificationService
             'classification_id' => (int) $data['classification_id'],
             'project' => $title,
             'description' => 'Classification Id '.$data['classification_id'],
-            'guid' => Uuid::uuid4()->toString(),
+            'guid' => \Str::uuid()->toString(),
             'timestamp' => Carbon::now(),
             'subject' => [
                 'link' => $subject['metadata']['references'] ?? '',

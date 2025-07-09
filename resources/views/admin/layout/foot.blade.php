@@ -1,7 +1,7 @@
 <!-- Footer -->
 <footer id="footer" class="page-footer font-small blue-grey lighten-5">
     <!-- Copyright -->
-    <div class="footer-copyright text-center text-black-50 py-3">{{ t('© 2014–2020 Copyright') }}
+    <div class="footer-copyright text-center text-black-50 py-3">{{ t('© 2014–%s Copyright', \Carbon\Carbon::now()->year) }}
         <a class="dark-grey-text" href="#"> {{ t('FSU Department of Biological Science') }}</a>
     </div>
     <!-- Copyright -->
