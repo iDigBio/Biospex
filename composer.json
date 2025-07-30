@@ -18,6 +18,7 @@
     "czim/file-handling": "dev-load-count-fix as 2.3.0",
     "czim/laravel-paperclip": "^5.0",
     "graham-campbell/markdown": "^v16.0.0.0",
+    "idigacademy/auto-cache": "dev-main",
     "intervention/image-laravel": "^1.5",
     "laracasts/utilities": "^3.2",
     "laravel/framework": "^12.0",
@@ -57,20 +58,24 @@
     "phpunit/phpunit": "^11.0",
     "spatie/laravel-ignition": "^2.0"
   },
-  "repositories": {
-    "nova": {
+  "repositories": [
+    {
       "type": "composer",
       "url": "https://nova.laravel.com"
     },
-    "file-handling": {
-      "type": "github",
+    {
+      "type": "vcs",
       "url": "https://github.com/rbruhn/file-handling.git"
     },
-    "lada-cache": {
+    {
       "type": "vcs",
       "url": "https://github.com/laravel-shift/lada-cache.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/iDigAcademy/AutoCache.git"
     }
-  },
+  ],
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",
@@ -101,7 +106,7 @@
       "Tests\\": "tests/"
     }
   },
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "prefer-stable": true,
   "scripts": {
     "post-autoload-dump": [
