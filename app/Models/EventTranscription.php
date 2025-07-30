@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
@@ -27,7 +28,9 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
  */
 class EventTranscription extends BaseEloquentModel
 {
-    use HybridRelations;
+    use Cacheable, HybridRelations {
+        Cacheable::newEloquentBuilder insteadof HybridRelations;
+    }
 
     /**
      * {@inheritDoc}

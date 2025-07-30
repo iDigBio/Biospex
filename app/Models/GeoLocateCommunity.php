@@ -21,6 +21,7 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class GeoLocateCommunity extends BaseEloquentModel
 {
-    use HasFactory, UuidTrait;
+    use Cacheable, HasFactory, UuidTrait;
 
     /**
      * The name of the database table associated with the model.

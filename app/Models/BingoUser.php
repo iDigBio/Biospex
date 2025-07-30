@@ -21,6 +21,7 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class BingoUser extends BaseEloquentModel
 {
-    use HasFactory, UuidTrait;
+    use Cacheable, HasFactory, UuidTrait;
 
     /**
      * {@inheritDoc}

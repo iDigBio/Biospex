@@ -20,8 +20,12 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
+
 class ActorExpedition extends BaseEloquentModel
 {
+    use Cacheable;
+
     public $incrementing = true;
 
     protected $table = 'actor_expedition';

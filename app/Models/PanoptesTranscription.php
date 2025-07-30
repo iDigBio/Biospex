@@ -20,11 +20,15 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
+
 /**
  * Class PanoptesTranscription
  */
 class PanoptesTranscription extends BaseMongoModel
 {
+    use Cacheable;
+
     /**
      * Set Collection
      */

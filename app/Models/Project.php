@@ -26,6 +26,7 @@ use App\Models\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Config;
@@ -39,7 +40,10 @@ use Str;
  */
 class Project extends BaseEloquentModel implements AttachableInterface
 {
-    use HasFactory, HybridRelations, PaperclipTrait, Presentable, UuidTrait;
+    use Cacheable, HybridRelations {
+        Cacheable::newEloquentBuilder insteadof HybridRelations;
+    }
+    use HasFactory, PaperclipTrait, Presentable, UuidTrait;
 
     /**
      * @var string

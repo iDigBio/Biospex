@@ -25,6 +25,7 @@ use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -39,7 +40,10 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
  */
 class Expedition extends BaseEloquentModel implements AttachableInterface
 {
-    use HasFactory, HybridRelations, PaperclipTrait, Presentable, UuidTrait;
+    use Cacheable, HybridRelations {
+        Cacheable::newEloquentBuilder insteadof HybridRelations;
+    }
+    use HasFactory, PaperclipTrait, Presentable, UuidTrait;
 
     /**
      * The name of the database table associated with the model.

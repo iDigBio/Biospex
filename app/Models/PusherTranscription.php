@@ -20,11 +20,15 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
+
 /**
  * Class PusherTranscription
  */
 class PusherTranscription extends BaseMongoModel
 {
+    use Cacheable;
+
     /**
      * Set Collection
      */

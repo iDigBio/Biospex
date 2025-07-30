@@ -23,6 +23,7 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\GroupPresenter;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -38,7 +39,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  */
 class Group extends BaseEloquentModel
 {
-    use HasFactory, Presentable, UuidTrait;
+    use Cacheable, HasFactory, Presentable, UuidTrait;
 
     /**
      * The name of the table associated with the model.

@@ -24,19 +24,19 @@ use App\Models\Traits\HasGroup;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\UserPresenter;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class User
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, HasGroup, LadaCacheTrait, Notifiable, Presentable, UuidTrait;
+    use Cacheable, HasApiTokens, HasFactory, HasGroup, Notifiable, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}

@@ -20,14 +20,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
 class WeDigBioEventTranscription extends BaseEloquentModel
 {
-    use HasFactory, HybridRelations;
+    use Cacheable, HybridRelations {
+        Cacheable::newEloquentBuilder insteadof HybridRelations;
+    }
 
     /**
      * {@inheritDoc}

@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
@@ -28,7 +29,7 @@ use Illuminate\Notifications\Notifiable;
  */
 class ActorContact extends BaseEloquentModel
 {
-    use HasFactory, Notifiable;
+    use Cacheable, HasFactory, Notifiable;
 
     /**
      * {@inheritDoc}

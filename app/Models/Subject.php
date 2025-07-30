@@ -20,11 +20,15 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
+
 /**
  * Class Subject
  */
 class Subject extends BaseMongoModel
 {
+    use Cacheable;
+
     /**
      * Set Collection
      */

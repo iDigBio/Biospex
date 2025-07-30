@@ -25,6 +25,7 @@ use App\Models\Traits\UuidTrait;
 use App\Presenters\ResourcePresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -32,7 +33,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Resource extends BaseEloquentModel implements AttachableInterface
 {
-    use HasFactory, PaperclipTrait, Presentable, UuidTrait;
+    use Cacheable, HasFactory, PaperclipTrait, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}

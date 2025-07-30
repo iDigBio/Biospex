@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\Concerns\AsPivot;
 use Spatie\EloquentSortable\Sortable;
@@ -31,7 +32,7 @@ use Spatie\EloquentSortable\SortableTrait;
  */
 class ActorWorkflow extends BaseEloquentModel implements Sortable
 {
-    use AsPivot, HasFactory, SortableTrait;
+    use AsPivot, Cacheable, HasFactory, SortableTrait;
 
     /**
      * @var string

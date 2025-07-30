@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -29,7 +30,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Actor extends BaseEloquentModel
 {
-    use HasFactory;
+    use Cacheable, HasFactory;
 
     /**
      * The name of the database table associated with the model.

@@ -21,12 +21,13 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Update extends BaseEloquentModel
 {
-    use HasFactory;
+    use Cacheable, HasFactory;
 
     /**
      * {@inheritDoc}

@@ -20,8 +20,12 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
+
 class GeoLocateExport extends BaseMongoModel
 {
+    use Cacheable;
+
     /**
      * Set Collection
      *

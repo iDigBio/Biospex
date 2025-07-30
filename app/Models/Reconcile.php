@@ -22,6 +22,7 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\ReconcilePresenter;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -29,7 +30,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Reconcile extends BaseMongoModel
 {
-    use HasFactory, Presentable;
+    use Cacheable, HasFactory, Presentable;
 
     /**
      * Set Collection
