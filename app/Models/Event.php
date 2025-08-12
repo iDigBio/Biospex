@@ -89,6 +89,16 @@ class Event extends BaseEloquentModel
     ];
 
     /**
+     * Get Cache relations.
+     *
+     * @return string[]
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'owner', 'teams', 'transcriptions'];
+    }
+
+    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string

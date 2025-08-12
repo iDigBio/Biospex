@@ -41,11 +41,17 @@ class TeamCategory extends BaseEloquentModel
     protected $fillable = ['name'];
 
     /**
-     * Faq relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Get the relations that should be cached.
      */
-    public function teams()
+    protected function getCacheRelations(): array
+    {
+        return ['teams'];
+    }
+
+    /**
+     * Faq relationship.
+     */
+    public function teams(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Team::class);
     }

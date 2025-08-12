@@ -20,10 +20,33 @@
 
 namespace App\Models\Traits;
 
+/**
+ * Trait UuidTrait
+ *
+ * Provides UUID generation functionality for Eloquent models. This trait
+ * automatically generates and assigns a UUID to the 'uuid' attribute when
+ * a new model instance is being created, ensuring unique identification
+ * across all model instances.
+ *
+ * Key Features:
+ * - Automatic UUID generation during model creation
+ * - Uses Laravel's Str::uuid() helper for UUID generation
+ * - Integrates seamlessly with Eloquent model lifecycle events
+ * - Provides consistent UUID handling across all models
+ *
+ * Usage:
+ * Simply use this trait in any Eloquent model and call bootUuidTrait()
+ * in the model's boot() method to enable automatic UUID generation.
+ */
 trait UuidTrait
 {
     /**
-     * Boot the Uuid trait for the model.
+     * Boot the UUID trait for the model.
+     *
+     * This method is automatically called when the trait is booted and sets up
+     * an event listener for the 'creating' model event. When a new model instance
+     * is being created, it automatically generates and assigns a UUID to the
+     * 'uuid' attribute using Laravel's Str::uuid() helper method.
      */
     public static function bootUuidTrait(): void
     {

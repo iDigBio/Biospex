@@ -57,9 +57,15 @@ class PanoptesProject extends BaseEloquentModel
     protected $presenter = PanoptesProjectPresenter::class;
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'expedition'];
+    }
+
+    /**
      * Project relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()
     {
@@ -68,14 +74,17 @@ class PanoptesProject extends BaseEloquentModel
 
     /**
      * Expedition relationship.
-     *
-     * @return mixed
      */
     public function expedition()
     {
         return $this->belongsTo(Expedition::class);
     }
 
+    /**
+     * Morph subjectSets.
+     *
+     * @TODO: Is this used anywhere?
+     */
     protected function subjectSets(): Attribute
     {
         return Attribute::make(

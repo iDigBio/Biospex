@@ -41,11 +41,17 @@ class FaqCategory extends BaseEloquentModel
     protected $fillable = ['name'];
 
     /**
-     * Faq relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Get the relations that should be cached.
      */
-    public function faqs()
+    protected function getCacheRelations(): array
+    {
+        return ['faqs'];
+    }
+
+    /**
+     * Faq relationship.
+     */
+    public function faqs(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Faq::class);
     }

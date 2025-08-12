@@ -64,6 +64,14 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     ];
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['user'];
+    }
+
+    /**
      * Profile constructor.
      */
     public function __construct(array $attributes = [])

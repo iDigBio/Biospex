@@ -36,15 +36,11 @@ class GeoLocateCommunity extends BaseEloquentModel
 
     /**
      * The name of the database table associated with the model.
-     *
-     * @var string
      */
     protected $table = 'geo_locate_communities';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
     protected $fillable = [
         'project_id',
@@ -60,11 +56,17 @@ class GeoLocateCommunity extends BaseEloquentModel
     ];
 
     /**
-     * Boot the model and its traits.
-     *
-     * @return void
+     * Get the relations that should be cached.
      */
-    public static function boot()
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'geoLocateDataSources'];
+    }
+
+    /**
+     * Boot the model and its traits.
+     */
+    public static function boot(): void
     {
         parent::boot();
 
@@ -81,8 +83,6 @@ class GeoLocateCommunity extends BaseEloquentModel
 
     /**
      * Get the casts for the model's attributes.
-     *
-     * @return array The attribute casts configuration.
      */
     protected function casts(): array
     {
@@ -93,8 +93,6 @@ class GeoLocateCommunity extends BaseEloquentModel
 
     /**
      * Defines the relationship indicating that this model belongs to a single Project model.
-     *
-     * @return BelongsTo The relationship object representing the association to the Project model.
      */
     public function project(): BelongsTo
     {
@@ -103,8 +101,6 @@ class GeoLocateCommunity extends BaseEloquentModel
 
     /**
      * Establishes a one-to-many relationship with the GeoLocateDataSource model, where multiple geo-location data sources are associated with a specific community.
-     *
-     * @return HasMany The relationship object representing the collection of GeoLocateDataSource models related to this community.
      */
     public function geoLocateDataSources(): HasMany
     {

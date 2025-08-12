@@ -56,6 +56,14 @@ class Team extends BaseEloquentModel
     protected $presenter = TeamPresenter::class;
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['teamCategory'];
+    }
+
+    /**
      * TeamCategory relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

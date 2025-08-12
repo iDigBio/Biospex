@@ -51,6 +51,14 @@ class PusherTranscription extends BaseMongoModel
         ];
     }
 
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['expedition', 'transcription'];
+    }
+
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class, 'expedition_id', 'id');

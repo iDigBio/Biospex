@@ -47,6 +47,14 @@ class GeoLocateExport extends BaseMongoModel
     }
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['expedition'];
+    }
+
+    /**
      * Expedition relation.
      */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo

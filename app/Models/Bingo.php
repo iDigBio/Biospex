@@ -72,6 +72,16 @@ class Bingo extends BaseEloquentModel
     protected $presenter = BingoPresenter::class;
 
     /**
+     * Get Cache relations.
+     *
+     * @return string[]
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['user', 'project', 'words', 'maps'];
+    }
+
+    /**
      * User relation.
      */
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -92,7 +102,7 @@ class Bingo extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function words()
+    public function words(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(BingoWord::class);
     }
@@ -102,7 +112,7 @@ class Bingo extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function maps()
+    public function maps(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(BingoUser::class);
     }

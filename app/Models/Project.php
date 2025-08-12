@@ -100,6 +100,14 @@ class Project extends BaseEloquentModel implements AttachableInterface
     ];
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['group', 'amChart'.'bingos', 'events', 'expeditions', 'expeditionStats', 'geoLocateCommunities', 'geoLocateDataSources', 'header', 'imports', 'metas', 'ocrQueue', 'panoptesProjects', 'panoptesTranscriptions', 'resources', 'subjects', 'transcriptionLocations', 'workflowManagers'];
+    }
+
+    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string

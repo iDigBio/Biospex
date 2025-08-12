@@ -47,6 +47,14 @@ class OcrQueue extends BaseEloquentModel
     ];
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'expedition', 'files'];
+    }
+
+    /**
      * Project relation
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -56,8 +64,6 @@ class OcrQueue extends BaseEloquentModel
 
     /**
      * Expedition relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition()
     {

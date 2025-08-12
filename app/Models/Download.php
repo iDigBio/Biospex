@@ -82,6 +82,16 @@ class Download extends BaseEloquentModel
     ];
 
     /**
+     * Get Cache relations.
+     *
+     * @return string[]
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['expedition', 'actor', 'geoLocateDataSource'];
+    }
+
+    /**
      * Specifies the route key name for the model, which is `uuid`.
      * This allows model instances to be resolved in routes using the UUID
      * instead of the default `id`.

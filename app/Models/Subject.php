@@ -48,6 +48,14 @@ class Subject extends BaseMongoModel
     }
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'panoptesTranscriptions', 'occurrence'];
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()

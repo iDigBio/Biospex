@@ -26,28 +26,69 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class AmChart
+ *
+ * Represents chart data storage for AmCharts visualization library.
+ * This model stores chart configurations, series data, and visualization
+ * data associated with projects, enabling dynamic chart generation and display.
+ *
+ * Key Features:
+ * - Supports caching for improved performance
+ * - Automatic JSON encoding/decoding for series and data attributes
+ * - Maintains relationship with Project model
+ * - Stores chart configuration and visualization data
  */
 class AmChart extends BaseEloquentModel
 {
     use Cacheable, HasFactory;
 
     /**
-     * {@inheritDoc}
+     * The name of the database table associated with the model.
+     *
+     * @var string
      */
     protected $table = 'amcharts';
 
     /**
-     * {@inheritDoc}
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
      */
-    protected $fillable = ['project_id', 'series', 'data'];
+    protected $fillable = [
+        'project_id',   // Foreign key reference to the Project model
+        'series',       // Chart series configuration data (JSON)
+        'data',         // Chart data points and values (JSON)
+    ];
 
+    /**
+     * Get the relations that should be cached for performance optimization.
+     *
+     * This method defines which Eloquent relationships should be cached
+     * when using the Cacheable trait to improve query performance.
+     *
+     * @return array<string> Array of relationship names to be cached
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project'];
+    }
+
+    /**
+     * Define a many-to-one relationship with the Project model.
+     *
+     * An AmChart belongs to a single Project, representing the chart
+     * data and configuration associated with that project.
+     */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
     /**
-     * Define the data attribute.
+     * Define the data attribute accessor and mutator.
+     *
+     * This attribute automatically handles JSON encoding/decoding for the
+     * chart data field, allowing seamless storage and retrieval of array
+     * data as JSON in the database.
      */
     protected function data(): Attribute
     {
@@ -58,7 +99,11 @@ class AmChart extends BaseEloquentModel
     }
 
     /**
-     * Define the series attribute.
+     * Define the series attribute accessor and mutator.
+     *
+     * This attribute automatically handles JSON encoding/decoding for the
+     * chart series configuration field, allowing seamless storage and
+     * retrieval of array data as JSON in the database.
      */
     protected function series(): Attribute
     {

@@ -47,6 +47,14 @@ class OcrQueueFile extends BaseEloquentModel
     ];
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['ocrQueue'];
+    }
+
+    /**
      * Queue relationship.
      */
     public function ocrQueue(): \Illuminate\Database\Eloquent\Relations\BelongsTo

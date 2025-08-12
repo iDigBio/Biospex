@@ -55,6 +55,14 @@ class StateCounty extends BaseEloquentModel
     ];
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['transcriptionLocations'];
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function transcriptionLocations()

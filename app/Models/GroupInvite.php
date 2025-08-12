@@ -54,6 +54,14 @@ class GroupInvite extends BaseEloquentModel
     ];
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['group'];
+    }
+
+    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string

@@ -45,6 +45,7 @@ class WeDigBioProject extends BaseEloquentModel
         'subject_sets',
     ];
 
+    // TODO: Is this used anywhere?
     protected function subjectSets(): Attribute
     {
         return Attribute::make(

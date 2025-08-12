@@ -48,18 +48,34 @@ class ExportQueue extends BaseEloquentModel
         'error',
     ];
 
+    /**
+     * Get the relations that should be cached.
+     *
+     * @return array<string> Array of relation names to cache
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['expedition', 'actor', 'files'];
+    }
+
+    /**
+     * Get Expedition relation.
+     */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class);
     }
 
+    /**
+     * Get Actor relation.
+     */
     public function actor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Actor::class);
     }
 
     /**
-     * ExportQueueFiles relationship.
+     * Get ExportQueueFile relation.
      */
     public function files(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

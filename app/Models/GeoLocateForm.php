@@ -45,15 +45,11 @@ class GeoLocateForm extends BaseEloquentModel
 
     /**
      * Table associated with this model.
-     *
-     * @var string
      */
     protected $table = 'geo_locate_forms';
 
     /**
      * Attributes that are mass assignable.
-     *
-     * @var string[]
      */
     protected $fillable = [
         'group_id',    // Reference to the related Group model
@@ -64,8 +60,6 @@ class GeoLocateForm extends BaseEloquentModel
 
     /**
      * Attributes that should be hidden for arrays.
-     *
-     * @var string[]
      */
     protected $hidden = [
         'id',
@@ -73,8 +67,6 @@ class GeoLocateForm extends BaseEloquentModel
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @return string[]
      */
     protected function casts(): array
     {
@@ -82,6 +74,14 @@ class GeoLocateForm extends BaseEloquentModel
             'fields' => 'array',            // Casts the `fields` attribute to an array
             'created_at' => 'datetime:Y-m-d', // Formats the `created_at` field as 'Y-m-d'
         ];
+    }
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['group', 'expeditions', 'geoLocateDataSources'];
     }
 
     /**
@@ -133,7 +133,7 @@ class GeoLocateForm extends BaseEloquentModel
     }
 
     /**
-     * Defines a "has many" relationship with the GeoLocateDataSource model.
+     * Defines a "has many" relationships with the GeoLocateDataSource model.
      *
      * A GeoLocateForm can be associated with multiple data sources
      * via this relationship.

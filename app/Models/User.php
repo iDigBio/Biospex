@@ -38,14 +38,8 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use Cacheable, HasApiTokens, HasFactory, HasGroup, Notifiable, Presentable, UuidTrait;
 
-    /**
-     * {@inheritDoc}
-     */
     protected $table = 'users';
 
-    /**
-     * {@inheritDoc}
-     */
     protected $fillable = [
         'uuid',
         'email',
@@ -53,10 +47,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'notification',
     ];
 
+    protected $hidden = ['id', 'password', 'remember_token'];
+
+    protected $hashableAttributes = ['password'];
+
+    protected string $presenter = UserPresenter::class;
+
     /**
      * The attributes that should be cast.
-     *
-     * @return string[]
      */
     protected function casts(): array
     {
@@ -66,21 +64,12 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * {@inheritDoc}
+     * Get the relations that should be cached.
      */
-    protected $hidden = ['id', 'password', 'remember_token'];
-
-    /**
-     * Attributes that should be hashed.
-     *
-     * @var array
-     */
-    protected $hashableAttributes = ['password'];
-
-    /**
-     * @var string
-     */
-    protected $presenter = UserPresenter::class;
+    protected function getCacheRelations(): array
+    {
+        return ['groups', 'ownGroups', 'imports', 'profile', 'events'];
+    }
 
     /**
      * Get the route key for the model.
@@ -102,50 +91,40 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Group relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function groups()
+    public function groups(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Group::class);
     }
 
     /**
      * Group owner relationship.
-     *
-     * @return mixed
      */
-    public function ownGroups()
+    public function ownGroups(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Group::class);
     }
 
     /**
      * Import relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function imports()
+    public function imports(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Import::class);
     }
 
     /**
      * Profile relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function profile()
+    public function profile(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Profile::class);
     }
 
     /**
      * Events relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function events()
+    public function events(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Event::class);
     }

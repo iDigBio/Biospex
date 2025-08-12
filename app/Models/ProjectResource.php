@@ -56,6 +56,14 @@ class ProjectResource extends BaseEloquentModel implements AttachableInterface
     protected $presenter = ProjectResourcePresenter::class;
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project'];
+    }
+
+    /**
      * Project constructor.
      */
     public function __construct(array $attributes = [])

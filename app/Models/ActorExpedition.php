@@ -22,29 +22,83 @@ namespace App\Models;
 
 use IDigAcademy\AutoCache\Traits\Cacheable;
 
+/**
+ * Class ActorExpedition
+ *
+ * Represents the pivot model for the many-to-many relationship between
+ * Actor and Expedition models. This model stores additional information
+ * about the processing state, progress, and configuration for each
+ * actor-expedition combination.
+ *
+ * Key Features:
+ * - Supports caching for improved performance
+ * - Tracks processing state and progress information
+ * - Manages actor order and expert status for expeditions
+ * - Stores error information and processing totals
+ */
 class ActorExpedition extends BaseEloquentModel
 {
     use Cacheable;
 
+    /**
+     * Indicates if the model should use auto-incrementing primary keys.
+     *
+     * @var bool
+     */
     public $incrementing = true;
 
+    /**
+     * The name of the database table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'actor_expedition';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
+     */
     protected $fillable = [
-        'actor_id',
-        'expedition_id',
-        'state',
-        'total',
-        'error',
-        'order',
-        'expert',
+        'actor_id',      // Foreign key reference to the Actor model
+        'expedition_id', // Foreign key reference to the Expedition model
+        'state',         // Current processing state of the actor-expedition
+        'total',         // Total number of items processed
+        'error',         // Error message if processing failed
+        'order',         // Processing order for this actor in the expedition
+        'expert',        // Boolean flag indicating if this is an expert review
     ];
 
+    /**
+     * Get the relations that should be cached for performance optimization.
+     *
+     * This method defines which Eloquent relationships should be cached
+     * when using the Cacheable trait to improve query performance.
+     *
+     * @return array<string> Array of relationship names to be cached
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['actor', 'expedition'];
+    }
+
+    /**
+     * Define a many-to-one relationship with the Actor model.
+     *
+     * This pivot model belongs to a single Actor, representing the
+     * actor that processes the expedition.
+     */
     public function actor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Actor::class);
     }
 
+    /**
+     * Define a many-to-one relationship with the Expedition model.
+     *
+     * This pivot model belongs to a single Expedition, representing the
+     * expedition being processed by the actor.
+     */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class);

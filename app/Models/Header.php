@@ -45,9 +45,15 @@ class Header extends BaseEloquentModel
     ];
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project'];
+    }
+
+    /**
      * Project relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()
     {

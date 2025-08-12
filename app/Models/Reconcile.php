@@ -58,6 +58,14 @@ class Reconcile extends BaseMongoModel
     protected string $presenter = ReconcilePresenter::class;
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'expedition', 'transcriptions'];
+    }
+
+    /**
      * Subject relation.
      */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo

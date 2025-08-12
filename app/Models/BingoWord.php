@@ -45,11 +45,19 @@ class BingoWord extends BaseEloquentModel
     ];
 
     /**
-     * Bingo relation.
+     * Get Cache relations.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return string[]
      */
-    public function bingo()
+    protected function getCacheRelations(): array
+    {
+        return ['bingo'];
+    }
+
+    /**
+     * Bingo relation.
+     */
+    public function bingo(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Bingo::class);
     }

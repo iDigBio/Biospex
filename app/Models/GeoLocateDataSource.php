@@ -39,15 +39,11 @@ class GeoLocateDataSource extends BaseEloquentModel
 
     /**
      * The name of the database table associated with the model.
-     *
-     * @var string
      */
     protected $table = 'geo_locate_data_sources';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
     protected $fillable = [
         'project_id',      // Identifier for the associated project
@@ -61,8 +57,6 @@ class GeoLocateDataSource extends BaseEloquentModel
 
     /**
      * The attributes that should be hidden for serialized arrays or JSON.
-     *
-     * @var array
      */
     protected $hidden = [
         'id', // ID hidden for external representations
@@ -70,12 +64,16 @@ class GeoLocateDataSource extends BaseEloquentModel
 
     /**
      * The attributes that should be cast to a specific data type.
-     *
-     * @var array
      */
-    protected $casts = [
-        'data' => 'array', // Casts the 'data' attribute to an array format
-    ];
+    protected $casts = ['data' => 'array'];
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'expedition', 'download', 'geoLocateCommunity', 'geoLocateForm'];
+    }
 
     /**
      * Get the route key name for the model.

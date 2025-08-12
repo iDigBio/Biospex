@@ -67,6 +67,16 @@ class EventTranscription extends BaseEloquentModel
     }
 
     /**
+     * Get Cache relations.
+     *
+     * @return string[]
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['event', 'team', 'user', 'transcription'];
+    }
+
+    /**
      * Transcription relationship.
      */
     public function transcription(): \Illuminate\Database\Eloquent\Relations\HasOne

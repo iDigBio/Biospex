@@ -34,24 +34,20 @@ class WeDigBioEvent extends BaseEloquentModel
 {
     use Cacheable, HasFactory, Presentable, UuidTrait;
 
-    /**
-     * {@inheritDoc}
-     */
     protected $table = 'wedigbio_events';
 
-    /**
-     * {@inheritDoc}
-     */
     protected $fillable = [
         'start_date',
         'end_date',
         'active',
     ];
 
+    protected string $presenter = WeDigBioDatePresenter::class;
+
+    protected $hidden = ['id'];
+
     /**
      * The attributes that should be cast.
-     *
-     * @return string[]
      */
     protected function casts(): array
     {
@@ -62,16 +58,13 @@ class WeDigBioEvent extends BaseEloquentModel
         ];
     }
 
-    protected string $presenter = WeDigBioDatePresenter::class;
-
     /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
+     * Get the relations that should be cached.
      */
-    protected $hidden = [
-        'id',
-    ];
+    protected function getCacheRelations(): array
+    {
+        return ['transcriptions'];
+    }
 
     /**
      * Get the route key for the model.

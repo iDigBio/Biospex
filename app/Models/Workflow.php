@@ -40,11 +40,25 @@ class Workflow extends BaseEloquentModel
      */
     protected $fillable = ['title', 'enabled'];
 
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['actors', 'expedition'];
+    }
+
+    /**
+     * Actors relation.
+     */
     public function actors(): mixed
     {
         return $this->belongsToMany(Actor::class)->using(ActorWorkflow::class)->withPivot('order');
     }
 
+    /**
+     * Expedition Relation.
+     */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Expedition::class);

@@ -25,27 +25,53 @@ use MongoDB\Laravel\Eloquent\Model;
 /**
  * Class BaseMongoModel
  *
+ * Base MongoDB model class that provides common functionality and configuration
+ * for all MongoDB-based models in the application. This class extends the
+ * Laravel MongoDB package's base model and provides enhanced attribute casting
+ * and standardized configuration for MongoDB collections.
+ *
+ * Key Features:
+ * - MongoDB connection management
+ * - Enhanced attribute casting functionality
+ * - Non-incrementing primary keys (MongoDB ObjectId)
+ * - Mass assignment protection disabled by default
+ * - Standardized MongoDB model configuration
+ *
  * @mixin \Eloquent
  */
 class BaseMongoModel extends Model
 {
     /**
-     * {@inheritDoc}
+     * The database connection name for the model.
+     * Uses MongoDB connection for all MongoDB-based models.
+     *
+     * @var string
      */
     protected $connection = 'mongodb';
 
     /**
-     * {@inheritDoc}
+     * The attributes that are not mass assignable.
+     * Empty array allows mass assignment for all attributes.
+     *
+     * @var array<string>
      */
     protected $guarded = [];
 
     /**
-     * {@inheritDoc}
+     * Indicates if the model should use auto-incrementing primary keys.
+     * MongoDB uses ObjectId which is not auto-incrementing.
+     *
+     * @var bool
      */
     public $incrementing = false;
 
     /**
-     * {@inheritDoc}
+     * Create a new MongoDB Eloquent model instance.
+     *
+     * This constructor initializes the MongoDB model with the provided
+     * attributes and sets up the necessary MongoDB-specific configurations.
+     *
+     * @param  array<string, mixed>  $attributes  Initial model attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -53,10 +79,14 @@ class BaseMongoModel extends Model
     }
 
     /**
-     * Enable casts in models.
+     * Set a given attribute on the model with enhanced casting support.
      *
-     * @param  string  $key
-     * @param  mixed  $value
+     * This method extends the base setAttribute functionality to ensure
+     * that attribute casting is properly applied before setting values,
+     * providing better data type consistency for MongoDB documents.
+     *
+     * @param  string  $key  The attribute name
+     * @param  mixed  $value  The attribute value
      * @return \MongoDB\Laravel\Eloquent\Model|mixed|void
      */
     public function setAttribute($key, $value)

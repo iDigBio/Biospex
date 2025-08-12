@@ -49,6 +49,19 @@ class ExpeditionStat extends BaseEloquentModel
         'percentage_completed',
     ];
 
+    /**
+     * Get the relations that should be cached.
+     *
+     * @return array<string> Array of relation names to cache
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['expedition'];
+    }
+
+    /**
+     * Return Expedition relation.
+     */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class);

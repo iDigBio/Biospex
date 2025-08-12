@@ -51,21 +51,25 @@ class ExportQueueFile extends BaseEloquentModel
     ];
 
     /**
-     * ExportQueue relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Get the relations that should be cached.
      */
-    public function queue()
+    protected function getCacheRelations(): array
+    {
+        return ['queue', 'subject'];
+    }
+
+    /**
+     * ExportQueue relationship.
+     */
+    public function queue(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(ExportQueue::class, 'queue_id', 'id');
     }
 
     /**
      * Subject relation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function subject()
+    public function subject(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Subject::class, '_id', 'subject_id');
     }

@@ -59,6 +59,16 @@ class BingoUser extends BaseEloquentModel
     ];
 
     /**
+     * Get Cache relations.
+     *
+     * @return string[]
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['bingo'];
+    }
+
+    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string
@@ -81,7 +91,7 @@ class BingoUser extends BaseEloquentModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function bingo()
+    public function bingo(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Bingo::class);
     }
