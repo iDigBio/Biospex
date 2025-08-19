@@ -438,7 +438,9 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
         $advertise = ! empty($extra) ? array_merge($build, $extra) : $build;
 
-        $this->attributes['advertise'] = serialize($advertise);
+        // Clean UTF-8 encoding and save as JSON
+        $cleanedData = $this->cleanUtf8InArray($advertise);
+        $this->attributes['advertise'] = json_encode($cleanedData, JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -448,6 +450,44 @@ class Project extends BaseEloquentModel implements AttachableInterface
      */
     public function getAdvertiseAttribute($value)
     {
-        return unserialize($value);
+        if (empty($value)) {
+            return null;
+        }
+
+        // Try JSON decode first (new format)
+        $jsonDecoded = json_decode($value, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $jsonDecoded;
+        }
+
+        // Fall back to unserialize for legacy data
+        try {
+            $unserialized = unserialize($value);
+            if ($unserialized !== false) {
+                return $unserialized;
+            }
+        } catch (\Exception $e) {
+            // If both fail, return null
+        }
+
+        return null;
+    }
+
+    /**
+     * Recursively clean UTF-8 encoding in array values
+     */
+    private function cleanUtf8InArray($data)
+    {
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = $this->cleanUtf8InArray($value);
+            }
+        } elseif (is_string($data)) {
+            // Clean UTF-8 encoding using the GeneralService method
+            $generalService = app(\App\Services\Helpers\GeneralService::class);
+            $data = $generalService->forceUtf8($data, 'UTF-8');
+        }
+
+        return $data;
     }
 }

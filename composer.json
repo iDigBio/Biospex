@@ -41,7 +41,6 @@
     "react/event-loop": "^1.5",
     "react/socket": "^1.16",
     "spatie/eloquent-sortable": "^4.0",
-    "spiritix/lada-cache": "dev-l12-compatibility",
     "tio/laravel": "^1.10"
   },
   "require-dev": {
