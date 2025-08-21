@@ -54,8 +54,8 @@ desc('Upload env file depending on the host');
 task('upload:env', function () {
     $alias = currentHost()->get('alias');
     $file = match ($alias) {
-        'production' => '/mnt/c/Users/bruhn/Cloud-Drive/Local-Dev-Install/env/.env.aws.prod',
-        'development' => '/mnt/c/Users/bruhn/Cloud-Drive/Local-Dev-Install/env/.env.aws.dev'
+        'production' => '.env.aws.prod',
+        'development' => '.env.aws.dev'
     };
     upload($file, '{{deploy_path}}/shared/.env');
 });

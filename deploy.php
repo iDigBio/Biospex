@@ -72,7 +72,7 @@ task('deploy', [
     'artisan:event:cache',
     'artisan:optimize',
     'set:permissions',
-    'supervisor:reload',
+    //'supervisor:reload',
     // 'supervisor:restart-group',
     // 'artisan:queue:restart',
     'deploy:publish',
