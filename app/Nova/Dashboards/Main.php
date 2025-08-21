@@ -36,10 +36,10 @@ class Main extends Dashboard
     public function cards()
     {
         return [
-            new NewUsers(),
-            new NewProjects(),
-            new NewExpeditions(),
-            new NewTranscriptions(),
+            new NewUsers,
+            new NewProjects,
+            new NewExpeditions,
+            new NewTranscriptions,
         ];
     }
 }
