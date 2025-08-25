@@ -88,8 +88,6 @@ class BingoUser extends BaseEloquentModel
 
     /**
      * Bingo relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function bingo(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

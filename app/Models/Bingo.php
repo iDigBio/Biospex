@@ -99,8 +99,6 @@ class Bingo extends BaseEloquentModel
 
     /**
      * Word relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function words(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -109,8 +107,6 @@ class Bingo extends BaseEloquentModel
 
     /**
      * Map relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function maps(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

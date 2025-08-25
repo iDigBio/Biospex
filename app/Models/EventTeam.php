@@ -73,9 +73,6 @@ class EventTeam extends BaseEloquentModel
         return 'uuid';
     }
 
-    /**
-     * @var string
-     */
     protected string $presenter = EventTeamPresenter::class;
 
     /**
@@ -90,8 +87,6 @@ class EventTeam extends BaseEloquentModel
 
     /**
      * Event relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function event(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -100,8 +95,6 @@ class EventTeam extends BaseEloquentModel
 
     /**
      * EventUser relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -110,8 +103,6 @@ class EventTeam extends BaseEloquentModel
 
     /**
      * Event transcription relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function transcriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

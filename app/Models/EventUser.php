@@ -82,8 +82,6 @@ class EventUser extends BaseEloquentModel
 
     /**
      * EventTeam relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function teams(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -93,8 +91,6 @@ class EventUser extends BaseEloquentModel
 
     /**
      * Event transcription relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function transcriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
