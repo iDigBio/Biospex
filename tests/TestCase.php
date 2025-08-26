@@ -33,12 +33,12 @@ abstract class TestCase extends BaseTestCase
     {
         // We don't have a cached config, so continue running the test suite.
         if (! $app->configurationIsCached()) {
-            \Artisan::call('lada-cache:flush');
+            \Artisan::call('auto-cache:clear');
 
             return;
         }
 
-        $commands = ['clear-compiled', 'cache:clear', 'view:clear', 'config:clear', 'route:clear', 'lada-cache:flush'];
+        $commands = ['clear-compiled', 'cache:clear', 'view:clear', 'config:clear', 'route:clear', 'auto-cache:clear'];
         foreach ($commands as $command) {
             \Illuminate\Support\Facades\Artisan::call($command);
         }
