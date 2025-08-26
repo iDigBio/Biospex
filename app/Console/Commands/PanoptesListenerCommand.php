@@ -41,21 +41,21 @@ class PanoptesListenerCommand extends Command
 
     private $connection;
 
-    private $isShuttingDown = false;
+    private bool $isShuttingDown = false;
 
-    private $maxReconnectAttempts = 10;
+    private int $maxReconnectAttempts = 10;
 
-    private $reconnectAttempts = 0;
+    private int $reconnectAttempts = 0;
 
-    private $reconnectDelay = 1;
+    private int $reconnectDelay = 1;
 
     private $lastMessageTime;
 
     private $heartbeatTimer;
 
-    private $adminEmail;
+    private string $adminEmail;
 
-    private $lastEmailSent = 0; // Rate limiting for emails
+    private int $lastEmailSent = 0; // Rate limiting for emails
 
     public function __construct()
     {
@@ -65,7 +65,7 @@ class PanoptesListenerCommand extends Command
         $this->adminEmail = config('mail.from.address');
     }
 
-    public function handle()
+    public function handle(): int
     {
         try {
             $this->info('Starting Panoptes Pusher listener...');
