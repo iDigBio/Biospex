@@ -20,7 +20,7 @@
 
 namespace App\Services\Api;
 
-use Cache;
+use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -45,18 +45,19 @@ class ZooniverseTalkApiService
 
     /**
      * Get talk comments for project and subject.
-     *
-     * @return mixed
      */
-    public function getComments(int $projectId, int $subjectId)
+    public function getComments(int $projectId, int $subjectId): mixed
     {
         $this->setResourceUri($projectId, $subjectId);
 
-        $talk = Cache::remember(__METHOD__.$projectId.$subjectId, 3600, function () {
+        $key = AutoCacheHelper::generateKey('zooniverse_talk_comments', ['project_id' => $projectId, 'subject_id' => $subjectId]);
+        $tags = AutoCacheHelper::generateTags(['zooniverse_talk', 'comments']);
+
+        $talk = AutoCacheHelper::remember($key, 3600, function () {
             $response = Http::get($this->resource_uri);
 
             return $response->json();
-        });
+        }, $tags);
 
         return $talk['comments'];
     }

@@ -20,6 +20,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Transcriptions\PanoptesTranscriptionService;
 use Illuminate\Console\Command;
 
 /**
@@ -37,16 +38,23 @@ class AppTestCommand extends Command
      */
     protected $description = 'Used to test code';
 
+    protected PanoptesTranscriptionService $panoptesTranscriptionService;
+
     /**
      * Create a new command instance.
      */
-    public function __construct()
+    public function __construct(PanoptesTranscriptionService $panoptesTranscriptionService)
     {
         parent::__construct();
+        $this->panoptesTranscriptionService = $panoptesTranscriptionService;
     }
 
     /**
      * @return void
      */
-    public function handle() {}
+    public function handle()
+    {
+        $data = $this->panoptesTranscriptionService->getTranscriptionsForDashboardJob(55);
+        dd($data->first());
+    }
 }
