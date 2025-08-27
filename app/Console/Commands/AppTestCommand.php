@@ -20,7 +20,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\PanoptesTranscription;
 use Illuminate\Console\Command;
 
 /**
@@ -49,7 +48,5 @@ class AppTestCommand extends Command
     /**
      * @return void
      */
-    public function handle() {
-        PanoptesTranscription::where('created_at')->count();
-    }
+    public function handle() {}
 }
