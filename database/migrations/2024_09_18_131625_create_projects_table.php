@@ -60,7 +60,7 @@ return new class extends Migration
             $table->timestamp('logo_updated_at')->nullable();
             $table->string('banner_file')->nullable();
             $table->text('target_fields')->nullable();
-            $table->binary('advertise')->nullable();
+            $table->json('advertise')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
         });

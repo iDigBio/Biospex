@@ -51,7 +51,7 @@ class PanoptesProjectUpdateJob implements ShouldQueue
     /**
      * Execute job.
      */
-    public function handle(PanoptesApiService $panoptesApiService, ExpeditionStat $expeditionStat)
+    public function handle(PanoptesApiService $panoptesApiService, ExpeditionStat $expeditionStat): void
     {
 
         $workflow = $panoptesApiService->getPanoptesWorkflow($this->panoptesProject->panoptes_workflow_id);

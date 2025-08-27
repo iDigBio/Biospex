@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -27,7 +28,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Import extends BaseEloquentModel
 {
-    use HasFactory;
+    use Cacheable, HasFactory;
 
     /**
      * {@inheritDoc}
@@ -43,6 +44,14 @@ class Import extends BaseEloquentModel
         'file',
         'error',
     ];
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'user'];
+    }
 
     /**
      * Project relationship.

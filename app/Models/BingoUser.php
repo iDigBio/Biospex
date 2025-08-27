@@ -21,6 +21,7 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class BingoUser extends BaseEloquentModel
 {
-    use HasFactory, UuidTrait;
+    use Cacheable, HasFactory, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -58,6 +59,16 @@ class BingoUser extends BaseEloquentModel
     ];
 
     /**
+     * Get Cache relations.
+     *
+     * @return string[]
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['bingo'];
+    }
+
+    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string
@@ -77,10 +88,8 @@ class BingoUser extends BaseEloquentModel
 
     /**
      * Bingo relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function bingo()
+    public function bingo(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Bingo::class);
     }

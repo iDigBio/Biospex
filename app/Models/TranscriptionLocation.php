@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -27,7 +28,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class TranscriptionLocation extends BaseEloquentModel
 {
-    use HasFactory;
+    use Cacheable, HasFactory;
 
     /**
      * {@inheritDoc}
@@ -60,9 +61,15 @@ class TranscriptionLocation extends BaseEloquentModel
     }
 
     /**
-     * Project relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'expedition', 'panoptesTranscription', 'stateCounty'];
+    }
+
+    /**
+     * Return Project relationship.
      */
     public function project()
     {
@@ -70,23 +77,23 @@ class TranscriptionLocation extends BaseEloquentModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Return Expedition relation.
      */
-    public function expedition()
+    public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Expedition::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Return PanoptesTranscription relation.
      */
-    public function panoptesTranscription()
+    public function panoptesTranscription(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(PanoptesTranscription::class, 'classification_id', 'classification_id');
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Return StateCounty relation.
      */
     public function stateCounty()
     {

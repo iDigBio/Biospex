@@ -23,6 +23,7 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\EventTeamPresenter;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -30,7 +31,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class EventTeam extends BaseEloquentModel
 {
-    use HasFactory, Presentable, UuidTrait;
+    use Cacheable, HasFactory, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -55,6 +56,16 @@ class EventTeam extends BaseEloquentModel
     ];
 
     /**
+     * Get Cache relations.
+     *
+     * @return string[]
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['event', 'users', 'transcriptions'];
+    }
+
+    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string
@@ -62,10 +73,7 @@ class EventTeam extends BaseEloquentModel
         return 'uuid';
     }
 
-    /**
-     * @var string
-     */
-    protected $presenter = EventTeamPresenter::class;
+    protected string $presenter = EventTeamPresenter::class;
 
     /**
      * Model Boot
@@ -79,30 +87,24 @@ class EventTeam extends BaseEloquentModel
 
     /**
      * Event relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function event()
+    public function event(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Event::class);
     }
 
     /**
      * EventUser relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function users()
+    public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(EventUser::class, 'event_team_user', 'team_id', 'user_id');
     }
 
     /**
      * Event transcription relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function transcriptions()
+    public function transcriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(EventTranscription::class, 'team_id');
     }

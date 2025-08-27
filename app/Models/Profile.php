@@ -23,6 +23,7 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -30,7 +31,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Profile extends BaseEloquentModel implements AttachableInterface
 {
-    use HasFactory, PaperclipTrait, Presentable;
+    use Cacheable, HasFactory, PaperclipTrait, Presentable;
 
     /**
      * {@inheritDoc}
@@ -61,6 +62,14 @@ class Profile extends BaseEloquentModel implements AttachableInterface
         'timezone',
         'avatar',
     ];
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['user'];
+    }
 
     /**
      * Profile constructor.

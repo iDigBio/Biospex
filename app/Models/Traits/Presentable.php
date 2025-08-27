@@ -22,17 +22,46 @@ namespace App\Models\Traits;
 
 use App\Exceptions\PresenterException;
 
+/**
+ * Trait Presentable
+ *
+ * Implements the Presenter pattern for Eloquent models. This trait allows
+ * models to have associated presenter classes that handle presentation logic,
+ * keeping the model focused on business logic while separating view-related
+ * formatting and display concerns.
+ *
+ * Key Features:
+ * - Lazy loading of presenter instances for performance
+ * - Automatic presenter instantiation based on model configuration
+ * - Exception handling for missing or invalid presenter configurations
+ * - Singleton pattern for presenter instances per model
+ *
+ * Usage:
+ * Models using this trait should define a protected $presenter property
+ * containing the fully qualified class name of their presenter class.
+ */
 trait Presentable
 {
     /**
-     * @var \App\Presenters\Presenter
+     * Cached presenter instance for this model.
+     * Stores the instantiated presenter to avoid repeated instantiation.
+     *
+     * @var \App\Presenters\Presenter|null
      */
     protected $presenterInstance;
 
     /**
-     * @return mixed
+     * Get the presenter instance for this model.
      *
-     * @throws PresenterException
+     * This method implements lazy loading of the presenter instance. It first
+     * checks if a presenter instance already exists and returns it. If not,
+     * it attempts to instantiate the presenter class specified in the model's
+     * $presenter property. If the presenter property is not set or the class
+     * doesn't exist, it throws a PresenterException.
+     *
+     * @return \App\Presenters\Presenter The presenter instance for this model
+     *
+     * @throws PresenterException When the presenter property is not set correctly
      */
     public function present()
     {

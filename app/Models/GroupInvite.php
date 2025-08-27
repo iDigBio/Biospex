@@ -21,13 +21,14 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 
 class GroupInvite extends BaseEloquentModel
 {
-    use HasFactory, Notifiable, UuidTrait;
+    use Cacheable, HasFactory, Notifiable, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -51,6 +52,14 @@ class GroupInvite extends BaseEloquentModel
     protected $hidden = [
         'id',
     ];
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['group'];
+    }
 
     /**
      * Get the route key for the model.

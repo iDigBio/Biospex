@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
@@ -27,7 +28,9 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
  */
 class EventTranscription extends BaseEloquentModel
 {
-    use HybridRelations;
+    use Cacheable, HybridRelations {
+        Cacheable::newEloquentBuilder insteadof HybridRelations;
+    }
 
     /**
      * {@inheritDoc}
@@ -61,6 +64,16 @@ class EventTranscription extends BaseEloquentModel
             'team_id' => 'int',
             'user_id' => 'int',
         ];
+    }
+
+    /**
+     * Get Cache relations.
+     *
+     * @return string[]
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['event', 'team', 'user', 'transcription'];
     }
 
     /**

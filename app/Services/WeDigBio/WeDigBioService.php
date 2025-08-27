@@ -23,6 +23,7 @@ namespace App\Services\WeDigBio;
 use App\Models\WeDigBioEvent;
 use App\Models\WeDigBioEventTranscription;
 use Carbon\Carbon;
+use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -55,15 +56,20 @@ class WeDigBioService
             return null;
         }
 
-        return $this->weDigBioEvent->withCount('transcriptions')->with([
-            'transcriptions' => function ($q) {
-                $q->select('*', DB::raw('count(project_id) as total'))
-                    ->with(['project' => function ($query) {
-                        $query->select('id', 'title');
-                    }])->groupBy('project_id')
-                    ->orderBy('total', 'desc');
-            },
-        ])->find($activeEvent->id);
+        $key = AutoCacheHelper::generateKey('wedigbio_event_transcriptions', ['event_id' => $activeEvent->id]);
+        $tags = AutoCacheHelper::generateTags(['wedigbio_events', 'transcriptions', 'projects']);
+
+        return AutoCacheHelper::remember($key, 3600, function () use ($activeEvent) {
+            return $this->weDigBioEvent->withCount('transcriptions')->with([
+                'transcriptions' => function ($q) {
+                    $q->select('*', DB::raw('count(project_id) as total'))
+                        ->with(['project' => function ($query) {
+                            $query->select('id', 'title');
+                        }])->groupBy('project_id')
+                        ->orderBy('total', 'desc');
+                },
+            ])->find($activeEvent->id);
+        }, $tags);
     }
 
     /**
@@ -101,13 +107,22 @@ class WeDigBioService
      */
     public function getWeDigBioRateChartTranscriptions(int $eventId, Carbon $startLoad, Carbon $endLoad): ?Collection
     {
-        return $this->weDigBioEventTranscription->with(['project:id,title'])
-            ->selectRaw('project_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, count(id) as count')
-            ->where('event_id', $eventId)
-            ->where('created_at', '>=', $startLoad->toDateTimeString())
-            ->where('created_at', '<', $endLoad->toDateTimeString())
-            ->groupBy('time', 'project_id')
-            ->orderBy('time')
-            ->get();
+        $key = AutoCacheHelper::generateKey('wedigbio_rate_chart_transcriptions', [
+            'event_id' => $eventId,
+            'start_load' => $startLoad->toDateTimeString(),
+            'end_load' => $endLoad->toDateTimeString(),
+        ]);
+        $tags = AutoCacheHelper::generateTags(['wedigbio_events', 'transcriptions', 'rate_charts']);
+
+        return AutoCacheHelper::remember($key, 1800, function () use ($eventId, $startLoad, $endLoad) {
+            return $this->weDigBioEventTranscription->with(['project:id,title'])
+                ->selectRaw('project_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, count(id) as count')
+                ->where('event_id', $eventId)
+                ->where('created_at', '>=', $startLoad->toDateTimeString())
+                ->where('created_at', '<', $endLoad->toDateTimeString())
+                ->groupBy('time', 'project_id')
+                ->orderBy('time')
+                ->get();
+        }, $tags);
     }
 }

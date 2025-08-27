@@ -23,6 +23,7 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\GroupPresenter;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -38,19 +39,15 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  */
 class Group extends BaseEloquentModel
 {
-    use HasFactory, Presentable, UuidTrait;
+    use Cacheable, HasFactory, Presentable, UuidTrait;
 
     /**
      * The name of the table associated with the model.
-     *
-     * @var string
      */
     protected $table = 'groups';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
     protected $fillable = [
         'uuid',
@@ -60,17 +57,21 @@ class Group extends BaseEloquentModel
 
     /**
      * The attributes that should be hidden for arrays.
-     *
-     * @var array
      */
-    protected $hidden = [
-        'id',
-    ];
+    protected $hidden = ['id'];
 
     /**
      * The presenter class associated with the group.
      */
     protected string $presenter = GroupPresenter::class;
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['owner', 'users', 'projects', 'panoptesProjects', 'expeditions', 'invites', 'geoLocateForms'];
+    }
 
     /**
      * Get the route key name for the model.

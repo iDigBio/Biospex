@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class WeDigBioProject extends BaseEloquentModel
 {
-    use HasFactory;
+    use Cacheable, HasFactory;
 
     /**
      * {@inheritDoc}
@@ -44,6 +45,7 @@ class WeDigBioProject extends BaseEloquentModel
         'subject_sets',
     ];
 
+    // TODO: Is this used anywhere?
     protected function subjectSets(): Attribute
     {
         return Attribute::make(

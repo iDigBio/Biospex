@@ -21,7 +21,7 @@
 namespace App\Services\Transcriptions;
 
 use App\Models\PanoptesTranscription;
-use Illuminate\Support\Facades\Cache;
+use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
 use MongoDB\BSON\UTCDateTime;
 
 class PanoptesTranscriptionService
@@ -45,16 +45,17 @@ class PanoptesTranscriptionService
     }
 
     /**
-     * Get contributor count for all transcriptions.
+     * Get a contributor count for all transcriptions.
      */
     public function getContributorCount(): mixed
     {
         // TODO: Eventually resolve Laravel issue with count.
-        return Cache::remember(md5(__METHOD__), 14440, function () {
-            return $this->model->select('user_name')
-                ->where('user_name', 'not regexp', '/^not-logged-in.*/i')
-                ->groupBy('user_name')->get()->count();
-        });
+        return $this->model->select('user_name')
+            ->where('user_name', 'not regexp', '/^not-logged-in.*/i')
+            ->groupBy('user_name')
+            ->setTtl(14440)
+            ->get()
+            ->count();
     }
 
     /**
@@ -62,9 +63,7 @@ class PanoptesTranscriptionService
      */
     public function getTotalTranscriptions(): mixed
     {
-        return Cache::remember(md5(__METHOD__), 14440, function () {
-            return $this->model->count();
-        });
+        return $this->model->setTtl(14440)->count();
     }
 
     /**
@@ -72,14 +71,20 @@ class PanoptesTranscriptionService
      */
     public function getExpeditionTranscriptionCount(int $expeditionId): int
     {
-        $result = Cache::remember(md5(__METHOD__.$expeditionId), 14440, function () use ($expeditionId) {
-            return $this->model->raw(function ($collection) use ($expeditionId) {
-                return $collection->aggregate([
-                    ['$match' => ['subject_expeditionId' => $expeditionId]],
-                    ['$count' => 'count'],
-                ]);
+        $aggregationQuery = [
+            ['$match' => ['subject_expeditionId' => $expeditionId]],
+            ['$count' => 'count'],
+        ];
+
+        $bindings = ['expedition_id' => $expeditionId];
+        $key = AutoCacheHelper::generateKey($aggregationQuery, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_transcriptions']);
+
+        $result = AutoCacheHelper::remember($key, 14440, function () use ($aggregationQuery) {
+            return $this->model->raw(function ($collection) use ($aggregationQuery) {
+                return $collection->aggregate($aggregationQuery);
             })->first();
-        });
+        }, $tags);
 
         return $result === null ? 0 : $result->count;
     }
@@ -89,19 +94,25 @@ class PanoptesTranscriptionService
      */
     public function getExpeditionTranscriberCount(int $expeditionId): int
     {
-        $result = Cache::remember(md5(__METHOD__.$expeditionId), 14440, function () use ($expeditionId) {
-            return $this->model->raw(function ($collection) use ($expeditionId) {
-                return $collection->aggregate([
-                    [
-                        '$match' => ['subject_expeditionId' => $expeditionId],
-                    ],
-                    [
-                        '$group' => ['_id' => '$user_name'],
-                    ],
-                    ['$count' => 'count'],
-                ]);
+        $aggregationQuery = [
+            [
+                '$match' => ['subject_expeditionId' => $expeditionId],
+            ],
+            [
+                '$group' => ['_id' => '$user_name'],
+            ],
+            ['$count' => 'count'],
+        ];
+
+        $bindings = ['expedition_id' => $expeditionId];
+        $key = AutoCacheHelper::generateKey($aggregationQuery, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_transcriptions']);
+
+        $result = AutoCacheHelper::remember($key, 14440, function () use ($aggregationQuery) {
+            return $this->model->raw(function ($collection) use ($aggregationQuery) {
+                return $collection->aggregate($aggregationQuery);
             })->first();
-        });
+        }, $tags);
 
         return $result === null ? 0 : $result->count;
     }
@@ -111,47 +122,53 @@ class PanoptesTranscriptionService
      */
     public function getTranscribersTranscriptionCount(int $projectId): mixed
     {
-        return Cache::rememberForever(md5(__METHOD__.$projectId), function () use ($projectId) {
-            return $this->model->raw(function ($collection) use ($projectId) {
-                return $collection->aggregate([
-                    [
-                        '$match' => [
-                            'subject_projectId' => (int) $projectId,
-                        ],
+        $aggregationQuery = [
+            [
+                '$match' => [
+                    'subject_projectId' => (int) $projectId,
+                ],
+            ],
+            [
+                '$sort' => [
+                    'classification_finished_at' => -1,
+                ],
+            ],
+            [
+                '$group' => [
+                    '_id' => '$user_name',
+                    'transcriptionCount' => [
+                        '$sum' => 1,
                     ],
-                    [
-                        '$sort' => [
-                            'classification_finished_at' => -1,
-                        ],
+                    'expedition' => [
+                        '$addToSet' => '$subject_expeditionId',
                     ],
-                    [
-                        '$group' => [
-                            '_id' => '$user_name',
-                            'transcriptionCount' => [
-                                '$sum' => 1,
-                            ],
-                            'expedition' => [
-                                '$addToSet' => '$subject_expeditionId',
-                            ],
-                            'last_date' => [
-                                '$max' => '$classification_finished_at',
-                            ],
-                        ],
+                    'last_date' => [
+                        '$max' => '$classification_finished_at',
                     ],
-                    [
-                        '$project' => [
-                            '_id' => 0,
-                            'user_name' => '$_id',
-                            'transcriptionCount' => 1,
-                            'expeditionCount' => [
-                                '$size' => '$expedition',
-                            ],
-                            'last_date' => 1,
-                        ],
+                ],
+            ],
+            [
+                '$project' => [
+                    '_id' => 0,
+                    'user_name' => '$_id',
+                    'transcriptionCount' => 1,
+                    'expeditionCount' => [
+                        '$size' => '$expedition',
                     ],
-                ]);
+                    'last_date' => 1,
+                ],
+            ],
+        ];
+
+        $bindings = ['project_id' => $projectId];
+        $key = AutoCacheHelper::generateKey($aggregationQuery, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_transcriptions']);
+
+        return AutoCacheHelper::remember($key, 0, function () use ($aggregationQuery) {
+            return $this->model->raw(function ($collection) use ($aggregationQuery) {
+                return $collection->aggregate($aggregationQuery);
             });
-        });
+        }, $tags);
     }
 
     /**
@@ -177,15 +194,21 @@ class PanoptesTranscriptionService
      */
     public function getMinFinishedAtDateByProjectId(int $projectId): mixed
     {
-        $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
-            return $this->model->raw(function ($collection) use ($projectId) {
-                return $collection->aggregate([
-                    ['$match' => ['subject_projectId' => (int) $projectId]],
-                    ['$sort' => ['classification_finished_at' => 1]],
-                    ['$limit' => 1],
-                ]);
+        $aggregationQuery = [
+            ['$match' => ['subject_projectId' => (int) $projectId]],
+            ['$sort' => ['classification_finished_at' => 1]],
+            ['$limit' => 1],
+        ];
+
+        $bindings = ['project_id' => $projectId];
+        $key = AutoCacheHelper::generateKey($aggregationQuery, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_transcriptions']);
+
+        $result = AutoCacheHelper::remember($key, 14440, function () use ($aggregationQuery) {
+            return $this->model->raw(function ($collection) use ($aggregationQuery) {
+                return $collection->aggregate($aggregationQuery);
             })->first();
-        });
+        }, $tags);
 
         return $result?->classification_finished_at->format('Y-m-d H:i:s');
     }
@@ -198,15 +221,21 @@ class PanoptesTranscriptionService
      */
     public function getMaxFinishedAtDateByProjectId(int $projectId)
     {
-        $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
-            return $this->model->raw(function ($collection) use ($projectId) {
-                return $collection->aggregate([
-                    ['$match' => ['subject_projectId' => (int) $projectId]],
-                    ['$sort' => ['classification_finished_at' => -1]],
-                    ['$limit' => 1],
-                ]);
+        $aggregationQuery = [
+            ['$match' => ['subject_projectId' => (int) $projectId]],
+            ['$sort' => ['classification_finished_at' => -1]],
+            ['$limit' => 1],
+        ];
+
+        $bindings = ['project_id' => $projectId];
+        $key = AutoCacheHelper::generateKey($aggregationQuery, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_transcriptions']);
+
+        $result = AutoCacheHelper::remember($key, 14440, function () use ($aggregationQuery) {
+            return $this->model->raw(function ($collection) use ($aggregationQuery) {
+                return $collection->aggregate($aggregationQuery);
             })->first();
-        });
+        }, $tags);
 
         return $result?->classification_finished_at->format('Y-m-d H:i:s');
     }
@@ -216,35 +245,44 @@ class PanoptesTranscriptionService
      */
     public function getTranscriptionCountPerDate(int $workflowId, $begin, $end): mixed
     {
-        $key = $workflowId.$begin->__toString().$end->__toString();
+        $aggregationQuery = [
+            [
+                '$match' => [
+                    'workflow_id' => $workflowId,
+                    'classification_finished_at' => [
+                        '$gte' => new UTCDateTime($begin),
+                        '$lt' => new UTCDateTime($end),
+                    ],
+                ],
+            ],
+            [
+                '$project' => [
+                    'yearMonthDay' => [
+                        '$dateToString' => [
+                            'format' => '%Y-%m-%d',
+                            'date' => '$classification_finished_at',
+                        ],
+                    ],
+                ],
+            ],
+            ['$group' => ['_id' => '$yearMonthDay', 'count' => ['$sum' => 1]]],
+            ['$sort' => ['_id' => 1]],
+        ];
 
-        return Cache::rememberForever(md5(__METHOD__.$key), function () use ($workflowId, $begin, $end) {
-            return $this->model->raw(function ($collection) use ($workflowId, $begin, $end) {
-                return $collection->aggregate([
-                    [
-                        '$match' => [
-                            'workflow_id' => $workflowId,
-                            'classification_finished_at' => [
-                                '$gte' => new UTCDateTime($begin),
-                                '$lt' => new UTCDateTime($end),
-                            ],
-                        ],
-                    ],
-                    [
-                        '$project' => [
-                            'yearMonthDay' => [
-                                '$dateToString' => [
-                                    'format' => '%Y-%m-%d',
-                                    'date' => '$classification_finished_at',
-                                ],
-                            ],
-                        ],
-                    ],
-                    ['$group' => ['_id' => '$yearMonthDay', 'count' => ['$sum' => 1]]],
-                    ['$sort' => ['_id' => 1]],
-                ]);
+        $bindings = [
+            'workflow_id' => $workflowId,
+            'begin' => $begin->__toString(),
+            'end' => $end->__toString(),
+        ];
+
+        $key = AutoCacheHelper::generateKey($aggregationQuery, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_transcriptions']);
+
+        return AutoCacheHelper::remember($key, 14400, function () use ($aggregationQuery) {
+            return $this->model->raw(function ($collection) use ($aggregationQuery) {
+                return $collection->aggregate($aggregationQuery);
             })->pluck('count', '_id');
-        });
+        }, $tags);
     }
 
     /**
@@ -260,19 +298,25 @@ class PanoptesTranscriptionService
      */
     public function getProjectTranscriberCount(int $projectId): int
     {
-        $result = Cache::remember(md5(__METHOD__.$projectId), 14440, function () use ($projectId) {
-            return $this->model->raw(function ($collection) use ($projectId) {
-                return $collection->aggregate([
-                    [
-                        '$match' => ['subject_projectId' => (int) $projectId],
-                    ],
-                    [
-                        '$group' => ['_id' => '$user_name'],
-                    ],
-                    ['$count' => 'count'],
-                ]);
+        $aggregationQuery = [
+            [
+                '$match' => ['subject_projectId' => (int) $projectId],
+            ],
+            [
+                '$group' => ['_id' => '$user_name'],
+            ],
+            ['$count' => 'count'],
+        ];
+
+        $bindings = ['project_id' => $projectId];
+        $key = AutoCacheHelper::generateKey($aggregationQuery, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_transcriptions']);
+
+        $result = AutoCacheHelper::remember($key, 14440, function () use ($aggregationQuery) {
+            return $this->model->raw(function ($collection) use ($aggregationQuery) {
+                return $collection->aggregate($aggregationQuery);
             })->first();
-        });
+        }, $tags);
 
         return $result === null ? 0 : $result->count;
     }

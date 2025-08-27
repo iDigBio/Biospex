@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\Concerns\AsPivot;
 use Spatie\EloquentSortable\Sortable;
@@ -27,46 +28,78 @@ use Spatie\EloquentSortable\SortableTrait;
 
 /**
  * Class ActorWorkflow
- * Pivot table.
+ *
+ * Represents the pivot model for the many-to-many relationship between
+ * Actor and Workflow models. This model extends the basic pivot functionality
+ * with sortable capabilities, allowing actors to be ordered within workflows.
+ *
+ * Key Features:
+ * - Supports caching for improved performance
+ * - Implements sortable functionality for ordering actors in workflows
+ * - Uses AsPivot trait for enhanced pivot model capabilities
+ * - Provides custom sort query building for workflow-specific ordering
  */
 class ActorWorkflow extends BaseEloquentModel implements Sortable
 {
-    use AsPivot, HasFactory, SortableTrait;
+    use AsPivot, Cacheable, HasFactory, SortableTrait;
 
     /**
+     * The name of the database table associated with the model.
+     *
      * @var string
      */
     protected $table = 'actor_workflow';
 
     /**
+     * The primary key for the model.
+     *
      * @var string
      */
     public $primaryKey = 'id';
 
     /**
+     * Indicates if the model should use auto-incrementing primary keys.
+     *
      * @var bool
      */
     public $incrementing = true;
 
     /**
-     * @var array
+     * The attributes that are not mass assignable.
+     * Empty array means all attributes are mass assignable.
+     *
+     * @var array<string>
      */
     protected $guarded = [];
 
     /**
+     * Indicates if the model should be timestamped.
+     *
      * @var bool
      */
     public $timestamps = false;
 
+    /**
+     * Configuration array for the sortable functionality.
+     * Defines the column name for ordering and behavior during creation.
+     *
+     * @var array<string, mixed>
+     */
     public array $sortable = [
-        'order_column_name' => 'order',
-        'sort_when_creating' => true,
+        'order_column_name' => 'order',    // Column used for sorting
+        'sort_when_creating' => true,      // Automatically sort when creating new records
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder
+     * Build a query for sorting actors within a specific workflow.
+     *
+     * This method is required by the Sortable interface and defines the scope
+     * for sorting operations. It ensures that actors are only sorted within
+     * their respective workflow context, not globally across all workflows.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder The query builder scoped to the current workflow
      */
-    public function buildSortQuery()
+    public function buildSortQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return static::query()->where('workflow_id', $this->workflow_id);
     }

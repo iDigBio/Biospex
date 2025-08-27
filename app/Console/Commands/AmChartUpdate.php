@@ -58,7 +58,7 @@ class AmChartUpdate extends Command
     public function handle(): void
     {
         $projectIds = empty($this->argument('projectIds')) ?
-            $this->amChart->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
+            $this->amChart->skipCache()->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
 
         $projectIds->each(function ($projectId) {
             $project = $this->project->find($projectId);

@@ -22,6 +22,7 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\PanoptesProjectPresenter;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -30,7 +31,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class PanoptesProject extends BaseEloquentModel
 {
-    use HasFactory, Presentable;
+    use Cacheable, HasFactory, Presentable;
 
     /**
      * {@inheritDoc}
@@ -56,9 +57,15 @@ class PanoptesProject extends BaseEloquentModel
     protected $presenter = PanoptesProjectPresenter::class;
 
     /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'expedition'];
+    }
+
+    /**
      * Project relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()
     {
@@ -67,14 +74,17 @@ class PanoptesProject extends BaseEloquentModel
 
     /**
      * Expedition relationship.
-     *
-     * @return mixed
      */
     public function expedition()
     {
         return $this->belongsTo(Expedition::class);
     }
 
+    /**
+     * Morph subjectSets.
+     *
+     * @TODO: Is this used anywhere?
+     */
     protected function subjectSets(): Attribute
     {
         return Attribute::make(

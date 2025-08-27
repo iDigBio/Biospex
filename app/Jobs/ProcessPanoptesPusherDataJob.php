@@ -76,8 +76,6 @@ class ProcessPanoptesPusherDataJob implements ShouldQueue
 
             $this->processData($data);
 
-            Log::info('Successfully processed Panoptes Pusher data');
-
         } catch (\Throwable $e) {
             Log::error('Failed to process Panoptes Pusher data', [
                 'error' => $e->getMessage(),

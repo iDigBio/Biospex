@@ -25,6 +25,7 @@ use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -32,55 +33,43 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
- * Class Expedition
+ * Expedition Model
  *
- * Represents an expedition with various attributes and relationships,
- * encapsulating functionality for data management and workflow integrations.
+ * Represents an expedition within a project that manages scientific data collection
+ * and transcription workflows. Expeditions contain subjects (specimens/images) that
+ * are processed through various actors (Zooniverse, GeoLocate, etc.) for data extraction
+ * and validation.
  */
 class Expedition extends BaseEloquentModel implements AttachableInterface
 {
-    use HasFactory, HybridRelations, PaperclipTrait, Presentable, UuidTrait;
+    use Cacheable, HybridRelations {
+        Cacheable::newEloquentBuilder insteadof HybridRelations;
+    }
+    use HasFactory, PaperclipTrait, Presentable, UuidTrait;
 
-    /**
-     * The name of the database table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'expeditions';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'uuid',
-        'project_id',
-        'title',
-        'description',
-        'keywords',
-        'logo',
-        'workflow_id',
-        'completed',
-        'locked',
+    protected $fillable = ['uuid', 'project_id', 'title', 'description', 'keywords', 'logo', 'workflow_id', 'completed', 'locked',
     ];
 
-    /**
-     * Holds the class name of the ExpeditionPresenter.
-     */
     protected string $presenter = ExpeditionPresenter::class;
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'id',
-    ];
+    protected $hidden = ['id'];
 
     /**
-     * Get the route key name for the model.
+     * Get the relations that should be cached.
+     *
+     * @return array<string> Array of relation names to cache
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['dashboard', 'downloads', 'exportQueue', 'ocrQueue', 'project', 'stat', 'subjects', 'workflow', 'workflowManager', 'actors', 'actorExpeditions', 'panoptesProject', 'geoLocateForm', 'geoLocateCommunity', 'geoLocateDataSource'];
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string The route key name (uuid)
      */
     public function getRouteKeyName(): string
     {
@@ -88,7 +77,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Boot method to initialize the model's functionality and traits.
+     * Boot the model and initialize traits.
      */
     public static function boot(): void
     {
@@ -97,10 +86,9 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Constructor for initializing the model with specific attributes and configuring the attached file for 'logo'.
+     * Create a new Eloquent model instance and configure file attachments.
      *
-     * @param  array  $attributes  An optional array of attributes to initialize the model with.
-     * @return void
+     * @param  array  $attributes  Initial model attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -116,15 +104,12 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
                 'medium' => config('config.missing_expedition_logo'),
             ],
         ]);
-        // $this->hasAttachedFile('logo', ['resize' => ['dimensions' => '318x208']]);
 
         parent::__construct($attributes);
     }
 
     /**
-     * Defines a one-to-many relationship with the PusherTranscription model.
-     *
-     * @return \MongoDB\Laravel\Relations\HasMany The associated collection of PusherTranscription instances.
+     * Get the dashboard transcriptions for this expedition.
      */
     public function dashboard(): \MongoDB\Laravel\Relations\HasMany
     {
@@ -132,9 +117,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Establishes a one-to-many relationship with the Download model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany The associated Download instances.
+     * Get all downloads associated with this expedition.
      */
     public function downloads(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -142,9 +125,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Establishes a one-to-one relationship with the Download model, filtered by actor ID from configuration and type 'csv'.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne The associated Download instance that matches the specified conditions.
+     * Get the GeoLocate CSV download for this expedition.
      */
     public function geoLocateCsvDownload(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -152,9 +133,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines a one-to-one relationship with the ExportQueue model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne The related ExportQueue instance.
+     * Get the export queue entry for this expedition.
      */
     public function exportQueue(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -162,10 +141,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Establishes a one-to-one relationship with the Download model, specifically for export downloads
-     * filtered by the configured actor ID and type 'export'.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne The associated Download instance matching the export criteria.
+     * Get the GeoLocate export download for this expedition.
      */
     public function geoLocateExport(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -173,9 +149,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines a one-to-many relationship with the OcrQueue model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany The related OcrQueue instances.
+     * Get all OCR queue entries for this expedition.
      */
     public function ocrQueue(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -183,9 +157,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines an inverse relationship with the Project model.
-     *
-     * @return BelongsTo The related Project instance.
+     * Get the project that owns this expedition.
      */
     public function project(): BelongsTo
     {
@@ -193,9 +165,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines a one-to-one relationship with the ExpeditionStat model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne The associated ExpeditionStat instance.
+     * Get the statistics for this expedition.
      */
     public function stat(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -203,11 +173,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines a many-to-many relationship with the Subject model.
-     *
-     * @note $expedition->subjects()->attach($subject) adds expedition ids in subjects
-     *
-     * @return \MongoDB\Laravel\Relations\BelongsToMany The related Subject instances.
+     * Get all subjects associated with this expedition.
      */
     public function subjects(): \MongoDB\Laravel\Relations\BelongsToMany
     {
@@ -215,9 +181,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines an inverse one-to-many relationship with the Workflow model.
-     *
-     * @return BelongsTo The parent Workflow instance.
+     * Get the workflow associated with this expedition.
      */
     public function workflow(): BelongsTo
     {
@@ -225,9 +189,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines a one-to-one relationship with the WorkflowManager model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne The related WorkflowManager instance.
+     * Get the workflow manager for this expedition.
      */
     public function workflowManager(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -235,10 +197,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Establishes a one-to-one relationship with the Download model specifically for Zooniverse exports.
-     * Applies filters based on actor ID from configuration and the type set to 'export'.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne The associated Download instance for Zooniverse export.
+     * Get the Zooniverse export download for this expedition.
      */
     public function zooniverseExport(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -247,10 +206,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines a many-to-many relationship with the Actor model via the actor_expedition pivot table.
-     * Includes additional pivot attributes and timestamps, and orders the results by the 'order' column.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany The related Actor instances with pivot data.
+     * Get all actors associated with this expedition through the pivot table.
      */
     public function actors(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -261,9 +217,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines a one-to-many relationship with the ActorExpedition model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany The related ActorExpedition instances.
+     * Get all actor expedition records for this expedition.
      */
     public function actorExpeditions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -271,9 +225,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Establishes a one-to-one relationship with the ActorExpedition model, filtered by the configured actor ID.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne The associated ActorExpedition instance.
+     * Get the GeoLocate actor expedition record for this expedition.
      */
     public function geoActorExpedition(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -281,9 +233,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Establishes a one-to-one relationship with the ActorExpedition model, filtered by the specified actor ID.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne The associated ActorExpedition instance matching the actor ID.
+     * Get the Zooniverse actor expedition record for this expedition.
      */
     public function zooActorExpedition(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -291,9 +241,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines a one-to-one relationship with the PanoptesProject model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne The related PanoptesProject instance.
+     * Get the Panoptes project associated with this expedition.
      */
     public function panoptesProject(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -301,9 +249,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Defines a has-one-through relationship with the GeoLocateForm model through the GeoLocateDataSource model.
-     *
-     * @return HasOneThrough The related GeoLocateForm instance accessed through GeoLocateDataSource.
+     * Get the GeoLocate form through the data source.
      */
     public function geoLocateForm(): HasOneThrough
     {
@@ -316,9 +262,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Establishes a one-to-one relationship through the GeoLocateDataSource model to the GeoLocateCommunity model.
-     *
-     * @return HasOneThrough The associated GeoLocateCommunity instance accessed through GeoLocateDataSource.
+     * Get the GeoLocate community through the data source.
      */
     public function geoLocateCommunity(): HasOneThrough
     {
@@ -331,9 +275,7 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Establishes a one-to-one relationship with the GeoLocateDataSource model.
-     *
-     * @return HasOne The associated GeoLocateDataSource instance.
+     * Get the GeoLocate data source for this expedition.
      */
     public function geoLocateDataSource(): HasOne
     {

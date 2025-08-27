@@ -21,7 +21,7 @@
 namespace App\Services\Helpers;
 
 use App\Services\Transcriptions\PanoptesTranscriptionService;
-use Illuminate\Support\Facades\Cache;
+use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
 
 /**
  * Class CountService
@@ -42,7 +42,7 @@ class CountService
     }
 
     /**
-     * Return unique transcriber count for expedition.
+     * Return a unique transcriber count for expedition.
      */
     public function expeditionTranscriberCount(int $expeditionId): mixed
     {
@@ -65,14 +65,24 @@ class CountService
      */
     public function getTranscriptionsPerTranscribers(int $projectId, $transcribers): mixed
     {
-        return Cache::rememberForever(md5(__METHOD__.$projectId), function () use ($transcribers) {
+        $queryData = [
+            'operation' => 'transcriptions_per_transcribers',
+            'project_id' => $projectId,
+            'transcribers_count' => $transcribers->count(),
+        ];
+
+        $bindings = ['project_id' => $projectId];
+        $key = AutoCacheHelper::generateKey($queryData, $bindings);
+        $tags = AutoCacheHelper::generateTags(['count_service', 'transcriptions']);
+
+        return AutoCacheHelper::remember($key, 86400, function () use ($transcribers) {
             return $transcribers->isEmpty() ? null :
                 $transcribers->pluck('transcriptionCount')->pipe(function ($transcribers) {
                     return collect(array_count_values($transcribers->sort()->toArray()));
                 })->flatMap(function ($users, $count) {
                     return [['transcriptions' => $count, 'transcribers' => $users]];
                 })->toJson();
-        });
+        }, $tags);
     }
 
     /**
@@ -80,9 +90,19 @@ class CountService
      */
     public function getTranscriptionCountForTranscriber(int $projectId, string $transcriber): mixed
     {
-        return Cache::remember(md5(__METHOD__.$projectId.$transcriber), 86400, function () use ($projectId, $transcriber) {
+        $queryData = [
+            'operation' => 'transcription_count_for_transcriber',
+            'project_id' => $projectId,
+            'transcriber' => $transcriber,
+        ];
+
+        $bindings = ['project_id' => $projectId, 'transcriber' => $transcriber];
+        $key = AutoCacheHelper::generateKey($queryData, $bindings);
+        $tags = AutoCacheHelper::generateTags(['count_service', 'transcriptions']);
+
+        return AutoCacheHelper::remember($key, 86400, function () use ($projectId, $transcriber) {
             return $this->panoptesTranscriptionService->getTranscriptionCountForTranscriber($projectId, $transcriber);
-        });
+        }, $tags);
     }
 
     /**

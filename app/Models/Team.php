@@ -22,6 +22,7 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\TeamPresenter;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -30,7 +31,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Team extends BaseEloquentModel
 {
-    use HasFactory, Presentable;
+    use Cacheable, HasFactory, Presentable;
 
     /**
      * {@inheritDoc}
@@ -53,6 +54,14 @@ class Team extends BaseEloquentModel
      * @var string
      */
     protected $presenter = TeamPresenter::class;
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['teamCategory'];
+    }
 
     /**
      * TeamCategory relationship.

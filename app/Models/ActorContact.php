@@ -20,32 +20,63 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
 /**
  * Class ActorContact
+ *
+ * Represents contact information for actors within the application system.
+ * This model stores email addresses and other contact details for actors,
+ * enabling communication and notification functionality.
+ *
+ * Key Features:
+ * - Supports caching for improved performance
+ * - Implements notification functionality via Notifiable trait
+ * - Maintains relationship with Actor model
+ * - Stores contact information for actor communication
  */
 class ActorContact extends BaseEloquentModel
 {
-    use HasFactory, Notifiable;
+    use Cacheable, HasFactory, Notifiable;
 
     /**
-     * {@inheritDoc}
+     * The name of the database table associated with the model.
+     *
+     * @var string
      */
     protected $table = 'actor_contacts';
 
     /**
-     * {@inheritDoc}
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
      */
     protected $fillable = [
-        'email',
+        'email',    // The email address for the actor contact
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Get the relations that should be cached for performance optimization.
+     *
+     * This method defines which Eloquent relationships should be cached
+     * when using the Cacheable trait to improve query performance.
+     *
+     * @return array<string> Array of relationship names to be cached
      */
-    public function actor()
+    protected function getCacheRelations(): array
+    {
+        return ['actor'];
+    }
+
+    /**
+     * Define a many-to-one relationship with the Actor model.
+     *
+     * An ActorContact belongs to a single Actor, representing the contact
+     * information associated with that specific actor.
+     */
+    public function actor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Actor::class);
     }

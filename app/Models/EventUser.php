@@ -21,6 +21,7 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class EventUser extends BaseEloquentModel
 {
-    use HasFactory, UuidTrait;
+    use Cacheable, HasFactory, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -52,6 +53,16 @@ class EventUser extends BaseEloquentModel
     ];
 
     /**
+     * Get Cache relations.
+     *
+     * @return string[]
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['teams', 'transcriptions'];
+    }
+
+    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string
@@ -71,10 +82,8 @@ class EventUser extends BaseEloquentModel
 
     /**
      * EventTeam relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function teams()
+    public function teams(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(EventTeam::class, 'event_team_user', 'user_id', 'team_id')
             ->withPivot('team_id', 'user_id');
@@ -82,10 +91,8 @@ class EventUser extends BaseEloquentModel
 
     /**
      * Event transcription relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function transcriptions()
+    public function transcriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(EventTranscription::class, 'user_id');
     }

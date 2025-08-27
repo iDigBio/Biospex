@@ -20,15 +20,15 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class FailedJob
  */
 class FailedJob extends Model
 {
-    use LadaCacheTrait;
+    use Cacheable;
 
     /**
      * @ineritDoc

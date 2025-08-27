@@ -22,8 +22,8 @@ namespace App\Services\Api;
 
 use App\Facades\CountHelper;
 use App\Services\Requests\HttpRequest;
-use Cache;
 use GuzzleHttp\Exception\GuzzleException;
+use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -107,7 +107,17 @@ class PanoptesApiService extends HttpRequest
      */
     public function getPanoptesProject($projectId): array
     {
-        return Cache::remember(__METHOD__.$projectId, 120, function () use ($projectId) {
+        $queryData = [
+            'method' => 'GET',
+            'resource' => 'projects',
+            'project_id' => $projectId,
+        ];
+
+        $bindings = ['project_id' => $projectId];
+        $key = AutoCacheHelper::generateKey($queryData, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_api', 'projects']);
+
+        return AutoCacheHelper::remember($key, 120, function () use ($projectId) {
             $this->setHttpProvider($this->getConfig());
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('projects', $projectId);
@@ -115,7 +125,7 @@ class PanoptesApiService extends HttpRequest
             $result = $this->sendAuthorizedRequest($request);
 
             return $result['projects'][0];
-        });
+        }, $tags);
     }
 
     /**
@@ -123,7 +133,17 @@ class PanoptesApiService extends HttpRequest
      */
     public function getPanoptesWorkflow($workflowId): mixed
     {
-        return Cache::remember(__METHOD__.$workflowId, 120, function () use ($workflowId) {
+        $queryData = [
+            'method' => 'GET',
+            'resource' => 'workflows',
+            'workflow_id' => $workflowId,
+        ];
+
+        $bindings = ['workflow_id' => $workflowId];
+        $key = AutoCacheHelper::generateKey($queryData, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_api', 'workflows']);
+
+        return AutoCacheHelper::remember($key, config('auto-cache.ttl'), function () use ($workflowId) {
             $this->setHttpProvider($this->getConfig());
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('workflows', $workflowId);
@@ -131,17 +151,25 @@ class PanoptesApiService extends HttpRequest
             $result = $this->sendAuthorizedRequest($request);
 
             return $result['workflows'][0];
-        });
+        }, $tags);
     }
 
     /**
      * Get panoptes subject.
-     *
-     * @return null
      */
-    public function getPanoptesSubject($subjectId)
+    public function getPanoptesSubject($subjectId): null
     {
-        return Cache::remember(__METHOD__.$subjectId, 120, function () use ($subjectId) {
+        $queryData = [
+            'method' => 'GET',
+            'resource' => 'subjects',
+            'subject_id' => $subjectId,
+        ];
+
+        $bindings = ['subject_id' => $subjectId];
+        $key = AutoCacheHelper::generateKey($queryData, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_api', 'subjects']);
+
+        return AutoCacheHelper::remember($key, config('auto-cache.ttl'), function () use ($subjectId) {
             $this->setHttpProvider($this->getConfig());
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('subjects', $subjectId);
@@ -149,7 +177,7 @@ class PanoptesApiService extends HttpRequest
             $results = $this->sendAuthorizedRequest($request);
 
             return $results['subjects'][0] ?? null;
-        });
+        }, $tags);
     }
 
     /**
@@ -157,7 +185,17 @@ class PanoptesApiService extends HttpRequest
      */
     public function getPanoptesUser($userId): mixed
     {
-        return Cache::remember(__METHOD__.$userId, 120, function () use ($userId) {
+        $queryData = [
+            'method' => 'GET',
+            'resource' => 'users',
+            'user_id' => $userId,
+        ];
+
+        $bindings = ['user_id' => $userId];
+        $key = AutoCacheHelper::generateKey($queryData, $bindings);
+        $tags = AutoCacheHelper::generateTags(['panoptes_api', 'users']);
+
+        return AutoCacheHelper::remember($key, config('auto-cache.ttl'), function () use ($userId) {
             $this->setHttpProvider($this->getConfig());
             $this->checkAccessToken('panoptes_token');
             $uri = $this->getPanoptesResourceUri('users', $userId);
@@ -165,11 +203,11 @@ class PanoptesApiService extends HttpRequest
             $results = $this->sendAuthorizedRequest($request);
 
             return $results['users'][0] ?? null;
-        });
+        }, $tags);
     }
 
     /**
-     * Check needed variables.
+     * Check the necessary variables.
      */
     public function checkForRequiredVariables($expedition): bool
     {

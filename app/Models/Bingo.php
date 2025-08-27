@@ -23,6 +23,7 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\BingoPresenter;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -30,7 +31,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Bingo extends BaseEloquentModel
 {
-    use HasFactory, Presentable, UuidTrait;
+    use Cacheable, HasFactory, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -71,6 +72,16 @@ class Bingo extends BaseEloquentModel
     protected $presenter = BingoPresenter::class;
 
     /**
+     * Get Cache relations.
+     *
+     * @return string[]
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['user', 'project', 'words', 'maps'];
+    }
+
+    /**
      * User relation.
      */
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -88,20 +99,16 @@ class Bingo extends BaseEloquentModel
 
     /**
      * Word relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function words()
+    public function words(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(BingoWord::class);
     }
 
     /**
      * Map relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function maps()
+    public function maps(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(BingoUser::class);
     }

@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -27,7 +28,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class StateCounty extends BaseEloquentModel
 {
-    use HasFactory;
+    use Cacheable, HasFactory;
 
     /**
      * {@inheritDoc}
@@ -52,6 +53,14 @@ class StateCounty extends BaseEloquentModel
         'fips_forumla',
         'has_error',
     ];
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['transcriptionLocations'];
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

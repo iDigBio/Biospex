@@ -45,8 +45,8 @@ class CheckExpeditionComplete extends Command
      */
     public function handle()
     {
-        // Get expeditions where relation stats percent_complete is 100
-        $expeditions = Expedition::with('actorExpeditions')->whereHas('stat', function ($query) {
+        // Get expeditions where relation stats. percent_complete is 100
+        $expeditions = Expedition::skipCache()->with('actorExpeditions')->whereHas('stat', function ($query) {
             $query->where('percent_completed', 100);
         })->get();
 

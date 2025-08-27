@@ -24,6 +24,7 @@ use App\Models\Traits\Presentable;
 use App\Presenters\ProjectResourcePresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -31,7 +32,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class ProjectResource extends BaseEloquentModel implements AttachableInterface
 {
-    use HasFactory, PaperclipTrait, Presentable;
+    use Cacheable, HasFactory, PaperclipTrait, Presentable;
 
     /**
      * {@inheritDoc}
@@ -53,6 +54,14 @@ class ProjectResource extends BaseEloquentModel implements AttachableInterface
      * @var string
      */
     protected $presenter = ProjectResourcePresenter::class;
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project'];
+    }
 
     /**
      * Project constructor.

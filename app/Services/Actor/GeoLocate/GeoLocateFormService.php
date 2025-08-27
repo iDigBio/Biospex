@@ -25,7 +25,7 @@ use App\Models\Expedition;
 use App\Models\GeoLocateForm;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Helpers\GeneralService;
-use Illuminate\Support\Facades\Cache;
+use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
 use Illuminate\Support\Facades\File;
 use Storage;
 
@@ -115,6 +115,8 @@ class GeoLocateFormService
      * @param  Expedition  $expedition  The expedition object used to build form fields.
      * @param  array  $form  The array of form data to be used.
      * @return string The rendered HTML of the form fields.
+     *
+     * @throws \Throwable
      */
     public function buildFormFields(Expedition $expedition, array $form): string
     {
@@ -212,7 +214,7 @@ class GeoLocateFormService
     }
 
     /**
-     * Set the reconcile file source based on the expedition's geolocation data or provided request parameters.
+     * Set the reconciled file source based on the expedition's geolocation data or provided request parameters.
      *
      * @param  Expedition  $expedition  The expedition instance containing geolocation data.
      * @param  array  $request  Optional. An array of request parameters that may include a source key.
@@ -279,7 +281,10 @@ class GeoLocateFormService
             default => config('zooniverse.directory.reconciled').'/'.$expedition->id.'.csv',
         };
 
-        return Cache::remember(md5($this->source), 14440, function () use ($csvFilePath) {
+        $key = AutoCacheHelper::generateKey('geolocate_csv_header', ['source' => $this->source, 'csv_path' => $csvFilePath]);
+        $tags = AutoCacheHelper::generateTags(['geolocate_forms', 'csv_headers']);
+
+        return AutoCacheHelper::remember($key, 14440 * 60, function () use ($csvFilePath) {
             $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'r');
             $this->awsS3CsvService->createCsvReaderFromStream();
             $this->awsS3CsvService->csv->setHeaderOffset();
@@ -289,7 +294,7 @@ class GeoLocateFormService
             return array_values(array_filter($array, function ($e) {
                 return $e !== 'subject_id';
             }));
-        });
+        }, $tags);
     }
 
     /**

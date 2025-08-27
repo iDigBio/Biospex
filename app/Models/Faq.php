@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -27,7 +28,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Faq extends BaseEloquentModel
 {
-    use HasFactory;
+    use Cacheable, HasFactory;
 
     /**
      * @ineritDoc
@@ -44,11 +45,17 @@ class Faq extends BaseEloquentModel
     ];
 
     /**
-     * FaqCategory relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Get the relations that should be cached.
      */
-    public function faqCategory()
+    protected function getCacheRelations(): array
+    {
+        return ['faqCategory'];
+    }
+
+    /**
+     * FaqCategory relationship.
+     */
+    public function faqCategory(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(FaqCategory::class);
     }

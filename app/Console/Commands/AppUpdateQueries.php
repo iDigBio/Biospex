@@ -20,13 +20,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Download;
-use App\Models\GeoLocateDataSource;
-use App\Models\GeoLocateForm;
 use Illuminate\Console\Command;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Class UpdateQueries
@@ -54,43 +48,5 @@ class AppUpdateQueries extends Command
     /**
      * Fire command
      */
-    public function handle()
-    {
-        $this->fixGeoLocateForms();
-
-        \Artisan::call('zooniverse:count --update');
-    }
-
-    private function fixGeoLocateForms(): void
-    {
-        $records = GeoLocateDataSource::with('expedition')->get();
-        $records->each(function ($record) {
-
-            $form = GeoLocateForm::find($record->expedition->geo_locate_form_id);
-
-            $download = Download::where('expedition_id', $record->expedition_id)
-                ->where('type', $form->source)->first();
-
-            $record->geo_locate_form_id = $form->id;
-            $record->download_id = $download->id;
-            $record->save();
-        });
-
-        Schema::table('expeditions', function (Blueprint $table) {
-            DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
-            DB::statement('ALTER TABLE `geo_locate_data_sources` CHANGE `geo_locate_form_id` `geo_locate_form_id` BIGINT UNSIGNED NOT NULL;');
-
-            DB::statement('ALTER TABLE `geo_locate_data_sources` CHANGE `geo_locate_community_id` `geo_locate_community_id` BIGINT UNSIGNED NULL DEFAULT NULL;');
-            DB::statement('ALTER TABLE `geo_locate_data_sources` CHANGE `data_source` `data_source` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;');
-            DB::statement('ALTER TABLE `geo_locate_data_sources` CHANGE `data` `data` JSON NULL DEFAULT NULL;');
-
-            $table->dropForeign('expeditions_geo_locate_form_id_foreign');
-            $table->dropColumn('geo_locate_form_id');
-            DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
-        });
-
-        Schema::table('geo_locate_forms', function (Blueprint $table) {
-            $table->dropColumn('source');
-        });
-    }
+    public function handle() {}
 }

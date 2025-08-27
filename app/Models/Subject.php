@@ -20,11 +20,15 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
+
 /**
  * Class Subject
  */
 class Subject extends BaseMongoModel
 {
+    use Cacheable;
+
     /**
      * Set Collection
      */
@@ -41,6 +45,14 @@ class Subject extends BaseMongoModel
             'project_id' => 'integer',
             'exported' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return ['project', 'panoptesTranscriptions', 'occurrence'];
     }
 
     /**
