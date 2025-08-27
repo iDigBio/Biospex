@@ -31,17 +31,12 @@ use MongoDB\Collection;
  */
 class MongoDbService
 {
-    /**
-     * @var Client
-     */
-    public $client;
+    public Client $client;
 
     /**
      * Collection being accessed.
-     *
-     * @var Collection
      */
-    public $clientCollection;
+    public Collection $clientCollection;
 
     /**
      * MongoDbService constructor.
@@ -49,11 +44,9 @@ class MongoDbService
     public function __construct(protected DatabaseManager $databaseManager) {}
 
     /**
-     * Return cursor as array.
-     *
-     * @return mixed
+     * Return the cursor as an array.
      */
-    public function getArray($cursor)
+    public function getArray($cursor): mixed
     {
         $cursor->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
 
@@ -61,20 +54,20 @@ class MongoDbService
     }
 
     /**
-     * Set connection client.
+     * Set a connection client.
      */
-    public function setClient()
+    public function setClient(): void
     {
-        $this->client = $this->databaseManager->connection('mongodb')->getMongoClient();
+        /** @var \MongoDB\Laravel\Connection $connection */
+        $this->client = $this->databaseManager->connection('mongodb')->getClient();
     }
 
     /**
      * Set database dynamically.
      *
      * @param  null  $database
-     * @return null
      */
-    public function setDatabase($database = null)
+    public function setDatabase($database = null): null
     {
         return $database === null ? config('database.connections.mongodb.database') : $database;
     }
@@ -115,7 +108,16 @@ class MongoDbService
 
     public function count(array $filter = [], array $options = []): int
     {
-        return $this->clientCollection->countDocuments($filter, $options);
+        $key = AutoCacheHelper::generateKey('mongodb_count', [
+            'collection' => $this->clientCollection->getCollectionName(),
+            'filter' => $filter,
+            'options' => $options,
+        ]);
+        $tags = AutoCacheHelper::generateTags(['mongodb', $this->clientCollection->getCollectionName()]);
+
+        return AutoCacheHelper::remember($key, 1800, function () use ($filter, $options) {
+            return $this->clientCollection->countDocuments($filter, $options);
+        }, $tags);
     }
 
     /**
@@ -125,7 +127,16 @@ class MongoDbService
      */
     public function find(array $query = [], array $options = [])
     {
-        return $this->clientCollection->find($query, $options);
+        $key = AutoCacheHelper::generateKey('mongodb_find', [
+            'collection' => $this->clientCollection->getCollectionName(),
+            'query' => $query,
+            'options' => $options,
+        ]);
+        $tags = AutoCacheHelper::generateTags(['mongodb', $this->clientCollection->getCollectionName()]);
+
+        return AutoCacheHelper::remember($key, 1800, function () use ($query, $options) {
+            return $this->getArray($this->clientCollection->find($query, $options));
+        }, $tags);
     }
 
     /**
@@ -135,7 +146,17 @@ class MongoDbService
      */
     public function findOne(array $query = [])
     {
-        return $this->clientCollection->findOne($query);
+        $key = AutoCacheHelper::generateKey('mongodb_find_one', [
+            'collection' => $this->clientCollection->getCollectionName(),
+            'query' => $query,
+        ]);
+        $tags = AutoCacheHelper::generateTags(['mongodb', $this->clientCollection->getCollectionName()]);
+
+        return AutoCacheHelper::remember($key, 1800, function () use ($query) {
+            $result = $this->clientCollection->findOne($query);
+
+            return $result ? $result->toArray() : null;
+        }, $tags);
     }
 
     /**
@@ -190,7 +211,16 @@ class MongoDbService
 
     public function aggregate($pipline, $options = [])
     {
-        return $this->clientCollection->aggregate($pipline, $options);
+        $key = AutoCacheHelper::generateKey('mongodb_aggregate', [
+            'collection' => $this->clientCollection->getCollectionName(),
+            'pipeline' => $pipline,
+            'options' => $options,
+        ]);
+        $tags = AutoCacheHelper::generateTags(['mongodb', $this->clientCollection->getCollectionName()]);
+
+        return AutoCacheHelper::remember($key, 1800, function () use ($pipline, $options) {
+            return $this->getArray($this->clientCollection->aggregate($pipline, $options));
+        }, $tags);
     }
 
     /**
