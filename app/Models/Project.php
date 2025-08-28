@@ -86,7 +86,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
         'banner_file',
         'target_fields',
         'status',
-        'advertise',
+        // 'advertise',
         'geolocate_community',
     ];
 
@@ -143,7 +143,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
 
         static::saving(function ($model) {
             $model->slug = Str::slug($model->title);
-            $model->advertise = $model->attributes;
+            // $model->advertise = $model->attributes;
         });
     }
 

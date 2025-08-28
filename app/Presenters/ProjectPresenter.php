@@ -305,9 +305,12 @@ class ProjectPresenter extends Presenter
      */
     public function projectAdvertiseIconLrg()
     {
-        return '<a href="'.route('admin.advertises.index', [$this->model]).'" 
-                    data-hover="tooltip" 
+        return '';
+        /* Disabled until Austin wants to bring it back.
+        return '<a href="'.route('admin.advertises.index', [$this->model]).'"
+                    data-hover="tooltip"
                     title="'.t('Download Advertisement Manifest').'"><i class="fas fa-ad fa-2x"></i></a>';
+        */
     }
 
     /**
