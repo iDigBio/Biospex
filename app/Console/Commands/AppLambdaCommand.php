@@ -39,7 +39,7 @@ class AppLambdaCommand extends Command
      */
     protected $description = 'Used to test sqs lambda code';
 
-    protected string $bucket;
+    protected ?string $bucket;
 
     protected int $expeditionId = 9999; // can be any expedition id
 
