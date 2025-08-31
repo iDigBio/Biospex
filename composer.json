@@ -97,8 +97,7 @@
     "files": [
       "app/Helpers/count_helper.php",
       "app/Helpers/date_helper.php",
-      "app/Helpers/general_helper.php",
-      "app/Helpers/aws_helper.php"
+      "app/Helpers/general_helper.php"
     ]
   },
   "autoload-dev": {

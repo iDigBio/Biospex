@@ -25,56 +25,24 @@ use Illuminate\Support\Facades\Storage;
 
 class AwsS3ApiService
 {
-    private ?S3Client $client = null;
+    private S3Client $client;
 
     /**
-     * Get or create an S3 client with lazy loading and environment awareness
-     * This prevents AWS S3 client instantiation during package discovery
-     *
-     * @throws \Exception
+     * Construct
      */
-    protected function getS3Client(): S3Client
+    public function __construct()
     {
-        if ($this->client === null) {
-            $this->client = $this->createS3Client();
-        }
-
-        return $this->client;
+        $this->client = Storage::disk('s3')->getClient();
     }
 
     /**
-     * Create an S3 client with proper configuration validation and environment awareness
-     */
-    protected function createS3Client(): S3Client
-    {
-        $bucket = config('filesystems.disks.s3.bucket');
-        $key = config('filesystems.disks.s3.key');
-        $secret = config('filesystems.disks.s3.secret');
-        $region = config('filesystems.disks.s3.region');
-
-        // Validate S3 configuration exists
-        if (empty($bucket) || empty($key) || empty($secret) || empty($region)) {
-            // For CI/testing environments, throw descriptive error or use mock
-            if (app()->environment(['testing', 'local'])) {
-                throw new \Exception('AWS S3 not available in testing environment. Required: AWS_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION');
-            }
-
-            throw new \Exception('AWS S3 credentials not configured. Required: AWS_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION');
-        }
-
-        return Storage::disk('s3')->getClient();
-    }
-
-    /**
-     * Create a seekable stream to read a file from the bucket.
+     * Create a seekable stream to read file from bucket.
      *
      * @return false|resource
-     *
-     * @throws \Exception
      */
     public function createS3BucketStream(string $bucket, string $filePath, string $mode, bool $seekable = true)
     {
-        $this->getS3Client()->registerStreamWrapper();
+        $this->client->registerStreamWrapper();
 
         $context = null;
         if ($seekable) {
@@ -91,13 +59,13 @@ class AwsS3ApiService
     }
 
     /**
-     * Get file count in the bucket directory.
+     * Get file count in bucket directory.
      *
-     * Count returns the top directory so subtract 1.
+     * Count returns top directory so subtract 1.
      */
     public function getFileCount(string $bucket, string $dirPath): int
     {
-        $objects = $this->getS3Client()->getIterator('ListObjects', [
+        $objects = $this->client->getIterator('ListObjects', [
             'Bucket' => $bucket,
             'Prefix' => $dirPath.'/',
         ]);
