@@ -1,4 +1,4 @@
-# CI/CD Deployment Workflow - Option 1 Implementation
+# CI/CD Deployment Workflow - Option 1 Implementation (Simplified)
 # 
 # USAGE INSTRUCTIONS:
 # - Push to 'main' branch → Deploys to PRODUCTION automatically
@@ -15,6 +15,11 @@
 # Regular commits deploy automatically:
 #   git commit -m "Fix user authentication bug"
 #   git commit -m "Add new dashboard feature" 
+#
+# CHANGES:
+# - Removed complex AWS credential workarounds (no longer needed with lazy loading)
+# - Simplified to standard Laravel CI/CD workflow
+# - AWS credentials only used on server during actual deployment
 #
 name: Build and Deploy
 on:
@@ -34,22 +39,6 @@ jobs:
         with:
           php-version: '8.3'
           extensions: mbstring, xml, bcmath, ctype, json, tokenizer, pdo, pdo_mysql
-      - name: Setup AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Create temporary .env file for CI build
-        run: |
-          echo "APP_ENV=testing" > .env
-          echo "APP_KEY=base64:dummykeyforci" >> .env
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-          echo "AWS_DEFAULT_REGION=${{ secrets.AWS_REGION }}" >> .env
-          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
-          echo "DB_CONNECTION=sqlite" >> .env
-          echo "DB_DATABASE=:memory:" >> .env
       - name: Setup Composer authentication for Laravel Nova
         run: composer config http-basic.nova.laravel.com ${{ secrets.NOVA_USERNAME }} ${{ secrets.NOVA_PASSWORD }}
       - name: Cache Composer packages
@@ -60,22 +49,8 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
-      - name: Install Composer dependencies without scripts
-        run: composer install --prefer-dist --no-progress --no-suggest --no-dev --optimize-autoloader --no-scripts
-        env:
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_PROFILE: default
-      - name: Run package discovery with proper AWS credentials
-        run: php artisan package:discover --ansi
-        env:
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_PROFILE: default
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-dev --optimize-autoloader
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

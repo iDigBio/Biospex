@@ -20,37 +20,67 @@
 
 namespace App\Services\Api;
 
-use Aws\Credentials\CredentialProvider;
 use Aws\Lambda\LambdaClient;
 
 class AwsLambdaApiService
 {
-    protected LambdaClient $lambdaClient;
+    protected ?LambdaClient $lambdaClient = null;
 
     /**
-     * Construct
+     * Get or create Lambda client with lazy loading
+     * This prevents AWS client instantiation during package discovery
+     *
+     * @throws \Exception
      */
-    public function __construct()
+    protected function getLambdaClient(): LambdaClient
     {
-        // $provider = CredentialProvider::defaultProvider();
-        $this->lambdaClient = new LambdaClient([
-            // 'credentials' => $provider,
+        if ($this->lambdaClient === null) {
+            $this->lambdaClient = $this->createLambdaClient();
+        }
+
+        return $this->lambdaClient;
+    }
+
+    /**
+     * Create a Lambda client with proper credential handling and environment awareness
+     */
+    protected function createLambdaClient(): LambdaClient
+    {
+        $accessKey = config('config.aws.access_key');
+        $secretKey = config('config.aws.secret_key');
+        $region = config('config.aws.default_region');
+
+        // Validate credentials exist
+        if (empty($accessKey) || empty($secretKey) || empty($region)) {
+            // For CI/testing environments, use mock credentials to prevent errors
+            if (app()->environment(['testing', 'local'])) {
+                return new LambdaClient([
+                    'credentials' => false, // Disable credentials for testing
+                    'version' => 'latest',
+                    'region' => $region ?: 'us-east-1',
+                ]);
+            }
+
+            throw new \Exception('AWS credentials not configured. Required: AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION');
+        }
+
+        return new LambdaClient([
             'credentials' => [
-                'key' => config('config.aws.access_key'),
-                'secret' => config('config.aws.secret_key'),
+                'key' => $accessKey,
+                'secret' => $secretKey,
             ],
             'version' => 'latest',
-            'region' => config('config.aws.default_region'),
+            'region' => $region,
         ]);
     }
 
     /**
-     * Invoke lambda client.
+     * Invoke lambda client asynchronously.
      */
     public function lambdaInvokeAsync(string $function, array $data): void
     {
-        $this->lambdaClient->invoke([
-            // The name your created Lamda function
+        $this->getLambdaClient()->invoke([
+            // The name your created Lambda function
             'FunctionName' => $function,
             'Payload' => json_encode($data),
             'InvocationType' => 'Event',
@@ -62,7 +92,7 @@ class AwsLambdaApiService
      */
     public function lambdaInvoke(string $function, array $data): \Aws\Result
     {
-        return $this->lambdaClient->invoke([
+        return $this->getLambdaClient()->invoke([
             'FunctionName' => $function,
             'Payload' => json_encode($data),
         ]);
