@@ -28,10 +28,11 @@ on:
       - main        # Production environment
       - development # Development environment
 jobs:
-  build-and-deploy:
+  build-and-deploy-production:
     runs-on: ubuntu-latest
+    environment: production
     # Skip deployment if commit message contains [skip deploy] or [no deploy]
-    if: "!contains(github.event.head_commit.message, '[skip deploy]') && !contains(github.event.head_commit.message, '[no deploy]')"
+    if: "github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip deploy]') && !contains(github.event.head_commit.message, '[no deploy]')"
     steps:
       - uses: actions/checkout@v4
       - name: Setup PHP
@@ -59,40 +60,12 @@ jobs:
       - name: Install Yarn dependencies
         run: yarn install --frozen-lockfile --ignore-engines
       - name: Build assets for Production
-        if: github.ref == 'refs/heads/main'
         run: npm run production
         env:
-          MIX_REVERB_APP_KEY: ${{ vars.PROD_REVERB_APP_KEY }}
-          MIX_REVERB_HOST: ${{ vars.PROD_REVERB_HOST }}
-          MIX_REVERB_PORT: ${{ vars.PROD_REVERB_PORT }}
-          MIX_REVERB_SCHEME: ${{ vars.PROD_REVERB_SCHEME }}
-
-      - name: Debug Reverb Environment Variables
-        if: github.ref == 'refs/heads/development'
-        run: |
-          echo "DEV_REVERB_APP_KEY: ${{ vars.DEV_REVERB_APP_KEY }}"
-          echo "DEV_REVERB_HOST: ${{ vars.DEV_REVERB_HOST }}"
-          echo "DEV_REVERB_PORT: ${{ vars.DEV_REVERB_PORT }}"
-          echo "DEV_REVERB_SCHEME: ${{ vars.DEV_REVERB_SCHEME }}"
-          echo "---"
-          echo "Environment variables during build:"
-          echo "MIX_REVERB_APP_KEY: $MIX_REVERB_APP_KEY"
-          echo "MIX_REVERB_HOST: $MIX_REVERB_HOST"
-          echo "MIX_REVERB_PORT: $MIX_REVERB_PORT"
-          echo "MIX_REVERB_SCHEME: $MIX_REVERB_SCHEME"
-        env:
-          MIX_REVERB_APP_KEY: ${{ vars.DEV_REVERB_APP_KEY }}
-          MIX_REVERB_HOST: ${{ vars.DEV_REVERB_HOST }}
-          MIX_REVERB_PORT: ${{ vars.DEV_REVERB_PORT }}
-          MIX_REVERB_SCHEME: ${{ vars.DEV_REVERB_SCHEME }}
-      - name: Build assets for Development
-        if: github.ref == 'refs/heads/development'
-        run: npm run production
-        env:
-          MIX_REVERB_APP_KEY: ${{ vars.DEV_REVERB_APP_KEY }}
-          MIX_REVERB_HOST: ${{ vars.DEV_REVERB_HOST }}
-          MIX_REVERB_PORT: ${{ vars.DEV_REVERB_PORT }}
-          MIX_REVERB_SCHEME: ${{ vars.DEV_REVERB_SCHEME }}
+          MIX_REVERB_APP_KEY: ${{ vars.REVERB_APP_KEY }}
+          MIX_REVERB_HOST: ${{ vars.REVERB_HOST }}
+          MIX_REVERB_PORT: ${{ vars.REVERB_PORT }}
+          MIX_REVERB_SCHEME: ${{ vars.REVERB_SCHEME }}
       - name: Create deployment package
         run: |
           mkdir -p deployment-package
@@ -101,14 +74,90 @@ jobs:
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
         with:
-          name: biospex-${{ github.sha }}
+          name: biospex-production-${{ github.sha }}
           path: deployment-package/
           retention-days: 30
       - name: Deploy with Deployer
         uses: deployphp/action@v1
         with:
           private-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
-          dep: deploy ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+          dep: deploy production
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REPO: ${{ github.repository }}
+
+  build-and-deploy-development:
+    runs-on: ubuntu-latest
+    environment: development
+    # Skip deployment if commit message contains [skip deploy] or [no deploy]
+    if: "github.ref == 'refs/heads/development' && !contains(github.event.head_commit.message, '[skip deploy]') && !contains(github.event.head_commit.message, '[no deploy]')"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, bcmath, ctype, json, tokenizer, pdo, pdo_mysql
+      - name: Setup Composer authentication for Laravel Nova
+        run: composer config http-basic.nova.laravel.com ${{ secrets.NOVA_USERNAME }} ${{ secrets.NOVA_PASSWORD }}
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-dev --optimize-autoloader
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      - name: Install Yarn dependencies
+        run: yarn install --frozen-lockfile --ignore-engines
+      - name: Debug Reverb Environment Variables
+        run: |
+          echo "REVERB_APP_KEY: ${{ vars.REVERB_APP_KEY }}"
+          echo "REVERB_HOST: ${{ vars.REVERB_HOST }}"
+          echo "REVERB_PORT: ${{ vars.REVERB_PORT }}"
+          echo "REVERB_SCHEME: ${{ vars.REVERB_SCHEME }}"
+          echo "---"
+          echo "Environment variables during build:"
+          echo "MIX_REVERB_APP_KEY: $MIX_REVERB_APP_KEY"
+          echo "MIX_REVERB_HOST: $MIX_REVERB_HOST"
+          echo "MIX_REVERB_PORT: $MIX_REVERB_PORT"
+          echo "MIX_REVERB_SCHEME: $MIX_REVERB_SCHEME"
+        env:
+          MIX_REVERB_APP_KEY: ${{ vars.REVERB_APP_KEY }}
+          MIX_REVERB_HOST: ${{ vars.REVERB_HOST }}
+          MIX_REVERB_PORT: ${{ vars.REVERB_PORT }}
+          MIX_REVERB_SCHEME: ${{ vars.REVERB_SCHEME }}
+      - name: Build assets for Development
+        run: npm run production
+        env:
+          MIX_REVERB_APP_KEY: ${{ vars.REVERB_APP_KEY }}
+          MIX_REVERB_HOST: ${{ vars.REVERB_HOST }}
+          MIX_REVERB_PORT: ${{ vars.REVERB_PORT }}
+          MIX_REVERB_SCHEME: ${{ vars.REVERB_SCHEME }}
+      - name: Create deployment package
+        run: |
+          mkdir -p deployment-package
+          rsync -av --exclude=node_modules --exclude=.git --exclude=.github --exclude=tests --exclude=storage/logs --exclude=vendor . deployment-package/
+          cp -r public/css public/js public/fonts public/images public/svg public/mix-manifest.json deployment-package/public/ || true
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: biospex-development-${{ github.sha }}
+          path: deployment-package/
+          retention-days: 30
+      - name: Deploy with Deployer
+        uses: deployphp/action@v1
+        with:
+          private-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          dep: deploy development
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
