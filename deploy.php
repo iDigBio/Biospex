@@ -53,13 +53,13 @@ set('clear_paths', [
 // Server Configurations
 // Production: main branch → /data/web/biospex
 host('production')
-    ->setHostname('3.142.169.134')
+    ->set('hostname', '3.142.169.134')
     ->setDeployPath('{{base_path}}/biospex')
     ->set('branch', 'main');
 
 // Development: development branch → /data/web/dev.biospex
 host('development')
-    ->setHostname('3.142.169.134')
+    ->set('hostname', '3.142.169.134')
     ->setDeployPath('{{base_path}}/dev.biospex')
     ->set('branch', 'development');
 
