@@ -75,7 +75,7 @@ jobs:
         uses: deployphp/action@v1
         with:
           private-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
-          dep: deploy ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }} --no-progress
+          dep: deploy ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
