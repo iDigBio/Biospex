@@ -17,6 +17,7 @@
     "aws/aws-sdk-php": "~3.0",
     "czim/file-handling": "dev-load-count-fix as 2.3.0",
     "czim/laravel-paperclip": "^5.0",
+    "deployer/deployer": "^7.5",
     "graham-campbell/markdown": "^v16.0.0.0",
     "idigacademy/auto-cache": "dev-main",
     "intervention/image-laravel": "^1.5",
@@ -46,7 +47,6 @@
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.5",
     "barryvdh/laravel-ide-helper": "^v3.0.0",
-    "deployer/deployer": "^8.0",
     "fakerphp/faker": "^1.9.1",
     "kitloong/laravel-migrations-generator": "^v7.0.1",
     "mockery/mockery": "^1.4.2",

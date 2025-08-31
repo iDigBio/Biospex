@@ -72,11 +72,11 @@ jobs:
           path: deployment-package/
           retention-days: 30
       - name: Deploy with Deployer
-        run: |
-          curl -LO https://deployer.org/deployer.phar
-          php deployer.phar deploy {{ 'production' if github.ref == 'refs/heads/main' else 'development' }} --no-progress
+        uses: deployphp/action@v1
+        with:
+          private-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          dep: deploy ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }} --no-progress
         env:
-          DEPLOYER_CONFIG: deploy.php
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REPO: ${{ github.repository }}
