@@ -161,8 +161,21 @@ task('deploy:ci-artifacts', function () {
     // Step 2: Download, extract, and deploy CI-built assets
     run("curl -L -H 'Authorization: Bearer {$githubToken}' -H 'Accept: application/vnd.github.v3+json' '{$downloadUrl}' -o artifact.zip");
     run('unzip -o -q artifact.zip');       // Extract artifact quietly, overwrite existing files
-    run('rsync -av deployment-package/ ./'); // Sync pre-built assets to release directory
-    run('rm -rf deployment-package artifact.zip'); // Cleanup temporary files
+
+    // Debug: Check what was actually extracted
+    writeln('Debug: Contents after extraction:');
+    run('ls -la');
+
+    // Check if deployment-package directory exists, if not, assume files are in current directory
+    $deploymentPackageExists = run('[ -d "deployment-package" ] && echo "true" || echo "false"');
+    if (trim($deploymentPackageExists) === 'true') {
+        run('rsync -av deployment-package/ ./'); // Sync pre-built assets from deployment-package
+        run('rm -rf deployment-package'); // Clean up deployment-package directory
+    } else {
+        writeln('Debug: No deployment-package directory found, artifacts appear to be extracted directly');
+    }
+
+    run('rm -f artifact.zip'); // Cleanup artifact file
 
     writeln('✅ CI artifacts deployed successfully - No server-side building required!');
 });
