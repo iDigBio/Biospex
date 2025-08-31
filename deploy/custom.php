@@ -115,13 +115,30 @@ task('supervisor:restart-group', function () {
 desc('Download and extract pre-built assets from GitHub Actions (OPTION 1 CORE FEATURE)');
 task('deploy:ci-artifacts', function () {
     // Environment variables automatically provided by GitHub Actions workflow
-    $githubToken = $_ENV['GITHUB_TOKEN'] ?? '';  // GitHub API token for authentication
-    $githubSha = $_ENV['GITHUB_SHA'] ?? '';      // Git commit SHA for artifact identification
-    $githubRepo = $_ENV['GITHUB_REPO'] ?? 'iDigBio/Biospex';  // Repository name
+    // Try multiple methods to access environment variables
+    $githubToken = $_ENV['GITHUB_TOKEN'] ?? getenv('GITHUB_TOKEN') ?? '';
+    $githubSha = $_ENV['GITHUB_SHA'] ?? getenv('GITHUB_SHA') ?? '';
+    $githubRepo = $_ENV['GITHUB_REPO'] ?? getenv('GITHUB_REPO') ?? 'iDigBio/Biospex';
+
+    // Debug: Show available environment variables for troubleshooting
+    writeln('Debug: Checking environment variables...');
+    writeln('GITHUB_TOKEN present: '.(! empty($githubToken) ? 'YES' : 'NO'));
+    writeln('GITHUB_SHA present: '.(! empty($githubSha) ? 'YES' : 'NO'));
+    writeln('GITHUB_REPO: '.$githubRepo);
 
     // Validate required environment variables
     if (empty($githubToken) || empty($githubSha)) {
-        throw new \Exception('GITHUB_TOKEN and GITHUB_SHA environment variables are required');
+        // Provide more helpful error message with debugging information
+        $envVars = array_keys($_ENV);
+        $relevantEnvVars = array_filter($envVars, function ($key) {
+            return strpos(strtoupper($key), 'GITHUB') !== false;
+        });
+
+        $errorMsg = "GITHUB_TOKEN and GITHUB_SHA environment variables are required.\n";
+        $errorMsg .= 'Available GitHub-related env vars: '.implode(', ', $relevantEnvVars)."\n";
+        $errorMsg .= 'All env vars count: '.count($envVars);
+
+        throw new \Exception($errorMsg);
     }
 
     // Artifact naming convention: biospex-{git-sha}
