@@ -86,26 +86,6 @@ task('npm:run-build', function () {
 
 /*
  * =============================================================================
- * ENVIRONMENT CONFIGURATION MANAGEMENT
- * =============================================================================
- */
-
-desc('Upload environment-specific configuration file');
-task('upload:env', function () {
-    $alias = currentHost()->get('alias');
-
-    // Select appropriate .env file based on deployment target
-    $file = match ($alias) {
-        'production' => '.env.aws.prod',      // Production environment settings
-        'development' => '.env.aws.dev'       // Development environment settings
-    };
-
-    // Upload to shared directory (persists across deployments)
-    upload($file, '{{deploy_path}}/shared/.env');
-});
-
-/*
- * =============================================================================
  * SUPERVISOR PROCESS MANAGEMENT
  * =============================================================================
  */
