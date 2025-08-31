@@ -35,7 +35,7 @@ class AwsS3CsvService
     public function __construct(protected AwsS3ApiService $awsS3ApiService, public Csv $csv) {}
 
     /**
-     * Create bucket stream.
+     * Create a bucket stream.
      */
     public function createBucketStream(string $bucket, string $path, string $mode): void
     {
@@ -43,7 +43,7 @@ class AwsS3CsvService
     }
 
     /**
-     * Close bucket stream.
+     * Close the bucket stream.
      */
     public function closeBucketStream(): bool
     {
@@ -68,9 +68,11 @@ class AwsS3CsvService
 
     /**
      * Get csv row count.
+     *
+     * @throws \Exception
      */
     public function getCsvRowCount(string $dir): int
     {
-        return $this->awsS3ApiService->getFileCount(config('filesystems.disks.s3.bucket'), $dir);
+        return $this->awsS3ApiService->getFileCount(aws_s3_bucket(), $dir);
     }
 }
