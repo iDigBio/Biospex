@@ -24,7 +24,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
-class CleanEfsDirs extends Command
+class CleanEfsDirsCommand extends Command
 {
     /**
      * The name and signature of the console command.

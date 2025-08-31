@@ -21,32 +21,25 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Queue;
+use Pheanstalk\Values\TubeName;
 
-/**
- * Class UpdateQueries
- */
-class AppUpdateQueries extends Command
+class QueueCountCommand extends Command
 {
-    /**
-     * The console command name.
-     */
-    protected $signature = 'app:update-queries';
+    protected $signature = 'queue:count {queue? : The name of the queue to count}';
 
-    /**
-     * The console command description.
-     */
-    protected $description = 'Used for custom queries when updating database';
+    protected $description = 'Count the number of jobs in a Beanstalkd queue';
 
-    /**
-     * UpdateQueries constructor.
-     */
-    public function __construct()
+    public function handle()
     {
-        parent::__construct();
-    }
+        $queueName = $this->argument('queue') ?? config('queue.connections.beanstalkd.queue', 'default');
+        $connection = Queue::connection('beanstalkd');
+        $pheanstalk = $connection->getPheanstalk();
+        $tube = new TubeName($queueName);
+        $stats = $pheanstalk->statsTube($tube);
+        $count = $stats->currentJobsReady; // Property access for Pheanstalk 7.x
+        $this->info("Queue '{$queueName}' has {$count} jobs.");
 
-    /**
-     * Fire command
-     */
-    public function handle() {}
+        return $count;
+    }
 }

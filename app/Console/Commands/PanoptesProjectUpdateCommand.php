@@ -20,43 +20,51 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Expedition;
-use Artisan;
+use App\Jobs\PanoptesProjectUpdateJob;
+use App\Models\PanoptesProject;
 use Illuminate\Console\Command;
 
-class CheckExpeditionComplete extends Command
+/**
+ * Class PanoptesProjectUpdateCommand
+ */
+class PanoptesProjectUpdateCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:check-expedition-complete';
+    protected $signature = 'panoptes:project {expeditionIds?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Update expedition panoptes_projects. Accepts comma separated ids or empty.';
+
+    /**
+     * PanoptesProjectUpdateCommand constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(PanoptesProject $panoptesProject): void
     {
-        // Get expeditions where relation stats. percent_complete is 100
-        $expeditions = Expedition::skipCache()->with('actorExpeditions')->whereHas('stat', function ($query) {
-            $query->where('percent_completed', 100);
-        })->get();
+        $expeditionIds = $this->argument('expeditionIds') === null ? null :
+            explode(',', $this->argument('expeditionIds'));
 
-        $expeditions->each(function ($expedition) {
-            $expedition->actorExpeditions->each(function ($actorExpedition) {
-                $actorExpedition->state = 2;
-                $actorExpedition->save();
-                Artisan::call('workflow:manage', ['expeditionId' => $actorExpedition->expedition_id]);
-            });
+        $projects = $expeditionIds === null ?
+            $panoptesProject->all() :
+            $panoptesProject->whereIn('expedition_id', $expeditionIds)->get();
+
+        $projects->each(function ($project) {
+            PanoptesProjectUpdateJob::dispatch($project);
         });
-
     }
 }

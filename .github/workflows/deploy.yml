@@ -1,0 +1,67 @@
+# CI/CD Deployment Workflow - Option 1 Implementation
+# 
+# USAGE INSTRUCTIONS:
+# - Push to 'main' branch → Deploys to PRODUCTION automatically
+# - Push to 'development' branch → Deploys to DEVELOPMENT automatically
+# 
+# SKIP DEPLOYMENT:
+# Add [skip deploy] or [no deploy] to your commit message to push without deploying:
+# Examples:
+#   git commit -m "Update documentation [skip deploy]"  
+#   git commit -m "Work in progress [no deploy]"
+#   git commit -m "Fix typo in README [skip deploy]"
+#
+# NORMAL DEPLOYMENT:
+# Regular commits deploy automatically:
+#   git commit -m "Fix user authentication bug"
+#   git commit -m "Add new dashboard feature" 
+#
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - main        # Production environment
+      - development # Development environment
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    # Skip deployment if commit message contains [skip deploy] or [no deploy]
+    if: "!contains(github.event.head_commit.message, '[skip deploy]') && !contains(github.event.head_commit.message, '[no deploy]')"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, bcmath, ctype, json, tokenizer, pdo, pdo_mysql
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-dev --optimize-autoloader
+      - name: Install Yarn dependencies
+        run: yarn install --frozen-lockfile --ignore-engines
+      - name: Build assets
+        run: npm run production
+      - name: Create deployment package
+        run: |
+          mkdir -p deployment-package
+          rsync -av --exclude=node_modules --exclude=.git --exclude=.github --exclude=tests --exclude=storage/logs --exclude=vendor . deployment-package/
+          cp -r public/css public/js public/fonts public/images public/svg public/mix-manifest.json deployment-package/public/ || true
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: biospex-${{ github.sha }}
+          path: deployment-package/
+          retention-days: 30
+      - name: Deploy with Deployer
+        run: |
+          curl -LO https://deployer.org/deployer.phar
+          php deployer.phar deploy {{ 'production' if github.ref == 'refs/heads/main' else 'development' }} --no-progress
+        env:
+          DEPLOYER_CONFIG: deploy.php
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REPO: ${{ github.repository }}

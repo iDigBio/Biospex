@@ -27,9 +27,9 @@ use Illuminate\Console\Command;
 use Storage;
 
 /**
- * Class UpdateGoogleStateCountyTable
+ * Class UpdateGoogleStateCountyTableCommand
  */
-class UpdateGoogleStateCountyTable extends Command
+class UpdateGoogleStateCountyTableCommand extends Command
 {
     /**
      * The name and signature of the console command.

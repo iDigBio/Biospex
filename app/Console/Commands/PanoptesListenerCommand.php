@@ -67,6 +67,12 @@ class PanoptesListenerCommand extends Command
 
     public function handle(): int
     {
+        // Only allow production environment to proceed
+        if (config('app.env') !== 'production') {
+            // Silently exit for non-production environments
+            return self::SUCCESS;
+        }
+
         try {
             $this->info('Starting Panoptes Pusher listener...');
             $this->validateConfiguration();

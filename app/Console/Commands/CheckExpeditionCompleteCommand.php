@@ -20,49 +20,43 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\AmChartJob;
-use App\Models\AmChart;
-use App\Models\Project;
+use App\Models\Expedition;
+use Artisan;
 use Illuminate\Console\Command;
 
-/**
- * Class AmChartUpdate
- */
-class AmChartUpdate extends Command
+class CheckExpeditionCompleteCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'amchart:update {projectIds?*}';
+    protected $signature = 'app:check-expedition-complete';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update AmChart data for projects.';
-
-    /**
-     * AmChartUpdate constructor.
-     */
-    public function __construct(protected AmChart $amChart, protected Project $project)
-    {
-        parent::__construct();
-    }
+    protected $description = 'Command description';
 
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle()
     {
-        $projectIds = empty($this->argument('projectIds')) ?
-            $this->amChart->skipCache()->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
+        // Get expeditions where relation stats. percent_complete is 100
+        $expeditions = Expedition::skipCache()->with('actorExpeditions')->whereHas('stat', function ($query) {
+            $query->where('percent_completed', 100);
+        })->get();
 
-        $projectIds->each(function ($projectId) {
-            $project = $this->project->find($projectId);
-            AmChartJob::dispatch($project);
+        $expeditions->each(function ($expedition) {
+            $expedition->actorExpeditions->each(function ($actorExpedition) {
+                $actorExpedition->state = 2;
+                $actorExpedition->save();
+                Artisan::call('workflow:manage', ['expeditionId' => $actorExpedition->expedition_id]);
+            });
         });
+
     }
 }

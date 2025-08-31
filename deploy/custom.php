@@ -1,6 +1,17 @@
 <?php
 
 /*
+ * BIOSPEX CUSTOM DEPLOYMENT TASKS - Option 1 Implementation
+ *
+ * This file contains custom deployment tasks for the Biospex project.
+ *
+ * KEY FEATURES:
+ * - CI/CD artifact deployment (no server-side building)
+ * - Environment-specific configuration uploads
+ * - Queue-safe deployments with active job checking
+ * - Supervisor management for background processes
+ * - Custom Laravel Artisan commands integration
+ *
  * Copyright (C) 2014 - 2025, Biospex
  * biospex@gmail.com
  *
@@ -20,55 +31,180 @@
 
 namespace Deployer;
 
-desc('Running update queries...');
+/*
+ * =============================================================================
+ * CUSTOM LARAVEL ARTISAN TASKS
+ * =============================================================================
+ */
+
+desc('Running custom database update queries');
 task('artisan:app:update-queries', function () {
     cd('{{release_or_current_path}}');
-    run('php artisan app:update-queries');
+    run('php artisan app:update-queries');  // Custom command for database schema updates
 });
 
-desc('Deploying files...');
+desc('Deploying application-specific files and configurations');
 task('artisan:app:deploy-files', function () {
     cd('{{release_or_current_path}}');
-    run('php artisan app:deploy-files');
+    run('php artisan app:deploy-files');    // Custom command for file deployments
 });
 
-desc('Setting permissions...');
+/*
+ * =============================================================================
+ * FILE SYSTEM & PERMISSIONS MANAGEMENT
+ * =============================================================================
+ */
+
+desc('Setting proper file permissions and clearing logs');
 task('set:permissions', function () {
+    // Set ownership: ubuntu user, www-data group for web server access
     run('sudo chown -R ubuntu.www-data {{deploy_path}}');
+
+    // Clear all log files to prevent disk space issues
     run('sudo truncate -s 0 {{release_or_current_path}}/storage/logs/*.log');
 });
 
-desc('Install project dependencies');
+/*
+ * =============================================================================
+ * LEGACY BUILD TASKS (NOT USED IN OPTION 1 - CI/CD ARTIFACTS)
+ * =============================================================================
+ * These tasks are kept for reference but not used in the main deployment sequence.
+ * Option 1 uses pre-built assets from GitHub Actions instead.
+ */
+
+desc('[LEGACY] Install project dependencies - NOT USED IN OPTION 1');
 task('yarn:run-install', function () {
     cd('{{release_or_current_path}}');
-    run('yarn install --frozen-lockfile --ignore-engines');
+    run('yarn install --frozen-lockfile --ignore-engines');  // Server-side dependency installation
 });
 
-desc('Build project dependencies');
+desc('[LEGACY] Build project dependencies - NOT USED IN OPTION 1');
 task('npm:run-build', function () {
     cd('{{release_or_current_path}}');
-    run('npm run production');
+    run('npm run production');  // Server-side asset compilation
 });
 
-desc('Upload env file depending on the host');
+/*
+ * =============================================================================
+ * ENVIRONMENT CONFIGURATION MANAGEMENT
+ * =============================================================================
+ */
+
+desc('Upload environment-specific configuration file');
 task('upload:env', function () {
     $alias = currentHost()->get('alias');
+
+    // Select appropriate .env file based on deployment target
     $file = match ($alias) {
-        'production' => '.env.aws.prod',
-        'development' => '.env.aws.dev'
+        'production' => '.env.aws.prod',      // Production environment settings
+        'development' => '.env.aws.dev'       // Development environment settings
     };
+
+    // Upload to shared directory (persists across deployments)
     upload($file, '{{deploy_path}}/shared/.env');
 });
 
-desc('Reload Supervisor');
+/*
+ * =============================================================================
+ * SUPERVISOR PROCESS MANAGEMENT
+ * =============================================================================
+ */
+
+desc('Reload Supervisor configuration and restart service');
 task('supervisor:reload', function () {
-    run('sudo supervisorctl reread');
-    run('sudo supervisorctl update');
-    run('sudo systemctl restart supervisor');
+    run('sudo supervisorctl reread');     // Re-read configuration files
+    run('sudo supervisorctl update');     // Update running processes with new config
+    run('sudo systemctl restart supervisor'); // Restart Supervisor daemon
 });
 
-desc('Reload Supervisor Restart Group');
+desc('Restart environment-specific Supervisor process group');
 task('supervisor:restart-group', function () {
-    $alias = currentHost()->get('alias');
+    $alias = currentHost()->get('alias');  // Get current host alias (production/development)
+
+    // Restart all processes in the environment-specific group
+    // Groups: 'production:*' or 'development:*'
     run('sudo supervisorctl restart '.$alias.':');
+});
+
+/*
+ * =============================================================================
+ * CI/CD ARTIFACT DEPLOYMENT - CORE OF OPTION 1 IMPLEMENTATION
+ * =============================================================================
+ */
+
+desc('Download and extract pre-built assets from GitHub Actions (OPTION 1 CORE FEATURE)');
+task('deploy:ci-artifacts', function () {
+    // Environment variables automatically provided by GitHub Actions workflow
+    $githubToken = $_ENV['GITHUB_TOKEN'] ?? '';  // GitHub API token for authentication
+    $githubSha = $_ENV['GITHUB_SHA'] ?? '';      // Git commit SHA for artifact identification
+    $githubRepo = $_ENV['GITHUB_REPO'] ?? 'iDigBio/Biospex';  // Repository name
+
+    // Validate required environment variables
+    if (empty($githubToken) || empty($githubSha)) {
+        throw new \Exception('GITHUB_TOKEN and GITHUB_SHA environment variables are required');
+    }
+
+    // Artifact naming convention: biospex-{git-sha}
+    $artifactName = "biospex-{$githubSha}";
+    writeln("Downloading CI artifact: {$artifactName}");
+
+    // Step 1: Get artifact download URL from GitHub API
+    $apiUrl = "https://api.github.com/repos/{$githubRepo}/actions/artifacts";
+    $response = runLocally("curl -H 'Authorization: Bearer {$githubToken}' -H 'Accept: application/vnd.github.v3+json' '{$apiUrl}?name={$artifactName}&per_page=1'");
+    $artifacts = json_decode($response, true);
+
+    // Validate artifact exists
+    if (empty($artifacts['artifacts'])) {
+        throw new \Exception("No CI artifact found with name: {$artifactName}");
+    }
+
+    $downloadUrl = $artifacts['artifacts'][0]['archive_download_url'];
+    cd('{{release_or_current_path}}');
+
+    // Step 2: Download, extract, and deploy CI-built assets
+    run("curl -L -H 'Authorization: Bearer {$githubToken}' -H 'Accept: application/vnd.github.v3+json' '{$downloadUrl}' -o artifact.zip");
+    run('unzip -q artifact.zip');           // Extract artifact quietly
+    run('rsync -av deployment-package/ ./'); // Sync pre-built assets to release directory
+    run('rm -rf deployment-package artifact.zip'); // Cleanup temporary files
+
+    writeln('✅ CI artifacts deployed successfully - No server-side building required!');
+});
+
+/*
+ * =============================================================================
+ * QUEUE-SAFE DEPLOYMENT - PREVENTS JOB INTERRUPTION
+ * =============================================================================
+ */
+
+desc('Check queue status and safely restart queues (PREVENTS ACTIVE JOB INTERRUPTION)');
+task('queue:check', function () {
+    // Get monitored queues from Laravel configuration (environment-aware)
+    // This allows different queue names for dev (devexport) vs prod (export)
+    $configOutput = run('php {{release_or_current_path}}/artisan tinker --execute="echo json_encode(config(\'queue.monitored_queues\', [\'export\', \'geolocate\', \'import\', \'lambda_ocr\', \'reconcile\', \'sns_image_export\', \'sns_reconciliation\', \'sns_tesseract_ocr\', \'sernec_file\', \'sernec_row\']));"');
+
+    // Fallback to default queue names if config retrieval fails
+    $queues = json_decode(trim($configOutput), true) ?: ['export', 'geolocate', 'import', 'lambda_ocr', 'reconcile', 'sns_image_export', 'sns_reconciliation', 'sns_tesseract_ocr', 'sernec_file', 'sernec_row'];
+
+    // Check each queue for active jobs
+    foreach ($queues as $queue) {
+        if (empty($queue)) {
+            continue;
+        } // Skip empty queue names
+
+        // Use custom queue:count command to get job count
+        $count = run("php {{release_or_current_path}}/artisan queue:count {$queue} --quiet || echo 0", ['tty' => false]);
+        $count = (int) trim($count);
+
+        // SAFETY CHECK: If any queue has active jobs, skip restart
+        if ($count > 0) {
+            writeln("⚠️  Queue '{$queue}' has {$count} active jobs. Skipping queue restart to prevent interruption.");
+            writeln('🛡️  Deployment will continue without restarting queues (SAFE MODE).');
+
+            return; // Exit without restarting queues
+        }
+    }
+
+    // All queues are empty - safe to restart
+    writeln('✅ All monitored queues are empty. Restarting queue workers...');
+    run('php {{release_or_current_path}}/artisan queue:restart');
 });

@@ -20,33 +20,34 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\PanoptesProjectUpdateJob;
-use App\Models\PanoptesProject;
+use App\Jobs\AmChartJob;
+use App\Models\AmChart;
+use App\Models\Project;
 use Illuminate\Console\Command;
 
 /**
- * Class PanoptesProjectUpdate
+ * Class AmChartUpdateCommand
  */
-class PanoptesProjectUpdate extends Command
+class AmChartUpdateCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'panoptes:project {expeditionIds?}';
+    protected $signature = 'amchart:update {projectIds?*}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update expedition panoptes_projects. Accepts comma separated ids or empty.';
+    protected $description = 'Update AmChart data for projects.';
 
     /**
-     * PanoptesProjectUpdate constructor.
+     * AmChartUpdateCommand constructor.
      */
-    public function __construct()
+    public function __construct(protected AmChart $amChart, protected Project $project)
     {
         parent::__construct();
     }
@@ -54,17 +55,14 @@ class PanoptesProjectUpdate extends Command
     /**
      * Execute the console command.
      */
-    public function handle(PanoptesProject $panoptesProject): void
+    public function handle(): void
     {
-        $expeditionIds = $this->argument('expeditionIds') === null ? null :
-            explode(',', $this->argument('expeditionIds'));
+        $projectIds = empty($this->argument('projectIds')) ?
+            $this->amChart->skipCache()->all(['project_id'])->pluck('project_id') : collect($this->argument('projectIds'));
 
-        $projects = $expeditionIds === null ?
-            $panoptesProject->all() :
-            $panoptesProject->whereIn('expedition_id', $expeditionIds)->get();
-
-        $projects->each(function ($project) {
-            PanoptesProjectUpdateJob::dispatch($project);
+        $projectIds->each(function ($projectId) {
+            $project = $this->project->find($projectId);
+            AmChartJob::dispatch($project);
         });
     }
 }

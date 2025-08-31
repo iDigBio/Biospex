@@ -20,33 +20,33 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\GeoLocateStatsJob;
-use App\Models\Expedition;
 use Illuminate\Console\Command;
 
-class GeoLocateStats extends Command
+/**
+ * Class UpdateQueries
+ */
+class AppUpdateQueriesCommand extends Command
 {
     /**
-     * The name and signature of the console command.
-     *
-     * @var string
+     * The console command name.
      */
-    protected $signature = 'app:geolocate-stats {expeditionId}';
+    protected $signature = 'app:update-queries';
 
     /**
      * The console command description.
-     *
-     * @var string
      */
-    protected $description = 'Run geolocate stats job.';
+    protected $description = 'Used for custom queries when updating database';
 
     /**
-     * Execute the console command.
+     * UpdateQueries constructor.
      */
-    public function handle(): void
+    public function __construct()
     {
-        $expedition = Expedition::with('geoActorExpedition')->find($this->argument('expeditionId'));
-
-        GeoLocateStatsJob::dispatch($expedition->geoActorExpedition, true);
+        parent::__construct();
     }
+
+    /**
+     * Fire command
+     */
+    public function handle() {}
 }

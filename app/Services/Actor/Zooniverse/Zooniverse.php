@@ -35,7 +35,7 @@ class Zooniverse
      * State = 0: Expedition created.
      * State = 1: Export for Expedition. Set to 1 when export called and performed. @see \App\Console\Commands\ExportQueueCommand
      * State = 2: Will not run until process started and set to 2, added to WorkflowManager. @see \App\Http\Controllers\Admin\WorkflowManagerController
-     * State = 3: Zooniverse classifications completed. @see \App\Console\Commands\ZooniverseClassificationCount
+     * State = 3: Zooniverse classifications completed. @see \App\Console\Commands\ZooniverseClassificationCountCommand
      *
      * Stages of export
      * Processing Images // 1

@@ -26,9 +26,9 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
- * Class ZooniverseClassificationCount
+ * Class ZooniverseClassificationCountCommand
  */
-class ZooniverseClassificationCount extends Command
+class ZooniverseClassificationCountCommand extends Command
 {
     use DispatchesJobs;
 

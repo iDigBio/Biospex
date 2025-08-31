@@ -26,9 +26,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Class AppFileDeployment
+ * Class AppFileDeploymentCommand
  */
-class AppFileDeployment extends Command
+class AppFileDeploymentCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -54,9 +54,7 @@ class AppFileDeployment extends Command
         $this->setConfig();
 
         $supFiles = File::files(base_path('resources').'/supervisor');
-        $supTargets = collect($supFiles)->reject(function ($file) {
-            return $this->rejectFiles($file);
-        })->map(function ($file) {
+        $supTargets = collect($supFiles)->map(function ($file) {
 
             if (! Storage::exists('supervisor')) {
                 Storage::makeDirectory('supervisor');
@@ -105,17 +103,5 @@ class AppFileDeployment extends Command
     private function setConfig(): void
     {
         $this->config = collect(config('config.deployment_fields'));
-    }
-
-    /**
-     * check file.
-     */
-    private function rejectFiles($file): bool
-    {
-        $files = ['panoptes-listener.conf'];
-
-        $env = ['production', 'local'];
-
-        return ! in_array(config('app.env'), $env) && in_array($file->getBaseName(), $files);
     }
 }
