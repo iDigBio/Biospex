@@ -25,23 +25,46 @@ use Illuminate\Support\Facades\Storage;
 
 class AwsS3ApiService
 {
-    private S3Client $client;
+    private ?S3Client $client = null;
 
     /**
      * Construct
      */
     public function __construct()
     {
-        $this->client = Storage::disk('s3')->getClient();
+        // Only initialize S3 client if AWS configuration is available
+        // This prevents null bucket errors during CI/CD builds
+        if ($this->hasAwsConfiguration()) {
+            $this->client = Storage::disk('s3')->getClient();
+        }
+    }
+
+    /**
+     * Check if AWS S3 configuration is available
+     */
+    private function hasAwsConfiguration(): bool
+    {
+        $bucket = config('filesystems.disks.s3.bucket');
+        $key = config('filesystems.disks.s3.key');
+        $secret = config('filesystems.disks.s3.secret');
+        $region = config('filesystems.disks.s3.region');
+
+        return ! empty($bucket) && ! empty($key) && ! empty($secret) && ! empty($region);
     }
 
     /**
      * Create a seekable stream to read file from bucket.
      *
      * @return false|resource
+     *
+     * @throws \Exception
      */
     public function createS3BucketStream(string $bucket, string $filePath, string $mode, bool $seekable = true)
     {
+        if (! $this->client) {
+            throw new \Exception('AWS S3 client not available. Required: AWS_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION');
+        }
+
         $this->client->registerStreamWrapper();
 
         $context = null;
@@ -65,6 +88,10 @@ class AwsS3ApiService
      */
     public function getFileCount(string $bucket, string $dirPath): int
     {
+        if (! $this->client) {
+            throw new \Exception('AWS S3 client not available. Required: AWS_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION');
+        }
+
         $objects = $this->client->getIterator('ListObjects', [
             'Bucket' => $bucket,
             'Prefix' => $dirPath.'/',

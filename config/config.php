@@ -172,7 +172,7 @@ return [
     'ppsr' => [
         'ProjectGUID' => ['private' => 'uuid'],
         'ProjectName' => ['column' => 'title'],
-        'ProjectDataProvider' => ['value' => env('APP_NAME')],
+        'ProjectDataProvider' => ['value' => config('app.name')],
         'ProjectDescription' => ['column' => 'description_long'],
         'ProjectDateLastUpdated' => ['date' => 'updated_at'],
         'ProjectContactName' => ['column' => 'contact'],
