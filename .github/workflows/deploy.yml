@@ -16,11 +16,7 @@
 #   git commit -m "Fix user authentication bug"
 #   git commit -m "Add new dashboard feature" 
 #
-# CHANGES:
-# - Removed complex AWS credential workarounds (no longer needed with lazy loading)
-# - Simplified to standard Laravel CI/CD workflow
-# - AWS credentials only used on server during actual deployment
-#
+
 name: Build and Deploy
 on:
   push:
