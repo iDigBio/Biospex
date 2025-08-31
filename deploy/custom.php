@@ -160,7 +160,7 @@ task('deploy:ci-artifacts', function () {
 
     // Step 2: Download, extract, and deploy CI-built assets
     run("curl -L -H 'Authorization: Bearer {$githubToken}' -H 'Accept: application/vnd.github.v3+json' '{$downloadUrl}' -o artifact.zip");
-    run('unzip -q artifact.zip');           // Extract artifact quietly
+    run('unzip -o -q artifact.zip');       // Extract artifact quietly, overwrite existing files
     run('rsync -av deployment-package/ ./'); // Sync pre-built assets to release directory
     run('rm -rf deployment-package artifact.zip'); // Cleanup temporary files
 
