@@ -67,6 +67,24 @@ jobs:
           MIX_REVERB_PORT: ${{ vars.PROD_REVERB_PORT }}
           MIX_REVERB_SCHEME: ${{ vars.PROD_REVERB_SCHEME }}
 
+      - name: Debug Reverb Environment Variables
+        if: github.ref == 'refs/heads/development'
+        run: |
+          echo "DEV_REVERB_APP_KEY: ${{ vars.DEV_REVERB_APP_KEY }}"
+          echo "DEV_REVERB_HOST: ${{ vars.DEV_REVERB_HOST }}"
+          echo "DEV_REVERB_PORT: ${{ vars.DEV_REVERB_PORT }}"
+          echo "DEV_REVERB_SCHEME: ${{ vars.DEV_REVERB_SCHEME }}"
+          echo "---"
+          echo "Environment variables during build:"
+          echo "MIX_REVERB_APP_KEY: $MIX_REVERB_APP_KEY"
+          echo "MIX_REVERB_HOST: $MIX_REVERB_HOST"
+          echo "MIX_REVERB_PORT: $MIX_REVERB_PORT"
+          echo "MIX_REVERB_SCHEME: $MIX_REVERB_SCHEME"
+        env:
+          MIX_REVERB_APP_KEY: ${{ vars.DEV_REVERB_APP_KEY }}
+          MIX_REVERB_HOST: ${{ vars.DEV_REVERB_HOST }}
+          MIX_REVERB_PORT: ${{ vars.DEV_REVERB_PORT }}
+          MIX_REVERB_SCHEME: ${{ vars.DEV_REVERB_SCHEME }}
       - name: Build assets for Development
         if: github.ref == 'refs/heads/development'
         run: npm run production
