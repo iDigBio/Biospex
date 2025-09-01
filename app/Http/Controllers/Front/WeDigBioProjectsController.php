@@ -35,9 +35,11 @@ class WeDigBioProjectsController extends Controller
      */
     public function __invoke(?WeDigBioEvent $event = null): \Illuminate\Http\JsonResponse
     {
+        /*
         if (! Request::ajax()) {
             return Response::json(['html' => 'Request must be ajax.']);
         }
+        */
 
         return Response::json($this->weDigBioService->getProjectsForWeDigBioRateChart($event));
     }

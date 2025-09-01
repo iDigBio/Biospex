@@ -83,13 +83,14 @@ class WeDigBioService
             return null;
         }
 
-        $result = $this->weDigBioEvent->with(['transcriptions' => function ($q) {
-            $q->with(['project' => function ($q2) {
-                $q2->select('id', 'title');
-            }])->groupBy('project_id');
-        }])->find($activeEvent->id);
+        $transcriptions = $this->weDigBioEventTranscription
+            ->with(['project:id,title'])
+            ->where('event_id', $activeEvent->id)
+            ->select('project_id')
+            ->groupBy('project_id')
+            ->get();
 
-        return $result->transcriptions->map(function ($transcription) {
+        return $transcriptions->map(function ($transcription) {
             return $transcription->project->title;
         })->toArray();
     }
