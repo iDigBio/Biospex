@@ -24,6 +24,125 @@ $(function () {
         }
     });
 
+    // Fix for Bootstrap modal aria-hidden accessibility issue
+    // Enhanced fix to handle all dismissal methods and dynamic content
+    let modalObserver;
+
+    // Aggressive prevention: Override setAttribute to prevent aria-hidden on modals with focus
+    const originalSetAttribute = Element.prototype.setAttribute;
+    Element.prototype.setAttribute = function (name, value) {
+        if (name === 'aria-hidden' && value === 'true' && this.classList.contains('modal')) {
+            const focusedElement = this.querySelector(':focus');
+            const modalHasFocus = this.contains(document.activeElement);
+
+            if (focusedElement || modalHasFocus) {
+                return; // Block the setAttribute call completely
+            }
+        }
+        return originalSetAttribute.call(this, name, value);
+    };
+
+    // Initialize MutationObserver for comprehensive modal monitoring
+    if (window.MutationObserver) {
+        modalObserver = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'aria-hidden') {
+                    const modal = mutation.target;
+                    if (modal.classList.contains('modal') && modal.getAttribute('aria-hidden') === 'true') {
+                        const focusedElement = modal.querySelector(':focus');
+                        const modalHasFocus = modal.contains(document.activeElement);
+
+                        if (focusedElement || modalHasFocus) {
+                            // Remove aria-hidden immediately if modal contains focused elements
+                            modal.removeAttribute('aria-hidden');
+                        }
+                    }
+                }
+            });
+        });
+
+        // Function to start observing a modal
+        function observeModal(modal) {
+            modalObserver.observe(modal, {
+                attributes: true,
+                attributeFilter: ['aria-hidden']
+            });
+        }
+
+        // Observe existing modals
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.modal').forEach(observeModal);
+        });
+
+        // Also observe modals that might be created dynamically
+        $(document).ready(function () {
+            $('.modal').each(function () {
+                observeModal(this);
+            });
+        });
+    }
+
+    // Multi-layer approach: handle different dismissal timing scenarios
+    $(document).on('hide.bs.modal', '.modal', function () {
+        const modal = this;
+
+        // Check immediately for focused elements
+        const checkAndRemoveAriaHidden = () => {
+            const focusedElement = modal.querySelector(':focus');
+            const ariaHidden = modal.getAttribute('aria-hidden');
+
+            if (focusedElement && ariaHidden === 'true') {
+                modal.removeAttribute('aria-hidden');
+            }
+        };
+
+        // Multiple timing checks to handle different dismissal scenarios
+        checkAndRemoveAriaHidden(); // Immediate check
+        setTimeout(checkAndRemoveAriaHidden, 0); // Next tick
+        setTimeout(checkAndRemoveAriaHidden, 1); // Slight delay for backdrop clicks
+        setTimeout(checkAndRemoveAriaHidden, 10); // Additional safety net
+        setTimeout(checkAndRemoveAriaHidden, 50); // Extended delay for backdrop clicks
+        setTimeout(checkAndRemoveAriaHidden, 100); // Additional safety for slower systems
+        setTimeout(checkAndRemoveAriaHidden, 200); // Even longer delay for backdrop clicks
+        setTimeout(checkAndRemoveAriaHidden, 500); // Maximum delay for slow systems
+    });
+
+    // Additional event handler specifically for backdrop clicks
+    // Bootstrap triggers these events in different order for backdrop vs button clicks
+    $(document).on('hidden.bs.modal', '.modal', function () {
+        const modal = this;
+
+        // Final check after modal is fully hidden
+        const finalCheck = () => {
+            const ariaHidden = modal.getAttribute('aria-hidden');
+            const focusedElement = modal.querySelector(':focus');
+
+            if (ariaHidden === 'true') {
+                if (focusedElement) {
+                    modal.removeAttribute('aria-hidden');
+                } else {
+                    // Check if modal itself or any descendant might still have focus or be focusable
+                    const modalHasFocus = modal.contains(document.activeElement);
+                    const focusableElements = modal.querySelectorAll('input, textarea, select, button, a[href], [tabindex]:not([tabindex="-1"])');
+
+                    if (modalHasFocus || focusableElements.length > 0) {
+                        modal.removeAttribute('aria-hidden');
+                    }
+                }
+            }
+        };
+
+        // Check immediately and with extended delays to catch backdrop dismissals
+        finalCheck();
+        setTimeout(finalCheck, 0);
+        setTimeout(finalCheck, 1);
+        setTimeout(finalCheck, 10);
+        setTimeout(finalCheck, 50);
+        setTimeout(finalCheck, 100);
+        setTimeout(finalCheck, 200);
+        setTimeout(finalCheck, 500);
+    });
+
     // Set prevent default for links
     $(document).on('click', '.prevent-default', function (e) {
         e.preventDefault();
@@ -105,8 +224,10 @@ $(function () {
 
     clockDiv();
 
-    if ($('#process-modal').length) {
-        $('#process-modal').on('shown.bs.modal', function (e) {
+
+    const $processModal = $('#process-modal');
+    if ($processModal.length) {
+        $processModal.on('shown.bs.modal', function () {
             fetchPoll();
             pollInterval = setInterval(fetchPoll, 60000);
         }).on('hidden.bs.modal', function () {
@@ -145,7 +266,7 @@ $(function () {
             Echo.channel(channel)
                 .listen('WeDigBioProgressEvent', (e) => {
                     $.each(e.data, function (id, val) {
-                        if (uuid === uuid) {
+                        if (id === uuid) {
                             $modal.html(val);
                         }
                     });
@@ -181,8 +302,8 @@ polling_data = function (data) {
  * @param element
  */
 sortPage = function (element) {
-    let data = element.data();
-    let $target = $('#' + data.target); // target container
+    const data = element.data();
+    const $target = $('#' + data.target); // target container
 
     $target.html('<span class="loader"></span>');
 
@@ -195,7 +316,7 @@ sortPage = function (element) {
 }
 
 setOrder = function (order, element) {
-    let $icon = element.find('i');
+    const $icon = element.find('i');
     element.siblings('span').data('order', 'asc').find('i').removeClass().addClass('fas fa-sort');
 
     switch (order) {
@@ -217,11 +338,12 @@ setOrder = function (order, element) {
 let timeInterval;
 
 getTimeRemaining = function (endTime) {
-    let t = Date.parse(endTime) - Date.parse(new Date());
-    let seconds = Math.floor((t / 1000) % 60);
-    let minutes = Math.floor((t / 1000 / 60) % 60);
-    let hours = Math.floor((t / (1000 * 60 * 60)) % 24);
-    let days = Math.floor(t / (1000 * 60 * 60 * 24));
+    const now = Date.now();
+    const t = Date.parse(endTime) - now;
+    const seconds = Math.floor((t / 1000) % 60);
+    const minutes = Math.floor((t / 1000 / 60) % 60);
+    const hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(t / (1000 * 60 * 60 * 24));
     return {
         'total': t,
         'days': days,
@@ -233,20 +355,21 @@ getTimeRemaining = function (endTime) {
 
 clockDiv = function () {
     $('.clockdiv').each(function () {
-        let deadline = $(this).data('value'); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
-        initializeClock($(this), deadline);
+        const $this = $(this);
+        const deadline = $this.data('value'); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
+        initializeClock($this, deadline);
     });
 }
 
 initializeClock = function ($clock, endTime) {
 
-    let daysSpan = $clock.find('.days');
-    let hoursSpan = $clock.find('.hours');
-    let minutesSpan = $clock.find('.minutes');
-    let secondsSpan = $clock.find('.seconds');
+    const daysSpan = $clock.find('.days');
+    const hoursSpan = $clock.find('.hours');
+    const minutesSpan = $clock.find('.minutes');
+    const secondsSpan = $clock.find('.seconds');
 
     function updateClock() {
-        let t = getTimeRemaining(endTime);
+        const t = getTimeRemaining(endTime);
         daysSpan.html(t.days);
         hoursSpan.html(('0' + t.hours).slice(-2));
         minutesSpan.html(('0' + t.minutes).slice(-2));
