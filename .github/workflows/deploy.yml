@@ -58,10 +58,10 @@ jobs:
       - name: Build assets for Production
         run: npm run production
         env:
-          MIX_REVERB_APP_KEY: ${{ vars.REVERB_APP_KEY }}
-          MIX_REVERB_HOST: ${{ vars.REVERB_HOST }}
-          MIX_REVERB_PORT: ${{ vars.REVERB_PORT }}
-          MIX_REVERB_SCHEME: ${{ vars.REVERB_SCHEME }}
+          MIX_REVERB_APP_KEY: ${{ vars.PROD_REVERB_APP_KEY }}
+          MIX_REVERB_HOST: ${{ vars.PROD_REVERB_HOST }}
+          MIX_REVERB_PORT: ${{ vars.PROD_REVERB_PORT }}
+          MIX_REVERB_SCHEME: ${{ vars.PROD_REVERB_SCHEME }}
       - name: Create deployment package
         run: |
           mkdir -p deployment-package
@@ -114,40 +114,13 @@ jobs:
           cache: 'yarn'
       - name: Install Yarn dependencies
         run: yarn install --frozen-lockfile --ignore-engines
-      - name: Debug Reverb Environment Variables
-        run: |
-          echo "=== Environment-level Variables ==="
-          echo "REVERB_APP_KEY: ${{ vars.REVERB_APP_KEY }}"
-          echo "REVERB_HOST: ${{ vars.REVERB_HOST }}"
-          echo "REVERB_PORT: ${{ vars.REVERB_PORT }}"
-          echo "REVERB_SCHEME: ${{ vars.REVERB_SCHEME }}"
-          echo ""
-          echo "=== Repository-level Variables (fallback test) ==="
-          echo "DEV_REVERB_APP_KEY: ${{ vars.DEV_REVERB_APP_KEY }}"
-          echo "DEV_REVERB_HOST: ${{ vars.DEV_REVERB_HOST }}"
-          echo "DEV_REVERB_PORT: ${{ vars.DEV_REVERB_PORT }}"
-          echo "DEV_REVERB_SCHEME: ${{ vars.DEV_REVERB_SCHEME }}"
-          echo ""
-          echo "=== Secrets test (should be hidden) ==="
-          echo "REVERB_APP_KEY secret: ${{ secrets.REVERB_APP_KEY }}"
-          echo ""
-          echo "=== Environment variables during build ==="
-          echo "MIX_REVERB_APP_KEY: $MIX_REVERB_APP_KEY"
-          echo "MIX_REVERB_HOST: $MIX_REVERB_HOST"
-          echo "MIX_REVERB_PORT: $MIX_REVERB_PORT"
-          echo "MIX_REVERB_SCHEME: $MIX_REVERB_SCHEME"
-        env:
-          MIX_REVERB_APP_KEY: ${{ vars.REVERB_APP_KEY || vars.DEV_REVERB_APP_KEY }}
-          MIX_REVERB_HOST: ${{ vars.REVERB_HOST || vars.DEV_REVERB_HOST }}
-          MIX_REVERB_PORT: ${{ vars.REVERB_PORT || vars.DEV_REVERB_PORT }}
-          MIX_REVERB_SCHEME: ${{ vars.REVERB_SCHEME || vars.DEV_REVERB_SCHEME }}
       - name: Build assets for Development
         run: npm run production
         env:
-          MIX_REVERB_APP_KEY: ${{ vars.REVERB_APP_KEY || vars.DEV_REVERB_APP_KEY }}
-          MIX_REVERB_HOST: ${{ vars.REVERB_HOST || vars.DEV_REVERB_HOST }}
-          MIX_REVERB_PORT: ${{ vars.REVERB_PORT || vars.DEV_REVERB_PORT }}
-          MIX_REVERB_SCHEME: ${{ vars.REVERB_SCHEME || vars.DEV_REVERB_SCHEME }}
+          MIX_REVERB_APP_KEY: ${{ vars.DEV_REVERB_APP_KEY }}
+          MIX_REVERB_HOST: ${{ vars.DEV_REVERB_HOST }}
+          MIX_REVERB_PORT: ${{ vars.DEV_REVERB_PORT }}
+          MIX_REVERB_SCHEME: ${{ vars.DEV_REVERB_SCHEME }}
       - name: Create deployment package
         run: |
           mkdir -p deployment-package
