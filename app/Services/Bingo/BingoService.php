@@ -172,7 +172,7 @@ class BingoService
      */
     public function getMapLocations(int $bingoId): Collection
     {
-        return $this->bingoUser->where('bingo_id', $bingoId)->groupBy('city')->get();
+        return $this->bingoUser->where('bingo_id', $bingoId)->groupBy(['city'])->get();
     }
 
     /**
