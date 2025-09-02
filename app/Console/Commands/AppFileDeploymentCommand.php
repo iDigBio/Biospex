@@ -168,8 +168,11 @@ class AppFileDeploymentCommand extends Command
         $processed = $content;
 
         foreach ($this->replacements as $search => $replace) {
-            if ($replace !== null && $replace !== '') {
-                $processed = str_replace($search, $replace, $processed);
+            if ($replace !== null) {
+                // Allow empty string replacements for REVERB_DEBUG
+                if ($search === 'REVERB_DEBUG' || $replace !== '') {
+                    $processed = str_replace($search, $replace, $processed);
+                }
             }
         }
 
@@ -250,7 +253,12 @@ class AppFileDeploymentCommand extends Command
 
                 return [$field => $replacement];
             })
-            ->filter(function ($value) {
+            ->filter(function ($value, $key) {
+                // Allow empty strings for REVERB_DEBUG (when false/empty, it should be replaced with '')
+                if ($key === 'REVERB_DEBUG') {
+                    return $value !== null;
+                }
+
                 return $value !== null && $value !== '';
             });
 
@@ -272,7 +280,7 @@ class AppFileDeploymentCommand extends Command
             }
 
             if ($field === 'REVERB_DEBUG') {
-                return config('config.reverb_debug') === 'true' ? '--debug' : '';
+                return config('config.reverb_debug') ? '--debug' : '';
             }
 
             return config('config.'.strtolower(Str::replaceFirst('_', '.', $field)));
