@@ -1,36 +1,132 @@
-# CI/CD Deployment Workflow - Option 1 Implementation (Simplified)
+# CI/CD Deployment Workflow with Semantic Versioning
 # 
-# USAGE INSTRUCTIONS:
-# - Push to 'main' branch → Deploys to PRODUCTION automatically
+# WORKFLOW:
 # - Push to 'development' branch → Deploys to DEVELOPMENT automatically
+# - Push to 'main' branch → Creates GitHub release with semantic version → Deploys to PRODUCTION
 # 
-# SKIP DEPLOYMENT:
-# Add [skip deploy] or [no deploy] to your commit message to push without deploying:
-# Examples:
-#   git commit -m "Update documentation [skip deploy]"  
-#   git commit -m "Work in progress [no deploy]"
-#   git commit -m "Fix typo in README [skip deploy]"
+# VERSION CONTROL:
+# Use commit message tags to control version bumps:
+# - [major] or [breaking] → Major version bump (1.0.0 → 2.0.0)
+# - [minor] or [feature] → Minor version bump (1.0.0 → 1.1.0)  
+# - Default (no tag) → Patch version bump (1.0.0 → 1.0.1)
 #
-# NORMAL DEPLOYMENT:
-# Regular commits deploy automatically:
-#   git commit -m "Fix user authentication bug"
-#   git commit -m "Add new dashboard feature" 
+# SKIP DEPLOYMENT:
+# Add [skip deploy] or [no deploy] to your commit message to push without deploying
+#
+# For detailed instructions, see: COMMIT_CONVENTIONS.md
 #
 
 name: Build and Deploy
 on:
   push:
     branches:
-      - main        # Production environment
+      - main        # Creates release and deploys to production
       - development # Development environment
+  release:
+    types: [published] # Production deployment trigger
 jobs:
+  # Create release when pushing to main
+  create-release:
+    runs-on: ubuntu-latest
+    if: "github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip deploy]') && !contains(github.event.head_commit.message, '[no deploy]')"
+    outputs:
+      release-tag: ${{ steps.create_release.outputs.tag_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for proper versioning
+      
+      - name: Determine version bump
+        id: version_bump
+        run: |
+          # Get the latest tag, default to 0.0.0 if no tags exist
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+          echo "Latest tag: $LATEST_TAG"
+          
+          # Check commit messages since last tag for version bump indicators
+          COMMITS=$(git log ${LATEST_TAG}..HEAD --oneline)
+          echo "Commits since last tag:"
+          echo "$COMMITS"
+          
+          # Determine version bump based on commit messages
+          if echo "$COMMITS" | grep -i "\[major\]\|\[breaking\]"; then
+            BUMP_TYPE="major"
+          elif echo "$COMMITS" | grep -i "\[minor\]\|\[feature\]"; then
+            BUMP_TYPE="minor"  
+          else
+            BUMP_TYPE="patch"
+          fi
+          
+          echo "Bump type: $BUMP_TYPE"
+          echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+          echo "current_version=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Calculate new version
+        id: new_version
+        run: |
+          CURRENT="${{ steps.version_bump.outputs.current_version }}"
+          BUMP_TYPE="${{ steps.version_bump.outputs.bump_type }}"
+          
+          # Parse current version
+          if [[ $CURRENT =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
+            MAJOR=${BASH_REMATCH[1]}
+            MINOR=${BASH_REMATCH[2]}
+            PATCH=${BASH_REMATCH[3]}
+          else
+            MAJOR=0
+            MINOR=0
+            PATCH=0
+          fi
+          
+          # Increment based on bump type
+          case $BUMP_TYPE in
+            "major")
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            "minor")
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            "patch")
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+          
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "New version: $NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.new_version.outputs.new_version }}
+          release_name: "Release ${{ steps.new_version.outputs.new_version }}"
+          body: |
+            ## What's Changed
+            
+            Auto-generated release from main branch.
+            
+            **Commits included:**
+            ${{ github.event.head_commit.message }}
+            
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.version_bump.outputs.current_version }}...${{ steps.new_version.outputs.new_version }}
+          draft: false
+          prerelease: false
+
+  # Production deployment (triggered by release)
   build-and-deploy-production:
     runs-on: ubuntu-latest
     environment: production
-    # Skip deployment if commit message contains [skip deploy] or [no deploy]
-    if: "github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip deploy]') && !contains(github.event.head_commit.message, '[no deploy]')"
+    if: github.event_name == 'release'
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
