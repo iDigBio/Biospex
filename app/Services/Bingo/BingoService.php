@@ -24,7 +24,7 @@ use App\Models\Bingo;
 use App\Models\BingoUser;
 use App\Models\BingoWord;
 use App\Models\User;
-use App\Services\Api\GeoPlugin;
+use App\Services\Api\IP;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Session;
@@ -41,7 +41,7 @@ class BingoService
         protected Bingo $bingo,
         protected BingoUser $bingoUser,
         protected BingoWord $bingoWord,
-        protected GeoPlugin $location
+        protected IP $location
     ) {}
 
     /**
