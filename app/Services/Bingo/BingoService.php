@@ -109,7 +109,7 @@ class BingoService
 
         $values = [
             'bingo_id' => $bingo->id,
-            'ip' => $this->location->ip,
+            'ip' => $this->location->ip ?? '0.0.0.0',
             'latitude' => $this->location->latitude == null ? '30.43826' : $this->location->latitude,
             'longitude' => $this->location->longitude == null ? '-84.28073' : $this->location->longitude,
             'city' => $this->location->city == null ? 'Tallahassee' : $this->location->city,
