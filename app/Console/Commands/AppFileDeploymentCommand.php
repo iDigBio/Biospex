@@ -20,10 +20,12 @@
 
 namespace App\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * Class AppFileDeploymentCommand
@@ -35,7 +37,7 @@ class AppFileDeploymentCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:deploy-files';
+    protected $signature = 'app:deploy-files {--dry-run : Show what would be done without making changes}';
 
     /**
      * The console command description.
@@ -44,64 +46,241 @@ class AppFileDeploymentCommand extends Command
      */
     protected $description = 'Handles moving, renaming, and replacing files needed per environment settings';
 
-    private Collection $config;
+    private Collection $replacements;
+
+    private bool $isDryRun = false;
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
-        $this->setConfig();
+        try {
+            $this->isDryRun = $this->option('dry-run');
+            $this->info('Starting file deployment process...');
 
-        $supFiles = File::files(base_path('resources').'/supervisor');
-        $supTargets = collect($supFiles)->map(function ($file) {
-
-            if (! Storage::exists('supervisor')) {
-                Storage::makeDirectory('supervisor');
+            if ($this->isDryRun) {
+                $this->warn('DRY RUN MODE: No files will be modified');
             }
 
-            $target = Storage::path('supervisor').'/'.$file->getBaseName();
-            if (File::exists($target)) {
-                File::delete($target);
+            $this->buildReplacementMap();
+            $sourceFiles = $this->getSourceFiles();
+            $processedFiles = $this->processFiles($sourceFiles);
+
+            $this->info("Successfully processed {$processedFiles} file(s)");
+
+            return Command::SUCCESS;
+
+        } catch (Exception $e) {
+            $this->error("Deployment failed: {$e->getMessage()}");
+
+            return Command::FAILURE;
+        }
+    }
+
+    /**
+     * Get source files from supervisor directory.
+     */
+    private function getSourceFiles(): Collection
+    {
+        $supervisorPath = base_path('resources/supervisor');
+
+        if (! File::isDirectory($supervisorPath)) {
+            throw new Exception("Supervisor templates directory not found: {$supervisorPath}");
+        }
+
+        $files = File::files($supervisorPath);
+
+        if (empty($files)) {
+            throw new Exception("No supervisor template files found in: {$supervisorPath}");
+        }
+
+        $this->info('Found '.count($files).' supervisor template file(s)');
+
+        return collect($files);
+    }
+
+    /**
+     * Process all template files.
+     */
+    private function processFiles(Collection $sourceFiles): int
+    {
+        $this->ensureTargetDirectory();
+        $processedCount = 0;
+
+        $progressBar = $this->output->createProgressBar($sourceFiles->count());
+        $progressBar->setFormat('Processing: %current%/%max% [%bar%] %percent:3s%% %message%');
+
+        foreach ($sourceFiles as $sourceFile) {
+            $progressBar->setMessage($sourceFile->getBasename());
+
+            try {
+                $this->processFile($sourceFile);
+                $processedCount++;
+            } catch (Exception $e) {
+                $progressBar->clear();
+                $this->error("Failed to process {$sourceFile->getBasename()}: {$e->getMessage()}");
+                $progressBar->display();
             }
-            File::copy($file->getPathname(), $target);
 
-            return $target;
-        });
+            $progressBar->advance();
+        }
 
-        $this->config->each(function ($search) use ($supTargets) {
-            $replace = $this->configureReplace($search);
-            $supTargets->each(function ($file) use ($search, $replace) {
-                exec("sed -i 's*$search*$replace*g' $file");
+        $progressBar->finish();
+        $this->newLine();
+
+        return $processedCount;
+    }
+
+    /**
+     * Process a single template file.
+     */
+    private function processFile($sourceFile): void
+    {
+        $targetPath = $this->getTargetPath($sourceFile);
+
+        // Read source content
+        $content = File::get($sourceFile->getPathname());
+
+        if (empty($content)) {
+            throw new Exception('Source file is empty or unreadable');
+        }
+
+        // Apply all replacements
+        $processedContent = $this->applyReplacements($content);
+
+        // Write to target (unless dry run)
+        if (! $this->isDryRun) {
+            $this->writeTargetFile($targetPath, $processedContent);
+        }
+
+        // Show changes in dry run mode
+        if ($this->isDryRun) {
+            $this->showDryRunChanges($sourceFile->getBasename(), $content, $processedContent);
+        }
+    }
+
+    /**
+     * Apply all configured replacements to content.
+     */
+    private function applyReplacements(string $content): string
+    {
+        $processed = $content;
+
+        foreach ($this->replacements as $search => $replace) {
+            if ($replace !== null && $replace !== '') {
+                $processed = str_replace($search, $replace, $processed);
+            }
+        }
+
+        return $processed;
+    }
+
+    /**
+     * Ensure target directory exists.
+     */
+    private function ensureTargetDirectory(): void
+    {
+        if (! $this->isDryRun && ! Storage::exists('supervisor')) {
+            Storage::makeDirectory('supervisor');
+            $this->info('Created supervisor directory');
+        }
+    }
+
+    /**
+     * Get target file path.
+     */
+    private function getTargetPath($sourceFile): string
+    {
+        return Storage::path('supervisor').DIRECTORY_SEPARATOR.$sourceFile->getBasename();
+    }
+
+    /**
+     * Write content to target file.
+     */
+    private function writeTargetFile(string $targetPath, string $content): void
+    {
+        // Remove existing file if it exists
+        if (File::exists($targetPath)) {
+            File::delete($targetPath);
+        }
+
+        // Write new content
+        if (! File::put($targetPath, $content)) {
+            throw new Exception("Failed to write target file: {$targetPath}");
+        }
+    }
+
+    /**
+     * Show what changes would be made in dry run mode.
+     */
+    private function showDryRunChanges(string $filename, string $original, string $processed): void
+    {
+        if ($original !== $processed) {
+            $this->line("\n<fg=yellow>Changes for {$filename}:</>");
+
+            $changes = 0;
+            foreach ($this->replacements as $search => $replace) {
+                if ($replace !== null && $replace !== '' && str_contains($original, $search)) {
+                    $this->line("  <fg=cyan>{$search}</> → <fg=green>{$replace}</>");
+                    $changes++;
+                }
+            }
+
+            if ($changes === 0) {
+                $this->line('  <fg=gray>No replacements needed</>');
+            }
+        }
+    }
+
+    /**
+     * Build the replacement map from configuration.
+     */
+    private function buildReplacementMap(): void
+    {
+        $deploymentFields = config('config.deployment_fields');
+
+        if (empty($deploymentFields)) {
+            throw new Exception('No deployment fields configured');
+        }
+
+        $this->replacements = collect($deploymentFields)
+            ->mapWithKeys(function ($field) {
+                $replacement = $this->getReplacementValue($field);
+
+                return [$field => $replacement];
+            })
+            ->filter(function ($value) {
+                return $value !== null && $value !== '';
             });
-        });
+
+        $this->info('Built replacement map with '.$this->replacements->count().' entries');
     }
 
     /**
-     * @return false|\Illuminate\Config\Repository|mixed|string
+     * Get replacement value for a configuration field.
      */
-    private function configureReplace($search): mixed
+    private function getReplacementValue(string $field): ?string
     {
-        if (str_starts_with($search, 'APP_')) {
-            if (str_ends_with($search, '_ENV')) {
-                return config('app.env');
+        try {
+            if (str_starts_with($field, 'APP_')) {
+                if ($field === 'APP_ENV') {
+                    return config('app.env');
+                }
+
+                return config('config.'.strtolower($field));
             }
 
-            return config('config.'.strtolower($search));
+            if ($field === 'REVERB_DEBUG') {
+                return config('config.reverb_debug') === 'true' ? '--debug' : '';
+            }
+
+            return config('config.'.strtolower(Str::replaceFirst('_', '.', $field)));
+
+        } catch (Exception $e) {
+            $this->warn("Could not resolve configuration for {$field}: {$e->getMessage()}");
+
+            return null;
         }
-
-        if ($search === 'REVERB_DEBUG') {
-            return config('config.reverb_debug') === 'true' ? '--debug' : '';
-        }
-
-        return config('config.'.strtolower(\Str::replaceFirst('_', '.', $search)));
-    }
-
-    /**
-     * Set search and replace arrays.
-     */
-    private function setConfig(): void
-    {
-        $this->config = collect(config('config.deployment_fields'));
     }
 }

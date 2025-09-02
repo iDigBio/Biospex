@@ -196,6 +196,7 @@ return [
     'wedigbio_end_date' => env('WEDIGBIO_END_DATE'),
 
     'deployment_fields' => [
+        'APP_ENV',
         'APP_DOMAIN',
         'APP_SERVER_USER',
         'APP_CURRENT_PATH',
