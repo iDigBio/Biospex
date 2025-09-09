@@ -18,8 +18,49 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-it('has expeditions page', function () {
-    $response = $this->get(route('front.expeditions.index'));
+use App\Models\Expedition;
 
-    $response->assertStatus(200);
+describe('Expeditions Page Tests', function () {
+    it('displays the expeditions page successfully', function () {
+        $response = $this->get(route('front.expeditions.index'));
+
+        $response->assertStatus(200);
+    });
+
+    it('returns the correct view for expeditions page', function () {
+        $response = $this->get(route('front.expeditions.index'));
+
+        $response->assertViewIs('front.expedition.index');
+    });
+
+    it('passes required data to the view', function () {
+        $response = $this->get(route('front.expeditions.index'));
+
+        $response->assertViewHas(['expeditions', 'expeditionsCompleted']);
+    });
+
+    it('displays expeditions page with data when expeditions exist', function () {
+        // Create some test expeditions
+        Expedition::factory()->count(3)->create([
+            'completed' => false,
+        ]);
+
+        $response = $this->get(route('front.expeditions.index'));
+
+        // Check that the page displays content related to expeditions
+        $response->assertSee('Expeditions'); // Page title or heading
+    });
+
+    it('displays page correctly with completed expeditions', function () {
+        // Create some completed expeditions
+        Expedition::factory()->count(2)->create([
+            'completed' => true,
+        ]);
+
+        $response = $this->get(route('front.expeditions.index'));
+
+        // Check that the page loads successfully with completed expeditions
+        $response->assertStatus(200)
+            ->assertViewHas(['expeditions', 'expeditionsCompleted']);
+    });
 });

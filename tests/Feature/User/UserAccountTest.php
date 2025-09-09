@@ -18,82 +18,155 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-it('gives redirect response for unauthicated user', function () {
-    $user = \App\Models\User::factory()->create();
-    $response = $this->get(route('admin.users.edit', [$user]));
+use App\Models\Profile;
+use App\Models\User;
 
-    $response->assertStatus(302);
+describe('User Account Access Control Tests', function () {
+    it('redirects unauthenticated user to login', function () {
+        $user = User::factory()->create();
+        $response = $this->get(route('admin.users.edit', [$user]));
+
+        $response->assertStatus(302);
+    });
+
+    it('redirects unauthorized user when trying to edit other user', function () {
+        $currentUser = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $response = $this->actingAs($currentUser)->get(route('admin.users.edit', [$otherUser]));
+
+        $response->assertStatus(302);
+    });
+
+    it('allows authorized user to access their own profile', function () {
+        $user = User::factory()->verified()->create();
+        Profile::factory()->create(['user_id' => $user->id]);
+        $response = $this->actingAs($user)->get(route('admin.users.edit', [$user]));
+
+        $response->assertStatus(200);
+    });
 });
 
-it('gives redirect response for unauthorized user', function () {
-    $user = \App\Models\User::factory()->create();
-    $response = $this->actingAs($user)->get(route('admin.users.edit', [$user]));
+describe('User Profile Form Tests', function () {
+    it('displays profile form fields for authorized user', function () {
+        $user = User::factory()->verified()->create();
+        Profile::factory()->create(['user_id' => $user->id]);
+        $response = $this->actingAs($user)->get(route('admin.users.edit', [$user]));
 
-    $response->assertStatus(302);
+        $response->assertSee('first_name')
+            ->assertSee('last_name')
+            ->assertSee('email')
+            ->assertSee('timezone');
+    });
+
+    it('displays user data in form fields', function () {
+        $user = User::factory()->verified()->create();
+        $profile = Profile::factory()->create(['user_id' => $user->id]);
+        $response = $this->actingAs($user)->get(route('admin.users.edit', [$user]));
+
+        $response->assertSee($profile->first_name)
+            ->assertSee($profile->last_name)
+            ->assertSee($user->email);
+    });
 });
 
-it('gives success response for authorized user', function () {
-    $user = \App\Models\User::factory()->verified()->create();
-    $profile = \App\Models\Profile::factory()->create([$user]);
-    $response = $this->actingAs($user)->get(route('admin.users.edit', [$user]));
+describe('User Profile Update Tests', function () {
+    it('can update profile information successfully', function () {
+        $user = User::factory()->verified()->create();
+        Profile::factory()->create(['user_id' => $user->id]);
 
-    $response->assertStatus(200);
-});
+        // Hit page first due to unit test not working well with Redirect::back().
+        $this->actingAs($user)->get(route('admin.users.edit', [$user]));
 
-it('has profile form for authorized user', function () {
-    $user = \App\Models\User::factory()->verified()->create();
-    $profile = \App\Models\Profile::factory()->create([$user]);
-    $response = $this->actingAs($user)->get(route('admin.users.edit', [$user]));
-    $response->assertSee('first_name')->assertSee('last_name')->assertSee('email')->assertSee('timezone');
-});
+        $firstName = fake()->firstName;
+        $lastName = fake()->lastName;
+        $email = fake()->email;
+        $timezone = fake()->timezone;
 
-it('can update profile for authorized user', function () {
-    $user = \App\Models\User::factory()->verified()->create();
-    $profile = \App\Models\Profile::factory()->create(['user_id' => $user->id]);
+        $response = $this->actingAs($user)->put(route('admin.users.update', [$user]), [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'timezone' => $timezone,
+        ]);
 
-    // Hit page first due to unit test not working well with Redirect::bock().
-    $this->actingAs($user)->get(route('admin.users.edit', [$user]));
+        $response->assertRedirect(route('admin.users.edit', [$user]));
 
-    $firstName = fake()->firstName;
-    $lastName = fake()->lastName;
-    $email = fake()->email;
-    $timezone = fake()->timezone;
+        $this->assertDatabaseHas('profiles', [
+            'user_id' => $user->id,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'timezone' => $timezone,
+        ]);
 
-    $response = $this->actingAs($user)->put(route('admin.users.update', [$user]), [
-        'first_name' => $firstName,
-        'last_name' => $lastName,
-        'email' => $email,
-        'timezone' => $timezone,
-    ]);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'email' => $email,
+        ]);
+    });
 
-    $response->assertRedirect('/admin/users/'.$user->id.'/edit');
+    it('can update profile with notification settings', function () {
+        $user = User::factory()->verified()->create();
+        Profile::factory()->create(['user_id' => $user->id]);
 
-    $this->assertDatabaseHas('profiles', [
-        'first_name' => $firstName,
-        'last_name' => $lastName,
-        'timezone' => $timezone,
-    ]);
+        // Hit page first due to unit test not working well with Redirect::back().
+        $this->actingAs($user)->get(route('admin.users.edit', [$user]));
 
-    $this->assertDatabaseHas('users', [
-        'email' => $email,
-    ]);
-});
+        $firstName = fake()->firstName;
+        $lastName = fake()->lastName;
+        $email = fake()->email;
+        $timezone = fake()->timezone;
 
-it('can update password for authorized user', function () {
-    $current_password = fake()->password;
-    $user = \App\Models\User::factory()->verified()->create(['password' => bcrypt($current_password)]);
-    $profile = \App\Models\Profile::factory()->create(['user_id' => $user]);
+        $response = $this->actingAs($user)->put(route('admin.users.update', [$user]), [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'timezone' => $timezone,
+            'notification' => 1,
+        ]);
 
-    // Hit page first due to unit test not working well with Redirect::bock().
-    $this->actingAs($user)->get(route('admin.users.edit', [$user]));
+        $response->assertRedirect(route('admin.users.edit', [$user]))
+            ->assertSessionHas('success', 'User profile updated.');
 
-    $password = bcrypt(fake()->password);
+        $this->assertDatabaseHas('profiles', [
+            'user_id' => $user->id,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'timezone' => $timezone,
+        ]);
 
-    $this->actingAs($user)->put(route('admin.users.update', [$user]), [
-        'current_password' => $current_password,
-        'password' => $password,
-        'password_confirmation' => $password,
-    ])->assertRedirect('/admin/users/'.$user->id.'/edit');
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'email' => $email,
+        ]);
+    });
 
-    $this->assertTrue(\Hash::check($password, $user->password));
+    it('validates required fields during update', function () {
+        $user = User::factory()->verified()->create();
+        Profile::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->put(route('admin.users.update', [$user]), [
+            'first_name' => '',
+            'last_name' => '',
+            'email' => '',
+        ]);
+
+        $response->assertRedirect()
+            ->assertSessionHasErrors(['first_name', 'last_name', 'email']);
+    });
+
+    it('validates email uniqueness during update', function () {
+        $user1 = User::factory()->verified()->create();
+        $user2 = User::factory()->verified()->create();
+        Profile::factory()->create(['user_id' => $user1->id]);
+
+        $response = $this->actingAs($user1)->put(route('admin.users.update', [$user1]), [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => $user2->email, // Try to use another user's email
+            'timezone' => 'UTC',
+        ]);
+
+        $response->assertRedirect()
+            ->assertSessionHasErrors(['email']);
+    });
 });

@@ -18,30 +18,49 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-it('has faqpage page', function () {
-    $response = $this->get(route('front.faqs.index'));
+use App\Models\Faq;
+use App\Models\FaqCategory;
 
-    $response->assertStatus(200);
+describe('FAQ Page Basic Tests', function () {
+    it('displays the FAQ page successfully', function () {
+        $response = $this->get(route('front.faqs.index'));
+
+        $response->assertStatus(200);
+    });
+
+    it('returns the correct view for FAQ page', function () {
+        $response = $this->get(route('front.faqs.index'));
+
+        $response->assertViewIs('front.faq.index');
+    });
 });
 
-it('returns correct view', function () {
-    $response = $this->get(route('front.faqs.index'));
+describe('FAQ Content Tests', function () {
+    it('displays FAQ categories and questions when available', function () {
+        FaqCategory::factory()->count(3)
+            ->has(Faq::factory()->count(2))
+            ->create();
 
-    $response->assertViewIs('front.faq.index');
-});
+        $response = $this->get(route('front.faqs.index'));
 
-it('can see faq categories and questions on faq page', function () {
-    \App\Models\FaqCategory::factory()->count(3)
-        ->has(\App\Models\Faq::factory()->count(2))
-        ->create();
+        $names = FaqCategory::all()->pluck('name')->toArray();
 
-    $response = $this->get(route('front.faqs.index'));
+        foreach ($names as $name) {
+            $response->assertSee($name);
+        }
 
-    $names = \App\Models\FaqCategory::all()->pluck('name')->toArray();
+        $response->assertStatus(200);
+    });
 
-    foreach ($names as $name) {
-        $response->assertSee($name);
-    }
+    it('displays FAQ questions from categories', function () {
+        $category = FaqCategory::factory()
+            ->has(Faq::factory()->count(2), 'faqs')
+            ->create();
 
-    $response->assertStatus(200);
+        $response = $this->get(route('front.faqs.index'));
+
+        foreach ($category->faqs as $faq) {
+            $response->assertSee($faq->question);
+        }
+    });
 });

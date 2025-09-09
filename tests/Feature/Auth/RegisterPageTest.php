@@ -18,89 +18,208 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-it('has register page', function () {
-    $response = $this->get('/register');
+use App\Models\Group;
+use App\Models\GroupInvite;
+use App\Models\User;
+use Illuminate\Support\Facades\Http;
 
-    $response->assertStatus(200);
+describe('Register Page Basic Tests', function () {
+    it('displays the register page successfully', function () {
+        $response = $this->get(route('app.get.register'));
+
+        $response->assertStatus(200);
+    });
+
+    it('returns the correct view for registration', function () {
+        $response = $this->get(route('app.get.register'));
+
+        $response->assertViewIs('auth.register');
+    });
+
+    it('displays all required form fields', function () {
+        $response = $this->get(route('app.get.register'))
+            ->assertSee('Register Account')
+            ->assertSee('Register')
+            ->assertSee('First Name')
+            ->assertSee('Last Name')
+            ->assertSee('Email')
+            ->assertSee('Password')
+            ->assertSee('Confirm Password')
+            ->assertSee('Timezone');
+    });
 });
 
-it('returns correct view', function () {
-    $response = $this->get('/register');
+describe('User Registration Tests', function () {
+    it('cannot register new user with invalid recaptcha', function () {
+        Http::fake([
+            config('services.recaptcha.url') => Http::response(['success' => false]),
+        ]);
 
-    $response->assertViewIs('auth.register');
+        $firstName = fake()->firstName;
+        $lastName = fake()->lastName;
+        $email = fake()->email;
+        $password = fake()->password;
+        $timezone = fake()->timezone;
+
+        $response = $this->post(route('app.post.register'), [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'password' => $password,
+            'password_confirmation' => $password,
+            'timezone' => $timezone,
+            'g-recaptcha-response' => 'INVALID_RESPONSE',
+        ])->assertRedirect('/');
+
+        $this->assertDatabaseMissing('users', [
+            'email' => $email,
+        ]);
+    });
+
+    it('can register new user successfully', function () {
+        Http::fake([
+            config('services.recaptcha.url') => Http::response(['success' => true]),
+        ]);
+
+        $firstName = fake()->firstName;
+        $lastName = fake()->lastName;
+        $email = fake()->email;
+        $password = fake()->password;
+        $timezone = fake()->timezone;
+
+        $response = $this->post(route('app.post.register'), [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'password' => $password,
+            'password_confirmation' => $password,
+            'timezone' => $timezone,
+            'g-recaptcha-response' => 'VALID_RESPONSE',
+        ])->assertRedirect('email/verify');
+
+        $this->assertDatabaseHas('users', [
+            'email' => $email,
+        ]);
+
+        $this->assertDatabaseHas('profiles', [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'timezone' => $timezone,
+        ]);
+
+        $this->assertAuthenticated();
+    });
 });
 
-it('has register form', function () {
-    $response = $this->get('/register')
-        ->assertSee('Register Account')
-        ->assertSee('Register')
-        ->assertSee('First Name')
-        ->assertSee('Last Name')
-        ->assertSee('Email')
-        ->assertSee('Password')
-        ->assertSee('Confirm Password')
-        ->assertSee('Timezone')
-        ->assertSee('Group Invite Code');
-});
+describe('Group Invite Registration Tests', function () {
+    it('displays register page with group invite code in URL', function () {
+        $group = Group::factory()->create();
+        $invite = GroupInvite::create([
+            'group_id' => $group->id,
+            'email' => 'invited@example.com',
+            'code' => 'TEST-INVITE-CODE',
+        ]);
 
-// create test where user regisatraion fails
-it('can not register new user with invalid recaptcha', function () {
-    Illuminate\Support\Facades\Http::fake([
-        config('services.recaptcha.url') => Illuminate\Support\Facades\Http::response(['success' => false]),
-    ]);
+        $response = $this->get(route('app.get.register', $invite));
 
-    $firstName = fake()->firstName;
-    $lastName = fake()->lastName;
-    $email = fake()->email;
-    $password = bcrypt(fake()->password);
-    $timezone = fake()->timezone;
+        $response->assertStatus(200)
+            ->assertViewIs('auth.register')
+            ->assertViewHas('invite', $invite)
+            ->assertSee('invited@example.com'); // Email should be pre-filled
+    });
 
-    $response = $this->post('/register', [
-        'first_name' => $firstName,
-        'last_name' => $lastName,
-        'email' => $email,
-        'password' => $password,
-        'password_confirmation' => $password,
-        'timezone' => $timezone,
-        'g-recaptcha-response' => 'VALID_RESPONSE',
-    ])->assertRedirect('/');
-    // ->assertSessionHasErrors('g-recaptcha-response');
+    it('can register new user with valid group invite', function () {
+        Http::fake([
+            config('services.recaptcha.url') => Http::response(['success' => true]),
+        ]);
 
-    $this->assertDatabaseMissing('users', [
-        'email' => 'test@yahoo.com',
-    ]);
-});
+        $group = Group::factory()->create();
+        $invite = GroupInvite::create([
+            'group_id' => $group->id,
+            'email' => 'invited@example.com',
+            'code' => 'TEST-INVITE-CODE',
+        ]);
 
-it('can register new user', function () {
-    Illuminate\Support\Facades\Http::fake([
-        config('services.recaptcha.url') => Illuminate\Support\Facades\Http::response(['success' => true]),
-    ]);
+        $firstName = fake()->firstName;
+        $lastName = fake()->lastName;
+        $password = fake()->password;
+        $timezone = fake()->timezone;
 
-    $firstName = fake()->firstName;
-    $lastName = fake()->lastName;
-    $email = fake()->email;
-    $password = bcrypt(fake()->password);
-    $timezone = fake()->timezone;
+        $response = $this->post(route('app.post.register', $invite), [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $invite->email, // Must match invite email
+            'password' => $password,
+            'password_confirmation' => $password,
+            'timezone' => $timezone,
+            'g-recaptcha-response' => 'VALID_RESPONSE',
+        ])->assertRedirect('email/verify');
 
-    $response = $this->post('/register', [
-        'first_name' => $firstName,
-        'last_name' => $lastName,
-        'email' => $email,
-        'password' => $password,
-        'password_confirmation' => $password,
-        'timezone' => $timezone,
-        'g-recaptcha-response' => 'VALID_RESPONSE',
-    ])->assertRedirect('email/verify');
+        $this->assertDatabaseHas('users', [
+            'email' => $invite->email,
+        ]);
 
-    $this->assertDatabaseHas('users', [
-        'email' => $email,
-    ]);
+        $user = User::where('email', $invite->email)->first();
 
-    $this->assertDatabaseHas('profiles', [
-        'first_name' => $firstName,
-        'last_name' => $lastName,
-        'timezone' => $timezone,
-    ]);
+        $this->assertDatabaseHas('profiles', [
+            'user_id' => $user->id,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'timezone' => $timezone,
+        ]);
 
-    $this->assertAuthenticated();
+        // User should be added to the group
+        $this->assertDatabaseHas('group_user', [
+            'group_id' => $group->id,
+            'user_id' => $user->id,
+        ]);
+
+        $this->assertAuthenticated();
+    });
+
+    it('cannot register with group invite when email does not match', function () {
+        Http::fake([
+            config('services.recaptcha.url') => Http::response(['success' => true]),
+        ]);
+
+        $group = Group::factory()->create();
+        $invite = GroupInvite::create([
+            'group_id' => $group->id,
+            'email' => 'invited@example.com',
+            'code' => 'TEST-INVITE-CODE',
+        ]);
+
+        $firstName = fake()->firstName;
+        $lastName = fake()->lastName;
+        $differentEmail = 'different@example.com';
+        $password = fake()->password;
+        $timezone = fake()->timezone;
+
+        $response = $this->post(route('app.post.register', $invite), [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $differentEmail, // Different email from invite
+            'password' => $password,
+            'password_confirmation' => $password,
+            'timezone' => $timezone,
+            'g-recaptcha-response' => 'VALID_RESPONSE',
+        ])->assertRedirect(route('app.get.register', $invite))
+            ->assertSessionHas('danger', 'Email does not match invite email.');
+
+        $this->assertDatabaseMissing('users', [
+            'email' => $differentEmail,
+        ]);
+
+        $this->assertGuest();
+    });
+
+    it('handles invalid group invite gracefully', function () {
+        // Test with non-existent invite UUID - should return 404 as expected
+        $fakeUuid = '12345678-1234-1234-1234-123456789012';
+
+        $response = $this->get("/register/{$fakeUuid}");
+
+        // Laravel returns 404 when model binding fails, which is the correct behavior
+        $response->assertStatus(404);
+    });
 });

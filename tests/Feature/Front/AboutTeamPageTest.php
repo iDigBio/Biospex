@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2015  Biospex
+ * Copyright (C) 2014 - 2025, Biospex
  * biospex@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,31 +18,50 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-it('has about team page', function () {
+use App\Models\Team;
+use App\Models\TeamCategory;
 
-    $response = $this->get(route('front.teams.index'));
+describe('About Team Page Basic Tests', function () {
+    it('displays the about team page successfully', function () {
+        $response = $this->get(route('front.teams.index'));
 
-    $response->assertStatus(200);
+        $response->assertStatus(200);
+    });
+
+    it('returns the correct view for about team page', function () {
+        $response = $this->get(route('front.teams.index'));
+
+        $response->assertViewIs('front.team.index');
+    });
 });
 
-it('returns correct view', function () {
-    $response = $this->get(route('front.teams.index'));
+describe('Team Content Tests', function () {
+    it('displays team categories and members when available', function () {
+        TeamCategory::factory()->count(3)
+            ->has(Team::factory()->count(2))
+            ->create();
 
-    $response->assertViewIs('front.team.index');
-});
+        $response = $this->get(route('front.teams.index'));
 
-it('can see team categories and members on team page', function () {
-    \App\Models\TeamCategory::factory()->count(3)
-        ->has(\App\Models\Team::factory()->count(2))
-        ->create();
+        $names = TeamCategory::all()->pluck('name')->toArray();
 
-    $response = $this->get(route('front.teams.index'));
+        foreach ($names as $name) {
+            $response->assertSee($name);
+        }
 
-    $names = \App\Models\TeamCategory::all()->pluck('name')->toArray();
+        $response->assertStatus(200);
+    });
 
-    foreach ($names as $name) {
-        $response->assertSee($name);
-    }
+    it('displays team member names when available', function () {
+        $category = TeamCategory::factory()
+            ->has(Team::factory()->count(2), 'teams')
+            ->create();
 
-    $response->assertStatus(200);
+        $response = $this->get(route('front.teams.index'));
+
+        foreach ($category->teams as $team) {
+            $response->assertSee($team->first_name)
+                ->assertSee($team->last_name);
+        }
+    });
 });

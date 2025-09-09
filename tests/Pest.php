@@ -1,26 +1,37 @@
 <?php
 
 /*
+ * Copyright (C) 2014 - 2025, Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
 |--------------------------------------------------------------------------
 | Test Case
 |--------------------------------------------------------------------------
 |
 | The closure you provide to your test functions is always bound to a specific PHPUnit test
 | case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "uses()" function to bind a different classes or traits.
+| need to change it using the "pest()" function to bind a different classes or traits.
 |
 */
 
-uses(
-    Tests\TestCase::class,
-    Illuminate\Foundation\Testing\LazilyRefreshDatabase::class,
-    // Illuminate\Foundation\Testing\RefreshDatabase::class,
-)->in('Feature');
-
-uses(
-    Tests\TestCase::class,
-    Illuminate\Foundation\Testing\LazilyRefreshDatabase::class,
-)->in('Unit');
+pest()->extend(Tests\TestCase::class)
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->in('Feature');
 
 /*
 |--------------------------------------------------------------------------
@@ -33,7 +44,7 @@ uses(
 |
 */
 
-expect()->extend('test', function () {
+expect()->extend('toBeOne', function () {
     return $this->toBe(1);
 });
 

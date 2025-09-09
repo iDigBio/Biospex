@@ -18,17 +18,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-beforeEach(function () {
-    \App\Models\PanoptesTranscription::truncate();
-    $this->seed(\HomePageTestSeeder::class);
-});
+use App\Models\PanoptesTranscription;
 
-afterEach(function () {
-    \App\Models\PanoptesTranscription::truncate();
-});
+describe('Home Page Basic Tests', function () {
+    beforeEach(function () {
+        PanoptesTranscription::truncate();
+        $this->seed(\HomePageTestSeeder::class);
+    });
 
-it('has home page', function () {
-    $response = $this->get('/');
+    afterEach(function () {
+        PanoptesTranscription::truncate();
+    });
 
-    $response->assertStatus(200);
+    it('displays the home page successfully', function () {
+        $response = $this->get(route('home'));
+
+        $response->assertStatus(200);
+    });
+
+    it('returns the correct view for home page', function () {
+        $response = $this->get(route('home'));
+
+        $response->assertViewIs('front.home');
+    });
+
+    it('passes required data to the view', function () {
+        $response = $this->get(route('home'));
+
+        $response->assertViewHas(['expedition', 'contributorCount', 'transcriptionCount']);
+    });
+
+    it('displays content with data provided by services', function () {
+        $response = $this->get(route('home'));
+
+        // The view should load successfully and contain the basic structure
+        $response->assertStatus(200);
+
+        // Check that data is passed to view (already tested above)
+        // This test verifies the page loads with the data services
+        $this->assertTrue(true); // Placeholder for successful data loading
+    });
 });

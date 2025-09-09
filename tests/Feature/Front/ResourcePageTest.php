@@ -18,25 +18,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-it('has resourcepage page', function () {
-    $response = $this->get(route('front.resources.index'));
+use App\Models\Resource;
 
-    $response->assertStatus(200);
+describe('Resource Page Basic Tests', function () {
+    it('displays the resource page successfully', function () {
+        $response = $this->get(route('front.resources.index'));
+
+        $response->assertStatus(200);
+    });
+
+    it('returns the correct view for resource page', function () {
+        $response = $this->get(route('front.resources.index'));
+
+        $response->assertViewIs('front.resource.index');
+    });
 });
 
-it('returns correct view', function () {
-    $response = $this->get(route('front.resources.index'));
+describe('Resource Content Tests', function () {
+    it('displays resource titles when available', function () {
+        Resource::factory()->count(3)->create();
+        $titles = Resource::all()->pluck('title')->toArray();
 
-    $response->assertViewIs('front.resource.index');
-});
+        $response = $this->get(route('front.resources.index'));
 
-it('shows resource text on page', function () {
-    \App\Models\Resource::factory()->count(3)->create();
-    $titles = \App\Models\Resource::all()->pluck('title')->toArray();
+        foreach ($titles as $title) {
+            $response->assertSee($title);
+        }
+    });
 
-    $response = $this->get(route('front.resources.index'));
+    it('displays resource content when available', function () {
+        $resources = Resource::factory()->count(2)->create();
 
-    foreach ($titles as $title) {
-        $response->assertSee($title);
-    }
+        $response = $this->get(route('front.resources.index'));
+
+        foreach ($resources as $resource) {
+            $response->assertSee($resource->title);
+            if ($resource->description) {
+                $response->assertSee($resource->description);
+            }
+        }
+    });
 });

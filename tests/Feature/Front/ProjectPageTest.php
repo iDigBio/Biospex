@@ -49,7 +49,10 @@ it('can sort projects in asc order by title', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'title',
         'order' => 'asc',
-    ]);
+    ], [
+        'HTTP_X-Requested-With' => 'XMLHttpRequest',
+    ]
+    );
 
     $response->assertSuccessful();
 });
@@ -58,7 +61,10 @@ it('can sort projects in desc order by title', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'title',
         'order' => 'desc',
-    ]);
+    ], [
+        'HTTP_X-Requested-With' => 'XMLHttpRequest',
+    ]
+    );
 
     $response->assertSuccessful();
 });
@@ -67,7 +73,10 @@ it('can sort projects in asc order by group', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'group',
         'order' => 'asc',
-    ]);
+    ], [
+        'HTTP_X-Requested-With' => 'XMLHttpRequest',
+    ]
+    );
 
     $response->assertSuccessful();
 });
@@ -76,7 +85,10 @@ it('can sort projects in desc order by group', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'group',
         'order' => 'desc',
-    ]);
+    ], [
+        'HTTP_X-Requested-With' => 'XMLHttpRequest',
+    ]
+    );
 
     $response->assertSuccessful();
 });
@@ -85,7 +97,10 @@ it('can sort projects in asc order by date', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'date',
         'order' => 'asc',
-    ]);
+    ], [
+        'HTTP_X-Requested-With' => 'XMLHttpRequest',
+    ]
+    );
 
     $response->assertSuccessful();
 });
@@ -94,7 +109,10 @@ it('can sort projects in desc order by date', function () {
     $response = $this->post(route('front.projects.sort'), [
         'sort' => 'date',
         'order' => 'desc',
-    ]);
+    ], [
+        'HTTP_X-Requested-With' => 'XMLHttpRequest',
+    ]
+    );
 
     $response->assertSuccessful();
 });
