@@ -24,8 +24,6 @@ use App\Facades\DateHelper;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
-use Czim\Paperclip\Contracts\AttachableInterface;
-use Czim\Paperclip\Model\PaperclipTrait;
 use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -38,12 +36,12 @@ use Str;
  * a wide variety of functionalities such as relationships, custom behaviors, and data transformations.
  * This class includes attributes, relations, and mutators/accessors for handling project data.
  */
-class Project extends BaseEloquentModel implements AttachableInterface
+class Project extends BaseEloquentModel
 {
     use Cacheable, HybridRelations {
         Cacheable::newEloquentBuilder insteadof HybridRelations;
     }
-    use HasFactory, PaperclipTrait, Presentable, UuidTrait;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
      * @var string
@@ -83,6 +81,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
         'activities',
         'language_skills',
         'logo',
+        'logo_path',
         'banner_file',
         'target_fields',
         'status',
@@ -125,10 +124,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('logo', [
-            'url' => config('config.missing_project_logo'),
-        ]);
-
         parent::__construct($attributes);
     }
 

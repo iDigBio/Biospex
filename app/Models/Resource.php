@@ -23,17 +23,15 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ResourcePresenter;
-use Czim\Paperclip\Contracts\AttachableInterface;
-use Czim\Paperclip\Model\PaperclipTrait;
 use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Resource
  */
-class Resource extends BaseEloquentModel implements AttachableInterface
+class Resource extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, PaperclipTrait, Presentable, UuidTrait;
+    use Cacheable, HasFactory, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -46,7 +44,7 @@ class Resource extends BaseEloquentModel implements AttachableInterface
     protected $fillable = [
         'title',
         'description',
-        'document',
+        'download_path',
         'order',
     ];
 
@@ -87,8 +85,6 @@ class Resource extends BaseEloquentModel implements AttachableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('document');
-
         parent::__construct($attributes);
     }
 }

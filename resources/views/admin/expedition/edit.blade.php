@@ -46,14 +46,8 @@
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
-                                <div class="custom-file">
-                                    <label for="logo" class="custom-file-label">{{ t('Logo') }}:</label>
-                                    <input type="file"
-                                           class="form-control custom-file-input {{ ($errors->has('logo')) ? 'is-invalid' : '' }}"
-                                           name="logo" id="logo"
-                                           accept="image/png, image/jpg">
-                                    <span class="invalid-feedback">{{ $errors->first('logo') }}</span>
-                                </div>
+                                @livewire('image-upload', ['modelType' => 'Expedition', 'fieldName' => 'logo', 'maxSize' => 5120], key('logo-upload-'.$expedition->id))
+                                <input type="hidden" name="logo_path" id="logo_path" value="{{ $expedition->logo_path }}">
                             </div>
                             <input type="hidden" name="current_logo" value="{{ $expedition->logo_file_name }}">
                             <div class="form-group col-sm-6">
@@ -106,4 +100,35 @@
             <table class="table table-bordered" id="jqGridTable"></table>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        // Listen for Livewire file upload events
+        document.addEventListener('livewire:init', function () {
+            console.log('Livewire init event fired - expedition logo upload listener registered');
+            
+            Livewire.on('fileUploaded', (eventData) => {
+                console.log('fileUploaded event received:', eventData);
+                
+                // The event data comes as an array, get the first element
+                const uploadData = Array.isArray(eventData) ? eventData[0] : eventData;
+                console.log('Processed upload data:', uploadData);
+                
+                // Update the hidden field with the uploaded file path
+                if (uploadData.fieldName === 'logo' && uploadData.modelType === 'Expedition') {
+                    console.log('Updating logo_path field from:', document.getElementById('logo_path').value);
+                    console.log('Updating logo_path field to:', uploadData.filePath);
+                    document.getElementById('logo_path').value = uploadData.filePath;
+                    
+                    // Optionally update the displayed image immediately
+                    console.log('Expedition logo uploaded successfully:', uploadData.filePath);
+                } else {
+                    console.log('fileUploaded event ignored - wrong field or model type');
+                    console.log('Expected: fieldName=logo, modelType=Expedition');
+                    console.log('Received: fieldName=' + uploadData.fieldName + ', modelType=' + uploadData.modelType);
+                }
+            });
+        });
+    </script>
+    @endpush
 @endsection

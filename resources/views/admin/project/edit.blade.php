@@ -219,14 +219,8 @@
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
-                                <div class="custom-file">
-                                    <label for="logo" class="custom-file-label">{{ t('Logo') }}:</label>
-                                    <input type="file"
-                                           class="form-control custom-file-input {{ ($errors->has('logo')) ? 'is-invalid' : '' }}"
-                                           name="logo" id="logo"
-                                           accept="image/svg+xml, image/png, image/jpg">
-                                    <span class="invalid-feedback">{{ $errors->first('logo') }}</span>
-                                </div>
+                                @livewire('image-upload', ['modelType' => 'Project', 'fieldName' => 'logo', 'maxSize' => 5120], key('logo-upload-'.$project->id))
+                                <input type="hidden" name="logo_path" id="logo_path" value="{{ $project->logo_path }}">
                             </div>
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
@@ -264,4 +258,159 @@
         </div>
     </div>
     @include('admin.partials.project-banner-modal')
+
+    @push('scripts')
+    <script>
+        // Enhanced Livewire file upload event handling with multiple compatibility approaches
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Project edit form JavaScript loaded');
+            
+            // Method 1: Modern Livewire 3 approach using document events
+            document.addEventListener('livewire:fileUploaded', function(event) {
+                console.log('Method 1 - livewire:fileUploaded event received:', event.detail);
+                handleFileUpload(event.detail);
+            });
+            
+            // Method 2: Window-level event listener
+            window.addEventListener('livewire:fileUploaded', function(event) {
+                console.log('Method 2 - window livewire:fileUploaded event received:', event.detail);
+                handleFileUpload(event.detail);
+            });
+            
+            // Method 3: Traditional Livewire.on approach (fallback for older versions)
+            if (typeof Livewire !== 'undefined') {
+                // Wait for Livewire to be ready
+                document.addEventListener('livewire:init', function () {
+                    console.log('Livewire initialized, setting up event listener');
+                    
+                    try {
+                        Livewire.on('fileUploaded', function(eventData) {
+                            console.log('Method 3 - Livewire.on fileUploaded event received:', eventData);
+                            handleFileUpload(eventData);
+                        });
+                    } catch (e) {
+                        console.error('Failed to set up Livewire.on event listener:', e);
+                    }
+                });
+            }
+            
+            // Method 4: Direct component communication using Alpine.js (if available)
+            if (typeof Alpine !== 'undefined') {
+                Alpine.data('projectForm', () => ({
+                    updateLogoPath(filePath) {
+                        console.log('Method 4 - Alpine.js updateLogoPath called:', filePath);
+                        document.getElementById('logo_path').value = filePath;
+                    }
+                }));
+            }
+            
+            // Centralized file upload handler
+            function handleFileUpload(eventData) {
+                if (!eventData) {
+                    console.warn('No event data received');
+                    return;
+                }
+                
+                console.log('Processing file upload event:', eventData);
+                
+                // Handle both array-wrapped and direct object formats
+                let data = eventData;
+                if (Array.isArray(eventData) && eventData.length > 0) {
+                    data = eventData[0];
+                    console.log('Event data is array, using first element:', data);
+                }
+                
+                // Update the hidden field with the uploaded file path
+                if (data && data.fieldName === 'logo' && data.modelType === 'Project') {
+                    const hiddenField = document.getElementById('logo_path');
+                    if (hiddenField) {
+                        hiddenField.value = data.filePath;
+                        console.log('✅ Hidden field updated with logo_path:', data.filePath);
+                        
+                        // Dispatch a custom event to confirm the update
+                        const updateEvent = new CustomEvent('logoPathUpdated', {
+                            detail: { filePath: data.filePath }
+                        });
+                        document.dispatchEvent(updateEvent);
+                        
+                    } else {
+                        console.error('❌ Hidden field with ID "logo_path" not found');
+                    }
+                } 
+                // Handle ProjectResource download uploads
+                else if (data && data.fieldName && data.fieldName.startsWith('download_') && data.modelType === 'ProjectResource') {
+                    // Extract the resource index from fieldName (e.g., 'download_0' -> '0')
+                    const resourceIndex = data.fieldName.replace('download_', '');
+                    const hiddenFieldId = `resources[${resourceIndex}][download_path]`;
+                    
+                    // Check if we need to create the hidden field
+                    let hiddenField = document.getElementById(hiddenFieldId);
+                    if (!hiddenField) {
+                        // Create hidden field for download_path if it doesn't exist
+                        hiddenField = document.createElement('input');
+                        hiddenField.type = 'hidden';
+                        hiddenField.id = hiddenFieldId;
+                        hiddenField.name = `resources[${resourceIndex}][download_path]`;
+                        
+                        // Find the appropriate fieldset to append the hidden field
+                        const fieldsets = document.querySelectorAll('fieldset');
+                        if (fieldsets[resourceIndex]) {
+                            fieldsets[resourceIndex].appendChild(hiddenField);
+                            console.log('✅ Created hidden field for download_path:', hiddenFieldId);
+                        } else {
+                            console.error('❌ Could not find fieldset for resource index:', resourceIndex);
+                            return;
+                        }
+                    }
+                    
+                    hiddenField.value = data.filePath;
+                    console.log('✅ Hidden field updated with download_path:', data.filePath);
+                    
+                    // Dispatch a custom event to confirm the update
+                    const updateEvent = new CustomEvent('downloadPathUpdated', {
+                        detail: { filePath: data.filePath, resourceIndex: resourceIndex }
+                    });
+                    document.dispatchEvent(updateEvent);
+                    
+                } else {
+                    console.log('Event not handled. Data structure:', data);
+                    console.log('fieldName:', data ? data.fieldName : 'undefined');
+                    console.log('modelType:', data ? data.modelType : 'undefined');
+                }
+            }
+            
+            // Listen for our custom confirmation events
+            document.addEventListener('logoPathUpdated', function(event) {
+                console.log('✅ Confirmation: logo_path field updated successfully:', event.detail.filePath);
+            });
+            
+            document.addEventListener('downloadPathUpdated', function(event) {
+                console.log('✅ Confirmation: download_path field updated successfully for resource index:', event.detail.resourceIndex, 'with path:', event.detail.filePath);
+            });
+            
+            // Method 5: Polling fallback (in case events don't work)
+            let lastKnownLogoPath = document.getElementById('logo_path').value;
+            setInterval(function() {
+                const currentLogoPath = document.getElementById('logo_path').value;
+                if (currentLogoPath !== lastKnownLogoPath && currentLogoPath !== '') {
+                    console.log('Method 5 - Polling detected logo_path change:', currentLogoPath);
+                    lastKnownLogoPath = currentLogoPath;
+                }
+            }, 1000);
+            
+            // Debug form submission
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    const logoPathValue = document.getElementById('logo_path').value;
+                    console.log('🚀 Form submitting with logo_path:', logoPathValue || 'EMPTY');
+                    
+                    if (!logoPathValue || logoPathValue.trim() === '') {
+                        console.warn('⚠️ WARNING: Form submitting with empty logo_path');
+                    }
+                });
+            }
+        });
+    </script>
+    @endpush
 @endsection

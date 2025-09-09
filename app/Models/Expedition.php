@@ -23,8 +23,6 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
-use Czim\Paperclip\Contracts\AttachableInterface;
-use Czim\Paperclip\Model\PaperclipTrait;
 use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,16 +38,16 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
  * are processed through various actors (Zooniverse, GeoLocate, etc.) for data extraction
  * and validation.
  */
-class Expedition extends BaseEloquentModel implements AttachableInterface
+class Expedition extends BaseEloquentModel
 {
     use Cacheable, HybridRelations {
         Cacheable::newEloquentBuilder insteadof HybridRelations;
     }
-    use HasFactory, PaperclipTrait, Presentable, UuidTrait;
+    use HasFactory, Presentable, UuidTrait;
 
     protected $table = 'expeditions';
 
-    protected $fillable = ['uuid', 'project_id', 'title', 'description', 'keywords', 'logo', 'workflow_id', 'completed', 'locked',
+    protected $fillable = ['uuid', 'project_id', 'title', 'description', 'keywords', 'logo_path', 'workflow_id', 'completed', 'locked',
     ];
 
     protected string $presenter = ExpeditionPresenter::class;
@@ -86,25 +84,12 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Create a new Eloquent model instance and configure file attachments.
+     * Create a new Eloquent model instance.
      *
      * @param  array  $attributes  Initial model attributes
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('logo', [
-            'variants' => [
-                'medium' => [
-                    'resize' => ['dimensions' => '318x208'],
-                ],
-            ],
-            'url' => config('config.missing_expedition_logo'),
-            'urls' => [
-                // This fallback URL is only given for the 'thumb' variant.
-                'medium' => config('config.missing_expedition_logo'),
-            ],
-        ]);
-
         parent::__construct($attributes);
     }
 

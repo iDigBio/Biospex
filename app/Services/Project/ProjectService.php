@@ -73,10 +73,13 @@ class ProjectService
      */
     public function create(array $data): \Illuminate\Database\Eloquent\Model|bool|Project
     {
+        // Handle logo upload for new projects
+        $this->handleLogoUploadForCreate($data);
+
         $project = $this->project->create($data);
 
         if (! isset($data['resources'])) {
-            return true;
+            return $project;
         }
 
         $resources = collect($data['resources'])->reject(function ($resource) {
@@ -91,10 +94,24 @@ class ProjectService
     }
 
     /**
+     * Handle logo upload for new projects.
+     */
+    private function handleLogoUploadForCreate(array &$data): void
+    {
+        // If logo_path is empty, remove it from data so it doesn't overwrite with null
+        if (isset($data['logo_path']) && empty($data['logo_path'])) {
+            unset($data['logo_path']);
+        }
+    }
+
+    /**
      * Update project.
      */
     public function update(array $data, Project $project): array|bool
     {
+        // Handle logo upload and removal
+        $this->handleLogoUpload($data, $project);
+
         $project->fill($data)->save();
 
         if (! isset($data['resources'])) {
@@ -114,6 +131,61 @@ class ProjectService
         }
 
         return $project->resources()->saveMany($resources->all());
+    }
+
+    /**
+     * Handle logo upload and remove old logo if new one is uploaded.
+     */
+    private function handleLogoUpload(array &$data, Project $project): void
+    {
+        // Check if there's a new logo uploaded via Livewire
+        if (isset($data['logo_path']) && ! empty($data['logo_path'])) {
+            // Remove old logo if it exists
+            $this->removeOldLogo($project);
+
+            // The new logo_path will be set via $project->fill($data)
+        }
+
+        // If logo_path is empty but was set before, keep the existing one
+        if (isset($data['logo_path']) && empty($data['logo_path']) && ! empty($project->logo_path)) {
+            unset($data['logo_path']); // Don't overwrite with empty value
+        }
+    }
+
+    /**
+     * Remove old logo files from storage.
+     */
+    private function removeOldLogo(Project $project): void
+    {
+        if (empty($project->logo_path)) {
+            return;
+        }
+
+        try {
+            $disk = config('filesystems.default') === 's3' ? 's3' : 'public';
+
+            // Remove the main logo file
+            if (\Storage::disk($disk)->exists($project->logo_path)) {
+                \Storage::disk($disk)->delete($project->logo_path);
+            }
+
+            // Remove any variants if they exist (for future use)
+            $logoDirectory = dirname($project->logo_path);
+            $logoFilename = basename($project->logo_path);
+
+            // Check for variant directories (medium, small, etc.)
+            $variantDirs = ['medium', 'small'];
+            foreach ($variantDirs as $variant) {
+                $variantPath = $logoDirectory.'/'.$variant.'/'.$logoFilename;
+                if (\Storage::disk($disk)->exists($variantPath)) {
+                    \Storage::disk($disk)->delete($variantPath);
+                }
+            }
+
+        } catch (\Exception $e) {
+            // Log error but don't fail the update
+            \Log::error("Failed to remove old logo for project {$project->id}: ".$e->getMessage());
+        }
     }
 
     /**

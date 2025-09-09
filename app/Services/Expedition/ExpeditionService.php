@@ -48,6 +48,9 @@ class ExpeditionService
      */
     public function store(Project $project, array $request): mixed
     {
+        // Handle logo upload for new expeditions
+        $this->handleLogoUploadForCreate($request);
+
         $request['project_id'] = $project->id;
         $expedition = $this->expedition->create($request);
 
@@ -242,6 +245,9 @@ class ExpeditionService
      */
     public function update(Expedition $expedition, array $request): Expedition
     {
+        // Handle logo upload and removal
+        $this->handleLogoUpload($request, $expedition);
+
         $expedition->completed = $this->setExpeditionCompleted($expedition, $request['workflow_id']);
 
         $expedition->fill($request)->save();
@@ -335,5 +341,71 @@ class ExpeditionService
     public function getExpeditionForQueueReset(int $expeditionId): Expedition
     {
         return $this->expedition->with(['zooActorExpedition.actor', 'stat', 'exportQueue'])->find($expeditionId);
+    }
+
+    /**
+     * Handle logo upload for new expeditions.
+     */
+    private function handleLogoUploadForCreate(array &$data): void
+    {
+        // If logo_path is empty, remove it from data so it doesn't overwrite with null
+        if (isset($data['logo_path']) && empty($data['logo_path'])) {
+            unset($data['logo_path']);
+        }
+    }
+
+    /**
+     * Handle logo upload and remove old logo if new one is uploaded.
+     */
+    private function handleLogoUpload(array &$data, Expedition $expedition): void
+    {
+        // Check if there's a new logo uploaded via Livewire
+        if (isset($data['logo_path']) && ! empty($data['logo_path'])) {
+            // Remove old logo if it exists
+            $this->removeOldLogo($expedition);
+
+            // The new logo_path will be set via $expedition->fill($data)
+        }
+
+        // If logo_path is empty but was set before, keep the existing one
+        if (isset($data['logo_path']) && empty($data['logo_path']) && ! empty($expedition->logo_path)) {
+            unset($data['logo_path']); // Don't overwrite with empty value
+        }
+    }
+
+    /**
+     * Remove old logo files from storage.
+     */
+    private function removeOldLogo(Expedition $expedition): void
+    {
+        if (empty($expedition->logo_path)) {
+            return;
+        }
+
+        try {
+            $disk = config('filesystems.default') === 's3' ? 's3' : 'public';
+
+            // Remove the main logo file
+            if (\Storage::disk($disk)->exists($expedition->logo_path)) {
+                \Storage::disk($disk)->delete($expedition->logo_path);
+            }
+
+            // Remove any variants if they exist (medium, small, etc.)
+            $logoDirectory = dirname($expedition->logo_path);
+            $logoFilename = basename($expedition->logo_path);
+
+            // Check for variant directories (medium, small, etc.)
+            $variantDirs = ['medium', 'small'];
+            foreach ($variantDirs as $variant) {
+                $variantPath = $logoDirectory.'/'.$variant.'/'.$logoFilename;
+                if (\Storage::disk($disk)->exists($variantPath)) {
+                    \Storage::disk($disk)->delete($variantPath);
+                }
+            }
+
+        } catch (\Exception $e) {
+            // Log error but don't fail the update
+            \Log::error("Failed to remove old logo for expedition {$expedition->id}: ".$e->getMessage());
+        }
     }
 }

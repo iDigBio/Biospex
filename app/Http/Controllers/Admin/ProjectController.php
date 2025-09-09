@@ -28,6 +28,7 @@ use App\Services\Group\GroupService;
 use App\Services\Permission\CheckPermission;
 use App\Services\Project\ProjectService;
 use Auth;
+use Illuminate\Http\RedirectResponse;
 use Redirect;
 use Request;
 use Throwable;
@@ -72,7 +73,7 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function show(Project $project): \Illuminate\Contracts\View\View|RedirectResponse
     {
         $viewParams = $this->projectService->getProjectShow($project);
 
@@ -122,7 +123,7 @@ class ProjectController extends Controller
     /**
      * Update project.
      */
-    public function update(Project $project, ProjectFormRequest $request): \Illuminate\Http\RedirectResponse
+    public function update(Project $project, ProjectFormRequest $request): RedirectResponse
     {
         $project->load('group');
 
@@ -140,7 +141,7 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Project $project): \Illuminate\Http\RedirectResponse
+    public function delete(Project $project): RedirectResponse
     {
         $this->projectService->loadRelationsForDelete($project);
 

@@ -50,6 +50,7 @@ class ExpeditionFormRequest extends Request
                 'image',
                 new FileUploadNameValidation,
             ],
+            'logo_path' => 'nullable|string',
             'workflow_id' => 'required',
         ];
     }

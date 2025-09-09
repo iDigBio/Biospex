@@ -38,16 +38,7 @@
                 <span class="invalid-feedback">{{ $errors->first("resources.$i.description") }}</span>
             </div>
             <div class="col-6 mt-2 mx-auto">
-                <div class="custom-file">
-                    <label class="custom-file-label">{{ $resources[$i]->download_file_name ?? t('Choose file...') }}</label>
-                    <input type="file"
-                           class="form-control custom-file-input {{ ($errors->has("resources.$i.download")) ? 'is-invalid' : '' }}"
-                           name="resources[{{ $i }}][download]"
-                           id="resources[{{ $i }}][download]"
-                           accept=".txt,.doc,.csv,.pdf">
-                    <span class="invalid-feedback">{{ $errors->first("resources.$i.download") }}</span>
-                </div>
-
+                @livewire('file-upload', ['modelType' => 'ProjectResource', 'fieldName' => 'download_' . $i, 'maxSize' => 10240, 'allowedTypes' => ['txt', 'doc', 'docx', 'csv', 'pdf'], 'projectUuid' => $project->uuid ?? null])
             </div>
             <input type="hidden" id="resources[{{ $i }}][id]" name="resources[{{ $i }}][id]"
                    value="{{ old("resources.$i.id", $resources[$i]->id ?? '') }}">

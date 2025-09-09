@@ -45,14 +45,8 @@
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
-                                <div class="custom-file">
-                                    <label for="logo" class="custom-file-label">{{ t('Logo') }}:</label>
-                                    <input type="file"
-                                           class="form-control custom-file-input {{ ($errors->has('logo')) ? 'is-invalid' : '' }}"
-                                           name="logo" id="logo"
-                                           accept="image/png,image/jpg">
-                                    <span class="invalid-feedback">{{ $errors->first('logo') }}</span>
-                                </div>
+                                @livewire('image-upload', ['modelType' => 'Expedition', 'fieldName' => 'logo', 'maxSize' => 5120], key('logo-upload-create'))
+                                <input type="hidden" name="logo_path" id="logo_path" value="{{ old('logo_path') }}">
                             </div>
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
@@ -86,4 +80,21 @@
             <table class="table table-bordered" id="jqGridTable"></table>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        // Listen for Livewire file upload events
+        document.addEventListener('livewire:init', function () {
+            Livewire.on('fileUploaded', (eventData) => {
+                // Update the hidden field with the uploaded file path
+                if (eventData.fieldName === 'logo' && eventData.modelType === 'Expedition') {
+                    document.getElementById('logo_path').value = eventData.filePath;
+                    
+                    // Optionally update the displayed image immediately
+                    console.log('Expedition logo uploaded:', eventData.filePath);
+                }
+            });
+        });
+    </script>
+    @endpush
 @endsection

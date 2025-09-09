@@ -20,22 +20,47 @@
 
 namespace App\Presenters;
 
+use Storage;
+
 /**
  * Class ResourcePresenter
  */
 class ResourcePresenter extends Presenter
 {
     /**
-     * Build link to logo thumb.
+     * Build document link with support for new Livewire path and legacy paperclip.
      *
      * @return string
      */
     public function documentUrl()
     {
-        $document = $this->model->document;
+        $url = null;
+        $filename = null;
 
-        if ($this->variantExists($document)) {
-            return '<a href="'.$document->url().'" target="_blank"><i class="fas fa-file"></i> '.$document->originalFilename().'</a>';
+        // Check for new Livewire download_path first (check S3 for new uploads)
+        if (! empty($this->model->download_path)) {
+            if (Storage::disk('s3')->exists($this->model->download_path)) {
+                // Generate a temporary signed URL for private S3 files (valid for 1 hour)
+                $url = Storage::disk('s3')->temporaryUrl($this->model->download_path, now()->addHour());
+                $filename = basename($this->model->download_path);
+            }
+        }
+
+        // Fallback to legacy paperclip logic during transition
+        if (! $url && ! empty($this->model->document_file_name)) {
+            $baseLength = config('paperclip.storage.base-urls.public');
+            $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
+            $paperclipPath = "/paperclip/App/Models/Resource/documents/{$idPartition}/original/{$this->model->document_file_name}";
+            $paperclipUrl = $baseLength.$paperclipPath;
+
+            if (Storage::disk('public')->exists($paperclipPath)) {
+                $url = $paperclipUrl;
+                $filename = $this->model->document_file_name;
+            }
+        }
+
+        if ($url && $filename) {
+            return '<a href="'.$url.'" target="_blank"><i class="fas fa-file"></i> '.$filename.'</a>';
         }
 
         return '';

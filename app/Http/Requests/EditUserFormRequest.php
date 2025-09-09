@@ -50,6 +50,7 @@ class EditUserFormRequest extends Request
             'last_name' => 'required',
             'email' => 'required|min:4|max:32|email|unique:users,email,'.Auth::user()->id,
             'avatar' => ['image', new FileUploadNameValidation],
+            'avatar_path' => 'nullable|string',
         ];
     }
 }

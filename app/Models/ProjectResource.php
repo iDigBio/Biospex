@@ -22,17 +22,15 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\ProjectResourcePresenter;
-use Czim\Paperclip\Contracts\AttachableInterface;
-use Czim\Paperclip\Model\PaperclipTrait;
 use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class ProjectResource
  */
-class ProjectResource extends BaseEloquentModel implements AttachableInterface
+class ProjectResource extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, PaperclipTrait, Presentable;
+    use Cacheable, HasFactory, Presentable;
 
     /**
      * {@inheritDoc}
@@ -47,7 +45,7 @@ class ProjectResource extends BaseEloquentModel implements AttachableInterface
         'type',
         'name',
         'description',
-        'download',
+        'download_path',
     ];
 
     /**
@@ -68,8 +66,6 @@ class ProjectResource extends BaseEloquentModel implements AttachableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('download');
-
         parent::__construct($attributes);
     }
 

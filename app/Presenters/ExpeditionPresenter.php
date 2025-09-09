@@ -29,16 +29,81 @@ class ExpeditionPresenter extends Presenter
 {
     /**
      * Check if logo file exists or return default.
+     * Supports both new Livewire path and legacy paperclip during transition.
      *
      * @return \Illuminate\Config\Repository|mixed
      */
     public function showMediumLogo()
     {
-        $baseLength = config('paperclip.storage.base-urls.public');
-        $url = $this->model->logo->url('medium');
-        $path = str_replace($baseLength, '', $url);
+        // Check for new Livewire logo_path with medium variant first (check S3 for new uploads)
+        if (! empty($this->model->logo_path)) {
+            // Try medium variant path on S3 first
+            $mediumPath = str_replace('/logos/original/', '/logos/medium/', $this->model->logo_path);
+            if (Storage::disk('s3')->exists($mediumPath)) {
+                // Generate a temporary signed URL for private S3 files (valid for 1 hour)
+                return Storage::disk('s3')->temporaryUrl($mediumPath, now()->addHour());
+            }
 
-        return Storage::disk('public')->exists($path) ? $url : config('config.missing_expedition_logo');
+            // Try original path on S3 as fallback
+            if (Storage::disk('s3')->exists($this->model->logo_path)) {
+                // Generate a temporary signed URL for private S3 files (valid for 1 hour)
+                return Storage::disk('s3')->temporaryUrl($this->model->logo_path, now()->addHour());
+            }
+        }
+
+        // Fallback to legacy paperclip logic during transition
+        if (! empty($this->model->logo_file_name)) {
+            $baseLength = config('paperclip.storage.base-urls.public');
+            $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
+            $paperclipPath = "/paperclip/App/Models/Expedition/logos/{$idPartition}/medium/{$this->model->logo_file_name}";
+            $url = $baseLength.$paperclipPath;
+
+            if (Storage::disk('public')->exists($paperclipPath)) {
+                return $url;
+            }
+
+            // Try original if medium doesn't exist
+            $originalPaperclipPath = "/paperclip/App/Models/Expedition/logos/{$idPartition}/original/{$this->model->logo_file_name}";
+            $originalUrl = $baseLength.$originalPaperclipPath;
+            if (Storage::disk('public')->exists($originalPaperclipPath)) {
+                return $originalUrl;
+            }
+        }
+
+        // Return default missing logo
+        return config('config.missing_expedition_logo');
+    }
+
+    /**
+     * Check if logo file exists or return default (original size).
+     * Supports both new Livewire path and legacy paperclip during transition.
+     *
+     * @return \Illuminate\Config\Repository|mixed
+     */
+    public function showLogo()
+    {
+        // Check for new Livewire logo_path first (check S3 for new uploads)
+        if (! empty($this->model->logo_path)) {
+            if (Storage::disk('s3')->exists($this->model->logo_path)) {
+                // Generate a temporary signed URL for private S3 files (valid for 1 hour)
+                return Storage::disk('s3')->temporaryUrl($this->model->logo_path, now()->addHour());
+            }
+        }
+
+        // Fallback to legacy paperclip logic during transition
+        if (! empty($this->model->logo_file_name)) {
+            $baseLength = config('paperclip.storage.base-urls.public');
+            $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
+            $paperclipPath = "/paperclip/App/Models/Expedition/logos/{$idPartition}/original/{$this->model->logo_file_name}";
+            $url = $baseLength.$paperclipPath;
+
+            if (Storage::disk('public')->exists($paperclipPath)) {
+                return $url;
+            }
+        }
+
+        // Return default missing logo
+        return config('config.missing_expedition_logo');
     }
 
     /**

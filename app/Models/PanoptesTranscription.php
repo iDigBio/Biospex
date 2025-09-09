@@ -21,13 +21,14 @@
 namespace App\Models;
 
 use IDigAcademy\AutoCache\Traits\Cacheable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class PanoptesTranscription
  */
 class PanoptesTranscription extends BaseMongoModel
 {
-    use Cacheable;
+    use Cacheable, HasFactory;
 
     /**
      * Set Collection

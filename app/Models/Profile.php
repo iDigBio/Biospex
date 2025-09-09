@@ -21,17 +21,15 @@
 namespace App\Models;
 
 use App\Models\Traits\Presentable;
-use Czim\Paperclip\Contracts\AttachableInterface;
-use Czim\Paperclip\Model\PaperclipTrait;
 use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Profile
  */
-class Profile extends BaseEloquentModel implements AttachableInterface
+class Profile extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, PaperclipTrait, Presentable;
+    use Cacheable, HasFactory, Presentable;
 
     /**
      * {@inheritDoc}
@@ -61,7 +59,10 @@ class Profile extends BaseEloquentModel implements AttachableInterface
         'last_name',
         'timezone',
         'avatar',
+        'avatar_path',
     ];
+
+    protected string $presenter = \App\Presenters\ProfilePresenter::class;
 
     /**
      * Get the relations that should be cached.
@@ -76,18 +77,6 @@ class Profile extends BaseEloquentModel implements AttachableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('avatar', [
-            'variants' => [
-                'medium' => '160x160',
-                'small' => '25x25',
-            ],
-            'url' => config('config.missing_avatar_medium'),
-            'urls' => [
-                'small' => config('config.missing_avatar_small'),
-                'medium' => config('config.missing_avatar_medium'),
-            ],
-        ]);
-
         parent::__construct($attributes);
     }
 

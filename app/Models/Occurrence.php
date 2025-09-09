@@ -20,7 +20,20 @@
 
 namespace App\Models;
 
+use IDigAcademy\AutoCache\Traits\Cacheable;
+
 /**
  * Class Occurrence
  */
-class Occurrence extends BaseMongoModel {}
+class Occurrence extends BaseMongoModel
+{
+    use Cacheable;
+
+    /**
+     * Get the relations that should be cached.
+     */
+    protected function getCacheRelations(): array
+    {
+        return [];
+    }
+}

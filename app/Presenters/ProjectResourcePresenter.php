@@ -20,13 +20,15 @@
 
 namespace App\Presenters;
 
+use Storage;
+
 /**
  * Class ProjectResourcePresenter
  */
 class ProjectResourcePresenter extends Presenter
 {
     /**
-     * Build link to logo thumb.
+     * Build resource link with support for new Livewire path and legacy paperclip.
      *
      * @return string
      */
@@ -36,8 +38,32 @@ class ProjectResourcePresenter extends Presenter
         $description = $this->model->description;
 
         if ($this->model->type === 'File Download') {
-            return '<a href="'.$this->model->download->url().'" target="_blank" data-hover="tooltip" title="'.$description.'">
-            <i class="fas fa-file"></i> '.$name.'</a>';
+            $url = null;
+
+            // Check for new Livewire download_path first (check S3 for new uploads)
+            if (! empty($this->model->download_path)) {
+                if (Storage::disk('s3')->exists($this->model->download_path)) {
+                    // Generate a temporary signed URL for private S3 files (valid for 1 hour)
+                    $url = Storage::disk('s3')->temporaryUrl($this->model->download_path, now()->addHour());
+                }
+            }
+
+            // Fallback to legacy paperclip logic during transition
+            if (! $url && ! empty($this->model->download_file_name)) {
+                $baseLength = config('paperclip.storage.base-urls.public');
+                $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
+                $paperclipPath = "/paperclip/App/Models/ProjectResource/downloads/{$idPartition}/original/{$this->model->download_file_name}";
+                $url = $baseLength.$paperclipPath;
+
+                if (! Storage::disk('public')->exists($paperclipPath)) {
+                    $url = null;
+                }
+            }
+
+            if ($url) {
+                return '<a href="'.$url.'" target="_blank" data-hover="tooltip" title="'.$description.'">
+                <i class="fas fa-file"></i> '.$name.'</a>';
+            }
         }
 
         return '<a href="'.$name.'" target="_blank" data-hover="tooltip" title="'.$description.'">

@@ -61,6 +61,7 @@ class ProjectFormRequest extends Request
                 'image',
                 new FileUploadNameValidation,
             ],
+            'logo_path' => 'nullable|string',
             'resources.*.type' => [new ResourceDownloadValidation],
             'resources.*.name' => ['required_with:resources.*.type', new ResourceNameValidation],
             'resources.*.description' => 'required_with:resources.*.type',

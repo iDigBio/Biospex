@@ -72,7 +72,7 @@ $(function () {
 
         let controls = $('.controls'),
             currentEntry = $(this).parents('.entry:first'),
-            newEntry = $(currentEntry.clone()).appendTo(controls)
+            newEntry = $(currentEntry.clone(false, false)).appendTo(controls) // Shallow clone to avoid Livewire issues
 
         newEntry.find(':input').each(function () {
             $(this).val('')
@@ -155,10 +155,19 @@ $(function () {
 
 function renumber_resource() {
     $('.controls').children('.entry').each(function (index) {
-        $(this).find('legend').html('Resource ' + (index + 1))
+        $(this).find('legend').html('Resources ' + (index + 1))
         $(this).find(':input').each(function () {
-            $(this).attr('id', $(this).attr('id').replace(/\[[0-9]+\]/g, '[' + index + ']'))
-            $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'))
+            let $input = $(this)
+            let currentId = $input.attr('id')
+            let currentName = $input.attr('name')
+
+            // Only update attributes if they exist and contain the expected pattern
+            if (currentId && currentId.match(/\[[0-9]+\]/)) {
+                $input.attr('id', currentId.replace(/\[[0-9]+\]/g, '[' + index + ']'))
+            }
+            if (currentName && currentName.match(/\[[0-9]+\]/)) {
+                $input.attr('name', currentName.replace(/\[[0-9]+\]/g, '[' + index + ']'))
+            }
         })
     })
 }

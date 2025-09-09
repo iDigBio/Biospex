@@ -19,14 +19,21 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
-        <env name="APP_CONFIG_CACHE" value="bootstrap/cache/config-testing.php" force="true"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
+        <env name="SKIP_MYSQL_MIGRATIONS" value="true"/>
+        <env name="MONGODB_HOST" value="localhost"/>
+        <env name="MONGODB_PORT" value="27017"/>
+        <env name="MONGODB_USERNAME" value=""/>
+        <env name="MONGODB_PASSWORD" value=""/>
+        <env name="MONGODB_DATABASE" value="test_database"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="LARAVEL_QUEUE_DRIVER" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
+        <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="NIGHTWATCH_ENABLED" value="false"/>
     </php>
 </phpunit>
