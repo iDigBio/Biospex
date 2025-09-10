@@ -111,7 +111,7 @@
                         <div class="form-group">
                             <label for="teams" class="col-form-label">{{ t('Teams') }}:</label>
                             <div class="controls col-sm-12">
-                                @include('admin.event.partials.teams', ['teams' => null, 'teamsCount' => old('entries', 1)])
+                                @livewire('event-team-manager', ['teams' => null, 'event' => null, 'errors' => $errors->toArray()])
                             </div>
                         </div>
                         @include('common.cancel-submit-buttons')

@@ -55,6 +55,7 @@ class EventFormRequest extends FormRequest
             'contact_email' => 'required|email',
             'start_date' => 'required|date|before:end_date',
             'end_date' => 'required|date|after:start_date',
+            'timezone' => 'required|string',
             'teams.*.title' => 'max:20',
         ];
     }

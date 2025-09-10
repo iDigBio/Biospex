@@ -138,6 +138,28 @@ class EventService
     {
         $this->setEventDates($attributes);
 
+        // Get existing team IDs from database
+        $existingTeamIds = $event->teams()->pluck('id')->toArray();
+
+        // Get submitted team IDs (only those that have IDs)
+        $submittedTeamIds = collect($attributes['teams'])
+            ->filter(function ($team) {
+                return isset($team['id']) && $team['id'] !== null;
+            })
+            ->pluck('id')
+            ->toArray();
+
+        // Find teams to delete (exist in database but not in submitted data)
+        $teamsToDelete = array_diff($existingTeamIds, $submittedTeamIds);
+
+        // Delete removed teams
+        if (! empty($teamsToDelete)) {
+            $this->eventTeam->whereIn('id', $teamsToDelete)
+                ->where('event_id', $event->id)
+                ->delete();
+        }
+
+        // Process submitted teams (create new or update existing)
         collect($attributes['teams'])->each(function ($team) use ($event) {
             $this->updateTeam($team, $event);
         });
@@ -158,22 +180,30 @@ class EventService
      */
     protected function updateTeam(array $team, Event $event): void
     {
-        $record = $this->eventTeam->where('id', $team['id'])->where('event_id', $event->id)->first();
+        // Check if team has an ID and if it exists
+        $record = null;
+        if (isset($team['id']) && $team['id'] !== null) {
+            $record = $this->eventTeam->where('id', $team['id'])->where('event_id', $event->id)->first();
+        }
+
+        // Update existing team if record found and title is not null
         if ($record && $team['title'] !== null) {
             $record->fill($team)->save();
 
             return;
         }
 
+        // Delete existing team if record found and title is null
         if ($record && $team['title'] === null) {
             $record->delete();
 
             return;
         }
 
+        // Create new team if no record found and title is not null
         if (! $record && $team['title'] !== null) {
-            $team = $this->eventTeam->make($team);
-            $event->teams()->save($team);
+            $newTeam = $this->eventTeam->make($team);
+            $event->teams()->save($newTeam);
         }
     }
 

@@ -50,9 +50,9 @@ final class EventFactory extends Factory
             'hashtag' => fake()->optional()->word,
             'contact' => fake()->word,
             'contact_email' => fake()->word,
-            'start_date' => fake()->datetime(),
-            'end_date' => fake()->datetime(),
-            'timezone' => fake()->word,
+            'start_date' => fake()->dateTimeBetween('now', '+1 month'),
+            'end_date' => fake()->dateTimeBetween('+1 month', '+2 months'),
+            'timezone' => 'America/New_York',
         ];
     }
 }

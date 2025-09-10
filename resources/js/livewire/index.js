@@ -26,13 +26,15 @@ import { LivewireFileUploadHandler } from './file-upload-handler.js';
 import { ProjectManager } from './project-manager.js';
 import { ExpeditionManager } from './expedition-manager.js';
 import { GroupInviteManager } from './group-invite-manager.js';
+import { EventTeamManager } from './event-team-manager.js';
 
 // Export classes for use in blade templates
 export {
     LivewireFileUploadHandler,
     ProjectManager,
     ExpeditionManager,
-    GroupInviteManager
+    GroupInviteManager,
+    EventTeamManager
 };
 
 // Make classes available globally for backward compatibility
@@ -40,6 +42,7 @@ window.LivewireFileUploadHandler = LivewireFileUploadHandler;
 window.ProjectManager = ProjectManager;
 window.ExpeditionManager = ExpeditionManager;
 window.GroupInviteManager = GroupInviteManager;
+window.EventTeamManager = EventTeamManager;
 
 // Auto-initialize based on current page context
 document.addEventListener('DOMContentLoaded', function() {

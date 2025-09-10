@@ -60,7 +60,9 @@
                 {!! $event->project->present()->project_page_icon !!}
                 {!! $event->present()->event_admin_show_icon !!}
                 @if(event_before($event) || event_active($event))
-                    {!! $event->project->lastPanoptesProject->present()->project_icon !!}
+                    @if($event->project->lastPanoptesProject)
+                        {!! $event->project->lastPanoptesProject->present()->project_icon !!}
+                    @endif
                 @endif
                 {!! $event->present()->event_edit_icon !!}
                 @can('isOwner', $event)
