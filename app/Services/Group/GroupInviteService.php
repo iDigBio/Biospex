@@ -38,7 +38,7 @@ class GroupInviteService
     public function storeInvites(Group &$group, array $request = []): Collection
     {
         $requestInvites = collect($request['invites'])->reject(function ($invite) {
-            return empty($invite['email']);
+            return empty(trim($invite['email']));
         })->pluck('email')->diff($group->invites->pluck('email'));
 
         return $requestInvites->reject(function ($invite) use ($group) {

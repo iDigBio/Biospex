@@ -28,7 +28,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<\App\Models\GroupInvite>
  */
-final class InviteFactory extends Factory
+final class GroupInviteFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.

@@ -41,6 +41,21 @@ $(function () {
             if ($('#geolocate-source-select').length > 0) {
                 $('#geolocate-source-select').selectpicker();
             }
+            // Restart Livewire to initialize components loaded via AJAX
+            if (typeof Livewire !== 'undefined') {
+                console.log('Livewire restart initiated for modal content');
+                Livewire.restart();
+                console.log('Livewire restart completed');
+                
+                // Initialize GroupInviteManager if it's a group invite modal
+                if (typeof GroupInviteManager !== 'undefined' && $(this).find('[wire\\:click="addInvite"]').length > 0) {
+                    const groupInviteManager = new GroupInviteManager({ debug: true });
+                    groupInviteManager.init();
+                    console.log('GroupInviteManager initialized for modal content');
+                }
+            } else {
+                console.error('Livewire is not available - wire:click events will not work');
+            }
         });
     }).on('hidden.bs.modal', function () {
         let size = $(this).data('size');

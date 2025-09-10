@@ -80,6 +80,14 @@ class GroupInvite extends BaseEloquentModel
     }
 
     /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory()
+    {
+        return \Database\Factories\GroupInviteFactory::new();
+    }
+
+    /**
      * Group relationship.
      */
     public function group(): BelongsTo

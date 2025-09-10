@@ -44,7 +44,7 @@ class InviteFormRequest extends Request
      */
     public function rules()
     {
-        return ['invites.*.email' => 'email'];
+        return ['invites.*.email' => 'nullable|email'];
     }
 
     public function messages()
