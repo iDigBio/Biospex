@@ -22,6 +22,7 @@ mix.webpackConfig({
 
 mix.js("resources/js/front-app.js", "js/front.js")
     .js("resources/js/admin-app.js", "js/admin.js")
+    .js("resources/js/livewire/index.js", "js/livewire.js")
     .sass("resources/sass/front.scss", "css/front.css")
     .sass("resources/sass/admin.scss", "css/admin.css")
     .extract([

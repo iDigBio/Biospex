@@ -118,7 +118,6 @@ class FileUpload extends Component
 
         } catch (\Exception $e) {
             $this->uploadError = 'Upload failed: '.$e->getMessage();
-            \Log::error('File upload error: '.$e->getMessage());
 
             return null;
         }

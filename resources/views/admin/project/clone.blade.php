@@ -228,14 +228,8 @@
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
-                                <div class="custom-file">
-                                    <label for="logo" class="custom-file-label">{{ t('Max. 300 x 300') }}:</label>
-                                    <input type="file"
-                                           class="form-control custom-file-input {{ ($errors->has('logo')) ? 'is-invalid' : '' }}"
-                                           name="logo" id="logo"
-                                           accept="image/svg+xml, image/png, image/jpg">
-                                    <span class="invalid-feedback">{{ $errors->first('logo') }}</span>
-                                </div>
+                                @livewire('image-upload', ['modelType' => 'Project', 'fieldName' => 'logo', 'maxSize' => 5120], key('logo-upload-clone'))
+                                <input type="hidden" name="logo_path" id="logo_path" value="{{ old('logo_path') }}">
                             </div>
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
@@ -275,7 +269,5 @@
     @include('admin.partials.project-banner-modal')
 @endsection
 @push('scripts')
-    <script>
-
-    </script>
+    <script src="{{ mix('js/livewire.js') }}"></script>
 @endpush

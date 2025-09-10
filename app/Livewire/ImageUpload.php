@@ -61,10 +61,6 @@ class ImageUpload extends FileUpload
             $disk = 's3';
             $filename = time().'_'.$this->file->getClientOriginalName();
 
-            // Debug: Log filename generation
-            \Log::info('ImageUpload - Original filename: '.$this->file->getClientOriginalName());
-            \Log::info('ImageUpload - Generated filename: '.$filename);
-
             // Store original image on S3 - use 'original' subdirectory if variants are configured
             $originalStoragePath = ! empty($this->variants) ? $this->storagePath.'/original' : $this->storagePath;
             $originalPath = $this->file->storeAs($originalStoragePath, $filename, $disk);
@@ -98,7 +94,6 @@ class ImageUpload extends FileUpload
 
         } catch (\Exception $e) {
             $this->uploadError = 'Upload failed: '.$e->getMessage();
-            \Log::error('File upload error: '.$e->getMessage());
 
             return null;
         }
@@ -138,8 +133,7 @@ class ImageUpload extends FileUpload
                 Storage::disk($disk)->put($variantFullPath, $imageData);
 
             } catch (\Exception $e) {
-                // Log error but don't fail upload
-                \Log::error("Failed to create image variant {$variant}: ".$e->getMessage());
+                // Don't fail upload for variant creation errors
             }
         }
     }
