@@ -29,6 +29,8 @@ class FileUpload extends Component
 
     public $uploadError = null;
 
+    public $uploading = false;
+
     protected function rules()
     {
         return [
@@ -76,6 +78,7 @@ class FileUpload extends Component
     public function save()
     {
         try {
+            $this->uploading = true;
             $this->uploadSuccess = false;
             $this->uploadError = null;
 
@@ -83,6 +86,7 @@ class FileUpload extends Component
 
             if (! $this->file) {
                 $this->uploadError = 'No file selected';
+                $this->uploading = false;
 
                 return null;
             }
@@ -114,10 +118,13 @@ class FileUpload extends Component
             // Reset file input
             $this->reset('file');
 
+            $this->uploading = false;
+
             return $storedPath;
 
         } catch (\Exception $e) {
             $this->uploadError = 'Upload failed: '.$e->getMessage();
+            $this->uploading = false;
 
             return null;
         }

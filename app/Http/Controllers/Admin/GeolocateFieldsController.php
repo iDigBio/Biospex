@@ -38,9 +38,9 @@ class GeolocateFieldsController extends Controller
      */
     public function __invoke(Expedition $expedition): mixed
     {
-        // if (! Request::ajax()) {
-        //    return Response::json(['message' => t('Request must be ajax.')], 400);
-        // }
+        if (! Request::ajax()) {
+            return Response::json(['message' => t('Request must be ajax.')], 400);
+        }
 
         try {
             $this->geoLocateFormService->loadExpeditionRelations($expedition);
@@ -52,7 +52,8 @@ class GeolocateFieldsController extends Controller
             // Request will contain formId and source
             $form = $this->geoLocateFormService->getFormData($expedition, Request::all());
 
-            return View::make('admin.geolocate.partials.geolocate-fields', compact('expedition', 'form'))->render();
+            // Create a temporary view to render the Livewire component
+            return view('admin.geolocate.partials.geolocate-livewire', compact('expedition', 'form'))->render();
         } catch (Throwable $throwable) {
             return Response::json(['message' => $throwable->getMessage().$throwable->getFile().$throwable->getLine()], 500);
         }

@@ -48,10 +48,6 @@ class GeolocateFormController extends Controller
      */
     public function index(Expedition $expedition): mixed
     {
-        // if (! Request::ajax()) {
-        //    return Response::json(['message' => t('Request must be ajax.')], 400);
-        // }
-
         try {
             $this->geoLocateFormService->loadExpeditionRelations($expedition);
             $form = $this->geoLocateFormService->getFormData($expedition);
@@ -69,10 +65,6 @@ class GeolocateFormController extends Controller
      */
     public function show(Expedition $expedition): mixed
     {
-        // if (! Request::ajax()) {
-        //    return Response::json(['message' => t('Request must be ajax.')], 400);
-        // }
-
         try {
             $this->geoLocateFormService->loadExpeditionRelations($expedition);
 

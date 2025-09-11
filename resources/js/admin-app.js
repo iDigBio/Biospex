@@ -43,6 +43,7 @@ try {
     require("./jqgrid");
     require("./admin");
     require("./admin-modals");
+    require("./livewire/geolocate-field-manager");
 
 } catch (e) {
     console.log(e);

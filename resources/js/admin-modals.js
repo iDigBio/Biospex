@@ -41,11 +41,11 @@ $(function () {
             if ($('#geolocate-source-select').length > 0) {
                 $('#geolocate-source-select').selectpicker();
             }
-            // Restart Livewire to initialize components loaded via AJAX
+            if ($('#geolocate-form-select').length > 0) {
+                $('#geolocate-form-select').selectpicker();
+            }
+            // Livewire v3 automatically handles component initialization after AJAX loads
             if (typeof Livewire !== 'undefined') {
-                console.log('Livewire restart initiated for modal content');
-                Livewire.restart();
-                console.log('Livewire restart completed');
                 
                 // Initialize GroupInviteManager if it's a group invite modal
                 if (typeof GroupInviteManager !== 'undefined' && $(this).find('[wire\\:click="addInvite"]').length > 0) {
@@ -92,24 +92,6 @@ $(function () {
 
             postGeoLocateFormSelect($(this).data('url'), formId, source, $ajaxResults, $globalModal)
         })
-        .on('click', '.geolocate-btn-add', function () {
-            $('#warning').html('').collapse('hide')
-            let $entry = $('.default').clone().appendTo($('#controls'))
-            $entry.find('.geolocate-field-default').removeClass('geolocate-field-default').addClass('geolocate-field').prop('required', true)
-            $entry.find('.header-select-default').removeClass('header-select-default').addClass('header-select').prop('required', true)
-            $entry.removeClass('default').addClass('entry').show()
-
-            makeSelect($entry)
-            renumber_geolocate()
-        })
-        .on('click', '.geolocate-btn-remove', function () {
-            $('#warning').html('').collapse('hide')
-            if ($('#controls').children('div.entry').length === 1) {
-                return
-            }
-            $('#controls div.entry:last').remove()
-            renumber_geolocate()
-        })
         .on('click', '#export', function () { // form-fields blade
             $('#warning').html('').collapse('hide')
             $('form#geolocate-form').attr('action', $(this).data('url')).trigger('submit')
@@ -128,8 +110,7 @@ $(function () {
             }
 
             let formData = new FormData(this);
-            formPost($(this).attr('action'), formData)
-            $globalModal.modal('hide');
+            formPostWithModalClose($(this).attr('action'), formData, $globalModal)
         })
         .on('change', '#geolocate-source-select', function (e) {
             $('#warning').html('').hide();
@@ -183,6 +164,36 @@ formPost = function (url, formData) {
     }).fail(function (response) {
         let json = JSON.parse(response.responseText)
         notify("exclamation-circle", json.message, "warning")
+    });
+}
+
+// Enhanced form post that closes modal after completion to prevent Livewire DOM conflicts
+formPostWithModalClose = function (url, formData, $modal) {
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        async: true, // Use async to properly handle modal closing timing
+    }).done(function (data) {
+        if (data.error) {
+            notify("exclamation-circle", data.message, "warning")
+            return;
+        }
+        notify("exclamation-circle", data.message, "success")
+        // Close modal only after successful completion
+        setTimeout(function() {
+            $modal.modal('hide');
+        }, 100); // Small delay to ensure notifications are displayed
+    }).fail(function (response) {
+        let json = JSON.parse(response.responseText)
+        notify("exclamation-circle", json.message, "warning")
+        // Close modal on error as well, but after notification
+        setTimeout(function() {
+            $modal.modal('hide');
+        }, 100);
     });
 }
 

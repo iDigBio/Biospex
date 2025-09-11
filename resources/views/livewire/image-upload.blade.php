@@ -13,7 +13,7 @@
         @enderror
 
         <!-- Upload Progress Indicator -->
-        <div wire:loading wire:target="file" class="mt-2">
+        <div wire:loading wire:target="file" class="mt-2" style="display: none;" x-show="$wire.uploading">
             <div class="progress">
                 <div class="progress-bar progress-bar-striped progress-bar-animated"
                      role="progressbar" style="width: 100%">

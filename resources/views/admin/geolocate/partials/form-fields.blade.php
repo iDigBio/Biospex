@@ -59,18 +59,12 @@
 
     <div class="form-group col-sm-10 mx-auto text-center">
         <div id="geolocate-fields">
-            @include('admin.geolocate.partials.geolocate-fields')
-        </div>
-        <div class="row">
-            <div class="col-sm-10 offset-sm-2 mt-5 text-left">
-                <button type="button" class="btn btn-primary pl-4 pr-4 geolocate-btn-add" data-hover="tooltip"
-                        title="{{ t('Add New Row') }}"><i
-                            class="fas fa-plus"></i></button>
-                <button type="button" class="btn btn-primary pl-4 pr-4 geolocate-btn-remove prevent-default"
-                        data-hover="tooltip"
-                        title="{{ t('Delete Last Row') }}"><i
-                            class="fas fa-minus"></i></button>
-            </div>
+            @livewire('geolocate-field-manager', [
+                'geoOptions' => $form['geo'],
+                'csvOptions' => $form['csv'],
+                'existingFields' => $form['fields'] ?? [],
+                'expedition' => $expedition
+            ])
         </div>
         <div class="row mt-3">
             <div id="warning" class="col-sm-10 mx-auto text-center text-danger collapse"></div>

@@ -46,6 +46,7 @@ class ImageUpload extends FileUpload
     public function save()
     {
         try {
+            $this->uploading = true;
             $this->uploadSuccess = false;
             $this->uploadError = null;
 
@@ -53,6 +54,7 @@ class ImageUpload extends FileUpload
 
             if (! $this->file) {
                 $this->uploadError = 'No file selected';
+                $this->uploading = false;
 
                 return null;
             }
@@ -90,10 +92,13 @@ class ImageUpload extends FileUpload
             // Reset file input
             $this->reset('file');
 
+            $this->uploading = false;
+
             return $originalPath;
 
         } catch (\Exception $e) {
             $this->uploadError = 'Upload failed: '.$e->getMessage();
+            $this->uploading = false;
 
             return null;
         }

@@ -25,3 +25,12 @@
 
 // biospex main
 @import "../css/main.scss";
+
+// Bootstrap Select flicker prevention - Enhanced approach
+#controls.bootstrap-select-updating,
+.controls.bootstrap-select-updating {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: none !important;
+}
+
