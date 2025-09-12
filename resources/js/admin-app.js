@@ -17,6 +17,7 @@
  */
 
 import "./app.js";
+import { GeolocateFieldManager } from "./livewire/index.js";
 
 try {
 
@@ -43,7 +44,6 @@ try {
     require("./jqgrid");
     require("./admin");
     require("./admin-modals");
-    require("./livewire/geolocate-field-manager");
 
 } catch (e) {
     console.log(e);

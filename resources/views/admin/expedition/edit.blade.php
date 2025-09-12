@@ -46,8 +46,8 @@
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
-                                @livewire('image-upload', ['modelType' => 'Expedition', 'fieldName' => 'logo', 'maxSize' => 5120], key('logo-upload-'.$expedition->id))
-                                <input type="hidden" name="logo_path" id="logo_path" value="{{ $expedition->logo_path }}">
+                                @livewire('image-upload', ['modelType' => 'Expedition', 'fieldName' => 'logo_path', 'maxSize' => 5120], key('logo-upload-'.$expedition->id))
+                                @livewire('expedition-manager', ['logo_path' => $expedition->logo_path, 'expeditionUuid' => $expedition->uuid, 'projectUuid' => $expedition->project->uuid], key('expedition-manager-'.$expedition->id))
                             </div>
                             <input type="hidden" name="current_logo" value="{{ $expedition->logo_file_name }}">
                             <div class="form-group col-sm-6">

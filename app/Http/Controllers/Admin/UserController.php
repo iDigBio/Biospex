@@ -71,16 +71,11 @@ class UserController extends Controller
 
         $request['notification'] = isset($request['notification']) ? 1 : 0;
 
-        // Debug: Log the avatar_path value being received
-        \Log::info('UserController update - avatar_path received: '.($request->avatar_path ?? 'null'));
-        \Log::info('UserController update - current avatar_path in DB: '.($user->profile->avatar_path ?? 'null'));
-
         $result = $user->fill($request->all())->save();
         $user->profile->fill($request->all())->save();
 
         // Debug: Log the avatar_path value after saving
         $user->profile->refresh();
-        \Log::info('UserController update - avatar_path after save: '.($user->profile->avatar_path ?? 'null'));
 
         return $result === true ?
             Redirect::route('admin.users.edit', [$user])->with('success', t('User profile updated.')) :

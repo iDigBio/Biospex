@@ -46,12 +46,11 @@ $(function () {
             }
             // Livewire v3 automatically handles component initialization after AJAX loads
             if (typeof Livewire !== 'undefined') {
-                
+
                 // Initialize GroupInviteManager if it's a group invite modal
                 if (typeof GroupInviteManager !== 'undefined' && $(this).find('[wire\\:click="addInvite"]').length > 0) {
-                    const groupInviteManager = new GroupInviteManager({ debug: true });
+                    const groupInviteManager = new GroupInviteManager({debug: true});
                     groupInviteManager.init();
-                    console.log('GroupInviteManager initialized for modal content');
                 }
             } else {
                 console.error('Livewire is not available - wire:click events will not work');
@@ -184,14 +183,14 @@ formPostWithModalClose = function (url, formData, $modal) {
         }
         notify("exclamation-circle", data.message, "success")
         // Close modal only after successful completion
-        setTimeout(function() {
+        setTimeout(function () {
             $modal.modal('hide');
         }, 100); // Small delay to ensure notifications are displayed
     }).fail(function (response) {
         let json = JSON.parse(response.responseText)
         notify("exclamation-circle", json.message, "warning")
         // Close modal on error as well, but after notification
-        setTimeout(function() {
+        setTimeout(function () {
             $modal.modal('hide');
         }, 100);
     });

@@ -217,8 +217,8 @@
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
-                                @livewire('image-upload', ['modelType' => 'Project', 'fieldName' => 'logo', 'maxSize' => 5120], key('logo-upload-'.$project->id))
-                                <input type="hidden" name="logo_path" id="logo_path" value="{{ $project->logo_path }}">
+                                @livewire('image-upload', ['modelType' => 'Project', 'fieldName' => 'logo_path', 'maxSize' => 5120], key('logo-upload-'.$project->id))
+                                @livewire('project-manager', ['logo_path' => $project->logo_path, 'projectUuid' => $project->uuid], key('project-manager-'.$project->id))
                             </div>
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"

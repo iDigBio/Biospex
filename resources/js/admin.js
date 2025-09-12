@@ -67,34 +67,6 @@ $(function () {
         ]
     })
 
-    // Commented out: jQuery-based dynamic field management replaced with Livewire ProjectResourceManager component
-    // $(document).on('click', '.btn-add', function (e) {
-    //     e.preventDefault()
-    //
-    //     let controls = $('.controls'),
-    //         currentEntry = $(this).parents('.entry:first'),
-    //         newEntry = $(currentEntry.clone(false, false)).appendTo(controls) // Shallow clone to avoid Livewire issues
-    //
-    //     newEntry.find(':input').each(function () {
-    //         $(this).val('')
-    //     })
-    //     newEntry.find('.custom-file-label').each(function () {
-    //         $(this).text('')
-    //     });
-    //     newEntry.find(':file').each(function () {
-    //         $(this).val('')
-    //     });
-    //     controls.find('.entry:last span.btn-add')
-    //         .removeClass('btn-add').addClass('btn-remove')
-    //         .html('<i class="fas fa-minus"></i>')
-    //     renumber_resource()
-    // }).on('click', '.btn-remove', function (e) {
-    //     $(this).parents('.entry:first').remove()
-    //     renumber_resource()
-    //     e.preventDefault()
-    //     return false
-    // })
-
     $(document).on('click', '[data-confirm=confirmation]', function () {
         let url = $(this).is("[data-href]") ? $(this).data("href") : $(this).attr('href')
         let method = $(this).data('method')
@@ -153,23 +125,3 @@ $(function () {
             $footer.css('margin-top', '0px')
     }, 250);
 })
-
-// Commented out: renumber_resource function no longer needed with Livewire ProjectResourceManager component
-// function renumber_resource() {
-//     $('.controls').children('.entry').each(function (index) {
-//         $(this).find('legend').html('Resources ' + (index + 1))
-//         $(this).find(':input').each(function () {
-//             let $input = $(this)
-//             let currentId = $input.attr('id')
-//             let currentName = $input.attr('name')
-//
-//             // Only update attributes if they exist and contain the expected pattern
-//             if (currentId && currentId.match(/\[[0-9]+\]/)) {
-//                 $input.attr('id', currentId.replace(/\[[0-9]+\]/g, '[' + index + ']'))
-//             }
-//             if (currentName && currentName.match(/\[[0-9]+\]/)) {
-//                 $input.attr('name', currentName.replace(/\[[0-9]+\]/g, '[' + index + ']'))
-//             }
-//         })
-//     })
-// }

@@ -22,11 +22,12 @@
  */
 
 // Import all managers
-import { LivewireFileUploadHandler } from './file-upload-handler.js';
-import { ProjectManager } from './project-manager.js';
-import { ExpeditionManager } from './expedition-manager.js';
-import { GroupInviteManager } from './group-invite-manager.js';
-import { EventTeamManager } from './event-team-manager.js';
+import {LivewireFileUploadHandler} from './file-upload-handler.js';
+import {ProjectManager} from './project-manager.js';
+import {ExpeditionManager} from './expedition-manager.js';
+import {GroupInviteManager} from './group-invite-manager.js';
+import {EventTeamManager} from './event-team-manager.js';
+import {GeolocateFieldManager} from './geolocate-field-manager.js';
 
 // Export classes for use in blade templates
 export {
@@ -34,7 +35,8 @@ export {
     ProjectManager,
     ExpeditionManager,
     GroupInviteManager,
-    EventTeamManager
+    EventTeamManager,
+    GeolocateFieldManager
 };
 
 // Make classes available globally for backward compatibility
@@ -43,26 +45,34 @@ window.ProjectManager = ProjectManager;
 window.ExpeditionManager = ExpeditionManager;
 window.GroupInviteManager = GroupInviteManager;
 window.EventTeamManager = EventTeamManager;
+window.GeolocateFieldManager = GeolocateFieldManager;
 
 // Auto-initialize based on current page context
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Determine which manager to initialize based on page context
     const body = document.body;
-    const isProjectPage = body.classList.contains('project-page') || 
-                          document.querySelector('form[action*="projects"]') ||
-                          document.getElementById('logo_path'); // Project logo field
-    
-    const isExpeditionPage = body.classList.contains('expedition-page') || 
-                             document.querySelector('form[action*="expeditions"]') ||
-                             (document.getElementById('logo_path') && window.location.href.includes('expedition'));
+    const isProjectPage = body.classList.contains('project-page') ||
+        document.querySelector('form[action*="projects"]') ||
+        document.getElementById('logo_path'); // Project logo field
 
-    if (isProjectPage && !isExpeditionPage) {
-        const projectManager = new ProjectManager({ debug: false });
+    const isExpeditionPage = body.classList.contains('expedition-page') ||
+        document.querySelector('form[action*="expeditions"]') ||
+        (document.getElementById('logo_path') && window.location.href.includes('expedition'));
+
+    const isGeolocatePage = body.classList.contains('geolocate-page') ||
+        document.querySelector('.geolocate-field') ||
+        document.getElementById('geolocate-form') ||
+        window.location.href.includes('geolocate') ||
+        document.querySelector('[wire\\:click="addField"], [wire\\:click="removeField"]');
+
+    if (isGeolocatePage) {
+        const geolocateManager = new GeolocateFieldManager({debug: false});
+        geolocateManager.init();
+    } else if (isProjectPage && !isExpeditionPage) {
+        const projectManager = new ProjectManager({debug: false});
         projectManager.init();
-        console.log('ProjectManager auto-initialized');
     } else if (isExpeditionPage) {
-        const expeditionManager = new ExpeditionManager({ debug: false });
+        const expeditionManager = new ExpeditionManager({debug: false});
         expeditionManager.init();
-        console.log('ExpeditionManager auto-initialized');
     }
 });

@@ -17,183 +17,362 @@
  */
 
 /**
- * GeoLocate Field Manager Livewire Component JavaScript
- * Handles Bootstrap Select initialization and modal integration
+ * GeolocateFieldManager - Modern ES6 class for handling geolocate field functionality
+ * Manages Bootstrap Select initialization, modal integration, and Livewire event handling
  */
-
-// Initialize Bootstrap Select components for geolocate fields
-function initializeBootstrapSelect() {
-    $('.geolocate-field, .header-select').not('.bootstrap-select').selectpicker();
-}
-
-// Refresh Bootstrap Select initialization - handles flicker prevention
-function refreshBootstrapSelect() {
-    // Hide the controls container to prevent flicker
-    const $controls = $('#controls, .controls');
-    $controls.addClass('bootstrap-select-updating');
-    
-    // Use requestAnimationFrame to ensure CSS is applied before DOM manipulation
-    requestAnimationFrame(function() {
-        // Destroy existing Bootstrap Select instances
-        $('.geolocate-field, .header-select').each(function() {
-            if ($(this).hasClass('bootstrap-select')) {
-                $(this).selectpicker('destroy');
-            }
-        });
+export class GeolocateFieldManager {
+    /**
+     * Create a GeolocateFieldManager instance
+     * @param {Object} options - Configuration options
+     * @param {boolean} options.debug - Enable debug logging
+     */
+    constructor(options = {}) {
+        this.options = {
+            debug: false,
+            ...options
+        };
         
-        // Use a minimal delay for cleanup, then re-initialize
-        setTimeout(function() {
-            // Re-initialize all select elements
-            $('.geolocate-field, .header-select').each(function() {
-                $(this).selectpicker();
+        this.isFormSubmitting = false;
+        this.eventListeners = [];
+        this.log('GeolocateFieldManager initialized with options:', this.options);
+    }
+
+    /**
+     * Initialize the manager and set up all event listeners
+     */
+    init() {
+        this.log('Initializing GeolocateFieldManager');
+        
+        // Initialize Bootstrap Select on initial load
+        this._initializeBootstrapSelect();
+        
+        // Set up all event listeners
+        this._setupLivewireEventListeners();
+        this._setupModalEventListeners();
+        this._setupFormEventListeners();
+        this._setupTooltips();
+        this._setupWireClickHandlers();
+        
+        this.log('GeolocateFieldManager fully initialized');
+    }
+
+    /**
+     * Clean up and destroy all event listeners
+     */
+    destroy() {
+        this.log('Destroying GeolocateFieldManager');
+        
+        // Clean up Bootstrap Select
+        this._destroyBootstrapSelect();
+        
+        // Remove all event listeners
+        this.eventListeners.forEach(({ element, event, handler }) => {
+            element.removeEventListener(event, handler);
+        });
+        this.eventListeners = [];
+        
+        this.log('GeolocateFieldManager destroyed');
+    }
+
+    /**
+     * Initialize Bootstrap Select components for geolocate fields
+     * @private
+     */
+    _initializeBootstrapSelect() {
+        try {
+            const selects = document.querySelectorAll('.geolocate-field, .header-select');
+            selects.forEach(select => {
+                if (!select.classList.contains('bootstrap-select')) {
+                    $(select).selectpicker();
+                }
             });
-            
-            // Call makeSelect for compatibility
-            if (typeof makeSelect === 'function') {
-                $('.entry').each(function() {
-                    makeSelect($(this));
-                });
-            }
-            
-            // Remove the hiding class to show elements again
-            setTimeout(function() {
-                $controls.removeClass('bootstrap-select-updating');
-            }, 10);
-        }, 30);
-    });
-}
-
-// Flag to track if form is being submitted to prevent DOM conflicts
-let isFormSubmitting = false;
-
-// Destroy Bootstrap Select components (for modal cleanup)
-function destroyBootstrapSelect() {
-    $('.geolocate-field, .header-select').each(function() {
-        if ($(this).hasClass('bootstrap-select')) {
-            $(this).selectpicker('destroy');
+            this.log('Bootstrap Select initialized for', selects.length, 'elements');
+        } catch (error) {
+            this._handleError('Error initializing Bootstrap Select', error);
         }
-    });
-}
+    }
 
-// Main initialization
-$(document).ready(function() {
-    // Initialize on page load
-    initializeBootstrapSelect();
-    
-    // Handle Livewire v3 updates - skip if form is being submitted
-    document.addEventListener('livewire:navigated', function () {
-        if (isFormSubmitting) return;
-        setTimeout(function() {
-            if (!isFormSubmitting) {
-                try {
-                    refreshBootstrapSelect();
-                } catch (e) {
-                    console.warn('GeolocateFieldManager: Error during livewire:navigated refresh', e);
+    /**
+     * Refresh Bootstrap Select initialization with flicker prevention
+     * @private
+     */
+    _refreshBootstrapSelect() {
+        if (this.isFormSubmitting) {
+            this.log('Skipping Bootstrap Select refresh - form is submitting');
+            return;
+        }
+
+        try {
+            // Hide controls to prevent flicker
+            const controls = document.querySelectorAll('#controls, .controls');
+            controls.forEach(control => control.classList.add('bootstrap-select-updating'));
+
+            // Use requestAnimationFrame for smooth DOM manipulation
+            requestAnimationFrame(() => {
+                this._destroyBootstrapSelect();
+
+                setTimeout(() => {
+                    // Re-initialize select elements
+                    const selects = document.querySelectorAll('.geolocate-field, .header-select');
+                    selects.forEach(select => {
+                        $(select).selectpicker();
+                    });
+
+                    // Call makeSelect for compatibility
+                    if (typeof window.makeSelect === 'function') {
+                        document.querySelectorAll('.entry').forEach(entry => {
+                            window.makeSelect($(entry));
+                        });
+                    }
+
+                    // Remove hiding class
+                    setTimeout(() => {
+                        controls.forEach(control => control.classList.remove('bootstrap-select-updating'));
+                    }, 10);
+
+                    this.log('Bootstrap Select refreshed');
+                }, 30);
+            });
+        } catch (error) {
+            this._handleError('Error refreshing Bootstrap Select', error);
+        }
+    }
+
+    /**
+     * Destroy Bootstrap Select components
+     * @private
+     */
+    _destroyBootstrapSelect() {
+        try {
+            const selects = document.querySelectorAll('.geolocate-field, .header-select');
+            selects.forEach(select => {
+                if (select.classList.contains('bootstrap-select')) {
+                    $(select).selectpicker('destroy');
                 }
+            });
+            this.log('Bootstrap Select destroyed for', selects.length, 'elements');
+        } catch (error) {
+            this._handleError('Error destroying Bootstrap Select', error);
+        }
+    }
+
+    /**
+     * Set up Livewire event listeners
+     * @private
+     */
+    _setupLivewireEventListeners() {
+        const livewireEvents = [
+            { event: 'livewire:navigated', handler: () => this._handleLivewireUpdate('navigated') },
+            { event: 'livewire:updated', handler: () => this._handleLivewireUpdate('updated') },
+            { event: 'livewire:load', handler: () => this._handleLivewireLoad() }
+        ];
+
+        livewireEvents.forEach(({ event, handler }) => {
+            document.addEventListener(event, handler);
+            this.eventListeners.push({ element: document, event, handler });
+        });
+
+        this.log('Livewire event listeners set up');
+    }
+
+    /**
+     * Handle Livewire update events
+     * @param {string} eventType - Type of Livewire event
+     * @private
+     */
+    _handleLivewireUpdate(eventType) {
+        if (this.isFormSubmitting) {
+            this.log(`Skipping Livewire ${eventType} handling - form is submitting`);
+            return;
+        }
+
+        setTimeout(() => {
+            if (!this.isFormSubmitting) {
+                this._refreshBootstrapSelect();
             }
         }, 50);
-    });
-    
-    document.addEventListener('livewire:updated', function () {
-        if (isFormSubmitting) return;
-        setTimeout(function() {
-            if (!isFormSubmitting) {
-                try {
-                    refreshBootstrapSelect();
-                } catch (e) {
-                    console.warn('GeolocateFieldManager: Error during livewire:updated refresh', e);
-                }
+    }
+
+    /**
+     * Handle Livewire load events
+     * @private
+     */
+    _handleLivewireLoad() {
+        if (this.isFormSubmitting) {
+            this.log('Skipping Livewire load handling - form is submitting');
+            return;
+        }
+
+        setTimeout(() => {
+            if (!this.isFormSubmitting) {
+                this._initializeBootstrapSelect();
             }
         }, 50);
-    });
-    
-    // Additional event listener for component-specific updates
-    document.addEventListener('livewire:load', function () {
-        if (isFormSubmitting) return;
-        setTimeout(function() {
-            if (!isFormSubmitting) {
-                try {
-                    initializeBootstrapSelect();
-                } catch (e) {
-                    console.warn('GeolocateFieldManager: Error during livewire:load init', e);
-                }
-            }
-        }, 50);
-    });
-    
-    // Handle modal events for proper cleanup and initialization
-    $(document).on('shown.bs.modal', '#global-modal', function () {
-        // Reset form submission flag when modal opens
-        isFormSubmitting = false;
-        // Initialize Bootstrap Select when modal is shown
-        setTimeout(function() {
-            initializeBootstrapSelect();
-            // Reset the Livewire component when modal opens
+    }
+
+    /**
+     * Set up modal event listeners
+     * @private
+     */
+    _setupModalEventListeners() {
+        const modalElement = document.getElementById('global-modal');
+        if (!modalElement) {
+            this.log('No global modal found, skipping modal event setup');
+            return;
+        }
+
+        const showHandler = () => this._handleModalShow();
+        const hideHandler = () => this._handleModalHide();
+
+        $(modalElement).on('shown.bs.modal', showHandler);
+        $(modalElement).on('hidden.bs.modal', hideHandler);
+
+        this.log('Modal event listeners set up');
+    }
+
+    /**
+     * Handle modal show event
+     * @private
+     */
+    _handleModalShow() {
+        this.log('Modal shown - initializing Bootstrap Select');
+        this.isFormSubmitting = false;
+
+        setTimeout(() => {
+            this._initializeBootstrapSelect();
+            
+            // Reset Livewire component when modal opens
             if (window.Livewire) {
-                window.Livewire.dispatch('resetGeolocateFields');
+                try {
+                    window.Livewire.dispatch('resetGeolocateFields');
+                } catch (error) {
+                    this.log('Could not dispatch resetGeolocateFields:', error);
+                }
             }
         }, 100);
-    });
-    
-    $(document).on('hidden.bs.modal', '#global-modal', function () {
-        // Set flag to prevent further Livewire updates during cleanup
-        isFormSubmitting = true;
-        // Clean up Bootstrap Select when modal is hidden
-        destroyBootstrapSelect();
-        // Reset the component when modal closes
-        if (window.Livewire) {
-            window.Livewire.dispatch('resetGeolocateFields');
-        }
-        // Reset flag after cleanup is complete
-        setTimeout(function() {
-            isFormSubmitting = false;
-        }, 200);
-    });
-    
-    // Handle form submission to set the flag and prevent DOM conflicts
-    $(document).on('submit', 'form#geolocate-form', function () {
-        isFormSubmitting = true;
+    }
+
+    /**
+     * Handle modal hide event
+     * @private
+     */
+    _handleModalHide() {
+        this.log('Modal hidden - cleaning up Bootstrap Select');
+        this.isFormSubmitting = true;
         
-        // Disable Livewire updates during form submission
+        this._destroyBootstrapSelect();
+        
+        // Reset component when modal closes
         if (window.Livewire) {
             try {
-                // Stop any pending Livewire requests
-                window.Livewire.stop();
-            } catch (e) {
-                // Silently handle any Livewire stop errors
+                window.Livewire.dispatch('resetGeolocateFields');
+            } catch (error) {
+                this.log('Could not dispatch resetGeolocateFields:', error);
             }
         }
-        
-        // Clean up Bootstrap Select to prevent DOM conflicts
-        setTimeout(function() {
-            $('.geolocate-field, .header-select').each(function() {
-                if ($(this).hasClass('bootstrap-select')) {
-                    try {
-                        $(this).selectpicker('destroy');
-                    } catch (e) {
-                        // Silently handle destroy errors during form submission
-                    }
-                }
-            });
-        }, 10);
-    });
-    
-    // Handle custom tooltips
-    $('[data-hover="tooltip"]').tooltip();
-    
-    // Handle direct wire:click events with Bootstrap Select refresh
-    $(document).on('click', '[wire\\:click="addField"], [wire\\:click="removeField"]', function() {
-        // Refresh Bootstrap Select after Livewire DOM update
-        setTimeout(function() {
-            refreshBootstrapSelect();
-            $('[data-hover="tooltip"]').tooltip();
-        }, 100);
-    });
-});
 
-// Export functions for external use
-window.GeolocateFieldManager = {
-    init: initializeBootstrapSelect,
-    refresh: refreshBootstrapSelect,
-    destroy: destroyBootstrapSelect
-};
+        // Reset flag after cleanup
+        setTimeout(() => {
+            this.isFormSubmitting = false;
+        }, 200);
+    }
+
+    /**
+     * Set up form event listeners
+     * @private
+     */
+    _setupFormEventListeners() {
+        const submitHandler = (event) => this._handleFormSubmit(event);
+        
+        $(document).on('submit', 'form#geolocate-form', submitHandler);
+        
+        this.log('Form event listeners set up');
+    }
+
+    /**
+     * Handle form submission
+     * @param {Event} event - Form submit event
+     * @private
+     */
+    _handleFormSubmit(event) {
+        this.log('Form submission detected');
+        this.isFormSubmitting = true;
+
+        // Stop Livewire updates during form submission
+        if (window.Livewire) {
+            try {
+                window.Livewire.stop();
+            } catch (error) {
+                this.log('Could not stop Livewire:', error);
+            }
+        }
+
+        // Clean up Bootstrap Select to prevent DOM conflicts
+        setTimeout(() => {
+            this._destroyBootstrapSelect();
+        }, 10);
+    }
+
+    /**
+     * Set up tooltips
+     * @private
+     */
+    _setupTooltips() {
+        try {
+            $('[data-hover="tooltip"]').tooltip();
+            this.log('Tooltips initialized');
+        } catch (error) {
+            this._handleError('Error setting up tooltips', error);
+        }
+    }
+
+    /**
+     * Set up wire:click event handlers
+     * @private
+     */
+    _setupWireClickHandlers() {
+        const clickHandler = () => this._handleWireClick();
+        
+        $(document).on('click', '[wire\\:click="addField"], [wire\\:click="removeField"]', clickHandler);
+        
+        this.log('Wire click handlers set up');
+    }
+
+    /**
+     * Handle wire:click events
+     * @private
+     */
+    _handleWireClick() {
+        this.log('Wire click detected - refreshing Bootstrap Select');
+        
+        setTimeout(() => {
+            this._refreshBootstrapSelect();
+            this._setupTooltips();
+        }, 100);
+    }
+
+    /**
+     * Handle errors with proper logging
+     * @param {string} message - Error message
+     * @param {Error} error - Error object
+     * @private
+     */
+    _handleError(message, error) {
+        const errorMsg = `GeolocateFieldManager: ${message}`;
+        if (this.options.debug) {
+            console.error(errorMsg, error);
+        } else {
+            console.warn(errorMsg, error.message);
+        }
+    }
+
+    /**
+     * Debug logging
+     * @param {...any} args - Arguments to log
+     */
+    log(...args) {
+        if (this.options.debug) {
+            console.log('[GeolocateFieldManager]', ...args);
+        }
+    }
+}

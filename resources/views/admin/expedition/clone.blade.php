@@ -45,14 +45,8 @@
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
-                                <div class="custom-file">
-                                    <label for="logo" class="custom-file-label">{{ t('Logo') }}:</label>
-                                    <input type="file"
-                                           class="form-control custom-file-input {{ ($errors->has('logo')) ? 'is-invalid' : '' }}"
-                                           name="logo" id="logo"
-                                           accept="image/svg+xml, image/png, image/jpg">
-                                    <span class="invalid-feedback">{{ $errors->first('logo') }}</span>
-                                </div>
+                                @livewire('image-upload', ['modelType' => 'Expedition', 'fieldName' => 'logo_path', 'maxSize' => 5120], key('logo-upload-expedition-clone'))
+                                @livewire('expedition-manager', ['logo_path' => old('logo_path', $expedition->logo_path), 'expeditionUuid' => null, 'projectUuid' => $expedition->project->uuid], key('expedition-manager-clone'))
                             </div>
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
