@@ -48,6 +48,20 @@ return [
     'missing_avatar_small' => env('APP_URL').'/images/avatars/small/missing.png',
     'missing_avatar_medium' => env('APP_URL').'/images/avatars/medium/missing.png',
 
+    'uploads' => [
+        'project_logos' => env('UPLOAD_PROJECT_LOGOS', 'uploads/projects/logos'),
+        'expedition_logos' => env('UPLOAD_EXPEDITION_LOGOS', 'uploads/expeditions/logos'),
+        'expedition_logos_medium' => env('UPLOAD_EXPEDITION_LOGOS_MEDIUM', 'uploads/expeditions/logos/medium'),
+        'expedition_logos_original' => env('UPLOAD_EXPEDITION_LOGOS_ORIGINAL', 'uploads/expeditions/logos/original'),
+        'profile_avatars' => env('UPLOAD_PROFILE_AVATARS', 'uploads/profiles/avatars'),
+        'profile_avatars_small' => env('UPLOAD_PROFILE_AVATARS_SMALL', 'uploads/profiles/avatars/small'),
+        'profile_avatars_medium' => env('UPLOAD_PROFILE_AVATARS_MEDIUM', 'uploads/profiles/avatars/medium'),
+        'profile_avatars_original' => env('UPLOAD_PROFILE_AVATARS_ORIGINAL', 'uploads/profiles/avatars/original'),
+        'resources' => env('UPLOAD_RESOURCES', 'uploads/resources'),
+        'project_resources_base' => env('UPLOAD_PROJECT_RESOURCES_BASE', 'uploads/project-resources'),
+        'project_resources_downloads' => env('UPLOAD_PROJECT_RESOURCES_DOWNLOADS', 'uploads/project-resources/downloads'),
+    ],
+
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
     'project_chart_config' => resource_path('json/projectChartConfig.json'),
 

@@ -76,7 +76,7 @@ class MigratePaperclipFilesToLivewire extends Command
             // Use correct Paperclip path structure with id_partition
             $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $project->id);
             $oldPath = "paperclip/App/Models/Project/logos/{$idPartition}/original/{$project->logo_file_name}";
-            $newPath = "uploads/projects/logos/{$project->id}_{$project->logo_file_name}";
+            $newPath = config('config.uploads.project_logos')."/{$project->id}_{$project->logo_file_name}";
 
             if (! Storage::disk('public')->exists($oldPath)) {
                 $this->warn("   ⚠️  File not found: {$oldPath}");
@@ -134,8 +134,8 @@ class MigratePaperclipFilesToLivewire extends Command
             $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $expedition->id);
             $originalPath = "paperclip/App/Models/Expedition/logos/{$idPartition}/original/{$expedition->logo_file_name}";
             $mediumPath = "paperclip/App/Models/Expedition/logos/{$idPartition}/medium/{$expedition->logo_file_name}";
-            $newOriginalPath = "uploads/expeditions/logos/original/{$expedition->id}_{$expedition->logo_file_name}";
-            $newMediumPath = "uploads/expeditions/logos/medium/{$expedition->id}_{$expedition->logo_file_name}";
+            $newOriginalPath = config('config.uploads.expedition_logos_original')."/{$expedition->id}_{$expedition->logo_file_name}";
+            $newMediumPath = config('config.uploads.expedition_logos_medium')."/{$expedition->id}_{$expedition->logo_file_name}";
 
             if (! Storage::disk('public')->exists($originalPath)) {
                 $this->warn("   ⚠️  File not found: {$originalPath}");
@@ -223,9 +223,9 @@ class MigratePaperclipFilesToLivewire extends Command
             $mediumPath = "paperclip/App/Models/Profile/avatars/{$idPartition}/medium/{$profile->avatar_file_name}";
             $smallPath = "paperclip/App/Models/Profile/avatars/{$idPartition}/small/{$profile->avatar_file_name}";
 
-            $newOriginalPath = "uploads/profiles/avatars/original/{$profile->id}_{$profile->avatar_file_name}";
-            $newMediumPath = "uploads/profiles/avatars/medium/{$profile->id}_{$profile->avatar_file_name}";
-            $newSmallPath = "uploads/profiles/avatars/small/{$profile->id}_{$profile->avatar_file_name}";
+            $newOriginalPath = config('config.uploads.profile_avatars_original')."/{$profile->id}_{$profile->avatar_file_name}";
+            $newMediumPath = config('config.uploads.profile_avatars_medium')."/{$profile->id}_{$profile->avatar_file_name}";
+            $newSmallPath = config('config.uploads.profile_avatars_small')."/{$profile->id}_{$profile->avatar_file_name}";
 
             if (! Storage::disk('public')->exists($originalPath)) {
                 $this->warn("   ⚠️  File not found: {$originalPath}");
@@ -312,7 +312,7 @@ class MigratePaperclipFilesToLivewire extends Command
 
             // Note: New uploads use project UUID directories (uploads/project-resources/{project-uuid})
             // but for migration of existing files, we use the generic downloads path
-            $newPath = "uploads/project-resources/downloads/{$resource->id}_{$resource->download_file_name}";
+            $newPath = config('config.uploads.project_resources_downloads')."/{$resource->id}_{$resource->download_file_name}";
 
             if (! Storage::disk('public')->exists($oldPath)) {
                 $this->warn("   ⚠️  File not found: {$oldPath}");
@@ -369,7 +369,7 @@ class MigratePaperclipFilesToLivewire extends Command
             // Use correct Paperclip path structure with id_partition
             $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $resource->id);
             $oldPath = "paperclip/App/Models/Resource/documents/{$idPartition}/original/{$resource->document_file_name}";
-            $newPath = "uploads/resources/{$resource->id}_{$resource->document_file_name}";
+            $newPath = config('config.uploads.resources')."/{$resource->id}_{$resource->document_file_name}";
 
             if (! Storage::disk('public')->exists($oldPath)) {
                 $this->warn("   ⚠️  File not found: {$oldPath}");

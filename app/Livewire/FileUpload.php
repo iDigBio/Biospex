@@ -133,11 +133,11 @@ class FileUpload extends Component
     protected function getStoragePath()
     {
         $paths = [
-            'Project' => 'uploads/projects/logos',
-            'Expedition' => 'uploads/expeditions/logos',
-            'Profile' => 'uploads/profiles/avatars',
+            'Project' => config('config.uploads.project_logos'),
+            'Expedition' => config('config.uploads.expedition_logos'),
+            'Profile' => config('config.uploads.profile_avatars'),
             'ProjectResource' => $this->getProjectResourcePath(),
-            'Resource' => 'uploads/resources',
+            'Resource' => config('config.uploads.resources'),
         ];
 
         return $paths[$this->modelType] ?? 'uploads/general';
@@ -146,11 +146,11 @@ class FileUpload extends Component
     protected function getProjectResourcePath()
     {
         if ($this->projectUuid) {
-            return 'uploads/project-resources/'.$this->projectUuid;
+            return config('config.uploads.project_resources_base').'/'.$this->projectUuid;
         }
 
         // Fallback to original path if no project UUID is provided
-        return 'uploads/project-resources/downloads';
+        return config('config.uploads.project_resources_downloads');
     }
 
     public function render()

@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Storage;
 /**
  * Cleanup orphaned files from S3 that are not referenced in database records
  */
-class CleanupOrphanedFiles extends Command
+class CleanupOrphanedS3UploadFiles extends Command
 {
     /**
      * The name and signature of the console command.
@@ -54,7 +54,7 @@ class CleanupOrphanedFiles extends Command
         $olderThanHours = (int) $this->option('older-than');
         $cutoffTime = now()->subHours($olderThanHours);
 
-        $this->info('Cleanup Orphaned Files Command');
+        $this->info('Cleanup Orphaned S3 Upload Files Command');
         $this->info('============================');
         $this->info('Mode: '.($dryRun ? 'DRY RUN (no files will be deleted)' : 'LIVE RUN (files will be deleted)'));
         $this->info("Cutoff time: Files older than {$olderThanHours} hours ({$cutoffTime})");
@@ -66,12 +66,23 @@ class CleanupOrphanedFiles extends Command
 
         // Check each upload directory
         $directories = [
-            'uploads/projects/logos',
-            'uploads/expeditions/logos',
-            'uploads/profiles/avatars',
-            'uploads/project-resources/downloads',
-            'uploads/resources/documents',
+            config('config.uploads.project_logos'),
+            config('config.uploads.expedition_logos'),
+            config('config.uploads.expedition_logos_medium'),
+            config('config.uploads.expedition_logos_original'),
+            config('config.uploads.profile_avatars'),
+            config('config.uploads.profile_avatars_medium'),
+            config('config.uploads.profile_avatars_original'),
+            config('config.uploads.profile_avatars_small'),
+            config('config.uploads.project_resources_downloads'),
+            config('config.uploads.resources'),
         ];
+
+        // Also check project-specific resource directories (UUID-based)
+        $projectUuids = \App\Models\Project::pluck('uuid')->toArray();
+        foreach ($projectUuids as $uuid) {
+            $directories[] = config('config.uploads.project_resources_base')."/{$uuid}";
+        }
 
         $totalOrphaned = 0;
         $totalDeleted = 0;
@@ -133,8 +144,8 @@ class CleanupOrphanedFiles extends Command
         $referencedFiles = array_merge($referencedFiles, $projectResourceDownloads);
 
         // Resource documents
-        $resourceDocuments = Resource::whereNotNull('document_path')
-            ->pluck('document_path')
+        $resourceDocuments = Resource::whereNotNull('download_path')
+            ->pluck('download_path')
             ->filter()
             ->toArray();
         $referencedFiles = array_merge($referencedFiles, $resourceDocuments);
