@@ -145,11 +145,7 @@ class FileUpload extends Component
 
     protected function getProjectResourcePath()
     {
-        if ($this->projectUuid) {
-            return config('config.uploads.project_resources_base').'/'.$this->projectUuid;
-        }
-
-        // Fallback to original path if no project UUID is provided
+        // Always use the standardized downloads path instead of UUID-based paths
         return config('config.uploads.project_resources_downloads');
     }
 

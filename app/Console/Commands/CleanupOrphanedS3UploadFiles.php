@@ -78,11 +78,12 @@ class CleanupOrphanedS3UploadFiles extends Command
             config('config.uploads.resources'),
         ];
 
-        // Also check project-specific resource directories (UUID-based)
-        $projectUuids = \App\Models\Project::pluck('uuid')->toArray();
-        foreach ($projectUuids as $uuid) {
-            $directories[] = config('config.uploads.project_resources_base')."/{$uuid}";
-        }
+        // UUID-based directories are no longer used after migration
+        // // Also check project-specific resource directories (UUID-based)
+        // $projectUuids = \App\Models\Project::pluck('uuid')->toArray();
+        // foreach ($projectUuids as $uuid) {
+        //     $directories[] = config('config.uploads.project_resources_base')."/{$uuid}";
+        // }
 
         $totalOrphaned = 0;
         $totalDeleted = 0;
