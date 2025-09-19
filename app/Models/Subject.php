@@ -53,7 +53,7 @@ class Subject extends BaseMongoModel
      */
     protected function getCacheRelations(): array
     {
-        return ['project', 'panoptesTranscriptions', 'occurrence'];
+        return ['project', 'panoptesTranscriptions'];
     }
 
     /**
