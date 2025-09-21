@@ -49,3 +49,5 @@ panoptes-pusher.js
 /.env
 /.env.*
 hooks
+tests_Feature_Requests/
+tests_Feature_Services/
