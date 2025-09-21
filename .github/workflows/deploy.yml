@@ -118,15 +118,14 @@ jobs:
           draft: false
           prerelease: false
 
-  # Production deployment (triggered by release)
+  # Production deployment (runs after release creation)
   build-and-deploy-production:
+    needs: create-release
     runs-on: ubuntu-latest
     environment: production
-    if: github.event_name == 'release'
+    if: "github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip deploy]') && !contains(github.event.head_commit.message, '[no deploy]')"
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.release.tag_name }}
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:

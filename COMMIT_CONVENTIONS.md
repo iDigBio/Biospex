@@ -9,7 +9,7 @@ Our CI/CD system uses **Semantic Versioning (SemVer)** to automatically create r
 ## How It Works
 
 1. **Development Branch**: Push to `development` → Automatically deploys to development environment
-2. **Main Branch**: Push to `main` → Creates GitHub release with auto-incremented version → Deploys to production
+2. **Main Branch**: Push to `main` → Creates GitHub release with auto-incremented version → Automatically deploys to production
 3. **Version Control**: Commit messages determine which part of the version number gets incremented
 
 ## Version Bump Rules
