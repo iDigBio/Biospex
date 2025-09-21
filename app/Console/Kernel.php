@@ -63,7 +63,7 @@ class Kernel extends ConsoleKernel
             // Trigger workflow manager to handle csv creation and updating expedition/project
             $schedule->command('workflow:manage')->daily()->before(function () {
                 Cache::flush();
-                Artisan::call('lada-cache:flush');
+                Artisan::call('auto-cache:clear');
             });
 
             // WeDigBio classification cron. Pulls pusher records from MySql table and enters into pusher_transcriptions
