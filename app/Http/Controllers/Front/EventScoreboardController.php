@@ -39,7 +39,7 @@ class EventScoreboardController extends Controller
     public function __invoke(Event $event): \Illuminate\Contracts\View\View
     {
         if (! Request::ajax() || ! isset($event->uuid)) {
-            $event = null;
+            return View::make('common.scoreboard-content', ['event' => null]);
         }
 
         $this->eventScoreboardService->getEventScoreboard($event);
