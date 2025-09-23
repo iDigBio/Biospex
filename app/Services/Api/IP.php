@@ -25,7 +25,6 @@ use App\Services\Requests\HttpRequest;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Contracts\Container\Container as App;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class IP
@@ -111,7 +110,6 @@ class IP
 
         // Validate IP address
         if (! $this->isValidIP($ip)) {
-            Log::warning('IP: Invalid IP detected', ['ip' => $ip]);
             $this->setFallbackLocation();
 
             return false;
@@ -120,22 +118,13 @@ class IP
         // Try each provider until one succeeds
         foreach ($this->providers as $providerName => $providerUrl) {
             $this->currentProvider = $providerName;
-            Log::info("IP: Attempting geolocation with {$providerName}", ['ip' => $ip]);
 
             if ($this->tryProvider($providerUrl, $ip)) {
-                Log::info("IP: Successfully located IP with {$providerName}", [
-                    'ip' => $ip,
-                    'city' => $this->city,
-                    'latitude' => $this->latitude,
-                    'longitude' => $this->longitude,
-                ]);
-
                 return true;
             }
         }
 
         // All providers failed, use fallback
-        Log::error('IP: All geolocation providers failed', ['ip' => $ip]);
         $this->setFallbackLocation();
 
         return false;
@@ -225,11 +214,6 @@ class IP
 
             return $this->parseProviderResponse($response);
         } catch (Exception $e) {
-            Log::warning("IP: Provider {$this->currentProvider} failed", [
-                'error' => $e->getMessage(),
-                'ip' => $ip,
-            ]);
-
             return false;
         }
     }
@@ -246,8 +230,6 @@ class IP
         if (str_contains($url, '{ACCESS_KEY}')) {
             $apiKey = config('services.ipstack.key');
             if (! $apiKey) {
-                Log::warning('IP: IPStack API key not configured');
-
                 return null;
             }
             $url = str_replace('{ACCESS_KEY}', $apiKey, $url);
@@ -273,11 +255,6 @@ class IP
                     return false;
             }
         } catch (Exception $e) {
-            Log::error("IP: Failed to parse {$this->currentProvider} response", [
-                'error' => $e->getMessage(),
-                'response' => $response,
-            ]);
-
             return false;
         }
     }
@@ -318,10 +295,6 @@ class IP
                 return $data !== false ? $data : json_decode($body, true);
             }
         } catch (GuzzleException $e) {
-            Log::warning("IP: HTTP request failed for {$this->currentProvider}", [
-                'error' => $e->getMessage(),
-                'url' => $host,
-            ]);
 
             return false;
         }
