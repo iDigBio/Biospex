@@ -121,16 +121,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.356.22",
+            "version": "3.356.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "5b3f65a158a0e822586d110192ee78c6565b4f06"
+                "reference": "d78bd3b221890aac679ec3b6cb5abcb01fd42699"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5b3f65a158a0e822586d110192ee78c6565b4f06",
-                "reference": "5b3f65a158a0e822586d110192ee78c6565b4f06",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d78bd3b221890aac679ec3b6cb5abcb01fd42699",
+                "reference": "d78bd3b221890aac679ec3b6cb5abcb01fd42699",
                 "shasum": ""
             },
             "require": {
@@ -212,9 +212,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.356.22"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.356.25"
             },
-            "time": "2025-09-19T18:25:30+00:00"
+            "time": "2025-09-24T18:08:25+00:00"
         },
         {
             "name": "brick/math",
@@ -2538,16 +2538,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v12.30.1",
+            "version": "v12.31.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "7f61e8679f9142f282a0184ac7ef9e3834bfd023"
+                "reference": "281b711710c245dd8275d73132e92635be3094df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/7f61e8679f9142f282a0184ac7ef9e3834bfd023",
-                "reference": "7f61e8679f9142f282a0184ac7ef9e3834bfd023",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/281b711710c245dd8275d73132e92635be3094df",
+                "reference": "281b711710c245dd8275d73132e92635be3094df",
                 "shasum": ""
             },
             "require": {
@@ -2754,7 +2754,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-09-18T21:07:07+00:00"
+            "time": "2025-09-23T15:33:04+00:00"
         },
         {
             "name": "laravel/nova",
@@ -2886,16 +2886,16 @@
         },
         {
             "name": "laravel/prompts",
-            "version": "v0.3.6",
+            "version": "v0.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/prompts.git",
-                "reference": "86a8b692e8661d0fb308cec64f3d176821323077"
+                "reference": "a1891d362714bc40c8d23b0b1d7090f022ea27cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/prompts/zipball/86a8b692e8661d0fb308cec64f3d176821323077",
-                "reference": "86a8b692e8661d0fb308cec64f3d176821323077",
+                "url": "https://api.github.com/repos/laravel/prompts/zipball/a1891d362714bc40c8d23b0b1d7090f022ea27cc",
+                "reference": "a1891d362714bc40c8d23b0b1d7090f022ea27cc",
                 "shasum": ""
             },
             "require": {
@@ -2912,8 +2912,8 @@
                 "illuminate/collections": "^10.0|^11.0|^12.0",
                 "mockery/mockery": "^1.5",
                 "pestphp/pest": "^2.3|^3.4",
-                "phpstan/phpstan": "^1.11",
-                "phpstan/phpstan-mockery": "^1.1"
+                "phpstan/phpstan": "^1.12.28",
+                "phpstan/phpstan-mockery": "^1.1.3"
             },
             "suggest": {
                 "ext-pcntl": "Required for the spinner to be animated."
@@ -2939,9 +2939,9 @@
             "description": "Add beautiful and user-friendly forms to your command-line applications.",
             "support": {
                 "issues": "https://github.com/laravel/prompts/issues",
-                "source": "https://github.com/laravel/prompts/tree/v0.3.6"
+                "source": "https://github.com/laravel/prompts/tree/v0.3.7"
             },
-            "time": "2025-07-07T14:17:42+00:00"
+            "time": "2025-09-19T13:47:56+00:00"
         },
         {
             "name": "laravel/reverb",
@@ -3091,16 +3091,16 @@
         },
         {
             "name": "laravel/serializable-closure",
-            "version": "v2.0.4",
+            "version": "v2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "b352cf0534aa1ae6b4d825d1e762e35d43f8a841"
+                "reference": "3832547db6e0e2f8bb03d4093857b378c66eceed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/b352cf0534aa1ae6b4d825d1e762e35d43f8a841",
-                "reference": "b352cf0534aa1ae6b4d825d1e762e35d43f8a841",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/3832547db6e0e2f8bb03d4093857b378c66eceed",
+                "reference": "3832547db6e0e2f8bb03d4093857b378c66eceed",
                 "shasum": ""
             },
             "require": {
@@ -3148,7 +3148,7 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2025-03-19T13:51:03+00:00"
+            "time": "2025-09-22T17:29:40+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -5343,16 +5343,16 @@
         },
         {
             "name": "pda/pheanstalk",
-            "version": "v7.1.0",
+            "version": "v7.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pheanstalk/pheanstalk.git",
-                "reference": "1ef0eb7b9950b170dc74017cb2f7cd2428cf8564"
+                "reference": "b64371b3a47a3849cb5c7a46149511fe883490a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pheanstalk/pheanstalk/zipball/1ef0eb7b9950b170dc74017cb2f7cd2428cf8564",
-                "reference": "1ef0eb7b9950b170dc74017cb2f7cd2428cf8564",
+                "url": "https://api.github.com/repos/pheanstalk/pheanstalk/zipball/b64371b3a47a3849cb5c7a46149511fe883490a2",
+                "reference": "b64371b3a47a3849cb5c7a46149511fe883490a2",
                 "shasum": ""
             },
             "require": {
@@ -5402,22 +5402,22 @@
             ],
             "support": {
                 "issues": "https://github.com/pheanstalk/pheanstalk/issues",
-                "source": "https://github.com/pheanstalk/pheanstalk/tree/v7.1.0"
+                "source": "https://github.com/pheanstalk/pheanstalk/tree/v7.1.1"
             },
-            "time": "2025-07-23T09:46:35+00:00"
+            "time": "2025-09-22T08:51:13+00:00"
         },
         {
             "name": "phiki/phiki",
-            "version": "v2.0.3",
+            "version": "v2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phikiphp/phiki.git",
-                "reference": "fe51fe6dc31856cd776fd1b04ee74053a4271644"
+                "reference": "160785c50c01077780ab217e5808f00ab8f05a13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phikiphp/phiki/zipball/fe51fe6dc31856cd776fd1b04ee74053a4271644",
-                "reference": "fe51fe6dc31856cd776fd1b04ee74053a4271644",
+                "url": "https://api.github.com/repos/phikiphp/phiki/zipball/160785c50c01077780ab217e5808f00ab8f05a13",
+                "reference": "160785c50c01077780ab217e5808f00ab8f05a13",
                 "shasum": ""
             },
             "require": {
@@ -5463,7 +5463,7 @@
             "description": "Syntax highlighting using TextMate grammars in PHP.",
             "support": {
                 "issues": "https://github.com/phikiphp/phiki/issues",
-                "source": "https://github.com/phikiphp/phiki/tree/v2.0.3"
+                "source": "https://github.com/phikiphp/phiki/tree/v2.0.4"
             },
             "funding": [
                 {
@@ -5475,7 +5475,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2025-09-19T11:50:41+00:00"
+            "time": "2025-09-20T17:21:02+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -12234,16 +12234,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "12.3.8",
+            "version": "12.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "99e692c6a84708211f7536ba322bbbaef57ac7fc"
+                "reference": "67e8aed88f93d0e6e1cb7effe1a2dfc2fee6022c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/99e692c6a84708211f7536ba322bbbaef57ac7fc",
-                "reference": "99e692c6a84708211f7536ba322bbbaef57ac7fc",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/67e8aed88f93d0e6e1cb7effe1a2dfc2fee6022c",
+                "reference": "67e8aed88f93d0e6e1cb7effe1a2dfc2fee6022c",
                 "shasum": ""
             },
             "require": {
@@ -12270,7 +12270,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "12.3.x-dev"
+                    "dev-main": "12.4.x-dev"
                 }
             },
             "autoload": {
@@ -12299,7 +12299,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
                 "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/12.3.8"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/12.4.0"
             },
             "funding": [
                 {
@@ -12319,7 +12319,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-09-17T11:31:43+00:00"
+            "time": "2025-09-24T13:44:41+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -13035,16 +13035,16 @@
         },
         {
             "name": "sebastian/exporter",
-            "version": "7.0.0",
+            "version": "7.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/exporter.git",
-                "reference": "76432aafc58d50691a00d86d0632f1217a47b688"
+                "reference": "016951ae10980765e4e7aee491eb288c64e505b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/exporter/zipball/76432aafc58d50691a00d86d0632f1217a47b688",
-                "reference": "76432aafc58d50691a00d86d0632f1217a47b688",
+                "url": "https://api.github.com/repos/sebastianbergmann/exporter/zipball/016951ae10980765e4e7aee491eb288c64e505b7",
+                "reference": "016951ae10980765e4e7aee491eb288c64e505b7",
                 "shasum": ""
             },
             "require": {
@@ -13101,15 +13101,27 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/exporter/issues",
                 "security": "https://github.com/sebastianbergmann/exporter/security/policy",
-                "source": "https://github.com/sebastianbergmann/exporter/tree/7.0.0"
+                "source": "https://github.com/sebastianbergmann/exporter/tree/7.0.2"
             },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
                     "type": "github"
+                },
+                {
+                    "url": "https://liberapay.com/sebastianbergmann",
+                    "type": "liberapay"
+                },
+                {
+                    "url": "https://thanks.dev/u/gh/sebastianbergmann",
+                    "type": "thanks_dev"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/sebastian/exporter",
+                    "type": "tidelift"
                 }
             ],
-            "time": "2025-02-07T04:56:42+00:00"
+            "time": "2025-09-24T06:16:11+00:00"
         },
         {
             "name": "sebastian/global-state",
