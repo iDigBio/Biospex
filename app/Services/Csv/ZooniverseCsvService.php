@@ -72,8 +72,6 @@ class ZooniverseCsvService
 
     /**
      * Build and send request to check csv file creating or ready.
-     *
-     * @throws \Exception
      */
     public function checkCsvRequest(int $expeditionId): mixed
     {

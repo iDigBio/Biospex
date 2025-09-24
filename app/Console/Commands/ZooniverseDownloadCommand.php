@@ -56,7 +56,7 @@ class ZooniverseDownloadCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(ZooniverseCsvService $service)
+    public function handle(ZooniverseCsvService $service): void
     {
         try {
             $expeditionId = $this->argument('expeditionId');

@@ -84,7 +84,7 @@ class DarwinCore
      *
      * @throws \Exception
      */
-    public function process($projectId, $directory)
+    public function process($projectId, $directory): void
     {
         $this->projectId = $projectId;
         $file = $directory.'/meta.xml';
@@ -113,7 +113,7 @@ class DarwinCore
      *
      * @throws \Exception
      */
-    protected function checkFileExists($file)
+    protected function checkFileExists($file): void
     {
         if (! file_exists($file)) {
             throw new Exception(t('Required file missing from Darwin Core Archive. %s', $file));
@@ -127,7 +127,7 @@ class DarwinCore
      *
      * @throws \Exception
      */
-    protected function processCsvFile($directory, $loadMedia = true)
+    protected function processCsvFile($directory, $loadMedia = true): void
     {
         $type = $this->setFileType($loadMedia);
         $file = $this->setFilePath($directory, $type);
