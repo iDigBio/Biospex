@@ -24,6 +24,7 @@ use App\Models\Traits\HasGroup;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\UserPresenter;
+use Filament\Models\Contracts\HasName;
 use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,7 +35,7 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * Class User
  */
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements HasName, MustVerifyEmail
 {
     use Cacheable, HasApiTokens, HasFactory, HasGroup, Notifiable, Presentable, UuidTrait;
 
@@ -52,6 +53,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hashableAttributes = ['password'];
 
     protected string $presenter = UserPresenter::class;
+
+    protected $with = ['profile'];
 
     /**
      * The attributes that should be cast.
@@ -127,5 +130,13 @@ class User extends Authenticatable implements MustVerifyEmail
     public function events(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Event::class);
+    }
+
+    /**
+     * Retrieve the Filament display name using the full name accessor.
+     */
+    public function getFilamentName(): string
+    {
+        return trim($this->profile?->first_name.' '.$this->profile?->last_name);
     }
 }

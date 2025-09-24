@@ -86,6 +86,8 @@
                     @can('isAdmin', Auth::user())
                         <a href="/admin/nova" target="_blank" class="dropdown-item text-uppercase"
                            type="button">{{ t('Nova') }}</a>
+                        <a href="/admin/dashboard" target="_blank" class="dropdown-item text-uppercase"
+                           type="button">{{ t('Dashboard') }}</a>
                         <a href="{{ route('admin.mail.index') }}" class="dropdown-item text-uppercase"
                            type="button">{{ t('Mail') }}</a>
                     @endcan

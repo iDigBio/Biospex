@@ -36,8 +36,8 @@ class UserService
     public function getUsersForMailer(string $type): Collection
     {
         $users = $type === 'all' ?
-            $this->user->with('profile')->orderBy('created_at')->get() :
-            $this->user->has('ownGroups')->with(['profile'])->get();
+            $this->user->orderBy('created_at')->get() :
+            $this->user->has('ownGroups')->get();
 
         return $users->reject(function ($user) {
             return $user->email === config('mail.from.address');
