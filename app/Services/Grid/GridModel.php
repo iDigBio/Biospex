@@ -143,10 +143,8 @@ class GridModel
 
     /**
      * Build expedition checkbox.
-     *
-     * @return array
      */
-    protected function buildAssigned()
+    protected function buildAssigned(): array
     {
         return [
             'name' => 'assigned',

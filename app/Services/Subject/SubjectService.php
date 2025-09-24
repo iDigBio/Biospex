@@ -159,7 +159,7 @@ class SubjectService
     /**
      * Cursor to delete unassigned by project id.
      */
-    public function deleteUnassignedByProject(int $projectId): LazyCollection
+    public function deleteUnassignedByProject(int $projectId): mixed
     {
         return $this->subject->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->cursor();
     }
@@ -394,11 +394,14 @@ class SubjectService
      */
     protected function assignedRule(&$query, $rule)
     {
-        $this->assignedRuleData = $rule['data'];
+        // Handle empty string as 'all' - no filtering needed
+        if ($rule['data'] === '' || $rule['data'] === 'all') {
+            $this->assignedRuleData = 'all';
 
-        if ($rule['data'] === 'all') {
             return;
         }
+
+        $this->assignedRuleData = $rule['data'];
 
         $this->setWhereForAssigned($query, $rule);
     }

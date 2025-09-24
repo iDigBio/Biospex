@@ -43,15 +43,20 @@ jobs:
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
           echo "Latest tag: $LATEST_TAG"
           
-          # Check commit messages since last tag for version bump indicators
+          # Check commit messages in the current push for version bump indicators
+          # Use git log with --grep to search only the pushed commits
           COMMITS=$(git log ${LATEST_TAG}..HEAD --oneline)
           echo "Commits since last tag:"
           echo "$COMMITS"
           
-          # Determine version bump based on commit messages
-          if echo "$COMMITS" | grep -i "\[major\]\|\[breaking\]"; then
+          # Get the specific commit message for this push
+          CURRENT_COMMIT_MSG="${{ github.event.head_commit.message }}"
+          echo "Current commit message: $CURRENT_COMMIT_MSG"
+          
+          # Determine version bump based on the current commit message only
+          if echo "$CURRENT_COMMIT_MSG" | grep -i "\[major\]\|\[breaking\]"; then
             BUMP_TYPE="major"
-          elif echo "$COMMITS" | grep -i "\[minor\]\|\[feature\]"; then
+          elif echo "$CURRENT_COMMIT_MSG" | grep -i "\[minor\]\|\[feature\]"; then
             BUMP_TYPE="minor"  
           else
             BUMP_TYPE="patch"
