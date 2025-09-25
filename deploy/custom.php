@@ -37,6 +37,8 @@ namespace Deployer;
  * =============================================================================
  */
 
+use Exception;
+
 desc('Running custom database update queries');
 task('artisan:app:update-queries', function () {
     cd('{{release_or_current_path}}');
@@ -178,6 +180,87 @@ task('deploy:ci-artifacts', function () {
     run('rm -f artifact.zip'); // Cleanup artifact file
 
     writeln('✅ CI artifacts deployed successfully - No server-side building required!');
+});
+
+/*
+ * =============================================================================
+ * OPCACHE MANAGEMENT
+ * =============================================================================
+ */
+
+desc('Reset OpCache after deployment');
+task('opcache:reset', function () {
+    // Method 1: Direct PHP CLI OpCache reset (try first)
+    try {
+        run('php {{release_or_current_path}}/artisan tinker --execute="if (function_exists(\'opcache_reset\')) { opcache_reset(); echo \'OpCache reset via CLI\'; } else { echo \'OpCache not available via CLI\'; }"');
+        writeln('✅ OpCache reset successful via CLI');
+    } catch (Exception $e) {
+        writeln('⚠️  CLI OpCache reset failed, trying webhook method...');
+
+        // Method 2: Webhook-based OpCache reset (fallback)
+        try {
+            $webhookToken = $_ENV['OPCACHE_WEBHOOK_TOKEN'] ?? getenv('OPCACHE_WEBHOOK_TOKEN') ?? '';
+            if (empty($webhookToken)) {
+                throw new Exception('OPCACHE_WEBHOOK_TOKEN not set');
+            }
+
+            $hostname = currentHost()->get('hostname');
+            $currentPath = run('readlink {{deploy_path}}/current');
+            $appUrl = strpos($currentPath, 'dev.biospex') !== false
+                ? 'https://dev.biospex.org'
+                : 'https://biospex.org';
+
+            $webhookUrl = "{$appUrl}/admin/opcache/reset/{$webhookToken}";
+            $response = run("curl -X POST -H 'Content-Type: application/json' '{$webhookUrl}'");
+
+            writeln('✅ OpCache reset successful via webhook');
+            writeln('Response: '.$response);
+        } catch (Exception $webhookException) {
+            writeln('❌ Both CLI and webhook OpCache reset methods failed');
+            writeln('CLI Error: '.$e->getMessage());
+            writeln('Webhook Error: '.$webhookException->getMessage());
+
+            // Don't fail the deployment, just warn
+            writeln('⚠️  Deployment will continue without OpCache reset');
+        }
+    }
+});
+
+desc('Reset OpCache via webhook (reliable method)');
+task('opcache:reset-webhook', function () {
+    $webhookToken = $_ENV['OPCACHE_WEBHOOK_TOKEN'] ?? getenv('OPCACHE_WEBHOOK_TOKEN') ?? '';
+    if (empty($webhookToken)) {
+        throw new Exception('OPCACHE_WEBHOOK_TOKEN environment variable is required');
+    }
+
+    $hostname = currentHost()->get('hostname');
+    $currentPath = run('readlink {{deploy_path}}/current');
+    $appUrl = strpos($currentPath, 'dev.biospex') !== false
+        ? 'https://dev.biospex.org'
+        : 'https://biospex.org';
+
+    $webhookUrl = "{$appUrl}/admin/opcache/reset/{$webhookToken}";
+    $response = run("curl -X POST -H 'Content-Type: application/json' '{$webhookUrl}' -w '%{http_code}'");
+
+    if (strpos($response, '200') === false) {
+        throw new Exception('OpCache webhook reset failed. Response: '.$response);
+    }
+
+    writeln('✅ OpCache reset successful via webhook');
+});
+
+desc('Reset OpCache after deployment (Production Only)');
+task('opcache:reset-production', function () {
+    // Only execute on production host
+    $currentHost = currentHost()->get('alias');
+    if ($currentHost !== 'production') {
+        writeln('⏭️  Skipping OpCache reset (not production environment)');
+
+        return;
+    }
+
+    writeln('🔄 Resetting OpCache for production deployment...');
+    invoke('opcache:reset');
 });
 
 /*
