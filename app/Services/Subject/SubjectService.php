@@ -276,13 +276,16 @@ class SubjectService
         // explore: Project Explore (show all)
         // show: Expedition Show page (show only assigned)
         // edit: Expedition edit (show all)
-        // create: Expedition create (show not assigned)
+        // create: Expedition create (show not assigned, unless assigned filter is 'all' or 'true')
         if ($vars['route'] === 'explore' || ($vars['route'] === 'edit' && $this->assignedRuleData === 'all')) {
             return;
         } elseif ($vars['route'] === 'show') {
             $this->setWhereIn($query, 'expedition_ids', [$vars['expeditionId']]);
         } elseif ($vars['route'] === 'create') {
-            $this->setWhere($query, 'expedition_ids', 'size', 0);
+            // Only filter for unassigned subjects if the assigned filter is not set to 'all' or 'true'
+            if ($this->assignedRuleData !== 'all' && $this->assignedRuleData !== 'true') {
+                $this->setWhere($query, 'expedition_ids', 'size', 0);
+            }
         }
     }
 

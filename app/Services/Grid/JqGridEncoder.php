@@ -37,9 +37,9 @@ class JqGridEncoder
      *
      * @return false|string
      */
-    public function loadGridModel(int $projectId)
+    public function loadGridModel(int $projectId, ?string $route = null)
     {
-        return $this->gridModel->createGridModel($projectId);
+        return $this->gridModel->createGridModel($projectId, $route);
     }
 
     /**
