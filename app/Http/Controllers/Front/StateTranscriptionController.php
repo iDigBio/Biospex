@@ -50,7 +50,7 @@ class StateTranscriptionController extends Controller
         });
 
         return [
-            'max' => abs(round(($counties->max('value') + 500), -3)),
+            'max' => abs((int) (($counties->max('value') + 500) / 1000) * 1000),
             'counties' => $counties->toJson(),
         ];
     }

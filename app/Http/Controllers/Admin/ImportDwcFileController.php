@@ -21,6 +21,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\DwcBatchImportJob;
 use App\Jobs\DwcFileImportJob;
 use App\Models\Import;
 use Auth;
@@ -45,7 +46,12 @@ class ImportDwcFileController extends Controller
                 'file' => $path,
             ]);
 
-            DwcFileImportJob::dispatch($import);
+            // Conditional dispatch based on feature flag
+            if (config('config.darwin_core.use_batch_processing', false)) {
+                DwcBatchImportJob::dispatch($import);
+            } else {
+                DwcFileImportJob::dispatch($import); // Fallback to old system
+            }
 
             return Redirect::back()
                 ->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));

@@ -129,6 +129,10 @@ return [
         'County' => 'county',
     ],
 
+    'darwin_core' => [
+        'use_batch_processing' => env('DWC_USE_BATCH_PROCESSING', false),
+    ],
+
     /* Beanstalk Queues */
     'queue' => [
         'custom_procs' => env('QUEUE_CUSTOM_PROCS'),
