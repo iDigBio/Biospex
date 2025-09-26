@@ -115,7 +115,7 @@ jobs:
 
           **Commits included:**
           \`\`\`
-          ${{ github.event.head_commit.message }}
+          ${COMMIT_MESSAGE}
           \`\`\`
 
           **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.version_bump.outputs.current_version }}...${{ steps.new_version.outputs.new_version }}
@@ -124,6 +124,7 @@ jobs:
           echo "tag_name=${{ steps.new_version.outputs.new_version }}" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
   # Production deployment (runs after release creation)
   build-and-deploy-production:
