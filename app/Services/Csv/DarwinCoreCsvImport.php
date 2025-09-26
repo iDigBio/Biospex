@@ -290,8 +290,6 @@ class DarwinCoreCsvImport
 
     /**
      * Set the unique id for each record.
-     *
-     * @return mixed
      */
     public function setUniqueId($row, $metaFields)
     {
@@ -302,8 +300,6 @@ class DarwinCoreCsvImport
 
     /**
      * Get the identifier column we are using.
-     *
-     * @return bool
      */
     public function getIdentifierValue($row, $metaFields)
     {
@@ -312,7 +308,8 @@ class DarwinCoreCsvImport
             ->filter(function ($identifier, $key) use ($row) {
                 if (isset($row[$this->header[$key]])
                     && ! empty($row[$this->header[$key]])
-                    && (! str_contains($row[$this->header[$key]], 'http'))) {
+                    && (! str_contains($row[$this->header[$key]], 'http'))
+                    && $this->isValidIdentifier($row[$this->header[$key]])) {
                     return true;
                 }
 
@@ -322,7 +319,7 @@ class DarwinCoreCsvImport
             });
 
         if ($identifierColumnValues->isEmpty()) {
-            $rejected = ['Reason' => t('All identifier columns empty or identifier is URL.')] + $row;
+            $rejected = ['Reason' => t('All identifier columns empty, identifier is URL, or invalid URN format.')] + $row;
             $this->reject($rejected);
 
             return false;
@@ -332,12 +329,63 @@ class DarwinCoreCsvImport
     }
 
     /**
-     * If identifier is a uuid, strip the namespace. Otherwise return value.
-     *
-     * @return mixed
+     * Validate if identifier is a proper URN UUID or other acceptable format.
      */
-    public function checkIdentifierUuid($value)
+    private function isValidIdentifier(string $value): bool
     {
+        // If it starts with 'urn:uuid:', validate the full format
+        if (str_starts_with(strtolower($value), 'urn:uuid:')) {
+            return $this->isValidUrnUuid($value);
+        }
+
+        // If it's just a UUID without URN prefix, that's also valid
+        if ($this->isValidUuid($value)) {
+            return true;
+        }
+
+        // Accept other identifier formats that don't contain 'http'
+        // and aren't malformed URN attempts
+        if (str_starts_with(strtolower($value), 'urn:') && ! str_starts_with(strtolower($value), 'urn:uuid:')) {
+            // It's some other URN format, which might be valid
+            return true;
+        }
+
+        // For non-URN identifiers, accept them as long as they don't contain http
+        return ! str_contains(strtolower($value), 'urn:');
+    }
+
+    /**
+     * Validate URN UUID format.
+     */
+    private function isValidUrnUuid(string $value): bool
+    {
+        $pattern = '/^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i';
+
+        return preg_match($pattern, $value) === 1;
+    }
+
+    /**
+     * Validate UUID format (without URN prefix).
+     */
+    private function isValidUuid(string $value): bool
+    {
+        $pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i';
+
+        return preg_match($pattern, $value) === 1;
+    }
+
+    /**
+     * If identifier is a uuid, strip the namespace. Otherwise return value.
+     */
+    public function checkIdentifierUuid($value): mixed
+    {
+        // Handle URN UUID format first
+        if (str_starts_with(strtolower($value), 'urn:uuid:')) {
+            // Remove 'urn:uuid:' prefix
+            return substr($value, 9);
+        }
+
+        // Original logic for other UUID formats
         $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}?$/i';
 
         return preg_match($pattern, $value, $matches) ? $matches[0] : $value;
