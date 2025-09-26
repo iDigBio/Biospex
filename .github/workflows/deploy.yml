@@ -124,7 +124,7 @@ jobs:
           )"
           echo "tag_name=${{ steps.new_version.outputs.new_version }}" >> $GITHUB_OUTPUT
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Production deployment (runs after release creation)
   build-and-deploy-production:
