@@ -106,17 +106,16 @@ jobs:
       - name: Create Release
         id: create_release
         run: |
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
           gh release create "${{ steps.new_version.outputs.new_version }}" \
             --title "Release ${{ steps.new_version.outputs.new_version }}" \
-            --notes "$(cat <<EOF
+            --notes "$(cat <<'EOF'
           ## What's Changed
 
           Auto-generated release from main branch.
 
           **Commits included:**
           \`\`\`
-          ${COMMIT_MSG}
+          ${{ github.event.head_commit.message }}
           \`\`\`
 
           **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.version_bump.outputs.current_version }}...${{ steps.new_version.outputs.new_version }}
