@@ -32,14 +32,6 @@ class EventTeamManager extends Component
 
     public function mount($teams = null, $event = null, $errors = null)
     {
-        \Log::info('EventTeamManager mount() called', [
-            'teams_type' => gettype($teams),
-            'teams_count' => is_array($teams) ? count($teams) : (is_object($teams) && method_exists($teams, 'count') ? $teams->count() : 'unknown'),
-            'event_id' => $event ? $event->id : 'null',
-            'has_errors' => ! empty($errors),
-            'session_id' => session()->getId(),
-        ]);
-
         $this->event = $event;
         $this->errors = $errors;
 
@@ -63,33 +55,16 @@ class EventTeamManager extends Component
             // Start with at least one empty team
             $this->addTeam();
         }
-
-        \Log::info('EventTeamManager mount() completed', [
-            'final_teams_count' => count($this->teams),
-            'teams_structure' => $this->teams,
-        ]);
     }
 
     public function addTeam()
     {
-        // Add detailed logging to debug the issue
-        \Log::info('EventTeamManager addTeam() called', [
-            'current_teams_count' => count($this->teams),
-            'session_id' => session()->getId(),
-            'timestamp' => now(),
-        ]);
-
         // Add a new empty team array
         $newTeam = [
             'id' => null,
             'title' => '',
         ];
         $this->teams[] = $newTeam;
-
-        \Log::info('EventTeamManager addTeam() completed', [
-            'new_teams_count' => count($this->teams),
-            'added_team' => $newTeam,
-        ]);
     }
 
     public function removeTeam($index)

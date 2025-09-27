@@ -120,16 +120,8 @@ class IP
         // Try each provider until one succeeds
         foreach ($this->providers as $providerName => $providerUrl) {
             $this->currentProvider = $providerName;
-            Log::info("IP: Attempting geolocation with {$providerName}", ['ip' => $ip]);
 
             if ($this->tryProvider($providerUrl, $ip)) {
-                Log::info("IP: Successfully located IP with {$providerName}", [
-                    'ip' => $ip,
-                    'city' => $this->city,
-                    'latitude' => $this->latitude,
-                    'longitude' => $this->longitude,
-                ]);
-
                 return true;
             }
         }
