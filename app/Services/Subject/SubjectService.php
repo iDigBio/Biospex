@@ -175,14 +175,6 @@ class SubjectService
     }
 
     /**
-     * Cursor to delete unassigned by project id.
-     */
-    public function deleteUnassignedByProject(int $projectId): mixed
-    {
-        return $this->subject->skipCache()->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->cursor();
-    }
-
-    /**
      * Calculate the number of rows. It's used for paging the result.
      *
      * @param  array  $vars

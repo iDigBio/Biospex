@@ -46,7 +46,7 @@ use Throwable;
  * - Processes API responses and handles JSON data
  * - Downloads and stores Darwin Core Archive (DwC-A) files
  * - Manages retries and error handling for HTTP requests
- * - Queues subsequent DwcFileImportJob for processing downloaded files
+ * - Queues subsequent DwcBatchImportJob for processing downloaded files
  *
  * @property Import $import Import model instance for tracking import status and metadata
  * @property object $response API response object containing recordset data and download URLs
@@ -185,7 +185,7 @@ class RecordsetImportJob implements ShouldQueue
 
             if (($this->response->complete ?? false) === true && ($this->response->task_status ?? '') === 'SUCCESS') {
                 $import = $this->download();
-                DwcFileImportJob::dispatch($import)->delay(now()->addMinutes(5));
+                DwcBatchImportJob::dispatch($import)->delay(now()->addMinutes(5));
 
                 return;
             }

@@ -48,7 +48,7 @@ use Throwable;
  * - Validating the file type (must be ZIP)
  * - Storing the file in the EFS storage
  * - Creating an import record
- * - Dispatching a DwcFileImportJob for further processing
+ * - Dispatching a DwcBatchImportJob for further processing
  *
  * Error handling includes:
  * - HTTP request failures and timeouts
@@ -132,7 +132,7 @@ class DwcUriImportJob implements ShouldQueue
                 'file' => $filePath,
             ]);
 
-            DwcFileImportJob::dispatch($import);
+            DwcBatchImportJob::dispatch($import);
         } catch (RequestException $e) {
             $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : 0;
             $message = t('HTTP request failed for :url with status :code: :message', [
