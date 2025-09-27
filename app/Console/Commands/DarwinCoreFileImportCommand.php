@@ -20,6 +20,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\DwcBatchImportJob;
 use App\Models\Import;
 use Illuminate\Console\Command;
 
