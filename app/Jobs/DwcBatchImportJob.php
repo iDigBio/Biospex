@@ -51,17 +51,17 @@ class DwcBatchImportJob implements ShouldQueue
     /**
      * The number of seconds the job can run before timing out.
      */
-    public int $timeout = 7200; // Increased timeout for large files
+    public int $timeout = 14400; // 4 hours for large datasets
 
     /**
      * The number of times the job may be attempted.
      */
-    public int $tries = 3;
+    public int $tries = 2; // Reduced for large imports
 
     /**
      * The number of seconds to wait before retrying the job.
      */
-    public int $backoff = 300; // 5 minutes
+    public int $backoff = 600; // 10 minutes
 
     /**
      * Create a new job instance.
@@ -70,6 +70,44 @@ class DwcBatchImportJob implements ShouldQueue
     {
         $this->import = $import->withoutRelations();
         $this->onQueue(config('config.queue.import'));
+    }
+
+    /**
+     * Safely get the number of attempts, handling JobNotFoundException.
+     *
+     * @return int Returns the attempt count or -1 if unavailable
+     */
+    private function safeGetAttempts(): int
+    {
+        try {
+            return $this->attempts();
+        } catch (Throwable $e) {
+            Log::warning('Unable to retrieve job attempt count', [
+                'import_id' => $this->import->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return -1;
+        }
+    }
+
+    /**
+     * Log memory usage at key stages for monitoring large datasets.
+     *
+     * @param  string  $stage  Description of the current processing stage
+     */
+    private function logMemoryUsage(string $stage): void
+    {
+        $memoryUsage = memory_get_usage(true);
+        $peakMemory = memory_get_peak_usage(true);
+
+        Log::info("Memory usage - {$stage}", [
+            'import_id' => $this->import->id,
+            'stage' => $stage,
+            'current_memory_mb' => (float) number_format($memoryUsage / 1024 / 1024, 2, '.', ''),
+            'peak_memory_mb' => (float) number_format($peakMemory / 1024 / 1024, 2, '.', ''),
+            'attempt' => $this->safeGetAttempts(),
+        ]);
     }
 
     public function handle(
@@ -84,11 +122,14 @@ class DwcBatchImportJob implements ShouldQueue
         $project = $projectService->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
 
+        // Log job start with memory usage
+        $this->logMemoryUsage('Job Start');
+
         Log::info('Starting Darwin Core batch import', [
             'import_id' => $this->import->id,
             'project_id' => $this->import->project_id,
             'file' => $this->import->file,
-            'attempt' => $this->attempts(),
+            'attempt' => $this->safeGetAttempts(),
         ]);
 
         try {
@@ -97,9 +138,11 @@ class DwcBatchImportJob implements ShouldQueue
 
             // Extract archive with enhanced error checking
             $this->unzipArchive($importFilePath, $scratchFileDir);
+            $this->logMemoryUsage('After Extraction');
 
             // Process with new batch processor
             $result = $batchProcessor->processArchive($this->import->project_id, $scratchFileDir);
+            $this->logMemoryUsage('After Processing');
 
             // Generate comprehensive reports
             $reports = $this->generateReports($createReportService, $batchProcessor);
@@ -131,21 +174,44 @@ class DwcBatchImportJob implements ShouldQueue
     }
 
     /**
-     * Handle job failure with enhanced error reporting.
+     * Handle job failure with enhanced error reporting and safe attempt counting.
      */
     public function failed(Throwable $exception): void
     {
-        Log::error('Darwin Core batch import job failed permanently', [
-            'import_id' => $this->import->id,
-            'project_id' => $this->import->project_id,
-            'attempts' => $this->attempts(),
-            'error' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString(),
-        ]);
+        try {
+            $attemptCount = $this->safeGetAttempts();
 
-        // Mark import as failed
-        $this->import->error = 1;
-        $this->import->save();
+            Log::error('Darwin Core batch import job failed permanently', [
+                'import_id' => $this->import->id,
+                'project_id' => $this->import->project_id,
+                'attempts' => $attemptCount,
+                'error' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
+            ]);
+
+            // Mark import as failed
+            $this->import->error = 1;
+            $this->import->save();
+
+        } catch (Throwable $failureException) {
+            // Fallback logging when even the failed method encounters issues
+            Log::error('Critical error in failed() method - unable to process job failure', [
+                'import_id' => $this->import->id ?? 'unknown',
+                'original_error' => $exception->getMessage(),
+                'failure_error' => $failureException->getMessage(),
+            ]);
+
+            // Still try to mark import as failed if possible
+            try {
+                $this->import->error = 1;
+                $this->import->save();
+            } catch (Throwable $saveException) {
+                Log::critical('Unable to save import failure state', [
+                    'import_id' => $this->import->id ?? 'unknown',
+                    'save_error' => $saveException->getMessage(),
+                ]);
+            }
+        }
     }
 
     /**
@@ -287,7 +353,7 @@ class DwcBatchImportJob implements ShouldQueue
     }
 
     /**
-     * Handle import failure with comprehensive error reporting.
+     * Handle import failure with comprehensive error reporting and safe attempt counting.
      */
     private function handleImportFailure(
         Throwable $throwable,
@@ -297,11 +363,12 @@ class DwcBatchImportJob implements ShouldQueue
         float $startTime
     ): void {
         $processingTime = (float) number_format(microtime(true) - $startTime, 2, '.', '');
+        $attemptCount = $this->safeGetAttempts();
 
         Log::error('Darwin Core batch import failed', [
             'import_id' => $this->import->id,
             'project_id' => $this->import->project_id,
-            'attempt' => $this->attempts(),
+            'attempt' => $attemptCount,
             'max_attempts' => $this->tries,
             'processing_time' => $processingTime.'s',
             'error' => $throwable->getMessage(),
@@ -310,26 +377,54 @@ class DwcBatchImportJob implements ShouldQueue
             'trace' => $throwable->getTraceAsString(),
         ]);
 
-        // Mark import as failed if this is the last attempt
-        if ($this->attempts() >= $this->tries) {
-            $this->import->error = 1;
-            $this->import->save();
+        // Mark import as failed if this is the last attempt (or if attempt count is unavailable)
+        if ($attemptCount >= $this->tries || $attemptCount === -1) {
+            try {
+                $this->import->error = 1;
+                $this->import->save();
+            } catch (Throwable $saveException) {
+                Log::error('Failed to mark import as failed', [
+                    'import_id' => $this->import->id,
+                    'save_error' => $saveException->getMessage(),
+                ]);
+            }
         }
 
         // Cleanup scratch directory
         $this->cleanupScratchDirectory($scratchFileDir);
 
         // Send failure notification only on final failure
-        if ($this->attempts() >= $this->tries) {
-            $this->sendFailureNotification($users, $project, $throwable, $processingTime);
+        if ($attemptCount >= $this->tries || $attemptCount === -1) {
+            try {
+                $this->sendFailureNotification($users, $project, $throwable, $processingTime);
+            } catch (Throwable $notificationException) {
+                Log::error('Failed to send failure notification', [
+                    'import_id' => $this->import->id,
+                    'notification_error' => $notificationException->getMessage(),
+                ]);
+            }
         }
 
-        // Only delete job on final failure
-        if ($this->attempts() >= $this->tries) {
-            $this->delete();
+        // Only delete job on final failure or if attempt count is unavailable
+        if ($attemptCount >= $this->tries || $attemptCount === -1) {
+            try {
+                $this->delete();
+            } catch (Throwable $deleteException) {
+                Log::error('Failed to delete job', [
+                    'import_id' => $this->import->id,
+                    'delete_error' => $deleteException->getMessage(),
+                ]);
+            }
         } else {
             // Release job for retry
-            $this->release($this->backoff);
+            try {
+                $this->release($this->backoff);
+            } catch (Throwable $releaseException) {
+                Log::error('Failed to release job for retry', [
+                    'import_id' => $this->import->id,
+                    'release_error' => $releaseException->getMessage(),
+                ]);
+            }
         }
     }
 

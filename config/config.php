@@ -109,6 +109,14 @@ return [
         ],
     ],
 
+    /**
+     * Darwin Core import thresholds for memory management
+     */
+    'dwc_import_thresholds' => [
+        'file_size_mb' => env('DWC_FILE_SIZE_THRESHOLD_MB', 30),
+        'row_count' => env('DWC_ROW_COUNT_THRESHOLD', 25000),
+    ],
+
     'dwcTranscriptFields' => [
         'stateProvince' => 'state_province',
         'StateProvince' => 'state_province',

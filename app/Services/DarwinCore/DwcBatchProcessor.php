@@ -20,6 +20,7 @@
 
 namespace App\Services\DarwinCore;
 
+use App\Models\ImportOccurrence;
 use App\Models\Subject;
 use App\Services\Csv\Csv;
 use App\Services\DarwinCore\ValueObjects\ProcessedMetaData;
@@ -50,6 +51,8 @@ class DwcBatchProcessor
 
     private ProcessedMetaData $processedMetaData;
 
+    private string $importSessionId;
+
     public function __construct(
         private readonly MetaFileProcessor $metaFileProcessor,
         private readonly Csv $csv,
@@ -67,8 +70,13 @@ class DwcBatchProcessor
     public function processArchive(int $projectId, string $directory): array
     {
         $this->projectId = $projectId;
+        $this->importSessionId = md5($projectId.microtime(true));
 
-        Log::info('Starting Darwin Core batch processing', ['project_id' => $projectId, 'directory' => $directory]);
+        Log::info('Starting Darwin Core batch processing', [
+            'project_id' => $projectId,
+            'directory' => $directory,
+            'import_session_id' => $this->importSessionId,
+        ]);
 
         try {
             // Parse meta.xml
@@ -91,6 +99,11 @@ class DwcBatchProcessor
 
             // Process media file with validation and batch operations
             $this->processMediaWithValidation($directory, $mediaIsCore, $metaFields, $occurrenceData, $projectId);
+
+            // Clean up MongoDB collection if it was used
+            if (is_string($occurrenceData)) {
+                $this->clearMongoCollection();
+            }
 
             Log::info('Darwin Core batch processing completed', [
                 'project_id' => $projectId,
@@ -119,17 +132,15 @@ class DwcBatchProcessor
     }
 
     /**
-     * Load occurrence data into memory map for fast lookup.
+     * Load occurrence data using hybrid memory/MongoDB approach based on file size.
      *
      * @throws \League\Csv\Exception
      */
-    protected function loadOccurrenceData(string $directory, bool $mediaIsCore, array $metaFields): array
+    protected function loadOccurrenceData(string $directory, bool $mediaIsCore, array $metaFields): array|string
     {
-        $occurrenceData = [];
-
         // If media is core, no separate occurrence file exists
         if ($mediaIsCore) {
-            return $occurrenceData;
+            return [];
         }
 
         $occurrenceFile = $directory.'/'.$this->processedMetaData->getCoreFile();
@@ -137,10 +148,93 @@ class DwcBatchProcessor
         if (! file_exists($occurrenceFile)) {
             Log::warning('Occurrence file not found', ['file' => $occurrenceFile]);
 
-            return $occurrenceData;
+            return [];
         }
 
-        Log::info('Loading occurrence data', ['file' => $occurrenceFile]);
+        // Check file size and determine processing method
+        $fileSize = filesize($occurrenceFile);
+        $useMongoDB = $this->shouldUseMongoDBProcessing($fileSize, $occurrenceFile);
+
+        if ($useMongoDB) {
+            Log::info('Using MongoDB processing for large occurrence file', [
+                'file' => $occurrenceFile,
+                'file_size_mb' => round($fileSize / 1024 / 1024, 2, PHP_ROUND_HALF_UP),
+                'import_session_id' => $this->importSessionId,
+            ]);
+
+            return $this->loadOccurrenceDataToMongoDB($occurrenceFile);
+        } else {
+            Log::info('Using memory processing for occurrence file', [
+                'file' => $occurrenceFile,
+                'file_size_mb' => round($fileSize / 1024 / 1024, 2, PHP_ROUND_HALF_UP),
+            ]);
+
+            return $this->loadOccurrenceDataToMemory($occurrenceFile);
+        }
+    }
+
+    /**
+     * Determine if MongoDB processing should be used based on file size and row count thresholds.
+     */
+    private function shouldUseMongoDBProcessing(int $fileSize, string $filePath): bool
+    {
+        $fileSizeThresholdMB = config('config.dwc_import_thresholds.file_size_mb', 30);
+        $rowCountThreshold = config('config.dwc_import_thresholds.row_count', 25000);
+
+        // Check file size first (fastest check)
+        if ($fileSize > ($fileSizeThresholdMB * 1024 * 1024)) {
+            Log::info('File size exceeds threshold, using MongoDB', [
+                'file_size_mb' => round($fileSize / 1024 / 1024, 2, PHP_ROUND_HALF_UP),
+                'threshold_mb' => $fileSizeThresholdMB,
+            ]);
+
+            return true;
+        }
+
+        // For borderline files, do a quick row count
+        $estimatedRows = $this->estimateRowCount($filePath);
+        if ($estimatedRows > $rowCountThreshold) {
+            Log::info('Row count exceeds threshold, using MongoDB', [
+                'estimated_rows' => $estimatedRows,
+                'threshold_rows' => $rowCountThreshold,
+            ]);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Estimate row count by quickly scanning the file.
+     */
+    private function estimateRowCount(string $filePath): int
+    {
+        $handle = fopen($filePath, 'r');
+        if (! $handle) {
+            return 0;
+        }
+
+        $rowCount = 0;
+        while (! feof($handle)) {
+            if (fgets($handle) !== false) {
+                $rowCount++;
+            }
+        }
+        fclose($handle);
+
+        // Subtract 1 for header row
+        return max(0, $rowCount - 1);
+    }
+
+    /**
+     * Load occurrence data into memory map for fast lookup (original implementation).
+     *
+     * @throws \League\Csv\Exception
+     */
+    private function loadOccurrenceDataToMemory(string $occurrenceFile): array
+    {
+        Log::info('Loading occurrence data into memory', ['file' => $occurrenceFile]);
 
         $this->csv->readerCreateFromPath($occurrenceFile);
         $this->csv->setDelimiter($this->processedMetaData->getCoreDelimiter());
@@ -149,6 +243,7 @@ class DwcBatchProcessor
 
         $header = $this->csv->getHeader();
         $records = $this->csv->getRecords();
+        $occurrenceData = [];
 
         foreach ($records as $row) {
             if (empty($row) || count($row) !== count($header)) {
@@ -164,9 +259,93 @@ class DwcBatchProcessor
             }
         }
 
-        Log::info('Loaded occurrence records', ['count' => count($occurrenceData)]);
+        Log::info('Loaded occurrence records into memory', ['count' => count($occurrenceData)]);
 
         return $occurrenceData;
+    }
+
+    /**
+     * Load occurrence data into MongoDB for streaming large files.
+     *
+     * @throws \League\Csv\Exception
+     */
+    private function loadOccurrenceDataToMongoDB(string $occurrenceFile): string
+    {
+        Log::info('Loading occurrence data into MongoDB', [
+            'file' => $occurrenceFile,
+            'import_session_id' => $this->importSessionId,
+        ]);
+
+        // Clear any existing data for this import session
+        ImportOccurrence::clearImportSession($this->importSessionId);
+
+        $this->csv->readerCreateFromPath($occurrenceFile);
+        $this->csv->setDelimiter($this->processedMetaData->getCoreDelimiter());
+        $this->csv->setEnclosure($this->processedMetaData->getCoreEnclosure());
+        $this->csv->setHeaderOffset(0);
+
+        $header = $this->csv->getHeader();
+        $records = $this->csv->getRecords();
+        $batchData = [];
+        $count = 0;
+
+        foreach ($records as $row) {
+            if (empty($row) || count($row) !== count($header)) {
+                continue;
+            }
+
+            // Use first column (ID) as key for lookup
+            $occurrenceId = $row[$header[0]] ?? null;
+            if ($occurrenceId) {
+                $occurrenceRecord = array_combine($header, $row);
+                // Sanitize occurrence data for UTF-8 issues
+                $sanitizedData = $this->validation->sanitizeOccurrenceData([$occurrenceId => $occurrenceRecord])[$occurrenceId];
+
+                $batchData[] = [
+                    'occurrence_id' => $occurrenceId,
+                    'data' => $sanitizedData,
+                    'project_id' => $this->projectId,
+                    'import_session_id' => $this->importSessionId,
+                ];
+
+                // Insert in batches of 1000 for performance
+                if (count($batchData) >= 1000) {
+                    ImportOccurrence::insert($batchData);
+                    $count += count($batchData);
+                    $batchData = [];
+
+                    // Log progress every 10,000 records
+                    if ($count % 10000 === 0) {
+                        Log::info('MongoDB import progress', ['records_imported' => $count]);
+                    }
+                }
+            }
+        }
+
+        // Insert remaining records
+        if (! empty($batchData)) {
+            ImportOccurrence::insert($batchData);
+            $count += count($batchData);
+        }
+
+        Log::info('Loaded occurrence records into MongoDB', [
+            'count' => $count,
+            'import_session_id' => $this->importSessionId,
+        ]);
+
+        // Return import session ID to identify this dataset
+        return $this->importSessionId;
+    }
+
+    /**
+     * Clear MongoDB collection after processing.
+     */
+    private function clearMongoCollection(): void
+    {
+        if (isset($this->importSessionId)) {
+            ImportOccurrence::clearImportSession($this->importSessionId);
+            Log::info('Cleared MongoDB collection', ['import_session_id' => $this->importSessionId]);
+        }
     }
 
     /**
@@ -178,7 +357,7 @@ class DwcBatchProcessor
         string $directory,
         bool $mediaIsCore,
         array $metaFields,
-        array $occurrenceData,
+        array|string $occurrenceData,
         int $projectId
     ): void {
         $mediaFile = $directory.'/'.$this->processedMetaData->getExtensionFile();
@@ -240,7 +419,7 @@ class DwcBatchProcessor
         int $projectId,
         array $metaFields,
         array $header,
-        array $occurrenceData,
+        array|string $occurrenceData,
         bool $mediaIsCore
     ): void {
         // Validate the entire batch
@@ -282,7 +461,7 @@ class DwcBatchProcessor
         array $row,
         array $header,
         int $projectId,
-        array $occurrenceData,
+        array|string $occurrenceData,
         bool $mediaIsCore
     ): ?array {
         try {
@@ -299,11 +478,23 @@ class DwcBatchProcessor
 
             // Embed occurrence data if available
             $occurrence = [];
-            if ($occurrenceId && isset($occurrenceData[$occurrenceId])) {
-                $occurrence = ['occurrence' => $occurrenceData[$occurrenceId]];
-            } elseif (! $mediaIsCore) {
-                // Add occurrence stub with ID for non-media-core imports
-                $occurrence = ['occurrence' => ['id' => (string) $occurrenceId]];
+            if ($occurrenceId) {
+                if (is_array($occurrenceData)) {
+                    // Memory-based lookup
+                    if (isset($occurrenceData[$occurrenceId])) {
+                        $occurrence = ['occurrence' => $occurrenceData[$occurrenceId]];
+                    } elseif (! $mediaIsCore) {
+                        $occurrence = ['occurrence' => ['id' => (string) $occurrenceId]];
+                    }
+                } elseif (is_string($occurrenceData)) {
+                    // MongoDB-based lookup using import session ID
+                    $occurrenceRecord = ImportOccurrence::findByOccurrenceId($occurrenceId, $occurrenceData);
+                    if ($occurrenceRecord) {
+                        $occurrence = ['occurrence' => $occurrenceRecord];
+                    } elseif (! $mediaIsCore) {
+                        $occurrence = ['occurrence' => ['id' => (string) $occurrenceId]];
+                    }
+                }
             }
 
             // Combine all data
