@@ -28,7 +28,6 @@ public/css/working.css
 /lang/.translation_io
 tests/_output/
 backups
-NOTES.txt
 Biospex
 
 chart-image.js
@@ -51,4 +50,5 @@ panoptes-pusher.js
 hooks
 tests_Feature_Requests/
 tests_Feature_Services/
-/INDEX.txt
+
+/task.txt
