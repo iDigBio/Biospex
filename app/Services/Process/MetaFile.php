@@ -25,49 +25,82 @@ use Exception;
 
 /**
  * Class MetaFile
+ * Handles the processing and management of Darwin Core Archive meta.xml files.
+ * This class is responsible for parsing meta.xml files, extracting core and extension
+ * information, validating required fields, and managing CSV settings for data import.
  */
 class MetaFile
 {
     /**
-     * @var null
+     * @var \DOMElement|null XML core element from meta.xml
      */
-    protected $core;
+    protected ?\DOMElement $core;
 
     /**
-     * @var null
+     * @var \DOMElement|null XML extension element from meta.xml
      */
-    protected $extension;
+    protected ?\DOMElement $extension;
 
     /**
-     * @var array
+     * @var array Required row types for Darwin Core Archive
      */
-    protected $dwcRequiredRowTypes;
-
-    protected $mediaIsCore;
-
-    protected $coreFile;
-
-    protected $extensionFile;
-
-    protected $coreDelimiter;
-
-    protected $coreEnclosure;
-
-    protected $extDelimiter;
-
-    protected $extEnclosure;
-
-    protected $metaFields;
-
-    protected $file;
+    protected mixed $dwcRequiredRowTypes;
 
     /**
-     * @var array
+     * @var bool Indicates if media is the core element
      */
-    protected $dwcRequiredFields;
+    protected bool $mediaIsCore;
 
     /**
-     * Constructor
+     * @var string Path to the core data file
+     */
+    protected string $coreFile;
+
+    /**
+     * @var string Path to the extension data file
+     */
+    protected string $extensionFile;
+
+    /**
+     * @var string Delimiter used in the core CSV file
+     */
+    protected string $coreDelimiter;
+
+    /**
+     * @var string Enclosure character used in the core CSV file
+     */
+    protected string $coreEnclosure;
+
+    /**
+     * @var string Delimiter used in the extension CSV file
+     */
+    protected string $extDelimiter;
+
+    /**
+     * @var string Enclosure character used in the extension CSV file
+     */
+    protected string $extEnclosure;
+
+    /**
+     * @var array Mapped fields from meta.xml for both core and extension
+     */
+    protected array $metaFields;
+
+    /**
+     * @var string Current meta.xml file being processed
+     */
+    protected string $file;
+
+    /**
+     * @var array Required fields for Darwin Core Archive
+     */
+    protected array $dwcRequiredFields;
+
+    /**
+     * Constructor for MetaFile
+     *
+     * @param  Meta  $meta  Meta model instance for database operations
+     * @param  Xml  $xml  XML processing service instance
      */
     public function __construct(protected Meta $meta, protected Xml $xml)
     {
@@ -76,13 +109,16 @@ class MetaFile
     }
 
     /**
-     * Process meta file.
+     * Process the meta.xml file from Darwin Core Archive
+     * Loads and validates XML structure, processes core and extension nodes,
+     * and sets up CSV configuration for data import.
      *
-     * @return string
+     * @param  string  $file  Path to the meta.xml file
+     * @return string Processed XML content
      *
-     * @throws \Exception
+     * @throws \Exception When required elements are missing or invalid
      */
-    public function process($file)
+    public function process(string $file): string
     {
         $this->file = $file;
         $xml = $this->xml->load($file);
@@ -103,9 +139,12 @@ class MetaFile
     }
 
     /**
-     * Save meta data for this upload.
+     * Save meta-data for the current upload to a database
+     *
+     * @param  int  $projectId  Project identifier
+     * @param  string  $meta  XML content to save
      */
-    public function saveMetaFile($projectId, $meta)
+    public function saveMetaFile(int $projectId, string $meta): void
     {
         $this->meta->create([
             'project_id' => $projectId,
@@ -115,11 +154,17 @@ class MetaFile
 
     /**
      * Load core node from meta file.
+     *
+     * @throws \Exception
      */
-    public function loadCoreNode()
+    public function loadCoreNode(): void
     {
         $query = '//ns:archive/ns:core';
         $this->core = $this->xml->xpathQuery($query, true);
+
+        if ($this->core === null) {
+            throw new Exception(t('Core element missing from meta.xml file. Darwin Core Archive must contain a <core> element. File: :file', [':file' => $this->file]));
+        }
     }
 
     /**
@@ -127,7 +172,7 @@ class MetaFile
      *
      * @throws \Exception
      */
-    public function loadExtensionNode()
+    public function loadExtensionNode(): bool
     {
         $extensions = $this->xml->xpathQuery('//ns:archive/ns:extension');
 
@@ -139,12 +184,9 @@ class MetaFile
     }
 
     /**
-     * Loop through extensions found using xpath query.
-     *
-     * @param  array  $extensions
-     * @return bool
+     * Loop through extensions found using a xpath query.
      */
-    protected function loopExtensions($extensions)
+    protected function loopExtensions(array $extensions): bool
     {
         foreach ($extensions as $extension) {
             $matches = $this->loopExtension($extension);
@@ -161,10 +203,8 @@ class MetaFile
 
     /**
      * Loop through extension.
-     *
-     * @return int
      */
-    protected function loopExtension($extension)
+    protected function loopExtension(\DOMElement $extension): int
     {
         $matches = 0;
         foreach ($this->dwcRequiredFields['extension'] as $field => $terms) {
@@ -183,7 +223,7 @@ class MetaFile
     /**
      * Check terms in extension node.
      */
-    protected function checkExtensionTerms($extension, $terms, &$matches)
+    protected function checkExtensionTerms(\DOMElement $extension, array $terms, int &$matches): void
     {
         foreach ($terms as $value) {
             if ((int) $this->xml->evaluate('count(ns:field[@term=\''.$value.'\'])', $extension)) {
@@ -201,6 +241,10 @@ class MetaFile
      */
     private function checkExtensionRowType()
     {
+        if ($this->extension === null || $this->extension->attributes === null) {
+            throw new Exception(t('Extension element or its attributes are missing from meta.xml file. File: :file', [':file' => $this->file]));
+        }
+
         $rowType = strtolower($this->extension->attributes->getNamedItem('rowType')->nodeValue);
         if (in_array($rowType, $this->dwcRequiredRowTypes, true)) {
             return;
@@ -213,9 +257,15 @@ class MetaFile
 
     /**
      * Set if multimedia is the core.
+     *
+     * @throws \Exception
      */
-    private function setMediaIsCore()
+    private function setMediaIsCore(): void
     {
+        if ($this->core === null || $this->core->attributes === null) {
+            throw new Exception(t('Core element or its attributes are missing from meta.xml file. File: :file', [':file' => $this->file]));
+        }
+
         $rowType = $this->core->attributes->getNamedItem('rowType')->nodeValue;
         $this->mediaIsCore = stripos($rowType, 'occurrence') === false;
 
@@ -228,6 +278,10 @@ class MetaFile
      */
     private function setCoreFile()
     {
+        if ($this->core === null) {
+            throw new Exception(t('Core element missing from meta.xml file. File: :file', [':file' => $this->file]));
+        }
+
         $this->coreFile = $this->core->nodeValue;
         if ($this->coreFile === '') {
             throw new Exception(t('Core node missing from xml meta file.'));
@@ -254,6 +308,10 @@ class MetaFile
      */
     private function setCoreCsvSettings()
     {
+        if ($this->core === null || $this->core->attributes === null) {
+            throw new Exception(t('Core element or its attributes are missing from meta.xml file. File: :file', [':file' => $this->file]));
+        }
+
         $delimiter = $this->core->attributes->getNamedItem('fieldsTerminatedBy')->nodeValue;
         $this->coreDelimiter = ($delimiter === '\\t') ? "\t" : $delimiter;
         $enclosure = $this->core->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
@@ -271,6 +329,10 @@ class MetaFile
      */
     private function setExtensionCsvSettings()
     {
+        if ($this->extension === null || $this->extension->attributes === null) {
+            throw new Exception(t('Extension element or its attributes are missing from meta.xml file. File: :file', [':file' => $this->file]));
+        }
+
         $delimiter = $this->extension->attributes->getNamedItem('fieldsTerminatedBy')->nodeValue;
         $this->extDelimiter = ($delimiter === '\\t') ? "\t" : $delimiter;
         $enclosure = $this->extension->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
@@ -283,12 +345,22 @@ class MetaFile
 
     /**
      * Set meta fields.
+     *
+     * @throws \Exception
      */
-    private function setMetaFields($type)
+    private function setMetaFields(string $type): void
     {
+        if ($this->{$type} === null) {
+            throw new Exception(t(':type element missing from meta.xml file. File: :file', [':type' => ucfirst($type), ':file' => $this->file]));
+        }
+
         foreach ($this->{$type}->childNodes as $child) {
             if ($child->tagName === 'files') {
                 continue;
+            }
+
+            if ($child->attributes === null) {
+                continue; // Skip nodes without attributes
             }
 
             $index = $child->attributes->getNamedItem('index')->nodeValue;
@@ -309,7 +381,7 @@ class MetaFile
     /**
      * @return mixed
      */
-    public function getCoreFile()
+    public function getCoreFile(): string
     {
         return $this->coreFile;
     }
@@ -317,7 +389,7 @@ class MetaFile
     /**
      * @return mixed
      */
-    public function getCoreDelimiter()
+    public function getCoreDelimiter(): string
     {
         return $this->coreDelimiter;
     }
@@ -325,7 +397,7 @@ class MetaFile
     /**
      * @return mixed
      */
-    public function getCoreEnclosure()
+    public function getCoreEnclosure(): string
     {
         return $this->coreEnclosure;
     }
@@ -333,7 +405,7 @@ class MetaFile
     /**
      * @return mixed
      */
-    public function getExtensionFile()
+    public function getExtensionFile(): string
     {
         return $this->extensionFile;
     }
@@ -341,7 +413,7 @@ class MetaFile
     /**
      * @return mixed
      */
-    public function getExtDelimiter()
+    public function getExtDelimiter(): string
     {
         return $this->extDelimiter;
     }
@@ -349,7 +421,7 @@ class MetaFile
     /**
      * @return mixed
      */
-    public function getExtEnclosure()
+    public function getExtEnclosure(): string
     {
         return $this->extEnclosure;
     }
@@ -357,7 +429,7 @@ class MetaFile
     /**
      * @return mixed
      */
-    public function getMediaIsCore()
+    public function getMediaIsCore(): bool
     {
         return $this->mediaIsCore;
     }
@@ -365,7 +437,7 @@ class MetaFile
     /**
      * @return mixed
      */
-    public function getMetaFields()
+    public function getMetaFields(): array
     {
         return $this->metaFields;
     }

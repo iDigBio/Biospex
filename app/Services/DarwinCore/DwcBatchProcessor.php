@@ -18,10 +18,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Process;
+namespace App\Services\DarwinCore;
 
 use App\Models\Subject;
 use App\Services\Csv\Csv;
+use App\Services\DarwinCore\ValueObjects\ProcessedMetaData;
 use App\Services\Project\HeaderService;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -47,17 +48,21 @@ class DwcBatchProcessor
 
     private int $projectId;
 
+    private ProcessedMetaData $processedMetaData;
+
     public function __construct(
-        private MetaFile $metaFile,
-        private Csv $csv,
-        private DwcValidationService $validation,
-        private HeaderService $headerService
+        private readonly MetaFileProcessor $metaFileProcessor,
+        private readonly Csv $csv,
+        private readonly DwcValidationService $validation,
+        private readonly HeaderService $headerService
     ) {
-        // Configuration values are now injected in DwcValidationService and MetaFile constructors
+        // Configuration values are now injected in DwcValidationService and MetaFileProcessor constructors
     }
 
     /**
      * Process Darwin Core Archive with batch processing.
+     *
+     * @throws \League\Csv\Exception|\App\Services\DarwinCore\Exceptions\MetaFileException
      */
     public function processArchive(int $projectId, string $directory): array
     {
@@ -68,13 +73,13 @@ class DwcBatchProcessor
         try {
             // Parse meta.xml
             $metaFile = $directory.'/meta.xml';
-            $this->metaFile->process($metaFile);
+            $this->processedMetaData = $this->metaFileProcessor->process($metaFile);
 
             // Save meta file to database
-            $this->metaFile->saveMetaFile($projectId, file_get_contents($metaFile));
+            $this->metaFileProcessor->saveMetaFile($projectId, $this->processedMetaData->xmlContent);
 
-            $mediaIsCore = $this->metaFile->getMediaIsCore();
-            $metaFields = $this->metaFile->getMetaFields();
+            $mediaIsCore = $this->processedMetaData->isMediaCore();
+            $metaFields = $this->processedMetaData->metaFields;
 
             // Validate identifier columns exist
             if (! $this->validation->checkForIdentifierColumn($metaFields['extension'])) {
@@ -115,6 +120,8 @@ class DwcBatchProcessor
 
     /**
      * Load occurrence data into memory map for fast lookup.
+     *
+     * @throws \League\Csv\Exception
      */
     protected function loadOccurrenceData(string $directory, bool $mediaIsCore, array $metaFields): array
     {
@@ -125,7 +132,7 @@ class DwcBatchProcessor
             return $occurrenceData;
         }
 
-        $occurrenceFile = $directory.'/'.$this->metaFile->getCoreFile();
+        $occurrenceFile = $directory.'/'.$this->processedMetaData->getCoreFile();
 
         if (! file_exists($occurrenceFile)) {
             Log::warning('Occurrence file not found', ['file' => $occurrenceFile]);
@@ -136,8 +143,8 @@ class DwcBatchProcessor
         Log::info('Loading occurrence data', ['file' => $occurrenceFile]);
 
         $this->csv->readerCreateFromPath($occurrenceFile);
-        $this->csv->setDelimiter($this->metaFile->getCoreDelimiter());
-        $this->csv->setEnclosure($this->metaFile->getCoreEnclosure());
+        $this->csv->setDelimiter($this->processedMetaData->getCoreDelimiter());
+        $this->csv->setEnclosure($this->processedMetaData->getCoreEnclosure());
         $this->csv->setHeaderOffset(0);
 
         $header = $this->csv->getHeader();
@@ -164,6 +171,8 @@ class DwcBatchProcessor
 
     /**
      * Process media file with validation and batch operations.
+     *
+     * @throws \League\Csv\Exception
      */
     protected function processMediaWithValidation(
         string $directory,
@@ -172,7 +181,7 @@ class DwcBatchProcessor
         array $occurrenceData,
         int $projectId
     ): void {
-        $mediaFile = $directory.'/'.$this->metaFile->getExtensionFile();
+        $mediaFile = $directory.'/'.$this->processedMetaData->getExtensionFile();
 
         if (! file_exists($mediaFile)) {
             throw new Exception("Media file not found: {$mediaFile}");
@@ -181,8 +190,8 @@ class DwcBatchProcessor
         Log::info('Processing media file', ['file' => $mediaFile]);
 
         $this->csv->readerCreateFromPath($mediaFile);
-        $this->csv->setDelimiter($this->metaFile->getExtDelimiter());
-        $this->csv->setEnclosure($this->metaFile->getExtEnclosure());
+        $this->csv->setDelimiter($this->processedMetaData->getExtDelimiter());
+        $this->csv->setEnclosure($this->processedMetaData->getExtEnclosure());
         $this->csv->setHeaderOffset(0);
 
         $header = $this->csv->getHeader();
@@ -401,13 +410,5 @@ class DwcBatchProcessor
     public function getRejectedMedia(): array
     {
         return $this->rejectedMedia;
-    }
-
-    /**
-     * Get subject count.
-     */
-    public function getSubjectCount(): int
-    {
-        return $this->subjectCount;
     }
 }

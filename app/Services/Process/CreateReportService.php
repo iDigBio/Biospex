@@ -37,7 +37,7 @@ class CreateReportService
     /**
      * Create csv report.
      *
-     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\CannotInsertRecord|\League\Csv\Exception
      */
     public function createCsvReport(string $csvName, array $data): ?string
     {

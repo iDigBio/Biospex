@@ -75,6 +75,12 @@ class GridModel
             ];
         } else {
             $headers = $result->header;
+
+            // Ensure $headers['image'] is an array before using array_unshift
+            if (! isset($headers['image']) || ! is_array($headers['image'])) {
+                $headers['image'] = [];
+            }
+
             array_unshift($headers['image'], 'assigned', 'exported', 'expedition_ids', 'imageId');
             $headers['image'][] = 'ocr';
         }

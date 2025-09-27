@@ -18,7 +18,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Process;
+namespace App\Services\DarwinCore;
 
 use App\Models\Subject;
 use ForceUTF8\Encoding;
@@ -38,23 +38,11 @@ class DwcValidationService
     private array $identifiers;
 
     /**
-     * Required fields configuration
-     */
-    private array $dwcRequiredFields;
-
-    /**
-     * Required row types configuration
-     */
-    private array $dwcRequiredRowTypes;
-
-    /**
      * Constructor - inject configuration values
      */
     public function __construct()
     {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
-        $this->dwcRequiredFields = config('config.dwcRequiredFields');
-        $this->dwcRequiredRowTypes = config('config.dwcRequiredRowTypes');
     }
 
     /**
