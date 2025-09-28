@@ -51,7 +51,7 @@ jobs:
           
           # Get the specific commit message for this push
           CURRENT_COMMIT_MSG="${{ github.event.head_commit.message }}"
-          echo "Current commit message: $CURRENT_COMMIT_MSG"
+          echo "Current commit message: $(printf '%s' "$CURRENT_COMMIT_MSG")"
           
           # Determine version bump based on the current commit message only
           if echo "$CURRENT_COMMIT_MSG" | grep -i "\[major\]\|\[breaking\]"; then
