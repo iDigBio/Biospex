@@ -73,12 +73,6 @@ class DwcBatchProcessor
         $this->projectId = $projectId;
         $this->importSessionId = md5($projectId.microtime(true));
 
-        Log::info('Starting Darwin Core batch processing', [
-            'project_id' => $projectId,
-            'directory' => $directory,
-            'import_session_id' => $this->importSessionId,
-        ]);
-
         try {
             // Parse meta.xml
             $metaFile = $directory.'/meta.xml';
@@ -105,13 +99,6 @@ class DwcBatchProcessor
             if (is_string($occurrenceData)) {
                 $this->clearMongoCollection();
             }
-
-            Log::info('Darwin Core batch processing completed', [
-                'project_id' => $projectId,
-                'subjects_created' => $this->subjectCount,
-                'duplicates' => count($this->duplicates),
-                'rejected' => count($this->rejectedMedia),
-            ]);
 
             return [
                 'success' => true,
@@ -157,19 +144,8 @@ class DwcBatchProcessor
         $useMongoDB = $this->shouldUseMongoDBProcessing($fileSize, $occurrenceFile);
 
         if ($useMongoDB) {
-            Log::info('Using MongoDB processing for large occurrence file', [
-                'file' => $occurrenceFile,
-                'file_size_mb' => round($fileSize / 1024 / 1024, 2, PHP_ROUND_HALF_UP),
-                'import_session_id' => $this->importSessionId,
-            ]);
-
             return $this->loadOccurrenceDataToMongoDB($occurrenceFile);
         } else {
-            Log::info('Using memory processing for occurrence file', [
-                'file' => $occurrenceFile,
-                'file_size_mb' => round($fileSize / 1024 / 1024, 2, PHP_ROUND_HALF_UP),
-            ]);
-
             return $this->loadOccurrenceDataToMemory($occurrenceFile);
         }
     }
@@ -184,22 +160,12 @@ class DwcBatchProcessor
 
         // Check file size first (fastest check)
         if ($fileSize > ($fileSizeThresholdMB * 1024 * 1024)) {
-            Log::info('File size exceeds threshold, using MongoDB', [
-                'file_size_mb' => round($fileSize / 1024 / 1024, 2, PHP_ROUND_HALF_UP),
-                'threshold_mb' => $fileSizeThresholdMB,
-            ]);
-
             return true;
         }
 
         // For borderline files, do a quick row count
         $estimatedRows = $this->estimateRowCount($filePath);
         if ($estimatedRows > $rowCountThreshold) {
-            Log::info('Row count exceeds threshold, using MongoDB', [
-                'estimated_rows' => $estimatedRows,
-                'threshold_rows' => $rowCountThreshold,
-            ]);
-
             return true;
         }
 
@@ -235,7 +201,6 @@ class DwcBatchProcessor
      */
     private function loadOccurrenceDataToMemory(string $occurrenceFile): array
     {
-        Log::info('Loading occurrence data into memory', ['file' => $occurrenceFile]);
 
         $this->csv->readerCreateFromPath($occurrenceFile);
         $this->csv->setDelimiter($this->processedMetaData->getCoreDelimiter());
@@ -260,8 +225,6 @@ class DwcBatchProcessor
             }
         }
 
-        Log::info('Loaded occurrence records into memory', ['count' => count($occurrenceData)]);
-
         return $occurrenceData;
     }
 
@@ -272,10 +235,6 @@ class DwcBatchProcessor
      */
     private function loadOccurrenceDataToMongoDB(string $occurrenceFile): string
     {
-        Log::info('Loading occurrence data into MongoDB', [
-            'file' => $occurrenceFile,
-            'import_session_id' => $this->importSessionId,
-        ]);
 
         // Clear any existing data for this import session
         ImportOccurrence::clearImportSession($this->importSessionId);
@@ -315,10 +274,6 @@ class DwcBatchProcessor
                     $count += count($batchData);
                     $batchData = [];
 
-                    // Log progress every 10,000 records
-                    if ($count % 10000 === 0) {
-                        Log::info('MongoDB import progress', ['records_imported' => $count]);
-                    }
                 }
             }
         }
@@ -328,11 +283,6 @@ class DwcBatchProcessor
             ImportOccurrence::insert($batchData);
             $count += count($batchData);
         }
-
-        Log::info('Loaded occurrence records into MongoDB', [
-            'count' => $count,
-            'import_session_id' => $this->importSessionId,
-        ]);
 
         // Return import session ID to identify this dataset
         return $this->importSessionId;
@@ -345,7 +295,6 @@ class DwcBatchProcessor
     {
         if (isset($this->importSessionId)) {
             ImportOccurrence::clearImportSession($this->importSessionId);
-            Log::info('Cleared MongoDB collection', ['import_session_id' => $this->importSessionId]);
         }
     }
 
@@ -366,8 +315,6 @@ class DwcBatchProcessor
         if (! file_exists($mediaFile)) {
             throw new Exception("Media file not found: {$mediaFile}");
         }
-
-        Log::info('Processing media file', ['file' => $mediaFile]);
 
         $this->csv->readerCreateFromPath($mediaFile);
         $this->csv->setDelimiter($this->processedMetaData->getExtDelimiter());
@@ -409,7 +356,6 @@ class DwcBatchProcessor
             $this->processBatch($batch, $projectId, $metaFields['extension'], $header, $occurrenceData, $mediaIsCore);
         }
 
-        Log::info('Media file processing completed', ['rows_processed' => $rowCount]);
     }
 
     /**
@@ -459,11 +405,6 @@ class DwcBatchProcessor
             // Bulk insert subjects (subjectCount is updated within the method)
             $this->bulkInsertSubjects($subjects);
 
-            Log::debug('Processed batch', [
-                'valid_records' => count($validationResult['valid']),
-                'subjects_created' => count($subjects),
-                'rejected_records' => count($validationResult['rejected']),
-            ]);
         }
     }
 

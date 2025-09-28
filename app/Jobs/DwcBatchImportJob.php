@@ -92,25 +92,6 @@ class DwcBatchImportJob implements ShouldQueue
         }
     }
 
-    /**
-     * Log memory usage at key stages for monitoring large datasets.
-     *
-     * @param  string  $stage  Description of the current processing stage
-     */
-    private function logMemoryUsage(string $stage): void
-    {
-        $memoryUsage = memory_get_usage(true);
-        $peakMemory = memory_get_peak_usage(true);
-
-        Log::info("Memory usage - {$stage}", [
-            'import_id' => $this->import->id,
-            'stage' => $stage,
-            'current_memory_mb' => (float) number_format($memoryUsage / 1024 / 1024, 2, '.', ''),
-            'peak_memory_mb' => (float) number_format($peakMemory / 1024 / 1024, 2, '.', ''),
-            'attempt' => $this->safeGetAttempts(),
-        ]);
-    }
-
     public function handle(
         ProjectService $projectService,
         DwcBatchProcessor $batchProcessor,
@@ -122,16 +103,6 @@ class DwcBatchImportJob implements ShouldQueue
 
         $project = $projectService->getProjectForDarwinImportJob($this->import->project_id);
         $users = $project->group->users->push($project->group->owner);
-
-        // Log job start with memory usage
-        $this->logMemoryUsage('Job Start');
-
-        Log::info('Starting Darwin Core batch import', [
-            'import_id' => $this->import->id,
-            'project_id' => $this->import->project_id,
-            'file' => $this->import->file,
-            'attempt' => $this->safeGetAttempts(),
-        ]);
 
         // Check if this import is already being processed or completed
         $this->import->refresh();
@@ -170,11 +141,9 @@ class DwcBatchImportJob implements ShouldQueue
 
             // Extract archive with enhanced error checking
             $this->unzipArchive($importFilePath, $scratchFileDir);
-            $this->logMemoryUsage('After Extraction');
 
             // Process with new batch processor
             $result = $batchProcessor->processArchive($this->import->project_id, $scratchFileDir);
-            $this->logMemoryUsage('After Processing');
 
             // Generate comprehensive reports
             $reports = $this->generateReports($createReportService, $batchProcessor);
@@ -190,12 +159,6 @@ class DwcBatchImportJob implements ShouldQueue
 
             // Cleanup files
             $this->cleanupFiles($scratchFileDir, $importFilePath);
-
-            Log::info('Darwin Core batch import completed successfully', [
-                'import_id' => $this->import->id,
-                'subjects_created' => $result['subjects_created'],
-                'processing_time' => $processingTime.'s',
-            ]);
 
             // Mark processing as complete before deletion
             $this->import->update(['processing' => 0]);
@@ -288,8 +251,6 @@ class DwcBatchImportJob implements ShouldQueue
         if (! file_exists($dir.'/meta.xml')) {
             throw new Exception('Invalid Darwin Core Archive: meta.xml not found');
         }
-
-        Log::info('Archive extracted successfully', ['directory' => $dir]);
     }
 
     /**
