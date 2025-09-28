@@ -45,7 +45,8 @@ class Thumbnail
     public function __construct(
         protected Storage $storage,
         protected File $file,
-        protected ImageManager $imageManager)
+        protected ImageManager $imageManager,
+        protected HttpRequest $httpRequest)
     {
         $this->setVariables();
     }
@@ -117,9 +118,47 @@ class Thumbnail
     protected function processImage(string $url, string $filePath): void
     {
         try {
-            $this->imageManager->read(file_get_contents($url))
-                ->resize($this->tnWidth, $this->tnHeight)->save($filePath);
+            // Use HttpRequest for reliable image downloads with retry logic
+            $client = $this->httpRequest->createDirectHttpClient([
+                'timeout' => 30,
+                'connect_timeout' => 10,
+            ]);
+
+            $response = $client->get($url);
+
+            if ($response->getStatusCode() !== 200) {
+                throw new Exception("Failed to download image, status code: {$response->getStatusCode()}");
+            }
+
+            $imageContent = $response->getBody()->getContents();
+
+            if (empty($imageContent)) {
+                throw new Exception("Downloaded image is empty from: {$url}");
+            }
+
+            $this->imageManager->read($imageContent)
+                ->resize($this->tnWidth, $this->tnHeight)
+                ->save($filePath);
+
+        } catch (RequestException $e) {
+            $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : 0;
+            Log::warning('Thumbnail: Image download request failed', [
+                'url' => $url,
+                'status_code' => $statusCode,
+                'error' => $e->getMessage(),
+            ]);
+            throw new Exception("Failed to download image: {$e->getMessage()}", 0, $e);
+        } catch (GuzzleException $e) {
+            Log::warning('Thumbnail: Image download Guzzle error', [
+                'url' => $url,
+                'error' => $e->getMessage(),
+            ]);
+            throw new Exception("HTTP error downloading image: {$e->getMessage()}", 0, $e);
         } catch (\Exception $e) {
+            Log::warning('Thumbnail: Image processing error', [
+                'url' => $url,
+                'error' => $e->getMessage(),
+            ]);
             throw new Exception($e->getMessage());
         }
     }

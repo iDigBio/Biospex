@@ -43,7 +43,7 @@ class PanoptesApiService extends HttpRequest
 
     private int $transcriber_count;
 
-    private float $percent_completed;
+    private int $percent_completed;
 
     /**
      * PanoptesApiService constructor.
@@ -157,7 +157,7 @@ class PanoptesApiService extends HttpRequest
     /**
      * Get panoptes subject.
      */
-    public function getPanoptesSubject($subjectId): null
+    public function getPanoptesSubject($subjectId): ?array
     {
         $queryData = [
             'method' => 'GET',
@@ -183,7 +183,7 @@ class PanoptesApiService extends HttpRequest
     /**
      * Get panoptes user.
      */
-    public function getPanoptesUser($userId): mixed
+    public function getPanoptesUser($userId): ?array
     {
         $queryData = [
             'method' => 'GET',
@@ -222,19 +222,27 @@ class PanoptesApiService extends HttpRequest
         $this->subject_count = (int) $workflow['subjects_count'];
         $this->transcriptions_goal = (int) $workflow['subjects_count'] * (int) $workflow['retirement']['options']['count'];
         $this->transcriptions_completed = (int) $workflow['classifications_count'];
-        $this->local_transcriptions_completed = CountHelper::expeditionTranscriptionCount($expeditionId);
-        $this->transcriber_count = CountHelper::expeditionTranscriberCount($expeditionId);
+        $this->local_transcriptions_completed = (int) CountHelper::expeditionTranscriptionCount($expeditionId);
+        $this->transcriber_count = (int) CountHelper::expeditionTranscriberCount($expeditionId);
         $this->percent_completed = $this->percentCompleted();
     }
 
     /**
-     * Calculate percent complete for transcriptsions.
+     * Calculate percent complete for transcriptions.
      */
     private function percentCompleted(): int
     {
-        $value = ($this->local_transcriptions_completed === 0) ? 0 : ($this->local_transcriptions_completed / $this->transcriptions_goal) * 100;
+        if ($this->local_transcriptions_completed === 0 || $this->transcriptions_goal === 0) {
+            return 0;
+        }
 
-        return ($value > 100) ? 100 : round($value);
+        $percentage = ($this->local_transcriptions_completed / $this->transcriptions_goal) * 100;
+
+        if ($percentage > 100) {
+            return 100;
+        }
+
+        return (int) floor($percentage + 0.5);
     }
 
     /**
@@ -280,7 +288,7 @@ class PanoptesApiService extends HttpRequest
     /**
      * Return percent completed.
      */
-    public function getPercentCompleted(): float
+    public function getPercentCompleted(): int
     {
         return $this->percent_completed;
     }
@@ -290,7 +298,7 @@ class PanoptesApiService extends HttpRequest
      *
      * @return mixed|null
      */
-    public function getSubjectImageLocation($subjectId): mixed
+    public function getSubjectImageLocation($subjectId): ?array
     {
         $subject = $this->getPanoptesSubject($subjectId);
         $locations = collect($subject['locations'])->filter(function ($location) {

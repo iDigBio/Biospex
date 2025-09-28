@@ -46,7 +46,7 @@ class ExpeditionStat extends BaseEloquentModel
         'local_transcriptions_completed',
         'transcriptions_completed',
         'transcriber_count',
-        'percentage_completed',
+        'percent_completed',
     ];
 
     /**

@@ -20,6 +20,7 @@
 
 namespace App\Services;
 
+use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
 use Illuminate\Database\DatabaseManager;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
@@ -64,10 +65,8 @@ class MongoDbService
 
     /**
      * Set database dynamically.
-     *
-     * @param  null  $database
      */
-    public function setDatabase($database = null): null
+    public function setDatabase(?string $database = null): string
     {
         return $database === null ? config('database.connections.mongodb.database') : $database;
     }
@@ -75,9 +74,10 @@ class MongoDbService
     /**
      * Set mongo collection.
      *
-     * @param  null  $database
+     * @param  string  $collection
+     * @param  string|null  $database
      */
-    public function setCollection($collection, $database = null)
+    public function setCollection($collection, $database = null): void
     {
         if (empty($this->client)) {
             $this->setClient();
@@ -89,9 +89,9 @@ class MongoDbService
     /**
      * Set a mongo id object.
      *
-     * @return \MongoDB\BSON\ObjectId
+     * @param  mixed  $value
      */
-    public function setMongoObjectId($value)
+    public function setMongoObjectId($value): \MongoDB\BSON\ObjectId
     {
         return new ObjectId($value);
     }
@@ -99,9 +99,9 @@ class MongoDbService
     /**
      * Set regex value.
      *
-     * @return \MongoDB\BSON\Regex
+     * @param  string  $value
      */
-    public function setRegex($value)
+    public function setRegex($value): \MongoDB\BSON\Regex
     {
         return new Regex($value, 'i');
     }
@@ -122,10 +122,8 @@ class MongoDbService
 
     /**
      * Find all matching query.
-     *
-     * @return mixed
      */
-    public function find(array $query = [], array $options = [])
+    public function find(array $query = [], array $options = []): mixed
     {
         $key = AutoCacheHelper::generateKey('mongodb_find', [
             'collection' => $this->clientCollection->getCollectionName(),
@@ -141,10 +139,8 @@ class MongoDbService
 
     /**
      * Find one matching query.
-     *
-     * @return array|null|object
      */
-    public function findOne(array $query = [])
+    public function findOne(array $query = []): ?array
     {
         $key = AutoCacheHelper::generateKey('mongodb_find_one', [
             'collection' => $this->clientCollection->getCollectionName(),
@@ -155,27 +151,26 @@ class MongoDbService
         return AutoCacheHelper::remember($key, 1800, function () use ($query) {
             $result = $this->clientCollection->findOne($query);
 
-            return $result ? $result->toArray() : null;
+            return $result?->toArray();
         }, $tags);
     }
 
     /**
      * Find one and replace.
      *
+     * @param  array  $filter
+     * @param  array  $replacement
      * @param  array  $options
-     * @return array|null|object
      */
-    public function findOneAndReplace($filter, $replacement, $options = [])
+    public function findOneAndReplace($filter, $replacement, $options = []): array|null|object
     {
         return $this->clientCollection->findOneAndReplace($filter, $replacement, $options);
     }
 
     /**
      * Insert one record.
-     *
-     * @return \MongoDB\InsertOneResult
      */
-    public function insertOne(array $attributes = [])
+    public function insertOne(array $attributes = []): \MongoDB\InsertOneResult
     {
         return $this->clientCollection->insertOne($attributes);
     }
@@ -183,15 +178,17 @@ class MongoDbService
     /**
      * Insert many documents.
      */
-    public function insertMany(array $data = [])
+    public function insertMany(array $data = []): void
     {
         $this->clientCollection->insertMany($data);
     }
 
     /**
      * Update single record.
+     *
+     * @param  mixed  $resourceId
      */
-    public function updateOneById(array $attributes, $resourceId)
+    public function updateOneById(array $attributes, $resourceId): void
     {
         $this->clientCollection->updateOne(['_id' => $this->setMongoObjectId($resourceId)], ['$set' => $attributes]);
     }
@@ -204,12 +201,21 @@ class MongoDbService
         return $this->clientCollection->updateMany($criteria, $attributes);
     }
 
-    public function deleteMany(array $criteria)
+    /**
+     * Delete many documents.
+     */
+    public function deleteMany(array $criteria): void
     {
         $this->clientCollection->deleteMany($criteria);
     }
 
-    public function aggregate($pipline, $options = [])
+    /**
+     * Aggregate documents.
+     *
+     * @param  array  $pipline
+     * @param  array  $options
+     */
+    public function aggregate($pipline, $options = []): mixed
     {
         $key = AutoCacheHelper::generateKey('mongodb_aggregate', [
             'collection' => $this->clientCollection->getCollectionName(),
@@ -226,9 +232,9 @@ class MongoDbService
     /**
      * Return only id from results.
      *
-     * @return array
+     * @param  mixed  $cursor
      */
-    public function pluckId($cursor)
+    public function pluckId($cursor): array
     {
         $ids = [];
         foreach ($cursor as $doc) {

@@ -24,6 +24,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AmChart;
 use App\Models\Project;
 use File;
+use Illuminate\Support\Facades\Log;
 use Response;
 use Throwable;
 
@@ -59,8 +60,12 @@ class TranscriptionController extends Controller
 
             return Response::json($file);
         } catch (Throwable $throwable) {
-            // TODO: Remove log error once the issue is fixed
-            \Log::info('Project: '.$project->id.' Message: '.$throwable->getMessage());
+            // Add proper error logging with context for production
+            Log::error('Transcription chart error', [
+                'project_id' => $project->id,
+                'year' => $year,
+                'error' => $throwable->getMessage(),
+            ]);
 
             return Response::json(['error' => $throwable->getMessage()]);
         }

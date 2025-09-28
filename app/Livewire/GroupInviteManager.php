@@ -33,14 +33,6 @@ class GroupInviteManager extends Component
 
     public function mount($invites = null, ?Group $group = null, $errors = null)
     {
-        \Log::info('GroupInviteManager mount() called', [
-            'invites_type' => gettype($invites),
-            'invites_count' => is_array($invites) ? count($invites) : (is_object($invites) && method_exists($invites, 'count') ? $invites->count() : 'unknown'),
-            'group_id' => $group ? $group->id : 'null',
-            'has_errors' => ! empty($errors),
-            'session_id' => session()->getId(),
-        ]);
-
         $this->group = $group;
         $this->errors = $errors;
 
@@ -64,33 +56,16 @@ class GroupInviteManager extends Component
             // Start with at least one empty invite
             $this->addInvite();
         }
-
-        \Log::info('GroupInviteManager mount() completed', [
-            'final_invites_count' => count($this->invites),
-            'invites_structure' => $this->invites,
-        ]);
     }
 
     public function addInvite()
     {
-        // Add detailed logging to debug the issue
-        \Log::info('GroupInviteManager addInvite() called', [
-            'current_invites_count' => count($this->invites),
-            'session_id' => session()->getId(),
-            'timestamp' => now(),
-        ]);
-
         // Add a new empty invite array
         $newInvite = [
             'id' => null,
             'email' => '',
         ];
         $this->invites[] = $newInvite;
-
-        \Log::info('GroupInviteManager addInvite() completed', [
-            'new_invites_count' => count($this->invites),
-            'added_invite' => $newInvite,
-        ]);
     }
 
     public function removeInvite($index)

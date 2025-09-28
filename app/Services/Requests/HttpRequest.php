@@ -22,14 +22,13 @@ namespace App\Services\Requests;
 
 use DateTime;
 use Generator;
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Pool;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RetryMiddleware;
 use Illuminate\Support\Facades\Cache;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -38,17 +37,40 @@ use Psr\Http\Message\RequestInterface;
 
 /**
  * Class HttpRequest
+ *
+ * Handles HTTP requests with OAuth2 authentication and retry capabilities.
+ * Provides functionality for making authenticated HTTP requests, managing access tokens,
+ * and handling request retries with customizable retry strategies.
+ *
+ * Features:
+ * - OAuth2 authentication integration
+ * - Automatic token refresh
+ * - Configurable retry mechanism with exponential backoff
+ * - Support for request pooling
+ * - Direct HTTP client creation without OAuth2
  */
 class HttpRequest
 {
+    /**
+     * OAuth2 Generic Provider instance for authentication
+     */
     protected GenericProvider $provider;
 
+    /**
+     * Current OAuth2 access token
+     */
     protected AccessTokenInterface $accessToken;
 
+    /**
+     * Maximum number of retry attempts for failed requests
+     */
     protected int $maxRetries = 3;
 
     /**
-     * Set authentication provider
+     * Set authentication provider with retry middleware
+     *
+     * @param  array  $config  Configuration options for the OAuth2 provider
+     * @return GenericProvider Configured OAuth2 provider instance
      */
     public function setHttpProvider(array $config = []): GenericProvider
     {
@@ -66,7 +88,9 @@ class HttpRequest
     }
 
     /**
-     * Get http client.
+     * Get a configured HTTP client from the OAuth2 provider
+     *
+     * @return ClientInterface Configured GuzzleHttp client
      */
     public function getHttpClient(): ClientInterface
     {
@@ -74,24 +98,26 @@ class HttpRequest
     }
 
     /**
-     * Set access token.
+     * Obtain and cache a new access token
      *
-     * @return void
+     * @param  string  $token  Cache key for storing the access token
      *
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function setAccessToken($token)
+    protected function setAccessToken(string $token): void
     {
         $accessToken = $this->provider->getAccessToken('client_credentials');
         Cache::put($token, $accessToken, 720);
     }
 
     /**
-     * Check access token
+     *  Verify and refresh the access token if expired
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
-    public function checkAccessToken($token)
+    public function checkAccessToken($token): void
     {
         if (Cache::get($token) === null || Cache::get($token)->hasExpired()) {
             $this->setAccessToken($token);
@@ -101,7 +127,11 @@ class HttpRequest
     }
 
     /**
-     * Build authenticated request
+     * Create an authenticated request with the current access token
+     *
+     * @param  string  $method  HTTP method
+     * @param  string  $uri  Request URI
+     * @param  array  $options  Additional request options
      */
     protected function buildAuthenticatedRequest(string $method, string $uri, array $options = []): RequestInterface
     {
@@ -109,30 +139,11 @@ class HttpRequest
     }
 
     /**
-     * Pool batch requests.
+     * Create a request pool for concurrent requests
      *
-     * - concurrency: (int) Maximum number of requests to send concurrently
-     * - options: Array of request options to apply to each request.
-     * - fulfilled: (callable) Function to invoke when a request completes.
-     * - rejected: (callable) Function to invoke when a request is rejected.
-     *
-     * @param  \Iterator|array  $requests  $requests
-     */
-    public function poolBatchRequest(\Iterator|array $requests, int $concurrency = 10): array
-    {
-        return Pool::batch($this->getHttpClient(), $requests, [
-            'concurrency' => $concurrency,
-            'fulfilled' => function (Response $response, $index) {
-                return [$index => $response];
-            },
-            'rejected' => function (RequestException $reason, $index) {
-                return [$index => $reason];
-            },
-        ]);
-    }
-
-    /**
-     * Create pool and return.
+     * @param  Generator  $promises  Generator of request promises
+     * @param  array  $poolConfig  Pool configuration options
+     * @return Pool Configured request pool
      */
     public function pool(Generator $promises, array $poolConfig): Pool
     {
@@ -140,32 +151,92 @@ class HttpRequest
     }
 
     /**
-     * Retry decider
+     * Create retry decision callback for failed requests
+     *
+     * Retries requests on:
+     * - Server errors (5xx)
+     * - Rate limiting (429)
+     * - Connection timeouts
+     * - Network errors
      */
     public function retryDecider(): \Closure
     {
-        return function (int $retries, Request $request, ?Response $response = null) {
-            return $retries < $this->maxRetries && $response !== null && $response->getStatusCode() === 429;
+        return function (int $retries, $request, $response = null, $exception = null): bool {
+            if ($retries >= $this->maxRetries) {
+                return false;
+            }
+
+            // Retry on server errors (5xx) or rate limiting (429)
+            if ($response && in_array($response->getStatusCode(), [429, 500, 502, 503, 504])) {
+                return true;
+            }
+
+            // Retry on connection timeouts or network errors
+            if ($exception instanceof RequestException) {
+                return true;
+            }
+
+            return false;
         };
     }
 
     /**
-     * Retry delay.
+     * Create a retry delay callback with Retry-After header support
+     *
+     * Uses server's Retry-After header when available, otherwise
+     * implements exponential backoff strategy
      */
     public function retryDelay(): \Closure
     {
-        return function (int $retries, Response $response): int {
-            if (! $response->hasHeader('Retry-After')) {
-                return RetryMiddleware::exponentialDelay($retries);
+        return function (int $retries, $response = null): int {
+            if ($response && $response->hasHeader('Retry-After')) {
+                $retryAfter = $response->getHeaderLine('Retry-After');
+
+                if (! is_numeric($retryAfter)) {
+                    $retryAfter = (new DateTime($retryAfter))->getTimestamp() - time();
+                }
+
+                return (int) $retryAfter * 1000;
             }
 
-            $retryAfter = $response->getHeaderLine('Retry-After');
-
-            if (! is_numeric($retryAfter)) {
-                $retryAfter = (new DateTime($retryAfter))->getTimestamp() - time();
-            }
-
-            return (int) $retryAfter * 1000;
+            // Exponential backoff: 1s, 2s, 4s, etc.
+            return RetryMiddleware::exponentialDelay($retries);
         };
+    }
+
+    /**
+     * Set maximum number of retry attempts
+     *
+     * @param  int  $maxRetries  Maximum number of retries
+     */
+    public function setMaxRetries(int $maxRetries): self
+    {
+        $this->maxRetries = $maxRetries;
+
+        return $this;
+    }
+
+    /**
+     * Create a standalone Guzzle HTTP client with retry middleware
+     *
+     * @param  array  $config  Additional client configuration
+     * @return Client Configured Guzzle client
+     */
+    public function createDirectHttpClient(array $config = []): Client
+    {
+        $handlerStack = HandlerStack::create(new CurlHandler);
+        $handlerStack->push(Middleware::retry($this->retryDecider(), $this->retryDelay()));
+
+        $defaultConfig = [
+            'handler' => $handlerStack,
+            'timeout' => 60,
+            'connect_timeout' => 10,
+            'headers' => [
+                'Accept' => 'application/json',
+                'User-Agent' => 'Biospex/1.0',
+            ],
+        ];
+
+        return new Client(array_merge($defaultConfig, $config));
     }
 }

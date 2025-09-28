@@ -20,6 +20,7 @@
 
 namespace App\Providers;
 
+use App\Services\DarwinCore\MetaFileProcessor;
 use App\Services\Helpers\CountService;
 use App\Services\Helpers\DateService;
 use App\Services\Helpers\TranscriptionMapService;
@@ -90,6 +91,15 @@ class BiospexServiceProvider extends ServiceProvider
             return new TranscriptionMapService(
                 $this->app['config']->get('zooniverse.reserved_encoded'),
                 $this->app['config']->get('zooniverse.mapped_transcription_fields')
+            );
+        });
+
+        $this->app->bind(MetaFileProcessor::class, function ($app) {
+            return new MetaFileProcessor(
+                $app->make(\App\Services\DarwinCore\DarwinCoreXmlLoader::class),
+                $app->make(\App\Models\Meta::class),
+                $app['config']->get('config.dwcRequiredRowTypes'),
+                $app['config']->get('config.dwcRequiredFields')
             );
         });
     }

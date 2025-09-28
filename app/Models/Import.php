@@ -43,6 +43,7 @@ class Import extends BaseEloquentModel
         'project_id',
         'file',
         'error',
+        'processing',
     ];
 
     /**

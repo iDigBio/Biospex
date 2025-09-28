@@ -28,70 +28,88 @@ use Illuminate\Support\LazyCollection;
 
 class SubjectService
 {
+    /**
+     * Flag indicating if group operation is 'AND' (true) or 'OR' (false).
+     */
     protected bool $groupAnd;
 
+    /**
+     * Flag indicating if group operation has been processed.
+     */
     protected bool $groupOpProcessed;
 
+    /**
+     * Stores the assigned rule data for filtering subjects.
+     * Possible values: 'all', 'true', 'false', null
+     */
     protected mixed $assignedRuleData = null;
 
     /**
-     * SubjectService constructor.
+     * Service class for handling Subject model operations including CRUD operations, grid operations,
+     * expedition attachments/detachments, and complex query building.
      */
     public function __construct(public Subject $subject) {}
 
     /**
-     * Create.
+     * Creates a new Subject record in the database.
      *
-     * @return mixed
+     * @param  array  $data  The data to create the subject with
+     * @return mixed The created Subject model instance
      */
-    public function create(array $data)
+    public function create(array $data): mixed
     {
         return $this->subject->create($data);
     }
 
     /**
-     * Update.
+     * Updates an existing Subject record in the database.
      *
-     * @return \App\Models\Subject|bool
+     * @param  array  $data  The data to update the subject with
+     * @param  string|int  $resourceId  The ID of the subject to update
+     * @return \App\Models\Subject|bool Returns the updated Subject model on success, false on failure
      */
-    public function update(array $data, $resourceId)
+    public function update(array $data, $resourceId): bool|Subject
     {
-        $model = $this->subject->find($resourceId);
+        $model = $this->subject->skipCache()->find($resourceId);
         $result = $model->fill($data)->save();
 
         return $result ? $model : false;
     }
 
     /**
-     * Find.
+     * Finds a Subject record by its ID.
      *
-     * @return mixed
+     * @param  string  $id  The ID of the subject to find
+     * @return mixed The found Subject model instance or null if not found
      */
-    public function find(string $id)
+    public function find(string $id): mixed
     {
-        return $this->subject->find($id);
+        return $this->subject->skipCache()->find($id);
     }
 
     /**
-     * Get subjects where values are whereIn.
+     * Retrieves subjects where field values match any value in the given array.
      *
-     * @param  array|string[]  $columns
-     * @return mixed
+     * @param  string  $field  The field to check against
+     * @param  array  $values  Array of values to match against
+     * @param  array|string[]  $columns  The columns to retrieve
+     * @return mixed Collection of matching Subject models
      */
-    public function getWhereIn(string $field, array $values, array $columns = ['*'])
+    public function getWhereIn(string $field, array $values, array $columns = ['*']): mixed
     {
-        return $this->subject->whereIn($field, $values)->get($columns);
+        return $this->subject->skipCache()->whereIn($field, $values)->get($columns);
     }
 
     /**
-     * Find by expedition id.
+     * Finds all subjects associated with a specific expedition ID.
      *
-     * @param  array|string[]  $attributes
-     * @return array|mixed
+     * @param  int|string  $expeditionId  The expedition ID to search for
+     * @param  array|string[]  $attributes  The attributes to retrieve
+     * @return array|mixed Collection of Subject models belonging to the expedition
      */
     public function findByExpeditionId($expeditionId, array $attributes = ['*']): mixed
     {
-        return $this->subject->where('expedition_ids', $expeditionId)->get($attributes);
+        return $this->subject->skipCache()->where('expedition_ids', $expeditionId)->get($attributes);
     }
 
     /**
@@ -99,7 +117,7 @@ class SubjectService
      */
     public function getSubjectCursorForExport($expeditionId): LazyCollection
     {
-        return $this->subject->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])
+        return $this->subject->skipCache()->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])
             ->timeout(86400)->cursor();
     }
 
@@ -108,7 +126,7 @@ class SubjectService
      */
     public function getSubjectCursorForOcr(Project $project, ?Expedition $expedition = null): LazyCollection
     {
-        $query = $this->subject->where('project_id', $project->id);
+        $query = $this->subject->skipCache()->where('project_id', $project->id);
         $query = $expedition === null ? $query : $query->where('expedition_ids', $expedition->id);
 
         return $query->where(function ($q) {
@@ -121,7 +139,7 @@ class SubjectService
      */
     public function getSubjectCountForOcr(Project $project, ?Expedition $expedition = null): int
     {
-        $query = $this->subject->where('project_id', $project->id);
+        $query = $this->subject->skipCache()->where('project_id', $project->id);
         $query = $expedition === null ? $query : $query->where('expedition_ids', $expedition->id);
 
         return $query->where(function ($query) {
@@ -132,10 +150,10 @@ class SubjectService
     /**
      * Detach subjects from expedition.
      */
-    public function detachSubjects(Collection $subjectIds, int $expeditionId)
+    public function detachSubjects(Collection $subjectIds, int $expeditionId): void
     {
         $subjectIds->each(function ($subjectId) use ($expeditionId) {
-            $subject = $this->subject->find($subjectId);
+            $subject = $this->subject->skipCache()->find($subjectId);
             $subject->expedition_ids = collect($subject->expedition_ids)->filter(function ($value) use ($expeditionId) {
                 return $value != $expeditionId;
             })->unique()->toArray();
@@ -147,21 +165,13 @@ class SubjectService
     /**
      * Attach subjects to expedition.
      */
-    public function attachSubjects(Collection $subjectIds, int $expeditionId)
+    public function attachSubjects(Collection $subjectIds, int $expeditionId): void
     {
         $subjectIds->each(function ($subjectId) use ($expeditionId) {
-            $subject = $this->subject->find($subjectId);
+            $subject = $this->subject->skipCache()->find($subjectId);
             $subject->expedition_ids = collect($subject->expedition_ids)->push($expeditionId)->unique()->toArray();
             $subject->save();
         });
-    }
-
-    /**
-     * Cursor to delete unassigned by project id.
-     */
-    public function deleteUnassignedByProject(int $projectId): LazyCollection
-    {
-        return $this->subject->where('project_id', $projectId)->where('expedition_ids', 'size', 0)->cursor();
     }
 
     /**
@@ -186,9 +196,9 @@ class SubjectService
      *
      * @throws \Exception
      */
-    public function getGridTotalRowCount(array $vars = [])
+    public function getGridTotalRowCount(array $vars = []): int
     {
-        $count = $this->subject->whereNested(function ($query) use ($vars) {
+        $count = $this->subject->skipCache()->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true])->count();
 
@@ -212,9 +222,9 @@ class SubjectService
      *
      * @throws \Exception
      */
-    public function getGridRows(array $vars = [])
+    public function getGridRows(array $vars = []): array
     {
-        $query = $this->subject->whereNested(function ($query) use ($vars) {
+        $query = $this->subject->skipCache()->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true])->take($vars['limit'])->skip($vars['offset']);
 
@@ -238,7 +248,7 @@ class SubjectService
      */
     public function exportGridRows(array $vars): LazyCollection
     {
-        $query = $this->subject->with('occurrence')->whereNested(function ($query) use ($vars) {
+        $query = $this->subject->skipCache()->with('occurrence')->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true]);
 
@@ -252,7 +262,7 @@ class SubjectService
     /**
      * Build query for search.
      */
-    protected function buildQuery(&$query, $vars)
+    protected function buildQuery(&$query, $vars): void
     {
         $this->setGroupOp($vars['filters']);
 
@@ -271,25 +281,28 @@ class SubjectService
     /**
      * Set where for expedition ids depending on route.
      */
-    protected function setExpeditionWhere(&$query, $vars)
+    protected function setExpeditionWhere(&$query, $vars): void
     {
         // explore: Project Explore (show all)
         // show: Expedition Show page (show only assigned)
         // edit: Expedition edit (show all)
-        // create: Expedition create (show not assigned)
+        // create: Expedition create (show not assigned, unless assigned filter is 'all' or 'true')
         if ($vars['route'] === 'explore' || ($vars['route'] === 'edit' && $this->assignedRuleData === 'all')) {
             return;
         } elseif ($vars['route'] === 'show') {
             $this->setWhereIn($query, 'expedition_ids', [$vars['expeditionId']]);
         } elseif ($vars['route'] === 'create') {
-            $this->setWhere($query, 'expedition_ids', 'size', 0);
+            // Only filter for unassigned subjects if the assigned filter is not set to 'all' or 'true'
+            if ($this->assignedRuleData !== 'all' && $this->assignedRuleData !== 'true') {
+                $this->setWhere($query, 'expedition_ids', 'size', 0);
+            }
         }
     }
 
     /**
      * Handle the passed filters.
      */
-    protected function handleRules(&$query, $rules)
+    protected function handleRules(&$query, $rules): void
     {
         foreach ($rules as $rule) {
             if ($rule['field'] === 'assigned') {
@@ -334,7 +347,7 @@ class SubjectService
      *
      * 'eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'
      */
-    protected function buildWhere(&$query, $rule)
+    protected function buildWhere(&$query, $rule): void
     {
         switch ($rule['op']) {
             case 'bw':
@@ -392,18 +405,21 @@ class SubjectService
      * Filter for if subject is assigned to an expedition.
      * data = all, true, false
      */
-    protected function assignedRule(&$query, $rule)
+    protected function assignedRule(&$query, $rule): void
     {
-        $this->assignedRuleData = $rule['data'];
+        // Handle empty string as 'all' - no filtering needed
+        if ($rule['data'] === '' || $rule['data'] === 'all') {
+            $this->assignedRuleData = 'all';
 
-        if ($rule['data'] === 'all') {
             return;
         }
+
+        $this->assignedRuleData = $rule['data'];
 
         $this->setWhereForAssigned($query, $rule);
     }
 
-    protected function setWhereForAssigned(&$query, $rule)
+    protected function setWhereForAssigned(&$query, $rule): void
     {
         if ($rule['data'] === 'true') {
             $this->setWhereRaw($query, 'expedition_ids', ['$not' => ['$size' => 0]]);
@@ -412,10 +428,7 @@ class SubjectService
         }
     }
 
-    /**
-     * @return array
-     */
-    public function setOrderBy($orderBy, $sord)
+    public function setOrderBy($orderBy, $sord): array
     {
         $orderByRaw = [];
         if ($orderBy !== null) {
@@ -433,7 +446,7 @@ class SubjectService
     /**
      * If row has expeditionId, mark as checked
      */
-    protected function setRowCheckbox(&$rows)
+    protected function setRowCheckbox(&$rows): void
     {
         foreach ($rows as &$row) {
             $row['assigned'] = ! empty($row['expedition_ids']) ? 'Yes' : 'No';
@@ -445,7 +458,7 @@ class SubjectService
      *
      * @internal param $groupOp
      */
-    protected function setGroupOp($filters)
+    protected function setGroupOp($filters): void
     {
         $this->groupAnd = true;
 
@@ -457,7 +470,7 @@ class SubjectService
     /**
      * Set groupOp process
      */
-    protected function setGroupOpProcessed($bool = false)
+    protected function setGroupOpProcessed($bool = false): void
     {
         $this->groupOpProcessed = $bool;
     }
@@ -465,7 +478,7 @@ class SubjectService
     /**
      * Set where/orWhere clause for query
      */
-    protected function setWhere(&$query, $field, $operation, $data)
+    protected function setWhere(&$query, $field, $operation, $data): void
     {
         ($this->groupAnd || ! $this->groupOpProcessed) ? $query->where($field, $operation, $data) : $query->orWhere($field, $operation, $data);
 
@@ -475,7 +488,7 @@ class SubjectService
     /**
      * Set whereRaw/orWhereRaw for query
      */
-    protected function setWhereRaw(&$query, $field, $data)
+    protected function setWhereRaw(&$query, $field, $data): void
     {
         ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereRaw([$field => $data]) : $query->orWhereRaw([$field => $data]);
 
@@ -485,7 +498,7 @@ class SubjectService
     /**
      * Set whereIn/orWhereIn for query
      */
-    protected function setWhereIn(&$query, $field, $data)
+    protected function setWhereIn(&$query, $field, $data): void
     {
         ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereIn($field, $data) : $query->orWhereIn($field, $data);
 
@@ -495,7 +508,7 @@ class SubjectService
     /**
      * Set whereIn/orWhereIn for query
      */
-    protected function setWhereNotIn(&$query, $field, $data)
+    protected function setWhereNotIn(&$query, $field, $data): void
     {
         ($this->groupAnd || ! $this->groupOpProcessed) ? $query->whereNotIn($field, $data) : $query->orWhereNotIn($field, $data);
 
@@ -505,7 +518,7 @@ class SubjectService
     /**
      * Set whereNull/orWhereNull for query
      */
-    protected function setWhereNull(&$query, $field)
+    protected function setWhereNull(&$query, $field): void
     {
         ($this->groupAnd || ! $this->groupOpProcessed) ? $query->where($field, '') : $query->orWhere($field, '');
 
@@ -515,7 +528,7 @@ class SubjectService
     /**
      * Set whereNotNull/orWhereNotNull for query
      */
-    protected function setWhereNotNull(&$query, $field)
+    protected function setWhereNotNull(&$query, $field): void
     {
         ($this->groupAnd || ! $this->groupOpProcessed) ? $query->where($field, '!=', '') : $query->orWhere($field, '!=', '');
 

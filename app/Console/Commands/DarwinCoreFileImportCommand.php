@@ -20,7 +20,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\DwcFileImportJob;
+use App\Jobs\DwcBatchImportJob;
 use App\Models\Import;
 use Illuminate\Console\Command;
 
@@ -64,7 +64,7 @@ class DarwinCoreFileImportCommand extends Command
             return;
         }
 
-        DwcFileImportJob::dispatch($import);
+        DwcBatchImportJob::dispatch($import);
 
         echo 'Import added to Queue.'.PHP_EOL;
 

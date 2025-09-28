@@ -24,11 +24,21 @@ use App\Services\Project\HeaderService;
 
 /**
  * Class GridModel
+ *
+ * Handles the creation and configuration of jqGrid models for data display.
+ * This class manages grid column definitions, properties, and formatting
+ * for both main grids and subgrids.
  */
 class GridModel
 {
+    /**
+     * Default visible columns for the main grid
+     */
     private mixed $defaultGridVisible;
 
+    /**
+     * Default visible columns for the sub grid
+     */
     private mixed $defaultSubGridVisible;
 
     /**
@@ -43,7 +53,14 @@ class GridModel
     /**
      * Create the grid model.
      */
-    public function createGridModel(int $projectId): false|string
+    /**
+     * Create the grid model with column definitions and configurations.
+     *
+     * @param  int  $projectId  Project identifier
+     * @param  string|null  $route  Current route name
+     * @return false|string JSON encoded grid model configuration or false on failure
+     */
+    public function createGridModel(int $projectId, ?string $route = null): false|string
     {
         $result = $this->headerService->getFirst('project_id', $projectId);
 
@@ -58,15 +75,21 @@ class GridModel
             ];
         } else {
             $headers = $result->header;
+
+            // Ensure $headers['image'] is an array before using array_unshift
+            if (! isset($headers['image']) || ! is_array($headers['image'])) {
+                $headers['image'] = [];
+            }
+
             array_unshift($headers['image'], 'assigned', 'exported', 'expedition_ids', 'imageId');
             $headers['image'][] = 'ocr';
         }
 
         $colNames = $headers['image'];
-        $colModel = $this->setColModel($colNames);
+        $colModel = $this->setColModel($colNames, $route);
 
         $subColNames = isset($headers['occurrence']) ? $this->setColNames($headers['occurrence']) : [];
-        $subColModel = isset($headers['occurrence']) ? $this->setColModel($subColNames) : [];
+        $subColModel = isset($headers['occurrence']) ? $this->setColModel($subColNames, $route) : [];
 
         $colNamesResult = array_merge($colNames, $subColNames);
         $colModelResult = array_merge($colModel, $subColModel);
@@ -84,6 +107,12 @@ class GridModel
      *
      * @return array
      */
+    /**
+     * Set column names by prefixing fields with 'occurrence.'
+     *
+     * @param  array  $fields  List of field names
+     * @return array Modified column names
+     */
     public function setColNames($fields)
     {
         $names = [];
@@ -99,25 +128,27 @@ class GridModel
      *
      * @return array
      */
-    protected function setColModel($colNames)
+    protected function setColModel($colNames, ?string $route = null)
     {
         $colModel = [];
         foreach ($colNames as $column) {
-            $colModel[] = $this->formatGridColumn($column);
+            $colModel[] = $this->formatGridColumn($column, $route);
         }
 
         return $colModel;
     }
 
     /**
-     * Format the given column for grid model.
+     * Format a grid column with specific properties based on column type.
      *
-     * @return array
+     * @param  string  $column  Column name to format
+     * @param  string|null  $route  Current route name
+     * @return array Column configuration array
      */
-    protected function formatGridColumn($column)
+    protected function formatGridColumn($column, ?string $route = null): array
     {
         if ($column === 'assigned') {
-            return $this->buildAssigned();
+            return $this->buildAssigned($route);
         }
 
         if ($column === 'exported') {
@@ -143,11 +174,12 @@ class GridModel
 
     /**
      * Build expedition checkbox.
-     *
-     * @return array
      */
-    protected function buildAssigned()
+    protected function buildAssigned(?string $route = null): array
     {
+        // Set default value based on route - 'false' (No) for create/clone, 'all' for others
+        $defaultValue = ($route === 'create') ? 'false' : 'all';
+
         return [
             'name' => 'assigned',
             'index' => 'assigned',
@@ -156,7 +188,7 @@ class GridModel
             'hidedlg' => false,
             'stype' => 'select',
             'sortable' => false,
-            'searchoptions' => ['defaultValue' => 'all', 'sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No'],
+            'searchoptions' => ['defaultValue' => $defaultValue, 'sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No'],
         ];
     }
 
@@ -177,6 +209,13 @@ class GridModel
         ];
     }
 
+    /**
+     * Set default properties for a normal grid column.
+     *
+     * @param  string  $column  Column name
+     * @param  bool  $image  Whether the column is for image grid
+     * @return array Column properties
+     */
     protected function setNormalColumnProperties($column, $image = true)
     {
         $default = $image ? $this->defaultGridVisible : $this->defaultSubGridVisible;
@@ -194,6 +233,12 @@ class GridModel
         ];
     }
 
+    /**
+     * Define search operations available for a column.
+     *
+     * @param  string  $column  Column name
+     * @return array Search options configuration
+     */
     protected function searchOps($column)
     {
         if ($column === 'expedition_ids') {

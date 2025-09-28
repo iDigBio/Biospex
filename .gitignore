@@ -28,7 +28,6 @@ public/css/working.css
 /lang/.translation_io
 tests/_output/
 backups
-NOTES.txt
 Biospex
 
 chart-image.js
@@ -49,3 +48,4 @@ panoptes-pusher.js
 /.env
 /.env.*
 hooks
+/task.txt

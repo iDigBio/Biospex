@@ -42,9 +42,9 @@ class JavascriptService
     /**
      * Set model.
      */
-    private function setModel(Project $project): void
+    private function setModel(Project $project, ?string $route = null): void
     {
-        $this->model = $this->jqGridEncoder->loadGridModel($project->id);
+        $this->model = $this->jqGridEncoder->loadGridModel($project->id, $route);
     }
 
     /**
@@ -70,7 +70,7 @@ class JavascriptService
      */
     public function expeditionCreate(Project $project): void
     {
-        $this->setModel($project);
+        $this->setModel($project, 'create');
 
         $this->javascript->put([
             'model' => $this->model,
@@ -116,19 +116,6 @@ class JavascriptService
             'exportUrl' => route('admin.grids.expeditions.export', [$expedition]),
             'checkbox' => $expedition->workflowManager === null,
             'route' => 'edit', // used for export
-        ]);
-    }
-
-    /**
-     * Show project.
-     */
-    public function projectShow(Project $project): void
-    {
-        $this->javascript->put([
-            'max' => $max,
-            'states' => $states->toJson(),
-            'years' => $years,
-            'project' => $project->id,
         ]);
     }
 }

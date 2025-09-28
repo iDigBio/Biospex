@@ -109,6 +109,14 @@ return [
         ],
     ],
 
+    /**
+     * Darwin Core import thresholds for memory management
+     */
+    'dwc_import_thresholds' => [
+        'file_size_mb' => env('DWC_FILE_SIZE_THRESHOLD_MB', 30),
+        'row_count' => env('DWC_ROW_COUNT_THRESHOLD', 25000),
+    ],
+
     'dwcTranscriptFields' => [
         'stateProvince' => 'state_province',
         'StateProvince' => 'state_province',
@@ -129,6 +137,10 @@ return [
         'County' => 'county',
     ],
 
+    'darwin_core' => [
+        'use_batch_processing' => env('DWC_USE_BATCH_PROCESSING', false),
+    ],
+
     /* Beanstalk Queues */
     'queue' => [
         'custom_procs' => env('QUEUE_CUSTOM_PROCS'),
@@ -140,6 +152,7 @@ return [
         'export' => env('QUEUE_EXPORT'),
         'geolocate' => env('QUEUE_GEOLOCATE'),
         'import' => env('QUEUE_IMPORT'),
+        'ocr' => env('QUEUE_OCR'),
         'lambda_ocr' => env('QUEUE_LAMBDA_OCR'),
         'biospex_event' => env('QUEUE_BIOSPEX_EVENT'),
         'pusher_classification' => env('QUEUE_PUSHER_CLASSIFICATION'),
@@ -222,6 +235,7 @@ return [
         'QUEUE_EVENT',
         'QUEUE_GEOLOCATE',
         'QUEUE_IMPORT',
+        'QUEUE_OCR',
         'QUEUE_EXPORT',
         'QUEUE_RECONCILE',
         'QUEUE_SNS_IMAGE_EXPORT',

@@ -21,7 +21,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\DwcFileImportJob;
+use App\Jobs\DwcBatchImportJob;
 use App\Models\Import;
 use Auth;
 use Redirect;
@@ -45,7 +45,7 @@ class ImportDwcFileController extends Controller
                 'file' => $path,
             ]);
 
-            DwcFileImportJob::dispatch($import);
+            DwcBatchImportJob::dispatch($import);
 
             return Redirect::back()
                 ->with('success', t('Upload was successful. You will receive an email when your import data have been processed.'));

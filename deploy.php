@@ -97,7 +97,10 @@ task('deploy', [
     'artisan:event:cache',     // Cache event listeners
     'artisan:optimize',        // Run Laravel optimization
 
-    // Phase 6: Queue Safety & Finalization
+    // Phase 6: OpCache Management (Production Only)
+    'opcache:reset-production', // Reset OpCache after deployment (production only)
+
+    // Phase 7: Queue Safety & Finalization
     'queue:check',             // Check active jobs before queue restart (SAFE: prevents job interruption)
     'set:permissions',         // Set proper file permissions
     'deploy:publish',          // Switch to new release (atomic deployment)
