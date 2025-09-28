@@ -152,6 +152,7 @@ return [
         'export' => env('QUEUE_EXPORT'),
         'geolocate' => env('QUEUE_GEOLOCATE'),
         'import' => env('QUEUE_IMPORT'),
+        'ocr' => env('QUEUE_OCR'),
         'lambda_ocr' => env('QUEUE_LAMBDA_OCR'),
         'biospex_event' => env('QUEUE_BIOSPEX_EVENT'),
         'pusher_classification' => env('QUEUE_PUSHER_CLASSIFICATION'),

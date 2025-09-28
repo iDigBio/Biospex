@@ -108,7 +108,7 @@ jobs:
         run: |
           gh release create "${{ steps.new_version.outputs.new_version }}" \
             --title "Release ${{ steps.new_version.outputs.new_version }}" \
-            --notes "$(cat <<'EOF'
+            --notes "$(cat <<EOF
           ## What's Changed
 
           Auto-generated release from main branch.
