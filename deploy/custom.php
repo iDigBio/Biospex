@@ -68,26 +68,6 @@ task('set:permissions', function () {
 
 /*
  * =============================================================================
- * LEGACY BUILD TASKS (NOT USED IN OPTION 1 - CI/CD ARTIFACTS)
- * =============================================================================
- * These tasks are kept for reference but not used in the main deployment sequence.
- * Option 1 uses pre-built assets from GitHub Actions instead.
- */
-
-desc('[LEGACY] Install project dependencies - NOT USED IN OPTION 1');
-task('yarn:run-install', function () {
-    cd('{{release_or_current_path}}');
-    run('yarn install --frozen-lockfile --ignore-engines');  // Server-side dependency installation
-});
-
-desc('[LEGACY] Build project dependencies - NOT USED IN OPTION 1');
-task('npm:run-build', function () {
-    cd('{{release_or_current_path}}');
-    run('npm run production');  // Server-side asset compilation
-});
-
-/*
- * =============================================================================
  * SUPERVISOR PROCESS MANAGEMENT
  * =============================================================================
  */
