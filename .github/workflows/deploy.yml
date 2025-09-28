@@ -115,7 +115,7 @@ jobs:
 
           **Commits included:**
           \`\`\`
-          ${COMMIT_MESSAGE}
+          $COMMIT_MESSAGE
           \`\`\`
 
           **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.version_bump.outputs.current_version }}...${{ steps.new_version.outputs.new_version }}
