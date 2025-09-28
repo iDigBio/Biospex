@@ -37,7 +37,7 @@ class ImportOccurrence extends Model
     /**
      * The collection associated with the model.
      */
-    protected $collection = 'import_occurrence';
+    protected $collection = 'import_occurrences';
 
     /**
      * The attributes that are mass assignable.

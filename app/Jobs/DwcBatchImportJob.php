@@ -21,6 +21,7 @@
 namespace App\Jobs;
 
 use App\Models\Import;
+use App\Models\Subject;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use App\Services\DarwinCore\DwcBatchProcessor;
@@ -132,6 +133,37 @@ class DwcBatchImportJob implements ShouldQueue
             'attempt' => $this->safeGetAttempts(),
         ]);
 
+        // Check if this import is already being processed or completed
+        $this->import->refresh();
+        if ($this->import->processing == 1) {
+            Log::warning('Import already being processed, skipping duplicate execution', [
+                'import_id' => $this->import->id,
+                'attempt' => $this->safeGetAttempts(),
+            ]);
+            $this->delete();
+
+            return;
+        }
+
+        // Check if import was already completed successfully (no error and no processing flag)
+        if ($this->import->error == 0 && $this->import->processing == 0) {
+            $existingSubjects = Subject::where('project_id', $this->import->project_id)->count();
+            if ($existingSubjects > 0) {
+                Log::warning('Import appears to be already completed, skipping duplicate execution', [
+                    'import_id' => $this->import->id,
+                    'existing_subjects' => $existingSubjects,
+                    'attempt' => $this->safeGetAttempts(),
+                ]);
+                $this->import->delete();
+                $this->delete();
+
+                return;
+            }
+        }
+
+        // Mark as processing to prevent duplicate execution
+        $this->import->update(['processing' => 1, 'error' => 0]);
+
         try {
             // Create scratch directory with proper permissions
             $this->makeDirectory($scratchFileDir);
@@ -165,6 +197,8 @@ class DwcBatchImportJob implements ShouldQueue
                 'processing_time' => $processingTime.'s',
             ]);
 
+            // Mark processing as complete before deletion
+            $this->import->update(['processing' => 0]);
             $this->import->delete();
             $this->delete();
 
@@ -189,8 +223,9 @@ class DwcBatchImportJob implements ShouldQueue
                 'trace' => $exception->getTraceAsString(),
             ]);
 
-            // Mark import as failed
+            // Mark import as failed and reset processing flag
             $this->import->error = 1;
+            $this->import->processing = 0;
             $this->import->save();
 
         } catch (Throwable $failureException) {
@@ -204,6 +239,7 @@ class DwcBatchImportJob implements ShouldQueue
             // Still try to mark import as failed if possible
             try {
                 $this->import->error = 1;
+                $this->import->processing = 0;
                 $this->import->save();
             } catch (Throwable $saveException) {
                 Log::critical('Unable to save import failure state', [
@@ -381,9 +417,21 @@ class DwcBatchImportJob implements ShouldQueue
         if ($attemptCount >= $this->tries || $attemptCount === -1) {
             try {
                 $this->import->error = 1;
+                $this->import->processing = 0;
                 $this->import->save();
             } catch (Throwable $saveException) {
                 Log::error('Failed to mark import as failed', [
+                    'import_id' => $this->import->id,
+                    'save_error' => $saveException->getMessage(),
+                ]);
+            }
+        } else {
+            // Reset processing flag for retry
+            try {
+                $this->import->processing = 0;
+                $this->import->save();
+            } catch (Throwable $saveException) {
+                Log::error('Failed to reset processing flag for retry', [
                     'import_id' => $this->import->id,
                     'save_error' => $saveException->getMessage(),
                 ]);

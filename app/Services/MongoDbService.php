@@ -20,6 +20,7 @@
 
 namespace App\Services;
 
+use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
 use Illuminate\Database\DatabaseManager;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
@@ -150,7 +151,7 @@ class MongoDbService
         return AutoCacheHelper::remember($key, 1800, function () use ($query) {
             $result = $this->clientCollection->findOne($query);
 
-            return $result ? $result->toArray() : null;
+            return $result?->toArray();
         }, $tags);
     }
 

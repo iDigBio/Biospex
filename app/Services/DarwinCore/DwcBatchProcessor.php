@@ -28,6 +28,7 @@ use App\Services\Project\HeaderService;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use MongoDB\BSON\ObjectId;
+use MongoDB\Driver\WriteConcern;
 
 /**
  * Darwin Core Batch Processor
@@ -37,7 +38,7 @@ use MongoDB\BSON\ObjectId;
  */
 class DwcBatchProcessor
 {
-    private const BATCH_SIZE = 1000;
+    private const BATCH_SIZE = 5000;
 
     private array $duplicates = [];
 
@@ -412,7 +413,7 @@ class DwcBatchProcessor
     }
 
     /**
-     * Process a batch of media rows.
+     * Process a batch of media rows with optimized batch operations.
      */
     protected function processBatch(
         array $batch,
@@ -432,19 +433,31 @@ class DwcBatchProcessor
             return;
         }
 
+        // For MongoDB-based occurrence data, collect all occurrence IDs and batch lookup
+        $batchedOccurrences = [];
+        if (is_string($occurrenceData) && ! $mediaIsCore) {
+            $occurrenceIds = [];
+            foreach ($validationResult['valid'] as $row) {
+                $occurrenceId = $row[$header[0]] ?? null;
+                if ($occurrenceId) {
+                    $occurrenceIds[] = $occurrenceId;
+                }
+            }
+            $batchedOccurrences = $this->batchLookupOccurrences($occurrenceIds);
+        }
+
         // Build subjects for valid records
         $subjects = [];
         foreach ($validationResult['valid'] as $row) {
-            $subject = $this->buildSubject($row, $header, $projectId, $occurrenceData, $mediaIsCore);
+            $subject = $this->buildSubject($row, $header, $projectId, $occurrenceData, $mediaIsCore, $batchedOccurrences);
             if ($subject) {
                 $subjects[] = $subject;
             }
         }
 
         if (! empty($subjects)) {
-            // Bulk insert subjects
+            // Bulk insert subjects (subjectCount is updated within the method)
             $this->bulkInsertSubjects($subjects);
-            $this->subjectCount += count($subjects);
 
             Log::debug('Processed batch', [
                 'valid_records' => count($validationResult['valid']),
@@ -462,7 +475,8 @@ class DwcBatchProcessor
         array $header,
         int $projectId,
         array|string $occurrenceData,
-        bool $mediaIsCore
+        bool $mediaIsCore,
+        array $batchedOccurrences = []
     ): ?array {
         try {
             // Get occurrence ID for lookup (first column in media file points to occurrence ID)
@@ -487,11 +501,21 @@ class DwcBatchProcessor
                         $occurrence = ['occurrence' => ['id' => (string) $occurrenceId]];
                     }
                 } elseif (is_string($occurrenceData)) {
-                    // MongoDB-based lookup using import session ID
-                    $occurrenceRecord = ImportOccurrence::findByOccurrenceId($occurrenceId, $occurrenceData);
-                    if ($occurrenceRecord) {
-                        $occurrence = ['occurrence' => $occurrenceRecord];
-                    } elseif (! $mediaIsCore) {
+                    // Use batched occurrences if available, otherwise fallback to individual lookup
+                    if (! empty($batchedOccurrences) && isset($batchedOccurrences[$occurrenceId])) {
+                        $occurrence = ['occurrence' => $batchedOccurrences[$occurrenceId]];
+                    } else {
+                        // Fallback to individual lookup for backward compatibility
+                        $occurrenceRecord = ImportOccurrence::findByOccurrenceId($occurrenceId, $occurrenceData);
+                        if ($occurrenceRecord) {
+                            $occurrence = ['occurrence' => $occurrenceRecord];
+                        } elseif (! $mediaIsCore) {
+                            $occurrence = ['occurrence' => ['id' => (string) $occurrenceId]];
+                        }
+                    }
+
+                    // If no occurrence found, create minimal occurrence record
+                    if (empty($occurrence) && ! $mediaIsCore) {
                         $occurrence = ['occurrence' => ['id' => (string) $occurrenceId]];
                     }
                 }
@@ -519,15 +543,20 @@ class DwcBatchProcessor
     }
 
     /**
-     * Bulk insert subjects using MongoDB operations.
+     * Bulk insert subjects using MongoDB operations with optimized write concern.
      */
     private function bulkInsertSubjects(array $subjects): void
     {
         try {
-            // Use MongoDB bulk operations for efficiency
+            // Use MongoDB bulk operations with optimized write concern for speed
             Subject::raw(function ($collection) use ($subjects) {
-                return $collection->insertMany($subjects);
+                return $collection->insertMany($subjects, [
+                    'writeConcern' => new WriteConcern(0), // Fire and forget for speed
+                    'ordered' => false, // Allow parallel processing
+                ]);
             });
+
+            $this->subjectCount += count($subjects);
 
         } catch (Exception $e) {
             Log::error('Bulk insert failed', [
@@ -550,6 +579,27 @@ class DwcBatchProcessor
                 }
             }
         }
+    }
+
+    /**
+     * Batch lookup occurrences to reduce individual database queries.
+     */
+    private function batchLookupOccurrences(array $occurrenceIds): array
+    {
+        if (empty($occurrenceIds)) {
+            return [];
+        }
+
+        $occurrences = [];
+        $occurrenceResults = ImportOccurrence::where('import_session_id', $this->importSessionId)
+            ->whereIn('occurrence_id', array_unique($occurrenceIds))
+            ->get();
+
+        foreach ($occurrenceResults as $occ) {
+            $occurrences[$occ->occurrence_id] = $occ->data;
+        }
+
+        return $occurrences;
     }
 
     /**
