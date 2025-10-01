@@ -23,8 +23,8 @@ namespace App\Console\Commands;
 use App\Models\Expedition;
 use App\Models\Profile;
 use App\Models\Project;
-use App\Models\ProjectResource;
-use App\Models\Resource;
+use App\Models\ProjectAsset;
+use App\Models\SiteAsset;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
@@ -79,7 +79,7 @@ class CleanupOrphanedS3UploadFiles extends Command
         ];
 
         // UUID-based directories are no longer used after migration
-        // // Also check project-specific resource directories (UUID-based)
+        // // Also check project-specific asset directories (UUID-based)
         // $projectUuids = \App\Models\Project::pluck('uuid')->toArray();
         // foreach ($projectUuids as $uuid) {
         //     $directories[] = config('config.uploads.project_resources_base')."/{$uuid}";
@@ -137,15 +137,15 @@ class CleanupOrphanedS3UploadFiles extends Command
             ->toArray();
         $referencedFiles = array_merge($referencedFiles, $profileAvatars);
 
-        // Project resource downloads
-        $projectResourceDownloads = ProjectResource::whereNotNull('download_path')
+        // Project site-asset downloads
+        $projectResourceDownloads = ProjectAsset::whereNotNull('download_path')
             ->pluck('download_path')
             ->filter()
             ->toArray();
         $referencedFiles = array_merge($referencedFiles, $projectResourceDownloads);
 
         // Resource documents
-        $resourceDocuments = Resource::whereNotNull('download_path')
+        $resourceDocuments = SiteAsset::whereNotNull('download_path')
             ->pluck('download_path')
             ->filter()
             ->toArray();

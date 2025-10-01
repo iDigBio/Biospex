@@ -16,23 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { LivewireFileUploadHandler } from './file-upload-handler.js';
+import {LivewireFileUploadHandler} from './file-upload-handler.js';
 
 /**
  * Project Manager - handles Project-specific file uploads
- * Manages both project logo uploads and project resource downloads
+ * Manages both project logo uploads and project asset downloads
  */
 export class ProjectManager extends LivewireFileUploadHandler {
     constructor(options = {}) {
         const defaultOptions = {
             modelType: 'Project',
             supportedFields: ['logo'],
-            resourceModelType: 'ProjectResource',
+            resourceModelType: 'ProjectAsset',
             resourceFieldPrefix: 'download_',
             debug: false
         };
-        
-        super({ ...defaultOptions, ...options });
+
+        super({...defaultOptions, ...options});
         this.log('ProjectManager initialized');
     }
 
@@ -45,13 +45,13 @@ export class ProjectManager extends LivewireFileUploadHandler {
         }
 
         // Handle Project logo uploads
-        if (data.modelType === this.options.modelType && 
+        if (data.modelType === this.options.modelType &&
             this.options.supportedFields.includes(data.fieldName)) {
             return true;
         }
 
-        // Handle ProjectResource download uploads
-        if (data.modelType === this.options.resourceModelType && 
+        // Handle ProjectAsset download uploads
+        if (data.modelType === this.options.resourceModelType &&
             data.fieldName.startsWith(this.options.resourceFieldPrefix)) {
             return true;
         }
@@ -76,12 +76,12 @@ export class ProjectManager extends LivewireFileUploadHandler {
     handleProjectUpload(data) {
         if (data.fieldName === 'logo') {
             this.log('Processing project logo upload:', data.filePath);
-            
+
             if (this.updateHiddenField('logo_path', data.filePath)) {
                 this.dispatchUpdateEvent('logoPathUpdated', {
                     filePath: data.filePath
                 });
-                
+
                 // Set up polling fallback for logo path changes
                 this.setupLogoPathPolling();
             }
@@ -89,25 +89,25 @@ export class ProjectManager extends LivewireFileUploadHandler {
     }
 
     /**
-     * Handle project resource download uploads
+     * Handle project asset download uploads
      */
     handleResourceUpload(data) {
         if (data.fieldName.startsWith(this.options.resourceFieldPrefix)) {
-            // Extract the resource index from fieldName (e.g., 'download_0' -> '0')
+            // Extract the project asset index from fieldName (e.g., 'download_0' -> '0')
             const resourceIndex = data.fieldName.replace(this.options.resourceFieldPrefix, '');
             const hiddenFieldId = `resources[${resourceIndex}][download_path]`;
             const hiddenFieldName = `resources[${resourceIndex}][download_path]`;
 
-            this.log('Processing project resource download upload for index:', resourceIndex);
+            this.log('Processing project asset download upload for index:', resourceIndex);
 
             // Find the appropriate fieldset to append the hidden field if needed
             const fieldsets = document.querySelectorAll('fieldset');
             const parentElement = fieldsets[resourceIndex] || null;
 
             const hiddenField = this.createHiddenField(
-                hiddenFieldId, 
-                hiddenFieldName, 
-                data.filePath, 
+                hiddenFieldId,
+                hiddenFieldName,
+                data.filePath,
                 parentElement
             );
 
@@ -129,7 +129,7 @@ export class ProjectManager extends LivewireFileUploadHandler {
         }
 
         let lastKnownLogoPath = document.getElementById('logo_path')?.value || '';
-        
+
         this.pollingInterval = setInterval(() => {
             const logoPathField = document.getElementById('logo_path');
             if (logoPathField) {
@@ -162,7 +162,7 @@ export class ProjectManager extends LivewireFileUploadHandler {
      */
     init() {
         this.setupFormHandling();
-        
+
         // Listen for confirmation events
         document.addEventListener('logoPathUpdated', (event) => {
             this.log('Logo path updated confirmation:', event.detail);

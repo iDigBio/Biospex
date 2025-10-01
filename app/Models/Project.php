@@ -281,7 +281,7 @@ class Project extends BaseEloquentModel
      */
     public function resources()
     {
-        return $this->hasMany(ProjectResource::class);
+        return $this->hasMany(ProjectAsset::class);
     }
 
     /**

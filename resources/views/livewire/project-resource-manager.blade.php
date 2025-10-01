@@ -56,7 +56,7 @@
                 </div>
                 <div class="col-6 mt-2 mx-auto">
                     @livewire('file-upload', [
-                        'modelType' => 'ProjectResource', 
+                        'modelType' => 'ProjectAsset',
                         'fieldName' => 'download_' . $index, 
                         'maxSize' => 10240, 
                         'allowedTypes' => ['txt', 'doc', 'docx', 'csv', 'pdf'], 

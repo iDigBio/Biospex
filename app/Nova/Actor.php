@@ -40,7 +40,7 @@ class Actor extends Resource
     public static $model = \App\Models\Actor::class;
 
     /**
-     * The single value that should be used to represent the resource when being displayed.
+     * The single value that should be used to represent the actor when being displayed.
      *
      * @var string
      */
@@ -57,7 +57,7 @@ class Actor extends Resource
     ];
 
     /**
-     * Get the displayable label of the resource.
+     * Get the displayable label of the actor.
      *
      * @return string
      */
@@ -67,7 +67,7 @@ class Actor extends Resource
     }
 
     /**
-     * Get the displayable singular label of the resource.
+     * Get the displayable singular label of the actor.
      *
      * @return string
      */
@@ -77,7 +77,7 @@ class Actor extends Resource
     }
 
     /**
-     * Get the fields displayed by the resource.
+     * Get the fields displayed by the actor.
      *
      * @return array
      */
@@ -102,7 +102,7 @@ class Actor extends Resource
     }
 
     /**
-     * Get the filters available for the resource.
+     * Get the filters available for the actor.
      *
      * @return array
      */
@@ -112,7 +112,7 @@ class Actor extends Resource
     }
 
     /**
-     * Get the lenses available for the resource.
+     * Get the lenses available for the actor.
      *
      * @return array
      */
@@ -122,7 +122,7 @@ class Actor extends Resource
     }
 
     /**
-     * Get the actions available for the resource.
+     * Get the actions available for the actor.
      *
      * @return array
      */

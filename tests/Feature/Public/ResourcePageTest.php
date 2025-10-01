@@ -18,38 +18,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Models\Resource;
+use App\Models\SiteAsset;
 
-describe('Resource Page Basic Tests', function () {
-    it('displays the resource page successfully', function () {
-        $response = $this->get(route('front.resources.index'));
+describe('SiteAsset Page Basic Tests', function () {
+    it('displays the site-asset page successfully', function () {
+        $response = $this->get(route('front.site-assets.index'));
 
         $response->assertStatus(200);
     });
 
-    it('returns the correct view for resource page', function () {
-        $response = $this->get(route('front.resources.index'));
+    it('returns the correct view for site-asset page', function () {
+        $response = $this->get(route('front.site-assets.index'));
 
-        $response->assertViewIs('front.resource.index');
+        $response->assertViewIs('front.site-asset.index');
     });
 });
 
-describe('Resource Content Tests', function () {
-    it('displays resource titles when available', function () {
-        Resource::factory()->count(3)->create();
-        $titles = Resource::all()->pluck('title')->toArray();
+describe('SiteAsset Content Tests', function () {
+    it('displays site-asset titles when available', function () {
+        SiteAsset::factory()->count(3)->create();
+        $titles = SiteAsset::all()->pluck('title')->toArray();
 
-        $response = $this->get(route('front.resources.index'));
+        $response = $this->get(route('front.site-assets.index'));
 
         foreach ($titles as $title) {
             $response->assertSee($title);
         }
     });
 
-    it('displays resource content when available', function () {
-        $resources = Resource::factory()->count(2)->create();
+    it('displays site-asset content when available', function () {
+        $resources = SiteAsset::factory()->count(2)->create();
 
-        $response = $this->get(route('front.resources.index'));
+        $response = $this->get(route('front.site-assets.index'));
 
         foreach ($resources as $resource) {
             $response->assertSee($resource->title);

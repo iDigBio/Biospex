@@ -21,7 +21,7 @@
 namespace App\Services\Project;
 
 use App\Models\Project;
-use App\Models\ProjectResource;
+use App\Models\ProjectAsset;
 use App\Models\User;
 use App\Services\Helpers\CountService;
 use App\Services\Helpers\DateService;
@@ -38,7 +38,7 @@ class ProjectService
      */
     public function __construct(
         protected Project $project,
-        protected ProjectResource $projectResource,
+        protected ProjectAsset $projectAsset,
         protected CountService $countService,
         protected DateService $dateService,
     ) {}
@@ -85,7 +85,7 @@ class ProjectService
         $resources = collect($data['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
         })->map(function ($resource) {
-            return $this->projectResource::make($resource);
+            return $this->projectAsset::make($resource);
         });
 
         $project->resources()->saveMany($resources->all());
@@ -123,7 +123,7 @@ class ProjectService
         })->reject(function ($resource) {
             return ! empty($resource['id']) && $this->updateProjectResource($resource);
         })->map(function ($resource) {
-            return $this->projectResource::make($resource);
+            return $this->projectAsset::make($resource);
         });
 
         if ($resources->isEmpty()) {
@@ -296,7 +296,7 @@ class ProjectService
         }
 
         if (strtolower($resource['type']) === 'delete') {
-            ProjectResource::destroy($resource['id']);
+            ProjectAsset::destroy($resource['id']);
 
             return true;
         }
@@ -309,7 +309,7 @@ class ProjectService
      */
     public function updateProjectResource($resource): bool
     {
-        $record = ProjectResource::find($resource['id']);
+        $record = ProjectAsset::find($resource['id']);
         $record->type = $resource['type'];
         $record->name = $resource['name'];
         $record->description = $resource['description'];

@@ -98,6 +98,7 @@ task('deploy', [
     'artisan:view:cache',      // Cache Blade templates
     'artisan:event:cache',     // Cache event listeners
     'artisan:optimize',        // Run Laravel optimization
+    'artisan:filament:optimize',   // Optimize Filament resources and assets
 
     // Phase 6: OpCache Management (Production Only)
     'opcache:reset-production', // Reset OpCache after deployment (production only)

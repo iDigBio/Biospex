@@ -17,7 +17,7 @@
                 <a class="dropdown-item text-uppercase" href="{{ route('front.teams.index') }}">{{ t('Team') }}</a>
                 <a class="dropdown-item text-uppercase" href="{{ route('front.faqs.index') }}">{{ t('FAQ') }}</a>
                 <a class="dropdown-item text-uppercase"
-                   href="{{ route('front.resources.index') }}">{{ t('Resources') }}</a>
+                   href="{{ route('front.site-assets.index') }}">{{ t('Resources') }}</a>
             </div>
         </li>
         <li class="nav-item active">

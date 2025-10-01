@@ -178,6 +178,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\BiospexServiceProvider::class,
         App\Providers\ImageServiceProvider::class,
+        App\Providers\AutoCacheFilamentServiceProvider::class,
     ],
 
     /*
