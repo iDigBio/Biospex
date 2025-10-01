@@ -55,13 +55,15 @@ set('clear_paths', [
 host('production')
     ->set('hostname', '3.142.169.134')
     ->set('deploy_path', '{{base_path}}/biospex')
-    ->set('branch', 'main');
+    ->set('branch', 'main')
+    ->set('domain_name', 'biospex');
 
 // Development: development branch → /data/web/dev.biospex
 host('development')
     ->set('hostname', '3.142.169.134')
     ->set('deploy_path', '{{base_path}}/dev.biospex')
-    ->set('branch', 'development');
+    ->set('branch', 'development')
+    ->set('domain_name', 'dev-biospex');
 
 /*
  * DEPLOYMENT TASK SEQUENCE - CI/CD Option 1 Implementation
@@ -100,10 +102,11 @@ task('deploy', [
     // Phase 6: OpCache Management (Production Only)
     'opcache:reset-production', // Reset OpCache after deployment (production only)
 
-    // Phase 7: Queue Safety & Finalization
-    'queue:check',             // Check active jobs before queue restart (SAFE: prevents job interruption)
-    'set:permissions',         // Set proper file permissions
-    'deploy:publish',          // Switch to new release (atomic deployment)
+    // Phase 7: Domain-Specific Supervisor Management
+    'supervisor:reload',               // Update configs only
+    'supervisor:restart-domain-safe',  // Check queues + restart domain processes
+    'set:permissions',
+    'deploy:publish',
 ]);
 
 // Hooks

@@ -6,6 +6,7 @@ return [
     'app_current_path' => env('APP_CURRENT_PATH'),
     'app_server_user' => env('APP_SERVER_USER'),
     'app_registration' => env('APP_REGISTRATION'),
+    'supervisor_group' => env('SUPERVISOR_GROUP'), // For supervisor: biospex, dev-biospex
 
     'db_log' => env('DB_LOG', false),
 
@@ -251,5 +252,6 @@ return [
         'QUEUE_SERNEC_FILE',
         'QUEUE_SERNEC_ROW',
         'REVERB_DEBUG',
+        'SUPERVISOR_GROUP',
     ],
 ];
