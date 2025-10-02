@@ -40,8 +40,6 @@ class SiteAssetResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFolder;
 
-    protected static ?string $recordTitleAttribute = 'title';
-
     public static function form(Schema $schema): Schema
     {
         return SiteAssetForm::configure($schema);

@@ -22,8 +22,6 @@ class EventTranscriptionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Event Transcription';
-
     public static function form(Schema $schema): Schema
     {
         return EventTranscriptionForm::configure($schema);

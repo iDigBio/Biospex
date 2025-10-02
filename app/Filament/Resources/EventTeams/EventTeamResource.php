@@ -22,8 +22,6 @@ class EventTeamResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Event Team';
-
     public static function form(Schema $schema): Schema
     {
         return EventTeamForm::configure($schema);

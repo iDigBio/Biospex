@@ -22,8 +22,6 @@ class ExpeditionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Expedition';
-
     public static function form(Schema $schema): Schema
     {
         return ExpeditionForm::configure($schema);

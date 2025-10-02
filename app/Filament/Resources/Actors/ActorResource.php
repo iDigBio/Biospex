@@ -22,8 +22,6 @@ class ActorResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Actor';
-
     public static function form(Schema $schema): Schema
     {
         return ActorForm::configure($schema);

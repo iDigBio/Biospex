@@ -22,8 +22,6 @@ class GroupResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Group';
-
     public static function form(Schema $schema): Schema
     {
         return GroupForm::configure($schema);

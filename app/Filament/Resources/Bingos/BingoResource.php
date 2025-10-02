@@ -22,8 +22,6 @@ class BingoResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Bingo';
-
     public static function form(Schema $schema): Schema
     {
         return BingoForm::configure($schema);

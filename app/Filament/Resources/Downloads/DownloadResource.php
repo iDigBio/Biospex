@@ -22,8 +22,6 @@ class DownloadResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Download';
-
     public static function form(Schema $schema): Schema
     {
         return DownloadForm::configure($schema);

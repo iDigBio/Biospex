@@ -22,8 +22,6 @@ class ActorContactResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Actor Contact';
-
     public static function form(Schema $schema): Schema
     {
         return ActorContactForm::configure($schema);
