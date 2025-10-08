@@ -16,9 +16,6 @@ class WeDigBioEventsTable
     {
         return $table
             ->columns([
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable(),
                 TextColumn::make('start_date')
                     ->dateTime()
                     ->sortable(),

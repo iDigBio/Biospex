@@ -15,15 +15,14 @@ class DownloadsTable
     {
         return $table
             ->columns([
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable(),
                 TextColumn::make('expedition.title')
                     ->searchable(),
                 TextColumn::make('actor.title')
                     ->searchable(),
                 TextColumn::make('file')
-                    ->searchable(),
+                    ->searchable()
+                    ->url(fn ($record) => $record->present()->downloadType())
+                    ->openUrlInNewTab(),
                 TextColumn::make('type')
                     ->searchable(),
                 TextColumn::make('created_at')

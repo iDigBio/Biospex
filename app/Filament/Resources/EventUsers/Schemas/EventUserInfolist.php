@@ -11,8 +11,6 @@ class EventUserInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('uuid')
-                    ->label('UUID'),
                 TextEntry::make('nfn_user'),
                 TextEntry::make('created_at')
                     ->dateTime()

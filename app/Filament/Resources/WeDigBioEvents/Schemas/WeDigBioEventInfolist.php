@@ -12,8 +12,6 @@ class WeDigBioEventInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('uuid')
-                    ->label('UUID'),
                 TextEntry::make('start_date')
                     ->dateTime(),
                 TextEntry::make('end_date')

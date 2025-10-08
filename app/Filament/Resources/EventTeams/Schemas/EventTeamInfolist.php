@@ -11,8 +11,6 @@ class EventTeamInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('uuid')
-                    ->label('UUID'),
                 TextEntry::make('event.title')
                     ->label('Event'),
                 TextEntry::make('title')

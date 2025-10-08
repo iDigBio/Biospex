@@ -11,9 +11,6 @@ class EventUserForm
     {
         return $schema
             ->components([
-                TextInput::make('uuid')
-                    ->label('UUID')
-                    ->required(),
                 TextInput::make('nfn_user')
                     ->required(),
             ]);

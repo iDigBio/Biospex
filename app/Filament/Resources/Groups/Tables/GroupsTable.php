@@ -15,9 +15,6 @@ class GroupsTable
     {
         return $table
             ->columns([
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable(),
                 TextColumn::make('user_id')
                     ->numeric()
                     ->sortable(),

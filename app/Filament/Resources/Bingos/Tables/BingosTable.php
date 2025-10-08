@@ -15,18 +15,13 @@ class BingosTable
     {
         return $table
             ->columns([
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable(),
-                TextColumn::make('user.id')
-                    ->searchable(),
+                TextColumn::make('user_name')
+                    ->label('User Name')
+                    ->getStateUsing(fn ($record) => $record->user?->getFilamentName())
+                    ->searchable(['user.profile.first_name', 'user.profile.last_name']),
                 TextColumn::make('project.title')
                     ->searchable(),
                 TextColumn::make('title')
-                    ->searchable(),
-                TextColumn::make('directions')
-                    ->searchable(),
-                TextColumn::make('contact')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

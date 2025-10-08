@@ -14,8 +14,6 @@ class BingoUserInfolist
             ->components([
                 TextEntry::make('bingo.title')
                     ->label('Bingo'),
-                TextEntry::make('uuid')
-                    ->label('UUID'),
                 TextEntry::make('ip'),
                 TextEntry::make('latitude')
                     ->numeric(),

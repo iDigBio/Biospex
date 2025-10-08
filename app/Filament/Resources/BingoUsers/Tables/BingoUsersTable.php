@@ -18,9 +18,6 @@ class BingoUsersTable
             ->columns([
                 TextColumn::make('bingo.title')
                     ->searchable(),
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable(),
                 TextColumn::make('ip')
                     ->searchable(),
                 TextColumn::make('latitude')

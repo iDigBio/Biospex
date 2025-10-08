@@ -11,8 +11,6 @@ class GroupInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('uuid')
-                    ->label('UUID'),
                 TextEntry::make('user_id')
                     ->numeric(),
                 TextEntry::make('title'),

@@ -11,13 +11,13 @@ class DownloadInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('uuid')
-                    ->label('UUID'),
                 TextEntry::make('expedition.title')
                     ->label('Expedition'),
                 TextEntry::make('actor.title')
                     ->label('Actor'),
-                TextEntry::make('file'),
+                TextEntry::make('file')
+                    ->url(fn ($record) => $record->present()->downloadType())
+                    ->openUrlInNewTab(),
                 TextEntry::make('type'),
                 TextEntry::make('created_at')
                     ->dateTime()

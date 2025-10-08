@@ -11,10 +11,9 @@ class BingoInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('uuid')
-                    ->label('UUID'),
-                TextEntry::make('user.id')
-                    ->label('User'),
+                TextEntry::make('user_name')
+                    ->label('User Name')
+                    ->getStateUsing(fn ($record) => $record->user?->getFilamentName()),
                 TextEntry::make('project.title')
                     ->label('Project'),
                 TextEntry::make('title'),

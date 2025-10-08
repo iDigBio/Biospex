@@ -20,8 +20,8 @@
 
 namespace App\Filament\Resources\SiteAssets\Schemas;
 
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class SiteAssetInfolist
@@ -32,11 +32,6 @@ class SiteAssetInfolist
             ->components([
                 Section::make('Asset Information')
                     ->schema([
-                        TextEntry::make('uuid')
-                            ->label('UUID')
-                            ->copyable()
-                            ->copyMessage('UUID copied!')
-                            ->columnSpanFull(),
                         TextEntry::make('title')
                             ->label('Asset Title'),
                         TextEntry::make('order')

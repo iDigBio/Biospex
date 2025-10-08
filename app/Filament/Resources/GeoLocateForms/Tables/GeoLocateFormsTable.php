@@ -15,9 +15,6 @@ class GeoLocateFormsTable
     {
         return $table
             ->columns([
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable(),
                 TextColumn::make('group.title')
                     ->searchable(),
                 TextColumn::make('name')

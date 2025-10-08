@@ -16,9 +16,6 @@ class BingoUserForm
                 Select::make('bingo_id')
                     ->relationship('bingo', 'title')
                     ->required(),
-                TextInput::make('uuid')
-                    ->label('UUID')
-                    ->required(),
                 TextInput::make('ip')
                     ->required(),
                 TextInput::make('latitude')

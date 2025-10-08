@@ -11,8 +11,6 @@ class GroupInviteInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('uuid')
-                    ->label('UUID'),
                 TextEntry::make('group.title')
                     ->label('Group'),
                 TextEntry::make('email')

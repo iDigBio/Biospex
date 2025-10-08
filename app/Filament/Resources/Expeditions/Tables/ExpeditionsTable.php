@@ -16,9 +16,6 @@ class ExpeditionsTable
     {
         return $table
             ->columns([
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable(),
                 TextColumn::make('project.title')
                     ->searchable(),
                 TextColumn::make('title')

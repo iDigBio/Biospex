@@ -12,9 +12,6 @@ class EventTeamForm
     {
         return $schema
             ->components([
-                TextInput::make('uuid')
-                    ->label('UUID')
-                    ->required(),
                 Select::make('event_id')
                     ->relationship('event', 'title')
                     ->required(),

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\WeDigBioEvents\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
@@ -13,9 +12,6 @@ class WeDigBioEventForm
     {
         return $schema
             ->components([
-                TextInput::make('uuid')
-                    ->label('UUID')
-                    ->required(),
                 DateTimePicker::make('start_date')
                     ->required(),
                 DateTimePicker::make('end_date')

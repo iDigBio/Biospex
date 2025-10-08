@@ -15,9 +15,6 @@ class EventTeamsTable
     {
         return $table
             ->columns([
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable(),
                 TextColumn::make('event.title')
                     ->searchable(),
                 TextColumn::make('title')

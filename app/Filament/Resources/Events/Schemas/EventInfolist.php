@@ -11,8 +11,6 @@ class EventInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('uuid')
-                    ->label('UUID'),
                 TextEntry::make('project.title')
                     ->label('Project'),
                 TextEntry::make('owner.id')

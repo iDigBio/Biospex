@@ -12,9 +12,6 @@ class GeoLocateCommunityForm
     {
         return $schema
             ->components([
-                TextInput::make('uuid')
-                    ->label('UUID')
-                    ->required(),
                 Select::make('project_id')
                     ->relationship('project', 'title')
                     ->required(),

@@ -42,7 +42,8 @@
     "react/event-loop": "^1.5",
     "react/socket": "^1.16",
     "spatie/eloquent-sortable": "^4.0",
-    "tio/laravel": "^1.10"
+    "tio/laravel": "^1.10",
+    "valentin-morice/filament-json-column": "dev-dev"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.5",

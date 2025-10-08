@@ -15,9 +15,6 @@ class EventUsersTable
     {
         return $table
             ->columns([
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable(),
                 TextColumn::make('nfn_user')
                     ->searchable(),
                 TextColumn::make('created_at')
