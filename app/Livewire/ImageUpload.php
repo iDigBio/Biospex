@@ -124,10 +124,7 @@ class ImageUpload extends FileUpload
                 $image = Image::read($this->file->getRealPath());
 
                 // Resize image maintaining aspect ratio
-                $image->resize($dimensions['width'], $dimensions['height'], function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize(); // Prevent upsizing
-                });
+                $image->resize($dimensions['width'], $dimensions['height']);
 
                 // Create variant path
                 $variantPath = str_replace('/'.basename($this->storagePath), '/'.basename($this->storagePath).'/'.$variant, $this->storagePath);

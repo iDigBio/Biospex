@@ -20,19 +20,19 @@ class ActorExpeditionsTable
                 TextColumn::make('actor.title')
                     ->searchable(),
                 TextColumn::make('state')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('total')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('error')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('order')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('expert')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -16,13 +16,13 @@ class EventTranscriptionsTable
         return $table
             ->columns([
                 TextColumn::make('classification_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('event.title')
                     ->searchable(),
                 TextColumn::make('team.title')
                     ->searchable(),
-                TextColumn::make('user.id')
+                TextColumn::make('user.nfn_user')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

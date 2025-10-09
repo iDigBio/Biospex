@@ -53,4 +53,10 @@ class BingoResource extends Resource
             'edit' => EditBingo::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['user.profile', 'project']);
+    }
 }

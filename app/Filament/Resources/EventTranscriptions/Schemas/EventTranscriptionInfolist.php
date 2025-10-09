@@ -12,12 +12,12 @@ class EventTranscriptionInfolist
         return $schema
             ->components([
                 TextEntry::make('classification_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('event.title')
                     ->label('Event'),
                 TextEntry::make('team.title')
                     ->label('Team'),
-                TextEntry::make('user.id')
+                TextEntry::make('user.nfn_user')
                     ->label('User'),
                 TextEntry::make('created_at')
                     ->dateTime()

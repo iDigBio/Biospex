@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Expeditions\Schemas;
 
 use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -25,20 +26,19 @@ class ExpeditionInfolist
                     ->boolean(),
                 IconEntry::make('locked')
                     ->boolean(),
-                TextEntry::make('logo_file_name')
-                    ->placeholder('-'),
-                TextEntry::make('logo_file_size')
-                    ->numeric()
-                    ->placeholder('-'),
-                TextEntry::make('logo_content_type')
-                    ->placeholder('-'),
-                TextEntry::make('logo_updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
+                ImageEntry::make('logo_display')
+                    ->label('Logo')
+                    ->height(150)
+                    ->width(150)
+                    ->getStateUsing(function ($record) {
+                        // Custom logic to determine the logo URL
+                        if (! empty($record->logo_path)) {
+                            return $record->present()->show_medium_logo;
+                        }
+
+                        return config('config.missing_expedition_logo');
+                    }),
                 TextEntry::make('logo_path')
-                    ->placeholder('-'),
-                TextEntry::make('logo_created_at')
-                    ->dateTime()
                     ->placeholder('-'),
                 TextEntry::make('created_at')
                     ->dateTime()

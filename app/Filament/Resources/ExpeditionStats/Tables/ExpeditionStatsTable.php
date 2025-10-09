@@ -17,26 +17,14 @@ class ExpeditionStatsTable
             ->columns([
                 TextColumn::make('expedition.title')
                     ->searchable(),
-                TextColumn::make('local_subject_count')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('subject_count')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('transcriptions_goal')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('local_transcriptions_completed')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('transcriptions_completed')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('transcriber_count')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('percent_completed')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

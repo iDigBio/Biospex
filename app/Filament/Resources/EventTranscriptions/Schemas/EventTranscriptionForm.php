@@ -22,7 +22,7 @@ class EventTranscriptionForm
                     ->relationship('team', 'title')
                     ->required(),
                 Select::make('user_id')
-                    ->relationship('user', 'id')
+                    ->relationship('user', 'nfn_user')
                     ->required(),
             ]);
     }

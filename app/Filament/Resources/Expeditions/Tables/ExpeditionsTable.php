@@ -20,29 +20,10 @@ class ExpeditionsTable
                     ->searchable(),
                 TextColumn::make('title')
                     ->searchable(),
-                TextColumn::make('keywords')
-                    ->searchable(),
                 TextColumn::make('workflow.title')
                     ->searchable(),
                 IconColumn::make('completed')
                     ->boolean(),
-                IconColumn::make('locked')
-                    ->boolean(),
-                TextColumn::make('logo_file_name')
-                    ->searchable(),
-                TextColumn::make('logo_file_size')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('logo_content_type')
-                    ->searchable(),
-                TextColumn::make('logo_updated_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('logo_path')
-                    ->searchable(),
-                TextColumn::make('logo_created_at')
-                    ->dateTime()
-                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

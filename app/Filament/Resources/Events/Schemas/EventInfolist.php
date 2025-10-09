@@ -13,8 +13,9 @@ class EventInfolist
             ->components([
                 TextEntry::make('project.title')
                     ->label('Project'),
-                TextEntry::make('owner.id')
-                    ->label('Owner'),
+                TextEntry::make('owner_name')
+                    ->label('Owner Name')
+                    ->getStateUsing(fn ($record) => $record->owner?->getFilamentName()),
                 TextEntry::make('title'),
                 TextEntry::make('description'),
                 TextEntry::make('hashtag')

@@ -11,6 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ExpeditionForm
 {
@@ -66,8 +67,19 @@ class ExpeditionForm
                         FileUpload::make('logo_path')
                             ->label('Expedition Logo')
                             ->image()
-                            ->directory('expedition-logos')
-                            ->visibility('public'),
+                            ->disk('s3')
+                            ->directory(config('config.uploads.expedition_logos').'/original') // Store in /original
+                            ->visibility('private')
+                            ->imageEditor()
+                            ->imageEditorAspectRatios(['318:208'])
+                            ->imagePreviewHeight('150')
+                            ->deletable()
+                            ->downloadable()
+                            ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
+                            ->maxSize(2048)
+                            ->getUploadedFileNameForStorageUsing(
+                                fn (TemporaryUploadedFile $file): string => time().'_'.$file->getClientOriginalName()
+                            ),
                     ]),
             ]);
     }

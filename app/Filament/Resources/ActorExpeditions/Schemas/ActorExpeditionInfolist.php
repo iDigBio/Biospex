@@ -16,15 +16,15 @@ class ActorExpeditionInfolist
                 TextEntry::make('actor.title')
                     ->label('Actor'),
                 TextEntry::make('state')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('total')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('error')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('order')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('expert')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),
