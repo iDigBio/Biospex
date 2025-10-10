@@ -20,9 +20,10 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AssetDownloadPathValidation;
+use App\Rules\AssetDownloadValidation;
+use App\Rules\AssetNameValidation;
 use App\Rules\FileUploadNameValidation;
-use App\Rules\ResourceDownloadValidation;
-use App\Rules\ResourceNameValidation;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -62,10 +63,10 @@ class ProjectFormRequest extends Request
                 new FileUploadNameValidation,
             ],
             'logo_path' => 'nullable|string',
-            'resources.*.type' => [new ResourceDownloadValidation],
-            'resources.*.name' => ['required_with:resources.*.type', new ResourceNameValidation],
-            'resources.*.description' => 'required_with:resources.*.type',
-            'resources.*.download' => 'mimes:txt,doc,csv,pdf',
+            'assets.*.type' => [new AssetDownloadValidation],
+            'assets.*.name' => ['required_with:assets.*.type', new AssetNameValidation],
+            'assets.*.description' => 'required_with:assets.*.type',
+            'assets.*.download_path' => [new AssetDownloadPathValidation],
         ];
     }
 
@@ -86,10 +87,9 @@ class ProjectFormRequest extends Request
     public function messages()
     {
         return [
-            'resources.*.name.required_with' => 'Required when Type selected',
-            'resources.*.description.required_with' => 'Required when Type selected',
-            'resources.*.download.required_if' => 'Required when Type selected',
-            'resources.*.download.mimes' => 'Accepted files: txt,doc,csv,pdf',
+            'assets.*.name.required_with' => 'Required when Type selected',
+            'assets.*.description.required_with' => 'Required when Type selected',
+            'assets.*.download_path.required_if' => 'Required when Type selected',
         ];
     }
 }

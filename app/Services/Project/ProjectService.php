@@ -78,17 +78,17 @@ class ProjectService
 
         $project = $this->project->create($data);
 
-        if (! isset($data['resources'])) {
+        if (! isset($data['assets'])) {
             return $project;
         }
 
-        $resources = collect($data['resources'])->reject(function ($resource) {
-            return $this->filterOrDeleteResources($resource);
-        })->map(function ($resource) {
-            return $this->projectAsset::make($resource);
+        $assets = collect($data['assets'])->reject(function ($asset) {
+            return $this->filterOrDeleteAssets($asset);
+        })->map(function ($asset) {
+            return $this->projectAsset::make($asset);
         });
 
-        $project->resources()->saveMany($resources->all());
+        $project->assets()->saveMany($assets->all());
 
         return $project;
     }
@@ -114,23 +114,23 @@ class ProjectService
 
         $project->fill($data)->save();
 
-        if (! isset($data['resources'])) {
+        if (! isset($data['assets'])) {
             return true;
         }
 
-        $resources = collect($data['resources'])->reject(function ($resource) {
-            return $this->filterOrDeleteResources($resource);
-        })->reject(function ($resource) {
-            return ! empty($resource['id']) && $this->updateProjectResource($resource);
-        })->map(function ($resource) {
-            return $this->projectAsset::make($resource);
+        $assets = collect($data['assets'])->reject(function ($asset) {
+            return $this->filterOrDeleteAssets($asset);
+        })->reject(function ($asset) {
+            return ! empty($asset['id']) && $this->updateProjectAsset($asset);
+        })->map(function ($asset) {
+            return $this->projectAsset::make($asset);
         });
 
-        if ($resources->isEmpty()) {
+        if ($assets->isEmpty()) {
             return true;
         }
 
-        return $project->resources()->saveMany($resources->all());
+        return $project->assets()->saveMany($assets->all());
     }
 
     /**
@@ -259,7 +259,7 @@ class ProjectService
             ->with([
                 'amChart',
                 'group.users.profile',
-                'resources',
+                'assets',
                 'lastPanoptesProject',
                 'bingos',
                 'expeditions' => function ($query) {
@@ -287,34 +287,40 @@ class ProjectService
     }
 
     /**
-     * Filter or delete resource.
+     * Filter or delete asset.
      */
-    public function filterOrDeleteResources($resource): bool
+    public function filterOrDeleteAssets($asset): bool
     {
-        if ($resource['type'] === null) {
-            return true;
-        }
-
-        if (strtolower($resource['type']) === 'delete') {
-            ProjectAsset::destroy($resource['id']);
+        \Log::info('filterOrDeleteAssets', ['asset' => $asset]);
+        if ($asset['type'] === null) {
+            \Log::info('Null', ['asset' => $asset]);
 
             return true;
         }
+
+        if (strtolower($asset['type']) === 'delete') {
+            \Log::info('Delete', ['asset' => $asset]);
+            ProjectAsset::destroy($asset['id']);
+
+            return true;
+        }
+
+        \Log::info('Not Delete', ['asset' => $asset]);
 
         return false;
     }
 
     /**
-     * Update project resource.
+     * Update project asset.
      */
-    public function updateProjectResource($resource): bool
+    public function updateProjectAsset($asset): bool
     {
-        $record = ProjectAsset::find($resource['id']);
-        $record->type = $resource['type'];
-        $record->name = $resource['name'];
-        $record->description = $resource['description'];
-        if (isset($resource['download'])) {
-            $record->download = $resource['download'];
+        $record = ProjectAsset::find($asset['id']);
+        $record->type = $asset['type'];
+        $record->name = $asset['name'];
+        $record->description = $asset['description'];
+        if (isset($asset['download'])) {
+            $record->download = $asset['download'];
         }
 
         $record->save();

@@ -275,11 +275,11 @@ class Project extends BaseEloquentModel
     }
 
     /**
-     * Resources relation.
+     * Assets relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function resources()
+    public function assets()
     {
         return $this->hasMany(ProjectAsset::class);
     }

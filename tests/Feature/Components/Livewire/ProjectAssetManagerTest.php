@@ -18,7 +18,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use App\Livewire\ProjectResourceManager;
+use App\Livewire\ProjectAssetManager;
 use App\Models\Project;
 use App\Models\ProjectAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -31,38 +31,38 @@ beforeEach(function () {
     $this->projectUuid = $this->project->uuid;
 });
 
-describe('ProjectResourceManager Component', function () {
+describe('ProjectAssetManager Component', function () {
 
     it('mounts with empty resources collection', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => $this->projectUuid, // Changed from 'project' to 'projectUuid'
             'errors' => null,
         ])
             ->assertStatus(200)
-            ->assertSet('resources', [['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']])
+            ->assertSet('assets', [['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']])
             ->assertSet('projectUuid', $this->projectUuid) // Changed assertion
             ->assertSet('errors', null);
     });
 
     it('mounts with existing resources', function () {
-        $projectResource = ProjectAsset::factory()->create([
+        $projectAsset = ProjectAsset::factory()->create([
             'project_id' => $this->project->id,
             'type' => 'Dataset',
             'name' => 'Test Resource',
             'description' => 'Test Description',
         ]);
 
-        $resources = collect([$projectResource]);
+        $assets = collect([$projectAsset]);
 
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => $resources,
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => $assets,
             'projectUuid' => $this->projectUuid,
             'errors' => null,
         ])
             ->assertStatus(200)
-            ->assertSet('resources', [[
-                'id' => $projectResource->id,
+            ->assertSet('assets', [[
+                'id' => $projectAsset->id,
                 'type' => 'Dataset',
                 'name' => 'Test Resource',
                 'description' => 'Test Description',
@@ -71,54 +71,54 @@ describe('ProjectResourceManager Component', function () {
     });
 
     it('mounts with null resources parameter', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => null,
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => null,
             'projectUuid' => $this->projectUuid, // Changed from 'project'
             'errors' => null,
         ])
             ->assertStatus(200)
-            ->assertSet('resources', [['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']])
-            ->assertCount('resources', 1);
+            ->assertSet('assets', [['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']])
+            ->assertCount('assets', 1);
     });
 
     // Update all other test methods to use 'projectUuid' instead of 'project'
     it('can add new site-asset', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => $this->projectUuid, // Changed
             'errors' => null,
         ])
-            ->call('addResource')
-            ->assertCount('resources', 2)
-            ->assertSet('resources.1', ['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']);
+            ->call('addAsset')
+            ->assertCount('assets', 2)
+            ->assertSet('assets.1', ['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']);
     });
 
     it('can remove site-asset when more than one exists', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => $this->projectUuid,
             'errors' => null,
         ])
-            ->call('addResource') // Should have 2 resources now
-            ->assertCount('resources', 2)
-            ->call('removeResource', 0)
-            ->assertCount('resources', 1);
+            ->call('addAsset') // Should have 2 assets now
+            ->assertCount('assets', 2)
+            ->call('removeAsset', 0)
+            ->assertCount('assets', 1);
     });
 
     it('cannot remove site-asset when only one exists', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => $this->projectUuid,
             'errors' => null,
         ])
-            ->assertCount('resources', 1)
-            ->call('removeResource', 0)
-            ->assertCount('resources', 1); // Should still have 1 site-asset
+            ->assertCount('assets', 1)
+            ->call('removeAsset', 0)
+            ->assertCount('assets', 1); // Should still have 1 site-asset
     });
 
     it('handles file upload correctly', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => $this->projectUuid,
             'errors' => null,
         ])
@@ -126,12 +126,12 @@ describe('ProjectResourceManager Component', function () {
                 'fieldName' => 'download_0',
                 'filePath' => 'uploads/test-file.pdf',
             ])
-            ->assertSet('resources.0.download_path', 'uploads/test-file.pdf');
+            ->assertSet('assets.0.download_path', 'uploads/test-file.pdf');
     });
 
     it('ignores file upload with invalid field name', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => $this->projectUuid,
             'errors' => null,
         ])
@@ -139,12 +139,12 @@ describe('ProjectResourceManager Component', function () {
                 'fieldName' => 'invalid_field',
                 'filePath' => 'uploads/test-file.pdf',
             ])
-            ->assertSet('resources.0.download_path', ''); // Should remain empty
+            ->assertSet('assets.0.download_path', ''); // Should remain empty
     });
 
     it('ignores file upload for non-existent site-asset index', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => $this->projectUuid,
             'errors' => null,
         ])
@@ -152,11 +152,11 @@ describe('ProjectResourceManager Component', function () {
                 'fieldName' => 'download_99',
                 'filePath' => 'uploads/test-file.pdf',
             ])
-            ->assertSet('resources.0.download_path', ''); // Should remain empty
+            ->assertSet('assets.0.download_path', ''); // Should remain empty
     });
 
     it('handles null errors correctly', function () {
-        Livewire::test(ProjectResourceManager::class, [
+        Livewire::test(ProjectAssetManager::class, [
             'resources' => collect(),
             'projectUuid' => $this->projectUuid,
             'errors' => null,
@@ -166,36 +166,36 @@ describe('ProjectResourceManager Component', function () {
     });
 
     it('renders the correct view', function () {
-        Livewire::test(ProjectResourceManager::class, [
+        Livewire::test(ProjectAssetManager::class, [
             'resources' => collect(),
             'projectUuid' => $this->projectUuid,
             'errors' => null,
         ])
-            ->assertViewIs('livewire.project-resource-manager');
+            ->assertViewIs('livewire.project-asset-manager');
     });
 
     it('preserves site-asset data types correctly', function () {
-        $projectResource = ProjectAsset::factory()->create([
+        $projectAsset = ProjectAsset::factory()->create([
             'project_id' => $this->project->id,
             'type' => 'Dataset',
             'name' => 'Test Resource',
             'description' => 'Test Description',
         ]);
 
-        $resources = collect([$projectResource]);
+        $resources = collect([$projectAsset]);
 
-        $component = Livewire::test(ProjectResourceManager::class, [
-            'resources' => $resources,
+        $component = Livewire::test(ProjectAssetManager::class, [
+            'assets' => $resources,
             'projectUuid' => $this->projectUuid,
             'errors' => null,
         ]);
 
         // Verify all fields are properly converted to arrays and maintain their values
-        expect($component->get('resources.0.id'))->toBe($projectResource->id);
-        expect($component->get('resources.0.type'))->toBe('Dataset');
-        expect($component->get('resources.0.name'))->toBe('Test Resource');
-        expect($component->get('resources.0.description'))->toBe('Test Description');
-        expect($component->get('resources.0.download_path'))->toBe('');
+        expect($component->get('assets.0.id'))->toBe($projectAsset->id);
+        expect($component->get('assets.0.type'))->toBe('Dataset');
+        expect($component->get('assets.0.name'))->toBe('Test Resource');
+        expect($component->get('assets.0.description'))->toBe('Test Description');
+        expect($component->get('assets.0.download_path'))->toBe('');
     });
 
     it('handles multiple resources correctly', function () {
@@ -215,81 +215,81 @@ describe('ProjectResourceManager Component', function () {
 
         $resources = collect([$resource1, $resource2]);
 
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => $resources,
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => $resources,
             'projectUuid' => $this->projectUuid,
             'errors' => null,
         ])
-            ->assertCount('resources', 2)
-            ->assertSet('resources.0.name', 'Resource 1')
-            ->assertSet('resources.1.name', 'Resource 2')
-            ->assertSet('resources.0.type', 'Dataset')
-            ->assertSet('resources.1.type', 'Publication');
+            ->assertCount('assets', 2)
+            ->assertSet('assets.0.name', 'Resource 1')
+            ->assertSet('assets.1.name', 'Resource 2')
+            ->assertSet('assets.0.type', 'Dataset')
+            ->assertSet('assets.1.type', 'Publication');
     });
 });
 
-describe('ProjectResourceManager Component - Create Page Scenarios', function () {
+describe('ProjectAssetManager Component - Create Page Scenarios', function () {
 
-    it('mounts with empty resources for create page (null projectUuid)', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+    it('mounts with empty assets for create page (null projectUuid)', function () {
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => null,
         ])
             ->assertStatus(200)
-            ->assertSet('resources', [['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']])
+            ->assertSet('assets', [['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']])
             ->assertSet('projectUuid', null)
             ->assertSet('errors', null);
     });
 
-    it('mounts with null resources parameter for create page', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => null,
+    it('mounts with null assets parameter for create page', function () {
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => null,
             'projectUuid' => null,
             'errors' => null,
         ])
             ->assertStatus(200)
-            ->assertSet('resources', [['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']])
-            ->assertCount('resources', 1);
+            ->assertSet('assets', [['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']])
+            ->assertCount('assets', 1);
     });
 
     it('can add new site-asset on create page', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => null,
         ])
-            ->call('addResource')
-            ->assertCount('resources', 2)
-            ->assertSet('resources.1', ['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']);
+            ->call('addAsset')
+            ->assertCount('assets', 2)
+            ->assertSet('assets.1', ['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']);
     });
 
     it('can remove site-asset on create page when more than one exists', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => null,
         ])
-            ->call('addResource') // Should have 2 resources now
-            ->assertCount('resources', 2)
-            ->call('removeResource', 0)
-            ->assertCount('resources', 1);
+            ->call('addAsset') // Should have 2 assets now
+            ->assertCount('assets', 2)
+            ->call('removeAsset', 0)
+            ->assertCount('assets', 1);
     });
 
     it('cannot remove site-asset on create page when only one exists', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => null,
         ])
-            ->assertCount('resources', 1)
-            ->call('removeResource', 0)
-            ->assertCount('resources', 1); // Should still have 1 site-asset
+            ->assertCount('assets', 1)
+            ->call('removeAsset', 0)
+            ->assertCount('assets', 1); // Should still have 1 site-asset
     });
 
     it('handles file upload correctly on create page', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => null,
         ])
@@ -297,12 +297,12 @@ describe('ProjectResourceManager Component - Create Page Scenarios', function ()
                 'fieldName' => 'download_0',
                 'filePath' => 'uploads/test-file.pdf',
             ])
-            ->assertSet('resources.0.download_path', 'uploads/test-file.pdf');
+            ->assertSet('assets.0.download_path', 'uploads/test-file.pdf');
     });
 
     it('ignores file upload with invalid field name on create page', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => null,
         ])
@@ -310,12 +310,12 @@ describe('ProjectResourceManager Component - Create Page Scenarios', function ()
                 'fieldName' => 'invalid_field',
                 'filePath' => 'uploads/test-file.pdf',
             ])
-            ->assertSet('resources.0.download_path', ''); // Should remain empty
+            ->assertSet('assets.0.download_path', ''); // Should remain empty
     });
 
     it('ignores file upload for non-existent site-asset index on create page', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => null,
         ])
@@ -323,17 +323,17 @@ describe('ProjectResourceManager Component - Create Page Scenarios', function ()
                 'fieldName' => 'download_99',
                 'filePath' => 'uploads/test-file.pdf',
             ])
-            ->assertSet('resources.0.download_path', ''); // Should remain empty
+            ->assertSet('assets.0.download_path', ''); // Should remain empty
     });
 
     it('handles validation errors for create page correctly', function () {
         $errors = [
-            'resources.0.name' => ['The site-asset name is required.'],
-            'resources.0.type' => ['The site-asset type is required.'],
+            'assets.0.name' => ['The site-asset name is required.'],
+            'assets.0.type' => ['The site-asset type is required.'],
         ];
 
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => $errors,
         ])
@@ -342,38 +342,38 @@ describe('ProjectResourceManager Component - Create Page Scenarios', function ()
     });
 
     it('renders the correct view for create page', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => null,
         ])
-            ->assertViewIs('livewire.project-resource-manager');
+            ->assertViewIs('livewire.project-asset-manager');
     });
 
     it('maintains proper site-asset structure on create page with multiple additions', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => null,
         ])
-            ->call('addResource')
-            ->call('addResource')
-            ->assertCount('resources', 3)
-            ->assertSet('resources.0', ['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => ''])
-            ->assertSet('resources.1', ['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => ''])
-            ->assertSet('resources.2', ['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']);
+            ->call('addAsset')
+            ->call('addAsset')
+            ->assertCount('assets', 3)
+            ->assertSet('assets.0', ['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => ''])
+            ->assertSet('assets.1', ['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => ''])
+            ->assertSet('assets.2', ['id' => null, 'type' => '', 'name' => '', 'description' => '', 'download_path' => '']);
     });
 
     it('handles site-asset removal in middle of array on create page', function () {
-        Livewire::test(ProjectResourceManager::class, [
-            'resources' => collect(),
+        Livewire::test(ProjectAssetManager::class, [
+            'assets' => collect(),
             'projectUuid' => null,
             'errors' => null,
         ])
-            ->call('addResource')
-            ->call('addResource')
-            ->assertCount('resources', 3)
-            ->call('removeResource', 1) // Remove middle site-asset
-            ->assertCount('resources', 2);
+            ->call('addAsset')
+            ->call('addAsset')
+            ->assertCount('assets', 3)
+            ->call('removeAsset', 1) // Remove middle site-asset
+            ->assertCount('assets', 2);
     });
 });

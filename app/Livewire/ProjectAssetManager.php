@@ -22,9 +22,9 @@ namespace App\Livewire;
 
 use Livewire\Component;
 
-class ProjectResourceManager extends Component
+class ProjectAssetManager extends Component
 {
-    public $resources = [];
+    public $assets = [];
 
     public ?string $projectUuid = null;  // Changed from $project to $projectUuid
 
@@ -32,74 +32,74 @@ class ProjectResourceManager extends Component
 
     protected $listeners = [
         'fileUploaded' => 'handleFileUploaded',
-        'resourceUpdated' => '$refresh',
+        'assetUpdated' => '$refresh',
     ];
 
-    public function mount($resources = null, $projectUuid = null, $errors = null)
+    public function mount($assets = null, $projectUuid = null, $errors = null)
     {
         $this->projectUuid = $projectUuid;
         $this->errors = $errors;
 
         // Handle both Collection and array inputs
-        if ($resources && (is_array($resources) ? count($resources) > 0 : $resources->isNotEmpty())) {
+        if ($assets && (is_array($assets) ? count($assets) > 0 : $assets->isNotEmpty())) {
             // If it's already an array (from controller), use as-is
             // If it's a Collection (from tests or elsewhere), transform it
-            if (is_array($resources)) {
-                $this->resources = $resources;
+            if (is_array($assets)) {
+                $this->assets = $assets;
             } else {
-                $this->resources = $resources->map(function ($resource) {
+                $this->assets = $assets->map(function ($asset) {
                     return [
-                        'id' => $resource->id ?? null,
-                        'type' => $resource->type ?? '',
-                        'name' => $resource->name ?? '',
-                        'description' => $resource->description ?? '',
-                        'download_path' => $resource->download_path ?? '',
+                        'id' => $asset->id ?? null,
+                        'type' => $asset->type ?? '',
+                        'name' => $asset->name ?? '',
+                        'description' => $asset->description ?? '',
+                        'download_path' => $asset->download_path ?? '',
                     ];
                 })->toArray();
             }
         } else {
             // Initialize as empty array
-            $this->resources = [];
-            // Start with at least one empty resource
-            $this->addResource();
+            $this->assets = [];
+            // Start with at least one empty asset
+            $this->addAsset();
         }
     }
 
-    public function addResource()
+    public function addAsset()
     {
-        // Add a new empty resource array
-        $newResource = [
+        // Add a new empty asset array
+        $newAsset = [
             'id' => null,
             'type' => '',
             'name' => '',
             'description' => '',
             'download_path' => '',
         ];
-        $this->resources[] = $newResource;
+        $this->assets[] = $newAsset;
     }
 
-    public function removeResource($index)
+    public function removeAsset($index)
     {
-        if (count($this->resources) > 1) {
-            unset($this->resources[$index]);
-            $this->resources = array_values($this->resources); // Re-index array
+        if (count($this->assets) > 1) {
+            unset($this->assets[$index]);
+            $this->assets = array_values($this->assets); // Re-index array
         }
     }
 
     public function handleFileUploaded($eventData)
     {
-        // Extract the resource index from the fieldName (e.g., 'download_0' -> 0)
+        // Extract the asset index from the fieldName (e.g., 'download_0' -> 0)
         if (preg_match('/download_(\d+)/', $eventData['fieldName'], $matches)) {
             $index = (int) $matches[1];
-            if (isset($this->resources[$index])) {
-                $this->resources[$index]['download_path'] = $eventData['filePath'];
-                $this->dispatch('resourceUpdated');
+            if (isset($this->assets[$index])) {
+                $this->assets[$index]['download_path'] = $eventData['filePath'];
+                $this->dispatch('assetUpdated');
             }
         }
     }
 
     public function render()
     {
-        return view('livewire.project-resource-manager');
+        return view('livewire.project-asset-manager');
     }
 }

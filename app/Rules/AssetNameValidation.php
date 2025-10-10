@@ -23,9 +23,9 @@ namespace App\Rules;
 use Illuminate\Contracts\Validation\Rule;
 
 /**
- * Class ResourceNameValidation
+ * Class AssetNameValidation
  */
-class ResourceNameValidation implements Rule
+class AssetNameValidation implements Rule
 {
     /**
      * messages
@@ -44,7 +44,7 @@ class ResourceNameValidation implements Rule
 
     /**
      * Determine if the validation rule passes.
-     * attribute = resource.*.name
+     * attribute = assets.*.name
      *
      * @param  string  $attribute
      * @param  mixed  $value
@@ -53,9 +53,9 @@ class ResourceNameValidation implements Rule
     public function passes($attribute, $value)
     {
         $parts = explode('.', $attribute);
-        $resources = \Request::get('resources');
+        $assets = \Request::get('assets');
 
-        if ($resources[$parts[1]]['type'] === 'Website URL' || $resources[$parts[1]]['type'] === 'Video URL') {
+        if ($assets[$parts[1]]['type'] === 'Website URL' || $assets[$parts[1]]['type'] === 'Video URL') {
             return filter_var($value, FILTER_VALIDATE_URL);
         }
 

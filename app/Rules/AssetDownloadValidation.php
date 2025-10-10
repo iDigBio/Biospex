@@ -24,9 +24,9 @@ use Illuminate\Contracts\Validation\Rule;
 use Request;
 
 /**
- * Class ResourceDownloadValidation
+ * Class AssetDownloadValidation
  */
-class ResourceDownloadValidation implements Rule
+class AssetDownloadValidation implements Rule
 {
     /**
      * Create a new rule instance.
@@ -36,7 +36,7 @@ class ResourceDownloadValidation implements Rule
     public function __construct()
     {
         /**
-        [resources] => Array
+        [assets] => Array
         (
         [1] => Array
         (
@@ -68,16 +68,16 @@ class ResourceDownloadValidation implements Rule
     public function passes($attribute, $value)
     {
         $parts = explode('.', $attribute);
-        $resources = Request::get('resources');
-        $fileUpload = Request::hasFile('resources.'.$parts[1].'.download');
+        $assets = Request::get('assets');
+        $fileUpload = Request::hasFile('assets.'.$parts[1].'.download');
 
-        if ($resources[$parts[1]]['type'] !== 'File Download' ||
-            $resources[$parts[1]]['type'] === 'delete' ||
+        if ($assets[$parts[1]]['type'] !== 'File Download' ||
+            $assets[$parts[1]]['type'] === 'delete' ||
             ! $fileUpload) {
             return true;
         }
 
-        $file = Request::file('resources.'.$parts[1].'.download');
+        $file = Request::file('assets.'.$parts[1].'.download');
 
         return preg_match('/^[\w\-.]+$/', $file->getClientOriginalName()) === 1;
     }
