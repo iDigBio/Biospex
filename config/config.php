@@ -61,6 +61,8 @@ return [
         'resources' => env('UPLOAD_RESOURCES', 'uploads/resources'),
         'project_resources_base' => env('UPLOAD_PROJECT_RESOURCES_BASE', 'uploads/project-resources'),
         'project_resources_downloads' => env('UPLOAD_PROJECT_RESOURCES_DOWNLOADS', 'uploads/project-resources/downloads'),
+        'project-assets' => env('UPLOAD_PROJECT_ASSETS', 'uploads/project-assets'),
+        'site-assets' => env('UPLOAD_SITE_ASSETS', 'uploads/site-assets'),
     ],
 
     'project_chart_series' => resource_path('json/projectChartSeries.json'),

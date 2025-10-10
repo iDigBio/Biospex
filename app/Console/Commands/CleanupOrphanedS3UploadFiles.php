@@ -74,16 +74,9 @@ class CleanupOrphanedS3UploadFiles extends Command
             config('config.uploads.profile_avatars_medium'),
             config('config.uploads.profile_avatars_original'),
             config('config.uploads.profile_avatars_small'),
-            config('config.uploads.project_resources_downloads'),
-            config('config.uploads.resources'),
+            config('config.uploads.project-assets'),
+            config('config.uploads.site-assets'),
         ];
-
-        // UUID-based directories are no longer used after migration
-        // // Also check project-specific asset directories (UUID-based)
-        // $projectUuids = \App\Models\Project::pluck('uuid')->toArray();
-        // foreach ($projectUuids as $uuid) {
-        //     $directories[] = config('config.uploads.project_resources_base')."/{$uuid}";
-        // }
 
         $totalOrphaned = 0;
         $totalDeleted = 0;

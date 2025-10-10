@@ -137,7 +137,7 @@ class FileUpload extends Component
             'Expedition' => config('config.uploads.expedition_logos'),
             'Profile' => config('config.uploads.profile_avatars'),
             'ProjectAsset' => $this->getProjectAssetPath(),
-            'Resource' => config('config.uploads.resources'),
+            'Resource' => config('config.uploads.site-assets'),
         ];
 
         return $paths[$this->modelType] ?? 'uploads/general';
@@ -146,7 +146,7 @@ class FileUpload extends Component
     protected function getProjectAssetPath()
     {
         // Always use the standardized downloads path instead of UUID-based paths
-        return config('config.uploads.project_resources_downloads');
+        return config('config.uploads.project-assets');
     }
 
     public function render()

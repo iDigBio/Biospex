@@ -82,13 +82,13 @@ class SiteAsset extends Resource
             Textarea::make('Description'),
             File::make('Document')
                 ->disk('s3')
-                ->path(config('config.uploads.resources'))
+                ->path(config('config.uploads.site-assets'))
                 ->store(function (NovaRequest $request, $model) {
                     $filename = time().'_'.$request->document->getClientOriginalName();
-                    $path = config('config.uploads.resources').'/'.$filename;
+                    $path = config('config.uploads.site-assets').'/'.$filename;
 
                     // Store the file on S3
-                    $request->document->storeAs(config('config.uploads.resources'), $filename, 's3');
+                    $request->document->storeAs(config('config.uploads.site-assets'), $filename, 's3');
 
                     return [
                         'download_path' => $path,
