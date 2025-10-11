@@ -47,10 +47,28 @@ class SiteAssetInfolist
                 Section::make('File Information')
                     ->schema([
                         TextEntry::make('download_path')
-                            ->label('File Path')
-                            ->copyable()
-                            ->copyMessage('File path copied!')
+                            ->label('Filename')
+                            ->formatStateUsing(fn (string $state): string => basename($state))
                             ->visible(fn ($record) => ! empty($record->download_path)),
+                        TextEntry::make('download_path')
+                            ->label('Download')
+                            ->formatStateUsing(function ($record) {
+                                if (empty($record->download_path)) {
+                                    return 'No file';
+                                }
+
+                                // Generate signed URL for download
+                                try {
+                                    $url = \Storage::disk('s3')->temporaryUrl($record->download_path, now()->addHour());
+                                    $filename = basename($record->download_path);
+
+                                    return '<a href="'.$url.'" target="_blank" class="text-primary hover:underline">
+                                        <i class="fas fa-download mr-1"></i>Download '.$filename.'</a>';
+                                } catch (\Exception $e) {
+                                    return 'File not available';
+                                }
+                            })
+                            ->html(),
                         TextEntry::make('created_at')
                             ->label('Created')
                             ->dateTime(),

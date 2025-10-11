@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Projects\Schemas;
 
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -59,23 +60,21 @@ class ProjectInfolist
                     ->placeholder('-'),
                 TextEntry::make('language_skills')
                     ->placeholder('-'),
-                TextEntry::make('logo_file_name')
-                    ->placeholder('-'),
-                TextEntry::make('logo_file_size')
-                    ->numeric()
-                    ->placeholder('-'),
-                TextEntry::make('logo_content_type')
-                    ->placeholder('-'),
-                TextEntry::make('logo_updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('logo_path')
-                    ->placeholder('-'),
-                TextEntry::make('logo_created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('banner_file')
-                    ->placeholder('-'),
+                ImageEntry::make('logo_path')
+                    ->label('Project Logo')
+                    ->disk('s3')
+                    ->height(150)
+                    ->placeholder(config('config.missing_project_logo'))
+                    ->columnSpanFull(),
+                ImageEntry::make('banner_file')
+                    ->label('Project Banner')
+                    ->disk('public')
+                    ->getStateUsing(function ($record): ?string {
+                        return $record->banner_file ? 'images/habitat-banners/'.$record->banner_file : 'images/habitat-banners/banner-trees.jpg';
+                    })
+                    ->height(50)
+                    ->defaultImageUrl('/images/habitat-banners/banner-trees.jpg')
+                    ->columnSpanFull(),
                 TextEntry::make('target_fields')
                     ->placeholder('-')
                     ->columnSpanFull(),

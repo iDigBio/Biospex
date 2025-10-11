@@ -20,8 +20,9 @@
 
 namespace App\Filament\Resources\ProjectAssets\Schemas;
 
+use App\Filament\Components\AssetFileUpload;
 use App\Models\Project;
-use Filament\Forms\Components\FileUpload;
+use App\Services\Validation\AssetValidationService;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -43,34 +44,55 @@ class ProjectAssetForm
                             ->searchable()
                             ->preload(),
                         Select::make('type')
-                            ->options([
-                                'Dataset' => 'Dataset',
-                                'Documentation' => 'Documentation',
-                                'Image' => 'Image',
-                                'Video' => 'Video',
-                                'Other' => 'Other',
-                            ])
-                            ->required(),
+                            ->options(function () {
+                                $projectAssets = config('config.project_assets', []);
+
+                                return array_combine($projectAssets, $projectAssets);
+                            })
+                            ->required()
+                            ->live()
+                            ->helperText('Select the asset type to determine required fields'),
                         TextInput::make('name')
+                            ->label('Asset Name / URL')
+                            ->required()
+                            ->rules([
+                                function ($get) {
+                                    return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                        $type = $get('type');
+                                        if (! $type) {
+                                            return;
+                                        }
+
+                                        $assetValidationService = app(AssetValidationService::class);
+                                        $errors = $assetValidationService->validateAssetType($type, $value);
+
+                                        foreach ($errors as $error) {
+                                            if (str_contains($error, 'URL') || str_contains($error, 'Name')) {
+                                                $fail($error);
+                                            }
+                                        }
+                                    };
+                                },
+                            ])
+                            ->helperText('For Website/Video URL types: enter valid URL. For other types: enter descriptive name')
+                            ->maxLength(255),
+                        Textarea::make('description')
                             ->required()
                             ->maxLength(255)
-                            ->label('Asset Name'),
-                        Textarea::make('description')
-                            ->maxLength(255)
                             ->rows(3)
+                            ->helperText('Provide a detailed description of this asset')
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
 
                 Section::make('File Upload')
                     ->schema([
-                        FileUpload::make('download_path')
+                        AssetFileUpload::makeForProjectAsset('download_path')
                             ->label('Asset File')
-                            ->directory('project-assets')
                             ->visibility('private')
-                            ->acceptedFileTypes(['application/pdf', 'image/*', 'text/*', '.xlsx', '.xls', '.csv', '.zip', '.rar'])
-                            ->maxSize(50000) // 50MB
-                            ->helperText('Maximum file size: 50MB'),
+                            ->visible(fn ($get) => $get('type') === 'File Download')
+                            ->required(fn ($get) => $get('type') === 'File Download')
+                            ->helperText('Required for "File Download" type. Maximum size: 10MB. Accepted types: txt, doc, csv, pdf'),
                     ]),
             ]);
     }

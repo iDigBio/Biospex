@@ -2,16 +2,20 @@
 
 namespace App\Livewire;
 
-use Intervention\Image\Laravel\Facades\Image;
-use Storage;
+use App\Services\Asset\ImageUploadService;
 
 class ImageUpload extends FileUpload
 {
-    public $variants = [];
-
     public $uploadSuccess = false;
 
     public $uploadError = null;
+
+    protected ImageUploadService $imageUploadService;
+
+    public function boot()
+    {
+        $this->imageUploadService = app(ImageUploadService::class);
+    }
 
     public function mount($modelType = null, $fieldName = null, $maxSize = 10240, $allowedTypes = null, $projectUuid = null)
     {
@@ -23,24 +27,6 @@ class ImageUpload extends FileUpload
         $imageTypes = ['jpeg', 'jpg', 'png', 'gif'];
 
         parent::mount($modelType, $fieldName, $maxSize, $imageTypes, $projectUuid);
-
-        // Set variants based on model type
-        $this->setVariants();
-    }
-
-    protected function setVariants()
-    {
-        $variantConfigs = [
-            'Profile' => [
-                'medium' => ['width' => 160, 'height' => 160],
-                'small' => ['width' => 25, 'height' => 25],
-            ],
-            'Expedition' => [
-                'medium' => ['width' => 318, 'height' => 208],
-            ],
-        ];
-
-        $this->variants = $variantConfigs[$this->modelType] ?? [];
     }
 
     public function save()
@@ -59,24 +45,18 @@ class ImageUpload extends FileUpload
                 return null;
             }
 
-            // Always use S3 for file uploads regardless of default filesystem
-            $disk = 's3';
-            $filename = time().'_'.$this->file->getClientOriginalName();
+            // Use the unified ImageUploadService
+            $originalPath = $this->imageUploadService->uploadImage(
+                $this->file,
+                $this->modelType,
+                $this->storagePath
+            );
 
-            // Store original image on S3 - use 'original' subdirectory if variants are configured
-            $originalStoragePath = ! empty($this->variants) ? $this->storagePath.'/original' : $this->storagePath;
-            $originalPath = $this->file->storeAs($originalStoragePath, $filename, $disk);
-
-            // Verify file was uploaded to S3
-            if (! Storage::disk('s3')->exists($originalPath)) {
-                $this->uploadError = 'Failed to upload file to S3';
+            if (! $originalPath) {
+                $this->uploadError = 'Upload failed';
+                $this->uploading = false;
 
                 return null;
-            }
-
-            // Create variants if configured
-            if (! empty($this->variants)) {
-                $this->createVariants($filename, $disk);
             }
 
             // Set success flag
@@ -113,30 +93,6 @@ class ImageUpload extends FileUpload
 
             // Auto-save when file is selected
             $this->save();
-        }
-    }
-
-    protected function createVariants($filename, $disk)
-    {
-        foreach ($this->variants as $variant => $dimensions) {
-            try {
-                // Create intervention image from uploaded file
-                $image = Image::read($this->file->getRealPath());
-
-                // Resize image maintaining aspect ratio
-                $image->resize($dimensions['width'], $dimensions['height']);
-
-                // Create variant path
-                $variantPath = str_replace('/'.basename($this->storagePath), '/'.basename($this->storagePath).'/'.$variant, $this->storagePath);
-                $variantFullPath = $variantPath.'/'.$filename;
-
-                // Encode image and store
-                $imageData = $image->encode();
-                Storage::disk($disk)->put($variantFullPath, $imageData);
-
-            } catch (\Exception $e) {
-                // Don't fail upload for variant creation errors
-            }
         }
     }
 

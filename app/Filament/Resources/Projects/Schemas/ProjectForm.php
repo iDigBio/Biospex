@@ -2,7 +2,8 @@
 
 namespace App\Filament\Resources\Projects\Schemas;
 
-use Filament\Forms\Components\DateTimePicker;
+use App\Filament\Components\ImageFileUpload;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -45,14 +46,33 @@ class ProjectForm
                 TextInput::make('twitter'),
                 TextInput::make('activities'),
                 TextInput::make('language_skills'),
-                TextInput::make('logo_file_name'),
-                TextInput::make('logo_file_size')
-                    ->numeric(),
-                TextInput::make('logo_content_type'),
-                DateTimePicker::make('logo_updated_at'),
-                TextInput::make('logo_path'),
-                DateTimePicker::make('logo_created_at'),
-                TextInput::make('banner_file'),
+                ImageFileUpload::makeForProject('logo_path')
+                    ->label('Project Logo')
+                    ->image()
+                    ->maxSize(2048)
+                    ->imagePreviewHeight('150')
+                    ->columnSpanFull(),
+                Radio::make('banner_file')
+                    ->label('Project Banner')
+                    ->options(function () {
+                        $bannerOptions = project_banner_options();
+                        $formattedOptions = [];
+
+                        foreach ($bannerOptions as $filename => $label) {
+                            $imageUrl = project_banner_file_url($filename);
+                            $formattedOptions[$filename] = new \Illuminate\Support\HtmlString(
+                                '<div class="flex flex-col items-center text-center p-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">'.
+                                '<img src="'.$imageUrl.'" alt="'.$label.'" class="w-20 h-12 object-cover rounded mb-1" />'.
+                                '<span class="text-xs text-gray-700 dark:text-gray-300">'.$label.'</span>'.
+                                '</div>'
+                            );
+                        }
+
+                        return $formattedOptions;
+                    })
+                    ->default('banner-trees.jpg')
+                    ->columns(3)
+                    ->columnSpanFull(),
                 Textarea::make('target_fields')
                     ->columnSpanFull(),
                 TextInput::make('advertise'),

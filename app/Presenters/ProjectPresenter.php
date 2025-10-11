@@ -45,6 +45,7 @@ class ProjectPresenter extends Presenter
 
         // Fallback to legacy paperclip logic during transition
         if (! empty($this->model->logo_file_name)) {
+            \Log::info('Checking for paperclip logo file: '.$this->model->logo_file_name);
             $baseLength = config('paperclip.storage.base-urls.public');
             $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
             $paperclipPath = "/paperclip/App/Models/Project/logos/{$idPartition}/original/{$this->model->logo_file_name}";

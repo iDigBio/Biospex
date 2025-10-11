@@ -77,11 +77,10 @@ return [
     'poll_bingo_channel' => env('POLL_BINGO_CHANNEL'),
     'poll_wedigbio_progress_channel' => env('POLL_WEDIGBIO_PROGRESS_CHANNEL'),
 
-    'project_resources' => [
+    'project_assets' => [
         'Website URL',
         'Video URL',
         'File Download',
-        'Delete',
     ],
 
     /**

@@ -20,8 +20,6 @@
 
 namespace App\Providers;
 
-use App\Models\Expedition;
-use App\Observers\ExpeditionObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
@@ -52,8 +50,6 @@ class AppServiceProvider extends ServiceProvider
 
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventAccessingMissingAttributes(! $this->app->isProduction());
-
-        Expedition::observe(ExpeditionObserver::class);
 
         /*
         // Check if the application is running in the local environment

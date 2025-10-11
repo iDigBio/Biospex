@@ -18,11 +18,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Services\Image;
+namespace App\Services\Asset;
 
+use App\Services\Requests\HttpRequest;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Contracts\Filesystem\Factory as Storage;
 use Illuminate\Filesystem\Filesystem as File;
+use Illuminate\Support\Facades\Log;
 use Intervention\Image\ImageManager;
 use Throwable;
 

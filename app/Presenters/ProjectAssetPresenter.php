@@ -50,6 +50,7 @@ class ProjectAssetPresenter extends Presenter
 
             // Fallback to legacy paperclip logic during transition
             if (! $url && ! empty($this->model->download_file_name)) {
+                \Log::info('Checking for paperclip download file: '.$this->model->download_file_name);
                 $baseLength = config('paperclip.storage.base-urls.public');
                 $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
                 $paperclipPath = "/paperclip/App/Models/ProjectAsset/downloads/{$idPartition}/original/{$this->model->download_file_name}";

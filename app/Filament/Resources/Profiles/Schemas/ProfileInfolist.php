@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Profiles\Schemas;
 
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -22,21 +23,23 @@ class ProfileInfolist
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->placeholder('-'),
-                TextEntry::make('avatar_file_name')
-                    ->placeholder('-'),
-                TextEntry::make('avatar_file_size')
-                    ->numeric()
-                    ->placeholder('-'),
-                TextEntry::make('avatar_content_type')
-                    ->placeholder('-'),
-                TextEntry::make('avatar_updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('avatar_path')
-                    ->placeholder('-'),
-                TextEntry::make('avatar_created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
+                ImageEntry::make('avatar_display')
+                    ->label('Avatar')
+                    ->height(150)
+                    ->width(150)
+                    ->getStateUsing(function ($record) {
+                        // Use medium avatar variant for detail views
+                        if (! empty($record->avatar_path)) {
+                            return $record->present()->showAvatarMedium();
+                        }
+
+                        return config('config.missing_avatar_medium');
+                    }),
+                TextEntry::make('full_name')
+                    ->label('Name')
+                    ->getStateUsing(function ($record) {
+                        return $record->full_name;
+                    }),
             ]);
     }
 }

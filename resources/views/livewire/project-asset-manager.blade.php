@@ -18,9 +18,10 @@
                                 wire:model.defer="assets.{{ $index }}.type"
                                 class="form-control custom-select {{ ($errors && isset($errors["assets.$index.type"])) ? 'is-invalid' : '' }}">
                             <option value="">None</option>
-                            @foreach(config('config.project_resources') as $name)
+                            @foreach(config('config.project_assets') as $name)
                                 <option value="{{ $name }}">{{ $name }}</option>
                             @endforeach
+                            <option value="Delete">Delete</option>
                         </select>
                         @if(count($assets) > 1)
                             <div class="input-group-append">

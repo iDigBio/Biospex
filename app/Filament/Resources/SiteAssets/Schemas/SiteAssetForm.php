@@ -20,7 +20,7 @@
 
 namespace App\Filament\Resources\SiteAssets\Schemas;
 
-use Filament\Forms\Components\FileUpload;
+use App\Filament\Components\AssetFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -55,13 +55,10 @@ class SiteAssetForm
 
                 Section::make('File Upload')
                     ->schema([
-                        FileUpload::make('download_path')
+                        AssetFileUpload::makeForSiteAsset('download_path')
                             ->label('Asset File')
-                            ->directory('site-assets')
-                            ->visibility('public')
-                            ->acceptedFileTypes(['application/pdf', 'image/*', 'text/*', '.xlsx', '.xls', '.csv', '.zip', '.rar', '.doc', '.docx'])
-                            ->maxSize(50000) // 50MB
-                            ->helperText('Maximum file size: 50MB'),
+                            ->visibility('private')
+                            ->helperText('Maximum file size: 10MB. Accepted types: PDF, images, documents, spreadsheets, archives'),
                     ]),
             ]);
     }

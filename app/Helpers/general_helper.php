@@ -79,6 +79,16 @@ function project_banner_file_url(?string $name = null)
 }
 
 /**
+ * Get available project banner options.
+ */
+function project_banner_options(): array
+{
+    $generalService = app(App\Services\Helpers\GeneralService::class);
+
+    return $generalService->getProjectBannerOptions();
+}
+
+/**
  * Return default logo for projects.
  */
 function project_default_logo(): string

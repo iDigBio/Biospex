@@ -20,10 +20,8 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\AssetDownloadPathValidation;
-use App\Rules\AssetDownloadValidation;
-use App\Rules\AssetNameValidation;
 use App\Rules\FileUploadNameValidation;
+use App\Services\Validation\AssetValidationService;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -44,8 +42,9 @@ class ProjectFormRequest extends Request
     public function rules()
     {
         $projectId = isset($this->route('project')->id) ? $this->route('project')->id : null;
+        $assetValidationService = app(AssetValidationService::class);
 
-        return [
+        $rules = [
             'group_id' => 'required|integer|min:1',
             'title' => 'required|between:6,140|unique:projects,title,'.$projectId,
             'contact' => 'required',
@@ -63,11 +62,10 @@ class ProjectFormRequest extends Request
                 new FileUploadNameValidation,
             ],
             'logo_path' => 'nullable|string',
-            'assets.*.type' => [new AssetDownloadValidation],
-            'assets.*.name' => ['required_with:assets.*.type', new AssetNameValidation],
-            'assets.*.description' => 'required_with:assets.*.type',
-            'assets.*.download_path' => [new AssetDownloadPathValidation],
         ];
+
+        // Merge asset validation rules from the shared service
+        return array_merge($rules, $assetValidationService->getAssetValidationRules('multiple'));
     }
 
     /**

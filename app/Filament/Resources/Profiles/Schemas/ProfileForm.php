@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Profiles\Schemas;
 
-use Filament\Forms\Components\DateTimePicker;
+use App\Filament\Components\ImageFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -21,13 +21,12 @@ class ProfileForm
                     ->required(),
                 TextInput::make('timezone')
                     ->required(),
-                TextInput::make('avatar_file_name'),
-                TextInput::make('avatar_file_size')
-                    ->numeric(),
-                TextInput::make('avatar_content_type'),
-                DateTimePicker::make('avatar_updated_at'),
-                TextInput::make('avatar_path'),
-                DateTimePicker::make('avatar_created_at'),
+                ImageFileUpload::makeForProfile('avatar_path')
+                    ->label('Avatar')
+                    ->image()
+                    ->maxSize(2048)
+                    ->imagePreviewHeight('150')
+                    ->helperText('Upload a profile avatar (JPEG, PNG, GIF). Maximum 2MB.'),
             ]);
     }
 }
