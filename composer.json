@@ -19,7 +19,7 @@
     "czim/laravel-paperclip": "^5.0",
     "filament/filament": "^4.0",
     "graham-campbell/markdown": "^v16.0.0.0",
-    "idigacademy/auto-cache": "dev-main",
+    "idigacademy/auto-cache": "^1.0.0",
     "intervention/image-laravel": "^1.5",
     "laracasts/utilities": "^3.2",
     "laravel/framework": "^12.0",

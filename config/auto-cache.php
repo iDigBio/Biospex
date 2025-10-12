@@ -100,11 +100,13 @@ return [
         'admin_route_patterns' => [
             'nova/*',
             'nova-api/*',
-            'admin/*',           // This catches everything under /admin/
+            // 'admin/*',           // This catches everything under /admin/
             'admin/nova/*',      // More specific for Nova UI
             'admin/nova-api/*',  // More specific for Nova API
             'filament/*',
             'admin/filament/*',
+            'dashboard/*',
+            'admin/dashboard/*',
         ],
 
         // URL paths that should skip caching (substring matches)
@@ -113,6 +115,8 @@ return [
             '/admin/nova/',      // Only skip Nova under admin
             '/filament/',
             '/admin/filament/',  // Only skip Filament under admin
+            '/dashboard/',
+            '/admin/dashboard/',
         ],
 
         // Service provider classes that indicate admin packages are installed
