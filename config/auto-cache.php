@@ -100,7 +100,7 @@ return [
         'admin_route_patterns' => [
             'nova/*',
             'nova-api/*',
-            // 'admin/*',           // This catches everything under /admin/
+            'admin/*',           // This catches everything under /admin/
             'admin/nova/*',      // More specific for Nova UI
             'admin/nova-api/*',  // More specific for Nova API
             'filament/*',

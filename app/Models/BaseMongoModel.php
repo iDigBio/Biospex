@@ -66,6 +66,13 @@ class BaseMongoModel extends Model
     public $incrementing = false;
 
     /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = true;
+
+    /**
      * Create a new MongoDB Eloquent model instance.
      *
      * This constructor initializes the MongoDB model with the provided

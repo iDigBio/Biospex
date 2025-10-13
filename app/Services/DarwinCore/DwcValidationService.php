@@ -21,7 +21,7 @@
 namespace App\Services\DarwinCore;
 
 use App\Models\Subject;
-use ForceUTF8\Encoding;
+use App\Services\Helpers\GeneralService;
 use Illuminate\Support\Collection;
 
 /**
@@ -38,9 +38,9 @@ class DwcValidationService
     private array $identifiers;
 
     /**
-     * Constructor - inject configuration values
+     * Constructor - inject configuration values and services
      */
-    public function __construct()
+    public function __construct(private GeneralService $generalService)
     {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
     }
@@ -279,11 +279,8 @@ class DwcValidationService
 
         foreach ($row as $key => $value) {
             if (is_string($value)) {
-                // Fix UTF-8 encoding issues
-                $value = Encoding::fixUTF8($value);
-
-                // Remove invalid UTF-8 characters that might cause MongoDB issues
-                $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+                // Fix UTF-8 encoding issues using GeneralService
+                $value = $this->generalService->fixUtf8($value);
 
                 // Replace problematic characters with safe alternatives
                 $replacements = [

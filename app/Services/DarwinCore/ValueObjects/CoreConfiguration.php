@@ -108,20 +108,6 @@ readonly class CoreConfiguration
     }
 
     /**
-     * Determines if the core represents multimedia data
-     *
-     * Analyzes the row type to distinguish between multimedia and occurrence data.
-     * This is crucial for proper handling of different Darwin Core Archive structures
-     * where either multimedia or occurrence data may be the core.
-     *
-     * @return bool True if this is a multimedia core, false if it's an occurrence core
-     */
-    public function isMultimediaCore(): bool
-    {
-        return stripos($this->rowType, 'occurrence') === false;
-    }
-
-    /**
      * Returns a human-readable representation of the delimiter
      *
      * Converts technical delimiter characters into their readable equivalents,

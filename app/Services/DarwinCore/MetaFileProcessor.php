@@ -60,8 +60,8 @@ readonly class MetaFileProcessor
         $coreElement = $xpathService->findCoreElement();
         $coreConfig = $this->processCoreElement($coreElement, $xpathService);
 
-        // Determine if media is core based on row type
-        $mediaIsCore = $coreConfig->isMultimediaCore();
+        // Validate that core file has occurrence rowType
+        $this->validateCoreIsOccurrence($coreConfig);
 
         // Find and process extension element (optional)
         $extensionConfig = $this->processExtensionElement($xpathService);
@@ -73,7 +73,6 @@ readonly class MetaFileProcessor
             core: $coreConfig,
             extension: $extensionConfig?->config,
             metaFields: $metaFields,
-            mediaIsCore: $mediaIsCore,
             xmlContent: $this->xmlLoader->getXmlContent()
         );
     }
@@ -157,6 +156,24 @@ readonly class MetaFileProcessor
         }
 
         return $metaFields;
+    }
+
+    /**
+     * Validate that core file has occurrence rowType
+     *
+     * @throws \App\Services\DarwinCore\Exceptions\MetaFileException
+     */
+    private function validateCoreIsOccurrence(CoreConfiguration $coreConfig): void
+    {
+        $rowTypeLower = strtolower($coreConfig->rowType);
+
+        if (stripos($rowTypeLower, 'occurrence') === false) {
+            throw new \Exception(
+                'Invalid Darwin Core Archive structure: Core file must contain occurrence data. '.
+                "Found rowType: {$coreConfig->rowType}. ".
+                'Darwin Core Archives must have occurrence as core and multimedia as extension.'
+            );
+        }
     }
 
     /**
