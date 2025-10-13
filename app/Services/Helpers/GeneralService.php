@@ -108,57 +108,67 @@ class GeneralService
     }
 
     /**
-     * Try to convert a string to UTF-8.
+     * Convert a string to UTF-8 encoding using native PHP functions.
      *
-     * @author Thomas Scholz <http://toscho.de>
-     *
-     * @param  string  $str  String to encode
-     * @param  string  $inputEnc  Maybe the source encoding.
-     *                            Set to NULL if you are not sure. iconv() will fail then.
+     * @param  string|null  $str  String to encode
+     * @param  string|null  $inputEnc  Source encoding (auto-detected if null)
+     * @return string UTF-8 encoded string
      */
-    public function forceUtf8($str, $inputEnc = 'WINDOWS-1252'): string
+    public function forceUtf8(?string $str, ?string $inputEnc = null): string
     {
-        if ($this->isUtf8($str)) { // nothing to do
+        // Handle null/empty input
+        if ($str === null || $str === '') {
+            return '';
+        }
+
+        // Check if already valid UTF-8
+        if ($this->isUtf8($str)) {
             return $str;
         }
 
-        if (strtoupper($inputEnc) === 'ISO-8859-1') {
-            return utf8_encode($str);
+        // Auto-detect encoding if not provided
+        if ($inputEnc === null) {
+            $inputEnc = mb_detect_encoding($str, ['UTF-8', 'ISO-8859-1', 'WINDOWS-1252', 'ASCII'], true);
+            if ($inputEnc === false) {
+                $inputEnc = 'WINDOWS-1252'; // fallback
+            }
         }
 
-        if (function_exists('mb_convert_encoding')) {
-            return mb_convert_encoding($str, 'UTF-8', $inputEnc);
-        }
+        // Convert to UTF-8
+        $converted = mb_convert_encoding($str, 'UTF-8', $inputEnc);
 
-        if (function_exists('iconv')) {
-            return iconv($inputEnc, 'UTF-8', $str);
-        }
-
-        // You could also just return the original string.
-        return 'Could not convert string to UTF-8';
+        // Return converted string or original if conversion failed
+        return $converted !== false ? $converted : $str;
     }
 
     /**
-     * Check for UTF-8 compatibility
+     * Check if a string is valid UTF-8 using native PHP function.
      *
-     * Regex from Martin Dürst
-     *
-     * @source http://www.w3.org/International/questions/qa-forms-utf-8.en.php
-     *
-     * @param  string  $str  String to check
+     * @param  string|null  $str  String to check
      */
-    private function isUtf8($str): bool
+    private function isUtf8(?string $str): bool
     {
-        return preg_match("/^(
-         [\x09\x0A\x0D\x20-\x7E]            # ASCII
-       | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
-       |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
-       | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
-       |  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates
-       |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
-       | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
-       |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
-      )*$/x", $str);
+        return $str !== null && mb_check_encoding($str, 'UTF-8');
+    }
+
+    /**
+     * Fix malformed UTF-8 encoding issues.
+     * This replaces ForceUTF8\Encoding::fixUTF8() functionality.
+     *
+     * @param  string|null  $str  String to fix
+     * @return string Fixed UTF-8 string
+     */
+    public function fixUtf8(?string $str): string
+    {
+        if ($str === null || $str === '') {
+            return '';
+        }
+
+        // Fix malformed UTF-8 by converting from UTF-8 to UTF-8
+        // This removes invalid sequences
+        $fixed = mb_convert_encoding($str, 'UTF-8', 'UTF-8');
+
+        return $fixed !== false ? $fixed : '';
     }
 
     /**

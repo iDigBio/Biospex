@@ -35,7 +35,6 @@
     "league/oauth2-client": "^2.6",
     "livewire/livewire": "^3.6",
     "mongodb/laravel-mongodb": "^5.0",
-    "neitanod/forceutf8": "~2.0",
     "outl1ne/nova-sortable": "^3.4",
     "pda/pheanstalk": "^v7.0.0",
     "pusher/pusher-php-server": "^7.0",
