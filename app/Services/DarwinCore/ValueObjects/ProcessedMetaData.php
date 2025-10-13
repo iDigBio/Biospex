@@ -32,7 +32,6 @@ readonly class ProcessedMetaData
         public CoreConfiguration $core,
         public ?ExtensionConfiguration $extension,
         public array $metaFields,
-        public bool $mediaIsCore,
         public string $xmlContent
     ) {}
 
@@ -98,14 +97,6 @@ readonly class ProcessedMetaData
     public function getExtensionMetaFields(): array
     {
         return $this->metaFields['extension'] ?? [];
-    }
-
-    /**
-     * Check if media records are in the core file
-     */
-    public function isMediaCore(): bool
-    {
-        return $this->mediaIsCore;
     }
 
     /**

@@ -28,6 +28,7 @@ use App\Services\Project\HeaderService;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\WriteConcern;
 
 /**
@@ -81,7 +82,6 @@ class DwcBatchProcessor
             // Save meta file to database
             $this->metaFileProcessor->saveMetaFile($projectId, $this->processedMetaData->xmlContent);
 
-            $mediaIsCore = $this->processedMetaData->isMediaCore();
             $metaFields = $this->processedMetaData->metaFields;
 
             // Validate identifier columns exist
@@ -89,11 +89,11 @@ class DwcBatchProcessor
                 throw new Exception('No identifier columns found in meta.xml extension fields');
             }
 
-            // Load occurrence data into memory map
-            $occurrenceData = $this->loadOccurrenceData($directory, $mediaIsCore, $metaFields);
+            // Load occurrence data into memory map (core is always occurrence data)
+            $occurrenceData = $this->loadOccurrenceData($directory, $metaFields);
 
             // Process media file with validation and batch operations
-            $this->processMediaWithValidation($directory, $mediaIsCore, $metaFields, $occurrenceData, $projectId);
+            $this->processMediaWithValidation($directory, $metaFields, $occurrenceData, $projectId);
 
             // Clean up MongoDB collection if it was used
             if (is_string($occurrenceData)) {
@@ -124,19 +124,12 @@ class DwcBatchProcessor
      *
      * @throws \League\Csv\Exception
      */
-    protected function loadOccurrenceData(string $directory, bool $mediaIsCore, array $metaFields): array|string
+    protected function loadOccurrenceData(string $directory, array $metaFields): array|string
     {
-        // If media is core, no separate occurrence file exists
-        if ($mediaIsCore) {
-            return [];
-        }
-
         $occurrenceFile = $directory.'/'.$this->processedMetaData->getCoreFile();
 
         if (! file_exists($occurrenceFile)) {
-            Log::warning('Occurrence file not found', ['file' => $occurrenceFile]);
-
-            return [];
+            throw new Exception("Core occurrence file not found: {$occurrenceFile}. Darwin Core Archives must have a valid occurrence core file.");
         }
 
         // Check file size and determine processing method
@@ -208,6 +201,10 @@ class DwcBatchProcessor
         $this->csv->setHeaderOffset(0);
 
         $header = $this->csv->getHeader();
+
+        // Save occurrence headers
+        $this->saveHeaderArray($header, 'occurrence');
+
         $records = $this->csv->getRecords();
         $occurrenceData = [];
 
@@ -245,6 +242,10 @@ class DwcBatchProcessor
         $this->csv->setHeaderOffset(0);
 
         $header = $this->csv->getHeader();
+
+        // Save occurrence headers
+        $this->saveHeaderArray($header, 'occurrence');
+
         $records = $this->csv->getRecords();
         $batchData = [];
         $count = 0;
@@ -305,7 +306,6 @@ class DwcBatchProcessor
      */
     protected function processMediaWithValidation(
         string $directory,
-        bool $mediaIsCore,
         array $metaFields,
         array|string $occurrenceData,
         int $projectId
@@ -324,8 +324,8 @@ class DwcBatchProcessor
         $header = $this->csv->getHeader();
         $records = $this->csv->getRecords();
 
-        // Save header for property creation
-        $this->saveHeaderArray($header, $mediaIsCore);
+        // Save header for property creation (extension file contains image/media data)
+        $this->saveHeaderArray($header, 'image');
 
         $batch = [];
         $rowCount = 0;
@@ -341,7 +341,7 @@ class DwcBatchProcessor
 
             // Process batch when it reaches the batch size
             if (count($batch) >= self::BATCH_SIZE) {
-                $this->processBatch($batch, $projectId, $metaFields['extension'], $header, $occurrenceData, $mediaIsCore);
+                $this->processBatch($batch, $projectId, $metaFields['extension'], $header, $occurrenceData);
                 $batch = [];
 
                 // Memory cleanup
@@ -353,7 +353,7 @@ class DwcBatchProcessor
 
         // Process remaining items in final batch
         if (! empty($batch)) {
-            $this->processBatch($batch, $projectId, $metaFields['extension'], $header, $occurrenceData, $mediaIsCore);
+            $this->processBatch($batch, $projectId, $metaFields['extension'], $header, $occurrenceData);
         }
 
     }
@@ -366,8 +366,7 @@ class DwcBatchProcessor
         int $projectId,
         array $metaFields,
         array $header,
-        array|string $occurrenceData,
-        bool $mediaIsCore
+        array|string $occurrenceData
     ): void {
         // Validate the entire batch
         $validationResult = $this->validation->validateBatch($batch, $header, $metaFields, $projectId);
@@ -381,7 +380,7 @@ class DwcBatchProcessor
 
         // For MongoDB-based occurrence data, collect all occurrence IDs and batch lookup
         $batchedOccurrences = [];
-        if (is_string($occurrenceData) && ! $mediaIsCore) {
+        if (is_string($occurrenceData)) {
             $occurrenceIds = [];
             foreach ($validationResult['valid'] as $row) {
                 $occurrenceId = $row[$header[0]] ?? null;
@@ -395,7 +394,7 @@ class DwcBatchProcessor
         // Build subjects for valid records
         $subjects = [];
         foreach ($validationResult['valid'] as $row) {
-            $subject = $this->buildSubject($row, $header, $projectId, $occurrenceData, $mediaIsCore, $batchedOccurrences);
+            $subject = $this->buildSubject($row, $header, $projectId, $occurrenceData, $batchedOccurrences);
             if ($subject) {
                 $subjects[] = $subject;
             }
@@ -416,19 +415,22 @@ class DwcBatchProcessor
         array $header,
         int $projectId,
         array|string $occurrenceData,
-        bool $mediaIsCore,
         array $batchedOccurrences = []
     ): ?array {
         try {
             // Get occurrence ID for lookup (first column in media file points to occurrence ID)
-            $occurrenceId = $mediaIsCore ? null : $row[$header[0]] ?? null;
+            $occurrenceId = $row[$header[0]] ?? null;
 
             // Base subject fields
+            // Base subject fields with timestamps
+            $now = new UTCDateTime;
             $fields = [
                 'project_id' => $projectId,
                 'ocr' => '',
                 'expedition_ids' => [],
                 'exported' => false,
+                'created_at' => $now,
+                'updated_at' => $now,
             ];
 
             // Embed occurrence data if available
@@ -438,7 +440,7 @@ class DwcBatchProcessor
                     // Memory-based lookup
                     if (isset($occurrenceData[$occurrenceId])) {
                         $occurrence = ['occurrence' => $occurrenceData[$occurrenceId]];
-                    } elseif (! $mediaIsCore) {
+                    } else {
                         $occurrence = ['occurrence' => ['id' => (string) $occurrenceId]];
                     }
                 } elseif (is_string($occurrenceData)) {
@@ -450,13 +452,13 @@ class DwcBatchProcessor
                         $occurrenceRecord = ImportOccurrence::findByOccurrenceId($occurrenceId, $occurrenceData);
                         if ($occurrenceRecord) {
                             $occurrence = ['occurrence' => $occurrenceRecord];
-                        } elseif (! $mediaIsCore) {
+                        } else {
                             $occurrence = ['occurrence' => ['id' => (string) $occurrenceId]];
                         }
                     }
 
                     // If no occurrence found, create minimal occurrence record
-                    if (empty($occurrence) && ! $mediaIsCore) {
+                    if (empty($occurrence)) {
                         $occurrence = ['occurrence' => ['id' => (string) $occurrenceId]];
                     }
                 }
@@ -546,27 +548,25 @@ class DwcBatchProcessor
     /**
      * Save header array for property creation.
      */
-    private function saveHeaderArray(array $header, bool $loadMedia): void
+    private function saveHeaderArray(array $header, string $headerType): void
     {
         try {
-            $type = $loadMedia ? 'image' : 'occurrence';
-
             $result = $this->headerService->getFirst('project_id', $this->projectId);
 
             if (empty($result)) {
                 $insert = [
                     'project_id' => $this->projectId,
-                    'header' => [$type => $header],
+                    'header' => [$headerType => $header],
                 ];
                 $this->headerService->create($insert);
             } else {
                 $existingHeader = $result->header;
-                $existingHeader[$type] = isset($existingHeader[$type]) ? $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
+                $existingHeader[$headerType] = isset($existingHeader[$headerType]) ? $this->combineHeader($existingHeader[$headerType], $header) : array_unique($header);
                 $result->header = $existingHeader;
                 $result->save();
             }
         } catch (Exception $e) {
-            Log::error('Failed to save header array', ['error' => $e->getMessage()]);
+            Log::error('Failed to save header array', ['error' => $e->getMessage(), 'headerType' => $headerType]);
         }
     }
 

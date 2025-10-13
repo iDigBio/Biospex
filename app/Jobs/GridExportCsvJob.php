@@ -87,8 +87,8 @@ class GridExportCsvJob implements ShouldQueue
             $subjectArray = $subject->getAttributes();
             $subjectArray['id'] = (string) $subject->id;
             $subjectArray['expedition_ids'] = trim(implode(', ', $subject->expedition_ids), ',');
-            $subjectArray['updated_at'] = $subject->updated_at->toDateTimeString();
-            $subjectArray['created_at'] = $subject->created_at->toDateTimeString();
+            $subjectArray['updated_at'] = $subject->updated_at ? $subject->updated_at->toDateTimeString() : '';
+            $subjectArray['created_at'] = $subject->created_at ? $subject->created_at->toDateTimeString() : '';
             $subjectArray['ocr'] = $generalService->forceUtf8($subject->ocr);
             $subjectArray['occurrence'] = $this->decodeAndEncode($subject['occurrence']->getAttributes());
 
@@ -96,6 +96,7 @@ class GridExportCsvJob implements ShouldQueue
 
             $awsS3CsvService->csv->insertOne($merged->toArray());
         });
+
         $awsS3CsvService->closeBucketStream();
 
         if (! Storage::disk('s3')->exists($filePath)) {
