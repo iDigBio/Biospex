@@ -15,11 +15,13 @@ class GroupsTable
     {
         return $table
             ->columns([
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('title')
                     ->searchable(),
+                TextColumn::make('owner.profile.first_name')
+                    ->label('Owner')
+                    ->formatStateUsing(fn ($record) => $record->owner?->getFilamentName() ?? '-')
+                    ->searchable(['owner.profile.first_name', 'owner.profile.last_name'])
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

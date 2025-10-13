@@ -5,6 +5,7 @@ namespace App\Filament\Resources\GeoLocateCommunities\Schemas;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use ValentinMorice\FilamentJsonColumn\JsonColumn;
 
 class GeoLocateCommunityForm
 {
@@ -17,7 +18,7 @@ class GeoLocateCommunityForm
                     ->required(),
                 TextInput::make('name')
                     ->required(),
-                TextInput::make('data')
+                JsonColumn::make('data')
                     ->required(),
             ]);
     }

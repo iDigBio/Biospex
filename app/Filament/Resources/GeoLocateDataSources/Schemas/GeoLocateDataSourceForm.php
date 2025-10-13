@@ -5,6 +5,7 @@ namespace App\Filament\Resources\GeoLocateDataSources\Schemas;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use ValentinMorice\FilamentJsonColumn\JsonColumn;
 
 class GeoLocateDataSourceForm
 {
@@ -24,8 +25,8 @@ class GeoLocateDataSourceForm
                 Select::make('geo_locate_community_id')
                     ->relationship('geoLocateCommunity', 'name'),
                 Select::make('download_id')
-                    ->relationship('download', 'id'),
-                TextInput::make('data_source'),
+                    ->relationship('download', 'file'),
+                JsonColumn::make('data_source'),
                 TextInput::make('data'),
             ]);
     }

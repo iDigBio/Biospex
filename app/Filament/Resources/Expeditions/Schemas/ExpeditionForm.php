@@ -57,7 +57,7 @@ class ExpeditionForm
                         Toggle::make('locked')
                             ->label('Expedition Locked')
                             ->default(false)
-                            ->helperText('Locked expeditions cannot be modified'),
+                            ->helperText('Locked expeditions are after GeoLocate initialization and should not be edited.'),
                     ])
                     ->columns(2),
 

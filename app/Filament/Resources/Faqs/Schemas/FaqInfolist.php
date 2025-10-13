@@ -14,7 +14,8 @@ class FaqInfolist
                 TextEntry::make('faqCategory.name')
                     ->label('Faq category'),
                 TextEntry::make('question'),
-                TextEntry::make('answer'),
+                TextEntry::make('answer')
+                    ->html(),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

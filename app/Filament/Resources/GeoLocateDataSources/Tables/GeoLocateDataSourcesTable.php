@@ -23,7 +23,7 @@ class GeoLocateDataSourcesTable
                     ->searchable(),
                 TextColumn::make('geoLocateCommunity.name')
                     ->searchable(),
-                TextColumn::make('download.id')
+                TextColumn::make('download.file')
                     ->searchable(),
                 TextColumn::make('data_source')
                     ->searchable(),

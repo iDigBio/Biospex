@@ -20,7 +20,7 @@ class GeoLocateDataSourceInfolist
                 TextEntry::make('geoLocateCommunity.name')
                     ->label('Geo locate community')
                     ->placeholder('-'),
-                TextEntry::make('download.id')
+                TextEntry::make('download.file')
                     ->label('Download')
                     ->placeholder('-'),
                 TextEntry::make('data_source')

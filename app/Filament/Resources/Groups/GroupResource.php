@@ -6,6 +6,9 @@ use App\Filament\Resources\Groups\Pages\CreateGroup;
 use App\Filament\Resources\Groups\Pages\EditGroup;
 use App\Filament\Resources\Groups\Pages\ListGroups;
 use App\Filament\Resources\Groups\Pages\ViewGroup;
+use App\Filament\Resources\Groups\RelationManagers\ExpeditionsRelationManager;
+use App\Filament\Resources\Groups\RelationManagers\ProjectsRelationManager;
+use App\Filament\Resources\Groups\RelationManagers\UsersRelationManager;
 use App\Filament\Resources\Groups\Schemas\GroupForm;
 use App\Filament\Resources\Groups\Schemas\GroupInfolist;
 use App\Filament\Resources\Groups\Tables\GroupsTable;
@@ -40,7 +43,9 @@ class GroupResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            UsersRelationManager::class,
+            ProjectsRelationManager::class,
+            ExpeditionsRelationManager::class,
         ];
     }
 
@@ -52,5 +57,11 @@ class GroupResource extends Resource
             'view' => ViewGroup::route('/{record}'),
             'edit' => EditGroup::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['owner.profile']);
     }
 }

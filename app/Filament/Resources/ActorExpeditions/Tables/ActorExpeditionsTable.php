@@ -19,21 +19,6 @@ class ActorExpeditionsTable
                     ->searchable(),
                 TextColumn::make('actor.title')
                     ->searchable(),
-                TextColumn::make('state')
-                    ->numeric(thousandsSeparator: '')
-                    ->sortable(),
-                TextColumn::make('total')
-                    ->numeric(thousandsSeparator: '')
-                    ->sortable(),
-                TextColumn::make('error')
-                    ->numeric(thousandsSeparator: '')
-                    ->sortable(),
-                TextColumn::make('order')
-                    ->numeric(thousandsSeparator: '')
-                    ->sortable(),
-                TextColumn::make('expert')
-                    ->numeric(thousandsSeparator: '')
-                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -15,10 +15,11 @@ class BingosTable
     {
         return $table
             ->columns([
-                TextColumn::make('user_name')
-                    ->label('User Name')
-                    ->getStateUsing(fn ($record) => $record->user?->getFilamentName())
-                    ->searchable(['user.profile.first_name', 'user.profile.last_name']),
+                TextColumn::make('user.profile.first_name')
+                    ->label('User')
+                    ->formatStateUsing(fn ($record) => $record->user?->getFilamentName() ?? '-')
+                    ->searchable(['user.profile.first_name', 'user.profile.last_name'])
+                    ->sortable(),
                 TextColumn::make('project.title')
                     ->searchable(),
                 TextColumn::make('title')

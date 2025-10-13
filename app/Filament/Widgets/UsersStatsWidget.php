@@ -30,7 +30,7 @@ class UsersStatsWidget extends Widget
 
     protected ?string $heading = 'Users';
 
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 4;
 
     public ?string $filter = 'ALL';
 

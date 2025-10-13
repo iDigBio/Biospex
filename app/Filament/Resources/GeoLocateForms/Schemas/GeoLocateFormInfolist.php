@@ -14,7 +14,6 @@ class GeoLocateFormInfolist
                 TextEntry::make('group.title')
                     ->label('Group'),
                 TextEntry::make('name'),
-                TextEntry::make('hash'),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

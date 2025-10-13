@@ -15,8 +15,9 @@ class HeadersTable
     {
         return $table
             ->columns([
-                TextColumn::make('project_id')
-                    ->numeric()
+                TextColumn::make('project.title')
+                    ->label('Project')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

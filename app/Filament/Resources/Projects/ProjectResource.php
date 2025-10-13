@@ -6,6 +6,8 @@ use App\Filament\Resources\Projects\Pages\CreateProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
 use App\Filament\Resources\Projects\Pages\ListProjects;
 use App\Filament\Resources\Projects\Pages\ViewProject;
+use App\Filament\Resources\Projects\RelationManagers\EventsRelationManager;
+use App\Filament\Resources\Projects\RelationManagers\ExpeditionsRelationManager;
 use App\Filament\Resources\Projects\Schemas\ProjectForm;
 use App\Filament\Resources\Projects\Schemas\ProjectInfolist;
 use App\Filament\Resources\Projects\Tables\ProjectsTable;
@@ -40,7 +42,8 @@ class ProjectResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ExpeditionsRelationManager::class,
+            EventsRelationManager::class,
         ];
     }
 

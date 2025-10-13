@@ -59,6 +59,7 @@ class GeoLocateDownloadJob implements ShouldQueue
     public function handle(GeoLocateDownloadService $service): void
     {
         // Download kml and csv files.
+        // TODO make the format type more descriptive for the download database table
         collect(['kml', 'csv'])->each(function ($formatType) use ($service) {
             $this->getDownload($service, $formatType);
         });

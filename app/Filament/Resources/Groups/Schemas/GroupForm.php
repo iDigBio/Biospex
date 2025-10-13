@@ -19,8 +19,9 @@ class GroupForm
                     ->label('Group Title'),
                 Select::make('user_id')
                     ->label('Group Owner')
-                    ->options(User::query()->with('profile')->get()->pluck('profile.full_name', 'id'))
-                    ->searchable()
+                    ->relationship('owner', 'id')
+                    ->getOptionLabelFromRecordUsing(fn (User $record) => $record->getFilamentName())
+                    ->searchable(['profile.first_name', 'profile.last_name'])
                     ->required()
                     ->preload(),
             ]);

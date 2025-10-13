@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Headers\Schemas;
 
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use ValentinMorice\FilamentJsonColumn\JsonColumn;
 
 class HeaderForm
 {
@@ -15,7 +15,7 @@ class HeaderForm
                 TextInput::make('project_id')
                     ->required()
                     ->numeric(),
-                Textarea::make('header')
+                JsonColumn::make('header')
                     ->columnSpanFull(),
             ]);
     }

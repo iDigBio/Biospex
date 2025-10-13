@@ -53,4 +53,9 @@ class HeaderResource extends Resource
             'edit' => EditHeader::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()->with(['project']);
+    }
 }

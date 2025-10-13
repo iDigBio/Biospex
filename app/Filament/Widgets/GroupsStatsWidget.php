@@ -20,25 +20,25 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\PanoptesTranscription;
+use App\Models\Group;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Carbon;
 
-class TranscriptionsStatsWidget extends Widget
+class GroupsStatsWidget extends Widget
 {
-    protected string $view = 'filament.widgets.transcriptions-stats-widget';
+    protected string $view = 'filament.widgets.groups-stats-widget';
 
-    protected ?string $heading = 'Transcriptions';
+    protected ?string $heading = 'Groups';
 
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 1;
 
     public ?string $filter = 'ALL';
 
-    protected function getTranscriptionsCount(): int
+    protected function getGroupsCount(): int
     {
         $filter = $this->filter ?? 'ALL';
 
-        $query = PanoptesTranscription::query();
+        $query = Group::query();
 
         switch ($filter) {
             case 'TODAY':
@@ -49,13 +49,12 @@ class TranscriptionsStatsWidget extends Widget
                     ->whereYear('created_at', Carbon::now()->year);
                 break;
             case 'QTD':
-                $quarter = ceil(Carbon::now()->month / 3);
-                $startMonth = ($quarter - 1) * 3 + 1;
-                $endMonth = $quarter * 3;
-
-                $query->whereMonth('created_at', '>=', $startMonth)
-                    ->whereMonth('created_at', '<=', $endMonth)
-                    ->whereYear('created_at', Carbon::now()->year);
+                $quarter = Carbon::now()->quarter;
+                $year = Carbon::now()->year;
+                $query->whereBetween('created_at', [
+                    Carbon::createFromDate($year, ($quarter - 1) * 3 + 1, 1)->startOfDay(),
+                    Carbon::now()->endOfDay(),
+                ]);
                 break;
             case 'YTD':
                 $query->whereYear('created_at', Carbon::now()->year);
@@ -83,7 +82,7 @@ class TranscriptionsStatsWidget extends Widget
     public function getViewData(): array
     {
         return [
-            'count' => $this->getTranscriptionsCount(),
+            'count' => $this->getGroupsCount(),
             'filters' => $this->getFilters(),
             'activeFilter' => $this->filter,
         ];

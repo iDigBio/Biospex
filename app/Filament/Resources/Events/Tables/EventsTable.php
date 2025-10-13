@@ -17,12 +17,12 @@ class EventsTable
             ->columns([
                 TextColumn::make('project.title')
                     ->searchable(),
-                TextColumn::make('owner_name')
+                TextColumn::make('owner.profile.first_name')
                     ->label('Owner')
-                    ->getStateUsing(fn ($record) => $record->owner?->getFilamentName()),
+                    ->formatStateUsing(fn ($record) => $record->owner?->getFilamentName() ?? '-')
+                    ->searchable(['owner.profile.first_name', 'owner.profile.last_name'])
+                    ->sortable(),
                 TextColumn::make('title')
-                    ->searchable(),
-                TextColumn::make('timezone')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

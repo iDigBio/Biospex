@@ -15,6 +15,10 @@ class UsersTable
     {
         return $table
             ->columns([
+                TextColumn::make('profile.first_name')
+                    ->label('First Name'),
+                TextColumn::make('profile.last_name')
+                    ->label('Last Name'),
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),

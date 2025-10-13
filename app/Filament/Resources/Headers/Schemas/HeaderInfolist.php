@@ -14,6 +14,7 @@ class HeaderInfolist
                 TextEntry::make('project_id')
                     ->numeric(),
                 TextEntry::make('header')
+                    ->formatStateUsing(fn ($state) => is_array($state) ? json_encode($state, JSON_PRETTY_PRINT) : $state)
                     ->placeholder('-')
                     ->columnSpanFull(),
                 TextEntry::make('created_at')

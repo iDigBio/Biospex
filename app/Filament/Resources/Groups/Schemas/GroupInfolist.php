@@ -11,9 +11,10 @@ class GroupInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('user_id')
-                    ->numeric(),
                 TextEntry::make('title'),
+                TextEntry::make('owner.profile.first_name')
+                    ->label('Owner Name')
+                    ->formatStateUsing(fn ($record) => $record->owner?->getFilamentName() ?? '-'),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

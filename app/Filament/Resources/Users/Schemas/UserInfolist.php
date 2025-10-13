@@ -11,6 +11,10 @@ class UserInfolist
     {
         return $schema
             ->components([
+                TextEntry::make('profile.first_name')
+                    ->label('First Name'),
+                TextEntry::make('profile.last_name')
+                    ->label('Last Name'),
                 TextEntry::make('email')
                     ->label('Email address'),
                 TextEntry::make('email_verified_at')

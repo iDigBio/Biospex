@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Faqs\Schemas;
 
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -17,7 +18,7 @@ class FaqForm
                     ->required(),
                 TextInput::make('question')
                     ->required(),
-                TextInput::make('answer')
+                RichEditor::make('answer')
                     ->required(),
             ]);
     }
