@@ -12,16 +12,16 @@ class PanoptesProjectInfolist
         return $schema
             ->components([
                 TextEntry::make('project_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->placeholder('-'),
                 TextEntry::make('expedition_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->placeholder('-'),
                 TextEntry::make('panoptes_project_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->placeholder('-'),
                 TextEntry::make('panoptes_workflow_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('subject_sets')
                     ->placeholder('-')
                     ->columnSpanFull(),

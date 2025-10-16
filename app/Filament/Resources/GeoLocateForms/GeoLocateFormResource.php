@@ -9,6 +9,7 @@ use App\Filament\Resources\GeoLocateForms\Pages\ViewGeoLocateForm;
 use App\Filament\Resources\GeoLocateForms\Schemas\GeoLocateFormForm;
 use App\Filament\Resources\GeoLocateForms\Schemas\GeoLocateFormInfolist;
 use App\Filament\Resources\GeoLocateForms\Tables\GeoLocateFormsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\GeoLocateForm;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class GeoLocateFormResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = GeoLocateForm::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

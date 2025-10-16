@@ -21,10 +21,10 @@ class BingoUsersTable
                 TextColumn::make('ip')
                     ->searchable(),
                 TextColumn::make('latitude')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('longitude')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('city')
                     ->searchable(),

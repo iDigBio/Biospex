@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Workflows\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class WorkflowForm
@@ -13,10 +14,8 @@ class WorkflowForm
             ->components([
                 TextInput::make('title')
                     ->required(),
-                TextInput::make('enabled')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
+                Toggle::make('enabled')
+                    ->default(false),
             ]);
     }
 }

@@ -14,19 +14,19 @@ class ExpeditionStatInfolist
                 TextEntry::make('expedition.title')
                     ->label('Expedition'),
                 TextEntry::make('local_subject_count')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('subject_count')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('transcriptions_goal')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('local_transcriptions_completed')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('transcriptions_completed')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('transcriber_count')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('percent_completed')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

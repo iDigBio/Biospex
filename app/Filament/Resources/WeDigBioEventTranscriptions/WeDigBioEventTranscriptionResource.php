@@ -9,6 +9,7 @@ use App\Filament\Resources\WeDigBioEventTranscriptions\Pages\ViewWeDigBioEventTr
 use App\Filament\Resources\WeDigBioEventTranscriptions\Schemas\WeDigBioEventTranscriptionForm;
 use App\Filament\Resources\WeDigBioEventTranscriptions\Schemas\WeDigBioEventTranscriptionInfolist;
 use App\Filament\Resources\WeDigBioEventTranscriptions\Tables\WeDigBioEventTranscriptionsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\WeDigBioEventTranscription;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,7 +19,11 @@ use Filament\Tables\Table;
 
 class WeDigBioEventTranscriptionResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = WeDigBioEventTranscription::class;
+
+    protected static ?string $modelLabel = 'WeDigBio Event Transcriptions';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Notices\Schemas;
 
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -12,8 +13,12 @@ class NoticeInfolist
         return $schema
             ->components([
                 TextEntry::make('message'),
-                TextEntry::make('enabled')
-                    ->numeric(),
+                IconEntry::make('enabled')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

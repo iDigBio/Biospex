@@ -9,6 +9,7 @@ use App\Filament\Resources\Events\Pages\ViewEvent;
 use App\Filament\Resources\Events\Schemas\EventForm;
 use App\Filament\Resources\Events\Schemas\EventInfolist;
 use App\Filament\Resources\Events\Tables\EventsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Event;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class EventResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Event::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

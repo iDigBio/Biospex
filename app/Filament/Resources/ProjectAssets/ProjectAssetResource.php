@@ -27,6 +27,7 @@ use App\Filament\Resources\ProjectAssets\Pages\ViewProjectAsset;
 use App\Filament\Resources\ProjectAssets\Schemas\ProjectAssetForm;
 use App\Filament\Resources\ProjectAssets\Schemas\ProjectAssetInfolist;
 use App\Filament\Resources\ProjectAssets\Tables\ProjectAssetsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\ProjectAsset;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -36,7 +37,11 @@ use Filament\Tables\Table;
 
 class ProjectAssetResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = ProjectAsset::class;
+
+    protected static ?string $modelLabel = 'Project Resources';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocument;
 

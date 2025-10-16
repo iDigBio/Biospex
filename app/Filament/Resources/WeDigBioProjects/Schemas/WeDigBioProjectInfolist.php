@@ -12,9 +12,9 @@ class WeDigBioProjectInfolist
         return $schema
             ->components([
                 TextEntry::make('panoptes_project_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('panoptes_workflow_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('subject_sets')
                     ->placeholder('-')
                     ->columnSpanFull(),

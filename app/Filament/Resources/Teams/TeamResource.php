@@ -9,6 +9,7 @@ use App\Filament\Resources\Teams\Pages\ViewTeam;
 use App\Filament\Resources\Teams\Schemas\TeamForm;
 use App\Filament\Resources\Teams\Schemas\TeamInfolist;
 use App\Filament\Resources\Teams\Tables\TeamsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Team;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class TeamResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Team::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

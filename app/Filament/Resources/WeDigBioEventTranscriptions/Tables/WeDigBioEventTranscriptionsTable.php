@@ -16,12 +16,12 @@ class WeDigBioEventTranscriptionsTable
         return $table
             ->columns([
                 TextColumn::make('classification_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('project.title')
                     ->searchable(),
                 TextColumn::make('event_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

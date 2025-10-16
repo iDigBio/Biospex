@@ -16,15 +16,15 @@ class TranscriptionLocationsTable
         return $table
             ->columns([
                 TextColumn::make('classification_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('project_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('expedition.title')
                     ->searchable(),
                 TextColumn::make('state_county_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -13,9 +13,9 @@ class CityInfolist
             ->components([
                 TextEntry::make('city'),
                 TextEntry::make('latitude')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('longitude')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

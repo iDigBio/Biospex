@@ -9,6 +9,7 @@ use App\Filament\Resources\ActorExpeditions\Pages\ViewActorExpedition;
 use App\Filament\Resources\ActorExpeditions\Schemas\ActorExpeditionForm;
 use App\Filament\Resources\ActorExpeditions\Schemas\ActorExpeditionInfolist;
 use App\Filament\Resources\ActorExpeditions\Tables\ActorExpeditionsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\ActorExpedition;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class ActorExpeditionResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = ActorExpedition::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

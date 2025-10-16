@@ -16,7 +16,7 @@ class PusherClassificationsTable
         return $table
             ->columns([
                 TextColumn::make('classification_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

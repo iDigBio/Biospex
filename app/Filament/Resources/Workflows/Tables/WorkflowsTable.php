@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -17,8 +18,12 @@ class WorkflowsTable
             ->columns([
                 TextColumn::make('title')
                     ->searchable(),
-                TextColumn::make('enabled')
-                    ->numeric()
+                IconColumn::make('enabled')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

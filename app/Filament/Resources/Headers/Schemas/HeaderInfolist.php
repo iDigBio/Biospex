@@ -12,7 +12,7 @@ class HeaderInfolist
         return $schema
             ->components([
                 TextEntry::make('project_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('header')
                     ->formatStateUsing(fn ($state) => is_array($state) ? json_encode($state, JSON_PRETTY_PRINT) : $state)
                     ->placeholder('-')

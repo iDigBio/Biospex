@@ -13,13 +13,13 @@ class OcrQueueFileInfolist
         return $schema
             ->components([
                 TextEntry::make('queue_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('subject_id'),
                 TextEntry::make('access_uri'),
                 IconEntry::make('processed')
                     ->boolean(),
                 TextEntry::make('tries')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

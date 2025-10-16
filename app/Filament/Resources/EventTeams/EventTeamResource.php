@@ -9,6 +9,7 @@ use App\Filament\Resources\EventTeams\Pages\ViewEventTeam;
 use App\Filament\Resources\EventTeams\Schemas\EventTeamForm;
 use App\Filament\Resources\EventTeams\Schemas\EventTeamInfolist;
 use App\Filament\Resources\EventTeams\Tables\EventTeamsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\EventTeam;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class EventTeamResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = EventTeam::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

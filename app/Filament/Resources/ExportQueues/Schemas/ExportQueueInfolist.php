@@ -17,11 +17,11 @@ class ExportQueueInfolist
                 TextEntry::make('actor.title')
                     ->label('Actor'),
                 TextEntry::make('stage')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 IconEntry::make('queued')
                     ->boolean(),
                 TextEntry::make('total')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 IconEntry::make('error')
                     ->boolean(),
                 TextEntry::make('created_at')

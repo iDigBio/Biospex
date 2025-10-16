@@ -19,13 +19,13 @@ class OcrQueuesTable
                 TextColumn::make('project.title')
                     ->searchable(),
                 TextColumn::make('expedition_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('total')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('status')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 IconColumn::make('error')
                     ->boolean(),

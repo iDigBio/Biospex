@@ -21,10 +21,6 @@ class ProjectsTable
                     ->searchable(),
                 TextColumn::make('contact')
                     ->searchable(),
-                TextColumn::make('contact_email')
-                    ->searchable(),
-                TextColumn::make('description_short')
-                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -9,6 +9,7 @@ use App\Filament\Resources\BingoWords\Pages\ViewBingoWord;
 use App\Filament\Resources\BingoWords\Schemas\BingoWordForm;
 use App\Filament\Resources\BingoWords\Schemas\BingoWordInfolist;
 use App\Filament\Resources\BingoWords\Tables\BingoWordsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\BingoWord;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class BingoWordResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = BingoWord::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

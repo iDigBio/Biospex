@@ -27,6 +27,7 @@ use App\Filament\Resources\SiteAssets\Pages\ViewSiteAsset;
 use App\Filament\Resources\SiteAssets\Schemas\SiteAssetForm;
 use App\Filament\Resources\SiteAssets\Schemas\SiteAssetInfolist;
 use App\Filament\Resources\SiteAssets\Tables\SiteAssetsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\SiteAsset;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -36,7 +37,11 @@ use Filament\Tables\Table;
 
 class SiteAssetResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = SiteAsset::class;
+
+    protected static ?string $modelLabel = 'Resources';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFolder;
 

@@ -9,6 +9,7 @@ use App\Filament\Resources\WeDigBioProjects\Pages\ViewWeDigBioProject;
 use App\Filament\Resources\WeDigBioProjects\Schemas\WeDigBioProjectForm;
 use App\Filament\Resources\WeDigBioProjects\Schemas\WeDigBioProjectInfolist;
 use App\Filament\Resources\WeDigBioProjects\Tables\WeDigBioProjectsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\WeDigBioProject;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,7 +19,11 @@ use Filament\Tables\Table;
 
 class WeDigBioProjectResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = WeDigBioProject::class;
+
+    protected static ?string $modelLabel = 'WeDigBio Projects';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 

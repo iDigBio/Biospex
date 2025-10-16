@@ -16,7 +16,7 @@ class TeamsTable
         return $table
             ->columns([
                 TextColumn::make('team_category_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('first_name')
                     ->searchable(),
@@ -24,12 +24,6 @@ class TeamsTable
                     ->searchable(),
                 TextColumn::make('email')
                     ->label('Email address')
-                    ->searchable(),
-                TextColumn::make('title')
-                    ->searchable(),
-                TextColumn::make('department')
-                    ->searchable(),
-                TextColumn::make('institution')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -9,6 +9,7 @@ use App\Filament\Resources\Imports\Pages\ViewImport;
 use App\Filament\Resources\Imports\Schemas\ImportForm;
 use App\Filament\Resources\Imports\Schemas\ImportInfolist;
 use App\Filament\Resources\Imports\Tables\ImportsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Import;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class ImportResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Import::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

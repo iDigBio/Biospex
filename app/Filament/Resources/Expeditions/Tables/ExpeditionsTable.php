@@ -17,9 +17,11 @@ class ExpeditionsTable
         return $table
             ->columns([
                 TextColumn::make('project.title')
-                    ->searchable(),
+                    ->searchable()
+                    ->limit(30),
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->searchable()
+                    ->limit(30),
                 TextColumn::make('workflow.title')
                     ->searchable(),
                 IconColumn::make('completed')

@@ -9,6 +9,7 @@ use App\Filament\Resources\Headers\Pages\ViewHeader;
 use App\Filament\Resources\Headers\Schemas\HeaderForm;
 use App\Filament\Resources\Headers\Schemas\HeaderInfolist;
 use App\Filament\Resources\Headers\Tables\HeadersTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Header;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class HeaderResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Header::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

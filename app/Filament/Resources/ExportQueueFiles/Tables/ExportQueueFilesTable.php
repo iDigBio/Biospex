@@ -27,7 +27,7 @@ class ExportQueueFilesTable
                 IconColumn::make('processed')
                     ->boolean(),
                 TextColumn::make('tries')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

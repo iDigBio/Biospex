@@ -6,11 +6,14 @@ use App\Filament\Resources\Projects\Pages\CreateProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
 use App\Filament\Resources\Projects\Pages\ListProjects;
 use App\Filament\Resources\Projects\Pages\ViewProject;
+use App\Filament\Resources\Projects\RelationManagers\BingosRelationManager;
 use App\Filament\Resources\Projects\RelationManagers\EventsRelationManager;
 use App\Filament\Resources\Projects\RelationManagers\ExpeditionsRelationManager;
+use App\Filament\Resources\Projects\RelationManagers\SubjectsRelationManager;
 use App\Filament\Resources\Projects\Schemas\ProjectForm;
 use App\Filament\Resources\Projects\Schemas\ProjectInfolist;
 use App\Filament\Resources\Projects\Tables\ProjectsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Project;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -20,6 +23,8 @@ use Filament\Tables\Table;
 
 class ProjectResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Project::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -44,6 +49,8 @@ class ProjectResource extends Resource
         return [
             ExpeditionsRelationManager::class,
             EventsRelationManager::class,
+            BingosRelationManager::class,
+            SubjectsRelationManager::class,
         ];
     }
 

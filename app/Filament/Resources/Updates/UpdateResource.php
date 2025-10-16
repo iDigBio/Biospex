@@ -9,6 +9,7 @@ use App\Filament\Resources\Updates\Pages\ViewUpdate;
 use App\Filament\Resources\Updates\Schemas\UpdateForm;
 use App\Filament\Resources\Updates\Schemas\UpdateInfolist;
 use App\Filament\Resources\Updates\Tables\UpdatesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Update;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class UpdateResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Update::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

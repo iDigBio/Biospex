@@ -18,25 +18,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+namespace App\Filament\Traits;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Filament\Helpers\NavigationConfig;
 
-/**
- * Class Property
- */
-class Property extends BaseEloquentModel
+trait NavigationTrait
 {
-    use Cacheable, HasFactory;
+    public static function getNavigationGroup(): ?string
+    {
+        return NavigationConfig::getGroupForResource(static::class);
+    }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected $table = 'properties';
-
-    /**
-     * {@inheritDoc}
-     */
-    protected $fillable = ['short'];
+    public static function getNavigationSort(): ?int
+    {
+        return NavigationConfig::getSortForResource(static::class);
+    }
 }

@@ -10,7 +10,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::rename('resources', 'site_assets');
+        if (! Schema::hasTable('site_assets')) {
+            Schema::rename('resources', 'site_assets');
+        }
     }
 
     /**
@@ -18,6 +20,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::rename('site_assets', 'resources');
+        if (! Schema::hasTable('resources')) {
+            Schema::rename('site_assets', 'resources');
+        }
     }
 };

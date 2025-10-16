@@ -9,6 +9,7 @@ use App\Filament\Resources\OcrQueues\Pages\ViewOcrQueue;
 use App\Filament\Resources\OcrQueues\Schemas\OcrQueueForm;
 use App\Filament\Resources\OcrQueues\Schemas\OcrQueueInfolist;
 use App\Filament\Resources\OcrQueues\Tables\OcrQueuesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\OcrQueue;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class OcrQueueResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = OcrQueue::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

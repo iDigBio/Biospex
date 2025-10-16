@@ -9,6 +9,7 @@ use App\Filament\Resources\ActorContacts\Pages\ViewActorContact;
 use App\Filament\Resources\ActorContacts\Schemas\ActorContactForm;
 use App\Filament\Resources\ActorContacts\Schemas\ActorContactInfolist;
 use App\Filament\Resources\ActorContacts\Tables\ActorContactsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\ActorContact;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class ActorContactResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = ActorContact::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

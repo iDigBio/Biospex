@@ -16,11 +16,14 @@ class DownloadsTable
         return $table
             ->columns([
                 TextColumn::make('expedition.title')
-                    ->searchable(),
+                    ->searchable()
+                    ->words(10),
                 TextColumn::make('actor.title')
-                    ->searchable(),
+                    ->searchable()
+                    ->words(10),
                 TextColumn::make('file')
                     ->searchable()
+                    ->words(10)
                     ->url(fn ($record) => $record->present()->downloadType())
                     ->openUrlInNewTab(),
                 TextColumn::make('type')

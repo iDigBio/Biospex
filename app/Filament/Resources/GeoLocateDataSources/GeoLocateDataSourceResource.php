@@ -9,6 +9,7 @@ use App\Filament\Resources\GeoLocateDataSources\Pages\ViewGeoLocateDataSource;
 use App\Filament\Resources\GeoLocateDataSources\Schemas\GeoLocateDataSourceForm;
 use App\Filament\Resources\GeoLocateDataSources\Schemas\GeoLocateDataSourceInfolist;
 use App\Filament\Resources\GeoLocateDataSources\Tables\GeoLocateDataSourcesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\GeoLocateDataSource;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class GeoLocateDataSourceResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = GeoLocateDataSource::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

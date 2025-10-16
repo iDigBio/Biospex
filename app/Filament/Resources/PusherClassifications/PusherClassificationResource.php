@@ -9,6 +9,7 @@ use App\Filament\Resources\PusherClassifications\Pages\ViewPusherClassification;
 use App\Filament\Resources\PusherClassifications\Schemas\PusherClassificationForm;
 use App\Filament\Resources\PusherClassifications\Schemas\PusherClassificationInfolist;
 use App\Filament\Resources\PusherClassifications\Tables\PusherClassificationsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\PusherClassification;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class PusherClassificationResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = PusherClassification::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

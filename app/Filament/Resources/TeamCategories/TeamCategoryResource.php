@@ -9,6 +9,7 @@ use App\Filament\Resources\TeamCategories\Pages\ViewTeamCategory;
 use App\Filament\Resources\TeamCategories\Schemas\TeamCategoryForm;
 use App\Filament\Resources\TeamCategories\Schemas\TeamCategoryInfolist;
 use App\Filament\Resources\TeamCategories\Tables\TeamCategoriesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\TeamCategory;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class TeamCategoryResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = TeamCategory::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

@@ -9,6 +9,7 @@ use App\Filament\Resources\GeoLocateCommunities\Pages\ViewGeoLocateCommunity;
 use App\Filament\Resources\GeoLocateCommunities\Schemas\GeoLocateCommunityForm;
 use App\Filament\Resources\GeoLocateCommunities\Schemas\GeoLocateCommunityInfolist;
 use App\Filament\Resources\GeoLocateCommunities\Tables\GeoLocateCommunitiesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\GeoLocateCommunity;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class GeoLocateCommunityResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = GeoLocateCommunity::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

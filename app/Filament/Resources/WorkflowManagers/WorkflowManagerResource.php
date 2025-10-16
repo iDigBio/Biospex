@@ -9,6 +9,7 @@ use App\Filament\Resources\WorkflowManagers\Pages\ViewWorkflowManager;
 use App\Filament\Resources\WorkflowManagers\Schemas\WorkflowManagerForm;
 use App\Filament\Resources\WorkflowManagers\Schemas\WorkflowManagerInfolist;
 use App\Filament\Resources\WorkflowManagers\Tables\WorkflowManagersTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\WorkflowManager;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class WorkflowManagerResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = WorkflowManager::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

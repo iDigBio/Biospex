@@ -9,6 +9,7 @@ use App\Filament\Resources\FailedJobs\Pages\ViewFailedJob;
 use App\Filament\Resources\FailedJobs\Schemas\FailedJobForm;
 use App\Filament\Resources\FailedJobs\Schemas\FailedJobInfolist;
 use App\Filament\Resources\FailedJobs\Tables\FailedJobsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\FailedJob;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class FailedJobResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = FailedJob::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

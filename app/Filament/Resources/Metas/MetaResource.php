@@ -9,6 +9,7 @@ use App\Filament\Resources\Metas\Pages\ViewMeta;
 use App\Filament\Resources\Metas\Schemas\MetaForm;
 use App\Filament\Resources\Metas\Schemas\MetaInfolist;
 use App\Filament\Resources\Metas\Tables\MetasTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Meta;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class MetaResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Meta::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

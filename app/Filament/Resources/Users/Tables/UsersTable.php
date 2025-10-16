@@ -26,7 +26,7 @@ class UsersTable
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('notification')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

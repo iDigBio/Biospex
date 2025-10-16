@@ -9,6 +9,7 @@ use App\Filament\Resources\Bingos\Pages\ViewBingo;
 use App\Filament\Resources\Bingos\Schemas\BingoForm;
 use App\Filament\Resources\Bingos\Schemas\BingoInfolist;
 use App\Filament\Resources\Bingos\Tables\BingosTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Bingo;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class BingoResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Bingo::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

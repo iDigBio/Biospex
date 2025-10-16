@@ -16,7 +16,7 @@ class ProfilesTable
         return $table
             ->columns([
                 TextColumn::make('user_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('first_name')
                     ->searchable(),
@@ -32,21 +32,6 @@ class ProfilesTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('avatar_file_name')
-                    ->searchable(),
-                TextColumn::make('avatar_file_size')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('avatar_content_type')
-                    ->searchable(),
-                TextColumn::make('avatar_updated_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('avatar_path')
-                    ->searchable(),
-                TextColumn::make('avatar_created_at')
-                    ->dateTime()
-                    ->sortable(),
             ])
             ->filters([
                 //

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Notices\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class NoticeForm
@@ -13,10 +14,8 @@ class NoticeForm
             ->components([
                 TextInput::make('message')
                     ->required(),
-                TextInput::make('enabled')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
+                Toggle::make('enabled')
+                    ->default(false),
             ]);
     }
 }

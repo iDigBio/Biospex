@@ -12,13 +12,13 @@ class TranscriptionLocationInfolist
         return $schema
             ->components([
                 TextEntry::make('classification_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('project_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('expedition.title')
                     ->label('Expedition'),
                 TextEntry::make('state_county_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

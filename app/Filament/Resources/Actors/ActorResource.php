@@ -9,6 +9,7 @@ use App\Filament\Resources\Actors\Pages\ViewActor;
 use App\Filament\Resources\Actors\Schemas\ActorForm;
 use App\Filament\Resources\Actors\Schemas\ActorInfolist;
 use App\Filament\Resources\Actors\Tables\ActorsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Actor;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class ActorResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Actor::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

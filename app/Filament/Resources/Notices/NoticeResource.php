@@ -9,6 +9,7 @@ use App\Filament\Resources\Notices\Pages\ViewNotice;
 use App\Filament\Resources\Notices\Schemas\NoticeForm;
 use App\Filament\Resources\Notices\Schemas\NoticeInfolist;
 use App\Filament\Resources\Notices\Tables\NoticesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Notice;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class NoticeResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Notice::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

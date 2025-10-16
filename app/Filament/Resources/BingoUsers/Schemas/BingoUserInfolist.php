@@ -16,9 +16,9 @@ class BingoUserInfolist
                     ->label('Bingo'),
                 TextEntry::make('ip'),
                 TextEntry::make('latitude')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('longitude')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('city'),
                 IconEntry::make('winner')
                     ->boolean(),

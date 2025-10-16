@@ -13,15 +13,15 @@ class ImportInfolist
         return $schema
             ->components([
                 TextEntry::make('user_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('project_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('file')
                     ->placeholder('-'),
                 IconEntry::make('error')
                     ->boolean(),
                 TextEntry::make('processing')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

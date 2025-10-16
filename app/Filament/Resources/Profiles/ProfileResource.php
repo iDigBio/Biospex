@@ -9,6 +9,7 @@ use App\Filament\Resources\Profiles\Pages\ViewProfile;
 use App\Filament\Resources\Profiles\Schemas\ProfileForm;
 use App\Filament\Resources\Profiles\Schemas\ProfileInfolist;
 use App\Filament\Resources\Profiles\Tables\ProfilesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Profile;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class ProfileResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Profile::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

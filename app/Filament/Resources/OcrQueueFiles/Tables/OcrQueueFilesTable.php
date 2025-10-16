@@ -17,7 +17,7 @@ class OcrQueueFilesTable
         return $table
             ->columns([
                 TextColumn::make('queue_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('subject_id')
                     ->searchable(),
@@ -26,7 +26,7 @@ class OcrQueueFilesTable
                 IconColumn::make('processed')
                     ->boolean(),
                 TextColumn::make('tries')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

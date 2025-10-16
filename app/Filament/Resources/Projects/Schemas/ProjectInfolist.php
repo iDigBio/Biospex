@@ -37,6 +37,7 @@ class ProjectInfolist
                 TextEntry::make('description_short')
                     ->placeholder('-'),
                 TextEntry::make('description_long')
+                    ->html()
                     ->placeholder('-')
                     ->columnSpanFull(),
                 TextEntry::make('incentives')

@@ -21,7 +21,7 @@ class ExportQueueFileInfolist
                 IconEntry::make('processed')
                     ->boolean(),
                 TextEntry::make('tries')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

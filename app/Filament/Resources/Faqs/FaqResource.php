@@ -9,6 +9,7 @@ use App\Filament\Resources\Faqs\Pages\ViewFaq;
 use App\Filament\Resources\Faqs\Schemas\FaqForm;
 use App\Filament\Resources\Faqs\Schemas\FaqInfolist;
 use App\Filament\Resources\Faqs\Tables\FaqsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Faq;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class FaqResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Faq::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

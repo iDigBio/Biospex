@@ -9,6 +9,7 @@ use App\Filament\Resources\ExportQueueFiles\Pages\ViewExportQueueFile;
 use App\Filament\Resources\ExportQueueFiles\Schemas\ExportQueueFileForm;
 use App\Filament\Resources\ExportQueueFiles\Schemas\ExportQueueFileInfolist;
 use App\Filament\Resources\ExportQueueFiles\Tables\ExportQueueFilesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\ExportQueueFile;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class ExportQueueFileResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = ExportQueueFile::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

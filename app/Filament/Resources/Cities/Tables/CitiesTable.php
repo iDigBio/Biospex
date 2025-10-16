@@ -18,10 +18,10 @@ class CitiesTable
                 TextColumn::make('city')
                     ->searchable(),
                 TextColumn::make('latitude')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('longitude')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

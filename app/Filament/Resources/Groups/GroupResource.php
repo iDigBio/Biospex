@@ -7,11 +7,13 @@ use App\Filament\Resources\Groups\Pages\EditGroup;
 use App\Filament\Resources\Groups\Pages\ListGroups;
 use App\Filament\Resources\Groups\Pages\ViewGroup;
 use App\Filament\Resources\Groups\RelationManagers\ExpeditionsRelationManager;
+use App\Filament\Resources\Groups\RelationManagers\GeoLocateFormsRelationManager;
 use App\Filament\Resources\Groups\RelationManagers\ProjectsRelationManager;
 use App\Filament\Resources\Groups\RelationManagers\UsersRelationManager;
 use App\Filament\Resources\Groups\Schemas\GroupForm;
 use App\Filament\Resources\Groups\Schemas\GroupInfolist;
 use App\Filament\Resources\Groups\Tables\GroupsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Group;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -21,6 +23,8 @@ use Filament\Tables\Table;
 
 class GroupResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Group::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -46,6 +50,7 @@ class GroupResource extends Resource
             UsersRelationManager::class,
             ProjectsRelationManager::class,
             ExpeditionsRelationManager::class,
+            GeoLocateFormsRelationManager::class,
         ];
     }
 

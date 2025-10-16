@@ -9,6 +9,7 @@ use App\Filament\Resources\AmCharts\Pages\ViewAmChart;
 use App\Filament\Resources\AmCharts\Schemas\AmChartForm;
 use App\Filament\Resources\AmCharts\Schemas\AmChartInfolist;
 use App\Filament\Resources\AmCharts\Tables\AmChartsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\AmChart;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class AmChartResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = AmChart::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

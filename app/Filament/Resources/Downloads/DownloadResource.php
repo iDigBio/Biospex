@@ -9,6 +9,7 @@ use App\Filament\Resources\Downloads\Pages\ViewDownload;
 use App\Filament\Resources\Downloads\Schemas\DownloadForm;
 use App\Filament\Resources\Downloads\Schemas\DownloadInfolist;
 use App\Filament\Resources\Downloads\Tables\DownloadsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Download;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class DownloadResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Download::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

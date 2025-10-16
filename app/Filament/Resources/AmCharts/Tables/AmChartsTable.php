@@ -18,7 +18,7 @@ class AmChartsTable
                 TextColumn::make('project.title')
                     ->searchable(),
                 TextColumn::make('queued')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

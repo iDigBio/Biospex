@@ -17,17 +17,17 @@ class ImportsTable
         return $table
             ->columns([
                 TextColumn::make('user_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('project_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('file')
                     ->searchable(),
                 IconColumn::make('error')
                     ->boolean(),
                 TextColumn::make('processing')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

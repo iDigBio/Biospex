@@ -9,6 +9,7 @@ use App\Filament\Resources\EventTranscriptions\Pages\ViewEventTranscription;
 use App\Filament\Resources\EventTranscriptions\Schemas\EventTranscriptionForm;
 use App\Filament\Resources\EventTranscriptions\Schemas\EventTranscriptionInfolist;
 use App\Filament\Resources\EventTranscriptions\Tables\EventTranscriptionsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\EventTranscription;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class EventTranscriptionResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = EventTranscription::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

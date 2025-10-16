@@ -23,7 +23,7 @@
         </header>
         <div class="fi-section-content-ctn flex items-center justify-center h-full">
             <div class="fi-section-content text-center">
-                <div style="font-size: 5rem; line-height: 1; color: #f59e0b;" class="font-bold">
+                <div style="font-size: 5rem; line-height: 1;" class="font-bold">
                     {{ $count }}
                 </div>
             </div>

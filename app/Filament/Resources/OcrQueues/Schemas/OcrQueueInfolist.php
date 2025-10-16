@@ -15,12 +15,12 @@ class OcrQueueInfolist
                 TextEntry::make('project.title')
                     ->label('Project'),
                 TextEntry::make('expedition_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->placeholder('-'),
                 TextEntry::make('total')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('status')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 IconEntry::make('error')
                     ->boolean(),
                 TextEntry::make('created_at')

@@ -9,6 +9,7 @@ use App\Filament\Resources\GroupInvites\Pages\ViewGroupInvite;
 use App\Filament\Resources\GroupInvites\Schemas\GroupInviteForm;
 use App\Filament\Resources\GroupInvites\Schemas\GroupInviteInfolist;
 use App\Filament\Resources\GroupInvites\Tables\GroupInvitesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\GroupInvite;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class GroupInviteResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = GroupInvite::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

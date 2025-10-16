@@ -9,6 +9,7 @@ use App\Filament\Resources\PanoptesProjects\Pages\ViewPanoptesProject;
 use App\Filament\Resources\PanoptesProjects\Schemas\PanoptesProjectForm;
 use App\Filament\Resources\PanoptesProjects\Schemas\PanoptesProjectInfolist;
 use App\Filament\Resources\PanoptesProjects\Tables\PanoptesProjectsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\PanoptesProject;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class PanoptesProjectResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = PanoptesProject::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

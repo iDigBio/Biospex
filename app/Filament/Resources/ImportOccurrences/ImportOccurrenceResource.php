@@ -9,6 +9,7 @@ use App\Filament\Resources\ImportOccurrences\Pages\ViewImportOccurrence;
 use App\Filament\Resources\ImportOccurrences\Schemas\ImportOccurrenceForm;
 use App\Filament\Resources\ImportOccurrences\Schemas\ImportOccurrenceInfolist;
 use App\Filament\Resources\ImportOccurrences\Tables\ImportOccurrencesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\ImportOccurrence;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class ImportOccurrenceResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = ImportOccurrence::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

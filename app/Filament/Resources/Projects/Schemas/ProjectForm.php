@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Projects\Schemas;
 
 use App\Filament\Components\ImageFileUpload;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -32,7 +33,7 @@ class ProjectForm
                 Textarea::make('funding_source')
                     ->columnSpanFull(),
                 TextInput::make('description_short'),
-                Textarea::make('description_long')
+                RichEditor::make('description_long')
                     ->columnSpanFull(),
                 Textarea::make('incentives')
                     ->columnSpanFull(),

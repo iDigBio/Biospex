@@ -12,7 +12,7 @@ class TeamInfolist
         return $schema
             ->components([
                 TextEntry::make('team_category_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('first_name'),
                 TextEntry::make('last_name'),
                 TextEntry::make('email')

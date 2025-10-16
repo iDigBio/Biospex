@@ -9,6 +9,7 @@ use App\Filament\Resources\ExpeditionStats\Pages\ViewExpeditionStat;
 use App\Filament\Resources\ExpeditionStats\Schemas\ExpeditionStatForm;
 use App\Filament\Resources\ExpeditionStats\Schemas\ExpeditionStatInfolist;
 use App\Filament\Resources\ExpeditionStats\Tables\ExpeditionStatsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\ExpeditionStat;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class ExpeditionStatResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = ExpeditionStat::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

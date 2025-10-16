@@ -21,7 +21,7 @@ class UserInfolist
                     ->dateTime()
                     ->placeholder('-'),
                 TextEntry::make('notification')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

@@ -12,7 +12,7 @@ class PusherClassificationInfolist
         return $schema
             ->components([
                 TextEntry::make('classification_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

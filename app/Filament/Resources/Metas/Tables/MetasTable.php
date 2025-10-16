@@ -16,7 +16,7 @@ class MetasTable
         return $table
             ->columns([
                 TextColumn::make('project_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('xml'),
                 TextColumn::make('created_at')

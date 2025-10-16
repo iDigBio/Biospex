@@ -9,6 +9,7 @@ use App\Filament\Resources\BingoUsers\Pages\ViewBingoUser;
 use App\Filament\Resources\BingoUsers\Schemas\BingoUserForm;
 use App\Filament\Resources\BingoUsers\Schemas\BingoUserInfolist;
 use App\Filament\Resources\BingoUsers\Tables\BingoUsersTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\BingoUser;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class BingoUserResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = BingoUser::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

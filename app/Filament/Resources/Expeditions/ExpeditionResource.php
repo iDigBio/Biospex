@@ -6,9 +6,13 @@ use App\Filament\Resources\Expeditions\Pages\CreateExpedition;
 use App\Filament\Resources\Expeditions\Pages\EditExpedition;
 use App\Filament\Resources\Expeditions\Pages\ListExpeditions;
 use App\Filament\Resources\Expeditions\Pages\ViewExpedition;
+use App\Filament\Resources\Expeditions\RelationManagers\DownloadsRelationManager;
+use App\Filament\Resources\Expeditions\RelationManagers\StatRelationManager;
+use App\Filament\Resources\Expeditions\RelationManagers\SubjectsRelationManager;
 use App\Filament\Resources\Expeditions\Schemas\ExpeditionForm;
 use App\Filament\Resources\Expeditions\Schemas\ExpeditionInfolist;
 use App\Filament\Resources\Expeditions\Tables\ExpeditionsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\Expedition;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +22,8 @@ use Filament\Tables\Table;
 
 class ExpeditionResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = Expedition::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -40,7 +46,9 @@ class ExpeditionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            DownloadsRelationManager::class,
+            StatRelationManager::class,
+            SubjectsRelationManager::class,
         ];
     }
 

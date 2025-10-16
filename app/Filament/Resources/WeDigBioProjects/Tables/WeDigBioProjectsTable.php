@@ -16,10 +16,10 @@ class WeDigBioProjectsTable
         return $table
             ->columns([
                 TextColumn::make('panoptes_project_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('panoptes_workflow_id')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('title')
                     ->searchable(),

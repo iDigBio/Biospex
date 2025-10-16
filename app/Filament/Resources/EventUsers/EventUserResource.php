@@ -9,6 +9,7 @@ use App\Filament\Resources\EventUsers\Pages\ViewEventUser;
 use App\Filament\Resources\EventUsers\Schemas\EventUserForm;
 use App\Filament\Resources\EventUsers\Schemas\EventUserInfolist;
 use App\Filament\Resources\EventUsers\Tables\EventUsersTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\EventUser;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class EventUserResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = EventUser::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

@@ -9,6 +9,7 @@ use App\Filament\Resources\Cities\Pages\ViewCity;
 use App\Filament\Resources\Cities\Schemas\CityForm;
 use App\Filament\Resources\Cities\Schemas\CityInfolist;
 use App\Filament\Resources\Cities\Tables\CitiesTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\City;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class CityResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = City::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

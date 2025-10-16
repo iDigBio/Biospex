@@ -13,7 +13,7 @@ class ProfileInfolist
         return $schema
             ->components([
                 TextEntry::make('user_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('first_name'),
                 TextEntry::make('last_name'),
                 TextEntry::make('timezone'),

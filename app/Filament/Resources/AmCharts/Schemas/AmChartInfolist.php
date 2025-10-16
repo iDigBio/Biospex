@@ -14,7 +14,7 @@ class AmChartInfolist
                 TextEntry::make('project.title')
                     ->label('Project'),
                 TextEntry::make('queued')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

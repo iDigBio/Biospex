@@ -21,12 +21,12 @@ class ExportQueuesTable
                 TextColumn::make('actor.title')
                     ->searchable(),
                 TextColumn::make('stage')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 IconColumn::make('queued')
                     ->boolean(),
                 TextColumn::make('total')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 IconColumn::make('error')
                     ->boolean(),

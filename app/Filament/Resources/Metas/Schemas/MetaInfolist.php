@@ -12,7 +12,7 @@ class MetaInfolist
         return $schema
             ->components([
                 TextEntry::make('project_id')
-                    ->numeric(),
+                    ->numeric(thousandsSeparator: ''),
                 TextEntry::make('xml'),
                 TextEntry::make('created_at')
                     ->dateTime()

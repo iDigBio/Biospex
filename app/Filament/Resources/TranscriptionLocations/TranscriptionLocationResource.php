@@ -9,6 +9,7 @@ use App\Filament\Resources\TranscriptionLocations\Pages\ViewTranscriptionLocatio
 use App\Filament\Resources\TranscriptionLocations\Schemas\TranscriptionLocationForm;
 use App\Filament\Resources\TranscriptionLocations\Schemas\TranscriptionLocationInfolist;
 use App\Filament\Resources\TranscriptionLocations\Tables\TranscriptionLocationsTable;
+use App\Filament\Traits\NavigationTrait;
 use App\Models\TranscriptionLocation;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 
 class TranscriptionLocationResource extends Resource
 {
+    use NavigationTrait;
+
     protected static ?string $model = TranscriptionLocation::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

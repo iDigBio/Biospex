@@ -27,6 +27,7 @@ use App\Presenters\ProjectPresenter;
 use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Config;
 use MongoDB\Laravel\Eloquent\HybridRelations;
 use Str;
@@ -153,7 +154,7 @@ class Project extends BaseEloquentModel
     /**
      * AmChart relation.
      */
-    public function amChart(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function amChart(): HasOne
     {
         return $this->hasOne(AmChart::class);
     }
@@ -248,20 +249,16 @@ class Project extends BaseEloquentModel
 
     /**
      * PanoptesProject relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function panoptesProjects()
+    public function panoptesProjects(): HasMany
     {
         return $this->hasMany(PanoptesProject::class);
     }
 
     /**
      * PanoptesProject relation returning last in database.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function lastPanoptesProject()
+    public function lastPanoptesProject(): HasOne
     {
         return $this->hasOne(PanoptesProject::class)->latest();
     }
