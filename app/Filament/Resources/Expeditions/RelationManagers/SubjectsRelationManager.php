@@ -21,14 +21,15 @@
 namespace App\Filament\Resources\Expeditions\RelationManagers;
 
 use App\Filament\Resources\Subjects\SubjectResource;
+use Filament\Actions\Action;
 use Filament\Actions\AttachAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DetachAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class SubjectsRelationManager extends RelationManager
 {
@@ -72,13 +73,34 @@ class SubjectsRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DetachAction::make(),
+                Action::make('view')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->modalContent(function ($record) {
+                        // Reload the full Subject record to get all attributes
+                        $fullRecord = \App\Models\Subject::find($record->id);
+
+                        if (! $fullRecord) {
+                            return new HtmlString('<div>Record not found</div>');
+                        }
+
+                        $attributes = $fullRecord->toArray();
+                        $json = json_encode($attributes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+                        return new HtmlString('<div style="font-family: monospace; white-space: pre; background: #f8f9fa; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;">'.
+                            htmlspecialchars($json).
+                            '</div>');
+                    })
+                    ->modalHeading(fn ($record) => 'Subject: '.$record->id)
+                    ->modalWidth('7xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close'),
+                // EditAction::make(),
+                // DetachAction::make(),
             ])
             ->headerActions([
-                CreateAction::make(),
-                AttachAction::make(),
+                // CreateAction::make(),
+                // AttachAction::make(),
             ]);
     }
 }
