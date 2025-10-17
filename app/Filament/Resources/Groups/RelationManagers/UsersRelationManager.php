@@ -87,7 +87,7 @@ class UsersRelationManager extends RelationManager
             ->headerActions([
                 AttachAction::make()
                     ->preloadRecordSelect(),
-                CreateAction::make(),
+                // CreateAction::make(),
             ])
             ->recordActions([
                 ViewAction::make(),
