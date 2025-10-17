@@ -12,7 +12,7 @@
     <table class="table table-striped">
         <thead>
         <tr>
-            <td colspan="3" class="color-action">Stats are example only. Will be real data later.</td>
+            <td colspan="3" class="color-action">Stats update every 5 minutes.</td>
         </tr>
         <tr>
             <th>#</th>
