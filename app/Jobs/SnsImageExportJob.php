@@ -43,7 +43,6 @@ class SnsImageExportJob implements ShouldQueue
      */
     public function handle(SnsImageExportResultProcess $snsImageExportResultProcess): void
     {
-        \Log::info('SnsImageExportJob', $this->data);
         try {
             $requestPayload = $this->data['requestPayload'];
             $responsePayload = $this->data['responsePayload'];
