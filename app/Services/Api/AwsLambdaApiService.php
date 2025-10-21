@@ -84,6 +84,7 @@ class AwsLambdaApiService
             'FunctionName' => $function,
             'Payload' => json_encode($data),
             'InvocationType' => 'Event',
+            'Qualifier' => config('config.aws.lambda_qualifier'),
         ]);
     }
 
@@ -95,6 +96,7 @@ class AwsLambdaApiService
         return $this->getLambdaClient()->invoke([
             'FunctionName' => $function,
             'Payload' => json_encode($data),
+            'Qualifier' => config('config.aws.lambda_qualifier'),
         ]);
     }
 }
