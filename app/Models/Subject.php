@@ -20,7 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -28,7 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Subject extends BaseMongoModel
 {
-    use Cacheable, HasFactory;
+    use HasFactory;
 
     /**
      * Set Collection
@@ -46,14 +45,6 @@ class Subject extends BaseMongoModel
             'project_id' => 'integer',
             'exported' => 'boolean',
         ];
-    }
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project', 'panoptesTranscriptions', 'expeditions'];
     }
 
     /**

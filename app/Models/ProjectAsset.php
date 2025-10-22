@@ -22,15 +22,15 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\ProjectAssetPresenter;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class ProjectAsset
  */
 class ProjectAsset extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, Presentable;
+    use HasFactory, LadaCacheTrait, Presentable;
 
     /**
      * {@inheritDoc}
@@ -52,14 +52,6 @@ class ProjectAsset extends BaseEloquentModel
      * @var string
      */
     protected $presenter = ProjectAssetPresenter::class;
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project'];
-    }
 
     /**
      * Project constructor.
