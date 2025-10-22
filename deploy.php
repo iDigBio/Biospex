@@ -76,11 +76,12 @@ task('deploy', [
     // REMOVED: 'upload:env',   // Now handled by local Git pre-push hook! 🎉
 
     // Phase 2: Dependencies & Assets
-    'deploy:vendors',          // Install PHP Composer dependencies (--no-dev --optimize-autoloader)
+    'deploy:vendors',          // Install PHP Composer dependencies safely (--no-scripts to prevent DB connection issues)
     'deploy:ci-artifacts',     // Download & extract pre-built assets from GitHub Actions (NEW: No server building!)
 
     // Phase 3: Laravel Setup
     'artisan:storage:link',    // Create symbolic link for storage directory
+    'artisan:package:discover', // Run package discovery after environment is ready (SAFE: after .env is linked)
     'artisan:nova:publish',    // Publish Laravel Nova assets
     'artisan:app:deploy-files', // Custom app deployment files
 
