@@ -42,7 +42,7 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
  */
 class BaseEloquentModel extends Model
 {
-    // use LadaCacheTrait;
+    use LadaCacheTrait;
 
     /**
      * The database connection name for the model.
