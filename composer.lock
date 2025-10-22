@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac4b5c2c93b9427790862a9898eb98bc",
+    "content-hash": "547d4b642b13117a4d84ce4f451e00ed",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -2052,68 +2052,6 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
-        },
-        {
-            "name": "idigacademy/auto-cache",
-            "version": "v1.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/iDigAcademy/AutoCache.git",
-                "reference": "8656f5482817446877186d33834d00f430973687"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/iDigAcademy/AutoCache/zipball/8656f5482817446877186d33834d00f430973687",
-                "reference": "8656f5482817446877186d33834d00f430973687",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/cache": "^12.0",
-                "illuminate/database": "^12.0",
-                "illuminate/events": "^12.0",
-                "illuminate/support": "^12.0",
-                "mongodb/laravel-mongodb": "^5.0",
-                "php": "^8.3"
-            },
-            "require-dev": {
-                "barryvdh/laravel-debugbar": "^3.13",
-                "laravel/pint": "^1.24.0",
-                "orchestra/testbench": "^10.0",
-                "phpunit/phpunit": "^11.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "IDigAcademy\\AutoCache\\Providers\\AutoCacheServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "IDigAcademy\\AutoCache\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "IDigAcademy\\AutoCache\\Tests\\": "tests/"
-                }
-            },
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "iDigAcademy",
-                    "email": "idigacademy@gmail.com"
-                }
-            ],
-            "description": "Automatic model caching for Laravel with MySQL and MongoDB support",
-            "support": {
-                "source": "https://github.com/iDigAcademy/AutoCache/tree/v1.2.1",
-                "issues": "https://github.com/iDigAcademy/AutoCache/issues"
-            },
-            "time": "2025-10-21T18:24:20+00:00"
         },
         {
             "name": "imagine/imagine",
@@ -7085,6 +7023,78 @@
                 }
             ],
             "time": "2025-07-17T15:46:43+00:00"
+        },
+        {
+            "name": "spiritix/lada-cache",
+            "version": "v6.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spiritix/lada-cache.git",
+                "reference": "96d6f215f8b61c0c07be8c621aca4a6b68e26a1a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spiritix/lada-cache/zipball/96d6f215f8b61c0c07be8c621aca4a6b68e26a1a",
+                "reference": "96d6f215f8b61c0c07be8c621aca4a6b68e26a1a",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "^12.0",
+                "illuminate/redis": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "barryvdh/laravel-debugbar": "^3.16",
+                "laravel/pint": "^1.25",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^10.6",
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^11.0",
+                "predis/predis": "^2.2"
+            },
+            "suggest": {
+                "barryvdh/laravel-debugbar": "Provides debug information about the cache"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spiritix\\LadaCache\\LadaCacheServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spiritix\\LadaCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matthias Isler",
+                    "email": "mi@matthias-isler.ch"
+                }
+            ],
+            "description": "A Redis based, automated and scalable database caching layer for Laravel",
+            "keywords": [
+                "cache",
+                "caching",
+                "database",
+                "eloquent",
+                "laravel",
+                "model",
+                "php",
+                "redis"
+            ],
+            "support": {
+                "issues": "https://github.com/spiritix/lada-cache/issues",
+                "source": "https://github.com/spiritix/lada-cache/tree/v6.0.1"
+            },
+            "time": "2025-10-16T06:54:27+00:00"
         },
         {
             "name": "symfony/clock",

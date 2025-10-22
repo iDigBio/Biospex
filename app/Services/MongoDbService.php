@@ -20,8 +20,8 @@
 
 namespace App\Services;
 
-use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Support\Facades\Cache;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
 use MongoDB\Client;
@@ -108,16 +108,12 @@ class MongoDbService
 
     public function count(array $filter = [], array $options = []): int
     {
-        $key = AutoCacheHelper::generateKey('mongodb_count', [
-            'collection' => $this->clientCollection->getCollectionName(),
-            'filter' => $filter,
-            'options' => $options,
-        ]);
-        $tags = AutoCacheHelper::generateTags(['mongodb', $this->clientCollection->getCollectionName()]);
+        $key = 'mongodb_count:'.$this->clientCollection->getCollectionName().':'.md5(serialize([$filter, $options]));
+        $tags = ['mongodb', $this->clientCollection->getCollectionName()];
 
-        return AutoCacheHelper::remember($key, 1800, function () use ($filter, $options) {
+        return Cache::tags($tags)->remember($key, 1800, function () use ($filter, $options) {
             return $this->clientCollection->countDocuments($filter, $options);
-        }, $tags);
+        });
     }
 
     /**
@@ -125,16 +121,12 @@ class MongoDbService
      */
     public function find(array $query = [], array $options = []): mixed
     {
-        $key = AutoCacheHelper::generateKey('mongodb_find', [
-            'collection' => $this->clientCollection->getCollectionName(),
-            'query' => $query,
-            'options' => $options,
-        ]);
-        $tags = AutoCacheHelper::generateTags(['mongodb', $this->clientCollection->getCollectionName()]);
+        $key = 'mongodb_find:'.$this->clientCollection->getCollectionName().':'.md5(serialize([$query, $options]));
+        $tags = ['mongodb', $this->clientCollection->getCollectionName()];
 
-        return AutoCacheHelper::remember($key, 1800, function () use ($query, $options) {
+        return Cache::tags($tags)->remember($key, 1800, function () use ($query, $options) {
             return $this->getArray($this->clientCollection->find($query, $options));
-        }, $tags);
+        });
     }
 
     /**
@@ -142,17 +134,14 @@ class MongoDbService
      */
     public function findOne(array $query = []): ?array
     {
-        $key = AutoCacheHelper::generateKey('mongodb_find_one', [
-            'collection' => $this->clientCollection->getCollectionName(),
-            'query' => $query,
-        ]);
-        $tags = AutoCacheHelper::generateTags(['mongodb', $this->clientCollection->getCollectionName()]);
+        $key = 'mongodb_find_one:'.$this->clientCollection->getCollectionName().':'.md5(serialize($query));
+        $tags = ['mongodb', $this->clientCollection->getCollectionName()];
 
-        return AutoCacheHelper::remember($key, 1800, function () use ($query) {
+        return Cache::tags($tags)->remember($key, 1800, function () use ($query) {
             $result = $this->clientCollection->findOne($query);
 
             return $result?->toArray();
-        }, $tags);
+        });
     }
 
     /**
@@ -217,16 +206,12 @@ class MongoDbService
      */
     public function aggregate($pipline, $options = []): mixed
     {
-        $key = AutoCacheHelper::generateKey('mongodb_aggregate', [
-            'collection' => $this->clientCollection->getCollectionName(),
-            'pipeline' => $pipline,
-            'options' => $options,
-        ]);
-        $tags = AutoCacheHelper::generateTags(['mongodb', $this->clientCollection->getCollectionName()]);
+        $key = 'mongodb_aggregate:'.$this->clientCollection->getCollectionName().':'.md5(serialize([$pipline, $options]));
+        $tags = ['mongodb', $this->clientCollection->getCollectionName()];
 
-        return AutoCacheHelper::remember($key, 1800, function () use ($pipline, $options) {
+        return Cache::tags($tags)->remember($key, 1800, function () use ($pipline, $options) {
             return $this->getArray($this->clientCollection->aggregate($pipline, $options));
-        }, $tags);
+        });
     }
 
     /**

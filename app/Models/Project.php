@@ -24,11 +24,9 @@ use App\Facades\DateHelper;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Config;
-use MongoDB\Laravel\Eloquent\HybridRelations;
 use Str;
 
 /**
@@ -38,9 +36,6 @@ use Str;
  */
 class Project extends BaseEloquentModel
 {
-    use Cacheable, HybridRelations {
-        Cacheable::newEloquentBuilder insteadof HybridRelations;
-    }
     use HasFactory, Presentable, UuidTrait;
 
     /**
@@ -97,14 +92,6 @@ class Project extends BaseEloquentModel
     protected $hidden = [
         'id',
     ];
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['group', 'amChart'.'bingos', 'events', 'expeditions', 'expeditionStats', 'geoLocateCommunities', 'geoLocateDataSources', 'header', 'imports', 'metas', 'ocrQueue', 'panoptesProjects', 'panoptesTranscriptions', 'resources', 'subjects', 'transcriptionLocations', 'workflowManagers'];
-    }
 
     /**
      * Get the route key for the model.

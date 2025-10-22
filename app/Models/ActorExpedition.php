@@ -20,8 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
-
 /**
  * Class ActorExpedition
  *
@@ -38,8 +36,6 @@ use IDigAcademy\AutoCache\Traits\Cacheable;
  */
 class ActorExpedition extends BaseEloquentModel
 {
-    use Cacheable;
-
     /**
      * Indicates if the model should use auto-incrementing primary keys.
      *
@@ -68,19 +64,6 @@ class ActorExpedition extends BaseEloquentModel
         'order',         // Processing order for this actor in the expedition
         'expert',        // Boolean flag indicating if this is an expert review
     ];
-
-    /**
-     * Get the relations that should be cached for performance optimization.
-     *
-     * This method defines which Eloquent relationships should be cached
-     * when using the Cacheable trait to improve query performance.
-     *
-     * @return array<string> Array of relationship names to be cached
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['actor', 'expedition'];
-    }
 
     /**
      * Define a many-to-one relationship with the Actor model.

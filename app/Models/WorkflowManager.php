@@ -20,7 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -28,7 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class WorkflowManager extends BaseEloquentModel
 {
-    use Cacheable, HasFactory;
+    use HasFactory;
 
     protected $table = 'workflow_managers';
 
@@ -36,14 +35,6 @@ class WorkflowManager extends BaseEloquentModel
         'expedition_id',
         'stopped',
     ];
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['expedition'];
-    }
 
     /**
      * Return Expedition relation.

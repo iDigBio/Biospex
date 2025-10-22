@@ -20,7 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -28,7 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class OcrQueue extends BaseEloquentModel
 {
-    use Cacheable, HasFactory;
+    use HasFactory;
 
     /**
      * {@inheritDoc}
@@ -45,14 +44,6 @@ class OcrQueue extends BaseEloquentModel
         'status',
         'error',
     ];
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project', 'expedition', 'files'];
-    }
 
     /**
      * Project relation

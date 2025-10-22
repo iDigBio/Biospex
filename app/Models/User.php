@@ -24,7 +24,6 @@ use App\Models\Traits\HasGroup;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\UserPresenter;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -36,7 +35,7 @@ use Laravel\Sanctum\HasApiTokens;
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use Cacheable, HasApiTokens, HasFactory, HasGroup, Notifiable, Presentable, UuidTrait;
+    use HasApiTokens, HasFactory, HasGroup, Notifiable, Presentable, UuidTrait;
 
     protected $table = 'users';
 
@@ -61,14 +60,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
         ];
-    }
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['groups', 'ownGroups', 'imports', 'profile', 'events'];
     }
 
     /**

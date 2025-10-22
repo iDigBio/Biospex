@@ -25,7 +25,7 @@ use App\Models\Expedition;
 use App\Models\GeoLocateForm;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Helpers\GeneralService;
-use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Storage;
 
@@ -281,10 +281,10 @@ class GeoLocateFormService
             default => config('zooniverse.directory.reconciled').'/'.$expedition->id.'.csv',
         };
 
-        $key = AutoCacheHelper::generateKey('geolocate_csv_header', ['source' => $this->source, 'csv_path' => $csvFilePath]);
-        $tags = AutoCacheHelper::generateTags(['geolocate_forms', 'csv_headers']);
+        $key = 'geolocate_csv_header:'.$this->source.':'.md5($csvFilePath);
+        $tags = ['geolocate_forms', 'csv_headers'];
 
-        return AutoCacheHelper::remember($key, 14440 * 60, function () use ($csvFilePath) {
+        return Cache::tags($tags)->remember($key, 14440 * 60, function () use ($csvFilePath) {
             $this->awsS3CsvService->createBucketStream(config('filesystems.disks.s3.bucket'), $csvFilePath, 'r');
             $this->awsS3CsvService->createCsvReaderFromStream();
             $this->awsS3CsvService->csv->setHeaderOffset();
@@ -294,7 +294,7 @@ class GeoLocateFormService
             return array_values(array_filter($array, function ($e) {
                 return $e !== 'subject_id';
             }));
-        }, $tags);
+        });
     }
 
     /**

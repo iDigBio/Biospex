@@ -21,7 +21,6 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -32,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class GeoLocateCommunity extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, UuidTrait;
+    use HasFactory, UuidTrait;
 
     /**
      * The name of the database table associated with the model.
@@ -54,14 +53,6 @@ class GeoLocateCommunity extends BaseEloquentModel
     protected $hidden = [
         'id',
     ];
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project', 'geoLocateDataSources'];
-    }
 
     /**
      * Boot the model and its traits.

@@ -20,7 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -28,7 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class PanoptesTranscription extends BaseMongoModel
 {
-    use Cacheable, HasFactory;
+    use HasFactory;
 
     /**
      * Set Collection
@@ -60,14 +59,6 @@ class PanoptesTranscription extends BaseMongoModel
      * @var array
      */
     protected $orderBy = [[]];
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project', 'expedition', 'subject', 'dashboard'];
-    }
 
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

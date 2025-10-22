@@ -23,12 +23,10 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
-use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
  * Expedition Model
@@ -40,9 +38,6 @@ use MongoDB\Laravel\Eloquent\HybridRelations;
  */
 class Expedition extends BaseEloquentModel
 {
-    use Cacheable, HybridRelations {
-        Cacheable::newEloquentBuilder insteadof HybridRelations;
-    }
     use HasFactory, Presentable, UuidTrait;
 
     protected $table = 'expeditions';
@@ -53,16 +48,6 @@ class Expedition extends BaseEloquentModel
     protected string $presenter = ExpeditionPresenter::class;
 
     protected $hidden = ['id'];
-
-    /**
-     * Get the relations that should be cached.
-     *
-     * @return array<string> Array of relation names to cache
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['dashboard', 'downloads', 'exportQueue', 'ocrQueue', 'project', 'stat', 'subjects', 'workflow', 'workflowManager', 'actors', 'actorExpeditions', 'panoptesProject', 'geoLocateForm', 'geoLocateCommunity', 'geoLocateDataSource'];
-    }
 
     /**
      * Get the route key for the model.

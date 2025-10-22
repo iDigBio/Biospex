@@ -21,7 +21,6 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -35,7 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class GeoLocateDataSource extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, UuidTrait;
+    use HasFactory, UuidTrait;
 
     /**
      * The name of the database table associated with the model.
@@ -66,14 +65,6 @@ class GeoLocateDataSource extends BaseEloquentModel
      * The attributes that should be cast to a specific data type.
      */
     protected $casts = ['data' => 'array'];
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project', 'expedition', 'download', 'geoLocateCommunity', 'geoLocateForm'];
-    }
 
     /**
      * Get the route key name for the model.

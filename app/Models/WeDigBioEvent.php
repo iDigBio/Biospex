@@ -23,7 +23,6 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\WeDigBioDatePresenter;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -32,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class WeDigBioEvent extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, Presentable, UuidTrait;
+    use HasFactory, Presentable, UuidTrait;
 
     protected $table = 'wedigbio_events';
 
@@ -56,14 +55,6 @@ class WeDigBioEvent extends BaseEloquentModel
             'end_date' => 'datetime',
             'active' => 'int',
         ];
-    }
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['transcriptions'];
     }
 
     /**

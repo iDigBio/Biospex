@@ -23,8 +23,8 @@ namespace App\Services\Event;
 use App\Models\EventTranscription;
 use App\Models\EventUser;
 use Carbon\Carbon;
-use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 use Validator;
 
@@ -113,20 +113,16 @@ class EventTranscriptionService
      */
     public function getEventRateChartTranscriptions(int $eventId, Carbon $startLoad, Carbon $endLoad): ?Collection
     {
-        $key = AutoCacheHelper::generateKey('event_rate_chart_transcriptions', [
-            'event_id' => $eventId,
-            'start_load' => $startLoad->toDateTimeString(),
-            'end_load' => $endLoad->toDateTimeString(),
-        ]);
-        $tags = AutoCacheHelper::generateTags(['events', 'transcriptions', 'rate_charts', 'teams']);
+        $key = 'event_rate_chart_transcriptions:'.$eventId.':'.md5($startLoad->toDateTimeString().$endLoad->toDateTimeString());
+        $tags = ['events', 'transcriptions', 'rate_charts', 'teams'];
 
-        return AutoCacheHelper::remember($key, 1800, function () use ($eventId, $startLoad, $endLoad) {
+        return Cache::tags($tags)->remember($key, 1800, function () use ($eventId, $startLoad, $endLoad) {
             return $this->eventTranscription->with('team:id,title')
                 ->selectRaw('event_id, ADDTIME(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(created_at))/300)*300), "0:05:00") AS time, team_id, count(id) as count')
                 ->where('event_id', $eventId)
                 ->where('created_at', '>=', $startLoad->toDateTimeString())
                 ->where('created_at', '<', $endLoad->toDateTimeString())
                 ->groupBy(['time', 'team_id', 'event_id'])->orderBy('time')->get();
-        }, $tags);
+        });
     }
 }

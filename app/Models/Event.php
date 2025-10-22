@@ -24,7 +24,6 @@ use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\EventPresenter;
 use DateTimeZone;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -33,7 +32,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Event extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, Presentable, UuidTrait;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -87,16 +86,6 @@ class Event extends BaseEloquentModel
     protected $hidden = [
         'id',
     ];
-
-    /**
-     * Get Cache relations.
-     *
-     * @return string[]
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project', 'owner', 'teams', 'transcriptions'];
-    }
 
     /**
      * Get the route key for the model.

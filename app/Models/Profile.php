@@ -21,7 +21,6 @@
 namespace App\Models;
 
 use App\Models\Traits\Presentable;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -29,7 +28,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Profile extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, Presentable;
+    use HasFactory, Presentable;
 
     /**
      * {@inheritDoc}
@@ -63,14 +62,6 @@ class Profile extends BaseEloquentModel
     ];
 
     protected string $presenter = \App\Presenters\ProfilePresenter::class;
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['user'];
-    }
 
     /**
      * Profile constructor.

@@ -20,15 +20,11 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
-
 /**
  * Class PusherTranscription
  */
 class PusherTranscription extends BaseMongoModel
 {
-    use Cacheable;
-
     /**
      * Set Collection
      */
@@ -49,14 +45,6 @@ class PusherTranscription extends BaseMongoModel
             'updated_at' => 'datetime',
             'timestamp' => 'datetime',
         ];
-    }
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['expedition', 'transcription'];
     }
 
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo

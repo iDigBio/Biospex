@@ -20,7 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -28,7 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Property extends BaseEloquentModel
 {
-    use Cacheable, HasFactory;
+    use HasFactory;
 
     /**
      * {@inheritDoc}

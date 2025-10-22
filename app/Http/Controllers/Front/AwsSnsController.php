@@ -27,7 +27,7 @@ use App\Jobs\SnsTesseractOcrJob;
 use Aws\Sns\Exception\InvalidSnsMessageException;
 use Aws\Sns\Message;
 use Aws\Sns\MessageValidator;
-use IDigAcademy\AutoCache\Helpers\AutoCacheHelper;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class AwsSnsController
@@ -45,12 +45,12 @@ class AwsSnsController
             $message = Message::fromRawPostData();
 
             $validator = new MessageValidator(function ($certUrl) {
-                $key = AutoCacheHelper::generateKey('sns_certificate', ['cert_url' => $certUrl]);
-                $tags = AutoCacheHelper::generateTags(['sns', 'certificates']);
+                $key = 'sns_certificate:'.md5($certUrl);
+                $tags = ['sns', 'certificates'];
 
-                return AutoCacheHelper::remember($key, 0, function () use ($certUrl) {
+                return Cache::tags($tags)->rememberForever($key, function () use ($certUrl) {
                     return Http::get($certUrl)->body();
-                }, $tags);
+                });
             });
             $validator->validate($message);
         } catch (InvalidSnsMessageException $e) {

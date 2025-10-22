@@ -20,7 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -28,7 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class BingoWord extends BaseEloquentModel
 {
-    use Cacheable, HasFactory;
+    use HasFactory;
 
     /**
      * {@inheritDoc}
@@ -43,16 +42,6 @@ class BingoWord extends BaseEloquentModel
         'word',
         'definition',
     ];
-
-    /**
-     * Get Cache relations.
-     *
-     * @return string[]
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['bingo'];
-    }
 
     /**
      * Bingo relation.
