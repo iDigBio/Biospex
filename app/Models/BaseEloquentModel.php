@@ -52,6 +52,8 @@ class BaseEloquentModel extends Model
      */
     protected $connection = 'mysql';
 
+    public $incrementing = true;  // Enable for auto-increment IDs
+
     /**
      * The primary key for the model.
      * Standardized across all application models.
@@ -76,5 +78,27 @@ class BaseEloquentModel extends Model
         }
 
         parent::__construct($attributes);
+    }
+
+    /**
+     * Save the model to the database.
+     *
+     * Fix for cases where auto-increment ID is not populated after save (e.g., Laravel 12 hydration edge cases).
+     */
+    public function save(array $options = []): bool
+    {
+        $result = parent::save($options);
+
+        // If save succeeded, it's a fresh insert, auto-increment is enabled, but key is still null—fetch it manually
+        if ($result && $this->wasRecentlyCreated && $this->getIncrementing() && is_null($this->getKey())) {
+            $lastId = $this->getConnection()->getPdo()->lastInsertId();
+            if ($lastId !== '0' && $lastId !== 0) {  // Guard against invalid/zero IDs
+                $this->setAttribute($this->getKeyName(), $lastId);
+                $this->syncOriginalAttribute($this->getKeyName());  // Sync to avoid "dirty" flags later
+                $this->syncChanges();  // Optional: Refresh changed attributes
+            }
+        }
+
+        return $result;
     }
 }

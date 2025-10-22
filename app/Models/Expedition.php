@@ -47,8 +47,6 @@ class Expedition extends BaseEloquentModel
 
     protected string $presenter = ExpeditionPresenter::class;
 
-    protected $hidden = ['id'];
-
     /**
      * Get the route key for the model.
      *
