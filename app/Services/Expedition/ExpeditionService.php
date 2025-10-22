@@ -27,6 +27,7 @@ use App\Services\Subject\SubjectService;
 use App\Services\Trait\ExpeditionPartitionTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class ExpeditionService
@@ -52,7 +53,8 @@ class ExpeditionService
         $this->handleLogoUploadForCreate($request);
 
         $request['project_id'] = $project->id;
-        $expedition = $this->expedition->create($request);
+
+        $expedition = Expedition::create($request);
 
         $expedition->load(['project', 'workflow.actors.contacts']);
 
@@ -197,17 +199,39 @@ class ExpeditionService
      */
     public function syncActors(Expedition $expedition): void
     {
-        $actors = $expedition->workflow->actors->mapWithKeys(function ($actor) use ($expedition) {
-            return $expedition->actors->contains('id', $actor->id) ? [$actor->id => ['order' => $actor->pivot->order]] : [
-                $actor->id => [
+        if (! $expedition->workflow) {
+            return;
+        }
+
+        if (! $expedition->workflow->actors || $expedition->workflow->actors->isEmpty()) {
+            return;
+        }
+
+        $subjectCount = $this->getSubjectCount();
+
+        $actors = $expedition->workflow->actors->mapWithKeys(function ($actor) use ($expedition, $subjectCount) {
+            $isExistingActor = $expedition->actors->contains('id', $actor->id);
+
+            if ($isExistingActor) {
+                return [$actor->id => ['order' => $actor->pivot->order]];
+            } else {
+                return [$actor->id => [
                     'state' => 0,
                     'order' => $actor->pivot->order,
-                    'total' => $this->getSubjectCount(),
-                ],
-            ];
+                    'total' => $subjectCount,
+                ]];
+            }
         })->toArray();
 
-        $expedition->actors()->sync($actors);
+        try {
+            $expedition->actors()->sync($actors);
+        } catch (\Exception $e) {
+            Log::error('Failed to sync actors', [
+                'expedition_id' => $expedition->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 
     /**
@@ -215,7 +239,20 @@ class ExpeditionService
      */
     public function syncStat(Expedition $expedition): void
     {
-        $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], ['local_subject_count' => $this->getSubjectCount()]);
+        $subjectCount = $this->getSubjectCount();
+
+        try {
+            $expedition->stat()->updateOrCreate(
+                ['expedition_id' => $expedition->id],
+                ['local_subject_count' => $subjectCount]
+            );
+        } catch (\Exception $e) {
+            Log::error('Failed to sync expedition stat', [
+                'expedition_id' => $expedition->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 
     /**

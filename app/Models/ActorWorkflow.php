@@ -57,13 +57,6 @@ class ActorWorkflow extends BaseEloquentModel implements Sortable
     public $primaryKey = 'id';
 
     /**
-     * Indicates if the model should use auto-incrementing primary keys.
-     *
-     * @var bool
-     */
-    public $incrementing = true;
-
-    /**
      * The attributes that are not mass assignable.
      * Empty array means all attributes are mass assignable.
      *

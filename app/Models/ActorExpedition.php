@@ -37,13 +37,6 @@ namespace App\Models;
 class ActorExpedition extends BaseEloquentModel
 {
     /**
-     * Indicates if the model should use auto-incrementing primary keys.
-     *
-     * @var bool
-     */
-    public $incrementing = true;
-
-    /**
      * The name of the database table associated with the model.
      *
      * @var string

@@ -22,7 +22,7 @@
     "graham-campbell/markdown": "^v16.0.0.0",
     "intervention/image-laravel": "^1.5",
     "laracasts/utilities": "^3.2",
-    "laravel/framework": "^12.0",
+    "laravel/framework": "^v12.0.0",
     "laravel/nova": "^4.0",
     "laravel/reverb": "^1.0",
     "laravel/sanctum": "^v4.0.0",
