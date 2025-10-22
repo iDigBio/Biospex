@@ -55,7 +55,7 @@ class BingoCleanCommand extends Command
      */
     public function handle(): void
     {
-        $records = $this->bingoUser->skipCache()->where('created_at', '<', Carbon::now()->subDays(1))->get();
+        $records = $this->bingoUser->where('created_at', '<', Carbon::now()->subDays(1))->get();
 
         $records->each(function ($record) {
             $record->delete();

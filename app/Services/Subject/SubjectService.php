@@ -70,7 +70,7 @@ class SubjectService
      */
     public function update(array $data, $resourceId): bool|Subject
     {
-        $model = $this->subject->skipCache()->find($resourceId);
+        $model = $this->subject->find($resourceId);
         $result = $model->fill($data)->save();
 
         return $result ? $model : false;
@@ -84,7 +84,7 @@ class SubjectService
      */
     public function find(string $id): mixed
     {
-        return $this->subject->skipCache()->find($id);
+        return $this->subject->find($id);
     }
 
     /**
@@ -97,7 +97,7 @@ class SubjectService
      */
     public function getWhereIn(string $field, array $values, array $columns = ['*']): mixed
     {
-        return $this->subject->skipCache()->whereIn($field, $values)->get($columns);
+        return $this->subject->whereIn($field, $values)->get($columns);
     }
 
     /**
@@ -109,7 +109,7 @@ class SubjectService
      */
     public function findByExpeditionId($expeditionId, array $attributes = ['*']): mixed
     {
-        return $this->subject->skipCache()->where('expedition_ids', $expeditionId)->get($attributes);
+        return $this->subject->where('expedition_ids', $expeditionId)->get($attributes);
     }
 
     /**
@@ -117,7 +117,7 @@ class SubjectService
      */
     public function getSubjectCursorForExport($expeditionId): LazyCollection
     {
-        return $this->subject->skipCache()->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])
+        return $this->subject->where('expedition_ids', $expeditionId)->options(['allowDiskUse' => true])
             ->timeout(86400)->cursor();
     }
 
@@ -126,7 +126,7 @@ class SubjectService
      */
     public function getSubjectCursorForOcr(Project $project, ?Expedition $expedition = null): LazyCollection
     {
-        $query = $this->subject->skipCache()->where('project_id', $project->id);
+        $query = $this->subject->where('project_id', $project->id);
         $query = $expedition === null ? $query : $query->where('expedition_ids', $expedition->id);
 
         return $query->where(function ($q) {
@@ -139,7 +139,7 @@ class SubjectService
      */
     public function getSubjectCountForOcr(Project $project, ?Expedition $expedition = null): int
     {
-        $query = $this->subject->skipCache()->where('project_id', $project->id);
+        $query = $this->subject->where('project_id', $project->id);
         $query = $expedition === null ? $query : $query->where('expedition_ids', $expedition->id);
 
         return $query->where(function ($query) {
@@ -153,7 +153,7 @@ class SubjectService
     public function detachSubjects(Collection $subjectIds, int $expeditionId): void
     {
         $subjectIds->each(function ($subjectId) use ($expeditionId) {
-            $subject = $this->subject->skipCache()->find($subjectId);
+            $subject = $this->subject->find($subjectId);
             $subject->expedition_ids = collect($subject->expedition_ids)->filter(function ($value) use ($expeditionId) {
                 return $value != $expeditionId;
             })->unique()->toArray();
@@ -168,7 +168,7 @@ class SubjectService
     public function attachSubjects(Collection $subjectIds, int $expeditionId): void
     {
         $subjectIds->each(function ($subjectId) use ($expeditionId) {
-            $subject = $this->subject->skipCache()->find($subjectId);
+            $subject = $this->subject->find($subjectId);
             $subject->expedition_ids = collect($subject->expedition_ids)->push($expeditionId)->unique()->toArray();
             $subject->save();
         });
@@ -198,7 +198,7 @@ class SubjectService
      */
     public function getGridTotalRowCount(array $vars = []): int
     {
-        $count = $this->subject->skipCache()->whereNested(function ($query) use ($vars) {
+        $count = $this->subject->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true])->count();
 
@@ -224,7 +224,7 @@ class SubjectService
      */
     public function getGridRows(array $vars = []): array
     {
-        $query = $this->subject->skipCache()->whereNested(function ($query) use ($vars) {
+        $query = $this->subject->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true])->take($vars['limit'])->skip($vars['offset']);
 
@@ -248,7 +248,7 @@ class SubjectService
      */
     public function exportGridRows(array $vars): LazyCollection
     {
-        $query = $this->subject->skipCache()->with('occurrence')->whereNested(function ($query) use ($vars) {
+        $query = $this->subject->with('occurrence')->whereNested(function ($query) use ($vars) {
             $this->buildQuery($query, $vars);
         })->options(['allowDiskUse' => true]);
 
