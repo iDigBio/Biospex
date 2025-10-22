@@ -33,11 +33,36 @@ namespace Deployer;
 
 /*
  * =============================================================================
- * CUSTOM LARAVEL ARTISAN TASKS
+ * COMPOSER DEPENDENCY MANAGEMENT - SAFE INSTALLATION
  * =============================================================================
  */
 
 use Exception;
+
+desc('Install Composer dependencies safely (with --no-scripts to prevent database connection issues)');
+task('deploy:vendors', function () {
+    if (! test('[ -f {{release_path}}/composer.json ]')) {
+        return;
+    }
+
+    // Install dependencies without running scripts to prevent database connection issues
+    run('cd {{release_path}} && {{bin/composer}} install --prefer-dist --no-progress --no-suggest --no-dev --optimize-autoloader --no-scripts');
+
+    writeln('✅ Composer dependencies installed safely (without scripts)');
+});
+
+desc('Run Laravel package discovery after environment is ready');
+task('artisan:package:discover', function () {
+    cd('{{release_or_current_path}}');
+    run('php artisan package:discover --ansi');
+    writeln('✅ Laravel package discovery completed');
+});
+
+/*
+ * =============================================================================
+ * CUSTOM LARAVEL ARTISAN TASKS
+ * =============================================================================
+ */
 
 desc('Running custom database update queries');
 task('artisan:app:update-queries', function () {

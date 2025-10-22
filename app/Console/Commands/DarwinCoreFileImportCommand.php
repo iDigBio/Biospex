@@ -58,7 +58,7 @@ class DarwinCoreFileImportCommand extends Command
      */
     public function handle()
     {
-        $import = $this->import->skipCache()->where('error', 0)->first();
+        $import = $this->import->where('error', 0)->first();
 
         if ($import === null) {
             return;

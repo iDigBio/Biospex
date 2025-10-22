@@ -23,7 +23,6 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\DownloadPresenter;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -45,7 +44,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Download extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, Presentable, UuidTrait;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
      * The name of the table associated with the model.
@@ -80,16 +79,6 @@ class Download extends BaseEloquentModel
     protected $hidden = [
         'id',
     ];
-
-    /**
-     * Get Cache relations.
-     *
-     * @return string[]
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['expedition', 'actor', 'geoLocateDataSource'];
-    }
 
     /**
      * Specifies the route key name for the model, which is `uuid`.

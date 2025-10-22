@@ -20,7 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -29,7 +28,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Header extends BaseEloquentModel
 {
-    use Cacheable, HasFactory;
+    use HasFactory;
 
     /**
      * {@inheritDoc}
@@ -43,14 +42,6 @@ class Header extends BaseEloquentModel
         'project_id',
         'header',
     ];
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project'];
-    }
 
     /**
      * Project relationship.

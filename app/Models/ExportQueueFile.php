@@ -20,19 +20,13 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use MongoDB\Laravel\Eloquent\HybridRelations;
 
 /**
  * Class ExportQueueFile
  */
 class ExportQueueFile extends BaseEloquentModel
 {
-    use Cacheable, HybridRelations {
-        Cacheable::newEloquentBuilder insteadof HybridRelations;
-    }
-
     /**
      * @ineritDoc
      */
@@ -49,14 +43,6 @@ class ExportQueueFile extends BaseEloquentModel
         'processed',
         'tries',
     ];
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['queue', 'subject'];
-    }
 
     /**
      * ExportQueue relationship.

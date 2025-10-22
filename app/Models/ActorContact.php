@@ -20,7 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
@@ -39,7 +38,7 @@ use Illuminate\Notifications\Notifiable;
  */
 class ActorContact extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The name of the database table associated with the model.
@@ -56,19 +55,6 @@ class ActorContact extends BaseEloquentModel
     protected $fillable = [
         'email',    // The email address for the actor contact
     ];
-
-    /**
-     * Get the relations that should be cached for performance optimization.
-     *
-     * This method defines which Eloquent relationships should be cached
-     * when using the Cacheable trait to improve query performance.
-     *
-     * @return array<string> Array of relationship names to be cached
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['actor'];
-    }
 
     /**
      * Define a many-to-one relationship with the Actor model.

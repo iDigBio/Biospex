@@ -20,7 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -39,7 +38,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class AmChart extends BaseEloquentModel
 {
-    use Cacheable, HasFactory;
+    use HasFactory;
 
     /**
      * The name of the database table associated with the model.
@@ -58,19 +57,6 @@ class AmChart extends BaseEloquentModel
         'series',       // Chart series configuration data (JSON)
         'data',         // Chart data points and values (JSON)
     ];
-
-    /**
-     * Get the relations that should be cached for performance optimization.
-     *
-     * This method defines which Eloquent relationships should be cached
-     * when using the Cacheable trait to improve query performance.
-     *
-     * @return array<string> Array of relationship names to be cached
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project'];
-    }
 
     /**
      * Define a many-to-one relationship with the Project model.

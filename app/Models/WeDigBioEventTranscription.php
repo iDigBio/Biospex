@@ -20,17 +20,11 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use MongoDB\Laravel\Eloquent\HybridRelations;
 
 class WeDigBioEventTranscription extends BaseEloquentModel
 {
-    use Cacheable, HybridRelations {
-        Cacheable::newEloquentBuilder insteadof HybridRelations;
-    }
-
     protected $table = 'wedigbio_event_transcriptions';
 
     protected $fillable = [
@@ -51,14 +45,6 @@ class WeDigBioEventTranscription extends BaseEloquentModel
             'project_id' => 'int',
             'event_id' => 'int',
         ];
-    }
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['transcription', 'project'];
     }
 
     /**

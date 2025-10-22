@@ -20,12 +20,8 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
-
 class GeoLocateExport extends BaseMongoModel
 {
-    use Cacheable;
-
     /**
      * Set Collection
      *
@@ -44,14 +40,6 @@ class GeoLocateExport extends BaseMongoModel
             'subject_id' => 'integer',
             'subject_expeditionId' => 'integer',
         ];
-    }
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['expedition'];
     }
 
     /**

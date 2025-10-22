@@ -6,11 +6,11 @@
         @endif
         @php($complete = false)
         @foreach ($expedition->actors as $actor)
-            @if($actor->id == config('zooniverse.actor_id'))
+            @if((int)$actor->id === (int)config('zooniverse.actor_id'))
                 @php($complete = $actor->pivot->state === 3)
                 @include('admin.expedition.partials.zooniverse-btns')
             @endif
-            @if($actor->id == config('geolocate.actor_id') && $complete)
+            @if((int)$actor->id === (int)config('geolocate.actor_id') && $complete)
                 @include('admin.expedition.partials.geolocate-btns')
             @endif
         @endforeach

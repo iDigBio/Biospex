@@ -22,7 +22,6 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\ReconcilePresenter;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -30,7 +29,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Reconcile extends BaseMongoModel
 {
-    use Cacheable, HasFactory, Presentable;
+    use HasFactory, Presentable;
 
     /**
      * Set Collection
@@ -56,14 +55,6 @@ class Reconcile extends BaseMongoModel
     }
 
     protected string $presenter = ReconcilePresenter::class;
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project', 'expedition', 'transcriptions'];
-    }
 
     /**
      * Subject relation.

@@ -22,7 +22,6 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\PanoptesProjectPresenter;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -31,7 +30,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class PanoptesProject extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, Presentable;
+    use HasFactory, Presentable;
 
     /**
      * {@inheritDoc}
@@ -55,14 +54,6 @@ class PanoptesProject extends BaseEloquentModel
      * @var string
      */
     protected $presenter = PanoptesProjectPresenter::class;
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['project', 'expedition'];
-    }
 
     /**
      * Project relationship.

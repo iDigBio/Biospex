@@ -104,9 +104,22 @@ class Thumbnail
 
         try {
             if (! $this->file->isFile($thumbFilePath)) {
+                // Ensure thumbnail directory exists
+                if (! $this->file->isDirectory($this->thumbDirectory)) {
+                    $this->file->makeDirectory($this->thumbDirectory, 0755, true);
+                }
+
                 $this->processImage($url, $thumbFilePath);
             }
         } catch (Throwable $throwable) {
+            Log::error('Thumbnail: Failed to generate thumbnail', [
+                'url' => $url,
+                'thumbnail_path' => $thumbFilePath,
+                'error' => $throwable->getMessage(),
+                'exception' => get_class($throwable),
+                'file' => $throwable->getFile(),
+                'line' => $throwable->getLine(),
+            ]);
 
             return $this->getFile($this->defaultThumbImg);
         }
@@ -126,6 +139,12 @@ class Thumbnail
             $client = $this->httpRequest->createDirectHttpClient([
                 'timeout' => 30,
                 'connect_timeout' => 10,
+                'headers' => [
+                    'Accept' => 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                    'Accept-Encoding' => 'gzip, deflate, br',
+                    'Accept-Language' => 'en-US,en;q=0.9',
+                ],
             ]);
 
             $response = $client->get($url);

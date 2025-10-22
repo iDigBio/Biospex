@@ -21,7 +21,6 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -41,7 +40,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class GeoLocateForm extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, UuidTrait;
+    use HasFactory, UuidTrait;
 
     /**
      * Table associated with this model.
@@ -74,14 +73,6 @@ class GeoLocateForm extends BaseEloquentModel
             'fields' => 'array',            // Casts the `fields` attribute to an array
             'created_at' => 'datetime:Y-m-d', // Formats the `created_at` field as 'Y-m-d'
         ];
-    }
-
-    /**
-     * Get the relations that should be cached.
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['group', 'expeditions', 'geoLocateDataSources'];
     }
 
     /**

@@ -23,7 +23,6 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\BingoPresenter;
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -31,7 +30,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Bingo extends BaseEloquentModel
 {
-    use Cacheable, HasFactory, Presentable, UuidTrait;
+    use HasFactory, Presentable, UuidTrait;
 
     /**
      * {@inheritDoc}
@@ -70,16 +69,6 @@ class Bingo extends BaseEloquentModel
      * @var string
      */
     protected $presenter = BingoPresenter::class;
-
-    /**
-     * Get Cache relations.
-     *
-     * @return string[]
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['user', 'project', 'words', 'maps'];
-    }
 
     /**
      * User relation.

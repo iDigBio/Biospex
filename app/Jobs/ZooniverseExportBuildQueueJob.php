@@ -38,6 +38,8 @@ class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
+    public int $timeout = 3600;
+
     /**
      * Create a new job instance.
      */

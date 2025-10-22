@@ -69,16 +69,15 @@ class ZooniverseBuildQueue
         $subjects = $this->subjectService->getSubjectCursorForExport($exportQueue->expedition_id);
 
         $subjects->each(function ($subject) use ($exportQueue) {
-            $attributes = [
-                'queue_id' => $exportQueue->id,
-                'subject_id' => (string) $subject->_id,
-            ];
-
-            $file = $this->exportQueueFile->firstOrNew($attributes);
-            $file->access_uri = $subject->accessURI;
-            $file->processed = 0;
-            $file->message = null;
-            $file->save();
+            $this->exportQueueFile->updateOrCreate(
+                [
+                    'queue_id' => $exportQueue->id,
+                    'subject_id' => (string) $subject->_id,
+                ],
+                [
+                    'access_uri' => $subject->accessURI,
+                ]
+            );
         });
     }
 }

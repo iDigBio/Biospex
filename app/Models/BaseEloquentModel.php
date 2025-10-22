@@ -22,6 +22,7 @@ namespace App\Models;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Model;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class BaseEloquentModel
@@ -41,6 +42,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BaseEloquentModel extends Model
 {
+    use LadaCacheTrait;
+
     /**
      * The database connection name for the model.
      * Defaults to MySQL but switches to SQLite during testing.

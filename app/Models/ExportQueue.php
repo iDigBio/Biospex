@@ -20,7 +20,6 @@
 
 namespace App\Models;
 
-use IDigAcademy\AutoCache\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -29,7 +28,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class ExportQueue extends BaseEloquentModel
 {
-    use Cacheable, HasFactory;
+    use HasFactory;
 
     /**
      * @ineritDoc
@@ -47,16 +46,6 @@ class ExportQueue extends BaseEloquentModel
         'total',
         'error',
     ];
-
-    /**
-     * Get the relations that should be cached.
-     *
-     * @return array<string> Array of relation names to cache
-     */
-    protected function getCacheRelations(): array
-    {
-        return ['expedition', 'actor', 'files'];
-    }
 
     /**
      * Get Expedition relation.
