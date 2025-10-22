@@ -21,7 +21,6 @@
 namespace App\Jobs;
 
 use App\Models\Import;
-use App\Models\Subject;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use App\Services\DarwinCore\DwcBatchProcessor;
@@ -114,22 +113,6 @@ class DwcBatchImportJob implements ShouldQueue
             $this->delete();
 
             return;
-        }
-
-        // Check if import was already completed successfully (no error and no processing flag)
-        if ($this->import->error == 0 && $this->import->processing == 0) {
-            $existingSubjects = Subject::where('project_id', $this->import->project_id)->count();
-            if ($existingSubjects > 0) {
-                Log::warning('Import appears to be already completed, skipping duplicate execution', [
-                    'import_id' => $this->import->id,
-                    'existing_subjects' => $existingSubjects,
-                    'attempt' => $this->safeGetAttempts(),
-                ]);
-                $this->import->delete();
-                $this->delete();
-
-                return;
-            }
         }
 
         // Mark as processing to prevent duplicate execution
