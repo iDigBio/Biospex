@@ -198,17 +198,13 @@ class ExpeditionService
     public function syncActors(Expedition $expedition): void
     {
         $actors = $expedition->workflow->actors->mapWithKeys(function ($actor) use ($expedition) {
-            $existingActor = $expedition->actors->firstWhere('id', $actor->id);
-
-            return $existingActor ?
-                [$actor->id => ['order' => $existingActor->pivot->order ?? $actor->pivot->order]] :
-                [
-                    $actor->id => [
-                        'state' => 0,
-                        'order' => $actor->pivot->order,
-                        'total' => $this->getSubjectCount(),
-                    ],
-                ];
+            return $expedition->actors->contains('id', $actor->id) ? [$actor->id => ['order' => $actor->pivot->order]] : [
+                $actor->id => [
+                    'state' => 0,
+                    'order' => $actor->pivot->order,
+                    'total' => $this->getSubjectCount(),
+                ],
+            ];
         })->toArray();
 
         $expedition->actors()->sync($actors);
