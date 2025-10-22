@@ -49,13 +49,30 @@ class PanoptesTranscriptionService
      */
     public function getContributorCount(): mixed
     {
-        // TODO: Eventually resolve Laravel issue with count.
-        return $this->model->select('user_name')
-            ->where('user_name', 'not regexp', '/^not-logged-in.*/i')
-            ->groupBy('user_name')
-            ->setTtl(14440)
-            ->get()
-            ->count();
+        $aggregationQuery = [
+            [
+                '$match' => [
+                    'user_name' => ['$not' => ['$regex' => '^not-logged-in.*', '$options' => 'i']],
+                ],
+            ],
+            [
+                '$group' => ['_id' => '$user_name'],
+            ],
+            [
+                '$count' => 'count',
+            ],
+        ];
+
+        $key = 'contributor_count';
+        $tags = ['panoptes_transcriptions'];
+
+        $result = Cache::tags($tags)->remember($key, 14440, function () use ($aggregationQuery) {
+            return $this->model->raw(function ($collection) use ($aggregationQuery) {
+                return $collection->aggregate($aggregationQuery, ['maxTimeMS' => 30000]); // 30 second timeout
+            })->first();
+        });
+
+        return $result === null ? 0 : $result->count;
     }
 
     /**
@@ -63,7 +80,14 @@ class PanoptesTranscriptionService
      */
     public function getTotalTranscriptions(): mixed
     {
-        return $this->model->setTtl(14440)->count();
+        $key = 'total_transcriptions';
+        $tags = ['panoptes_transcriptions'];
+
+        return Cache::tags($tags)->remember($key, 14440, function () {
+            return $this->model->raw(function ($collection) {
+                return $collection->countDocuments([], ['maxTimeMS' => 30000]); // 30 second timeout
+            });
+        });
     }
 
     /**
