@@ -104,7 +104,8 @@ class ZooniverseClassificationCountJob implements ShouldQueue
      */
     protected function checkFinishedAt(Expedition $expedition, ?string $finishedAt = null): void
     {
-        if ($finishedAt === null || $expedition->stat->percent_completed === 100) {
+        if ($finishedAt === null ||
+            ($expedition->stat->percent_completed === 100 && $expedition->completed === 1)) {
             return;
         }
 
