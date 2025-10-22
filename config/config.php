@@ -31,11 +31,11 @@ return [
         'secret_key' => env('AWS_SECRET_ACCESS_KEY'),
         'default_region' => env('AWS_DEFAULT_REGION'),
         'lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION'),
+        'lambda_reconciliation_function' => env('AWS_LAMBDA_RECONCILIATION_FUNCTION'),
+        'lambda_ocr_function' => env('AWS_LAMBDA_OCR_FUNCTION'),
         'lambda_export_count' => env('AWS_LAMBDA_EXPORT_COUNT'),
         'lambda_qualifier' => env('AWS_LAMBDA_QUALIFIER'),
-        'lambda_ocr_function' => env('AWS_LAMBDA_OCR_FUNCTION'),
         'lambda_ocr_count' => env('AWS_LAMBDA_OCR_COUNT'),
-        'lambda_reconciliation_function' => env('AWS_LAMBDA_RECONCILIATION_FUNCTION'),
     ],
 
     'batch_dir' => env('BATCH_DIR', 'batch'),

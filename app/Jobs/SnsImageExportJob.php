@@ -54,7 +54,7 @@ class SnsImageExportJob implements ShouldQueue
                 return;
             }
 
-            $snsImageExportResultProcess->handleResponse($responsePayload['statusCode'], $responsePayload['body']);
+            $snsImageExportResultProcess->handleResponse($responsePayload['body']);
         } catch (Throwable $throwable) {
             $snsImageExportResultProcess->handleErrorMessage($this->data['requestPayload'], $throwable->getMessage());
         }

@@ -33,7 +33,7 @@ class SnsImageExportResultProcess
     public function __construct(protected ExportQueueFile $exportQueueFile) {}
 
     /**
-     * Handle hard failure of lambda function.
+     * Handle hard failure of a lambda function.
      * Do not update queue if hard error.
      */
     public function handleErrorMessage(array $requestPayload, string $errorMessage): void
@@ -44,9 +44,16 @@ class SnsImageExportResultProcess
     /**
      * Handle response for success or failure.
      */
-    public function handleResponse(int $statusCode, array $body): void
+    public function handleResponse(array $body): void
     {
-        $this->updateQueueFile($body['subjectId'], $body['message']);
+        $message = $body['message'] ?? null;
+
+        // Convert array/object messages to JSON string for storage
+        if (is_array($message) || is_object($message)) {
+            $message = json_encode($message);
+        }
+
+        $this->updateQueueFile($body['subjectId'], $message);
     }
 
     /**
