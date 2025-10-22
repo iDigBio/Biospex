@@ -197,23 +197,6 @@ class ExpeditionService
      */
     public function syncActors(Expedition $expedition): void
     {
-        // Debug: Check if workflow exists
-        if (! $expedition->workflow) {
-            \Log::error("syncActors failed: Expedition {$expedition->id} has no workflow assigned");
-
-            return;
-        }
-
-        // Debug: Check if workflow has actors
-        if (! $expedition->workflow->actors || $expedition->workflow->actors->count() === 0) {
-            \Log::error("syncActors failed: Workflow {$expedition->workflow->id} has no actors assigned");
-
-            return;
-        }
-
-        // Force fresh load of actors to avoid cache issues
-        $expedition->load('actors');
-
         $actors = $expedition->workflow->actors->mapWithKeys(function ($actor) use ($expedition) {
             $existingActor = $expedition->actors->firstWhere('id', $actor->id);
 
@@ -228,23 +211,7 @@ class ExpeditionService
                 ];
         })->toArray();
 
-        // Debug: Log what we're about to sync
-        \Log::info('syncActors: About to sync actors', [
-            'expedition_id' => $expedition->id,
-            'actors_to_sync' => $actors,
-            'subject_count' => $this->getSubjectCount(),
-        ]);
-
         $expedition->actors()->sync($actors);
-
-        // Debug: Check if sync worked
-        $expedition->load('actors');
-        \Log::info("syncActors: After sync, expedition has {$expedition->actors->count()} actors");
-
-        // Clear the actors relationship cache after sync
-        if (method_exists($expedition, 'flushCacheForRelation')) {
-            $expedition->flushCacheForRelation('actors');
-        }
     }
 
     /**
