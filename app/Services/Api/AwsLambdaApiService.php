@@ -76,27 +76,42 @@ class AwsLambdaApiService
 
     /**
      * Invoke lambda client asynchronously.
+     *
+     * @throws \Exception
      */
     public function lambdaInvokeAsync(string $function, array $data): void
     {
-        $this->getLambdaClient()->invoke([
-            // The name your created Lambda function
+        $invokeParams = [
             'FunctionName' => $function,
             'Payload' => json_encode($data),
             'InvocationType' => 'Event',
-            'Qualifier' => config('config.aws.lambda_qualifier'),
-        ]);
+        ];
+
+        $qualifier = config('config.aws.lambda_export_qualifier');  // e.g., "" on dev, "production" on prod
+        if (! empty($qualifier)) {  // Only add if non-empty (omits for $LATEST on dev)
+            $invokeParams['Qualifier'] = $qualifier;
+        }
+
+        $this->getLambdaClient()->invoke($invokeParams);
     }
 
     /**
      * Invoke lambda client synchronously.
+     *
+     * @throws \Exception
      */
     public function lambdaInvoke(string $function, array $data): \Aws\Result
     {
-        return $this->getLambdaClient()->invoke([
+        $invokeParams = [
             'FunctionName' => $function,
             'Payload' => json_encode($data),
-            'Qualifier' => config('config.aws.lambda_qualifier'),
-        ]);
+        ];
+
+        $qualifier = config('config.aws.lambda_export_qualifier');  // e.g., "" on dev, "production" on prod
+        if (! empty($qualifier)) {  // FIX: Only add if non-empty (omits for $LATEST on dev)
+            $invokeParams['Qualifier'] = $qualifier;
+        }
+
+        return $this->getLambdaClient()->invoke($invokeParams);
     }
 }
