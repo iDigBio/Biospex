@@ -8,7 +8,6 @@ use App\Models\Workflow;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -18,7 +17,7 @@ class ExpeditionForm
     {
         return $schema
             ->components([
-                Section::make('Basic Information')
+                Section::make('Expedition Details')
                     ->schema([
                         TextInput::make('title')
                             ->required()
@@ -35,34 +34,15 @@ class ExpeditionForm
                             ->options(Workflow::pluck('title', 'id'))
                             ->searchable()
                             ->preload()
-                            ->nullable(),
-                    ])
-                    ->columns(3),
-
-                Section::make('Description & Details')
-                    ->schema([
+                            ->nullable()
+                            ->extraAttributes(['style' => 'max-width: 33.333%;']),
                         Textarea::make('description')
-                            ->rows(4)
-                            ->columnSpanFull(),
+                            ->required()
+                            ->rows(4),
                         TextInput::make('keywords')
+                            ->required()
                             ->maxLength(255)
                             ->helperText('Comma-separated keywords for searching'),
-                    ]),
-
-                Section::make('Status & Settings')
-                    ->schema([
-                        Toggle::make('completed')
-                            ->label('Expedition Completed')
-                            ->default(false),
-                        Toggle::make('locked')
-                            ->label('Expedition Locked')
-                            ->default(false)
-                            ->helperText('Locked expeditions are after GeoLocate initialization and should not be edited.'),
-                    ])
-                    ->columns(2),
-
-                Section::make('Media')
-                    ->schema([
                         ImageFileUpload::makeForExpedition('logo_path')
                             ->label('Expedition Logo')
                             ->image()
@@ -73,7 +53,9 @@ class ExpeditionForm
                             ->deletable()
                             ->downloadable()
                             ->maxSize(2048),
-                    ]),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
             ]);
     }
 }

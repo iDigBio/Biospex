@@ -79,7 +79,7 @@ class Expedition extends BaseEloquentModel
     /**
      * Get the dashboard transcriptions for this expedition.
      */
-    public function dashboard(): \MongoDB\Laravel\Relations\HasMany
+    public function dashboard(): Expedition|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(PusherTranscription::class, 'expedition_id');
     }
@@ -143,9 +143,9 @@ class Expedition extends BaseEloquentModel
     /**
      * Get all subjects associated with this expedition.
      */
-    public function subjects(): \MongoDB\Laravel\Relations\BelongsToMany
+    public function subjects(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->belongsToMany(Subject::class);
+        return $this->hasMany(Subject::class, 'expedition_ids', 'id')->where('expedition_ids', $this->id);
     }
 
     /**

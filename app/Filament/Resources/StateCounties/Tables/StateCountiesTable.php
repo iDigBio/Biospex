@@ -23,21 +23,7 @@ class StateCountiesTable
                     ->searchable(),
                 TextColumn::make('state_abbr_cap')
                     ->searchable(),
-                TextColumn::make('value')
-                    ->searchable(),
-                TextColumn::make('geo_id')
-                    ->searchable(),
-                TextColumn::make('geo_id_2')
-                    ->searchable(),
                 TextColumn::make('geographic_name')
-                    ->searchable(),
-                TextColumn::make('state_num')
-                    ->searchable(),
-                TextColumn::make('county_num')
-                    ->searchable(),
-                TextColumn::make('fips_forumla')
-                    ->searchable(),
-                TextColumn::make('has_error')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

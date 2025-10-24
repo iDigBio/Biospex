@@ -253,7 +253,7 @@ class Project extends BaseEloquentModel
     /**
      * Panoptes transcription relation.
      */
-    public function panoptesTranscriptions(): \MongoDB\Laravel\Relations\HasMany
+    public function panoptesTranscriptions(): Project|\Illuminate\Database\Eloquent\Builder|HasMany
     {
         return $this->hasMany(PanoptesTranscription::class, 'subject_projectId');
     }
@@ -271,37 +271,31 @@ class Project extends BaseEloquentModel
     /**
      * Subject relation.
      */
-    public function subjects(): \MongoDB\Laravel\Relations\HasMany
+    public function subjects(): Project|\Illuminate\Database\Eloquent\Builder|HasMany
     {
         return $this->hasMany(Subject::class);
     }
 
     /**
      * Transcription location relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function transcriptionLocations()
+    public function transcriptionLocations(): HasMany
     {
         return $this->hasMany(TranscriptionLocation::class);
     }
 
     /**
      * Workflow Manager relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function workflowManagers()
+    public function workflowManagers(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(WorkflowManager::class, Expedition::class);
     }
 
     /**
      * Set tag uri for rfc 4151 specs.
-     *
-     * @return string
      */
-    public function setTagUriAttribute()
+    public function setTagUriAttribute(): string
     {
         return 'tag:'.$_ENV['site.domain'].','.date('Y-m-d').':'.$this->attributes['slug'];
     }
@@ -309,7 +303,7 @@ class Project extends BaseEloquentModel
     /**
      * Mutator for target_fields.
      */
-    public function setTargetFieldsAttribute($input)
+    public function setTargetFieldsAttribute($input): void
     {
         if (empty($input)) {
             return;
@@ -345,24 +339,22 @@ class Project extends BaseEloquentModel
 
     /**
      * Accessor for target_fields.
-     *
-     * @return mixed
      */
-    public function getTargetFieldsAttribute($value)
+    public function getTargetFieldsAttribute($value): mixed
     {
         return json_decode($value);
     }
 
     /**
-     * Set attribute for advertise.
+     * Set attribute for advertisement.
      */
-    public function setAdvertiseAttribute($input)
+    public function setAdvertiseAttribute($input): void
     {
         if (empty($input)) {
             return;
         }
 
-        $extra = isset($input['advertiseExtra']) ? $input['advertiseExtra'] : '';
+        $extra = $input['advertiseExtra'] ?? '';
 
         $build = [];
         $ppsrFields = Config::get('config.ppsr');

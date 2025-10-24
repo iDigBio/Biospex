@@ -127,11 +127,21 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     }
 
     /**
+     * Get the name attribute for display purposes.
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->getFilamentName() ?: $this->email;
+    }
+
+    /**
      * Retrieve the Filament display name using the full name accessor.
      */
     public function getFilamentName(): string
     {
-        return trim($this->profile?->first_name.' '.$this->profile?->last_name);
+        $name = trim($this->profile?->first_name.' '.$this->profile?->last_name);
+
+        return $name ?: $this->email;
     }
 
     /**

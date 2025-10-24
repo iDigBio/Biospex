@@ -65,7 +65,7 @@ class UsersRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('filament_name')
+            ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
                     ->label('Name')
@@ -86,7 +86,23 @@ class UsersRelationManager extends RelationManager
             ])
             ->headerActions([
                 AttachAction::make()
-                    ->preloadRecordSelect(),
+                    ->preloadRecordSelect()
+                    ->recordSelectSearchColumns(['email'])
+                    ->recordSelectOptionsQuery(function ($query, ?string $search = null) {
+                        $query->with('profile');
+
+                        if ($search) {
+                            $query->where(function ($query) use ($search) {
+                                $query->where('email', 'like', "%{$search}%")
+                                    ->orWhereHas('profile', function ($query) use ($search) {
+                                        $query->where('first_name', 'like', "%{$search}%")
+                                            ->orWhere('last_name', 'like', "%{$search}%");
+                                    });
+                            });
+                        }
+
+                        return $query;
+                    }),
                 // CreateAction::make(),
             ])
             ->recordActions([

@@ -57,7 +57,6 @@ class NavigationConfig
         'App\Filament\Resources\PanoptesProjects\PanoptesProjectResource' => ['group' => 'Secondary'],
         'App\Filament\Resources\PanoptesTranscriptions\PanoptesTranscriptionResource' => ['group' => 'Secondary'],
         'App\Filament\Resources\ProjectAssets\ProjectAssetResource' => ['group' => 'Secondary'],
-        'App\Filament\Resources\PusherClassifications\PusherClassificationResource' => ['group' => 'Secondary'],
         'App\Filament\Resources\PusherTranscriptions\PusherTranscriptionResource' => ['group' => 'Secondary'],
         'App\Filament\Resources\Reconciles\ReconcileResource' => ['group' => 'Secondary'],
         'App\Filament\Resources\StateCounties\StateCountyResource' => ['group' => 'Secondary'],

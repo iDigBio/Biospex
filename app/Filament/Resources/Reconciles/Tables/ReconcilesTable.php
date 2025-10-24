@@ -37,11 +37,6 @@ class ReconcilesTable
                     ->label('ID')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('project.title')
-                    ->label('Project')
-                    ->searchable()
-                    ->sortable()
-                    ->placeholder('-'),
                 TextColumn::make('expedition.title')
                     ->label('Expedition')
                     ->searchable()
@@ -50,9 +45,6 @@ class ReconcilesTable
                 TextColumn::make('subject_id')
                     ->label('Subject ID')
                     ->searchable()
-                    ->sortable(),
-                TextColumn::make('problem')
-                    ->label('Problem')
                     ->sortable(),
                 TextColumn::make('json_preview')
                     ->label('Document Preview')
