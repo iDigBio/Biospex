@@ -72,6 +72,8 @@ class ExpeditionPresenter extends Presenter
         }
 
         // Return default missing logo
+        \Log::info('Returning default missing logo');
+
         return config('config.missing_expedition_logo');
     }
 
@@ -105,6 +107,8 @@ class ExpeditionPresenter extends Presenter
         }
 
         // Return default missing logo
+        \Log::info('Returning default missing logo');
+
         return config('config.missing_expedition_logo');
     }
 
