@@ -45,7 +45,6 @@ class Reconcile extends BaseMongoModel
     {
         return [
             'subject_id' => 'integer',
-            'subject_projectId' => 'integer',
             'subject_expeditionId' => 'integer',
             'problem' => 'integer',
             'created_at' => 'datetime',
@@ -57,19 +56,11 @@ class Reconcile extends BaseMongoModel
     protected string $presenter = ReconcilePresenter::class;
 
     /**
-     * Subject relation.
-     */
-    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(Project::class, 'project_id', 'id');
-    }
-
-    /**
      * Expdition relation.
      */
     public function expedition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Expedition::class, 'expedition_id', 'id');
+        return $this->belongsTo(Expedition::class, 'subject_expeditionId', 'id');
     }
 
     /**

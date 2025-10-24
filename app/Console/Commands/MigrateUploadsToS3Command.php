@@ -23,8 +23,8 @@ namespace App\Console\Commands;
 use App\Models\Expedition;
 use App\Models\Profile;
 use App\Models\Project;
-use App\Models\ProjectResource;
-use App\Models\Resource;
+use App\Models\ProjectAsset;
+use App\Models\SiteAsset;
 use Illuminate\Console\Command;
 use Intervention\Image\Laravel\Facades\Image;
 use Storage;
@@ -62,8 +62,8 @@ class MigrateUploadsToS3Command extends Command
         $this->migrateProjectLogos($isDryRun);
         $this->migrateExpeditionLogos($isDryRun);
         $this->migrateProfileAvatars($isDryRun);
-        $this->migrateProjectResourceDownloads($isDryRun);
-        $this->migrateResourceDocuments($isDryRun);
+        $this->migrateProjectAssetDownloads($isDryRun);
+        $this->migrateSiteAssetDocuments($isDryRun);
 
         $this->info('✅ Migration completed successfully!');
 
@@ -207,36 +207,36 @@ class MigrateUploadsToS3Command extends Command
         }
     }
 
-    private function migrateProjectResourceDownloads($isDryRun)
+    private function migrateProjectAssetDownloads($isDryRun)
     {
-        $this->info('📁 Migrating Project Resource downloads from paperclip to S3...');
+        $this->info('📁 Migrating Project Asset downloads from paperclip to S3...');
 
-        $resources = ProjectResource::whereNotNull('download_file_name')->get();
+        $resources = ProjectAsset::whereNotNull('download_file_name')->get();
         $count = 0;
 
         foreach ($resources as $resource) {
-            if ($this->migratePaperclipFileToS3($resource, 'ProjectResource', 'downloads', $resource->download_file_name, $isDryRun)) {
+            if ($this->migratePaperclipFileToS3($resource, 'ProjectAsset', 'downloads', $resource->download_file_name, $isDryRun)) {
                 $count++;
             }
         }
 
-        $this->info("   Processed {$count} project resource downloads");
+        $this->info("   Processed {$count} project asset downloads");
     }
 
-    private function migrateResourceDocuments($isDryRun)
+    private function migrateSiteAssetDocuments($isDryRun)
     {
         $this->info('📁 Migrating Resource documents from paperclip to S3...');
 
-        $resources = Resource::whereNotNull('document_file_name')->get();
+        $resources = SiteAsset::whereNotNull('document_file_name')->get();
         $count = 0;
 
         foreach ($resources as $resource) {
-            if ($this->migratePaperclipFileToS3($resource, 'Resource', 'documents', $resource->document_file_name, $isDryRun)) {
+            if ($this->migratePaperclipFileToS3($resource, 'SiteAsset', 'documents', $resource->document_file_name, $isDryRun)) {
                 $count++;
             }
         }
 
-        $this->info("   Processed {$count} resource documents");
+        $this->info("   Processed {$count} site-asset documents");
     }
 
     private function migratePaperclipFileToS3($model, $modelType, $attachment, $fileName, $isDryRun)
@@ -307,9 +307,9 @@ class MigrateUploadsToS3Command extends Command
                 return config('config.uploads.expedition_logos_original').'/'.$newFileName;
             case 'Profile':
                 return config('config.uploads.profile_avatars_original').'/'.$newFileName;
-            case 'ProjectResource':
+            case 'ProjectAsset':
                 return config('config.uploads.project_resources_downloads').'/'.$newFileName;
-            case 'Resource':
+            case 'SiteAsset':
                 return config('config.uploads.resources').'/'.$newFileName;
             default:
                 return 'uploads/general/'.$newFileName;
@@ -328,10 +328,10 @@ class MigrateUploadsToS3Command extends Command
             case 'Profile':
                 $model->avatar_path = $s3Path;
                 break;
-            case 'ProjectResource':
+            case 'ProjectAsset':
                 $model->download_path = $s3Path;
                 break;
-            case 'Resource':
+            case 'SiteAsset':
                 $model->download_path = $s3Path;
                 break;
         }

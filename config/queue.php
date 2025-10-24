@@ -104,6 +104,7 @@ return [
         env('QUEUE_EXPORT', 'export'),
         env('QUEUE_GEOLOCATE', 'geolocate'),
         env('QUEUE_IMPORT', 'import'),
+        env('QUEUE_OCR', 'ocr'),
         env('QUEUE_LAMBDA_OCR', 'lambda_ocr'),
         env('QUEUE_RECONCILE', 'reconcile'),
         env('QUEUE_SNS_IMAGE_EXPORT', 'sns_image_export'),

@@ -11,14 +11,13 @@
     "php": "^8.2",
     "ext-dom": "*",
     "ext-fileinfo": "*",
-    "ext-libxml": "*",
     "ext-memcached": "*",
     "ext-mongodb": "*",
     "aws/aws-php-sns-message-validator": "^1.0",
     "aws/aws-sdk-php": "~3.0",
     "czim/file-handling": "dev-load-count-fix as 2.3.0",
     "czim/laravel-paperclip": "^5.0",
-    "deployer/deployer": "^7.5",
+    "filament/filament": "^4.0",
     "graham-campbell/markdown": "^v16.0.0.0",
     "intervention/image-laravel": "^1.5",
     "laracasts/utilities": "^3.2",
@@ -41,12 +40,14 @@
     "react/event-loop": "^1.5",
     "react/socket": "^1.16",
     "spatie/eloquent-sortable": "^4.0",
-    "spiritix/lada-cache": "^6.0.0",
-    "tio/laravel": "^1.10"
+    "spiritix/lada-cache": "^6.0",
+    "tio/laravel": "^1.10",
+    "valentin-morice/filament-json-column": "dev-dev"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.5",
     "barryvdh/laravel-ide-helper": "^v3.0.0",
+    "deployer/deployer": "^7.5",
     "fakerphp/faker": "^1.23",
     "laravel/pail": "^1.2.2",
     "laravel/pint": "^1.24",
@@ -102,7 +103,8 @@
   "scripts": {
     "post-autoload-dump": [
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-      "@php artisan package:discover --ansi"
+      "@php artisan package:discover --ansi",
+      "@php artisan filament:upgrade"
     ],
     "post-root-package-install": [
       "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

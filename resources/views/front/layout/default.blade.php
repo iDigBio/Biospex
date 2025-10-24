@@ -84,7 +84,7 @@ sub footer -->
                     <a href="{{ route('front.faqs.index') }}">{{ t('FAQ') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.resources.index') }}">{{ t('Resources') }}</a>
+                    <a href="{{ route('front.site-assets.index') }}">{{ t('Resources') }}</a>
                 </p>
                 <p>
                     <a href="{{ route('front.contact.index') }}">{{ t('Contact') }}</a>

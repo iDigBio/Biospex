@@ -17,7 +17,7 @@
                 <a class="dropdown-item text-uppercase" href="{{ route('front.teams.index') }}">{{ t('Team') }}</a>
                 <a class="dropdown-item text-uppercase" href="{{ route('front.faqs.index') }}">{{ t('FAQ') }}</a>
                 <a class="dropdown-item text-uppercase"
-                   href="{{ route('front.resources.index') }}">{{ t('Resources') }}</a>
+                   href="{{ route('front.site-assets.index') }}">{{ t('Resources') }}</a>
             </div>
         </li>
         <li class="nav-item active">
@@ -86,6 +86,8 @@
                     @can('isAdmin', Auth::user())
                         <a href="/admin/nova" target="_blank" class="dropdown-item text-uppercase"
                            type="button">{{ t('Nova') }}</a>
+                        <a href="/admin/dashboard" target="_blank" class="dropdown-item text-uppercase"
+                           type="button">{{ t('Dashboard') }}</a>
                         <a href="{{ route('admin.mail.index') }}" class="dropdown-item text-uppercase"
                            type="button">{{ t('Mail') }}</a>
                     @endcan

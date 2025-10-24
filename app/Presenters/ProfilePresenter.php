@@ -45,6 +45,7 @@ class ProfilePresenter extends Presenter
 
         // Fallback to legacy paperclip logic during transition
         if (! empty($this->model->avatar_file_name)) {
+            \Log::info('Checking for paperclip avatar file: '.$this->model->avatar_file_name);
             $baseLength = config('paperclip.storage.base-urls.public');
             $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
             $paperclipPath = "/paperclip/App/Models/Profile/avatars/{$idPartition}/original/{$this->model->avatar_file_name}";
@@ -56,6 +57,46 @@ class ProfilePresenter extends Presenter
         }
 
         // Return default missing avatar
-        return config('config.missing_user_avatar', '/images/default-avatar.png');
+        return config('config.missing_avatar_medium');
+    }
+
+    /**
+     * Get medium avatar variant (160x160) - for detail views
+     *
+     * @return string
+     */
+    public function showAvatarMedium()
+    {
+        // Check for new Livewire avatar_path with medium variant
+        if (! empty($this->model->avatar_path) && str_contains($this->model->avatar_path, '/original/')) {
+            $mediumPath = str_replace('/original/', '/medium/', $this->model->avatar_path);
+
+            if (Storage::disk('s3')->exists($mediumPath)) {
+                return Storage::disk('s3')->temporaryUrl($mediumPath, now()->addHour());
+            }
+        }
+
+        // Fallback to original if medium doesn't exist
+        return $this->showAvatar();
+    }
+
+    /**
+     * Get small avatar variant (25x25) - for forms/tables
+     *
+     * @return string
+     */
+    public function showAvatarSmall()
+    {
+        // Check for new Livewire avatar_path with small variant
+        if (! empty($this->model->avatar_path) && str_contains($this->model->avatar_path, '/original/')) {
+            $smallPath = str_replace('/original/', '/small/', $this->model->avatar_path);
+
+            if (Storage::disk('s3')->exists($smallPath)) {
+                return Storage::disk('s3')->temporaryUrl($smallPath, now()->addHour());
+            }
+        }
+
+        // Fallback to original if small doesn't exist
+        return $this->showAvatar();
     }
 }

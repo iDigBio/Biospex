@@ -26,6 +26,7 @@ use App\Models\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Config;
 use Str;
 
@@ -140,7 +141,7 @@ class Project extends BaseEloquentModel
     /**
      * AmChart relation.
      */
-    public function amChart(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function amChart(): HasOne
     {
         return $this->hasOne(AmChart::class);
     }
@@ -235,20 +236,16 @@ class Project extends BaseEloquentModel
 
     /**
      * PanoptesProject relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function panoptesProjects()
+    public function panoptesProjects(): HasMany
     {
         return $this->hasMany(PanoptesProject::class);
     }
 
     /**
      * PanoptesProject relation returning last in database.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function lastPanoptesProject()
+    public function lastPanoptesProject(): HasOne
     {
         return $this->hasOne(PanoptesProject::class)->latest();
     }
@@ -256,55 +253,49 @@ class Project extends BaseEloquentModel
     /**
      * Panoptes transcription relation.
      */
-    public function panoptesTranscriptions(): \MongoDB\Laravel\Relations\HasMany
+    public function panoptesTranscriptions(): Project|\Illuminate\Database\Eloquent\Builder|HasMany
     {
         return $this->hasMany(PanoptesTranscription::class, 'subject_projectId');
     }
 
     /**
-     * Resources relation.
+     * Assets relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function resources()
+    public function assets()
     {
-        return $this->hasMany(ProjectResource::class);
+        return $this->hasMany(ProjectAsset::class);
     }
 
     /**
      * Subject relation.
      */
-    public function subjects(): \MongoDB\Laravel\Relations\HasMany
+    public function subjects(): Project|\Illuminate\Database\Eloquent\Builder|HasMany
     {
         return $this->hasMany(Subject::class);
     }
 
     /**
      * Transcription location relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function transcriptionLocations()
+    public function transcriptionLocations(): HasMany
     {
         return $this->hasMany(TranscriptionLocation::class);
     }
 
     /**
      * Workflow Manager relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function workflowManagers()
+    public function workflowManagers(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(WorkflowManager::class, Expedition::class);
     }
 
     /**
      * Set tag uri for rfc 4151 specs.
-     *
-     * @return string
      */
-    public function setTagUriAttribute()
+    public function setTagUriAttribute(): string
     {
         return 'tag:'.$_ENV['site.domain'].','.date('Y-m-d').':'.$this->attributes['slug'];
     }
@@ -312,7 +303,7 @@ class Project extends BaseEloquentModel
     /**
      * Mutator for target_fields.
      */
-    public function setTargetFieldsAttribute($input)
+    public function setTargetFieldsAttribute($input): void
     {
         if (empty($input)) {
             return;
@@ -348,24 +339,22 @@ class Project extends BaseEloquentModel
 
     /**
      * Accessor for target_fields.
-     *
-     * @return mixed
      */
-    public function getTargetFieldsAttribute($value)
+    public function getTargetFieldsAttribute($value): mixed
     {
         return json_decode($value);
     }
 
     /**
-     * Set attribute for advertise.
+     * Set attribute for advertisement.
      */
-    public function setAdvertiseAttribute($input)
+    public function setAdvertiseAttribute($input): void
     {
         if (empty($input)) {
             return;
         }
 
-        $extra = isset($input['advertiseExtra']) ? $input['advertiseExtra'] : '';
+        $extra = $input['advertiseExtra'] ?? '';
 
         $build = [];
         $ppsrFields = Config::get('config.ppsr');

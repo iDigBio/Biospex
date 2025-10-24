@@ -110,9 +110,9 @@ class ProjectController extends Controller
      */
     public function edit(Project $project): \Illuminate\View\View
     {
-        $project->load(['group', 'resources']);
+        $project->load(['group', 'assets']);
         $groupOptions = $this->groupService->getUsersGroupsSelect(Request::user());
-        $resources = $project->resources;
+        $resources = $project->assets;
         $vars = compact('project', 'resources', 'groupOptions');
 
         return View::make('admin.project.edit', $vars);

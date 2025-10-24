@@ -93,44 +93,42 @@ task('set:permissions', function () {
 
 /*
  * =============================================================================
- * LEGACY BUILD TASKS (NOT USED IN OPTION 1 - CI/CD ARTIFACTS)
- * =============================================================================
- * These tasks are kept for reference but not used in the main deployment sequence.
- * Option 1 uses pre-built assets from GitHub Actions instead.
- */
-
-desc('[LEGACY] Install project dependencies - NOT USED IN OPTION 1');
-task('yarn:run-install', function () {
-    cd('{{release_or_current_path}}');
-    run('yarn install --frozen-lockfile --ignore-engines');  // Server-side dependency installation
-});
-
-desc('[LEGACY] Build project dependencies - NOT USED IN OPTION 1');
-task('npm:run-build', function () {
-    cd('{{release_or_current_path}}');
-    run('npm run production');  // Server-side asset compilation
-});
-
-/*
- * =============================================================================
  * SUPERVISOR PROCESS MANAGEMENT
  * =============================================================================
  */
 
-desc('Reload Supervisor configuration and restart service');
+desc('Reload Supervisor configuration (config-only update)');
 task('supervisor:reload', function () {
-    run('sudo supervisorctl reread');     // Re-read configuration files
-    run('sudo supervisorctl update');     // Update running processes with new config
-    run('sudo systemctl restart supervisor'); // Restart Supervisor daemon
+    run('sudo supervisorctl reread');
+    run('sudo supervisorctl update');
 });
 
-desc('Restart environment-specific Supervisor process group');
-task('supervisor:restart-group', function () {
-    $alias = currentHost()->get('alias');  // Get current host alias (production/development)
+desc('Safely restart domain-specific supervisor processes (checks queues first)');
+task('supervisor:restart-domain-safe', function () {
+    $domain = get('domain_name');
 
-    // Restart all processes in the environment-specific group
-    // Groups: 'production:*' or 'development:*'
-    run('sudo supervisorctl restart '.$alias.':');
+    if (! $domain) {
+        throw new Exception('Domain name not configured for this host');
+    }
+
+    // Check critical queues first
+    $configOutput = run('php {{release_or_current_path}}/artisan tinker --execute="echo json_encode(config(\'queue.monitored_queues\', [\'export\', \'geolocate\', \'import\', \'ocr\', \'lambda_ocr\', \'reconcile\', \'sns_image_export\', \'sns_reconciliation\', \'sns_tesseract_ocr\', \'sernec_file\', \'sernec_row\']));"');
+    $queues = json_decode(trim($configOutput), true) ?: ['export', 'geolocate', 'import', 'ocr', 'lambda_ocr', 'reconcile', 'sns_image_export', 'sns_reconciliation', 'sns_tesseract_ocr', 'sernec_file', 'sernec_row'];
+
+    foreach ($queues as $queue) {
+        if (empty($queue)) {
+            continue;
+        }
+        $count = run("php {{release_or_current_path}}/artisan queue:count {$queue} --quiet || echo 0", ['tty' => false]);
+        if ((int) trim($count) > 0) {
+            writeln("⚠️ Queue '{$queue}' has active jobs. Skipping supervisor restart.");
+
+            return;
+        }
+    }
+
+    // Safe to restart domain processes
+    run("sudo supervisorctl restart {$domain}:*");
 });
 
 /*
@@ -286,43 +284,4 @@ task('opcache:reset-production', function () {
 
     writeln('🔄 Resetting OpCache for production deployment...');
     invoke('opcache:reset');
-});
-
-/*
- * =============================================================================
- * QUEUE-SAFE DEPLOYMENT - PREVENTS JOB INTERRUPTION
- * =============================================================================
- */
-
-desc('Check queue status and safely restart queues (PREVENTS ACTIVE JOB INTERRUPTION)');
-task('queue:check', function () {
-    // Get monitored queues from Laravel configuration (environment-aware)
-    // This allows different queue names for dev (devexport) vs prod (export)
-    $configOutput = run('php {{release_or_current_path}}/artisan tinker --execute="echo json_encode(config(\'queue.monitored_queues\', [\'export\', \'geolocate\', \'import\', \'lambda_ocr\', \'reconcile\', \'sns_image_export\', \'sns_reconciliation\', \'sns_tesseract_ocr\', \'sernec_file\', \'sernec_row\']));"');
-
-    // Fallback to default queue names if config retrieval fails
-    $queues = json_decode(trim($configOutput), true) ?: ['export', 'geolocate', 'import', 'lambda_ocr', 'reconcile', 'sns_image_export', 'sns_reconciliation', 'sns_tesseract_ocr', 'sernec_file', 'sernec_row'];
-
-    // Check each queue for active jobs
-    foreach ($queues as $queue) {
-        if (empty($queue)) {
-            continue;
-        } // Skip empty queue names
-
-        // Use custom queue:count command to get job count
-        $count = run("php {{release_or_current_path}}/artisan queue:count {$queue} --quiet || echo 0", ['tty' => false]);
-        $count = (int) trim($count);
-
-        // SAFETY CHECK: If any queue has active jobs, skip restart
-        if ($count > 0) {
-            writeln("⚠️  Queue '{$queue}' has {$count} active jobs. Skipping queue restart to prevent interruption.");
-            writeln('🛡️  Deployment will continue without restarting queues (SAFE MODE).');
-
-            return; // Exit without restarting queues
-        }
-    }
-
-    // All queues are empty - safe to restart
-    writeln('✅ All monitored queues are empty. Restarting queue workers...');
-    run('php {{release_or_current_path}}/artisan queue:restart');
 });

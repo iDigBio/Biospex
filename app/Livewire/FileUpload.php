@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Rules\FileUploadNameValidation;
+use App\Services\Asset\AssetUploadService;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Storage;
@@ -31,6 +32,13 @@ class FileUpload extends Component
 
     public $uploading = false;
 
+    protected AssetUploadService $assetUploadService;
+
+    public function boot()
+    {
+        $this->assetUploadService = app(AssetUploadService::class);
+    }
+
     protected function rules()
     {
         return [
@@ -52,11 +60,23 @@ class FileUpload extends Component
 
         $this->modelType = $modelType;
         $this->fieldName = $fieldName;
-        $this->maxSize = $maxSize;
         $this->projectUuid = $projectUuid;
 
-        if ($allowedTypes) {
-            $this->allowedTypes = $allowedTypes;
+        // Use AssetUploadService configurations for asset types
+        if (in_array($modelType, ['ProjectAsset', 'SiteAsset', 'Resource'])) {
+            $this->maxSize = $maxSize ?: $this->assetUploadService->getMaxFileSize();
+
+            if (! $allowedTypes) {
+                // Convert service file types to extensions for validation
+                $this->allowedTypes = ['pdf', 'doc', 'docx', 'xlsx', 'xls', 'csv', 'zip', 'rar', 'jpeg', 'jpg', 'png', 'gif', 'txt'];
+            } else {
+                $this->allowedTypes = $allowedTypes;
+            }
+        } else {
+            $this->maxSize = $maxSize;
+            if ($allowedTypes) {
+                $this->allowedTypes = $allowedTypes;
+            }
         }
 
         // Set storage path based on model type
@@ -91,16 +111,30 @@ class FileUpload extends Component
                 return null;
             }
 
-            // Always use S3 for file uploads regardless of default filesystem
-            $disk = 's3';
-            $filename = time().'_'.$this->file->getClientOriginalName();
+            // Use the unified AssetUploadService for asset types
+            if (in_array($this->modelType, ['ProjectAsset', 'SiteAsset', 'Resource'])) {
+                // Map Resource type to SiteAsset for consistency
+                $serviceModelType = $this->modelType === 'Resource' ? 'SiteAsset' : $this->modelType;
+                $uploadedPath = $this->assetUploadService->uploadAsset(
+                    $this->file,
+                    $serviceModelType,
+                    $this->storagePath
+                );
+            } else {
+                // Fallback to original logic for other types (Project, Expedition, Profile)
+                $disk = 's3';
+                $filename = time().'_'.$this->file->getClientOriginalName();
+                $uploadedPath = $this->file->storeAs($this->storagePath, $filename, $disk);
 
-            // Store the file on S3
-            $storedPath = $this->file->storeAs($this->storagePath, $filename, $disk);
+                // Verify file was uploaded to S3
+                if (! Storage::disk('s3')->exists($uploadedPath)) {
+                    throw new \Exception('Failed to upload file to S3');
+                }
+            }
 
-            // Verify file was uploaded to S3
-            if (! Storage::disk('s3')->exists($storedPath)) {
-                $this->uploadError = 'Failed to upload file to S3';
+            if (! $uploadedPath) {
+                $this->uploadError = 'Upload failed';
+                $this->uploading = false;
 
                 return null;
             }
@@ -111,7 +145,7 @@ class FileUpload extends Component
             // Emit event with the uploaded file path for parent form integration
             $this->dispatch('fileUploaded', [
                 'fieldName' => $this->fieldName,
-                'filePath' => $storedPath,
+                'filePath' => $uploadedPath,
                 'modelType' => $this->modelType,
             ]);
 
@@ -120,7 +154,7 @@ class FileUpload extends Component
 
             $this->uploading = false;
 
-            return $storedPath;
+            return $uploadedPath;
 
         } catch (\Exception $e) {
             $this->uploadError = 'Upload failed: '.$e->getMessage();
@@ -132,21 +166,22 @@ class FileUpload extends Component
 
     protected function getStoragePath()
     {
+        // Use AssetUploadService for asset types
+        if (in_array($this->modelType, ['ProjectAsset', 'SiteAsset'])) {
+            // Map Resource type to SiteAsset for consistency
+            $modelType = $this->modelType === 'Resource' ? 'SiteAsset' : $this->modelType;
+
+            return $this->assetUploadService->getStoragePath($modelType);
+        }
+
+        // Legacy paths for non-asset types
         $paths = [
             'Project' => config('config.uploads.project_logos'),
             'Expedition' => config('config.uploads.expedition_logos'),
             'Profile' => config('config.uploads.profile_avatars'),
-            'ProjectResource' => $this->getProjectResourcePath(),
-            'Resource' => config('config.uploads.resources'),
         ];
 
         return $paths[$this->modelType] ?? 'uploads/general';
-    }
-
-    protected function getProjectResourcePath()
-    {
-        // Always use the standardized downloads path instead of UUID-based paths
-        return config('config.uploads.project_resources_downloads');
     }
 
     public function render()

@@ -257,7 +257,7 @@
                         <div class="form-group">
                             <label for="resources" class="col-form-label">{{ t('Resources') }}:</label>
                             <div class="controls col-sm-12">
-                                @include('admin.project.partials.resources')
+                                @include('admin.project.partials.assets')
                             </div>
                         </div>
                         @include('common.cancel-submit-buttons')

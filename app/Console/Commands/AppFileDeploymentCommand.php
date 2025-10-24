@@ -26,6 +26,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Command\Command as CommandAlias;
 
 /**
  * Class AppFileDeploymentCommand
@@ -69,12 +70,12 @@ class AppFileDeploymentCommand extends Command
 
             $this->info("Successfully processed {$processedFiles} file(s)");
 
-            return Command::SUCCESS;
+            return CommandAlias::SUCCESS;
 
         } catch (Exception $e) {
             $this->error("Deployment failed: {$e->getMessage()}");
 
-            return Command::FAILURE;
+            return CommandAlias::FAILURE;
         }
     }
 
@@ -281,6 +282,10 @@ class AppFileDeploymentCommand extends Command
 
             if ($field === 'REVERB_DEBUG') {
                 return config('config.reverb_debug') ? '--debug' : '';
+            }
+
+            if ($field === 'SUPERVISOR_GROUP') {
+                return config('config.supervisor_group');
             }
 
             return config('config.'.strtolower(Str::replaceFirst('_', '.', $field)));

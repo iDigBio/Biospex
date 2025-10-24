@@ -6,6 +6,7 @@ return [
     'app_current_path' => env('APP_CURRENT_PATH'),
     'app_server_user' => env('APP_SERVER_USER'),
     'app_registration' => env('APP_REGISTRATION'),
+    'supervisor_group' => env('SUPERVISOR_GROUP'), // For supervisor: biospex, dev-biospex
 
     'db_log' => env('DB_LOG', false),
 
@@ -61,6 +62,8 @@ return [
         'resources' => env('UPLOAD_RESOURCES', 'uploads/resources'),
         'project_resources_base' => env('UPLOAD_PROJECT_RESOURCES_BASE', 'uploads/project-resources'),
         'project_resources_downloads' => env('UPLOAD_PROJECT_RESOURCES_DOWNLOADS', 'uploads/project-resources/downloads'),
+        'project-assets' => env('UPLOAD_PROJECT_ASSETS', 'uploads/project-assets'),
+        'site-assets' => env('UPLOAD_SITE_ASSETS', 'uploads/site-assets'),
     ],
 
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
@@ -75,11 +78,10 @@ return [
     'poll_bingo_channel' => env('POLL_BINGO_CHANNEL'),
     'poll_wedigbio_progress_channel' => env('POLL_WEDIGBIO_PROGRESS_CHANNEL'),
 
-    'project_resources' => [
+    'project_assets' => [
         'Website URL',
         'Video URL',
         'File Download',
-        'Delete',
     ],
 
     /**
@@ -252,5 +254,6 @@ return [
         'QUEUE_SERNEC_FILE',
         'QUEUE_SERNEC_ROW',
         'REVERB_DEBUG',
+        'SUPERVISOR_GROUP',
     ],
 ];
