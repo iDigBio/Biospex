@@ -300,6 +300,16 @@ task('opcache:reset-production', function () {
     invoke('opcache:reset');
 });
 
+/**
+ * Publish Filament assets
+ */
+desc('Publish Filament assets');
+task('artisan:filament:assets', function () {
+    cd('{{release_or_current_path}}');
+    run('php artisan filament:assets');
+    writeln('✅ Filament assets published');
+});
+
 /*
  * =============================================================================
  * DEPLOYMENT VERIFICATION

@@ -85,7 +85,6 @@ task('deploy', [
     // Phase 3: Laravel Setup
     'artisan:storage:link',    // Create symbolic link for storage directory
     'artisan:package:discover', // Run package discovery after environment is ready (SAFE: after .env is linked)
-    'artisan:nova:publish',    // Publish Laravel Nova assets
     'artisan:app:deploy-files', // Custom app deployment files
 
     // Phase 4: Database & Updates
