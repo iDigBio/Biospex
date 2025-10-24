@@ -76,6 +76,23 @@ task('artisan:app:deploy-files', function () {
     run('php artisan app:deploy-files');    // Custom command for file deployments
 });
 
+/**
+ * Publish Filament assets
+ */
+desc('Publish Filament assets');
+task('artisan:filament:assets', function () {
+    cd('{{release_or_current_path}}');
+    run('php artisan filament:assets');
+    writeln('✅ Filament assets published');
+});
+
+desc('Optimize Filament resources and assets');
+task('artisan:filament:optimize', function () {
+    cd('{{release_or_current_path}}');
+    run('php artisan filament:optimize --ansi');
+    writeln('✅ Filament optimization completed');
+});
+
 /*
  * =============================================================================
  * FILE SYSTEM & PERMISSIONS MANAGEMENT
@@ -298,16 +315,6 @@ task('opcache:reset-production', function () {
 
     writeln('🔄 Resetting OpCache for production deployment...');
     invoke('opcache:reset');
-});
-
-/**
- * Publish Filament assets
- */
-desc('Publish Filament assets');
-task('artisan:filament:assets', function () {
-    cd('{{release_or_current_path}}');
-    run('php artisan filament:assets');
-    writeln('✅ Filament assets published');
 });
 
 /*
