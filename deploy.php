@@ -48,6 +48,7 @@ set('shared_dirs', [
 // Files/Directories to Remove After Deployment
 set('clear_paths', [
     'node_modules',     // Remove after CI artifacts are deployed
+    'deployment-package', // Remove any residual nesting dirs
 ]);
 
 // Server Configurations
@@ -109,6 +110,7 @@ task('deploy', [
     'supervisor:restart-domain-safe',  // Check queues + restart domain processes
     'set:permissions',
     'deploy:publish',
+    'deploy:verify-structure', // Verify flat structure post-deploy
 ]);
 
 // Hooks

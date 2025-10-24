@@ -191,13 +191,27 @@ task('deploy:ci-artifacts', function () {
     writeln('Debug: Contents after extraction:');
     run('ls -la');
 
-    // Check if deployment-package directory exists, if not, assume files are in current directory
-    $deploymentPackageExists = run('[ -d "deployment-package" ] && echo "true" || echo "false"');
-    if (trim($deploymentPackageExists) === 'true') {
-        run('rsync -av deployment-package/ ./'); // Sync pre-built assets from deployment-package
-        run('rm -rf deployment-package'); // Clean up deployment-package directory
+    // Find the deepest 'deployment-package' and rsync its contents to flatten
+    $nestLevelCmd = run('find . -type d -name "deployment-package" -printf "%p\\n" | wc -l');
+    $nests = (int) trim($nestLevelCmd);
+    writeln("Detected {$nests} 'deployment-package' dirs post-unzip");
+
+    if ($nests === 0) {
+        writeln('Debug: No deployment-package found—assuming flat extraction');
+    } elseif ($nests === 1) {
+        // Single level: rsync as before
+        run('rsync -av deployment-package/ ./');
+        run('rm -rf deployment-package');
     } else {
-        writeln('Debug: No deployment-package directory found, artifacts appear to be extracted directly');
+        // Multiple nests: Find innermost and rsync up
+        writeln('⚠️ Detected nesting; flattening...');
+        $innermost = run('find . -type d -name "deployment-package" | sort -r | head -1');  // Deepest path
+        $innermost = trim($innermost);
+        if (! empty($innermost)) {
+            run("rsync -av '{$innermost}/' ./");  // Copy contents of deepest to root
+            // Clean all deployment-package dirs
+            run('find . -type d -name "deployment-package" -exec rm -rf {} +');
+        }
     }
 
     run('rm -f artifact.zip'); // Cleanup artifact file
@@ -284,4 +298,19 @@ task('opcache:reset-production', function () {
 
     writeln('🔄 Resetting OpCache for production deployment...');
     invoke('opcache:reset');
+});
+
+/*
+ * =============================================================================
+ * DEPLOYMENT VERIFICATION
+ * =============================================================================
+ */
+
+desc('Verify flat deployment structure');
+task('deploy:verify-structure', function () {
+    $nestCheck = run('find {{release_path}} -type d -name "deployment-package" | wc -l');
+    if ((int) trim($nestCheck) > 0) {
+        throw new \Exception("Nesting detected post-deploy: {$nestCheck} dirs. Check CI artifact.");
+    }
+    writeln('✅ Deployment structure verified: flat and clean');
 });
