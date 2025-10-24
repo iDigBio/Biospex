@@ -64,6 +64,13 @@ task('artisan:package:discover', function () {
  * =============================================================================
  */
 
+desc('Publish Laravel Nova assets');
+task('artisan:nova:publish', function () {
+    cd('{{release_or_current_path}}');
+    run('php artisan nova:publish --ansi');
+    writeln('✅ Laravel Nova assets published');
+});
+
 desc('Running custom database update queries');
 task('artisan:app:update-queries', function () {
     cd('{{release_or_current_path}}');
@@ -162,12 +169,6 @@ task('deploy:ci-artifacts', function () {
     $githubSha = $_ENV['GITHUB_SHA'] ?? getenv('GITHUB_SHA') ?? '';
     $githubRepo = $_ENV['GITHUB_REPO'] ?? getenv('GITHUB_REPO') ?? 'iDigBio/Biospex';
 
-    // Debug: Show available environment variables for troubleshooting
-    writeln('Debug: Checking environment variables...');
-    writeln('GITHUB_TOKEN present: '.(! empty($githubToken) ? 'YES' : 'NO'));
-    writeln('GITHUB_SHA present: '.(! empty($githubSha) ? 'YES' : 'NO'));
-    writeln('GITHUB_REPO: '.$githubRepo);
-
     // Validate required environment variables
     if (empty($githubToken) || empty($githubSha)) {
         // Provide more helpful error message with debugging information
@@ -204,24 +205,18 @@ task('deploy:ci-artifacts', function () {
     run("curl -L -H 'Authorization: Bearer {$githubToken}' -H 'Accept: application/vnd.github.v3+json' '{$downloadUrl}' -o artifact.zip");
     run('unzip -o -q artifact.zip');       // Extract artifact quietly, overwrite existing files
 
-    // Debug: Check what was actually extracted
-    writeln('Debug: Contents after extraction:');
-    run('ls -la');
-
     // Find the deepest 'deployment-package' and rsync its contents to flatten
     $nestLevelCmd = run('find . -type d -name "deployment-package" -printf "%p\\n" | wc -l');
     $nests = (int) trim($nestLevelCmd);
-    writeln("Detected {$nests} 'deployment-package' dirs post-unzip");
 
     if ($nests === 0) {
-        writeln('Debug: No deployment-package found—assuming flat extraction');
+        // Assume flat
     } elseif ($nests === 1) {
         // Single level: rsync as before
         run('rsync -av deployment-package/ ./');
         run('rm -rf deployment-package');
     } else {
-        // Multiple nests: Find innermost and rsync up
-        writeln('⚠️ Detected nesting; flattening...');
+        // Multiple nests: Find innermost and rsync up (silent flatten)
         $innermost = run('find . -type d -name "deployment-package" | sort -r | head -1');  // Deepest path
         $innermost = trim($innermost);
         if (! empty($innermost)) {

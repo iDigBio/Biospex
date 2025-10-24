@@ -76,7 +76,6 @@ desc('Deploys your project using CI/CD artifacts');
 task('deploy', [
     // Phase 1: Preparation
     'deploy:prepare',           // Create release directory and setup structure
-    // REMOVED: 'upload:env',   // Now handled by local Git pre-push hook! 🎉
 
     // Phase 2: Dependencies & Assets
     'deploy:vendors',          // Install PHP Composer dependencies safely (--no-scripts to prevent DB connection issues)
@@ -85,6 +84,7 @@ task('deploy', [
     // Phase 3: Laravel Setup
     'artisan:storage:link',    // Create symbolic link for storage directory
     'artisan:package:discover', // Run package discovery after environment is ready (SAFE: after .env is linked)
+    'artisan:filament:assets',
     'artisan:app:deploy-files', // Custom app deployment files
 
     // Phase 4: Database & Updates
@@ -99,7 +99,6 @@ task('deploy', [
     'artisan:view:cache',      // Cache Blade templates
     'artisan:event:cache',     // Cache event listeners
     'artisan:optimize',        // Run Laravel optimization
-    'artisan:filament:assets',
     'artisan:filament:optimize',   // Optimize Filament resources and assets
 
     // Phase 6: OpCache Management (Production Only)

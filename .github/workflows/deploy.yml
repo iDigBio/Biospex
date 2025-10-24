@@ -1,13 +1,13 @@
 # CI/CD Deployment Workflow with Semantic Versioning
-# 
+#
 # WORKFLOW:
 # - Push to 'development' branch → Deploys to DEVELOPMENT automatically
 # - Push to 'main' branch → Creates GitHub release with semantic version → Deploys to PRODUCTION
-# 
+#
 # VERSION CONTROL:
 # Use commit message tags to control version bumps:
 # - [major] or [breaking] → Major version bump (1.0.0 → 2.0.0)
-# - [minor] or [feature] → Minor version bump (1.0.0 → 1.1.0)  
+# - [minor] or [feature] → Minor version bump (1.0.0 → 1.1.0)
 # - Default (no tag) → Patch version bump (1.0.0 → 1.0.1)
 #
 # SKIP DEPLOYMENT:
@@ -188,13 +188,6 @@ jobs:
           
           # Rename to package name
           mv "$TEMP_DIR" deployment-package
-          
-          # Verify flat structure (add to logs temporarily)
-          echo "=== Deployment Package Structure ==="
-          find deployment-package -maxdepth 3 -type f | head -10
-          echo "Nesting check (should be 1):"
-          find deployment-package -type d -name "deployment-package" | wc -l
-          du -sh deployment-package  # Should be <500MB ideally
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
         with:
@@ -273,13 +266,6 @@ jobs:
           
           # Rename to package name
           mv "$TEMP_DIR" deployment-package
-          
-          # Verify flat structure (add to logs temporarily)
-          echo "=== Deployment Package Structure ==="
-          find deployment-package -maxdepth 3 -type f | head -10
-          echo "Nesting check (should be 1):"
-          find deployment-package -type d -name "deployment-package" | wc -l
-          du -sh deployment-package  # Should be <500MB ideally
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
         with:
