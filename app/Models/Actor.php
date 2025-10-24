@@ -101,12 +101,12 @@ class Actor extends BaseEloquentModel
      * Define a many-to-many relationship with Workflow models.
      *
      * An actor can be associated with multiple workflows, and each workflow
-     * can have multiple actors. This relationship uses a custom pivot model
-     * (ActorWorkflow) to manage additional pivot table data.
+     * can have multiple actors. The pivot table includes an order column
+     * for sorting actors within workflows.
      */
     public function workflows(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Workflow::class)->using(ActorWorkflow::class);
+        return $this->belongsToMany(Workflow::class)->withPivot('order')->orderByPivot('order');
     }
 
     /**

@@ -44,7 +44,7 @@ class Workflow extends BaseEloquentModel
      */
     public function actors(): mixed
     {
-        return $this->belongsToMany(Actor::class)->using(ActorWorkflow::class)->withPivot('order');
+        return $this->belongsToMany(Actor::class)->withPivot('order')->orderByPivot('order');
     }
 
     /**

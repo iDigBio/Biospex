@@ -6,6 +6,7 @@ use App\Filament\Resources\Actors\Pages\CreateActor;
 use App\Filament\Resources\Actors\Pages\EditActor;
 use App\Filament\Resources\Actors\Pages\ListActors;
 use App\Filament\Resources\Actors\Pages\ViewActor;
+use App\Filament\Resources\Actors\RelationManagers\WorkflowsRelationManager;
 use App\Filament\Resources\Actors\Schemas\ActorForm;
 use App\Filament\Resources\Actors\Schemas\ActorInfolist;
 use App\Filament\Resources\Actors\Tables\ActorsTable;
@@ -43,7 +44,7 @@ class ActorResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            WorkflowsRelationManager::class,
         ];
     }
 
