@@ -22,7 +22,6 @@
     "intervention/image-laravel": "^1.5",
     "laracasts/utilities": "^3.2",
     "laravel/framework": "^v12.0.0",
-    "laravel/nova": "^4.0",
     "laravel/reverb": "^1.0",
     "laravel/sanctum": "^v4.0.0",
     "laravel/tinker": "^2.5",
@@ -33,13 +32,11 @@
     "league/oauth2-client": "^2.6",
     "livewire/livewire": "^3.6",
     "mongodb/laravel-mongodb": "^5.0",
-    "outl1ne/nova-sortable": "^3.4",
     "pda/pheanstalk": "^v7.0.0",
     "pusher/pusher-php-server": "^7.0",
     "ratchet/pawl": "^0.4.3",
     "react/event-loop": "^1.5",
     "react/socket": "^1.16",
-    "spatie/eloquent-sortable": "^4.0",
     "spiritix/lada-cache": "^6.0",
     "tio/laravel": "^1.10",
     "valentin-morice/filament-json-column": "dev-dev"
@@ -59,10 +56,6 @@
     "spatie/laravel-ignition": "^2.0"
   },
   "repositories": [
-    {
-      "type": "composer",
-      "url": "https://nova.laravel.com"
-    },
     {
       "type": "vcs",
       "url": "https://github.com/rbruhn/file-handling.git"
@@ -113,8 +106,7 @@
       "@php artisan key:generate --ansi"
     ],
     "post-update-cmd": [
-      "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-      "@php artisan nova:publish"
+      "Illuminate\\Foundation\\ComposerScripts::postUpdate"
     ],
     "dev-post-update-cmd": [
       "@php artisan ide-helper:generate",
