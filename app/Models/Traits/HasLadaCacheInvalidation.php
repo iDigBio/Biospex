@@ -28,7 +28,7 @@ trait HasLadaCacheInvalidation
     /**
      * Boot the trait and hook model events for auto-flush.
      */
-    public static function bootHasLadaCacheInvalidation(): void
+    public static function bootHasLadaCacheInvalidation()
     {
         static::created(function ($model) {
             $model->flushLadaCache('create');
@@ -55,8 +55,8 @@ trait HasLadaCacheInvalidation
             $prefix = config('lada-cache.prefix', 'lada:');
             $redis = Redis::connection($redisConnection);
 
-            // Use model's connection DB index (handles multi-DB)
-            $dbIndex = config("database.connections.{$this->getConnectionName()}.database", 0);
+            // Use Redis config for DB index (not model's connection)
+            $dbIndex = config("database.redis.{$redisConnection}.database", 0);
             $redis->select($dbIndex);
 
             $keys = $redis->keys($prefix.'*');
@@ -81,13 +81,5 @@ trait HasLadaCacheInvalidation
                 'error' => $e->getMessage(),
             ]);
         }
-    }
-
-    /**
-     * Get the model's connection name (for DB index).
-     */
-    protected function getConnectionName(): string
-    {
-        return $this->getConnectionName() ?? config('database.default');
     }
 }
