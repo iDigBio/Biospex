@@ -30,7 +30,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Redis;
 
 class ExpeditionService
 {
@@ -83,7 +82,7 @@ class ExpeditionService
         });
 
         // Post-commit: Clear caches (outside tx to ensure commit first)
-        $this->clearExpeditionCache($project->id, $expedition->id ?? null);
+        \Artisan::call('lada-cache:flush');
 
         return $expedition;
 
@@ -370,8 +369,8 @@ class ExpeditionService
             return $expedition;
         });
 
-        // Clear only expedition-related cache
-        $this->clearExpeditionCache($expedition->project_id, $expedition->id);
+        // Post-commit: Clear caches (outside tx to ensure commit first)
+        \Artisan::call('lada-cache:flush');
 
         return $expedition;
     }
@@ -521,52 +520,6 @@ class ExpeditionService
         } catch (\Exception $e) {
             // Log error but don't fail the update
             \Log::error("Failed to remove old logo for expedition {$expedition->id}: ".$e->getMessage());
-        }
-    }
-
-    /**
-     * Clear targeted Lada-cache for expeditions (table/project/row level).
-     * Lada-cache was not clearing the project-level expeditions list.
-     */
-    private function clearExpeditionCache(int $projectId, ?int $expeditionId = null): void
-    {
-        try {
-            $redisConnection = config('lada-cache.redis_connection', 'cache');
-            $prefix = config('lada-cache.prefix', 'lada:');
-            $redis = Redis::connection($redisConnection);
-
-            // Patterns: Broaden for list queries (e.g., project expeditions collection)
-            $patterns = [
-                $prefix.'*expeditions*',                      // Any expedition queries
-                $prefix.'*actor_expedition*',                 // Pivot relations
-                $prefix.'*expedition_stats*',                 // Stats
-                $prefix.'*projects*expeditions*',             // Project->expeditions lists
-                $prefix.'*project_id:'.$projectId.'*',    // Project-specific (e.g., lists)
-            ];
-
-            if ($expeditionId) {
-                $patterns[] = $prefix.'*expedition_id:'.$expeditionId.'*';  // Row-specific if hashed that way
-            }
-
-            $totalCleared = 0;
-            foreach ($patterns as $pattern) {
-                $keys = $redis->keys($pattern);
-                if (! empty($keys)) {
-                    $redis->del($keys);
-                    $totalCleared += count($keys);
-                    Log::info('Cleared Lada-cache keys', ['pattern' => $pattern, 'count' => count($keys)]);
-                }
-            }
-
-            if ($totalCleared > 0) {
-                Log::info('Expedition cache cleared post-create', ['project_id' => $projectId, 'total_keys' => $totalCleared]);
-            }
-
-        } catch (\Exception $e) {
-            Log::warning('Failed to clear expedition cache', [
-                'project_id' => $projectId,
-                'error' => $e->getMessage(),
-            ]);
         }
     }
 }
