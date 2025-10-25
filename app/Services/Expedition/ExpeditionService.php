@@ -369,9 +369,6 @@ class ExpeditionService
             return $expedition;
         });
 
-        // Post-commit: Clear caches (outside tx to ensure commit first)
-        \Artisan::call('lada-cache:flush');
-
         return $expedition;
     }
 
@@ -474,7 +471,7 @@ class ExpeditionService
     private function handleLogoUpload(array &$data, Expedition $expedition): void
     {
         // Check if there's a new logo uploaded via Livewire
-        if (isset($data['logo_path']) && ! empty($data['logo_path'])) {
+        if (! empty($data['logo_path'])) {
             // Remove old logo if it exists
             $this->removeOldLogo($expedition);
 

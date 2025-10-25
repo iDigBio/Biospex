@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasLadaCacheInvalidation;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\ExpeditionPresenter;
@@ -38,7 +39,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
  */
 class Expedition extends BaseEloquentModel
 {
-    use HasFactory, Presentable, UuidTrait;
+    use HasFactory, HasLadaCacheInvalidation, Presentable, UuidTrait;
 
     protected $table = 'expeditions';
 
