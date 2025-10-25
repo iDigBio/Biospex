@@ -68,7 +68,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Website')
-                    ->url('/')
+                    ->url('/admin/projects')
                     ->icon('heroicon-o-window')
                     ->sort(-3),
             ])
