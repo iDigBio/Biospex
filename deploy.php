@@ -57,7 +57,7 @@ host('production')
     ->set('hostname', '3.142.169.134')
     ->set('deploy_path', '{{base_path}}/biospex')
     ->set('branch', 'main')
-    ->set('domain_name', 'biospex');
+    ->set('domain_name', 'prod-biospex');
 
 // Development: development branch → /data/web/dev.biospex
 host('development')

@@ -135,9 +135,44 @@ task('supervisor:restart-domain-safe', function () {
         throw new Exception('Domain name not configured for this host');
     }
 
-    // Check critical queues first
-    $configOutput = run('php {{release_or_current_path}}/artisan tinker --execute="echo json_encode(config(\'queue.monitored_queues\', [\'export\', \'geolocate\', \'import\', \'ocr\', \'lambda_ocr\', \'reconcile\', \'sns_image_export\', \'sns_reconciliation\', \'sns_tesseract_ocr\', \'sernec_file\', \'sernec_row\']));"');
-    $queues = json_decode(trim($configOutput), true) ?: ['export', 'geolocate', 'import', 'ocr', 'lambda_ocr', 'reconcile', 'sns_image_export', 'sns_reconciliation', 'sns_tesseract_ocr', 'sernec_file', 'sernec_row'];
+    // Skip supervisor check entirely for dev-biospex
+    if ($domain === 'dev-biospex') {
+        writeln('ℹ️ Skipping supervisor restart for dev environment (dev-biospex).');
+
+        return;
+    }
+
+    // Continue with normal supervisor checks for production
+    $groupExists = run("sudo supervisorctl status {$domain}:* >/dev/null 2>&1 && echo 'EXISTS' || echo 'NOT_FOUND'", ['tty' => false]);
+
+    if (trim($groupExists) !== 'EXISTS') {
+        writeln("ℹ️ Supervisor group '{$domain}' not found. Skipping restart.");
+
+        return;
+    }
+
+    // Get environment prefix - use "production" for queue names
+    $envPrefix = 'production';
+
+    // Define base queue names
+    $baseQueues = [
+        'export',
+        'geolocate',
+        'import',
+        'ocr',
+        'lambda-ocr',
+        'reconcile',
+        'sns-image-export',
+        'sns-reconciliation',
+        'sns-tesseract-ocr',
+        'sernec-file',
+        'sernec-row',
+    ];
+
+    // Build full queue names
+    $queues = array_map(function ($queue) use ($envPrefix) {
+        return "{$envPrefix}-{$queue}";
+    }, $baseQueues);
 
     foreach ($queues as $queue) {
         if (empty($queue)) {
@@ -153,6 +188,7 @@ task('supervisor:restart-domain-safe', function () {
 
     // Safe to restart domain processes
     run("sudo supervisorctl restart {$domain}:*");
+    writeln("✅ Supervisor group '{$domain}' restarted");
 });
 
 /*
