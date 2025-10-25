@@ -32,13 +32,9 @@ class UserPresenter extends Presenter
      */
     public function fullNameOrEmail()
     {
-        $firstName = $this->model->profile->first_name;
-        $lastName = $this->model->profile->last_name;
-        $email = $this->model->email;
+        $fullName = $this->model->getFilamentName();
 
-        $isNull = $firstName === null || $lastName === null;
-
-        return $isNull ? $email : $firstName.' '.$lastName;
+        return empty($fullName) ? $this->model->email : $fullName;
     }
 
     /**

@@ -21,8 +21,7 @@
 namespace App\Http\Requests;
 
 use App\Rules\FileUploadNameValidation;
-use App\Rules\ResourceDownloadValidation;
-use App\Rules\ResourceNameValidation;
+use App\Services\Validation\AssetValidationService;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -43,8 +42,9 @@ class ProjectFormRequest extends Request
     public function rules()
     {
         $projectId = isset($this->route('project')->id) ? $this->route('project')->id : null;
+        $assetValidationService = app(AssetValidationService::class);
 
-        return [
+        $rules = [
             'group_id' => 'required|integer|min:1',
             'title' => 'required|between:6,140|unique:projects,title,'.$projectId,
             'contact' => 'required',
@@ -62,11 +62,10 @@ class ProjectFormRequest extends Request
                 new FileUploadNameValidation,
             ],
             'logo_path' => 'nullable|string',
-            'resources.*.type' => [new ResourceDownloadValidation],
-            'resources.*.name' => ['required_with:resources.*.type', new ResourceNameValidation],
-            'resources.*.description' => 'required_with:resources.*.type',
-            'resources.*.download' => 'mimes:txt,doc,csv,pdf',
         ];
+
+        // Merge asset validation rules from the shared service
+        return array_merge($rules, $assetValidationService->getAssetValidationRules('multiple'));
     }
 
     /**
@@ -86,10 +85,9 @@ class ProjectFormRequest extends Request
     public function messages()
     {
         return [
-            'resources.*.name.required_with' => 'Required when Type selected',
-            'resources.*.description.required_with' => 'Required when Type selected',
-            'resources.*.download.required_if' => 'Required when Type selected',
-            'resources.*.download.mimes' => 'Accepted files: txt,doc,csv,pdf',
+            'assets.*.name.required_with' => 'Required when Type selected',
+            'assets.*.description.required_with' => 'Required when Type selected',
+            'assets.*.download_path.required_if' => 'Required when Type selected',
         ];
     }
 }

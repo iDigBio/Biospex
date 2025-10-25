@@ -25,6 +25,7 @@ use App\Models\Project;
 use App\Models\User;
 use App\Services\Subject\SubjectService;
 use App\Services\Trait\ExpeditionPartitionTrait;
+use DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -46,6 +47,8 @@ class ExpeditionService
 
     /**
      * Create Expedition and return.
+     *
+     * @throws \Throwable
      */
     public function store(Project $project, array $request): mixed
     {
@@ -54,18 +57,72 @@ class ExpeditionService
 
         $request['project_id'] = $project->id;
 
-        $expedition = Expedition::create($request);
+        $expedition = DB::transaction(function () use ($project, $request) {
+            $expedition = Expedition::create($request);
+            $expedition->load(['project', 'workflow.actors.contacts']);
+            $this->setSubjectIds($request['subject-ids']);
+            $this->attachSubjects($expedition->id);
 
-        $expedition->load(['project', 'workflow.actors.contacts']);
+            try {
+                $this->syncActors($expedition);
+                $this->syncStat($expedition);
+            } catch (\Exception $e) {
+                Log::error('Failed during sync operations in transaction', [
+                    'expedition_id' => $expedition->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                $this->rollbackSubjects($expedition->id);
+                throw $e; // Re-throw to trigger MySQL rollback
+            }
 
-        $this->setSubjectIds($request['subject-ids']);
-        $this->attachSubjects($expedition->id);
-        $this->syncActors($expedition);
-        $this->syncStat($expedition);
+            $this->notifyActorContacts($expedition, $project);
 
-        $this->notifyActorContacts($expedition, $project);
+            return $expedition;
+        });
+
+        // Post-commit: Clear caches (outside tx to ensure commit first)
+        \Artisan::call('lada-cache:flush');
 
         return $expedition;
+
+    }
+
+    /**
+     * Rollback subject attachments for failed expedition creation.
+     */
+    private function rollbackSubjects(int $expeditionId): void
+    {
+        try {
+            $this->subjectService->detachSubjects($this->subjectIds, $expeditionId);
+        } catch (\Exception $e) {
+            Log::error('Failed to rollback subjects during expedition creation failure', [
+                'expedition_id' => $expeditionId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Rollback subject changes for failed expedition update.
+     */
+    private function rollbackSubjectChanges(int $expeditionId, Collection $originalSubjectIds): void
+    {
+        try {
+            // Detach all current subjects
+            $currentSubjectIds = $this->getSubjectIdsByExpeditionId(
+                $this->expedition->find($expeditionId)
+            );
+            $this->subjectService->detachSubjects($currentSubjectIds, $expeditionId);
+
+            // Reattach original subjects
+            $this->subjectService->attachSubjects($originalSubjectIds, $expeditionId);
+        } catch (\Exception $e) {
+            Log::error('Failed to rollback subject changes during expedition update failure', [
+                'expedition_id' => $expeditionId,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -194,9 +251,6 @@ class ExpeditionService
         $this->subjectService->attachSubjects($attachIds, $expeditionId);
     }
 
-    /**
-     * Sync the actors depending on workflow chosen.
-     */
     public function syncActors(Expedition $expedition): void
     {
         if (! $expedition->workflow) {
@@ -234,9 +288,6 @@ class ExpeditionService
         }
     }
 
-    /**
-     * Update or create expedition stat.
-     */
     public function syncStat(Expedition $expedition): void
     {
         $subjectCount = $this->getSubjectCount();
@@ -278,22 +329,45 @@ class ExpeditionService
 
     /**
      * Update Expedition.
-     * If expedition is completed and unlocked, this is a first change. If workflow id
+     * If the expedition is completed and unlocked, this is a first change. If workflow id
+     *
+     * @throws \Throwable
      */
     public function update(Expedition $expedition, array $request): Expedition
     {
         // Handle logo upload and removal
         $this->handleLogoUpload($request, $expedition);
 
-        $expedition->completed = $this->setExpeditionCompleted($expedition, $request['workflow_id']);
+        $expedition = DB::transaction(function () use ($expedition, $request) {
+            $expedition->completed = $this->setExpeditionCompleted($expedition, $request['workflow_id']);
 
-        $expedition->fill($request)->save();
+            $expedition->fill($request)->save();
 
-        $expedition->load(['actors', 'workflow.actors', 'workflowManager']);
+            $expedition->load(['actors', 'workflow.actors', 'workflowManager']);
 
-        $this->setSubjectIds($request['subject-ids']);
-        $this->updateSubjects($expedition);
-        $this->syncActors($expedition);
+            $this->setSubjectIds($request['subject-ids']);
+
+            // Store original subject IDs for potential rollback
+            $originalSubjectIds = $this->getSubjectIdsByExpeditionId($expedition);
+
+            $this->updateSubjects($expedition);
+
+            try {
+                $this->syncActors($expedition);
+            } catch (\Exception $e) {
+                Log::error('Failed during sync operations in update transaction', [
+                    'expedition_id' => $expedition->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
+                // Rollback MongoDB changes - restore original subjects
+                $this->rollbackSubjectChanges($expedition->id, $originalSubjectIds);
+                throw $e; // Re-throw to trigger MySQL rollback
+            }
+
+            return $expedition;
+        });
 
         return $expedition;
     }
@@ -397,7 +471,7 @@ class ExpeditionService
     private function handleLogoUpload(array &$data, Expedition $expedition): void
     {
         // Check if there's a new logo uploaded via Livewire
-        if (isset($data['logo_path']) && ! empty($data['logo_path'])) {
+        if (! empty($data['logo_path'])) {
             // Remove old logo if it exists
             $this->removeOldLogo($expedition);
 

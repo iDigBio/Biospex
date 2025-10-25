@@ -21,7 +21,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\Image\Thumbnail;
+use App\Services\Asset\Thumbnail;
 use Request;
 
 /**

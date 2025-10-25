@@ -24,18 +24,22 @@ use App\Models\Traits\HasGroup;
 use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
 use App\Presenters\UserPresenter;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class User
  */
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, HasGroup, Notifiable, Presentable, UuidTrait;
+    use HasApiTokens, HasFactory, HasGroup, LadaCacheTrait, Notifiable, Presentable, UuidTrait;
 
     protected $table = 'users';
 
@@ -48,7 +52,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $hidden = ['id', 'password', 'remember_token'];
 
-    protected $hashableAttributes = ['password'];
+    protected array $hashableAttributes = ['password'];
+
+    protected $with = ['profile'];
 
     protected string $presenter = UserPresenter::class;
 
@@ -118,5 +124,34 @@ class User extends Authenticatable implements MustVerifyEmail
     public function events(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Event::class);
+    }
+
+    /**
+     * Get the name attribute for display purposes.
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->getFilamentName() ?: $this->email;
+    }
+
+    /**
+     * Retrieve the Filament display name using the full name accessor.
+     */
+    public function getFilamentName(): string
+    {
+        $name = trim($this->profile?->first_name.' '.$this->profile?->last_name);
+
+        return $name ?: $this->email;
+    }
+
+    /**
+     * Determine if the user can access the given panel.
+     *
+     * @param  Panel  $panel  The panel instance to check access for.
+     * @return bool True if the user is an admin and can access the panel, otherwise false.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->isAdmin();
     }
 }

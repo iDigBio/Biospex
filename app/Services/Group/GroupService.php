@@ -89,8 +89,8 @@ class GroupService
             'projects',
             'expeditions',
             'geoLocateForms.expeditions',
-            'owner.profile',
-            'users.profile',
+            'owner',
+            'users',
         ])->loadCount('expeditions');
     }
 
@@ -102,7 +102,7 @@ class GroupService
      */
     public function editGroup(Group &$group): Collection
     {
-        $group->load(['owner', 'users.profile']);
+        $group->load(['owner', 'users']);
 
         return $group->users->mapWithKeys(function ($user) {
             return [$user->id => $user->profile->full_name];

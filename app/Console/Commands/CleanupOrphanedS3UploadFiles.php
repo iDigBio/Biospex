@@ -23,8 +23,8 @@ namespace App\Console\Commands;
 use App\Models\Expedition;
 use App\Models\Profile;
 use App\Models\Project;
-use App\Models\ProjectResource;
-use App\Models\Resource;
+use App\Models\ProjectAsset;
+use App\Models\SiteAsset;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
@@ -74,16 +74,9 @@ class CleanupOrphanedS3UploadFiles extends Command
             config('config.uploads.profile_avatars_medium'),
             config('config.uploads.profile_avatars_original'),
             config('config.uploads.profile_avatars_small'),
-            config('config.uploads.project_resources_downloads'),
-            config('config.uploads.resources'),
+            config('config.uploads.project-assets'),
+            config('config.uploads.site-assets'),
         ];
-
-        // UUID-based directories are no longer used after migration
-        // // Also check project-specific resource directories (UUID-based)
-        // $projectUuids = \App\Models\Project::pluck('uuid')->toArray();
-        // foreach ($projectUuids as $uuid) {
-        //     $directories[] = config('config.uploads.project_resources_base')."/{$uuid}";
-        // }
 
         $totalOrphaned = 0;
         $totalDeleted = 0;
@@ -137,15 +130,15 @@ class CleanupOrphanedS3UploadFiles extends Command
             ->toArray();
         $referencedFiles = array_merge($referencedFiles, $profileAvatars);
 
-        // Project resource downloads
-        $projectResourceDownloads = ProjectResource::whereNotNull('download_path')
+        // Project site-asset downloads
+        $projectResourceDownloads = ProjectAsset::whereNotNull('download_path')
             ->pluck('download_path')
             ->filter()
             ->toArray();
         $referencedFiles = array_merge($referencedFiles, $projectResourceDownloads);
 
         // Resource documents
-        $resourceDocuments = Resource::whereNotNull('download_path')
+        $resourceDocuments = SiteAsset::whereNotNull('download_path')
             ->pluck('download_path')
             ->filter()
             ->toArray();

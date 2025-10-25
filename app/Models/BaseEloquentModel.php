@@ -80,6 +80,8 @@ class BaseEloquentModel extends Model
         parent::__construct($attributes);
     }
 
+    // ... existing code ...
+
     /**
      * Save the model to the database.
      *
@@ -92,8 +94,8 @@ class BaseEloquentModel extends Model
         // If save succeeded, it's a fresh insert, auto-increment is enabled, but key is still null—fetch it manually
         if ($result && $this->wasRecentlyCreated && $this->getIncrementing() && is_null($this->getKey())) {
             $lastId = $this->getConnection()->getPdo()->lastInsertId();
-            if ($lastId !== '0' && $lastId !== 0) {  // Guard against invalid/zero IDs
-                $this->setAttribute($this->getKeyName(), $lastId);
+            if ($lastId !== '0' && $lastId !== '') {  // Compare against string values only
+                $this->setAttribute($this->getKeyName(), (int) $lastId);  // Cast to int when setting
                 $this->syncOriginalAttribute($this->getKeyName());  // Sync to avoid "dirty" flags later
                 $this->syncChanges();  // Optional: Refresh changed attributes
             }
@@ -101,4 +103,6 @@ class BaseEloquentModel extends Model
 
         return $result;
     }
+
+    // ... existing code ...
 }

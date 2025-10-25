@@ -49,7 +49,7 @@ class DownloadController extends Controller
      */
     public function index(Expedition $expedition): \Illuminate\View\View
     {
-        $user = Auth::user()->load('profile');
+        $user = Auth::user();
         $this->expeditionService->getExpeditionDownloadsByActor($expedition);
 
         $error = ! CheckPermission::handle('readProject', $expedition->project->group);

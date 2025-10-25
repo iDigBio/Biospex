@@ -203,6 +203,21 @@ class GeneralService
     }
 
     /**
+     * Get available project banner options for Filament Select field.
+     */
+    public function getProjectBannerOptions(): array
+    {
+        return [
+            'banner-desert.jpg' => 'Desert Banner',
+            'banner-grass.jpg' => 'Grass Banner',
+            'banner-meadow.jpg' => 'Meadow Banner',
+            'banner-mtn-flowers.jpg' => 'Mountain Banner',
+            'banner-swamp.jpg' => 'Swamp Banner',
+            'banner-trees.jpg' => 'Trees Banner',
+        ];
+    }
+
+    /**
      * Return default logo for projects.
      */
     public function projectDefaultLogo(): string

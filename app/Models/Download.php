@@ -136,4 +136,23 @@ class Download extends BaseEloquentModel
     {
         return $this->hasOne(GeoLocateDataSource::class);
     }
+
+    /**
+     * Mutator for the file attribute.
+     * Ensures only the filename is stored, not the full path.
+     */
+    public function setFileAttribute($value)
+    {
+        // If it's an array (from Filament FileUpload), get the first element
+        if (is_array($value)) {
+            $value = $value[0] ?? $value;
+        }
+
+        // If it's a string path, extract just the filename
+        if (is_string($value) && str_contains($value, '/')) {
+            $value = basename($value);
+        }
+
+        $this->attributes['file'] = $value;
+    }
 }

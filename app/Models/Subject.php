@@ -56,6 +56,18 @@ class Subject extends BaseMongoModel
     }
 
     /**
+     * Get all expeditions that this subject belongs to.
+     */
+    public function getExpeditionsAttribute()
+    {
+        if (! isset($this->attributes['expedition_ids']) || ! is_array($this->attributes['expedition_ids'])) {
+            return collect();
+        }
+
+        return \App\Models\Expedition::whereIn('id', $this->attributes['expedition_ids'])->get();
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function panoptesTranscriptions()

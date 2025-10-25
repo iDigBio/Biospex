@@ -13,6 +13,32 @@
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ t('Edit Project') }}</h2>
+
+                    {{-- Display any general errors --}}
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <h5><i class="icon fas fa-ban"></i> {{ t('Error!') }}</h5>
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    {{-- Display flash messages --}}
+                    @if (session('danger'))
+                        <div class="alert alert-danger">
+                            <i class="icon fas fa-ban"></i> {{ session('danger') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            <i class="icon fas fa-ban"></i> {{ session('error') }}
+                        </div>
+                    @endif
+
                     <form method="post" id="projectFrm" action="{{ route('admin.projects.update', $project) }}"
                           role="form"
                           enctype="multipart/form-data">
@@ -246,7 +272,7 @@
                         <div class="form-group">
                             <label for="resources" class="col-form-label">{{ t('Resources') }}:</label>
                             <div class="controls col-sm-12">
-                                @include('admin.project.partials.resources')
+                                @include('admin.project.partials.assets')
                             </div>
                         </div>
                         @include('common.cancel-submit-buttons')

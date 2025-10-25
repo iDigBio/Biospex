@@ -48,6 +48,7 @@ set('shared_dirs', [
 // Files/Directories to Remove After Deployment
 set('clear_paths', [
     'node_modules',     // Remove after CI artifacts are deployed
+    'deployment-package', // Remove any residual nesting dirs
 ]);
 
 // Server Configurations
@@ -55,13 +56,15 @@ set('clear_paths', [
 host('production')
     ->set('hostname', '3.142.169.134')
     ->set('deploy_path', '{{base_path}}/biospex')
-    ->set('branch', 'main');
+    ->set('branch', 'main')
+    ->set('domain_name', 'prod-biospex');
 
 // Development: development branch → /data/web/dev.biospex
 host('development')
     ->set('hostname', '3.142.169.134')
     ->set('deploy_path', '{{base_path}}/dev.biospex')
-    ->set('branch', 'development');
+    ->set('branch', 'development')
+    ->set('domain_name', 'dev-biospex');
 
 /*
  * DEPLOYMENT TASK SEQUENCE - CI/CD Option 1 Implementation
@@ -73,7 +76,6 @@ desc('Deploys your project using CI/CD artifacts');
 task('deploy', [
     // Phase 1: Preparation
     'deploy:prepare',           // Create release directory and setup structure
-    // REMOVED: 'upload:env',   // Now handled by local Git pre-push hook! 🎉
 
     // Phase 2: Dependencies & Assets
     'deploy:vendors',          // Install PHP Composer dependencies safely (--no-scripts to prevent DB connection issues)
@@ -82,7 +84,7 @@ task('deploy', [
     // Phase 3: Laravel Setup
     'artisan:storage:link',    // Create symbolic link for storage directory
     'artisan:package:discover', // Run package discovery after environment is ready (SAFE: after .env is linked)
-    'artisan:nova:publish',    // Publish Laravel Nova assets
+    'artisan:filament:assets',
     'artisan:app:deploy-files', // Custom app deployment files
 
     // Phase 4: Database & Updates
@@ -97,14 +99,17 @@ task('deploy', [
     'artisan:view:cache',      // Cache Blade templates
     'artisan:event:cache',     // Cache event listeners
     'artisan:optimize',        // Run Laravel optimization
+    'artisan:filament:optimize',   // Optimize Filament resources and assets
 
     // Phase 6: OpCache Management (Production Only)
     'opcache:reset-production', // Reset OpCache after deployment (production only)
 
-    // Phase 7: Queue Safety & Finalization
-    'queue:check',             // Check active jobs before queue restart (SAFE: prevents job interruption)
-    'set:permissions',         // Set proper file permissions
-    'deploy:publish',          // Switch to new release (atomic deployment)
+    // Phase 7: Domain-Specific Supervisor Management
+    'supervisor:reload',               // Update configs only
+    'supervisor:restart-domain-safe',  // Check queues + restart domain processes
+    'set:permissions',
+    'deploy:publish',
+    'deploy:verify-structure', // Verify flat structure post-deploy
 ]);
 
 // Hooks

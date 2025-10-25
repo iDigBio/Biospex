@@ -45,10 +45,18 @@ task('deploy:vendors', function () {
         return;
     }
 
-    // Install dependencies without running scripts to prevent database connection issues
-    run('cd {{release_path}} && {{bin/composer}} install --prefer-dist --no-progress --no-suggest --no-dev --optimize-autoloader --no-scripts');
+    // Check if this is a development deployment
+    $isDevelopment = get('domain_name') === 'dev-biospex';
 
-    writeln('✅ Composer dependencies installed safely (without scripts)');
+    if ($isDevelopment) {
+        // Install with dev dependencies for development environment
+        run('cd {{release_path}} && {{bin/composer}} install --prefer-dist --no-progress --no-suggest --optimize-autoloader --no-scripts');
+        writeln('✅ Composer dependencies installed with dev packages (development environment)');
+    } else {
+        // Install without dev dependencies for production
+        run('cd {{release_path}} && {{bin/composer}} install --prefer-dist --no-progress --no-suggest --no-dev --optimize-autoloader --no-scripts');
+        writeln('✅ Composer dependencies installed safely (production environment - without dev packages)');
+    }
 });
 
 desc('Run Laravel package discovery after environment is ready');
@@ -64,6 +72,13 @@ task('artisan:package:discover', function () {
  * =============================================================================
  */
 
+desc('Publish Laravel Nova assets');
+task('artisan:nova:publish', function () {
+    cd('{{release_or_current_path}}');
+    run('php artisan nova:publish --ansi');
+    writeln('✅ Laravel Nova assets published');
+});
+
 desc('Running custom database update queries');
 task('artisan:app:update-queries', function () {
     cd('{{release_or_current_path}}');
@@ -74,6 +89,23 @@ desc('Deploying application-specific files and configurations');
 task('artisan:app:deploy-files', function () {
     cd('{{release_or_current_path}}');
     run('php artisan app:deploy-files');    // Custom command for file deployments
+});
+
+/**
+ * Publish Filament assets
+ */
+desc('Publish Filament assets');
+task('artisan:filament:assets', function () {
+    cd('{{release_or_current_path}}');
+    run('php artisan filament:assets');
+    writeln('✅ Filament assets published');
+});
+
+desc('Optimize Filament resources and assets');
+task('artisan:filament:optimize', function () {
+    cd('{{release_or_current_path}}');
+    run('php artisan filament:optimize --ansi');
+    writeln('✅ Filament optimization completed');
 });
 
 /*
@@ -93,44 +125,78 @@ task('set:permissions', function () {
 
 /*
  * =============================================================================
- * LEGACY BUILD TASKS (NOT USED IN OPTION 1 - CI/CD ARTIFACTS)
- * =============================================================================
- * These tasks are kept for reference but not used in the main deployment sequence.
- * Option 1 uses pre-built assets from GitHub Actions instead.
- */
-
-desc('[LEGACY] Install project dependencies - NOT USED IN OPTION 1');
-task('yarn:run-install', function () {
-    cd('{{release_or_current_path}}');
-    run('yarn install --frozen-lockfile --ignore-engines');  // Server-side dependency installation
-});
-
-desc('[LEGACY] Build project dependencies - NOT USED IN OPTION 1');
-task('npm:run-build', function () {
-    cd('{{release_or_current_path}}');
-    run('npm run production');  // Server-side asset compilation
-});
-
-/*
- * =============================================================================
  * SUPERVISOR PROCESS MANAGEMENT
  * =============================================================================
  */
 
-desc('Reload Supervisor configuration and restart service');
+desc('Reload Supervisor configuration (config-only update)');
 task('supervisor:reload', function () {
-    run('sudo supervisorctl reread');     // Re-read configuration files
-    run('sudo supervisorctl update');     // Update running processes with new config
-    run('sudo systemctl restart supervisor'); // Restart Supervisor daemon
+    run('sudo supervisorctl reread');
+    run('sudo supervisorctl update');
 });
 
-desc('Restart environment-specific Supervisor process group');
-task('supervisor:restart-group', function () {
-    $alias = currentHost()->get('alias');  // Get current host alias (production/development)
+desc('Safely restart domain-specific supervisor processes (checks queues first)');
+task('supervisor:restart-domain-safe', function () {
+    $domain = get('domain_name');
 
-    // Restart all processes in the environment-specific group
-    // Groups: 'production:*' or 'development:*'
-    run('sudo supervisorctl restart '.$alias.':');
+    if (! $domain) {
+        throw new Exception('Domain name not configured for this host');
+    }
+
+    // Skip supervisor check entirely for dev-biospex
+    if ($domain === 'dev-biospex') {
+        writeln('ℹ️ Skipping supervisor restart for dev environment (dev-biospex).');
+
+        return;
+    }
+
+    // Continue with normal supervisor checks for production
+    $groupExists = run("sudo supervisorctl status {$domain}:* >/dev/null 2>&1 && echo 'EXISTS' || echo 'NOT_FOUND'", ['tty' => false]);
+
+    if (trim($groupExists) !== 'EXISTS') {
+        writeln("ℹ️ Supervisor group '{$domain}' not found. Skipping restart.");
+
+        return;
+    }
+
+    // Get environment prefix - use "production" for queue names
+    $envPrefix = 'production';
+
+    // Define base queue names
+    $baseQueues = [
+        'export',
+        'geolocate',
+        'import',
+        'ocr',
+        'lambda-ocr',
+        'reconcile',
+        'sns-image-export',
+        'sns-reconciliation',
+        'sns-tesseract-ocr',
+        'sernec-file',
+        'sernec-row',
+    ];
+
+    // Build full queue names
+    $queues = array_map(function ($queue) use ($envPrefix) {
+        return "{$envPrefix}-{$queue}";
+    }, $baseQueues);
+
+    foreach ($queues as $queue) {
+        if (empty($queue)) {
+            continue;
+        }
+        $count = run("php {{release_or_current_path}}/artisan queue:count {$queue} --quiet || echo 0", ['tty' => false]);
+        if ((int) trim($count) > 0) {
+            writeln("⚠️ Queue '{$queue}' has active jobs. Skipping supervisor restart.");
+
+            return;
+        }
+    }
+
+    // Safe to restart domain processes
+    run("sudo supervisorctl restart {$domain}:*");
+    writeln("✅ Supervisor group '{$domain}' restarted");
 });
 
 /*
@@ -146,12 +212,6 @@ task('deploy:ci-artifacts', function () {
     $githubToken = $_ENV['GITHUB_TOKEN'] ?? getenv('GITHUB_TOKEN') ?? '';
     $githubSha = $_ENV['GITHUB_SHA'] ?? getenv('GITHUB_SHA') ?? '';
     $githubRepo = $_ENV['GITHUB_REPO'] ?? getenv('GITHUB_REPO') ?? 'iDigBio/Biospex';
-
-    // Debug: Show available environment variables for troubleshooting
-    writeln('Debug: Checking environment variables...');
-    writeln('GITHUB_TOKEN present: '.(! empty($githubToken) ? 'YES' : 'NO'));
-    writeln('GITHUB_SHA present: '.(! empty($githubSha) ? 'YES' : 'NO'));
-    writeln('GITHUB_REPO: '.$githubRepo);
 
     // Validate required environment variables
     if (empty($githubToken) || empty($githubSha)) {
@@ -189,17 +249,25 @@ task('deploy:ci-artifacts', function () {
     run("curl -L -H 'Authorization: Bearer {$githubToken}' -H 'Accept: application/vnd.github.v3+json' '{$downloadUrl}' -o artifact.zip");
     run('unzip -o -q artifact.zip');       // Extract artifact quietly, overwrite existing files
 
-    // Debug: Check what was actually extracted
-    writeln('Debug: Contents after extraction:');
-    run('ls -la');
+    // Find the deepest 'deployment-package' and rsync its contents to flatten
+    $nestLevelCmd = run('find . -type d -name "deployment-package" -printf "%p\\n" | wc -l');
+    $nests = (int) trim($nestLevelCmd);
 
-    // Check if deployment-package directory exists, if not, assume files are in current directory
-    $deploymentPackageExists = run('[ -d "deployment-package" ] && echo "true" || echo "false"');
-    if (trim($deploymentPackageExists) === 'true') {
-        run('rsync -av deployment-package/ ./'); // Sync pre-built assets from deployment-package
-        run('rm -rf deployment-package'); // Clean up deployment-package directory
+    if ($nests === 0) {
+        // Assume flat
+    } elseif ($nests === 1) {
+        // Single level: rsync as before
+        run('rsync -av deployment-package/ ./');
+        run('rm -rf deployment-package');
     } else {
-        writeln('Debug: No deployment-package directory found, artifacts appear to be extracted directly');
+        // Multiple nests: Find innermost and rsync up (silent flatten)
+        $innermost = run('find . -type d -name "deployment-package" | sort -r | head -1');  // Deepest path
+        $innermost = trim($innermost);
+        if (! empty($innermost)) {
+            run("rsync -av '{$innermost}/' ./");  // Copy contents of deepest to root
+            // Clean all deployment-package dirs
+            run('find . -type d -name "deployment-package" -exec rm -rf {} +');
+        }
     }
 
     run('rm -f artifact.zip'); // Cleanup artifact file
@@ -290,39 +358,15 @@ task('opcache:reset-production', function () {
 
 /*
  * =============================================================================
- * QUEUE-SAFE DEPLOYMENT - PREVENTS JOB INTERRUPTION
+ * DEPLOYMENT VERIFICATION
  * =============================================================================
  */
 
-desc('Check queue status and safely restart queues (PREVENTS ACTIVE JOB INTERRUPTION)');
-task('queue:check', function () {
-    // Get monitored queues from Laravel configuration (environment-aware)
-    // This allows different queue names for dev (devexport) vs prod (export)
-    $configOutput = run('php {{release_or_current_path}}/artisan tinker --execute="echo json_encode(config(\'queue.monitored_queues\', [\'export\', \'geolocate\', \'import\', \'lambda_ocr\', \'reconcile\', \'sns_image_export\', \'sns_reconciliation\', \'sns_tesseract_ocr\', \'sernec_file\', \'sernec_row\']));"');
-
-    // Fallback to default queue names if config retrieval fails
-    $queues = json_decode(trim($configOutput), true) ?: ['export', 'geolocate', 'import', 'lambda_ocr', 'reconcile', 'sns_image_export', 'sns_reconciliation', 'sns_tesseract_ocr', 'sernec_file', 'sernec_row'];
-
-    // Check each queue for active jobs
-    foreach ($queues as $queue) {
-        if (empty($queue)) {
-            continue;
-        } // Skip empty queue names
-
-        // Use custom queue:count command to get job count
-        $count = run("php {{release_or_current_path}}/artisan queue:count {$queue} --quiet || echo 0", ['tty' => false]);
-        $count = (int) trim($count);
-
-        // SAFETY CHECK: If any queue has active jobs, skip restart
-        if ($count > 0) {
-            writeln("⚠️  Queue '{$queue}' has {$count} active jobs. Skipping queue restart to prevent interruption.");
-            writeln('🛡️  Deployment will continue without restarting queues (SAFE MODE).');
-
-            return; // Exit without restarting queues
-        }
+desc('Verify flat deployment structure');
+task('deploy:verify-structure', function () {
+    $nestCheck = run('find {{release_path}} -type d -name "deployment-package" | wc -l');
+    if ((int) trim($nestCheck) > 0) {
+        throw new \Exception("Nesting detected post-deploy: {$nestCheck} dirs. Check CI artifact.");
     }
-
-    // All queues are empty - safe to restart
-    writeln('✅ All monitored queues are empty. Restarting queue workers...');
-    run('php {{release_or_current_path}}/artisan queue:restart');
+    writeln('✅ Deployment structure verified: flat and clean');
 });
