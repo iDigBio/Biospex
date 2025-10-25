@@ -13,6 +13,7 @@
     "ext-fileinfo": "*",
     "ext-memcached": "*",
     "ext-mongodb": "*",
+    "ext-redis": "*",
     "aws/aws-php-sns-message-validator": "^1.0",
     "aws/aws-sdk-php": "~3.0",
     "czim/file-handling": "dev-load-count-fix as 2.3.0",

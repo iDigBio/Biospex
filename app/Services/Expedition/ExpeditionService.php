@@ -25,10 +25,12 @@ use App\Models\Project;
 use App\Models\User;
 use App\Services\Subject\SubjectService;
 use App\Services\Trait\ExpeditionPartitionTrait;
+use DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Redis;
 
 class ExpeditionService
 {
@@ -46,6 +48,8 @@ class ExpeditionService
 
     /**
      * Create Expedition and return.
+     *
+     * @throws \Throwable
      */
     public function store(Project $project, array $request): mixed
     {
@@ -54,60 +58,72 @@ class ExpeditionService
 
         $request['project_id'] = $project->id;
 
-        Log::debug('Starting expedition store', [
-            'project_id' => $project->id,
-            'workflow_id' => $request['workflow_id'] ?? null,
-            'subject_ids_raw' => $request['subject-ids'] ?? null,
-        ]);
+        $expedition = DB::transaction(function () use ($project, $request) {
+            $expedition = Expedition::create($request);
+            $expedition->load(['project', 'workflow.actors.contacts']);
+            $this->setSubjectIds($request['subject-ids']);
+            $this->attachSubjects($expedition->id);
 
-        $expedition = Expedition::create($request);
+            try {
+                $this->syncActors($expedition);
+                $this->syncStat($expedition);
+            } catch (\Exception $e) {
+                Log::error('Failed during sync operations in transaction', [
+                    'expedition_id' => $expedition->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                $this->rollbackSubjects($expedition->id);
+                throw $e; // Re-throw to trigger MySQL rollback
+            }
 
-        Log::debug('Expedition created', [
-            'expedition_id' => $expedition->id,
-            'workflow_id' => $expedition->workflow_id,
-        ]);
+            $this->notifyActorContacts($expedition, $project);
 
-        $expedition->load(['project', 'workflow.actors.contacts']);
+            return $expedition;
+        });
 
-        Log::debug('Expedition relationships loaded', [
-            'expedition_id' => $expedition->id,
-            'workflow_exists' => ! is_null($expedition->workflow),
-            'actors_count' => $expedition->workflow?->actors?->count() ?? 0,
-        ]);
-
-        $this->setSubjectIds($request['subject-ids']);
-
-        Log::debug('Subject IDs set', [
-            'expedition_id' => $expedition->id,
-            'subject_count' => $this->getSubjectCount(),
-        ]);
-
-        $this->attachSubjects($expedition->id);
-
-        try {
-            Log::debug('About to sync actors and stats', ['expedition_id' => $expedition->id]);
-
-            $this->syncActors($expedition);
-            $this->syncStat($expedition);
-
-            Log::debug('Actors and stats synced successfully', ['expedition_id' => $expedition->id]);
-        } catch (\Exception $e) {
-            Log::error('Failed during sync operations', [
-                'expedition_id' => $expedition->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            // Note: Without transaction, you may want to handle cleanup differently
-            // or consider removing the created expedition
-            throw $e;
-        }
-
-        $this->notifyActorContacts($expedition, $project);
-
-        Log::debug('Expedition store completed successfully', ['expedition_id' => $expedition->id]);
+        // Post-commit: Clear caches (outside tx to ensure commit first)
+        $this->clearExpeditionCache($project->id, $expedition->id ?? null);
 
         return $expedition;
+
+    }
+
+    /**
+     * Rollback subject attachments for failed expedition creation.
+     */
+    private function rollbackSubjects(int $expeditionId): void
+    {
+        try {
+            $this->subjectService->detachSubjects($this->subjectIds, $expeditionId);
+        } catch (\Exception $e) {
+            Log::error('Failed to rollback subjects during expedition creation failure', [
+                'expedition_id' => $expeditionId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Rollback subject changes for failed expedition update.
+     */
+    private function rollbackSubjectChanges(int $expeditionId, Collection $originalSubjectIds): void
+    {
+        try {
+            // Detach all current subjects
+            $currentSubjectIds = $this->getSubjectIdsByExpeditionId(
+                $this->expedition->find($expeditionId)
+            );
+            $this->subjectService->detachSubjects($currentSubjectIds, $expeditionId);
+
+            // Reattach original subjects
+            $this->subjectService->attachSubjects($originalSubjectIds, $expeditionId);
+        } catch (\Exception $e) {
+            Log::error('Failed to rollback subject changes during expedition update failure', [
+                'expedition_id' => $expeditionId,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -238,25 +254,11 @@ class ExpeditionService
 
     public function syncActors(Expedition $expedition): void
     {
-        Log::debug('syncActors called', [
-            'expedition_id' => $expedition->id,
-            'workflow_exists' => ! is_null($expedition->workflow),
-            'actors_count' => $expedition->workflow?->actors?->count() ?? 0,
-            'subject_count' => $this->getSubjectCount(),
-        ]);
-
         if (! $expedition->workflow) {
-            Log::debug('No workflow found for expedition', ['expedition_id' => $expedition->id]);
-
             return;
         }
 
         if (! $expedition->workflow->actors || $expedition->workflow->actors->isEmpty()) {
-            Log::debug('No actors found for workflow', [
-                'expedition_id' => $expedition->id,
-                'workflow_id' => $expedition->workflow->id,
-            ]);
-
             return;
         }
 
@@ -276,17 +278,8 @@ class ExpeditionService
             }
         })->toArray();
 
-        Log::debug('About to sync actors', [
-            'expedition_id' => $expedition->id,
-            'actors_data' => $actors,
-        ]);
-
         try {
-            $result = $expedition->actors()->sync($actors);
-            Log::debug('Actors sync completed', [
-                'expedition_id' => $expedition->id,
-                'sync_result' => $result,
-            ]);
+            $expedition->actors()->sync($actors);
         } catch (\Exception $e) {
             Log::error('Failed to sync actors', [
                 'expedition_id' => $expedition->id,
@@ -300,22 +293,11 @@ class ExpeditionService
     {
         $subjectCount = $this->getSubjectCount();
 
-        Log::debug('syncStat called', [
-            'expedition_id' => $expedition->id,
-            'subject_count' => $subjectCount,
-        ]);
-
         try {
-            $result = $expedition->stat()->updateOrCreate(
+            $expedition->stat()->updateOrCreate(
                 ['expedition_id' => $expedition->id],
                 ['local_subject_count' => $subjectCount]
             );
-
-            Log::debug('Stat sync completed', [
-                'expedition_id' => $expedition->id,
-                'was_recently_created' => $result->wasRecentlyCreated,
-                'stat_id' => $result->id,
-            ]);
         } catch (\Exception $e) {
             Log::error('Failed to sync expedition stat', [
                 'expedition_id' => $expedition->id,
@@ -348,22 +330,48 @@ class ExpeditionService
 
     /**
      * Update Expedition.
-     * If expedition is completed and unlocked, this is a first change. If workflow id
+     * If the expedition is completed and unlocked, this is a first change. If workflow id
+     *
+     * @throws \Throwable
      */
     public function update(Expedition $expedition, array $request): Expedition
     {
         // Handle logo upload and removal
         $this->handleLogoUpload($request, $expedition);
 
-        $expedition->completed = $this->setExpeditionCompleted($expedition, $request['workflow_id']);
+        $expedition = DB::transaction(function () use ($expedition, $request) {
+            $expedition->completed = $this->setExpeditionCompleted($expedition, $request['workflow_id']);
 
-        $expedition->fill($request)->save();
+            $expedition->fill($request)->save();
 
-        $expedition->load(['actors', 'workflow.actors', 'workflowManager']);
+            $expedition->load(['actors', 'workflow.actors', 'workflowManager']);
 
-        $this->setSubjectIds($request['subject-ids']);
-        $this->updateSubjects($expedition);
-        $this->syncActors($expedition);
+            $this->setSubjectIds($request['subject-ids']);
+
+            // Store original subject IDs for potential rollback
+            $originalSubjectIds = $this->getSubjectIdsByExpeditionId($expedition);
+
+            $this->updateSubjects($expedition);
+
+            try {
+                $this->syncActors($expedition);
+            } catch (\Exception $e) {
+                Log::error('Failed during sync operations in update transaction', [
+                    'expedition_id' => $expedition->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
+                // Rollback MongoDB changes - restore original subjects
+                $this->rollbackSubjectChanges($expedition->id, $originalSubjectIds);
+                throw $e; // Re-throw to trigger MySQL rollback
+            }
+
+            return $expedition;
+        });
+
+        // Clear only expedition-related cache
+        $this->clearExpeditionCache($expedition->project_id, $expedition->id);
 
         return $expedition;
     }
@@ -513,6 +521,52 @@ class ExpeditionService
         } catch (\Exception $e) {
             // Log error but don't fail the update
             \Log::error("Failed to remove old logo for expedition {$expedition->id}: ".$e->getMessage());
+        }
+    }
+
+    /**
+     * Clear targeted Lada-cache for expeditions (table/project/row level).
+     * Lada-cache was not clearing the project-level expeditions list.
+     */
+    private function clearExpeditionCache(int $projectId, ?int $expeditionId = null): void
+    {
+        try {
+            $redisConnection = config('lada-cache.redis_connection', 'cache');
+            $prefix = config('lada-cache.prefix', 'lada:');
+            $redis = Redis::connection($redisConnection);
+
+            // Patterns: Broaden for list queries (e.g., project expeditions collection)
+            $patterns = [
+                $prefix.'*expeditions*',                      // Any expedition queries
+                $prefix.'*actor_expedition*',                 // Pivot relations
+                $prefix.'*expedition_stats*',                 // Stats
+                $prefix.'*projects*expeditions*',             // Project->expeditions lists
+                $prefix.'*project_id:'.$projectId.'*',    // Project-specific (e.g., lists)
+            ];
+
+            if ($expeditionId) {
+                $patterns[] = $prefix.'*expedition_id:'.$expeditionId.'*';  // Row-specific if hashed that way
+            }
+
+            $totalCleared = 0;
+            foreach ($patterns as $pattern) {
+                $keys = $redis->keys($pattern);
+                if (! empty($keys)) {
+                    $redis->del($keys);
+                    $totalCleared += count($keys);
+                    Log::info('Cleared Lada-cache keys', ['pattern' => $pattern, 'count' => count($keys)]);
+                }
+            }
+
+            if ($totalCleared > 0) {
+                Log::info('Expedition cache cleared post-create', ['project_id' => $projectId, 'total_keys' => $totalCleared]);
+            }
+
+        } catch (\Exception $e) {
+            Log::warning('Failed to clear expedition cache', [
+                'project_id' => $projectId,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 }

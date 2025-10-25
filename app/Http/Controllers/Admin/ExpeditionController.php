@@ -91,7 +91,7 @@ class ExpeditionController extends Controller
 
             return Redirect::route('admin.expeditions.show', [$expedition])->with('success', t('Record was created successfully.'));
         } catch (Throwable $throwable) {
-            return Redirect::route('admin.projects.show', [$project])->with('danger', t('An error occurred when saving record.'));
+            return Redirect::route('admin.projects.show', [$project])->with('danger', t('An error occurred when saving record. Please contact the administrator.'));
         }
 
     }
@@ -150,7 +150,7 @@ class ExpeditionController extends Controller
                 ->with('success', t('Record was updated successfully.'));
         } catch (Throwable $throwable) {
             return Redirect::route('admin.expeditions.edit', [$expedition])
-                ->with('danger', t('An error occurred when saving record.'));
+                ->with('danger', t('An error occurred when saving record. Please contact the administrator.'));
         }
     }
 
