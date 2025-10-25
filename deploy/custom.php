@@ -45,10 +45,18 @@ task('deploy:vendors', function () {
         return;
     }
 
-    // Install dependencies without running scripts to prevent database connection issues
-    run('cd {{release_path}} && {{bin/composer}} install --prefer-dist --no-progress --no-suggest --no-dev --optimize-autoloader --no-scripts');
+    // Check if this is a development deployment
+    $isDevelopment = get('domain_name') === 'dev-biospex';
 
-    writeln('✅ Composer dependencies installed safely (without scripts)');
+    if ($isDevelopment) {
+        // Install with dev dependencies for development environment
+        run('cd {{release_path}} && {{bin/composer}} install --prefer-dist --no-progress --no-suggest --optimize-autoloader --no-scripts');
+        writeln('✅ Composer dependencies installed with dev packages (development environment)');
+    } else {
+        // Install without dev dependencies for production
+        run('cd {{release_path}} && {{bin/composer}} install --prefer-dist --no-progress --no-suggest --no-dev --optimize-autoloader --no-scripts');
+        writeln('✅ Composer dependencies installed safely (production environment - without dev packages)');
+    }
 });
 
 desc('Run Laravel package discovery after environment is ready');
