@@ -25,6 +25,7 @@ use App\Models\Project;
 use App\Models\User;
 use App\Services\Subject\SubjectService;
 use App\Services\Trait\ExpeditionPartitionTrait;
+use DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -54,18 +55,78 @@ class ExpeditionService
 
         $request['project_id'] = $project->id;
 
-        $expedition = Expedition::create($request);
+        Log::debug('Starting expedition store', [
+            'project_id' => $project->id,
+            'workflow_id' => $request['workflow_id'] ?? null,
+            'subject_ids_raw' => $request['subject-ids'] ?? null,
+        ]);
 
-        $expedition->load(['project', 'workflow.actors.contacts']);
+        return DB::transaction(function () use ($project, $request) {
+            $expedition = Expedition::create($request);
 
-        $this->setSubjectIds($request['subject-ids']);
-        $this->attachSubjects($expedition->id);
-        $this->syncActors($expedition);
-        $this->syncStat($expedition);
+            Log::debug('Expedition created in transaction', [
+                'expedition_id' => $expedition->id,
+                'workflow_id' => $expedition->workflow_id,
+            ]);
 
-        $this->notifyActorContacts($expedition, $project);
+            $expedition->load(['project', 'workflow.actors.contacts']);
 
-        return $expedition;
+            Log::debug('Expedition relationships loaded', [
+                'expedition_id' => $expedition->id,
+                'workflow_exists' => ! is_null($expedition->workflow),
+                'actors_count' => $expedition->workflow?->actors?->count() ?? 0,
+            ]);
+
+            $this->setSubjectIds($request['subject-ids']);
+
+            Log::debug('Subject IDs set', [
+                'expedition_id' => $expedition->id,
+                'subject_count' => $this->getSubjectCount(),
+            ]);
+
+            $this->attachSubjects($expedition->id);
+
+            try {
+                Log::debug('About to sync actors and stats', ['expedition_id' => $expedition->id]);
+
+                $this->syncActors($expedition);
+                $this->syncStat($expedition);
+
+                Log::debug('Actors and stats synced successfully', ['expedition_id' => $expedition->id]);
+            } catch (\Exception $e) {
+                Log::error('Failed during sync operations in transaction', [
+                    'expedition_id' => $expedition->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
+                // Rollback MongoDB changes manually
+                $this->rollbackSubjects($expedition->id);
+                throw $e; // Re-throw to trigger MySQL rollback
+            }
+
+            $this->notifyActorContacts($expedition, $project);
+
+            Log::debug('Expedition store completed successfully', ['expedition_id' => $expedition->id]);
+
+            return $expedition;
+        });
+    }
+
+    /**
+     * Rollback subject attachments for failed expedition creation.
+     */
+    private function rollbackSubjects(int $expeditionId): void
+    {
+        try {
+            $this->subjectService->detachSubjects($this->subjectIds, $expeditionId);
+            Log::debug('Successfully rolled back subjects', ['expedition_id' => $expeditionId]);
+        } catch (\Exception $e) {
+            Log::error('Failed to rollback subjects during expedition creation failure', [
+                'expedition_id' => $expeditionId,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -194,16 +255,27 @@ class ExpeditionService
         $this->subjectService->attachSubjects($attachIds, $expeditionId);
     }
 
-    /**
-     * Sync the actors depending on workflow chosen.
-     */
     public function syncActors(Expedition $expedition): void
     {
+        Log::debug('syncActors called', [
+            'expedition_id' => $expedition->id,
+            'workflow_exists' => ! is_null($expedition->workflow),
+            'actors_count' => $expedition->workflow?->actors?->count() ?? 0,
+            'subject_count' => $this->getSubjectCount(),
+        ]);
+
         if (! $expedition->workflow) {
+            Log::debug('No workflow found for expedition', ['expedition_id' => $expedition->id]);
+
             return;
         }
 
         if (! $expedition->workflow->actors || $expedition->workflow->actors->isEmpty()) {
+            Log::debug('No actors found for workflow', [
+                'expedition_id' => $expedition->id,
+                'workflow_id' => $expedition->workflow->id,
+            ]);
+
             return;
         }
 
@@ -223,8 +295,17 @@ class ExpeditionService
             }
         })->toArray();
 
+        Log::debug('About to sync actors', [
+            'expedition_id' => $expedition->id,
+            'actors_data' => $actors,
+        ]);
+
         try {
-            $expedition->actors()->sync($actors);
+            $result = $expedition->actors()->sync($actors);
+            Log::debug('Actors sync completed', [
+                'expedition_id' => $expedition->id,
+                'sync_result' => $result,
+            ]);
         } catch (\Exception $e) {
             Log::error('Failed to sync actors', [
                 'expedition_id' => $expedition->id,
@@ -234,18 +315,26 @@ class ExpeditionService
         }
     }
 
-    /**
-     * Update or create expedition stat.
-     */
     public function syncStat(Expedition $expedition): void
     {
         $subjectCount = $this->getSubjectCount();
 
+        Log::debug('syncStat called', [
+            'expedition_id' => $expedition->id,
+            'subject_count' => $subjectCount,
+        ]);
+
         try {
-            $expedition->stat()->updateOrCreate(
+            $result = $expedition->stat()->updateOrCreate(
                 ['expedition_id' => $expedition->id],
                 ['local_subject_count' => $subjectCount]
             );
+
+            Log::debug('Stat sync completed', [
+                'expedition_id' => $expedition->id,
+                'was_recently_created' => $result->wasRecentlyCreated,
+                'stat_id' => $result->id,
+            ]);
         } catch (\Exception $e) {
             Log::error('Failed to sync expedition stat', [
                 'expedition_id' => $expedition->id,
