@@ -42,32 +42,32 @@ class AwsLambdaApiService
     }
 
     /**
-     * Create a Lambda client with proper credential handling and environment awareness
+     * Create a Lambda client using config('services.aws') credentials
      */
     protected function createLambdaClient(): LambdaClient
     {
-        $accessKey = config('config.aws.access_key');
-        $secretKey = config('config.aws.secret_key');
-        $region = config('config.aws.default_region');
+        $region = config('services.aws.region', 'us-east-2');
 
-        // Validate credentials exist
-        if (empty($accessKey) || empty($secretKey) || empty($region)) {
-            // For CI/testing environments, use mock credentials to prevent errors
-            if (app()->environment(['testing', 'local'])) {
-                return new LambdaClient([
-                    'credentials' => false, // Disable credentials for testing
-                    'version' => 'latest',
-                    'region' => $region ?: 'us-east-1',
-                ]);
-            }
+        // For testing: allow mock client
+        if (app()->environment(['testing'])) {
+            return new LambdaClient([
+                'credentials' => false,
+                'version' => 'latest',
+                'region' => $region,
+            ]);
+        }
 
-            throw new \Exception('AWS credentials not configured. Required: AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION');
+        $key = config('services.aws.credentials.key');
+        $secret = config('services.aws.credentials.secret');
+
+        if (empty($key) || empty($secret)) {
+            throw new \Exception('AWS credentials missing. Required: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env');
         }
 
         return new LambdaClient([
             'credentials' => [
-                'key' => $accessKey,
-                'secret' => $secretKey,
+                'key' => $key,
+                'secret' => $secret,
             ],
             'version' => 'latest',
             'region' => $region,
@@ -75,9 +75,7 @@ class AwsLambdaApiService
     }
 
     /**
-     * Invoke lambda client asynchronously.
-     *
-     * @throws \Exception
+     * Invoke Lambda asynchronously (fire-and-forget)
      */
     public function lambdaInvokeAsync(string $function, array $data): void
     {
@@ -87,8 +85,8 @@ class AwsLambdaApiService
             'InvocationType' => 'Event',
         ];
 
-        $qualifier = config('config.aws.lambda_export_qualifier');  // e.g., "" on dev, "production" on prod
-        if (! empty($qualifier)) {  // Only add if non-empty (omits for $LATEST on dev)
+        $qualifier = config('services.aws.lambda_export_qualifier', '');
+        if (! empty($qualifier)) {
             $invokeParams['Qualifier'] = $qualifier;
         }
 
@@ -96,9 +94,7 @@ class AwsLambdaApiService
     }
 
     /**
-     * Invoke lambda client synchronously.
-     *
-     * @throws \Exception
+     * Invoke Lambda synchronously (wait for result)
      */
     public function lambdaInvoke(string $function, array $data): \Aws\Result
     {
@@ -107,8 +103,8 @@ class AwsLambdaApiService
             'Payload' => json_encode($data),
         ];
 
-        $qualifier = config('config.aws.lambda_export_qualifier');  // e.g., "" on dev, "production" on prod
-        if (! empty($qualifier)) {  // FIX: Only add if non-empty (omits for $LATEST on dev)
+        $qualifier = config('services.aws.lambda_export_qualifier', '');
+        if (! empty($qualifier)) {
             $invokeParams['Qualifier'] = $qualifier;
         }
 
