@@ -62,7 +62,7 @@ class AwsS3ApiService
     public function createS3BucketStream(string $bucket, string $filePath, string $mode, bool $seekable = true)
     {
         if (! $this->client) {
-            throw new \Exception('AWS S3 client not available. Required: AWS_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION');
+            throw new \Exception('AWS S3 client not available. Check: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION, and AWS_BUCKET in .env');
         }
 
         $this->client->registerStreamWrapper();
@@ -82,21 +82,31 @@ class AwsS3ApiService
     }
 
     /**
-     * Get file count in bucket directory.
+     * Get file count in the bucket directory.
      *
-     * Count returns top directory so subtract 1.
+     * @throws \Exception
      */
     public function getFileCount(string $bucket, string $dirPath): int
     {
         if (! $this->client) {
-            throw new \Exception('AWS S3 client not available. Required: AWS_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION');
+            throw new \Exception('AWS S3 client not available. Required: AWS_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION');
         }
+
+        $prefix = rtrim($dirPath, '/').'/';
 
         $objects = $this->client->getIterator('ListObjects', [
             'Bucket' => $bucket,
-            'Prefix' => $dirPath.'/',
+            'Prefix' => $prefix,
         ]);
 
-        return count(iterator_to_array($objects, false)) - 1;
+        $count = 0;
+        foreach ($objects as $object) {
+            // SKIP the "folder" placeholder (key ends with '/')
+            if (! str_ends_with($object['Key'], '/')) {
+                $count++;
+            }
+        }
+
+        return $count;
     }
 }
