@@ -85,7 +85,7 @@ class AwsLambdaApiService
             'InvocationType' => 'Event',
         ];
 
-        $qualifier = config('services.aws.lambda_export_qualifier', '');
+        $qualifier = config('services.aws.lambda_qualifier', '');
         if (! empty($qualifier)) {
             $invokeParams['Qualifier'] = $qualifier;
         }
@@ -103,7 +103,7 @@ class AwsLambdaApiService
             'Payload' => json_encode($data),
         ];
 
-        $qualifier = config('services.aws.lambda_export_qualifier', '');
+        $qualifier = config('services.aws.lambda_qualifier', '');
         if (! empty($qualifier)) {
             $invokeParams['Qualifier'] = $qualifier;
         }

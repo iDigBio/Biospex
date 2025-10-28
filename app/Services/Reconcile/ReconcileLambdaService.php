@@ -55,6 +55,6 @@ class ReconcileLambdaService
             'explanations' => true,
         ];
 
-        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_reconciliation_function'), $attributes);
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('services.aws.lambda_reconciliation_function'), $attributes);
     }
 }

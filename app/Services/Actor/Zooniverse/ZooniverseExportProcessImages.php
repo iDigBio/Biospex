@@ -44,7 +44,7 @@ class ZooniverseExportProcessImages
         $files = $this->exportQueueFile->where('queue_id', $exportQueue->id)
             ->where('processed', 0)
             ->orderBy('id')
-            ->take(config('config.aws.lambda_export_count'))->get();
+            ->take(config('services.aws.lambda_export_count'))->get();
 
         // If processed files count is 0, send to csv job.
         if ($files->count() === 0) {
@@ -65,7 +65,7 @@ class ZooniverseExportProcessImages
             if ($file->tries < 3) {
                 $file->increment('tries');
                 $data = $this->createDataArray($file, $actorDirectory->workingDir);
-                $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_export_function'), $data);
+                $this->awsLambdaApiService->lambdaInvokeAsync(config('services.aws.lambda_export_function'), $data);
 
                 return;
             }

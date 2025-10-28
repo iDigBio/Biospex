@@ -94,7 +94,7 @@ class TesseractOcrProcessJob implements ShouldQueue
      */
     public function invoke(AwsLambdaApiService $awsLambdaApiService, $file): void
     {
-        $awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), [
+        $awsLambdaApiService->lambdaInvokeAsync(config('services.aws.lambda_ocr_function'), [
             'bucket' => config('filesystems.disks.s3.bucket'),
             'key' => config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt',
             'file' => $file->id,

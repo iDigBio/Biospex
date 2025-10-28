@@ -44,4 +44,26 @@ return [
         'secret_key' => env('RECAPTCHA_SECRET_KEY'),
         'url' => env('RECAPTCHA_URL', 'https://www.google.com/recaptcha/api/siteverify'),
     ],
+
+    // config/services.php
+    'aws' => [
+        'region' => env('AWS_REGION', 'us-east-2'),
+        'credentials' => [
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        ],
+        'export_credentials' => [
+            'key' => env('AWS_EXPORT_ACCESS_KEY_ID'),
+            'secret' => env('AWS_EXPORT_SECRET_ACCESS_KEY'),
+        ],
+        // LAMBDA FUNCTION NAMES
+        'lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION', 'BiospexExportProcessor'),
+        'lambda_reconciliation_function' => env('AWS_LAMBDA_RECONCILIATION_FUNCTION', 'labelReconciliations'),
+        'lambda_ocr_function' => env('AWS_LAMBDA_OCR_FUNCTION', 'tesseractOcr'),
+
+        // NEW KEYS
+        'lambda_export_count' => env('AWS_LAMBDA_EXPORT_COUNT', 1),
+        'lambda_qualifier' => env('AWS_LAMBDA_QUALIFIER', ''),
+        'lambda_ocr_count' => env('AWS_LAMBDA_OCR_COUNT', 1),
+    ],
 ];

@@ -58,7 +58,7 @@ class ZooniverseBuildCsv
         $this->awsS3CsvService->csv->addEncodingFormatter();
 
         $first = true;
-        $this->exportQueueFile->chunk(config('config.aws.lambda_export_count'), function ($chunk) use (
+        $this->exportQueueFile->chunk(config('services.aws.lambda_export_count'), function ($chunk) use (
             $exportQueue,
             $actorDirectory,
             &$first

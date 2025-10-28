@@ -70,9 +70,9 @@ class AwsSnsController
         $payload = json_decode($message['Message'], true);
 
         $job = match (true) {
-            str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_reconciliation_function')) => SnsLabelReconciliationJob::class,
-            str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_ocr_function')) => SnsTesseractOcrJob::class,
-            str_contains($payload['requestContext']['functionArn'], config('config.aws.lambda_export_function')) => SnsImageExportJob::class,
+            str_contains($payload['requestContext']['functionArn'], config('services.aws.lambda_reconciliation_function')) => SnsLabelReconciliationJob::class,
+            str_contains($payload['requestContext']['functionArn'], config('services.aws.lambda_ocr_function')) => SnsTesseractOcrJob::class,
+            str_contains($payload['requestContext']['functionArn'], config('services.aws.lambda_export_function')) => SnsImageExportJob::class,
             default => null,
         };
 

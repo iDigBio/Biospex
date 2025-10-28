@@ -53,7 +53,7 @@ return [
 
         'sqs' => [
             'driver' => 'sqs',
-            'key' => env('AWS_ACCESS_KEY'),
+            'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
             'prefix' => env('AWS_QUEUE_URL'),
             'queue' => env('AWS_QUEUE'),

@@ -101,10 +101,10 @@ class AppLambdaCommand extends Command
 
         Storage::disk('s3')->makeDirectory($workingDir);
 
-        $result = $this->awsLambdaApiService->lambdaInvoke(config('config.aws.lambda_export_function'), $attributes);
+        $result = $this->awsLambdaApiService->lambdaInvoke(config('services.aws.lambda_export_function'), $attributes);
         echo $result['Payload']->getContents();
 
-        // $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_export_function'), $attributes);
+        // $this->awsLambdaApiService->lambdaInvokeAsync(config('services.aws.lambda_export_function'), $attributes);
     }
 
     private function explainTest(): void
@@ -118,7 +118,7 @@ class AppLambdaCommand extends Command
         // $result = $this->awsLambdaApiService->lambdaInvoke('labelReconciliations', $attributes);
         // echo $result['Payload']->getContents();
 
-        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_reconciliation_function'), $attributes);
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('services.aws.lambda_reconciliation_function'), $attributes);
     }
 
     private function reconcileTest(): void
@@ -146,7 +146,7 @@ class AppLambdaCommand extends Command
             'uri' => 'https://cdn.floridamuseum.ufl.edu/herbarium/jpg/092/92321s1.jpg',
         ]; // https://sernecportal.org/imglib/seinet/sernec/FTU/FTU0016/FTU0016693.jpg
 
-        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), $attributes);
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('services.aws.lambda_ocr_function'), $attributes);
         // $result = $this->awsLambdaApiService->lambdaInvoke('tesseractOcr', $attributes);
         // echo $result['Payload']->getContents();
     }
@@ -154,7 +154,7 @@ class AppLambdaCommand extends Command
     private function ocrTest()
     {
         echo 'sending'.PHP_EOL;
-        $this->awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), [
+        $this->awsLambdaApiService->lambdaInvokeAsync(config('services.aws.lambda_ocr_function'), [
             'bucket' => config('filesystems.disks.s3.bucket'),
             'key' => config('zooniverse.directory.lambda-ocr').'/67a157d456950022dc0c1965.txt',
             'file' => 1,
@@ -163,7 +163,7 @@ class AppLambdaCommand extends Command
         echo 'sent'.PHP_EOL;
 
         /*
-        $result = $this->awsLambdaApiService->lambdaInvoke(config('config.aws.lambda_ocr_function'), [
+        $result = $this->awsLambdaApiService->lambdaInvoke(config('services.aws.lambda_ocr_function'), [
             'bucket' => config('filesystems.disks.s3.bucket'),
             'key' => config('zooniverse.directory.lambda-ocr').'/67a157d456950022dc0c1965.txt',
             'file' => 1,
