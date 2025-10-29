@@ -22,7 +22,6 @@ namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
 use JavaScript;
-use Session;
 
 /**
  * Class PhpVarsComposer
@@ -37,9 +36,6 @@ class PhpVarsComposer
     public function compose(View $view)
     {
         JavaScript::put([
-            'groupIds' => json_encode(Session::get('groupIds')),
-            'ocrChannel' => config('config.poll_ocr_channel'),
-            'exportChannel' => config('config.poll_export_channel'),
             'imagePreviewPath' => '/admin/images/preview?url=',
             'habitatBannersPath' => '/images/habitat-banners/',
         ]);

@@ -60,8 +60,6 @@ return [
     // Whether OCR is enabled for overnight scripts.
     'ocr_enabled' => env('OCR_ENABLED', true),
 
-    'poll_ocr_channel' => env('POLL_OCR_CHANNEL'),
-    'poll_export_channel' => env('POLL_EXPORT_CHANNEL'),
     'poll_scoreboard_channel' => env('POLL_SCOREBOARD_CHANNEL'),
     'poll_bingo_channel' => env('POLL_BINGO_CHANNEL'),
     'poll_wedigbio_progress_channel' => env('POLL_WEDIGBIO_PROGRESS_CHANNEL'),
