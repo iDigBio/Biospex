@@ -62,8 +62,12 @@ return [
         'lambda_ocr_function' => env('AWS_LAMBDA_OCR_FUNCTION', 'tesseractOcr'),
 
         // NEW KEYS
-        'lambda_export_count' => env('AWS_LAMBDA_EXPORT_COUNT', 1),
+        'lambda_export_count' => env('AWS_LAMBDA_EXPORT_COUNT', 10),
         'lambda_qualifier' => env('AWS_LAMBDA_QUALIFIER', ''),
-        'lambda_ocr_count' => env('AWS_LAMBDA_OCR_COUNT', 1),
+        'lambda_ocr_count' => env('AWS_LAMBDA_OCR_COUNT', 100),
+
+        // SQS QUEUE NAMES
+        'queue_image_tasks' => env('AWS_SQS_IMAGE_TASKS_QUEUE'),
+        'queue_updates' => env('AWS_SQS_UPDATES_QUEUE'),
     ],
 ];

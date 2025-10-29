@@ -62,7 +62,7 @@ class ExportPollCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $queues = $this->exportQueue->withCount([
             'files' => function ($q) {

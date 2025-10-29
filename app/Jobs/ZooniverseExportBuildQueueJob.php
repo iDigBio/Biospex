@@ -21,9 +21,11 @@
 namespace App\Jobs;
 
 use App\Models\ActorExpedition;
+use App\Models\ExportQueue;
+use App\Models\ExportQueueFile;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Actor\Zooniverse\ZooniverseBuildQueue;
+use App\Services\Subject\SubjectService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -31,37 +33,50 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Throwable;
 
-/**
- * Class ZooniverseExportBuildQueueJob
- */
 class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
     public int $timeout = 3600;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(protected ActorExpedition $actorExpedition)
     {
         $this->actorExpedition = $actorExpedition->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 
-    /**
-     * Execute the job.
-     *
-     * @throws \Exception
-     */
-    public function handle(ZooniverseBuildQueue $zooniverseBuildQueue): void
+    public function handle(SubjectService $subjectService): void
     {
-        $zooniverseBuildQueue->process($this->actorExpedition);
+        $this->actorExpedition->load('expedition');
+
+        // === CREATE OR UPDATE EXPORT QUEUE ===
+        $queue = ExportQueue::firstOrNew([
+            'expedition_id' => $this->actorExpedition->expedition_id,
+            'actor_id' => $this->actorExpedition->actor_id,
+        ]);
+
+        $queue->queued = 0;
+        $queue->error = 0;
+        $queue->stage = 0;
+        $queue->total = $this->actorExpedition->total;
+        $queue->save();
+
+        // === BUILD FILES ===
+        $subjects = $subjectService->getSubjectCursorForExport($this->actorExpedition->expedition_id);
+
+        $subjects->each(function ($subject) use ($queue) {
+            ExportQueueFile::updateOrCreate(
+                [
+                    'queue_id' => $queue->id,
+                    'subject_id' => (string) $subject->_id,
+                ],
+                [
+                    'access_uri' => $subject->accessURI,
+                ]
+            );
+        });
     }
 
-    /**
-     * Handle a job failure.
-     */
     public function failed(Throwable $throwable): void
     {
         $attributes = [
@@ -77,6 +92,8 @@ class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
         ];
 
         $user = User::find(config('config.admin.user_id'));
-        $user->notify(new Generic($attributes));
+        if ($user) {
+            $user->notify(new Generic($attributes));
+        }
     }
 }

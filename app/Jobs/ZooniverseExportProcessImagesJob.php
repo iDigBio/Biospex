@@ -21,11 +21,10 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
+use App\Models\ExportQueueFile;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Actor\ActorDirectory;
-use App\Services\Actor\Zooniverse\ZooniverseExportProcessImages;
-use Artisan;
+use Aws\Sqs\SqsClient;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -37,32 +36,54 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(protected ExportQueue $exportQueue, protected ActorDirectory $actorDirectory)
+    public function __construct(protected ExportQueue $exportQueue)
     {
         $this->exportQueue = $exportQueue->withoutRelations();
         $this->onQueue(config('config.queue.export'));
     }
 
-    /**
-     * Execute the job.
-     */
-    public function handle(ZooniverseExportProcessImages $zooniverseExportProcessImages): void
+    public function handle(SqsClient $sqs): void
     {
-        // Make sure it's always stage 1 entering this job.
         $this->exportQueue->load('expedition');
-        $this->exportQueue->stage = 1;
-        $this->exportQueue->save();
-        Artisan::call('export:poll');
 
-        $zooniverseExportProcessImages->process($this->exportQueue, $this->actorDirectory);
+        $files = ExportQueueFile::where('queue_id', $this->exportQueue->id)
+            ->where('processed', 0)
+            ->orderBy('id')
+            ->get();
+
+        if ($files->isEmpty()) {
+            throw new \Exception("No unprocessed files found for export queue ID: {$this->exportQueue->id}");
+        }
+
+        $queueUrl = $this->getQueueUrl($sqs, 'queue_image_tasks');
+        $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_updates');
+        $scratchDir = config('scratch_dir');
+        $processDir = "{$scratchDir}/{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
+
+        foreach ($files as $file) {
+            $payload = [
+                'processDir' => $processDir,
+                'accessURI' => $file->access_uri,
+                'subjectId' => $file->subject_id,
+                's3Bucket' => config('filesystems.disks.s3.bucket'),
+                'updatesQueueUrl' => $updatesQueueUrl,
+                'queueId' => $this->exportQueue->id,
+            ];
+
+            $sqs->sendMessage([
+                'QueueUrl' => $queueUrl,
+                'MessageBody' => json_encode($payload),
+            ]);
+        }
     }
 
-    /**
-     * Handle a job failure.
-     */
+    private function getQueueUrl(SqsClient $sqs, string $key): string
+    {
+        $queueName = config("services.aws.{$key}");
+
+        return $sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
+    }
+
     public function failed(Throwable $throwable): void
     {
         $this->exportQueue->error = 1;
@@ -72,13 +93,14 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
             'subject' => t('Expedition Export Process Error'),
             'html' => [
                 t('Queue Id: %s', $this->exportQueue->id),
-                t('Expedition Id: %s', $this->exportQueue->expedition->id),
+                t('Expedition Id: %s', $this->exportQueue->expedition_id ?? 'unknown'),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),
             ],
         ];
+
         $user = User::find(config('config.admin.user_id'));
-        $user->notify(new Generic($attributes));
+        $user?->notify(new Generic($attributes));
     }
 }

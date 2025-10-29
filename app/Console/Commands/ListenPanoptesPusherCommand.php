@@ -31,32 +31,53 @@ use React\Socket\Connector;
 
 use function Ratchet\Client\connect;
 
-class PanoptesListenerCommand extends Command
+/**
+ * Command to listen to external Panoptes Pusher channel for real-time updates.
+ *
+ * This command establishes and maintains a WebSocket connection to the Panoptes Pusher service,
+ * processes incoming messages, and handles various events including classifications.
+ *
+ * @author BIOSPEX <biospex@gmail.com>
+ */
+class ListenPanoptesPusherCommand extends Command
 {
     protected $signature = 'panoptes:listen';
 
     protected $description = 'Listen to external Panoptes Pusher channel';
 
-    private $loop;
+    /** @var \React\EventLoop\LoopInterface Event loop instance */
+    private \React\EventLoop\LoopInterface $loop;
 
-    private $connection;
+    /** @var \Ratchet\Client\WebSocket|null WebSocket connection instance */
+    private ?WebSocket $connection;
 
+    /** @var bool Flag indicating if the command is shutting down */
     private bool $isShuttingDown = false;
 
+    /** @var int Maximum number of reconnection attempts */
     private int $maxReconnectAttempts = 10;
 
+    /** @var int Current number of reconnection attempts */
     private int $reconnectAttempts = 0;
 
+    /** @var int Base delay between reconnection attempts in seconds */
     private int $reconnectDelay = 1;
 
-    private $lastMessageTime;
+    /** @var int|null Timestamp of last received message */
+    private ?int $lastMessageTime;
 
-    private $heartbeatTimer;
+    /** @var mixed Timer for monitoring connection heartbeat */
+    private mixed $heartbeatTimer;
 
+    /** @var string Admin email address for notifications */
     private string $adminEmail;
 
+    /** @var int Timestamp of last notification email sent */
     private int $lastEmailSent = 0; // Rate limiting for emails
 
+    /**
+     * Create a new command instance.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -65,11 +86,18 @@ class PanoptesListenerCommand extends Command
         $this->adminEmail = config('mail.from.address');
     }
 
+    /**
+     * Execute the console command.
+     *
+     * @return int Command exit code
+     */
     public function handle(): int
     {
-        // Only allow production environment to proceed
+        // Only allow the production environment to proceed
         if (config('app.env') !== 'production') {
             // Silently exit for non-production environments
+            \Log::info('Panoptes listener is only available in production environment');
+
             return self::SUCCESS;
         }
 
@@ -86,6 +114,11 @@ class PanoptesListenerCommand extends Command
         }
     }
 
+    /**
+     * Validate required configuration settings.
+     *
+     * @throws \RuntimeException When required configuration is missing
+     */
     private function validateConfiguration(): void
     {
         $required = [
@@ -105,6 +138,11 @@ class PanoptesListenerCommand extends Command
         }
     }
 
+    /**
+     * Initialize the WebSocket listener and event loop.
+     *
+     * @throws \Throwable When initialization fails
+     */
     private function initializeListener(): void
     {
         $this->loop = Loop::get();
@@ -139,6 +177,9 @@ class PanoptesListenerCommand extends Command
         });
     }
 
+    /**
+     * Establish connection to Pusher WebSocket server.
+     */
     private function connectToPusher(): void
     {
         if ($this->isShuttingDown) {
@@ -174,6 +215,11 @@ class PanoptesListenerCommand extends Command
         return "wss://ws-{$cluster}.pusher.com:443/app/{$appId}?protocol=7&client=php-ratchet&version=1.0";
     }
 
+    /**
+     * Handle successful WebSocket connection.
+     *
+     * @param  WebSocket  $connection  WebSocket connection instance
+     */
     public function onConnectionSuccess(WebSocket $connection): void
     {
         $this->connection = $connection;
@@ -190,6 +236,11 @@ class PanoptesListenerCommand extends Command
         $this->setupConnectionEventHandlers();
     }
 
+    /**
+     * Handle WebSocket connection failure.
+     *
+     * @param  \Throwable  $e  Exception that caused the failure
+     */
     public function onConnectionFailure(\Throwable $e): void
     {
         $this->reconnectAttempts++;
@@ -244,6 +295,11 @@ class PanoptesListenerCommand extends Command
         $this->connection->on('error', [$this, 'onConnectionError']);
     }
 
+    /**
+     * Handle incoming WebSocket messages.
+     *
+     * @param  MessageInterface  $msg  Received message
+     */
     public function onMessage(MessageInterface $msg): void
     {
         $this->lastMessageTime = time();
@@ -285,6 +341,12 @@ class PanoptesListenerCommand extends Command
         }
     }
 
+    /**
+     * Handle WebSocket connection closure.
+     *
+     * @param  int|null  $code  Close status code
+     * @param  string|null  $reason  Close reason
+     */
     public function onConnectionClose($code = null, $reason = null): void
     {
         if (! $this->isShuttingDown) {
@@ -293,6 +355,11 @@ class PanoptesListenerCommand extends Command
         }
     }
 
+    /**
+     * Handle WebSocket connection errors.
+     *
+     * @param  \Throwable  $e  Connection error exception
+     */
     public function onConnectionError(\Throwable $e): void
     {
         $this->handleError('Connection error during operation', $e);
@@ -383,6 +450,13 @@ class PanoptesListenerCommand extends Command
         }
     }
 
+    /**
+     * Handle and log error events.
+     *
+     * @param  string  $message  Error message
+     * @param  \Throwable|null  $e  Exception if available
+     * @param  array  $context  Additional context information
+     */
     private function handleError(string $message, ?\Throwable $e = null, array $context = []): void
     {
         $context['timestamp'] = now()->toISOString();
@@ -508,6 +582,11 @@ class PanoptesListenerCommand extends Command
         return $body;
     }
 
+    /**
+     * Perform graceful shutdown of the command.
+     *
+     * @param  int  $exitCode  Exit code to return
+     */
     private function shutdown(int $exitCode = 0): void
     {
         $this->isShuttingDown = true;

@@ -24,7 +24,6 @@ use App\Models\ExportQueue;
 use App\Services\Actor\ActorDirectory;
 use App\Services\Actor\Traits\ZooniverseErrorNotification;
 use App\Services\Actor\Zooniverse\ZooniverseBuildZip;
-use Artisan;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -60,7 +59,6 @@ class ZooniverseExportBuildZipJob implements ShouldBeUnique, ShouldQueue
     public function handle(ZooniverseBuildZip $zooniverseBuildZip): void
     {
         $this->exportQueue->increment('stage');
-        Artisan::call('export:poll');
         $zooniverseBuildZip->process($this->exportQueue, $this->actorDirectory);
     }
 

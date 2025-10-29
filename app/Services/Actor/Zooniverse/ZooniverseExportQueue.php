@@ -24,45 +24,57 @@ use App\Jobs\ZooniverseExportProcessImagesJob;
 use App\Models\Download;
 use App\Models\Expedition;
 use App\Models\ExportQueue;
-use App\Services\Actor\ActorDirectory;
 use App\Services\Actor\ActorFactory;
 use App\Services\Expedition\ExpeditionService;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Handles Zooniverse export queue operations and expedition data management.
+ */
 class ZooniverseExportQueue
 {
     /**
      * ExportQueueCommand constructor.
+     *
+     * @param  ExpeditionService  $expeditionService  Service for expedition operations
+     * @param  ExportQueue  $exportQueue  Export queue model
+     * @param  Download  $download  Download model
      */
     public function __construct(
         protected ExpeditionService $expeditionService,
         protected ExportQueue $exportQueue,
-        protected ActorDirectory $actorDirectory,
         protected Download $download
     ) {}
 
     /**
      * Process export queue.
+     * Gets first non-errored and non-queued export and dispatches it for processing.
      */
     public function processQueue(): void
     {
-        $exportQueue = $this->exportQueue->with('expedition')->where('error', 0)->first();
+        $exportQueue = $this->exportQueue
+            ->with('expedition')
+            ->where('error', 0)
+            ->where('queued', 0)
+            ->orderBy('created_at', 'asc')
+            ->first();
 
-        if ($exportQueue === null || $exportQueue->queued === 1) {
+        if (! $exportQueue) {
             return;
         }
 
         $exportQueue->queued = 1;
+        $exportQueue->stage = 1;
         $exportQueue->save();
 
-        $this->actorDirectory->setFolder($exportQueue->expedition_id, config('zooniverse.actor_id'), $exportQueue->expedition->uuid);
-        $this->actorDirectory->setDirectories();
-
-        ZooniverseExportProcessImagesJob::dispatch($exportQueue, $this->actorDirectory); // set stage 1
+        ZooniverseExportProcessImagesJob::dispatch($exportQueue);
     }
 
     /**
      * Get export queue for stage command.
+     *
+     * @param  int  $queueId  The queue ID to retrieve
+     * @return ExportQueue The export queue with its expedition relationship
      */
     public function getExportQueueForStageCommand(int $queueId): ExportQueue
     {
@@ -71,6 +83,8 @@ class ZooniverseExportQueue
 
     /**
      * Handles resetting Expedition attributes from command line.
+     *
+     * @param  int  $expeditionId  The expedition ID to reset
      */
     public function resetExpeditionExport(int $expeditionId): void
     {
@@ -85,6 +99,9 @@ class ZooniverseExportQueue
 
     /**
      * Reset data for expedition when regenerating export.
+     * Deletes export files and updates actor expedition state.
+     *
+     * @param  Expedition  $expedition  The expedition to reset
      */
     public function resetExpeditionData(Expedition $expedition): void
     {
@@ -107,6 +124,9 @@ class ZooniverseExportQueue
 
     /**
      * Delete existing exports files for expedition.
+     * Removes files from S3 storage and deletes corresponding download records.
+     *
+     * @param  string  $expeditionId  The expedition ID whose files should be deleted
      */
     public function deleteExportFiles(string $expeditionId): void
     {

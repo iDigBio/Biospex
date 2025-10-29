@@ -21,9 +21,11 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actor\ActorDirectory;
+use App\Models\ExportQueueFile;
+use App\Notifications\Generic;
+use App\Notifications\Traits\ButtonTrait;
 use App\Services\Actor\Traits\ZooniverseErrorNotification;
-use App\Services\Actor\Zooniverse\ZooniverseExportCreateReport;
+use App\Services\Process\CreateReportService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -31,46 +33,74 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Notification;
 use Throwable;
 
-/**
- * Class ZooniverseExportCreateReportJob
- */
 class ZooniverseExportCreateReportJob implements ShouldBeUnique, ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
+    use Batchable, ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
 
     public int $timeout = 900;
 
-    /**
-     * Indicate if the job should be marked as failed on timeout.
-     */
     public bool $failOnTimeout = true;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(protected ExportQueue $exportQueue, protected ActorDirectory $actorDirectory)
+    public function __construct(protected ExportQueue $exportQueue)
     {
         $this->exportQueue = $exportQueue->withoutRelations();
         $this->onQueue(config('config.queue.export'));
     }
 
     /**
-     * Execute the job.
-     *
-     * @throws \Exception
+     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\Exception
      */
-    public function handle(ZooniverseExportCreateReport $zooniverseExportReport)
+    public function handle(CreateReportService $createReportService): void
     {
-        $this->exportQueue->increment('stage');
-        \Artisan::call('export:poll');
-        $zooniverseExportReport->process($this->exportQueue, $this->actorDirectory);
+        $this->exportQueue->load([
+            'expedition.project.group' => function ($q) {
+                $q->with(['owner', 'users' => function ($q) {
+                    $q->where('notification', 1);
+                }]);
+            },
+        ]);
+
+        // === CREATE ERROR REPORT ===
+        $data = ExportQueueFile::where('queue_id', $this->exportQueue->id)
+            ->whereNotNull('message')
+            ->get(['subject_id', 'message']);
+
+        $csvName = $this->exportQueue->expedition->uuid.'.csv';
+        $fileName = $createReportService->createCsvReport($csvName, $data->toArray());
+
+        $button = [];
+        if ($fileName !== null) {
+            $createReportService->saveReport($this->exportQueue, $csvName);
+            $route = route('admin.downloads.report', ['file' => $fileName]);
+            $button = $this->createButton($route, t('Download Export Errors'), 'error');
+        }
+
+        // === NOTIFY USERS ===
+        $attributes = [
+            'subject' => t('Zooniverse Export Completed'),
+            'html' => [
+                t('The export process for "%s" has been completed successfully.', $this->exportQueue->expedition->title),
+                t('If a download file was created during this process, you may access the link on the Expedition view page.'),
+            ],
+            'buttons' => $button,
+        ];
+
+        $users = $this->exportQueue->expedition->project->group->users
+            ->push($this->exportQueue->expedition->project->group->owner);
+
+        Notification::send($users, new Generic($attributes));
+
+        // === FINAL: ONLY DISPATCH CLEANUP ===
+        $this->exportQueue->stage = 4;
+        $this->exportQueue->save();
+
+        ZooniverseExportDeleteFilesJob::dispatch($this->exportQueue);
     }
 
-    /**
-     * Handle a job failure.
-     */
     public function failed(Throwable $throwable): void
     {
         $this->sendErrorNotification($this->exportQueue, $throwable);
