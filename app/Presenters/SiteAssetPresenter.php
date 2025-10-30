@@ -28,7 +28,7 @@ use Storage;
 class SiteAssetPresenter extends Presenter
 {
     /**
-     * Build document link with support for new Livewire path and legacy paperclip.
+     * Build document link with support for new Livewire path.
      *
      * @return string
      */
@@ -43,20 +43,6 @@ class SiteAssetPresenter extends Presenter
                 // Generate a temporary signed URL for private S3 files (valid for 1 hour)
                 $url = Storage::disk('s3')->temporaryUrl($this->model->download_path, now()->addHour());
                 $filename = basename($this->model->download_path);
-            }
-        }
-
-        // Fallback to legacy paperclip logic during transition
-        if (! $url && ! empty($this->model->document_file_name)) {
-            \Log::info('Checking for paperclip document file: '.$this->model->document_file_name);
-            $baseLength = config('paperclip.storage.base-urls.public');
-            $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
-            $paperclipPath = "/paperclip/App/Models/SiteAsset/documents/{$idPartition}/original/{$this->model->document_file_name}";
-            $paperclipUrl = $baseLength.$paperclipPath;
-
-            if (Storage::disk('public')->exists($paperclipPath)) {
-                $url = $paperclipUrl;
-                $filename = $this->model->document_file_name;
             }
         }
 

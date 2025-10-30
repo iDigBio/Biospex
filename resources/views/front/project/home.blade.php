@@ -108,8 +108,8 @@
 
                     @if($project->assets->isNotEmpty())
                         <h3>{{ t('Resources') }}</h3>
-                        @foreach($project->assets as $resource)
-                            <p>{!! $resource->present()->resource !!}</p>
+                        @foreach($project->assets as $asset)
+                            <p>{!! $asset->present()->asset !!}</p>
                         @endforeach
                     @endif
 

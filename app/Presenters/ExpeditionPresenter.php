@@ -29,7 +29,6 @@ class ExpeditionPresenter extends Presenter
 {
     /**
      * Check if logo file exists or return default.
-     * Supports both new Livewire path and legacy paperclip during transition.
      *
      * @return \Illuminate\Config\Repository|mixed
      */
@@ -51,35 +50,11 @@ class ExpeditionPresenter extends Presenter
             }
         }
 
-        // Fallback to legacy paperclip logic during transition
-        if (! empty($this->model->logo_file_name)) {
-            \Log::info('Checking for paperclip logo file: '.$this->model->logo_file_name);
-            $baseLength = config('paperclip.storage.base-urls.public');
-            $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
-            $paperclipPath = "/paperclip/App/Models/Expedition/logos/{$idPartition}/medium/{$this->model->logo_file_name}";
-            $url = $baseLength.$paperclipPath;
-
-            if (Storage::disk('public')->exists($paperclipPath)) {
-                return $url;
-            }
-
-            // Try original if medium doesn't exist
-            $originalPaperclipPath = "/paperclip/App/Models/Expedition/logos/{$idPartition}/original/{$this->model->logo_file_name}";
-            $originalUrl = $baseLength.$originalPaperclipPath;
-            if (Storage::disk('public')->exists($originalPaperclipPath)) {
-                return $originalUrl;
-            }
-        }
-
-        // Return default missing logo
-        \Log::info('Returning default missing logo');
-
         return config('config.missing_expedition_logo');
     }
 
     /**
      * Check if logo file exists or return default (original size).
-     * Supports both new Livewire path and legacy paperclip during transition.
      *
      * @return \Illuminate\Config\Repository|mixed
      */
@@ -93,22 +68,7 @@ class ExpeditionPresenter extends Presenter
             }
         }
 
-        // Fallback to legacy paperclip logic during transition
-        if (! empty($this->model->logo_file_name)) {
-            \Log::info('Checking for paperclip logo file: '.$this->model->logo_file_name);
-            $baseLength = config('paperclip.storage.base-urls.public');
-            $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
-            $paperclipPath = "/paperclip/App/Models/Expedition/logos/{$idPartition}/original/{$this->model->logo_file_name}";
-            $url = $baseLength.$paperclipPath;
-
-            if (Storage::disk('public')->exists($paperclipPath)) {
-                return $url;
-            }
-        }
-
         // Return default missing logo
-        \Log::info('Returning default missing logo');
-
         return config('config.missing_expedition_logo');
     }
 

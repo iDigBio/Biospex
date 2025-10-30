@@ -29,7 +29,6 @@ class ProfilePresenter extends Presenter
 {
     /**
      * Check if avatar file exists or return default.
-     * Supports both new Livewire path and legacy paperclip during transition.
      *
      * @return string
      */
@@ -40,19 +39,6 @@ class ProfilePresenter extends Presenter
             if (Storage::disk('s3')->exists($this->model->avatar_path)) {
                 // Generate a temporary signed URL for private S3 files (valid for 1 hour)
                 return Storage::disk('s3')->temporaryUrl($this->model->avatar_path, now()->addHour());
-            }
-        }
-
-        // Fallback to legacy paperclip logic during transition
-        if (! empty($this->model->avatar_file_name)) {
-            \Log::info('Checking for paperclip avatar file: '.$this->model->avatar_file_name);
-            $baseLength = config('paperclip.storage.base-urls.public');
-            $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
-            $paperclipPath = "/paperclip/App/Models/Profile/avatars/{$idPartition}/original/{$this->model->avatar_file_name}";
-            $url = $baseLength.$paperclipPath;
-
-            if (Storage::disk('public')->exists($paperclipPath)) {
-                return $url;
             }
         }
 

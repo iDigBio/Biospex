@@ -23,14 +23,13 @@ namespace App\Models;
 use App\Models\Traits\Presentable;
 use App\Presenters\ProjectAssetPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class ProjectAsset
  */
 class ProjectAsset extends BaseEloquentModel
 {
-    use HasFactory, LadaCacheTrait, Presentable;
+    use HasFactory, Presentable;
 
     /**
      * {@inheritDoc}

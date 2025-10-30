@@ -16,8 +16,6 @@
     "ext-redis": "*",
     "aws/aws-php-sns-message-validator": "^1.0",
     "aws/aws-sdk-php": "~3.0",
-    "czim/file-handling": "dev-load-count-fix as 2.3.0",
-    "czim/laravel-paperclip": "^5.0",
     "filament/filament": "^4.0",
     "graham-campbell/markdown": "^v16.0.0.0",
     "intervention/image-laravel": "^1.5",
@@ -56,12 +54,6 @@
     "kitloong/laravel-migrations-generator": "^v7.0.1",
     "spatie/laravel-ignition": "^2.0"
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/rbruhn/file-handling.git"
-    }
-  ],
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",
