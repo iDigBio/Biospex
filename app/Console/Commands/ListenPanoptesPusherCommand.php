@@ -96,7 +96,7 @@ class ListenPanoptesPusherCommand extends Command
         // Only allow the production environment to proceed
         if (config('app.env') !== 'production') {
             // Silently exit for non-production environments
-            \Log::info('Panoptes listener is only available in production environment');
+            // \Log::info('Panoptes listener is only available in production environment');
 
             return self::SUCCESS;
         }

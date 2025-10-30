@@ -255,11 +255,6 @@ $(function () {
     });
 });
 
-// Fetch poll data
-fetchPoll = function () {
-    $.get("/poll");
-}
-
 /**
  * data attributes: project-id, type (active, completed), sort, order, url, target
  * @param element

@@ -67,7 +67,7 @@ class ListenExportUpdates extends Command
     public function handle(): int
     {
         if (config('app.env') !== 'production' && config('app.env') !== 'local') {
-            Log::info('Export updates listener disabled in non-prod/local env');
+            // Log::info('Export updates listener disabled in non-prod/local env');
 
             return self::SUCCESS;
         }
@@ -199,7 +199,9 @@ class ListenExportUpdates extends Command
                 }
 
                 if (! $this->isShuttingDown) {
-                    $this->loop->addTimer(0.1, [$this, 'pollSqs']);
+                    $this->loop->addTimer(0.1, function () {
+                        $this->pollSqs();
+                    });
                 }
             },
             function ($e) {
@@ -275,7 +277,9 @@ class ListenExportUpdates extends Command
         $delay = min(60, $this->reconnectDelay * pow(2, $this->reconnectAttempts - 1)) + $jitter;
 
         $this->info('Reconnecting in '.round($delay, 2).'s...');
-        $this->loop->addTimer($delay, [$this, 'connectToSqs']);
+        $this->loop->addTimer($delay, function () {
+            $this->connectToSqs();
+        });
     }
 
     /**
@@ -284,7 +288,9 @@ class ListenExportUpdates extends Command
     private function forceReconnection(): void
     {
         $this->info('Forcing SQS reconnection...');
-        $this->loop->addTimer(1.0, [$this, 'connectToSqs']);
+        $this->loop->addTimer(1.0, function () {
+            $this->connectToSqs();
+        });
     }
 
     /**

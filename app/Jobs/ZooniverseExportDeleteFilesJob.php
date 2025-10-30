@@ -57,7 +57,7 @@ class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
-        $processDir = "scratch/{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
+        $processDir = config('config.scratch_dir')."/{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
         if (Storage::disk('s3')->exists($processDir)) {
             Storage::disk('s3')->deleteDirectory($processDir);
         }
