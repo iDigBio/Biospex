@@ -53,10 +53,11 @@ class ListenExportUpdates extends Command
     /** @var int Timestamp of last notification email sent */
     private int $lastEmailSent = 0;
 
-    public function __construct()
+    public function __construct(SqsClient $sqs)
     {
         parent::__construct();
         $this->adminEmail = config('mail.from.address', 'admin@biospex.org');
+        $this->sqs = $sqs;
     }
 
     /**
@@ -164,11 +165,6 @@ class ListenExportUpdates extends Command
         if ($this->isShuttingDown) {
             return;
         }
-
-        $this->sqs = new SqsClient([
-            'credentials' => Config::get('services.aws.export_credentials'),
-            'region' => Config::get('services.aws.region'),
-        ]);
 
         $this->lastMessageTime = time();
         $this->info('Connecting to SQS (attempt '.($this->reconnectAttempts + 1).')...');

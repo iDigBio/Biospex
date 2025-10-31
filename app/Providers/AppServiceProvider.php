@@ -20,6 +20,8 @@
 
 namespace App\Providers;
 
+use Aws\S3\S3Client;
+use Aws\Sqs\SqsClient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
@@ -89,5 +91,23 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment() !== 'production') {
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
         }
+
+        // Register AWS SQS Client
+        $this->app->singleton(SqsClient::class, function ($app) {
+            return new SqsClient([
+                'version' => 'latest',
+                'region' => config('services.aws.region'),
+                'credentials' => config('services.aws.export_credentials'),
+            ]);
+        });
+
+        // Register AWS S3 Client (if not already registered)
+        $this->app->singleton(S3Client::class, function ($app) {
+            return new S3Client([
+                'version' => 'latest',
+                'region' => config('services.aws.region'),
+                'credentials' => config('services.aws.export_credentials'),
+            ]);
+        });
     }
 }
