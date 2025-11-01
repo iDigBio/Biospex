@@ -94,12 +94,14 @@ class ListenPanoptesPusherCommand extends Command
     public function handle(): int
     {
         // Only allow the production environment to proceed
+        /*
         if (config('app.env') !== 'production') {
             // Silently exit for non-production environments
             // \Log::info('Panoptes listener is only available in production environment');
 
             return self::SUCCESS;
         }
+        */
 
         try {
             $this->info('Starting Panoptes Pusher listener...');
@@ -190,11 +192,17 @@ class ListenPanoptesPusherCommand extends Command
         $url = $this->buildWebSocketUrl();
 
         $connector = new Connector([
-            'timeout' => 15,
+            'timeout' => 20, // Increased from 15 to 20 seconds
             'tls' => [
                 'verify_peer' => true,
                 'verify_peer_name' => true,
             ],
+            //'tcp' => [
+            //    'so_keepalive' => true,
+            //],
+            //'dns' => [
+            //    'timeout' => 10,
+            //],
         ]);
 
         $this->info('Connecting to Pusher... (attempt: '.($this->reconnectAttempts + 1).')');
@@ -305,7 +313,22 @@ class ListenPanoptesPusherCommand extends Command
         $this->lastMessageTime = time();
 
         try {
-            $payload = json_decode($msg->getPayload(), true);
+            $rawPayload = $msg->getPayload();
+
+            // Validate JSON before decoding
+            if (empty($rawPayload)) {
+                $this->warn('Received empty message payload');
+
+                return;
+            }
+
+            $payload = json_decode($rawPayload, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->warn('Received invalid JSON message: '.json_last_error_msg());
+
+                return;
+            }
 
             if (! is_array($payload)) {
                 $this->warn('Received invalid message format - not JSON array');
@@ -334,10 +357,18 @@ class ListenPanoptesPusherCommand extends Command
 
                 default:
                     $this->info("📨 Received event: {$event}");
+                    // Log unknown events for debugging
+                    Log::info('Unknown Pusher event received', [
+                        'event' => $event,
+                        'payload' => $payload,
+                        'command' => 'panoptes:listen',
+                    ]);
             }
 
         } catch (\Throwable $e) {
-            $this->handleError('Error processing incoming message', $e);
+            $this->handleError('Error processing incoming message', $e, [
+                'raw_payload' => substr($msg->getPayload(), 0, 500), // First 500 chars for debugging
+            ]);
         }
     }
 
@@ -368,10 +399,17 @@ class ListenPanoptesPusherCommand extends Command
     private function handlePing(): void
     {
         try {
-            $this->connection->send(json_encode(['event' => 'pusher:pong']));
+            // Send pong immediately when ping is received
+            $pongMessage = json_encode(['event' => 'pusher:pong', 'data' => []]);
+            $this->connection->send($pongMessage);
             $this->info('🏓 Responded to Pusher ping');
+
+            // Update last message time to reset heartbeat monitor
+            $this->lastMessageTime = time();
         } catch (\Throwable $e) {
             $this->handleError('Failed to respond to ping', $e);
+            // Force reconnection if ping response fails
+            $this->forceReconnection();
         }
     }
 
@@ -384,14 +422,29 @@ class ListenPanoptesPusherCommand extends Command
                 throw new \InvalidArgumentException('Classification event missing data field');
             }
 
-            ProcessPanoptesPusherDataJob::dispatch($payload['data']);
+            // Validate that data is either string or array
+            $data = $payload['data'];
+            if (! is_string($data) && ! is_array($data)) {
+                throw new \InvalidArgumentException('Classification data must be string or array, got: '.gettype($data));
+            }
 
+            // If it's an array, encode it as JSON string for the job
+            if (is_array($data)) {
+                $data = json_encode($data);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new \InvalidArgumentException('Failed to encode classification data as JSON: '.json_last_error_msg());
+                }
+            }
+
+            ProcessPanoptesPusherDataJob::dispatch($data);
             $this->info('✅ Classification job dispatched successfully');
 
         } catch (\Throwable $e) {
             $this->handleError('Failed to dispatch classification job', $e, [
                 'payload_keys' => array_keys($payload),
                 'has_data' => isset($payload['data']),
+                'data_type' => isset($payload['data']) ? gettype($payload['data']) : 'missing',
+                'payload_preview' => json_encode($payload, JSON_PRETTY_PRINT | JSON_PARTIAL_OUTPUT_ON_ERROR),
             ]);
         }
     }
@@ -401,7 +454,34 @@ class ListenPanoptesPusherCommand extends Command
         $errorMessage = $payload['data']['message'] ?? 'Unknown Pusher error';
         $errorCode = $payload['data']['code'] ?? 'unknown';
 
-        $this->handleError("Pusher error received: {$errorMessage} (Code: {$errorCode})", null, $payload);
+        // Handle specific Pusher error codes
+        switch ($errorCode) {
+            case 4004: // Over quota
+                $this->handleCriticalError('Pusher account over quota - service degraded',
+                    new \RuntimeException("Account for App exceeded quota. Error: {$errorMessage}"));
+                // Don't reconnect immediately for quota issues
+                $this->scheduleReconnection(300); // Wait 5 minutes
+
+                return;
+
+            case 4201: // Pong not received
+                $this->warn("Pusher didn't receive our pong response - connection may be slow");
+                // Force immediate reconnection
+                $this->forceReconnection();
+
+                return;
+
+            case 4001: // App does not exist
+            case 4003: // App disabled
+                $this->handleCriticalError('Pusher configuration error',
+                    new \RuntimeException("Pusher error {$errorCode}: {$errorMessage}"));
+                $this->shutdown(1); // Exit completely
+
+                return;
+
+            default:
+                $this->handleError("Pusher error received: {$errorMessage} (Code: {$errorCode})", null, $payload);
+        }
     }
 
     private function forceReconnection(): void
