@@ -27,6 +27,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -97,10 +98,24 @@ class ProcessPanoptesPusherDataJob implements ShouldQueue
      */
     private function processData(array $data): void
     {
-        $panoptesProject = PanoptesProject::where('panoptes_project_id', $data['project_id'])->where('panoptes_workflow_id', $data['workflow_id'])->first();
+        $projectId = (int) $data['project_id'];
+        $workflowId = (int) $data['workflow_id'];
 
-        $weDigBioProject = WeDigBioProject::where('panoptes_project_id', $data['project_id'])->where('panoptes_workflow_id', $data['workflow_id'])->first();
+        $cacheKey = "panoptes_projects:{$projectId}:{$workflowId}";
 
+        [$panoptesProject, $weDigBioProject] = Cache::remember($cacheKey, 300, function () use ($projectId, $workflowId) {
+            $panoptesProject = PanoptesProject::where('panoptes_project_id', $projectId)
+                ->where('panoptes_workflow_id', $workflowId)
+                ->first();
+
+            $weDigBioProject = WeDigBioProject::where('panoptes_project_id', $projectId)
+                ->where('panoptes_workflow_id', $workflowId)
+                ->first();
+
+            return [$panoptesProject, $weDigBioProject];
+        });
+
+        // If neither project exists, delete the job
         if ($panoptesProject === null && $weDigBioProject === null) {
             $this->delete();
 
@@ -112,11 +127,11 @@ class ProcessPanoptesPusherDataJob implements ShouldQueue
 
         ZooniverseClassificationJob::dispatch($data, $title);
 
-        if (isset($panoptesProject->expedition_id)) {
+        if ($panoptesProject !== null && isset($panoptesProject->expedition_id)) {
             EventTranscriptionJob::dispatch($data, $panoptesProject->expedition_id);
         }
 
-        if (isset($panoptesProject->project_id)) {
+        if ($panoptesProject !== null && isset($panoptesProject->project_id)) {
             WeDigBioEventTranscriptionJob::dispatch($data, $panoptesProject->project_id);
         }
     }
