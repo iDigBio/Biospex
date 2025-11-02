@@ -31,32 +31,53 @@ use React\Socket\Connector;
 
 use function Ratchet\Client\connect;
 
+/**
+ * Command to listen to external Panoptes Pusher channel for real-time updates.
+ *
+ * This command establishes and maintains a WebSocket connection to the Panoptes Pusher service,
+ * processes incoming messages, and handles various events including classifications.
+ *
+ * @author BIOSPEX <biospex@gmail.com>
+ */
 class PanoptesListenerCommand extends Command
 {
     protected $signature = 'panoptes:listen';
 
     protected $description = 'Listen to external Panoptes Pusher channel';
 
-    private $loop;
+    /** @var \React\EventLoop\LoopInterface Event loop instance */
+    private \React\EventLoop\LoopInterface $loop;
 
-    private $connection;
+    /** @var \Ratchet\Client\WebSocket|null WebSocket connection instance */
+    private ?WebSocket $connection;
 
+    /** @var bool Flag indicating if the command is shutting down */
     private bool $isShuttingDown = false;
 
+    /** @var int Maximum number of reconnection attempts */
     private int $maxReconnectAttempts = 10;
 
+    /** @var int Current number of reconnection attempts */
     private int $reconnectAttempts = 0;
 
+    /** @var int Base delay between reconnection attempts in seconds */
     private int $reconnectDelay = 1;
 
-    private $lastMessageTime;
+    /** @var int|null Timestamp of last received message */
+    private ?int $lastMessageTime;
 
-    private $heartbeatTimer;
+    /** @var mixed Timer for monitoring connection heartbeat */
+    private mixed $heartbeatTimer;
 
+    /** @var string Admin email address for notifications */
     private string $adminEmail;
 
+    /** @var int Timestamp of last notification email sent */
     private int $lastEmailSent = 0; // Rate limiting for emails
 
+    /**
+     * Create a new command instance.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -65,13 +86,22 @@ class PanoptesListenerCommand extends Command
         $this->adminEmail = config('mail.from.address');
     }
 
+    /**
+     * Execute the console command.
+     *
+     * @return int Command exit code
+     */
     public function handle(): int
     {
-        // Only allow production environment to proceed
+        // Only allow the production environment to proceed
+        /*
         if (config('app.env') !== 'production') {
             // Silently exit for non-production environments
+            // \Log::info('Panoptes listener is only available in production environment');
+
             return self::SUCCESS;
         }
+        */
 
         try {
             $this->info('Starting Panoptes Pusher listener...');
@@ -86,6 +116,11 @@ class PanoptesListenerCommand extends Command
         }
     }
 
+    /**
+     * Validate required configuration settings.
+     *
+     * @throws \RuntimeException When required configuration is missing
+     */
     private function validateConfiguration(): void
     {
         $required = [
@@ -105,6 +140,11 @@ class PanoptesListenerCommand extends Command
         }
     }
 
+    /**
+     * Initialize the WebSocket listener and event loop.
+     *
+     * @throws \Throwable When initialization fails
+     */
     private function initializeListener(): void
     {
         $this->loop = Loop::get();
@@ -139,6 +179,9 @@ class PanoptesListenerCommand extends Command
         });
     }
 
+    /**
+     * Establish connection to Pusher WebSocket server.
+     */
     private function connectToPusher(): void
     {
         if ($this->isShuttingDown) {
@@ -149,11 +192,17 @@ class PanoptesListenerCommand extends Command
         $url = $this->buildWebSocketUrl();
 
         $connector = new Connector([
-            'timeout' => 15,
+            'timeout' => 20, // Increased from 15 to 20 seconds
             'tls' => [
                 'verify_peer' => true,
                 'verify_peer_name' => true,
             ],
+            //'tcp' => [
+            //    'so_keepalive' => true,
+            //],
+            //'dns' => [
+            //    'timeout' => 10,
+            //],
         ]);
 
         $this->info('Connecting to Pusher... (attempt: '.($this->reconnectAttempts + 1).')');
@@ -174,6 +223,11 @@ class PanoptesListenerCommand extends Command
         return "wss://ws-{$cluster}.pusher.com:443/app/{$appId}?protocol=7&client=php-ratchet&version=1.0";
     }
 
+    /**
+     * Handle successful WebSocket connection.
+     *
+     * @param  WebSocket  $connection  WebSocket connection instance
+     */
     public function onConnectionSuccess(WebSocket $connection): void
     {
         $this->connection = $connection;
@@ -190,6 +244,11 @@ class PanoptesListenerCommand extends Command
         $this->setupConnectionEventHandlers();
     }
 
+    /**
+     * Handle WebSocket connection failure.
+     *
+     * @param  \Throwable  $e  Exception that caused the failure
+     */
     public function onConnectionFailure(\Throwable $e): void
     {
         $this->reconnectAttempts++;
@@ -244,12 +303,32 @@ class PanoptesListenerCommand extends Command
         $this->connection->on('error', [$this, 'onConnectionError']);
     }
 
+    /**
+     * Handle incoming WebSocket messages.
+     *
+     * @param  MessageInterface  $msg  Received message
+     */
     public function onMessage(MessageInterface $msg): void
     {
         $this->lastMessageTime = time();
 
         try {
-            $payload = json_decode($msg->getPayload(), true);
+            $rawPayload = $msg->getPayload();
+
+            // Validate JSON before decoding
+            if (empty($rawPayload)) {
+                $this->warn('Received empty message payload');
+
+                return;
+            }
+
+            $payload = json_decode($rawPayload, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->warn('Received invalid JSON message: '.json_last_error_msg());
+
+                return;
+            }
 
             if (! is_array($payload)) {
                 $this->warn('Received invalid message format - not JSON array');
@@ -278,13 +357,27 @@ class PanoptesListenerCommand extends Command
 
                 default:
                     $this->info("📨 Received event: {$event}");
+                    // Log unknown events for debugging
+                    Log::info('Unknown Pusher event received', [
+                        'event' => $event,
+                        'payload' => $payload,
+                        'command' => 'panoptes:listen',
+                    ]);
             }
 
         } catch (\Throwable $e) {
-            $this->handleError('Error processing incoming message', $e);
+            $this->handleError('Error processing incoming message', $e, [
+                'raw_payload' => substr($msg->getPayload(), 0, 500), // First 500 chars for debugging
+            ]);
         }
     }
 
+    /**
+     * Handle WebSocket connection closure.
+     *
+     * @param  int|null  $code  Close status code
+     * @param  string|null  $reason  Close reason
+     */
     public function onConnectionClose($code = null, $reason = null): void
     {
         if (! $this->isShuttingDown) {
@@ -293,6 +386,11 @@ class PanoptesListenerCommand extends Command
         }
     }
 
+    /**
+     * Handle WebSocket connection errors.
+     *
+     * @param  \Throwable  $e  Connection error exception
+     */
     public function onConnectionError(\Throwable $e): void
     {
         $this->handleError('Connection error during operation', $e);
@@ -301,10 +399,17 @@ class PanoptesListenerCommand extends Command
     private function handlePing(): void
     {
         try {
-            $this->connection->send(json_encode(['event' => 'pusher:pong']));
+            // Send pong immediately when ping is received
+            $pongMessage = json_encode(['event' => 'pusher:pong', 'data' => []]);
+            $this->connection->send($pongMessage);
             $this->info('🏓 Responded to Pusher ping');
+
+            // Update last message time to reset heartbeat monitor
+            $this->lastMessageTime = time();
         } catch (\Throwable $e) {
             $this->handleError('Failed to respond to ping', $e);
+            // Force reconnection if ping response fails
+            $this->forceReconnection();
         }
     }
 
@@ -317,14 +422,29 @@ class PanoptesListenerCommand extends Command
                 throw new \InvalidArgumentException('Classification event missing data field');
             }
 
-            ProcessPanoptesPusherDataJob::dispatch($payload['data']);
+            // Validate that data is either string or array
+            $data = $payload['data'];
+            if (! is_string($data) && ! is_array($data)) {
+                throw new \InvalidArgumentException('Classification data must be string or array, got: '.gettype($data));
+            }
 
+            // If it's an array, encode it as JSON string for the job
+            if (is_array($data)) {
+                $data = json_encode($data);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new \InvalidArgumentException('Failed to encode classification data as JSON: '.json_last_error_msg());
+                }
+            }
+
+            ProcessPanoptesPusherDataJob::dispatch($data);
             $this->info('✅ Classification job dispatched successfully');
 
         } catch (\Throwable $e) {
             $this->handleError('Failed to dispatch classification job', $e, [
                 'payload_keys' => array_keys($payload),
                 'has_data' => isset($payload['data']),
+                'data_type' => isset($payload['data']) ? gettype($payload['data']) : 'missing',
+                'payload_preview' => json_encode($payload, JSON_PRETTY_PRINT | JSON_PARTIAL_OUTPUT_ON_ERROR),
             ]);
         }
     }
@@ -334,7 +454,34 @@ class PanoptesListenerCommand extends Command
         $errorMessage = $payload['data']['message'] ?? 'Unknown Pusher error';
         $errorCode = $payload['data']['code'] ?? 'unknown';
 
-        $this->handleError("Pusher error received: {$errorMessage} (Code: {$errorCode})", null, $payload);
+        // Handle specific Pusher error codes
+        switch ($errorCode) {
+            case 4004: // Over quota
+                $this->handleCriticalError('Pusher account over quota - service degraded',
+                    new \RuntimeException("Account for App exceeded quota. Error: {$errorMessage}"));
+                // Don't reconnect immediately for quota issues
+                $this->scheduleReconnection(300); // Wait 5 minutes
+
+                return;
+
+            case 4201: // Pong not received
+                $this->warn("Pusher didn't receive our pong response - connection may be slow");
+                // Force immediate reconnection
+                $this->forceReconnection();
+
+                return;
+
+            case 4001: // App does not exist
+            case 4003: // App disabled
+                $this->handleCriticalError('Pusher configuration error',
+                    new \RuntimeException("Pusher error {$errorCode}: {$errorMessage}"));
+                $this->shutdown(1); // Exit completely
+
+                return;
+
+            default:
+                $this->handleError("Pusher error received: {$errorMessage} (Code: {$errorCode})", null, $payload);
+        }
     }
 
     private function forceReconnection(): void
@@ -383,6 +530,13 @@ class PanoptesListenerCommand extends Command
         }
     }
 
+    /**
+     * Handle and log error events.
+     *
+     * @param  string  $message  Error message
+     * @param  \Throwable|null  $e  Exception if available
+     * @param  array  $context  Additional context information
+     */
     private function handleError(string $message, ?\Throwable $e = null, array $context = []): void
     {
         $context['timestamp'] = now()->toISOString();
@@ -508,6 +662,11 @@ class PanoptesListenerCommand extends Command
         return $body;
     }
 
+    /**
+     * Perform graceful shutdown of the command.
+     *
+     * @param  int  $exitCode  Exit code to return
+     */
     private function shutdown(int $exitCode = 0): void
     {
         $this->isShuttingDown = true;
