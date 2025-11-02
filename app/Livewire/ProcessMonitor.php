@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Models\ExportQueue;
 use App\Models\OcrQueue;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ProcessMonitor extends Component
@@ -13,7 +12,7 @@ class ProcessMonitor extends Component
 
     public string $ocrHtml = '';
 
-    protected $listeners = ['refresh-process-monitor' => 'render'];
+    protected $listeners = ['livewire.refresh-process-monitor' => 'render'];
 
     public function mount()
     {
@@ -29,20 +28,17 @@ class ProcessMonitor extends Component
 
     private function loadData(): void
     {
-        $user = Auth::user();
-        $groupIds = $user?->groups()->pluck('groups.id')->toArray() ?? [];
-
-        $exportData = $this->getExportData($groupIds);
-        $ocrData = $this->getOcrData($groupIds);
+        $exportData = $this->getExportData();
+        $ocrData = $this->getOcrData();
 
         $this->exportHtml = $exportData['html'];
         $this->ocrHtml = $ocrData['html'];
     }
 
-    private function getExportData(array $groupIds): array
+    private function getExportData(): array
     {
         $queues = ExportQueue::query()
-            ->with(['expedition.project.group'])
+            ->with(['expedition'])
             ->withCount(['files as processed_files' => fn ($q) => $q->where('processed', 1)])
             ->where('error', 0)
             ->orderBy('id')
@@ -52,12 +48,7 @@ class ProcessMonitor extends Component
         $count = 0;
 
         foreach ($queues as $queue) {
-            $groupId = $queue->expedition?->project?->group?->id;
-            if ($groupId && ! in_array($groupId, $groupIds)) {
-                continue;
-            }
-
-            if ($queue->queued) {
+            if (! $queue->queued) {
                 $position = $count === 0
                     ? t('Next in queue.')
                     : t(n(':count export in queue before processing begins.', ':count exports in queue before processing begins.', $count), [':count' => $count]);
@@ -70,7 +61,7 @@ class ProcessMonitor extends Component
                 $stage = config('zooniverse.export_stages')[$queue->stage] ?? 'Unknown';
                 $processedRecords = $queue->stage === 1
                     ? t(' :processed of :total completed.', [
-                        ':processed' => $queue->processed_files ?: 1,
+                        ':processed' => $queue->processed_files ?: 0,
                         ':total' => $queue->total,
                     ])
                     : null;
@@ -87,10 +78,10 @@ class ProcessMonitor extends Component
         return ['html' => $html];
     }
 
-    private function getOcrData(array $groupIds): array
+    private function getOcrData(): array
     {
         $records = OcrQueue::query()
-            ->with(['expedition', 'project.group'])
+            ->with(['expedition', 'project'])
             ->withCount(['files as processed_files' => fn ($q) => $q->where('processed', 1)])
             ->orderBy('id')
             ->get();
@@ -99,11 +90,6 @@ class ProcessMonitor extends Component
         $count = 0;
 
         foreach ($records as $record) {
-            $groupId = $record->project?->group?->id;
-            if ($groupId && ! in_array($groupId, $groupIds)) {
-                continue;
-            }
-
             $title = $record->expedition?->title ?? $record->project?->title ?? '—';
             $batches = $count === 0
                 ? ''
@@ -124,11 +110,5 @@ class ProcessMonitor extends Component
         }
 
         return ['html' => $html];
-    }
-
-    // Call from jobs for instant updates
-    public static function refresh()
-    {
-        \Livewire\Livewire::dispatch('refresh-process-monitor');
     }
 }

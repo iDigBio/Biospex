@@ -20,6 +20,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Download;
 use App\Models\ExportQueue;
 use App\Models\User;
 use App\Notifications\Generic;
@@ -28,34 +29,48 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
+/**
+ * Handles the result of a Zooniverse export ZIP operation.
+ *
+ * This job processes the results of a ZIP operation for exported Zooniverse data,
+ * managing success and failure scenarios, creating download records, and dispatching
+ * report generation jobs as needed.
+ */
 class ZooniverseExportZipResultJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Create a new job instance.
+     *
+     * @param  array  $data  Array containing queue ID and status information for the ZIP operation
+     */
     public function __construct(
         public array $data
     ) {
         $this->onQueue(config('config.queue.export'));
     }
 
+    /**
+     * Execute the job.
+     *
+     * Processes the ZIP operation result, handling both success and failure scenarios.
+     *
+     * @throws \Exception When payload is invalid or queue record is not found
+     */
     public function handle(): void
     {
         $queueId = $this->data['queueId'] ?? null;
         $status = $this->data['status'] ?? null;
 
         if (! $queueId || ! $status) {
-            Log::warning('Invalid ZIP result payload', $this->data);
-
-            return;
+            throw new \Exception('Invalid ZIP result payload: '.json_encode($this->data));
         }
 
-        $queue = ExportQueue::find($queueId);
+        $queue = ExportQueue::with(['expedition'])->find($queueId);
         if (! $queue) {
-            Log::warning("ExportQueue #{$queueId} not found");
-
-            return;
+            throw new \Exception("ExportQueue #{$queueId} not found");
         }
 
         if ($status === 'zip-ready') {
@@ -65,24 +80,71 @@ class ZooniverseExportZipResultJob implements ShouldQueue
         }
     }
 
+    /**
+     * Handle a successful ZIP operation.
+     *
+     * Updates queue stage, creates download record and dispatches report generation.
+     *
+     * @param  ExportQueue  $queue  The export queue records to update
+     */
     private function handleZipSuccess(ExportQueue $queue): void
     {
         $queue->stage = 3;
         $queue->save();
 
+        // === CREATE DOWNLOAD RECORD ===
+        $this->createDownloadRecord($queue);
+
         ZooniverseExportCreateReportJob::dispatch($queue)->onQueue(config('config.queue.export'));
     }
 
+    /**
+     * Handle failed ZIP operation.
+     *
+     * Marks the queue as errored and throws an exception.
+     *
+     * @param  ExportQueue  $queue  The export queue records to update
+     * @param  array  $data  The failure data
+     * @throws \Exception When the ZIP operation fails
+     */
     private function handleZipFailure(ExportQueue $queue, array $data): void
     {
         $queue->error = 1;
         $queue->save();
 
-        Log::error("ZIP failed for queue #{$queue->id}", $data);
+        throw new \Exception("ZIP failed for queue #{$queue->id}", $data);
     }
 
     /**
-     * Handle a job failure — your exact pattern
+     * Create or update download record for the exported ZIP file.
+     *
+     * @param  ExportQueue  $exportQueue  The export queue records to create download for
+     */
+    private function createDownloadRecord(ExportQueue $exportQueue): void
+    {
+        $file = "{$exportQueue->id}-".config('zooniverse.actor_id')."-{$exportQueue->expedition->uuid}.zip";
+        $values = [
+            'expedition_id' => $exportQueue->expedition_id,
+            'actor_id' => $exportQueue->actor_id,
+            'file' => $file,
+            'type' => 'export',
+        ];
+        $attributes = [
+            'expedition_id' => $exportQueue->expedition_id,
+            'actor_id' => $exportQueue->actor_id,
+            'file' => $file,
+            'type' => 'export',
+        ];
+
+        Download::updateOrCreate($attributes, $values);
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * Updates the queue status and notifies the admin user about the failure.
+     *
+     * @param  \Throwable  $throwable  The exception that caused the failure
      */
     public function failed(\Throwable $throwable): void
     {

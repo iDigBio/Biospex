@@ -45,6 +45,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('export:queue')->everyTwoMinutes();
+
+        /*
         $schedule->command('cache:prune-stale-tags')->hourly();
 
         // $schedule->command('queue:prune-batches --hours=48 --unfinished=72')->daily();
@@ -72,6 +75,7 @@ class Kernel extends ConsoleKernel
             // Clean efs directories for files over 72 hours old.
             // $schedule->command('app:clean-efs-dirs')->daily();
         }
+        */
     }
 
     /**

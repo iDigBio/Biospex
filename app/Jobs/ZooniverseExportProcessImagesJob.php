@@ -44,6 +44,7 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
 
     public function handle(SqsClient $sqs): void
     {
+        \Log::info("ZooniverseExportProcessImagesJob export queue ID: {$this->exportQueue->id}");
         $this->exportQueue->load('expedition');
 
         $files = ExportQueueFile::where('queue_id', $this->exportQueue->id)
@@ -57,8 +58,7 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
 
         $queueUrl = $this->getQueueUrl($sqs, 'queue_image_tasks');
         $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_updates');
-        $scratchDir = config('scratch_dir');
-        $processDir = "{$scratchDir}/{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
+        $processDir = "{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
 
         foreach ($files as $file) {
             $payload = [

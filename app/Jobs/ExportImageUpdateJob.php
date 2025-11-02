@@ -34,7 +34,7 @@ class ExportImageUpdateJob implements ShouldQueue
         public string $status,
         public ?string $error = null
     ) {
-        $this->onQueue('config.queue.export');
+        $this->onQueue(config('config.queue.export'));
     }
 
     /**
@@ -52,10 +52,8 @@ class ExportImageUpdateJob implements ShouldQueue
             return;
         }
 
-        if ($this->status === 'success') {
-            $file->processed = 1;
-        } else {
-            $file->processed = 1;
+        $file->processed = 1;
+        if ($this->status !== 'success') {
             $file->message = $this->error ?? 'Processing failed';
         }
 

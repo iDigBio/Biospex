@@ -1,7 +1,7 @@
 <!-- resources/views/livewire/process-monitor.blade.php -->
-<div wire:poll.60s>
+<div wire:poll.10s>
     <p class="text-center color-action small mb-4">
-        {{ t('Stats update every minute.') }}
+        {{ t('Stats update every 10 seconds.') }}
     </p>
 
     <div class="m-4">

@@ -36,6 +36,12 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Notification;
 use Throwable;
 
+/**
+ * Job to create error reports for Zooniverse exports and notify users.
+ *
+ * This job handles creating CSV error reports for failed Zooniverse exports,
+ * notifies relevant users about the export completion, and triggers cleanup.
+ */
 class ZooniverseExportCreateReportJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable, ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
@@ -44,6 +50,11 @@ class ZooniverseExportCreateReportJob implements ShouldBeUnique, ShouldQueue
 
     public bool $failOnTimeout = true;
 
+    /**
+     * Create a new job instance.
+     *
+     * @param  ExportQueue  $exportQueue  The export queue to process
+     */
     public function __construct(protected ExportQueue $exportQueue)
     {
         $this->exportQueue = $exportQueue->withoutRelations();
@@ -51,6 +62,16 @@ class ZooniverseExportCreateReportJob implements ShouldBeUnique, ShouldQueue
     }
 
     /**
+     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\Exception
+     */
+    /**
+     * Execute the job.
+     *
+     * Creates error report CSV, notifies users, and triggers a cleanup process.
+     *
+     * @param  CreateReportService  $createReportService  Service to create CSV reports
+     *
      * @throws \League\Csv\CannotInsertRecord
      * @throws \League\Csv\Exception
      */
@@ -101,6 +122,11 @@ class ZooniverseExportCreateReportJob implements ShouldBeUnique, ShouldQueue
         ZooniverseExportDeleteFilesJob::dispatch($this->exportQueue);
     }
 
+    /**
+     * Handle a job failure.
+     *
+     * @param  Throwable  $throwable  The exception that caused the failure
+     */
     public function failed(Throwable $throwable): void
     {
         $this->sendErrorNotification($this->exportQueue, $throwable);

@@ -20,6 +20,7 @@
 
 namespace App\Jobs;
 
+use App\Livewire\ProcessMonitor;
 use App\Models\ActorExpedition;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
@@ -47,6 +48,8 @@ class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
 
     public function handle(SubjectService $subjectService): void
     {
+        \Log::info("ZooniverseExportBuildQueueJob actor ID: {$this->actorExpedition->actor_id}");
+
         $this->actorExpedition->load('expedition');
 
         // === CREATE OR UPDATE EXPORT QUEUE ===
