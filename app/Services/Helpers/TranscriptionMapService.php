@@ -45,6 +45,20 @@ class TranscriptionMapService
     ): mixed {
         foreach ($this->mappedTranscriptionFields[$type] as $value) {
             $encodedValue = $this->decodeTranscriptionField($value);
+
+            // Log if decoding failed to help identify problematic records
+            if ($encodedValue === false) {
+                \Log::error('Base64 decode failed in TranscriptionMapService', [
+                    'type' => $type,
+                    'original_value' => $value,
+                    'panoptes_transcription_id' => $panoptesTranscription->id ?? 'unknown',
+                    'pusher_transcription_id' => $pusherTranscription->id ?? 'unknown',
+                    'mapped_fields' => $this->mappedTranscriptionFields[$type] ?? [],
+                ]);
+
+                continue; // Skip this field and try the next one
+            }
+
             if (isset($panoptesTranscription->{$encodedValue})) {
                 return $panoptesTranscription->{$encodedValue};
             }
