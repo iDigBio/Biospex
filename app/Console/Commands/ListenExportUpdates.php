@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ExportImageUpdateJob;
+use App\Jobs\ZooniverseExportBatchResultJob;
 use App\Jobs\ZooniverseExportZipResultJob;
 use Aws\Sqs\SqsClient;
 use Illuminate\Console\Command;
@@ -324,16 +325,11 @@ class ListenExportUpdates extends Command
 
         $function = $data['function'];
 
-        Log::info('Processing SQS message', [
-            'function' => $function,
-            'data_keys' => array_keys($data),
-            'command' => 'export:listen-updates',
-        ]);
-
         try {
             match ($function) {
                 'BiospexImageProcess' => $this->dispatchImageProcessJob($data),
                 'BiospexZipCreator' => $this->dispatchZipCreatorJob($data),
+                'BiospexBatchCreator' => $this->dispatchBatchCreatorJob($data),
                 default => throw new \InvalidArgumentException("Unknown function: {$function}"),
             };
 
@@ -378,6 +374,20 @@ class ListenExportUpdates extends Command
         }
 
         ZooniverseExportZipResultJob::dispatch($data);
+    }
+
+    private function dispatchBatchCreatorJob(array $data): void
+    {
+        $status = $data['status'] ?? throw new \InvalidArgumentException('Missing status');
+        $downloadId = $data['downloadId'] ?? throw new \InvalidArgumentException('Missing downloadId');
+
+        if ($status === 'failed') {
+            $error = $data['error'] ?? 'Unknown error';
+            Log::error('BiospexBatchCreator failed', $data);
+            throw new \RuntimeException("Batch export failed for download #{$downloadId}: {$error}");
+        }
+
+        ZooniverseExportBatchResultJob::dispatch($data);
     }
 
     /**

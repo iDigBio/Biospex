@@ -21,7 +21,6 @@
 namespace App\Services\Actor\Zooniverse;
 
 use App\Jobs\ZooniverseExportProcessImagesJob;
-use App\Livewire\ProcessMonitor;
 use App\Models\Download;
 use App\Models\Expedition;
 use App\Models\ExportQueue;
@@ -53,7 +52,6 @@ class ZooniverseExportQueue
      */
     public function processQueue(): void
     {
-        \Log::info('Processing export queue...');
         $exportQueue = $this->exportQueue
             ->with('expedition')
             ->where('error', 0)
@@ -62,7 +60,6 @@ class ZooniverseExportQueue
             ->first();
 
         if (! $exportQueue) {
-            \Log::info('No export queue items available.');
 
             return;
         }
@@ -92,7 +89,6 @@ class ZooniverseExportQueue
      */
     public function resetExpeditionExport(int $expeditionId): void
     {
-        \Log::info('Resetting expedition export for expedition ID: '.$expeditionId);
         $expedition = $this->expeditionService->getExpeditionForQueueReset($expeditionId);
 
         if (! is_null($expedition->exportQueue)) {

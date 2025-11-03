@@ -20,13 +20,12 @@
 
 namespace App\Jobs;
 
-use App\Livewire\ProcessMonitor;
 use App\Models\ActorExpedition;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
 use App\Models\User;
-use App\Notifications\Generic;
 use App\Services\Subject\SubjectService;
+use App\Traits\NotifyOnJobFailure;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,22 +33,35 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Throwable;
 
+/**
+ * Job to build export queue for Zooniverse expedition data.
+ * Creates or updates export queue entries and builds associated files for subjects.
+ */
 class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
+    use Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable;
 
     public int $timeout = 3600;
 
+    /**
+     * Create a new job instance.
+     *
+     * @param  ActorExpedition  $actorExpedition  The actor expedition instance
+     */
     public function __construct(protected ActorExpedition $actorExpedition)
     {
         $this->actorExpedition = $actorExpedition->withoutRelations();
         $this->onQueue(config('config.queue.default'));
     }
 
+    /**
+     * Execute the job.
+     * Creates or updates export queue and builds associated files for subjects.
+     *
+     * @param  SubjectService  $subjectService  Service to handle subject operations
+     */
     public function handle(SubjectService $subjectService): void
     {
-        \Log::info("ZooniverseExportBuildQueueJob actor ID: {$this->actorExpedition->actor_id}");
-
         $this->actorExpedition->load('expedition');
 
         // === CREATE OR UPDATE EXPORT QUEUE ===
@@ -80,23 +92,14 @@ class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
         });
     }
 
+    /**
+     * Handle a job failure.
+     * Sends notification to admin user about the failure.
+     *
+     * @param  Throwable  $throwable  The exception that caused the failure
+     */
     public function failed(Throwable $throwable): void
     {
-        $attributes = [
-            'subject' => t('Zooniverse Export Build Queue Job Failed'),
-            'html' => [
-                t('An error occurred building the export queue.'),
-                t('Actor Id: %s', $this->actorExpedition->actor_id),
-                t('Expedition Id: %s', $this->actorExpedition->expedition_id),
-                t('File: %s', $throwable->getFile()),
-                t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage()),
-            ],
-        ];
-
-        $user = User::find(config('config.admin.user_id'));
-        if ($user) {
-            $user->notify(new Generic($attributes));
-        }
+        $this->notifyGroupOnFailure($this->actorExpedition, $throwable);
     }
 }

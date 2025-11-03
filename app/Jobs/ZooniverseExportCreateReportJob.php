@@ -24,8 +24,8 @@ use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
 use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
-use App\Services\Actor\Traits\ZooniverseErrorNotification;
 use App\Services\Process\CreateReportService;
+use App\Traits\NotifyOnJobFailure;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -44,7 +44,7 @@ use Throwable;
  */
 class ZooniverseExportCreateReportJob implements ShouldBeUnique, ShouldQueue
 {
-    use Batchable, ButtonTrait, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
+    use Batchable, ButtonTrait, Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
     public int $timeout = 900;
 
@@ -129,6 +129,9 @@ class ZooniverseExportCreateReportJob implements ShouldBeUnique, ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
-        $this->sendErrorNotification($this->exportQueue, $throwable);
+        $this->exportQueue->error = 1;
+        $this->exportQueue->save();
+
+        $this->notifyGroupOnFailure($this->exportQueue, $throwable);
     }
 }

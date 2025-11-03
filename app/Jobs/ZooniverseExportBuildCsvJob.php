@@ -22,9 +22,9 @@ namespace App\Jobs;
 
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
-use App\Services\Actor\Traits\ZooniverseErrorNotification;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Process\MapZooniverseCsvColumnsService;
+use App\Traits\NotifyOnJobFailure;
 use Aws\S3\S3Client;
 use Aws\Sqs\SqsClient;
 use Illuminate\Bus\Batchable;
@@ -48,7 +48,7 @@ use Throwable;
  */
 class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
+    use Batchable, Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
     public int $timeout = 1800;
 
@@ -72,6 +72,7 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
      * @param  SqsClient  $sqs  AWS SQS client
      * @param  AwsS3CsvService  $awsS3CsvService  Service for handling S3 CSV operations
      * @param  MapZooniverseCsvColumnsService  $mapZooniverseCsvColumnsService  Service for mapping CSV columns
+     *
      * @throws \Exception When no images are found or CSV row count doesn't match image count
      */
     public function handle(
@@ -186,6 +187,9 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
-        $this->sendErrorNotification($this->exportQueue, $throwable);
+        $this->exportQueue->error = 1;
+        $this->exportQueue->save();
+
+        $this->notifyGroupOnFailure($this->exportQueue, $throwable);
     }
 }

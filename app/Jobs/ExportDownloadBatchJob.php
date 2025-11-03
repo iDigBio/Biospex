@@ -22,59 +22,81 @@ namespace App\Jobs;
 
 use App\Models\Download;
 use App\Notifications\Generic;
-use App\Services\Actor\Zooniverse\ZooniverseExportBatch;
+use Aws\Sqs\SqsClient;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Throwable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
-/**
- * Class ExportDownloadBatchJob
- */
 class ExportDownloadBatchJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * The number of seconds the job can run before timing out.
-     */
-    public int $timeout = 3600;
+    public $timeout = 30;
 
-    /**
-     * ExportDownloadBatchJob constructor.
-     */
     public function __construct(protected Download $download)
     {
         $this->download = $this->download->withoutRelations();
         $this->onQueue(config('config.queue.export'));
     }
 
-    /**
-     * Handle download batch job.
-     *
-     * @throws \Exception
-     */
-    public function handle(ZooniverseExportBatch $zooniverseExportBatch): void
+    public function handle(SqsClient $sqs): void
     {
-        $this->download->load(['expedition.project.group.owner', 'actor']);
+        \Log::info('ExportDownloadBatchJob', ['download_id' => $this->download->id]);
 
-        $zooniverseExportBatch->process($this->download);
+        $this->download->load('expedition');
+
+        $file = $this->download->file;
+        $path = config('config.export_dir').'/'.$file;
+
+        if (empty($file)) {
+            throw new \InvalidArgumentException('Download file is missing');
+        }
+
+        $size = Storage::disk('s3')->size($path);
+
+        $triggerQueueUrl = $this->getQueueUrl($sqs, 'queue_batch_trigger');
+        $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_updates');
+
+        $message = [
+            'downloadId' => $this->download->id,
+            'file' => $file,
+            'path' => $path,
+            'totalSize' => $size,
+            's3Bucket' => config('filesystems.disks.s3.bucket'),
+            'updatesQueueUrl' => $updatesQueueUrl,
+        ];
+
+        $sqs->sendMessage([
+            'QueueUrl' => $triggerQueueUrl,
+            'MessageBody' => json_encode($message),
+        ]);
+
+        Log::info('Batch job queued to Lambda', [
+            'download_id' => $this->download->id,
+            'file' => $file,
+            'size' => $size,
+        ]);
     }
 
-    /**
-     * Handle a job failure.
-     */
-    public function failed(Throwable $throwable): void
+    private function getQueueUrl(SqsClient $sqs, string $configKey): string
+    {
+        $queueName = config("services.aws.{$configKey}");
+
+        return $sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
+    }
+
+    public function failed(\Throwable $throwable): void
     {
         $attributes = [
-            'subject' => t('Export Download Batch Error'),
+            'subject' => t('Export Batch Failed to Queue'),
             'html' => [
-                t('The batch export for Expedition %s has failed.', $this->download->expedition->title),
-                t('File: %s', $throwable->getFile()),
-                t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage()),
-                t('The Administration has been notified. If you are unable to resolve this issue, please contact the Administration.'),
+                t('Failed to queue batch export for Expedition: %s', $this->download->expedition->title),
+                t('File: %s', $this->download->file),
+                t('Error: %s', $throwable->getMessage()),
             ],
         ];
 

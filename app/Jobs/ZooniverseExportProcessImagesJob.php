@@ -22,8 +22,7 @@ namespace App\Jobs;
 
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
-use App\Models\User;
-use App\Notifications\Generic;
+use App\Traits\NotifyOnJobFailure;
 use Aws\Sqs\SqsClient;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -32,19 +31,34 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Throwable;
 
+/**
+ * Process images for Zooniverse export by sending them to SQS queue for processing.
+ */
 class ZooniverseExportProcessImagesJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
+    /**
+     * Create a new job instance.
+     *
+     * @param  ExportQueue  $exportQueue  The export queue model instance
+     */
     public function __construct(protected ExportQueue $exportQueue)
     {
         $this->exportQueue = $exportQueue->withoutRelations();
         $this->onQueue(config('config.queue.export'));
     }
 
+    /**
+     * Execute the job to process images for Zooniverse export.
+     * Sends unprocessed files to SQS queue for processing.
+     *
+     * @param  SqsClient  $sqs  AWS SQS client instance
+     *
+     * @throws \Exception When no unprocessed files are found
+     */
     public function handle(SqsClient $sqs): void
     {
-        \Log::info("ZooniverseExportProcessImagesJob export queue ID: {$this->exportQueue->id}");
         $this->exportQueue->load('expedition');
 
         $files = ExportQueueFile::where('queue_id', $this->exportQueue->id)
@@ -77,6 +91,13 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
         }
     }
 
+    /**
+     * Get AWS SQS queue URL for given queue key.
+     *
+     * @param  SqsClient  $sqs  AWS SQS client instance
+     * @param  string  $key  Queue configuration key
+     * @return string Queue URL
+     */
     private function getQueueUrl(SqsClient $sqs, string $key): string
     {
         $queueName = config("services.aws.{$key}");
@@ -84,23 +105,19 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
         return $sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
     }
 
+    /**
+     * Handle job failure by updating export queue and notifying admin.
+     *
+     * @param  Throwable  $throwable  The exception that caused the failure
+     */
     public function failed(Throwable $throwable): void
     {
         $this->exportQueue->error = 1;
         $this->exportQueue->save();
 
-        $attributes = [
-            'subject' => t('Expedition Export Process Error'),
-            'html' => [
-                t('Queue Id: %s', $this->exportQueue->id),
-                t('Expedition Id: %s', $this->exportQueue->expedition_id ?? 'unknown'),
-                t('File: %s', $throwable->getFile()),
-                t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage()),
-            ],
-        ];
+        $this->exportQueue->error = 1;
+        $this->exportQueue->save();
 
-        $user = User::find(config('config.admin.user_id'));
-        $user?->notify(new Generic($attributes));
+        $this->notifyGroupOnFailure($this->exportQueue, $throwable);
     }
 }

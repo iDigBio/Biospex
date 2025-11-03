@@ -24,11 +24,13 @@ use App\Models\Download;
 use App\Models\ExportQueue;
 use App\Models\User;
 use App\Notifications\Generic;
+use App\Traits\NotifyOnJobFailure;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Handles the result of a Zooniverse export ZIP operation.
@@ -39,7 +41,7 @@ use Illuminate\Queue\SerializesModels;
  */
 class ZooniverseExportZipResultJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
@@ -105,6 +107,7 @@ class ZooniverseExportZipResultJob implements ShouldQueue
      *
      * @param  ExportQueue  $queue  The export queue records to update
      * @param  array  $data  The failure data
+     *
      * @throws \Exception When the ZIP operation fails
      */
     private function handleZipFailure(ExportQueue $queue, array $data): void
@@ -146,27 +149,22 @@ class ZooniverseExportZipResultJob implements ShouldQueue
      *
      * @param  \Throwable  $throwable  The exception that caused the failure
      */
-    public function failed(\Throwable $throwable): void
+    public function failed(Throwable $throwable): void
     {
-        $queueId = $this->data['queueId'] ?? 'unknown';
-        $queue = ExportQueue::find($queueId);
+        $queueId = $this->data['queueId'] ?? null;
+        $queue = $queueId ? ExportQueue::find($queueId) : null;
 
         if ($queue) {
             $queue->error = 1;
             $queue->save();
-        }
-
-        $attributes = [
-            'subject' => t('Expedition Export Process Error'), 'html' => [
-                t('Queue Id: %s', $queueId), t('Expedition Id: %s', $queue?->expedition_id ?? 'unknown'),
-                t('File: %s', $throwable->getFile()), t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage()),
-            ],
-        ];
-
-        $user = User::find(config('config.admin.user_id'));
-        if ($user) {
-            $user->notify(new Generic($attributes));
+            $this->notifyGroupOnFailure($queue, $throwable);
+        } else {
+            // Fallback to admin
+            $admin = User::find(config('config.admin.user_id'));
+            $admin?->notify(new Generic([
+                'subject' => t('Export ZIP Job Failed'),
+                'html' => [t('Error: %s', $throwable->getMessage())],
+            ]));
         }
     }
 }

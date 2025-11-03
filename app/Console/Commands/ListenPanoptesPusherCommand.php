@@ -94,14 +94,12 @@ class ListenPanoptesPusherCommand extends Command
     public function handle(): int
     {
         // Only allow the production environment to proceed
-        /*
         if (config('app.env') !== 'production') {
             // Silently exit for non-production environments
             // \Log::info('Panoptes listener is only available in production environment');
 
             return self::SUCCESS;
         }
-        */
 
         try {
             $this->info('Starting Panoptes Pusher listener...');
@@ -197,12 +195,6 @@ class ListenPanoptesPusherCommand extends Command
                 'verify_peer' => true,
                 'verify_peer_name' => true,
             ],
-            //'tcp' => [
-            //    'so_keepalive' => true,
-            //],
-            //'dns' => [
-            //    'timeout' => 10,
-            //],
         ]);
 
         $this->info('Connecting to Pusher... (attempt: '.($this->reconnectAttempts + 1).')');
