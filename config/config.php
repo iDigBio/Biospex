@@ -226,6 +226,7 @@ return [
         'QUEUE_GEOLOCATE',
         'QUEUE_IMPORT',
         'QUEUE_OCR',
+        'QUEUE_EXPORT',
         'QUEUE_RECONCILE',
         'QUEUE_SNS_IMAGE_EXPORT',
         'QUEUE_SNS_RECONCILIATION',
