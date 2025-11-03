@@ -28,7 +28,7 @@ return [
     ],
 
     'aws' => [
-        'access_key' => env('AWS_ACCESS_KEY'),
+        'access_key' => env('AWS_ACCESS_KEY_ID'),
         'secret_key' => env('AWS_SECRET_ACCESS_KEY'),
         'default_region' => env('AWS_DEFAULT_REGION'),
         'lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION'),
