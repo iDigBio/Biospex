@@ -59,7 +59,7 @@ class ExportDownloadBatchJob implements ShouldQueue
         $size = Storage::disk('s3')->size($path);
 
         $triggerQueueUrl = $this->getQueueUrl($sqs, 'queue_batch_trigger');
-        $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_updates');
+        $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_export_update');
 
         $message = [
             'downloadId' => $this->download->id,

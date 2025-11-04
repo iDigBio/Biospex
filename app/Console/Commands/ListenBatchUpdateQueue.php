@@ -1,10 +1,25 @@
 <?php
+/*
+ * Copyright (C) 2014 - 2025, Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 namespace App\Console\Commands;
 
-use App\Jobs\ExportImageUpdateJob;
 use App\Jobs\ZooniverseExportBatchResultJob;
-use App\Jobs\ZooniverseExportZipResultJob;
 use Aws\Sqs\SqsClient;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
@@ -13,16 +28,16 @@ use Illuminate\Support\Facades\Mail;
 use JetBrains\PhpStorm\NoReturn;
 
 /**
- * Listens for export updates from SQS queue and processes them.
+ * Listens for updates from SQS queue and processes them.
  * Handles reconnection attempts and monitoring of the connection health.
  */
-class ListenExportUpdates extends Command
+class ListenBatchUpdateQueue extends Command
 {
     /** @var string Command signature */
-    protected $signature = 'export:listen-updates';
+    protected $signature = 'batch:listen';
 
     /** @var string Command description */
-    protected $description = 'Robust SQS listener for export updates with reconnections and alerts';
+    protected $description = 'Robust SQS listener for batch update queue with reconnections and alerts';
 
     /** @var SqsClient AWS SQS client instance */
     private SqsClient $sqs;
@@ -74,13 +89,13 @@ class ListenExportUpdates extends Command
         }
 
         try {
-            $this->info('Starting Export Updates SQS Listener...');
+            $this->info('Starting Batch Update SQS Listener...');
             $this->validateConfiguration();
             $this->initializeListener();
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
-            $this->handleCriticalError('Failed to start export updates listener', $e);
+            $this->handleCriticalError('Failed to start batch updates listener', $e);
 
             return self::FAILURE;
         }
@@ -94,7 +109,7 @@ class ListenExportUpdates extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queue_updates' => 'AWS_SQS_UPDATES_QUEUE',
+            'services.aws.queue_batch_update' => 'AWS_SQS_BATCH_UPDATE_QUEUE',
             'services.aws.export_credentials' => 'AWS_EXPORT_CREDENTIALS',
         ];
 
@@ -177,7 +192,7 @@ class ListenExportUpdates extends Command
      */
     private function pollSqs(): void
     {
-        $queueUrl = $this->getQueueUrl('queue_updates');
+        $queueUrl = $this->getQueueUrl('queue_batch_update');
 
         $this->sqs->receiveMessageAsync([
             'QueueUrl' => $queueUrl,
@@ -196,7 +211,7 @@ class ListenExportUpdates extends Command
 
                     $this->info("📦 Received batch of {$messageCount} messages from SQS");
 
-                    $this->processBatchMessages($response['Messages'], $this->getQueueUrl('queue_updates'));
+                    $this->processBatchMessages($response['Messages'], $this->getQueueUrl('queue_batch_update'));
                 }
 
                 if (! $this->isShuttingDown) {
@@ -343,39 +358,6 @@ class ListenExportUpdates extends Command
         }
     }
 
-    /**
-     * Dispatch BiospexImageProcess job with validation.
-     */
-    private function dispatchImageProcessJob(array $data): void
-    {
-        $required = ['queueId', 'subjectId', 'status'];
-        $missing = array_diff($required, array_keys($data));
-
-        if (! empty($missing)) {
-            throw new \InvalidArgumentException('BiospexImageProcess missing required fields: '.implode(', ', $missing));
-        }
-
-        ExportImageUpdateJob::dispatch(
-            $data['queueId'],
-            $data['subjectId'],
-            $data['status'],
-            $data['error'] ?? null
-        );
-    }
-
-    /**
-     * Dispatch BiospexZipCreator job with validation.
-     */
-    private function dispatchZipCreatorJob(array $data): void
-    {
-        // Add any specific validation for zip creator job
-        if (empty($data)) {
-            throw new \InvalidArgumentException('BiospexZipCreator requires data payload');
-        }
-
-        ZooniverseExportZipResultJob::dispatch($data);
-    }
-
     private function dispatchBatchCreatorJob(array $data): void
     {
         $status = $data['status'] ?? throw new \InvalidArgumentException('Missing status');
@@ -401,7 +383,7 @@ class ListenExportUpdates extends Command
     {
         $context = array_merge($ctx, [
             'timestamp' => now()->toISOString(),
-            'command' => 'export:listen-updates',
+            'command' => 'batch:listen',
             'reconnect_attempts' => $this->reconnectAttempts,
         ]);
 
@@ -430,7 +412,7 @@ class ListenExportUpdates extends Command
     {
         $context = [
             'timestamp' => now()->toISOString(),
-            'command' => 'export:listen-updates',
+            'command' => 'batch:listen',
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString(),
             'file' => $e->getFile(),
@@ -600,8 +582,8 @@ class ListenExportUpdates extends Command
 
         try {
             $subject = $critical
-                ? '[CRITICAL] Export Updates Listener - '.config('app.name')
-                : '[ERROR] Export Updates Listener - '.config('app.name');
+                ? '[CRITICAL] Batch Update Queue Listener - '.config('app.name')
+                : '[ERROR] Batch Update Queue Listener - '.config('app.name');
 
             $body = $this->buildEmailBody($msg, $e, $ctx, $critical);
 
@@ -624,7 +606,7 @@ class ListenExportUpdates extends Command
      */
     private function buildEmailBody(string $msg, ?\Throwable $e, array $ctx, bool $critical): string
     {
-        $body = "Export Updates Listener Error Report\n";
+        $body = "Batch Update Queue Listener Error Report\n";
         $body .= str_repeat('=', 50)."\n\n";
 
         if ($critical) {
@@ -654,7 +636,7 @@ class ListenExportUpdates extends Command
         }
 
         $body .= "Configuration:\n";
-        $body .= 'Queue: '.Config::get('services.aws.queue_updates')."\n";
+        $body .= 'Queue: '.Config::get('services.aws.queue_batch_update')."\n";
         $body .= 'Region: '.Config::get('services.aws.region', 'us-east-1')."\n";
 
         return $body;

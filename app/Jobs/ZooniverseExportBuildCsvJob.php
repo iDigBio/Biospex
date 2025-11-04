@@ -160,7 +160,7 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
 
         // === SEND EXACT MESSAGE TO ZIP TRIGGER ===
         $queueUrl = $sqs->getQueueUrl(['QueueName' => config('services.aws.queue_zip_trigger')])['QueueUrl'];
-        $updatesQueueUrl = $sqs->getQueueUrl(['QueueName' => config('services.aws.queue_updates')])['QueueUrl'];
+        $updatesQueueUrl = $sqs->getQueueUrl(['QueueName' => config('services.aws.queue_export_update')])['QueueUrl'];
 
         $payload = [
             'processDir' => $processDir, // Now just the ID part without scratch/

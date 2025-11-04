@@ -68,9 +68,10 @@ return [
 
         // SQS QUEUE NAMES
         'queue_image_tasks' => env('AWS_SQS_IMAGE_TASKS_QUEUE'),
-        'queue_updates' => env('AWS_SQS_UPDATES_QUEUE'),
+        'queue_export_update' => env('AWS_SQS_EXPORT_UPDATE_QUEUE'),
         'queue_zip_trigger' => env('AWS_SQS_ZIP_TRIGGER_QUEUE'),
         'queue_batch_trigger' => env('AWS_SQS_BATCH_TRIGGER_QUEUE'),
+        'queue_batch_update' => env('AWS_SQS_BATCH_UPDATE_QUEUE'),
         'queue_dlq' => env('AWS_SQS_DLQ'),
     ],
 ];
