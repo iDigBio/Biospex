@@ -21,6 +21,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ProcessPanoptesPusherDataJob;
+use App\Jobs\ProcessPanoptesPusherDataJobDev;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -94,12 +95,14 @@ class ListenPanoptesPusherCommand extends Command
     public function handle(): int
     {
         // Only allow the production environment to proceed
+        /*
         if (config('app.env') !== 'production') {
             // Silently exit for non-production environments
             // \Log::info('Panoptes listener is only available in production environment');
 
             return self::SUCCESS;
         }
+        */
 
         try {
             $this->info('Starting Panoptes Pusher listener...');
@@ -428,7 +431,13 @@ class ListenPanoptesPusherCommand extends Command
                 }
             }
 
-            ProcessPanoptesPusherDataJob::dispatch($data);
+            // Because WSl2 on localhost uses float instead of integer in regard to time,
+            // This fix implemented to avoid the error with Pheanstalk JobStats().
+            $jobClass = app()->environment('local', 'testing')
+                ? ProcessPanoptesPusherDataJobDev::class
+                : ProcessPanoptesPusherDataJob::class;
+
+            $jobClass::dispatch($data);
             $this->info('✅ Classification job dispatched successfully');
 
         } catch (\Throwable $e) {

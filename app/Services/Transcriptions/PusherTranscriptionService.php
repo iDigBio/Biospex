@@ -23,44 +23,52 @@ namespace App\Services\Transcriptions;
 use App\Models\PusherTranscription;
 use Carbon\Carbon;
 
+/**
+ * Service class for handling PusherTranscription operations including CRUD and dashboard queries.
+ */
 class PusherTranscriptionService
 {
-    /**
-     * @var \Illuminate\Database\Eloquent\Builder
-     */
-    private $dashboardQuery;
+    /** @var \Illuminate\Database\Eloquent\Builder Query builder for dashboard operations */
+    private \Illuminate\Database\Eloquent\Builder $dashboardQuery;
 
     /**
-     * PusherTranscriptionService constructor.
+     * Create a new PusherTranscriptionService instance.
+     *
+     * @param  PusherTranscription  $model
      */
     public function __construct(protected PusherTranscription $model) {}
 
     /**
-     * Find by column and value.
+     * Find a PusherTranscription by column and value.
      *
-     * @return mixed
+     * @param  string  $column  Column to search
+     * @param  string  $value  Value to match
+     * @return \App\Models\PusherTranscription|null
      */
-    public function findBy(string $column, string $value)
+    public function findBy(string $column, string $value): ?PusherTranscription
     {
         return $this->model->where($column, $value)->first();
     }
 
     /**
-     * Create.
+     * Create a new PusherTranscription record.
      *
-     * @return mixed
+     * @param  array  $data
+     * @return \App\Models\PusherTranscription
      */
-    public function create(array $data)
+    public function create(array $data): PusherTranscription
     {
         return $this->model->create($data);
     }
 
     /**
-     * Update.
+     * Update existing PusherTranscription record.
      *
-     * @return \App\Models\PusherTranscription|bool
+     * @param  array  $data
+     * @param  mixed  $resourceId
+     * @return \App\Models\PusherTranscription|false
      */
-    public function update(array $data, $resourceId): \App\Models\PusherTranscription|false
+    public function update(array $data, mixed $resourceId): \App\Models\PusherTranscription|false
     {
         $model = $this->model->find($resourceId);
         $result = $model->fill($data)->save();
@@ -69,47 +77,63 @@ class PusherTranscriptionService
     }
 
     /**
-     * Return count for current dashboard query.
+     * Get a total count of dashboard items.
      *
-     * @return mixed
+     * @return int
      */
-    public function getWeDigBioDashboardCount()
+    public function getWeDigBioDashboardCount(): int
     {
         return $this->dashboardQuery->count();
     }
 
     /**
-     * Get dashboard items.
+     * Get paginated dashboard items.
      *
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @param  int  $limit
+     * @param  int  $offset
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getWeDigBioDashboardItems(int $limit, int $offset)
+    public function getWeDigBioDashboardItems(int $limit, int $offset): \Illuminate\Database\Eloquent\Collection
     {
         return $this->dashboardQuery->limit($limit)->offset($offset)->orderBy('timestamp', 'desc')->get();
     }
 
     /**
-     * Set query for dashboard.
+     * Set query builder for dashboard based on request parameters.
+     *
+     * @param  array  $request
+     * @return void
      */
-    public function setQueryForDashboard(array $request)
+    public function setQueryForDashboard(array $request): void
     {
         $timestampStart = $this->setTimestampStart($request);
         $timestampEnd = $this->setTimestampEnd($request);
 
         $this->dashboardQuery = $this->model->where(function ($query) use ($timestampStart, $timestampEnd) {
             $query->where('timestamp', '<=', $timestampStart);
-            isset($date_end) ? $query->where('timestamp', '>=', $timestampEnd) : null;
+            if ($timestampEnd !== null) {
+                $query->where('timestamp', '>=', $timestampEnd);
+            }
         });
     }
 
     /**
-     * Set the date_start with default to now.
+     * Set start timestamp from request or current time.
+     *
+     * @param  array  $request
+     * @return \Carbon\Carbon
      */
     private function setTimestampStart(array $request): Carbon
     {
         return isset($request['timestampStart']) ? Carbon::parse($request['timestampStart'], 'UTC') : Carbon::now('UTC');
     }
 
+    /**
+     * Set the end timestamp from request or null.
+     *
+     * @param  array  $request
+     * @return \Carbon\Carbon|null
+     */
     private function setTimestampEnd(array $request): ?Carbon
     {
         return isset($request['timestampEnd']) ? Carbon::parse($request['timestampEnd'], 'UTC') : null;

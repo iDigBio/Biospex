@@ -125,7 +125,7 @@ class ProcessPanoptesPusherDataJob implements ShouldQueue
         $title = $weDigBioProject === null ?
             $panoptesProject->title : $weDigBioProject->title;
 
-        ZooniverseClassificationJob::dispatch($data, $title);
+        PusherClassificationJob::dispatch($data, $title);
 
         if ($panoptesProject !== null && isset($panoptesProject->expedition_id)) {
             EventTranscriptionJob::dispatch($data, $panoptesProject->expedition_id);

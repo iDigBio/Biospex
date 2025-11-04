@@ -69,9 +69,6 @@ class Kernel extends ConsoleKernel
                 Artisan::call('lada-cache:flush');
             });
 
-            // WeDigBio classification cron. Pulls pusher records from MySql table and enters into pusher_transcriptions
-            $schedule->command('dashboard:records')->everyFiveMinutes();
-
             // Clean efs directories for files over 72 hours old.
             // $schedule->command('app:clean-efs-dirs')->daily();
         }
