@@ -53,7 +53,6 @@ class ExpeditionPresenter extends Presenter
 
         // Fallback to legacy paperclip logic during transition
         if (! empty($this->model->logo_file_name)) {
-            \Log::info('Checking for paperclip logo file: '.$this->model->logo_file_name);
             $baseLength = config('paperclip.storage.base-urls.public');
             $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
             $paperclipPath = "/paperclip/App/Models/Expedition/logos/{$idPartition}/medium/{$this->model->logo_file_name}";
@@ -70,9 +69,6 @@ class ExpeditionPresenter extends Presenter
                 return $originalUrl;
             }
         }
-
-        // Return default missing logo
-        \Log::info('Returning default missing logo');
 
         return config('config.missing_expedition_logo');
     }
@@ -95,7 +91,6 @@ class ExpeditionPresenter extends Presenter
 
         // Fallback to legacy paperclip logic during transition
         if (! empty($this->model->logo_file_name)) {
-            \Log::info('Checking for paperclip logo file: '.$this->model->logo_file_name);
             $baseLength = config('paperclip.storage.base-urls.public');
             $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
             $paperclipPath = "/paperclip/App/Models/Expedition/logos/{$idPartition}/original/{$this->model->logo_file_name}";
@@ -105,9 +100,6 @@ class ExpeditionPresenter extends Presenter
                 return $url;
             }
         }
-
-        // Return default missing logo
-        \Log::info('Returning default missing logo');
 
         return config('config.missing_expedition_logo');
     }

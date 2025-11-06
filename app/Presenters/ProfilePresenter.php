@@ -45,7 +45,6 @@ class ProfilePresenter extends Presenter
 
         // Fallback to legacy paperclip logic during transition
         if (! empty($this->model->avatar_file_name)) {
-            \Log::info('Checking for paperclip avatar file: '.$this->model->avatar_file_name);
             $baseLength = config('paperclip.storage.base-urls.public');
             $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
             $paperclipPath = "/paperclip/App/Models/Profile/avatars/{$idPartition}/original/{$this->model->avatar_file_name}";
