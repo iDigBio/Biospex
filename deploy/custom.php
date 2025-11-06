@@ -71,14 +71,6 @@ task('artisan:package:discover', function () {
  * CUSTOM LARAVEL ARTISAN TASKS
  * =============================================================================
  */
-
-desc('Publish Laravel Nova assets');
-task('artisan:nova:publish', function () {
-    cd('{{release_or_current_path}}');
-    run('php artisan nova:publish --ansi');
-    writeln('✅ Laravel Nova assets published');
-});
-
 desc('Running custom database update queries');
 task('artisan:app:update-queries', function () {
     cd('{{release_or_current_path}}');
