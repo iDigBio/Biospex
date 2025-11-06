@@ -94,7 +94,7 @@ class TranscriptionMapService
     /**
      * Decode transcription an reconcile fields.
      */
-    public function decodeTranscriptionField(string $field): string
+    public function decodeTranscriptionField(string $field): false|string
     {
         if (str_contains($field, 'subject_') || in_array($field, $this->reservedEncoded)) {
             return $field;
@@ -106,7 +106,7 @@ class TranscriptionMapService
     /**
      * Base decode string.
      */
-    public function base64UrlDecode(string $str): string
+    public function base64UrlDecode(string $str): false|string
     {
         return base64_decode(str_replace(['-', '_'], ['+', '/'], $str));
     }
