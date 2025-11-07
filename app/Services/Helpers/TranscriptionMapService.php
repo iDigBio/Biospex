@@ -43,32 +43,36 @@ class TranscriptionMapService
         PanoptesTranscription $panoptesTranscription,
         ?PusherTranscription $pusherTranscription = null
     ): mixed {
-        foreach ($this->mappedTranscriptionFields[$type] as $value) {
-            $encodedValue = $this->decodeTranscriptionField($value);
-
-            // Log if decoding failed to help identify problematic records
-            if ($encodedValue === false) {
-                \Log::error('Base64 decode failed in TranscriptionMapService', [
-                    'type' => $type,
-                    'original_value' => $value,
-                    'panoptes_transcription_id' => $panoptesTranscription->id ?? 'unknown',
-                    'pusher_transcription_id' => $pusherTranscription->id ?? 'unknown',
-                    'mapped_fields' => $this->mappedTranscriptionFields[$type] ?? [],
-                ]);
-
-                continue; // Skip this field and try the next one
+        try {
+            foreach ($this->mappedTranscriptionFields[$type] as $value) {
+                $encodedValue = $this->decodeTranscriptionField($value);
+                if (isset($panoptesTranscription->{$encodedValue})) {
+                    return $panoptesTranscription->{$encodedValue};
+                }
             }
 
-            if (isset($panoptesTranscription->{$encodedValue})) {
-                return $panoptesTranscription->{$encodedValue};
+            if ($pusherTranscription === null) {
+                return '';
             }
-        }
 
-        if ($pusherTranscription === null) {
-            return '';
-        }
+            return $type === 'taxon' ?
+                $pusherTranscription->taxon : $pusherTranscription->transcriptionContent[$type];
+        } catch (\Throwable $e) {
+            \Log::error('Error in mapTranscriptionField method', [
+                'type' => $type,
+                'panoptes_transcription_id' => $panoptesTranscription->id ?? 'unknown',
+                'pusher_transcription_id' => $pusherTranscription->id ?? 'unknown',
+                'mapped_fields' => $this->mappedTranscriptionFields[$type] ?? [],
+                'current_value' => $value ?? 'undefined',
+                'current_encoded_value' => $encodedValue ?? 'undefined',
+                'encoded_value_type' => isset($encodedValue) ? gettype($encodedValue) : 'undefined',
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+            ]);
 
-        return $type === 'taxon' ? $pusherTranscription->taxon : $pusherTranscription->transcriptionContent[$type];
+            throw $e; // Re-throw to prevent database operations
+        }
     }
 
     /**
