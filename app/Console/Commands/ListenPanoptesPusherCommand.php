@@ -21,7 +21,6 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ProcessPanoptesPusherDataJob;
-use App\Jobs\ProcessPanoptesPusherDataJobDev;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -350,6 +349,10 @@ class ListenPanoptesPusherCommand extends Command
                     $this->handlePusherError($payload);
                     break;
 
+                case 'pusher_internal:subscription_succeeded':
+                    \Log::info('Pusher subscription succeeded', $payload);
+                    break;
+
                 default:
                     $this->info("📨 Received event: {$event}");
                     // Log unknown events for debugging
@@ -431,13 +434,8 @@ class ListenPanoptesPusherCommand extends Command
                 }
             }
 
-            // Because WSl2 on localhost uses float instead of integer in regard to time,
-            // This fix implemented to avoid the error with Pheanstalk JobStats().
-            $jobClass = app()->environment('local', 'testing')
-                ? ProcessPanoptesPusherDataJobDev::class
-                : ProcessPanoptesPusherDataJob::class;
+            ProcessPanoptesPusherDataJob::dispatch($data);
 
-            $jobClass::dispatch($data);
             $this->info('✅ Classification job dispatched successfully');
 
         } catch (\Throwable $e) {
