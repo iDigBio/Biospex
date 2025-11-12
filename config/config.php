@@ -22,6 +22,7 @@ return [
     ],
 
     'admin' => [
+        'home' => env('ADMIN_HOME', '/projects'),
         'group' => env('ADMIN_GROUP', 'Admin'),
         'group_id' => env('ADMIN_GROUP_ID', 1),
         'user_id' => env('ADMIN_USER_ID', 1),
@@ -132,8 +133,6 @@ return [
 
     /* Beanstalk Queues */
     'queue' => [
-        'custom_procs' => env('QUEUE_CUSTOM_PROCS'),
-        'num_procs' => env('QUEUE_NUM_PROCS'),
         'chart' => env('QUEUE_CHART'),
         'classification' => env('QUEUE_CLASSIFICATION'),
         'default' => env('QUEUE_DEFAULT'),
@@ -148,7 +147,6 @@ return [
         'wedigbio_event' => env('QUEUE_WEDIGBIO_EVENT'),
         'pusher_process' => env('QUEUE_PUSHER_PROCESS'),
         'reconcile' => env('QUEUE_RECONCILE'),
-        'sns_image_export' => env('QUEUE_SNS_IMAGE_EXPORT'),
         'sns_reconciliation' => env('QUEUE_SNS_RECONCILIATION'),
         'sns_tesseract_ocr' => env('QUEUE_SNS_TESSERACT_OCR'),
         'workflow' => env('QUEUE_WORKFLOW'),
@@ -215,8 +213,6 @@ return [
         'APP_DOMAIN',
         'APP_SERVER_USER',
         'APP_CURRENT_PATH',
-        'QUEUE_CUSTOM_PROCS',
-        'QUEUE_NUM_PROCS',
         'QUEUE_CHART',
         'QUEUE_CLASSIFICATION',
         'QUEUE_DEFAULT',
@@ -226,7 +222,6 @@ return [
         'QUEUE_OCR',
         'QUEUE_EXPORT',
         'QUEUE_RECONCILE',
-        'QUEUE_SNS_IMAGE_EXPORT',
         'QUEUE_SNS_RECONCILIATION',
         'QUEUE_SNS_TESSERACT_OCR',
         'QUEUE_WORKFLOW',

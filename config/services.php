@@ -62,16 +62,16 @@ return [
         'lambda_ocr_function' => env('AWS_LAMBDA_OCR_FUNCTION', 'tesseractOcr'),
 
         // NEW KEYS
-        'lambda_export_count' => env('AWS_LAMBDA_EXPORT_COUNT', 10),
+        'csv_export_count' => env('AWS_CSV_EXPORT_COUNT', 1000),
         'lambda_qualifier' => env('AWS_LAMBDA_QUALIFIER', ''),
         'lambda_ocr_count' => env('AWS_LAMBDA_OCR_COUNT', 100),
 
         // SQS QUEUE NAMES
         'queue_image_tasks' => env('AWS_SQS_IMAGE_TASKS_QUEUE'),
+        'queue_image_tasks_dlq' => env('AWS_SQS_IMAGE_TASKS_DLQ'),
         'queue_export_update' => env('AWS_SQS_EXPORT_UPDATE_QUEUE'),
         'queue_zip_trigger' => env('AWS_SQS_ZIP_TRIGGER_QUEUE'),
         'queue_batch_trigger' => env('AWS_SQS_BATCH_TRIGGER_QUEUE'),
         'queue_batch_update' => env('AWS_SQS_BATCH_UPDATE_QUEUE'),
-        'queue_dlq' => env('AWS_SQS_DLQ'),
     ],
 ];

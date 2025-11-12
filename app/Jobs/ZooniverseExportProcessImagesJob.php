@@ -38,6 +38,8 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
+    public int $timeout = 1800;
+
     /**
      * Create a new job instance.
      *

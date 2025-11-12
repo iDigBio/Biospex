@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Job to update the status of image export processing and trigger CSV build when complete.
@@ -49,17 +50,28 @@ class ExportImageUpdateJob implements ShouldQueue
             ->first();
 
         if (! $file) {
+            \Log::warning('ExportImageUpdateJob: File not found', [
+                'queue_id' => $this->queueId,
+                'subject_id' => $this->subjectId,
+            ]);
+
             return;
         }
 
+        $wasProcessed = $file->processed;  // Cache for guard
+
         $file->processed = 1;
+        $file->tries = $file->tries + 1;
         if ($this->status !== 'success') {
             $file->message = $this->error ?? 'Processing failed';
         }
 
-        $file->save();
+        $saved = $file->save();
 
-        $this->checkIfExportComplete();
+        // Only check/increment if this newly advanced processed (success or fail)
+        if ($saved && $wasProcessed !== 1) {
+            $this->checkIfExportComplete();
+        }
     }
 
     /**

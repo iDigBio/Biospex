@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2015  Biospex
+ * Copyright (C) 2014 - 2025, Biospex
  * biospex@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12,24 +12,30 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use Illuminate\Foundation\Inspiring;
 
-/*
-|--------------------------------------------------------------------------
-| Console Routes
-|--------------------------------------------------------------------------
-|
-| This file is where you may define all of your Closure based console
-| commands. Each Closure is bound to a command instance allowing a
-| simple approach to interacting with each command's IO methods.
-|
-*/
+namespace App\Traits;
 
-Artisan::command('inspire', function () {
-    $router->comment(Inspiring::quote());
-})->describe('Display an inspiring quote');
+use Spatie\ResponseCache\Facades\ResponseCache;
+
+trait ClearsResponseCache
+{
+    public static function bootClearsResponseCache()
+    {
+        self::created(function () {
+            ResponseCache::clear();
+        });
+
+        self::updated(function () {
+            ResponseCache::clear();
+        });
+
+        self::deleted(function () {
+            ResponseCache::clear();
+        });
+    }
+}

@@ -91,13 +91,13 @@ class ZooniverseExportZipResultJob implements ShouldQueue
      */
     private function handleZipSuccess(ExportQueue $queue): void
     {
-        $queue->stage = 3;
+        $queue->stage = 4;
         $queue->save();
 
         // === CREATE DOWNLOAD RECORD ===
         $this->createDownloadRecord($queue);
 
-        ZooniverseExportCreateReportJob::dispatch($queue)->onQueue(config('config.queue.export'));
+        ZooniverseExportCreateReportJob::dispatch($queue);
     }
 
     /**
@@ -115,7 +115,12 @@ class ZooniverseExportZipResultJob implements ShouldQueue
         $queue->error = 1;
         $queue->save();
 
-        throw new \Exception("ZIP failed for queue #{$queue->id}", $data);
+        $errorMessage = "ZIP failed for queue #{$queue->id}";
+        if (! empty($data)) {
+            $errorMessage .= '. Additional data: '.json_encode($data);
+        }
+
+        throw new \Exception($errorMessage, 0);
     }
 
     /**

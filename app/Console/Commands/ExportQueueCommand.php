@@ -58,8 +58,11 @@ class ExportQueueCommand extends Command
      */
     public function handle(): void
     {
-        is_null($this->argument('expeditionId')) ?
+        $expeditionId = $this->argument('expeditionId');
+
+        is_null($expeditionId) ?
             $this->zooniverseExportQueue->processQueue() :
-            $this->zooniverseExportQueue->resetExpeditionExport($this->argument('expeditionId'));
+            $this->zooniverseExportQueue->resetExpeditionExport($expeditionId);
+
     }
 }

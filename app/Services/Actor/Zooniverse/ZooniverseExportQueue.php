@@ -60,7 +60,6 @@ class ZooniverseExportQueue
             ->first();
 
         if (! $exportQueue) {
-
             return;
         }
 

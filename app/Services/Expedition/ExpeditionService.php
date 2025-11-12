@@ -68,9 +68,7 @@ class ExpeditionService
                 $this->syncStat($expedition);
             } catch (\Exception $e) {
                 Log::error('Failed during sync operations in transaction', [
-                    'expedition_id' => $expedition->id,
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
+                    'expedition_id' => $expedition->id, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString(),
                 ]);
                 $this->rollbackSubjects($expedition->id);
                 throw $e; // Re-throw to trigger MySQL rollback
@@ -81,11 +79,7 @@ class ExpeditionService
             return $expedition;
         });
 
-        // Post-commit: Clear caches (outside tx to ensure commit first)
-        \Artisan::call('lada-cache:flush');
-
         return $expedition;
-
     }
 
     /**
@@ -97,8 +91,7 @@ class ExpeditionService
             $this->subjectService->detachSubjects($this->subjectIds, $expeditionId);
         } catch (\Exception $e) {
             Log::error('Failed to rollback subjects during expedition creation failure', [
-                'expedition_id' => $expeditionId,
-                'error' => $e->getMessage(),
+                'expedition_id' => $expeditionId, 'error' => $e->getMessage(),
             ]);
         }
     }
@@ -110,17 +103,14 @@ class ExpeditionService
     {
         try {
             // Detach all current subjects
-            $currentSubjectIds = $this->getSubjectIdsByExpeditionId(
-                $this->expedition->find($expeditionId)
-            );
+            $currentSubjectIds = $this->getSubjectIdsByExpeditionId($this->expedition->find($expeditionId));
             $this->subjectService->detachSubjects($currentSubjectIds, $expeditionId);
 
             // Reattach original subjects
             $this->subjectService->attachSubjects($originalSubjectIds, $expeditionId);
         } catch (\Exception $e) {
             Log::error('Failed to rollback subject changes during expedition update failure', [
-                'expedition_id' => $expeditionId,
-                'error' => $e->getMessage(),
+                'expedition_id' => $expeditionId, 'error' => $e->getMessage(),
             ]);
         }
     }
@@ -131,11 +121,7 @@ class ExpeditionService
     public function getAdminIndex(User $user, array $request = []): Collection
     {
         $query = $this->expedition->with([
-            'project.group',
-            'stat',
-            'panoptesProject',
-            'workflowManager',
-            'zooniverseExport',
+            'project.group', 'stat', 'panoptesProject', 'workflowManager', 'zooniverseExport',
         ])->whereHas('project.group.users', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         });
@@ -150,11 +136,9 @@ class ExpeditionService
      */
     public function getPublicIndex(array $request = []): Collection
     {
-        $query = $this->expedition->with('project:id,slug')
-            ->has('panoptesProject')->whereHas('actors', function ($q) {
-                $q->zooniverse();
-            })
-            ->with('panoptesProject', 'stat', 'zooActorExpedition');
+        $query = $this->expedition->with('project:id,slug')->has('panoptesProject')->whereHas('actors', function ($q) {
+            $q->zooniverse();
+        })->with('panoptesProject', 'stat', 'zooActorExpedition');
 
         $sortedResults = $this->sortRecords($query, $request);
 
@@ -166,23 +150,18 @@ class ExpeditionService
      */
     protected function sortRecords(Builder $query, array $request = []): \Illuminate\Database\Eloquent\Collection
     {
-        $records = ! isset($request['projectId']) ?
-            $query->get() :
-            $query->where('project_id', $request['projectId'])->get();
+        $records = ! isset($request['projectId']) ? $query->get() : $query->where('project_id',
+            $request['projectId'])->get();
 
         if (! isset($request['order'])) {
             return $records;
         }
 
         match ($request['sort']) {
-            'title' => $records = $request['order'] === 'desc' ?
-                $records->sortByDesc('title') : $records->sortBy('title'),
-            'project' => $records = $request['order'] === 'desc' ?
-                $records->sortByDesc(fn ($expedition) => $expedition->project->title) :
-                $records->sortBy(fn ($expedition) => $expedition->project->title),
-            'date' => $records = $request['order'] === 'desc' ?
-                $records->sortByDesc('created_at') :
-                $records->sortBy('created_at'),
+            'title' => $records = $request['order'] === 'desc' ? $records->sortByDesc('title') : $records->sortBy('title'),
+            'project' => $records = $request['order'] === 'desc' ? $records->sortByDesc(fn ($expedition
+            ) => $expedition->project->title) : $records->sortBy(fn ($expedition) => $expedition->project->title),
+            'date' => $records = $request['order'] === 'desc' ? $records->sortByDesc('created_at') : $records->sortBy('created_at'),
         };
 
         return $records;
@@ -269,11 +248,11 @@ class ExpeditionService
             if ($isExistingActor) {
                 return [$actor->id => ['order' => $actor->pivot->order]];
             } else {
-                return [$actor->id => [
-                    'state' => 0,
-                    'order' => $actor->pivot->order,
-                    'total' => $subjectCount,
-                ]];
+                return [
+                    $actor->id => [
+                        'state' => 0, 'order' => $actor->pivot->order, 'total' => $subjectCount,
+                    ],
+                ];
             }
         })->toArray();
 
@@ -281,8 +260,7 @@ class ExpeditionService
             $expedition->actors()->sync($actors);
         } catch (\Exception $e) {
             Log::error('Failed to sync actors', [
-                'expedition_id' => $expedition->id,
-                'error' => $e->getMessage(),
+                'expedition_id' => $expedition->id, 'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -293,14 +271,18 @@ class ExpeditionService
         $subjectCount = $this->getSubjectCount();
 
         try {
+            // Simple updateOrCreate - much cleaner!
             $expedition->stat()->updateOrCreate(
                 ['expedition_id' => $expedition->id],
                 ['local_subject_count' => $subjectCount]
             );
+
+            // Manually flush all Lada Cache
+            //$this->flushLadaCacheManually();
+
         } catch (\Exception $e) {
             Log::error('Failed to sync expedition stat', [
-                'expedition_id' => $expedition->id,
-                'error' => $e->getMessage(),
+                'expedition_id' => $expedition->id, 'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -338,27 +320,25 @@ class ExpeditionService
         // Handle logo upload and removal
         $this->handleLogoUpload($request, $expedition);
 
-        $expedition = DB::transaction(function () use ($expedition, $request) {
-            $expedition->completed = $this->setExpeditionCompleted($expedition, $request['workflow_id']);
-
-            $expedition->fill($request)->save();
-
-            $expedition->load(['actors', 'workflow.actors', 'workflowManager']);
-
-            $this->setSubjectIds($request['subject-ids']);
-
-            // Store original subject IDs for potential rollback
-            $originalSubjectIds = $this->getSubjectIdsByExpeditionId($expedition);
-
-            $this->updateSubjects($expedition);
-
+        return DB::transaction(function () use ($expedition, $request) {
             try {
+                $expedition->completed = $this->setExpeditionCompleted($expedition, $request['workflow_id']);
+
+                $expedition->fill($request)->save();
+
+                $expedition->load(['actors', 'workflow.actors', 'workflowManager']);
+
+                $this->setSubjectIds($request['subject-ids']);
+
+                // Store original subject IDs for potential rollback
+                $originalSubjectIds = $this->getSubjectIdsByExpeditionId($expedition);
+
+                $this->updateSubjects($expedition);
+
                 $this->syncActors($expedition);
             } catch (\Exception $e) {
                 Log::error('Failed during sync operations in update transaction', [
-                    'expedition_id' => $expedition->id,
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
+                    'expedition_id' => $expedition->id, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString(),
                 ]);
 
                 // Rollback MongoDB changes - restore original subjects
@@ -368,8 +348,6 @@ class ExpeditionService
 
             return $expedition;
         });
-
-        return $expedition;
     }
 
     /**
@@ -377,8 +355,7 @@ class ExpeditionService
      */
     private function setExpeditionCompleted(Expedition $expedition, int $workflow_id): int
     {
-        return ($expedition->completed && ! $expedition->locked &&
-            $workflow_id == config('geolocate.workflow_id')) ? 0 : $expedition->completed;
+        return ($expedition->completed && ! $expedition->locked && $workflow_id == config('geolocate.workflow_id')) ? 0 : $expedition->completed;
     }
 
     /**
@@ -397,8 +374,7 @@ class ExpeditionService
     public function getExpeditionDownloadsByActor(Expedition &$expedition): \Illuminate\Database\Eloquent\Model
     {
         return $expedition->load([
-            'project.group',
-            'actors.downloads' => function ($query) use ($expedition) {
+            'project.group', 'actors.downloads' => function ($query) use ($expedition) {
                 $query->where('expedition_id', $expedition->id);
             },
         ]);
@@ -419,10 +395,9 @@ class ExpeditionService
     {
         return $this->expedition->with([
             'project' => function ($q) {
-                $q->withCount('expeditions')
-                    ->withSum('expeditionStats', 'transcriptions_completed')
-                    ->withSum('expeditionStats', 'transcriber_count')
-                    ->withCount('events');
+                $q->withCount('expeditions')->withSum('expeditionStats',
+                    'transcriptions_completed')->withSum('expeditionStats',
+                        'transcriber_count')->withCount('events');
             },
         ])->with('panoptesProject')->whereHas('stat', function ($q) {
             $q->whereBetween('percent_completed', [0.00, 99.99]);
@@ -440,10 +415,9 @@ class ExpeditionService
      */
     public function getExpeditionForZooniverseProcess(int $expeditionId): \Illuminate\Database\Eloquent\Model
     {
-        return $this->expedition->with(['panoptesProject'])
-            ->has('panoptesProject')->whereHas('actors', function ($q) {
-                $q->zooniverse();
-            })->where('completed', 0)->find($expeditionId);
+        return $this->expedition->with(['panoptesProject'])->has('panoptesProject')->whereHas('actors', function ($q) {
+            $q->zooniverse();
+        })->where('completed', 0)->find($expeditionId);
     }
 
     /**
@@ -474,7 +448,6 @@ class ExpeditionService
         if (! empty($data['logo_path'])) {
             // Remove old logo if it exists
             $this->removeOldLogo($expedition);
-
             // The new logo_path will be set via $expedition->fill($data)
         }
 
@@ -513,7 +486,6 @@ class ExpeditionService
                     \Storage::disk($disk)->delete($variantPath);
                 }
             }
-
         } catch (\Exception $e) {
             // Log error but don't fail the update
             \Log::error("Failed to remove old logo for expedition {$expedition->id}: ".$e->getMessage());

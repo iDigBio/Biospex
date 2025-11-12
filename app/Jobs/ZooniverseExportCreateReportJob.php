@@ -116,7 +116,7 @@ class ZooniverseExportCreateReportJob implements ShouldBeUnique, ShouldQueue
         Notification::send($users, new Generic($attributes));
 
         // === FINAL: ONLY DISPATCH CLEANUP ===
-        $this->exportQueue->stage = 4;
+        $this->exportQueue->stage = 5;
         $this->exportQueue->save();
 
         ZooniverseExportDeleteFilesJob::dispatch($this->exportQueue);

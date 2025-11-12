@@ -107,7 +107,6 @@ return [
         env('QUEUE_OCR', 'ocr'),
         env('QUEUE_LAMBDA_OCR', 'lambda_ocr'),
         env('QUEUE_RECONCILE', 'reconcile'),
-        env('QUEUE_SNS_IMAGE_EXPORT', 'sns_image_export'),
         env('QUEUE_SNS_RECONCILIATION', 'sns_reconciliation'),
         env('QUEUE_SNS_TESSERACT_OCR', 'sns_tesseract_ocr'),
         env('QUEUE_SERNEC_FILE', 'sernec_file'),

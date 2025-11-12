@@ -20,7 +20,7 @@
 
 namespace App\Models;
 
-use App\Models\Traits\Presentable;
+use App\Traits\Presentable;
 use App\Presenters\ReconcilePresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 

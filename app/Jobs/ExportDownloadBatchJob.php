@@ -35,7 +35,7 @@ class ExportDownloadBatchJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $timeout = 30;
+    public int $timeout = 30;
 
     public function __construct(protected Download $download)
     {
@@ -59,7 +59,7 @@ class ExportDownloadBatchJob implements ShouldQueue
         $size = Storage::disk('s3')->size($path);
 
         $triggerQueueUrl = $this->getQueueUrl($sqs, 'queue_batch_trigger');
-        $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_export_update');
+        $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_batch_update');
 
         $message = [
             'downloadId' => $this->download->id,

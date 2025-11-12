@@ -69,8 +69,9 @@ return [
         'Building Queue', // 0
         'Processing Images', // 1
         'Building CSV', // 2
-        'Creating Report', // 3
-        'Deleting Working Files', // 4
+        'Creating Archive', // 3
+        'Creating Report', // 4
+        'Deleting Working Files', // 5
     ],
 
     'panoptes' => [

@@ -21,8 +21,8 @@
 namespace App\Models;
 
 use App\Facades\DateHelper;
-use App\Models\Traits\Presentable;
-use App\Models\Traits\UuidTrait;
+use App\Traits\Presentable;
+use App\Traits\UuidTrait;
 use App\Presenters\ProjectPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;

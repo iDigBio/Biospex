@@ -20,9 +20,9 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasGroup;
-use App\Models\Traits\Presentable;
-use App\Models\Traits\UuidTrait;
+use App\Traits\HasGroup;
+use App\Traits\Presentable;
+use App\Traits\UuidTrait;
 use App\Presenters\UserPresenter;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
@@ -32,14 +32,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class User
  */
 class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, HasGroup, LadaCacheTrait, Notifiable, Presentable, UuidTrait;
+    use HasApiTokens, HasFactory, HasGroup, Notifiable, Presentable, UuidTrait;
 
     protected $table = 'users';
 
