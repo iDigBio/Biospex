@@ -21,7 +21,6 @@
 namespace App\Http\Controllers\Front;
 
 use App\Events\SnsTopicSubscriptionEvent;
-use App\Jobs\SnsImageExportJob;
 use App\Jobs\SnsLabelReconciliationJob;
 use App\Jobs\SnsTesseractOcrJob;
 use Aws\Sns\Exception\InvalidSnsMessageException;
@@ -72,7 +71,6 @@ class AwsSnsController
         $job = match (true) {
             str_contains($payload['requestContext']['functionArn'], config('services.aws.lambda_reconciliation_function')) => SnsLabelReconciliationJob::class,
             str_contains($payload['requestContext']['functionArn'], config('services.aws.lambda_ocr_function')) => SnsTesseractOcrJob::class,
-            str_contains($payload['requestContext']['functionArn'], config('services.aws.lambda_export_function')) => SnsImageExportJob::class,
             default => null,
         };
 
