@@ -39,14 +39,13 @@ class ExpeditionPresenter extends Presenter
             // Try medium variant path on S3 first
             $mediumPath = str_replace('/logos/original/', '/logos/medium/', $this->model->logo_path);
             if (Storage::disk('s3')->exists($mediumPath)) {
-                // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                return Storage::disk('s3')->temporaryUrl($mediumPath, now()->addHour());
+                return Storage::disk('s3')->url($mediumPath);
             }
 
             // Try original path on S3 as fallback
             if (Storage::disk('s3')->exists($this->model->logo_path)) {
                 // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                return Storage::disk('s3')->temporaryUrl($this->model->logo_path, now()->addHour());
+                return Storage::disk('s3')->url($this->model->logo_path);
             }
         }
 
@@ -64,7 +63,7 @@ class ExpeditionPresenter extends Presenter
         if (! empty($this->model->logo_path)) {
             if (Storage::disk('s3')->exists($this->model->logo_path)) {
                 // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                return Storage::disk('s3')->temporaryUrl($this->model->logo_path, now()->addHour());
+                return Storage::disk('s3')->url($this->model->logo_path);
             }
         }
 

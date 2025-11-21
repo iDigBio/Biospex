@@ -35,7 +35,10 @@ class ZooniverseExportBatchResultJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
-    public function __construct(protected array $data) {}
+    public function __construct(protected array $data)
+    {
+        $this->onQueue(config('config.queue.default'));
+    }
 
     public function handle(): void
     {
@@ -57,6 +60,9 @@ class ZooniverseExportBatchResultJob implements ShouldQueue
         ];
 
         $download->expedition->project->group->owner->notify(new Generic($attributes, true));
+
+        \Log::info('Stopping batch supervisor');
+        \Artisan::call('batch:listen-controller stop');
     }
 
     private function generateLink(string $file): string

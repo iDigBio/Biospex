@@ -9,6 +9,7 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
+    "ext-curl": "*",
     "ext-dom": "*",
     "ext-fileinfo": "*",
     "ext-memcached": "*",
@@ -37,6 +38,7 @@
     "react/event-loop": "^1.5",
     "react/socket": "^1.16",
     "spatie/laravel-responsecache": "^7.7",
+    "supervisorphp/supervisor": "^5.1",
     "tio/laravel": "^1.10",
     "valentin-morice/filament-json-column": "dev-dev"
   },
@@ -59,7 +61,8 @@
     "preferred-install": "dist",
     "sort-packages": true,
     "allow-plugins": {
-      "pestphp/pest-plugin": true
+      "pestphp/pest-plugin": true,
+      "php-http/discovery": true
     }
   },
   "extra": {

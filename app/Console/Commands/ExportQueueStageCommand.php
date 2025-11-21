@@ -1,4 +1,21 @@
 <?php
+/*
+ * Copyright (C) 2014 - 2025, Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 namespace App\Console\Commands;
 
@@ -8,8 +25,6 @@ use App\Jobs\ZooniverseExportDeleteFilesJob;
 use App\Jobs\ZooniverseExportProcessImagesJob;
 use App\Models\ExportQueue;
 use App\Services\Actor\Zooniverse\ZooniverseZipTriggerService;
-use Aws\S3\S3Client;
-use Aws\Sqs\SqsClient;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
@@ -29,21 +44,13 @@ class ExportQueueStageCommand extends Command
      */
     protected $description = 'Admin command to manually trigger export queue stages for failed exports. Uses current queue stage if --stage not provided.';
 
-    protected SqsClient $sqs;
-
-    protected S3Client $s3;
-
     protected ZooniverseZipTriggerService $zipTriggerService;
 
     public function __construct(
-        SqsClient $sqs,
-        S3Client $s3,
         ZooniverseZipTriggerService $zipTriggerService
     ) {
         parent::__construct();
         $this->zipTriggerService = $zipTriggerService;
-        $this->sqs = $sqs;
-        $this->s3 = $s3;
     }
 
     /**
@@ -79,6 +86,8 @@ class ExportQueueStageCommand extends Command
         $queue->error = 0;
         $queue->save();
 
+        \Artisan::call('update:listen-controller start');
+
         try {
             match ($queue->stage) {
                 1 => ZooniverseExportProcessImagesJob::dispatch($queue),
@@ -110,7 +119,7 @@ class ExportQueueStageCommand extends Command
         $this->info('Sending ZIP trigger to AWS SQS...');
 
         // Process the complete zip trigger workflow
-        $exportData = $this->zipTriggerService->processZipTrigger($this->sqs, $this->s3, $queue);
+        $exportData = $this->zipTriggerService->processZipTrigger($queue);
 
         // Update queue stage to indicate zip creation is in progress
         $queue->stage = 3;

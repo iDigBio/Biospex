@@ -26,8 +26,6 @@ use App\Services\Actor\Zooniverse\ZooniverseZipTriggerService;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Process\MapZooniverseCsvColumnsService;
 use App\Traits\NotifyOnJobFailure;
-use Aws\S3\S3Client;
-use Aws\Sqs\SqsClient;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -69,33 +67,27 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
      *
      * Processes S3 objects, creates CSV manifest, and triggers zip creation.
      *
-     * @param  S3Client  $s3  AWS S3 client
-     * @param  SqsClient  $sqs  AWS SQS client
      * @param  AwsS3CsvService  $awsS3CsvService  Service for handling S3 CSV operations
      * @param  MapZooniverseCsvColumnsService  $mapZooniverseCsvColumnsService  Service for mapping CSV columns
      *
-     * @throws \Exception When no images are found or CSV row count doesn't match image count
+     * @throws \Exception When no images are found or CSV row count doesn't match the image count
      */
     public function handle(
-        S3Client $s3,
-        SqsClient $sqs,
         AwsS3CsvService $awsS3CsvService,
         MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService,
         ZooniverseZipTriggerService $zipTriggerService
     ): void {
 
+        \Log::info('ZooniverseExportBuildCsvJob: Starting', ['queue_id' => $this->exportQueue->id]);
+        return;
+
         $this->exportQueue->load('expedition');
 
         // === GET ALL EXPORT DATA ===
-        $exportData = $zipTriggerService->getExportData($s3, $this->exportQueue);
+        $exportData = $zipTriggerService->getExportData($this->exportQueue);
 
         // === CHECK AND DELETE EXISTING MANIFEST.CSV ===
-        if ($s3->doesObjectExist($exportData['s3Bucket'], $exportData['csvFilePath'])) {
-            $s3->deleteObject([
-                'Bucket' => $exportData['s3Bucket'],
-                'Key' => $exportData['csvFilePath'],
-            ]);
-        }
+        $zipTriggerService->deleteManifest($exportData);
 
         // === BUILD CSV ON S3 ===
         $awsS3CsvService->createBucketStream($exportData['s3Bucket'], $exportData['csvFilePath'], 'w');
@@ -136,7 +128,7 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
         }
 
         // === SEND ZIP TRIGGER ===
-        $zipTriggerService->sendZipTrigger($sqs, $this->exportQueue, $exportData['totalSize'], $exportData['fileCount']);
+        $zipTriggerService->sendZipTrigger($this->exportQueue, $exportData['totalSize'], $exportData['fileCount']);
 
         $this->exportQueue->stage = 3;
         $this->exportQueue->save();

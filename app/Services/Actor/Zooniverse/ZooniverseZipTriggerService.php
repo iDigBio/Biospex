@@ -22,6 +22,7 @@ namespace App\Services\Actor\Zooniverse;
 
 use App\Models\ExportQueue;
 use Aws\S3\S3Client;
+use Aws\Sfn\SfnClient;
 use Aws\Sqs\SqsClient;
 
 /**
@@ -29,6 +30,12 @@ use Aws\Sqs\SqsClient;
  */
 class ZooniverseZipTriggerService
 {
+    public function __construct(
+        protected SfnClient $stepFunctions,
+        protected SqsClient $sqs,
+        protected S3Client $s3
+    ) {}
+
     /**
      * Get complete export data including paths and S3 file information.
      *
@@ -36,7 +43,7 @@ class ZooniverseZipTriggerService
      *
      * @throws \Exception When no images are found
      */
-    public function getExportData(S3Client $s3, ExportQueue $exportQueue): array
+    public function getExportData(ExportQueue $exportQueue): array
     {
         // Build all paths
         $scratchDir = config('config.scratch_dir');
@@ -50,7 +57,7 @@ class ZooniverseZipTriggerService
         $fileCount = 0;
         $imageKeys = [];
 
-        $paginator = $s3->getPaginator('ListObjectsV2', [
+        $paginator = $this->s3->getPaginator('ListObjectsV2', [
             'Bucket' => $s3Bucket,
             'Prefix' => "{$fullProcessPath}/",
         ]);
@@ -82,23 +89,22 @@ class ZooniverseZipTriggerService
     /**
      * Send ZIP trigger message to AWS SQS queue.
      *
-     * @param  SqsClient  $sqs  AWS SQS client
      * @param  ExportQueue  $exportQueue  The export queue instance
      * @param  int  $totalSize  Total file size in bytes
      * @param  int  $fileCount  Number of files
      *
      * @throws \Exception When unable to send message
      */
-    public function sendZipTrigger(SqsClient $sqs, ExportQueue $exportQueue, int $totalSize, int $fileCount): void
+    public function sendZipTrigger(ExportQueue $exportQueue, int $totalSize, int $fileCount): void
     {
         // Get queue URLs
-        $queueUrl = $this->getQueueUrl($sqs, 'queue_zip_trigger');
-        $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_export_update');
+        $queueUrl = $this->getQueueUrl('queue_zip_trigger');
+        $updatesQueueUrl = $this->getQueueUrl('queue_export_update');
 
         // Build process directory path
         $processDir = $this->buildProcessDir($exportQueue);
 
-        // Prepare payload
+        // Prepare common payload
         $payload = [
             'processDir' => $processDir,
             's3Bucket' => config('filesystems.disks.s3.bucket'),
@@ -106,13 +112,27 @@ class ZooniverseZipTriggerService
             'queueId' => $exportQueue->id,
             'totalSize' => $totalSize,
             'fileCount' => $fileCount,
+            'finalKey' => "export/{$processDir}.zip", // Added for Step Function
         ];
 
-        // Send message to SQS
-        $sqs->sendMessage([
-            'QueueUrl' => $queueUrl,
-            'MessageBody' => json_encode($payload),
-        ]);
+        // Configurable threshold (e.g., from .env or config)
+        $zipThreshold = config('services.aws.zip_threshold');
+
+        if ($fileCount > $zipThreshold) {
+            // Trigger Step Function for large jobs
+            $result = $this->stepFunctions->startExecution([
+                'stateMachineArn' => 'arn:aws:states:us-east-2:147899039648:stateMachine:ZipBatchOrchestrator',
+                'input' => json_encode($payload),
+            ]);
+            \Log::info("Step Function execution started for {$processDir}: ".$result['executionArn']);
+        } else {
+            // Send to SQS for direct Lambda processing for small jobs
+            $this->sqs->sendMessage([
+                'QueueUrl' => $queueUrl,
+                'MessageBody' => json_encode($payload),
+            ]);
+            \Log::info("SQS message sent for {$processDir} direct processing");
+        }
     }
 
     /**
@@ -122,13 +142,29 @@ class ZooniverseZipTriggerService
      *
      * @throws \Exception
      */
-    public function processZipTrigger(SqsClient $sqs, S3Client $s3, ExportQueue $exportQueue): array
+    public function processZipTrigger(ExportQueue $exportQueue): array
     {
-        $exportData = $this->getExportData($s3, $exportQueue);
+        $exportData = $this->getExportData($exportQueue);
 
-        $this->sendZipTrigger($sqs, $exportQueue, $exportData['totalSize'], $exportData['fileCount']);
+        $this->sendZipTrigger($exportQueue, $exportData['totalSize'], $exportData['fileCount']);
 
         return $exportData;
+    }
+
+    /**
+     * Delete manifest CSV file from S3 bucket if it exists.
+     *
+     * @param  array  $exportData  Export data containing s3Bucket and csvFilePath keys
+     * @return void
+     */
+    public function deleteManifest(array $exportData): void
+    {
+        if ($this->s3->doesObjectExist($exportData['s3Bucket'], $exportData['csvFilePath'])) {
+            $this->s3->deleteObject([
+                'Bucket' => $exportData['s3Bucket'],
+                'Key' => $exportData['csvFilePath'],
+            ]);
+        }
     }
 
     /**
@@ -142,14 +178,13 @@ class ZooniverseZipTriggerService
     /**
      * Get AWS SQS queue URL for given queue key.
      *
-     * @param  SqsClient  $sqs  AWS SQS client instance
      * @param  string  $key  Queue configuration key
      * @return string Queue URL
      */
-    protected function getQueueUrl(SqsClient $sqs, string $key): string
+    protected function getQueueUrl(string $key): string
     {
         $queueName = config("services.aws.{$key}");
 
-        return $sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
+        return $this->sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
     }
 }

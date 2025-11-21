@@ -9,7 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Job to update the status of image export processing and trigger CSV build when complete.
@@ -17,24 +16,36 @@ use Illuminate\Support\Facades\DB;
  * This job handles updating individual export queue file statuses and checks if the entire
  * export process is complete to trigger the next stage of processing.
  */
-class ExportImageUpdateJob implements ShouldQueue
+class ZooniverseExportImageUpdateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public int $queueId;
+
+    public string $subjectId;
+
+    public string $status;
+
+    public ?string $error;
 
     /**
      * Create a new job instance.
      *
-     * @param  int  $queueId  The ID of the export queue
-     * @param  string  $subjectId  The ID of the subject being processed
-     * @param  string  $status  The processing status ('success' or 'failed')
-     * @param  string|null  $error  Optional error message if processing failed
+     * @param  array  $data  {
+     *
+     * @type int $queueId The ID of the export queue
+     * @type string $subjectId The subject ID for the export
+     * @type string $status The processing status
+     * @type string $error Optional. Error message if processing failed
+     *              }
      */
-    public function __construct(
-        public int $queueId,
-        public string $subjectId,
-        public string $status,
-        public ?string $error = null
-    ) {
+    public function __construct(array $data)
+    {
+        $this->queueId = (int) $data['queueId'];
+        $this->subjectId = (string) $data['subjectId'];
+        $this->status = (string) $data['status'];
+        $this->error = $data['error'] ?? null;
+
         $this->onQueue(config('config.queue.export'));
     }
 
@@ -50,7 +61,7 @@ class ExportImageUpdateJob implements ShouldQueue
             ->first();
 
         if (! $file) {
-            \Log::warning('ExportImageUpdateJob: File not found', [
+            \Log::warning('ZooniverseExportImageUpdateJob: File not found', [
                 'queue_id' => $this->queueId,
                 'subject_id' => $this->subjectId,
             ]);

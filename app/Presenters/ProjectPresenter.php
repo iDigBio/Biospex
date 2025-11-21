@@ -38,7 +38,7 @@ class ProjectPresenter extends Presenter
         if (! empty($this->model->logo_path)) {
             if (Storage::disk('s3')->exists($this->model->logo_path)) {
                 // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                return Storage::disk('s3')->temporaryUrl($this->model->logo_path, now()->addHour());
+                return Storage::disk('s3')->url($this->model->logo_path);
             }
         }
 

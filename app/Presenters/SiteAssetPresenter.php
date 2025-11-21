@@ -28,11 +28,11 @@ use Storage;
 class SiteAssetPresenter extends Presenter
 {
     /**
-     * Build document link with support for new Livewire path.
+     * Build asset link with support for a new Livewire path.
      *
      * @return string
      */
-    public function documentUrl()
+    public function assetUrl()
     {
         $url = null;
         $filename = null;
@@ -41,7 +41,7 @@ class SiteAssetPresenter extends Presenter
         if (! empty($this->model->download_path)) {
             if (Storage::disk('s3')->exists($this->model->download_path)) {
                 // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                $url = Storage::disk('s3')->temporaryUrl($this->model->download_path, now()->addHour());
+                $url = Storage::disk('s3')->url($this->model->download_path);
                 $filename = basename($this->model->download_path);
             }
         }

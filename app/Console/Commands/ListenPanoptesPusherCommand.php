@@ -93,15 +93,10 @@ class ListenPanoptesPusherCommand extends Command
      */
     public function handle(): int
     {
-        // Only allow the production environment to proceed
-        /*
-        if (config('app.env') !== 'production') {
-            // Silently exit for non-production environments
-            // \Log::info('Panoptes listener is only available in production environment');
+        if (! config('services.aws.sqs_listen_panoptes_pusher')) {
 
             return self::SUCCESS;
         }
-        */
 
         try {
             $this->info('Starting Panoptes Pusher listener...');

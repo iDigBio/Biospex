@@ -44,6 +44,7 @@ class ExportQueue extends BaseEloquentModel
         'stage',
         'queued',
         'total',
+        'files_ready',
         'error',
     ];
 

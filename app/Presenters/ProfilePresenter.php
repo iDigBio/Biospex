@@ -38,7 +38,7 @@ class ProfilePresenter extends Presenter
         if (! empty($this->model->avatar_path)) {
             if (Storage::disk('s3')->exists($this->model->avatar_path)) {
                 // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                return Storage::disk('s3')->temporaryUrl($this->model->avatar_path, now()->addHour());
+                return Storage::disk('s3')->url($this->model->avatar_path);
             }
         }
 
@@ -58,7 +58,7 @@ class ProfilePresenter extends Presenter
             $mediumPath = str_replace('/original/', '/medium/', $this->model->avatar_path);
 
             if (Storage::disk('s3')->exists($mediumPath)) {
-                return Storage::disk('s3')->temporaryUrl($mediumPath, now()->addHour());
+                return Storage::disk('s3')->url($mediumPath);
             }
         }
 
@@ -78,7 +78,7 @@ class ProfilePresenter extends Presenter
             $smallPath = str_replace('/original/', '/small/', $this->model->avatar_path);
 
             if (Storage::disk('s3')->exists($smallPath)) {
-                return Storage::disk('s3')->temporaryUrl($smallPath, now()->addHour());
+                return Storage::disk('s3')->url($smallPath);
             }
         }
 

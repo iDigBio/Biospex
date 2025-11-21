@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2014 - 2025, Biospex
  * biospex@gmail.com
@@ -25,7 +26,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use JetBrains\PhpStorm\NoReturn;
 
 /**
  * Listens for updates from SQS queue and processes them.
@@ -42,11 +42,8 @@ class ListenBatchUpdateQueue extends Command
     /** @var SqsClient AWS SQS client instance */
     private SqsClient $sqs;
 
-    /** @var \React\EventLoop\LoopInterface Event loop instance */
-    private \React\EventLoop\LoopInterface $loop;
-
-    /** @var bool Indicates if the listener is shutting down */
-    private bool $isShuttingDown = false;
+    /** @var bool Indicates if the listener should exit */
+    private bool $shouldExit = false;
 
     /** @var int Number of reconnection attempts */
     private int $reconnectAttempts = 0;
@@ -54,19 +51,10 @@ class ListenBatchUpdateQueue extends Command
     /** @var int Maximum number of reconnection attempts */
     private int $maxReconnectAttempts = 10;
 
-    /** @var float Delay between reconnection attempts */
-    private float $reconnectDelay = 1.0;
-
-    /** @var int|null Timestamp of last received message */
-    private ?int $lastMessageTime;
-
-    /** @var mixed Timer for heartbeat checks */
-    private mixed $heartbeatTimer;
-
     /** @var string Admin email address for notifications */
     private string $adminEmail;
 
-    /** @var int Timestamp of last notification email sent */
+    /** @var int Timestamp of the last notification email sent */
     private int $lastEmailSent = 0;
 
     public function __construct(SqsClient $sqs)
@@ -83,15 +71,10 @@ class ListenBatchUpdateQueue extends Command
      */
     public function handle(): int
     {
-        if (config('app.env') !== 'production' && config('app.env') !== 'local') {
-
-            return self::SUCCESS;
-        }
-
         try {
             $this->info('Starting Batch Update SQS Listener...');
             $this->validateConfiguration();
-            $this->initializeListener();
+            $this->runWorker();
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
@@ -104,7 +87,7 @@ class ListenBatchUpdateQueue extends Command
     /**
      * Validate required AWS configuration settings.
      *
-     * @throws \RuntimeException When required configuration is missing
+     * @throws \RuntimeException When the required configuration is missing
      */
     private function validateConfiguration(): void
     {
@@ -121,38 +104,53 @@ class ListenBatchUpdateQueue extends Command
     }
 
     /**
-     * Initialize the SQS listener and event loop.
-     *
-     * @throws \Throwable On initialization failure
+     * Run the worker loop.
      */
-    private function initializeListener(): void
+    private function runWorker(): void
     {
-        $this->loop = \React\EventLoop\Loop::get();
-        $this->lastMessageTime = time();
-        $this->setupHeartbeat();
         $this->setupSignalHandlers();
-        $this->connectToSqs();
+        $idleStart = null;
+        $gracePeriod = (int) config('services.aws.batch_idle_grace', 60);
 
-        $this->info('Event loop started. Listening...');
-        $this->loop->run();
-    }
+        $this->info('Worker started. Listening...');
 
-    /**
-     * Setup periodic heartbeat to monitor connection health.
-     */
-    private function setupHeartbeat(): void
-    {
-        $this->heartbeatTimer = $this->loop->addPeriodicTimer(30, function () {
-            if ($this->isShuttingDown) {
-                return;
+        while (true) {
+            if (extension_loaded('pcntl')) {
+                pcntl_signal_dispatch();
             }
 
-            $now = time();
-            if (($now - $this->lastMessageTime) > 300) { // 5 min
-                $this->warn('No SQS messages in 5 minutes — checking connection...');
-                $this->forceReconnection();
+            if ($this->shouldExit) {
+                break;
             }
-        });
+
+            // Check active batches logic
+            if (! $this->hasActiveBatches()) {
+                if ($idleStart === null) {
+                    $idleStart = time();
+                    $this->info("No pending batch messages. Monitoring for {$gracePeriod} seconds before shutdown.");
+                } elseif ((time() - $idleStart) > $gracePeriod) {
+                    $this->info('No pending batch messages. Shutting down listener.');
+                    break;
+                }
+                sleep(5);
+
+                continue;
+            } else {
+                if ($idleStart !== null) {
+                    $idleStart = null;
+                    $this->info('Batch messages detected—continuing polling.');
+                }
+            }
+
+            try {
+                $this->pollSqsSync();
+            } catch (\Throwable $e) {
+                $this->handleConnectionError($e);
+                sleep(min(60, pow(2, $this->reconnectAttempts)));
+            }
+        }
+
+        $this->info('Shutdown complete');
     }
 
     /**
@@ -164,66 +162,37 @@ class ListenBatchUpdateQueue extends Command
             return;
         }
 
-        foreach ([SIGINT, SIGTERM] as $signal) {
-            $this->loop->addSignal($signal, function () {
-                $this->info('Shutdown signal received...');
-                $this->shutdown(0);
-            });
-        }
+        $handler = function () {
+            $this->info('Shutdown signal received...');
+            $this->shouldExit = true;
+        };
+
+        pcntl_signal(SIGINT, $handler);
+        pcntl_signal(SIGTERM, $handler);
     }
 
     /**
-     * Establish connection to AWS SQS service.
+     * Poll SQS queue synchronously.
      */
-    private function connectToSqs(): void
-    {
-        if ($this->isShuttingDown) {
-            return;
-        }
-
-        $this->lastMessageTime = time();
-        $this->info('Connecting to SQS (attempt '.($this->reconnectAttempts + 1).')...');
-
-        $this->pollSqs();
-    }
-
-    /**
-     * Poll SQS queue for messages in batches.
-     */
-    private function pollSqs(): void
+    private function pollSqsSync(): void
     {
         $queueUrl = $this->getQueueUrl('queue_batch_update');
 
-        $this->sqs->receiveMessageAsync([
+        $result = $this->sqs->receiveMessage([
             'QueueUrl' => $queueUrl,
-            'MaxNumberOfMessages' => 10, // Get up to 10 messages in batch
+            'MaxNumberOfMessages' => 10,
             'WaitTimeSeconds' => 20,
-            'VisibilityTimeout' => 30,
-            'AttributeNames' => ['ApproximateReceiveCount'], // Track retry attempts
-        ])->then(
-            function ($response) {
-                $this->reconnectAttempts = 0;
-                $this->reconnectDelay = 1.0;
+            'VisibilityTimeout' => 60,
+            'AttributeNames' => ['ApproximateReceiveCount'],
+        ]);
 
-                if (! empty($response['Messages'])) {
-                    $this->lastMessageTime = time();
-                    $messageCount = count($response['Messages']);
+        $messages = $result['Messages'] ?? [];
 
-                    $this->info("📦 Received batch of {$messageCount} messages from SQS");
-
-                    $this->processBatchMessages($response['Messages'], $this->getQueueUrl('queue_batch_update'));
-                }
-
-                if (! $this->isShuttingDown) {
-                    $this->loop->addTimer(0.1, function () {
-                        $this->pollSqs();
-                    });
-                }
-            },
-            function ($e) {
-                $this->handleConnectionError($e);
-            }
-        );
+        if (! empty($messages)) {
+            $this->reconnectAttempts = 0;
+            $this->info('📦 Received batch of '.count($messages).' messages from SQS');
+            $this->processBatchMessages($messages, $queueUrl);
+        }
     }
 
     /**
@@ -240,7 +209,6 @@ class ListenBatchUpdateQueue extends Command
             $messageId = $message['MessageId'] ?? 'unknown';
             $receiveCount = $message['Attributes']['ApproximateReceiveCount'] ?? 1;
 
-            // Log if message has been retried multiple times
             if ($receiveCount > 3) {
                 $this->warn("⚠️  Message {$messageId} has been retried {$receiveCount} times");
             }
@@ -248,33 +216,27 @@ class ListenBatchUpdateQueue extends Command
             try {
                 $this->processSingleMessage($message);
                 $processedMessages[] = $message;
-
             } catch (\InvalidArgumentException $e) {
-                // Message format errors - delete to avoid infinite retries
                 $this->error("❌ Invalid message format: {$e->getMessage()} (Message ID: {$messageId})");
-                $processedMessages[] = $message; // Add to processed for deletion
-
+                $processedMessages[] = $message;
             } catch (\Throwable $e) {
                 $this->handleError('Failed to process message in batch', $e, [
                     'message_id' => $messageId,
                     'message_body_preview' => substr($message['Body'] ?? '', 0, 200),
                 ]);
-
-                // Add to processed if it's a permanent error that should be deleted
                 if ($this->isPermanentError($e)) {
                     $processedMessages[] = $message;
                 }
             }
         }
 
-        // Batch deletes successfully processed messages
         if (! empty($processedMessages)) {
             $this->batchDeleteMessages($queueUrl, $processedMessages);
         }
     }
 
     /**
-     * Process a single SQS message (extracted for batch processing).
+     * Process a single SQS message.
      *
      * @param  array  $message  SQS message data
      *
@@ -282,9 +244,6 @@ class ListenBatchUpdateQueue extends Command
      */
     private function processSingleMessage(array $message): void
     {
-        $messageId = $message['MessageId'] ?? 'unknown';
-
-        // Validate message has body
         if (empty($message['Body'])) {
             throw new \InvalidArgumentException('Message body is empty');
         }
@@ -307,7 +266,6 @@ class ListenBatchUpdateQueue extends Command
      */
     private function isPermanentError(\Throwable $e): bool
     {
-        // Delete messages that have permanent issues
         $permanentErrorPatterns = [
             'Unknown function:',
             'Invalid JSON',
@@ -325,15 +283,14 @@ class ListenBatchUpdateQueue extends Command
     }
 
     /**
-     * Route message to appropriate job based on function name.
+     * Route message to the appropriate job based on the function name.
      *
      * @param  array  $data  Message data
      *
-     * @throws \InvalidArgumentException|\Throwable When function is missing or unknown
+     * @throws \InvalidArgumentException|\Throwable When a function is missing or unknown
      */
     private function routeMessage(array $data): void
     {
-        // Validate required fields
         if (! isset($data['function'])) {
             throw new \InvalidArgumentException('Message missing required "function" field');
         }
@@ -345,7 +302,6 @@ class ListenBatchUpdateQueue extends Command
                 'BiospexBatchCreator' => $this->dispatchBatchCreatorJob($data),
                 default => throw new \InvalidArgumentException("Unknown function: {$function}"),
             };
-
         } catch (\Throwable $e) {
             Log::error('Failed to dispatch job', [
                 'function' => $function,
@@ -360,6 +316,7 @@ class ListenBatchUpdateQueue extends Command
      * Dispatch a batch creator job based on message data.
      *
      * @param  array  $data  Message data containing batch processing results
+     *
      * @throws \InvalidArgumentException When required fields are missing
      * @throws \RuntimeException When batch processing failed
      */
@@ -443,28 +400,8 @@ class ListenBatchUpdateQueue extends Command
 
         if ($this->reconnectAttempts > $this->maxReconnectAttempts) {
             $this->handleCriticalError("Max reconnection attempts ({$this->maxReconnectAttempts}) exceeded", $e);
-            $this->shutdown(1);
+            $this->shouldExit = true;
         }
-
-        // Exponential backoff with jitter using reconnectDelay as base
-        $jitter = mt_rand(0, 1000) / 1000;
-        $delay = min(60, $this->reconnectDelay * pow(2, $this->reconnectAttempts - 1)) + $jitter;
-
-        $this->info('⏰ Reconnecting in '.round($delay, 2).'s...');
-        $this->loop->addTimer($delay, function () {
-            $this->connectToSqs();
-        });
-    }
-
-    /**
-     * Force reconnection to SQS service.
-     */
-    private function forceReconnection(): void
-    {
-        $this->info('Forcing SQS reconnection...');
-        $this->loop->addTimer(1.0, function () {
-            $this->connectToSqs();
-        });
     }
 
     /**
@@ -492,7 +429,6 @@ class ListenBatchUpdateQueue extends Command
             return;
         }
 
-        // SQS batch delete supports up to 10 messages per request
         $batches = array_chunk($messages, 10);
 
         foreach ($batches as $batchIndex => $batch) {
@@ -514,17 +450,14 @@ class ListenBatchUpdateQueue extends Command
                 $successCount = count($result['Successful'] ?? []);
                 $this->info("🗑️  Batch deleted {$successCount} messages");
 
-                // Handle any failed deletions
                 if (! empty($result['Failed'])) {
                     foreach ($result['Failed'] as $failed) {
                         $this->error("Failed to delete message in batch: {$failed['Code']} - {$failed['Message']}");
                     }
                 }
-
             } catch (\Throwable $e) {
                 $this->error('Batch delete failed, falling back to individual deletion: '.$e->getMessage());
 
-                // Fallback to individual deletion
                 foreach ($batch as $message) {
                     $this->deleteMessage($queueUrl, $message['ReceiptHandle']);
                 }
@@ -597,7 +530,6 @@ class ListenBatchUpdateQueue extends Command
             });
 
             Log::info('Error notification email sent', ['subject' => $subject]);
-
         } catch (\Throwable $me) {
             Log::error('Failed to send alert email', [
                 'mail_error' => $me->getMessage(),
@@ -648,19 +580,24 @@ class ListenBatchUpdateQueue extends Command
     }
 
     /**
-     * Shutdown the listener gracefully.
+     * Check if the batch queue has pending messages.
      *
-     * @param  int  $code  Exit code
+     * @return bool True if messages > 0
      */
-    #[NoReturn]
-    private function shutdown(int $code): void
+    private function hasActiveBatches(): bool
     {
-        $this->isShuttingDown = true;
-        if ($this->heartbeatTimer) {
-            $this->loop->cancelTimer($this->heartbeatTimer);
+        try {
+            $queueUrl = $this->getQueueUrl('queue_batch_update');
+            $result = $this->sqs->getQueueAttributes([
+                'QueueUrl' => $queueUrl,
+                'AttributeNames' => ['ApproximateNumberOfMessages'],
+            ]);
+
+            return (int) ($result['Attributes']['ApproximateNumberOfMessages'] ?? 0) > 0;
+        } catch (\Throwable $e) {
+            $this->warn('Failed to check queue attributes: '.$e->getMessage());
+
+            return true;  // Assume active on error to avoid false shutdown
         }
-        $this->loop->stop();
-        $this->info($code === 0 ? 'Shutdown complete' : 'Shutdown with errors');
-        exit($code);
     }
 }

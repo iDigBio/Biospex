@@ -48,14 +48,19 @@ class ZooniverseExportQueue
 
     /**
      * Process export queue.
-     * Gets first non-errored and non-queued export and dispatches it for processing.
+     * Gets the first non-errored and non-queued export and dispatches it for processing.
      */
     public function processQueue(): void
     {
+        if ($this->exportQueue->where('queued', 1)->where('error', 0)->exists()) {
+            return;
+        }
+
         $exportQueue = $this->exportQueue
             ->with('expedition')
             ->where('error', 0)
             ->where('queued', 0)
+            ->where('files_ready', 1)
             ->orderBy('created_at', 'asc')
             ->first();
 
@@ -66,6 +71,8 @@ class ZooniverseExportQueue
         $exportQueue->queued = 1;
         $exportQueue->stage = 1;
         $exportQueue->save();
+
+        \Artisan::call('update:listen-controller start');
 
         ZooniverseExportProcessImagesJob::dispatch($exportQueue);
     }

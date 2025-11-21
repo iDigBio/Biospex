@@ -6,7 +6,7 @@
             {!! $asset->description !!}
         </div>
         <div class="card-footer py-4">
-            {!! $asset->present()->document_url !!}
+            {!! $asset->present()->asset_url !!}
         </div>
     </div>
 </div>

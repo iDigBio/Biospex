@@ -74,9 +74,11 @@ return [
         'queue_batch_trigger' => env('AWS_SQS_BATCH_TRIGGER_QUEUE'),
         'queue_batch_update' => env('AWS_SQS_BATCH_UPDATE_QUEUE'),
 
-        'sqs_listen_batch_update' => env('AWS_SQS_LISTEN_BATCH_UPDATE', true),
-        'sqs_listen_export_update' => env('AWS_SQS_LISTEN_EXPORT_UPDATE', true),
-        'sqs_listen_export_dlqueue' => env('AWS_SQS_LISTEN_EXPORT_DLQUEUE', true),
+        // set whether to run or not via .env for different environments
         'sqs_listen_panoptes_pusher' => env('AWS_SQS_LISTEN_PANOPTES_PUSHER', true),
+
+        'batch_idle_grace' => env('AWS_BATCH_IDLE_GRACE', 1800),
+        'export_idle_grace' => env('AWS_EXPORT_IDLE_GRACE', 300),
+        'zip_threshold' => env('AWS_ZIP_THRESHOLD', 8000),
     ],
 ];

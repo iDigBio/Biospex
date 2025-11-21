@@ -38,7 +38,7 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
-    public int $timeout = 1800;
+    public int $timeout = 3600;
 
     /**
      * Create a new job instance.
@@ -63,19 +63,22 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
     {
         $this->exportQueue->load('expedition');
 
+        if (! ExportQueueFile::where('queue_id', $this->exportQueue->id)
+            ->where('processed', 0)
+            ->exists()) {
+            throw new \Exception("No unprocessed files found for export queue ID: {$this->exportQueue->id}");
+        }
+
         $files = ExportQueueFile::where('queue_id', $this->exportQueue->id)
             ->where('processed', 0)
             ->orderBy('id')
-            ->get();
-
-        if ($files->isEmpty()) {
-            throw new \Exception("No unprocessed files found for export queue ID: {$this->exportQueue->id}");
-        }
+            ->cursor();
 
         $queueUrl = $this->getQueueUrl($sqs, 'queue_image_tasks');
         $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_export_update');
         $processDir = "{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
 
+        $processedCount = 0;
         foreach ($files as $file) {
             $payload = [
                 'processDir' => $processDir,
@@ -86,11 +89,17 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
                 'queueId' => $this->exportQueue->id,
             ];
 
-            $sqs->sendMessage([
-                'QueueUrl' => $queueUrl,
-                'MessageBody' => json_encode($payload),
-            ]);
+            try {
+                $sqs->sendMessage([
+                    'QueueUrl' => $queueUrl,
+                    'MessageBody' => json_encode($payload),
+                ]);
+            } catch (\Exception $e) {
+                \Log::error("Failed to send for file {$file->id}: ".$e->getMessage());
+            }
+            $processedCount++;
         }
+        \Log::info("Sent {$processedCount} records to SQS");
     }
 
     /**

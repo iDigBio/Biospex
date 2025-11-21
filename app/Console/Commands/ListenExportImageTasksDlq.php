@@ -20,19 +20,19 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\ExportImageUpdateJob;
+use App\Jobs\ZooniverseExportImageUpdateJob;
+use App\Models\ExportQueue;
 use Aws\Sqs\SqsClient;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use JetBrains\PhpStorm\NoReturn;
 
 /**
  * Listens for messages from the export DLQ and processes recovery.
  * Handles reconnection attempts and monitoring of the connection health.
  */
-class ListenExportMonitorDlQueue extends Command
+class ListenExportImageTasksDlq extends Command
 {
     /** @var string Command signature */
     protected $signature = 'export:monitor-dlq';
@@ -43,26 +43,14 @@ class ListenExportMonitorDlQueue extends Command
     /** @var SqsClient AWS SQS client instance */
     private SqsClient $sqs;
 
-    /** @var \React\EventLoop\LoopInterface Event loop instance */
-    private \React\EventLoop\LoopInterface $loop;
-
-    /** @var bool Indicates if the listener is shutting down */
-    private bool $isShuttingDown = false;
+    /** @var bool Indicates if the listener should exit */
+    private bool $shouldExit = false;
 
     /** @var int Number of reconnection attempts */
     private int $reconnectAttempts = 0;
 
     /** @var int Maximum number of reconnection attempts */
     private int $maxReconnectAttempts = 10;
-
-    /** @var float Delay between reconnection attempts */
-    private float $reconnectDelay = 1.0;
-
-    /** @var int|null Timestamp of last received message */
-    private ?int $lastMessageTime;
-
-    /** @var mixed Timer for heartbeat checks */
-    private mixed $heartbeatTimer;
 
     /** @var string Admin email address for notifications */
     private string $adminEmail;
@@ -84,14 +72,10 @@ class ListenExportMonitorDlQueue extends Command
      */
     public function handle(): int
     {
-        if (config('app.env') !== 'production' && config('app.env') !== 'local') {
-            return self::SUCCESS;
-        }
-
         try {
             $this->info('Starting Export DLQ Monitor...');
             $this->validateConfiguration();
-            $this->initializeListener();
+            $this->runWorker();
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
@@ -104,7 +88,7 @@ class ListenExportMonitorDlQueue extends Command
     /**
      * Validate required AWS configuration settings.
      *
-     * @throws \RuntimeException When required configuration is missing
+     * @throws \RuntimeException When the required configuration is missing
      */
     private function validateConfiguration(): void
     {
@@ -121,38 +105,53 @@ class ListenExportMonitorDlQueue extends Command
     }
 
     /**
-     * Initialize the SQS listener and event loop.
-     *
-     * @throws \Throwable On initialization failure
+     * Run the worker loop.
      */
-    private function initializeListener(): void
+    private function runWorker(): void
     {
-        $this->loop = \React\EventLoop\Loop::get();
-        $this->lastMessageTime = time();
-        $this->setupHeartbeat();
         $this->setupSignalHandlers();
-        $this->connectToSqs();
+        $idleStart = null;
+        $gracePeriod = (int) config('services.aws.export_idle_grace', 60);
 
-        $this->info('Event loop started. Monitoring DLQ...');
-        $this->loop->run();
-    }
+        $this->info('Worker started. Monitoring DLQ...');
 
-    /**
-     * Setup periodic heartbeat to monitor connection health.
-     */
-    private function setupHeartbeat(): void
-    {
-        $this->heartbeatTimer = $this->loop->addPeriodicTimer(30, function () {
-            if ($this->isShuttingDown) {
-                return;
+        while (true) {
+            if (extension_loaded('pcntl')) {
+                pcntl_signal_dispatch();
             }
 
-            $now = time();
-            if (($now - $this->lastMessageTime) > 300) { // 5 min
-                $this->warn('No DLQ messages in 5 minutes — checking connection...');
-                $this->forceReconnection();
+            if ($this->shouldExit) {
+                break;
             }
-        });
+
+            // Check active exports logic
+            if (! $this->hasActiveExports()) {
+                if ($idleStart === null) {
+                    $idleStart = time();
+                    $this->info("No active exports. Monitoring for {$gracePeriod} seconds before shutdown.");
+                } elseif ((time() - $idleStart) > $gracePeriod) {
+                    $this->info('No active exports. Shutting down DLQ monitor.');
+                    break;
+                }
+                sleep(5);
+
+                continue;
+            } else {
+                if ($idleStart !== null) {
+                    $idleStart = null;
+                    $this->info('Active exports detected—continuing DLQ monitoring.');
+                }
+            }
+
+            try {
+                $this->pollSqsSync();
+            } catch (\Throwable $e) {
+                $this->handleConnectionError($e);
+                sleep(min(60, pow(2, $this->reconnectAttempts)));
+            }
+        }
+
+        $this->info('DLQ Monitor shutdown complete');
     }
 
     /**
@@ -164,66 +163,36 @@ class ListenExportMonitorDlQueue extends Command
             return;
         }
 
-        foreach ([SIGINT, SIGTERM] as $signal) {
-            $this->loop->addSignal($signal, function () {
-                $this->info('Shutdown signal received...');
-                $this->shutdown(0);
-            });
-        }
+        $handler = function () {
+            $this->info('Shutdown signal received...');
+            $this->shouldExit = true;
+        };
+
+        pcntl_signal(SIGINT, $handler);
+        pcntl_signal(SIGTERM, $handler);
     }
 
     /**
-     * Establish connection to AWS SQS service.
+     * Poll SQS queue synchronously.
      */
-    private function connectToSqs(): void
-    {
-        if ($this->isShuttingDown) {
-            return;
-        }
-
-        $this->lastMessageTime = time();
-        $this->info('Connecting to DLQ (attempt '.($this->reconnectAttempts + 1).')...');
-
-        $this->pollSqs();
-    }
-
-    /**
-     * Poll SQS queue for messages in batches.
-     */
-    private function pollSqs(): void
+    private function pollSqsSync(): void
     {
         $queueUrl = $this->getQueueUrl('queue_image_tasks_dlq');
 
-        $this->sqs->receiveMessageAsync([
+        $result = $this->sqs->receiveMessage([
             'QueueUrl' => $queueUrl,
-            'MaxNumberOfMessages' => 10, // Get up to 10 messages in batch
+            'MaxNumberOfMessages' => 10,
             'WaitTimeSeconds' => 20,
-            'VisibilityTimeout' => 30,
-            'AttributeNames' => ['ApproximateReceiveCount'], // Track retry attempts
-        ])->then(
-            function ($response) {
-                $this->reconnectAttempts = 0;
-                $this->reconnectDelay = 1.0;
+            'AttributeNames' => ['ApproximateReceiveCount'],
+        ]);
 
-                if (! empty($response['Messages'])) {
-                    $this->lastMessageTime = time();
-                    $messageCount = count($response['Messages']);
+        $messages = $result['Messages'] ?? [];
 
-                    $this->warn("⚠️ Found {$messageCount} messages in DLQ - processing recovery");
-
-                    $this->processBatchMessages($response['Messages'], $this->getQueueUrl('queue_image_tasks_dlq'));
-                }
-
-                if (! $this->isShuttingDown) {
-                    $this->loop->addTimer(0.1, function () {
-                        $this->pollSqs();
-                    });
-                }
-            },
-            function ($e) {
-                $this->handleConnectionError($e);
-            }
-        );
+        if (! empty($messages)) {
+            $this->reconnectAttempts = 0;
+            $this->warn('⚠️ Found '.count($messages).' messages in DLQ - processing recovery');
+            $this->processBatchMessages($messages, $queueUrl);
+        }
     }
 
     /**
@@ -242,19 +211,15 @@ class ListenExportMonitorDlQueue extends Command
             try {
                 $this->processSingleMessage($message);
                 $processedMessages[] = $message;
-
             } catch (\Throwable $e) {
                 $this->handleError('Failed to process DLQ message', $e, [
                     'message_id' => $messageId,
                     'message_body_preview' => substr($message['Body'] ?? '', 0, 200),
                 ]);
-
-                // Always delete DLQ messages after processing attempt
                 $processedMessages[] = $message;
             }
         }
 
-        // Batch delete all processed messages from DLQ
         if (! empty($processedMessages)) {
             $this->batchDeleteMessages($queueUrl, $processedMessages);
         }
@@ -269,9 +234,6 @@ class ListenExportMonitorDlQueue extends Command
      */
     private function processSingleMessage(array $message): void
     {
-        $messageId = $message['MessageId'] ?? 'unknown';
-
-        // Validate message has body
         if (empty($message['Body'])) {
             throw new \InvalidArgumentException('DLQ message body is empty');
         }
@@ -286,6 +248,7 @@ class ListenExportMonitorDlQueue extends Command
             throw new \InvalidArgumentException('DLQ message body must be a JSON object, got: '.gettype($body));
         }
 
+        $messageId = $message['MessageId'] ?? 'unknown';
         $this->recoverFailedMessage($body, $messageId);
     }
 
@@ -311,18 +274,23 @@ class ListenExportMonitorDlQueue extends Command
 
         $this->warn("🔄 Recovering failed subject {$subjectId} from queue {$queueId} (DLQ message {$messageId})");
 
-        ExportImageUpdateJob::dispatch(
-            $queueId,
-            $subjectId,
-            'failed',
-            'Auto-recovery from DLQ: Lambda processing failed after max retries'
-        );
+        ZooniverseExportImageUpdateJob::dispatch($data);
 
         Log::info('DLQ message recovered', [
             'queue_id' => $queueId,
             'subject_id' => $subjectId,
             'dlq_message_id' => $messageId,
         ]);
+    }
+
+    /**
+     * Check if an export is currently queued/active.
+     *
+     * @return bool True if queued export exists
+     */
+    private function hasActiveExports(): bool
+    {
+        return ExportQueue::where('queued', 1)->exists();
     }
 
     /**
@@ -337,28 +305,8 @@ class ListenExportMonitorDlQueue extends Command
 
         if ($this->reconnectAttempts > $this->maxReconnectAttempts) {
             $this->handleCriticalError("Max reconnection attempts ({$this->maxReconnectAttempts}) exceeded", $e);
-            $this->shutdown(1);
+            $this->shouldExit = true;
         }
-
-        // Exponential backoff with jitter using reconnectDelay as base
-        $jitter = mt_rand(0, 1000) / 1000;
-        $delay = min(60, $this->reconnectDelay * pow(2, $this->reconnectAttempts - 1)) + $jitter;
-
-        $this->info('⏰ Reconnecting in '.round($delay, 2).'s...');
-        $this->loop->addTimer($delay, function () {
-            $this->connectToSqs();
-        });
-    }
-
-    /**
-     * Force reconnection to SQS service.
-     */
-    private function forceReconnection(): void
-    {
-        $this->info('Forcing DLQ reconnection...');
-        $this->loop->addTimer(1.0, function () {
-            $this->connectToSqs();
-        });
     }
 
     /**
@@ -386,7 +334,6 @@ class ListenExportMonitorDlQueue extends Command
             return;
         }
 
-        // SQS batch delete supports up to 10 messages per request
         $batches = array_chunk($messages, 10);
 
         foreach ($batches as $batchIndex => $batch) {
@@ -408,17 +355,14 @@ class ListenExportMonitorDlQueue extends Command
                 $successCount = count($result['Successful'] ?? []);
                 $this->info("🗑️  Cleared {$successCount} DLQ messages");
 
-                // Handle any failed deletions
                 if (! empty($result['Failed'])) {
                     foreach ($result['Failed'] as $failed) {
                         $this->error("Failed to delete DLQ message: {$failed['Code']} - {$failed['Message']}");
                     }
                 }
-
             } catch (\Throwable $e) {
                 $this->error('DLQ batch delete failed, falling back to individual deletion: '.$e->getMessage());
 
-                // Fallback to individual deletion
                 foreach ($batch as $message) {
                     $this->deleteMessage($queueUrl, $message['ReceiptHandle']);
                 }
@@ -545,7 +489,6 @@ class ListenExportMonitorDlQueue extends Command
             });
 
             Log::info('DLQ error notification email sent', ['subject' => $subject]);
-
         } catch (\Throwable $me) {
             Log::error('Failed to send DLQ alert email', [
                 'mail_error' => $me->getMessage(),
@@ -593,22 +536,5 @@ class ListenExportMonitorDlQueue extends Command
         $body .= 'Region: '.Config::get('services.aws.region', 'us-east-1')."\n";
 
         return $body;
-    }
-
-    /**
-     * Shutdown the listener gracefully.
-     *
-     * @param  int  $code  Exit code
-     */
-    #[NoReturn]
-    private function shutdown(int $code): void
-    {
-        $this->isShuttingDown = true;
-        if ($this->heartbeatTimer) {
-            $this->loop->cancelTimer($this->heartbeatTimer);
-        }
-        $this->loop->stop();
-        $this->info($code === 0 ? 'DLQ Monitor shutdown complete' : 'DLQ Monitor shutdown with errors');
-        exit($code);
     }
 }

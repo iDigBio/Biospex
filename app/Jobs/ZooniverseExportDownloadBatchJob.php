@@ -31,7 +31,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class ExportDownloadBatchJob implements ShouldQueue
+class ZooniverseExportDownloadBatchJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -40,12 +40,12 @@ class ExportDownloadBatchJob implements ShouldQueue
     public function __construct(protected Download $download)
     {
         $this->download = $this->download->withoutRelations();
-        $this->onQueue(config('config.queue.export'));
+        $this->onQueue(config('config.queue.default'));
     }
 
     public function handle(SqsClient $sqs): void
     {
-        \Log::info('ExportDownloadBatchJob', ['download_id' => $this->download->id]);
+        \Log::info('ZooniverseExportDownloadBatchJob', ['download_id' => $this->download->id]);
 
         $this->download->load('expedition');
 
@@ -64,11 +64,13 @@ class ExportDownloadBatchJob implements ShouldQueue
         $message = [
             'downloadId' => $this->download->id,
             'file' => $file,
-            'path' => $path,
+            'exportPath' => $path,
             'totalSize' => $size,
             's3Bucket' => config('filesystems.disks.s3.bucket'),
             'updatesQueueUrl' => $updatesQueueUrl,
         ];
+
+        \Log::info('Batch job message', $message);
 
         $sqs->sendMessage([
             'QueueUrl' => $triggerQueueUrl,
@@ -80,6 +82,9 @@ class ExportDownloadBatchJob implements ShouldQueue
             'file' => $file,
             'size' => $size,
         ]);
+
+        \Log::info('Starting batch supervisor listener.');
+        \Artisan::call('batch:listen-controller start');
     }
 
     private function getQueueUrl(SqsClient $sqs, string $configKey): string

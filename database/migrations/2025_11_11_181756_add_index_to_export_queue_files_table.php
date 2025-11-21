@@ -12,6 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('export_queue_files', function (Blueprint $table) {
+            $table->dropUnique('export_queue_files_subject_id_unique');
+            $table->unique(['queue_id', 'subject_id']);
             $table->index(['queue_id', 'processed']);
         });
     }
@@ -22,6 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('export_queue_files', function (Blueprint $table) {
+            $table->dropUnique(['queue_id', 'subject_id']);
             $table->dropIndex(['queue_id', 'processed']);
         });
     }

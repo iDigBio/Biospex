@@ -59,7 +59,7 @@ class SiteAssetInfolist
 
                                 // Generate signed URL for download
                                 try {
-                                    $url = \Storage::disk('s3')->temporaryUrl($record->download_path, now()->addHour());
+                                    $url = \Storage::disk('s3')->url($record->download_path);
                                     $filename = basename($record->download_path);
 
                                     return '<a href="'.$url.'" target="_blank" class="text-primary hover:underline">
