@@ -606,38 +606,20 @@ class ListenPanoptesPusherCommand extends Command
         }
 
         try {
-            // Manual XML construction to avoid ext-xmlrpc dependency
-            $request = "<?xml version=\"1.0\"?>\n".
-                "<methodCall>\n".
-                "  <methodName>supervisor.stopProcess</methodName>\n".
-                "  <params>\n".
-                "    <param>\n".
-                "      <value><string>{$fullName}</string></value>\n".
-                "    </param>\n".
-                "  </params>\n".
-                '</methodCall>';
-
-            $context = stream_context_create([
-                'unix' => [
-                    'path' => $socketPath,
+            // Build XML-RPC client for Unix socket
+            $guzzle = new \GuzzleHttp\Client([
+                'curl' => [
+                    CURLOPT_UNIX_SOCKET_PATH => $socketPath,
                 ],
             ]);
 
-            $fp = stream_socket_client("unix://{$socketPath}", $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $context);
+            $transport = new \fXmlRpc\Transport\PsrTransport(new \GuzzleHttp\Psr7\HttpFactory, $guzzle);
+            $client = new \fXmlRpc\Client('http://localhost/RPC2', $transport);
 
-            if (! $fp) {
-                return false;
-            }
+            $supervisor = new \Supervisor\Supervisor($client);
+            $supervisor->stopProcess($fullName);
 
-            fwrite($fp, "POST /RPC2 HTTP/1.0\r\n");
-            fwrite($fp, "Content-Type: text/xml\r\n");
-            fwrite($fp, 'Content-Length: '.strlen($request)."\r\n\r\n");
-            fwrite($fp, $request);
-
-            $response = stream_get_contents($fp);
-            fclose($fp);
-
-            return ! str_contains($response, '<name>faultCode</name>');
+            return true;
         } catch (\Throwable $e) {
             Log::error('Failed to call Supervisor XML-RPC: '.$e->getMessage());
 
