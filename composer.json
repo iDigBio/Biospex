@@ -33,6 +33,7 @@
     "league/fractal": "^0.20",
     "league/oauth2-client": "^2.6",
     "livewire/livewire": "^3.6",
+    "lstrojny/fxmlrpc": "^0.22.0",
     "mongodb/laravel-mongodb": "^5.0",
     "pda/pheanstalk": "^v7.0.0",
     "pusher/pusher-php-server": "^7.0",
@@ -40,6 +41,7 @@
     "react/event-loop": "^1.5",
     "react/socket": "^1.16",
     "spiritix/lada-cache": "^6.0",
+    "supervisorphp/supervisor":  "^4.10",
     "tio/laravel": "^1.10",
     "valentin-morice/filament-json-column": "dev-dev"
   },
