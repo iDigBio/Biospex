@@ -90,7 +90,7 @@ class ListenExportUpdateQueue extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queue_export_update' => 'AWS_SQS_EXPORT_UPDATE_QUEUE',
+            'services.aws.queues.queue_export_update' => 'AWS_SQS_EXPORT_UPDATE_QUEUE',
             'services.aws.export_credentials' => 'AWS_EXPORT_CREDENTIALS',
         ];
 
@@ -214,6 +214,7 @@ class ListenExportUpdateQueue extends Command
                 $this->processSingleMessage($message);
                 $processedMessages[] = $message;
             } catch (\InvalidArgumentException $e) {
+                // TODO: remove this error once we've confirmed that the Step Function is working correctly'
                 $this->error("❌ Invalid message format: {$e->getMessage()} (Message ID: {$messageId})");
                 $processedMessages[] = $message;
             } catch (\Throwable $e) {
@@ -307,6 +308,7 @@ class ListenExportUpdateQueue extends Command
         ZooniverseExportImageUpdateJob::dispatch($data);
 
         // Only throw/log if it's an unexpected status (optional)
+        // TODO remove this once we've confirmed that the job is working correctly'
         if ($status === 'failed') {
             $error = $data['error'] ?? 'Unknown error';
             Log::error("Image processing failed for image #{$subjectId}: {$error}", $data);
@@ -329,7 +331,25 @@ class ListenExportUpdateQueue extends Command
 
         if ($status === 'zip-failed') {
             $error = $data['error'] ?? 'Unknown error';
+
+            // Ignore harmless empty-batch noise
+            if (str_contains($error, 'No files found')) {
+                // This is a normal empty-batch message from the Step Function — ignore it
+                // TODO Remove this once we've confirmed that the Step Function is working correctly
+                Log::info('Empty batch skipped (normal for Step Function)', $data);
+
+                return;   // ← do NOT throw, do NOT dispatch a job
+            }
+
+            // REAL FAILURE — update DB and re-throw so handleError() sends the email
             Log::error('BiospexZipCreator failed', $data);
+
+            ExportQueue::where('id', $queueId)->update([
+                'error' => 1,
+                'error_message' => $error,
+            ]);
+
+            // Send email with the error message
             throw new \RuntimeException("Zip export failed for export #{$queueId}: {$error}");
         }
 
@@ -440,7 +460,7 @@ class ListenExportUpdateQueue extends Command
      */
     private function getQueueUrl(string $key): string
     {
-        $name = Config::get("services.aws.{$key}");
+        $name = Config::get("services.aws.queues.{$key}");
 
         return $this->sqs->getQueueUrl(['QueueName' => $name])['QueueUrl'];
     }
@@ -601,7 +621,7 @@ class ListenExportUpdateQueue extends Command
         }
 
         $body .= "Configuration:\n";
-        $body .= 'Queue: '.Config::get('services.aws.queue_export_update')."\n";
+        $body .= 'Queue: '.Config::get('services.aws.queues.queue_export_update')."\n";
         $body .= 'Region: '.Config::get('services.aws.region', 'us-east-1')."\n";
 
         return $body;

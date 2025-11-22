@@ -30,7 +30,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
-use Str;
 use Throwable;
 
 /**
@@ -63,21 +62,13 @@ class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
             Storage::disk('s3')->deleteDirectory($processDir);
         }
 
-        // Clean up any partial zip files from S3 (e.g. ..._part0.zip)
-        $files = Storage::disk('s3')->files(config('config.scratch_dir'));
-        $partialPrefix = $processDir.'_part';
-        $filesToDelete = array_filter($files, fn ($file) => Str::startsWith($file, $partialPrefix));
-
-        if (! empty($filesToDelete)) {
-            Storage::disk('s3')->delete($filesToDelete);
-        }
-
         if (Storage::disk('efs')->exists($processDir)) {
             Storage::disk('efs')->deleteDirectory($processDir);
         }
 
         \Artisan::call('update:listen-controller stop');
         $this->exportQueue->delete();
+        \Log::info("Export queue stop process: {$this->exportQueue->id}");
     }
 
     /**

@@ -93,7 +93,7 @@ class ListenExportImageTasksDlq extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queue_image_tasks_dlq' => 'AWS_SQS_IMAGE_TASKS_DLQ',
+            'services.aws.queues.queue_image_tasks_dlq' => 'AWS_SQS_IMAGE_TASKS_DLQ',
             'services.aws.export_credentials' => 'AWS_EXPORT_CREDENTIALS',
         ];
 
@@ -317,7 +317,7 @@ class ListenExportImageTasksDlq extends Command
      */
     private function getQueueUrl(string $key): string
     {
-        $name = Config::get("services.aws.{$key}");
+        $name = Config::get("services.aws.queues.{$key}");
 
         return $this->sqs->getQueueUrl(['QueueName' => $name])['QueueUrl'];
     }
@@ -532,7 +532,7 @@ class ListenExportImageTasksDlq extends Command
         }
 
         $body .= "Configuration:\n";
-        $body .= 'DLQ: '.Config::get('services.aws.queue_image_tasks_dlq')."\n";
+        $body .= 'DLQ: '.Config::get('services.aws.queues.queue_image_tasks_dlq')."\n";
         $body .= 'Region: '.Config::get('services.aws.region', 'us-east-1')."\n";
 
         return $body;

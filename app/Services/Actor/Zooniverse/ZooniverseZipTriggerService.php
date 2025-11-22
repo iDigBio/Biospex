@@ -124,6 +124,7 @@ class ZooniverseZipTriggerService
                 'stateMachineArn' => 'arn:aws:states:us-east-2:147899039648:stateMachine:ZipBatchOrchestrator',
                 'input' => json_encode($payload),
             ]);
+            //TODO Remove this log once we have a better way to track executions
             \Log::info("Step Function execution started for {$processDir}: ".$result['executionArn']);
         } else {
             // Send to SQS for direct Lambda processing for small jobs
@@ -183,7 +184,7 @@ class ZooniverseZipTriggerService
      */
     protected function getQueueUrl(string $key): string
     {
-        $queueName = config("services.aws.{$key}");
+        $queueName = config("services.aws.queues.{$key}");
 
         return $this->sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
     }

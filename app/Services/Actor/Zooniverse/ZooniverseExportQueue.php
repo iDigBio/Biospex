@@ -72,6 +72,7 @@ class ZooniverseExportQueue
         $exportQueue->stage = 1;
         $exportQueue->save();
 
+        \Log::info("Export queue start process: {$exportQueue->id}");
         \Artisan::call('update:listen-controller start');
 
         ZooniverseExportProcessImagesJob::dispatch($exportQueue);

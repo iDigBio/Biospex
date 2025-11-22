@@ -87,9 +87,9 @@ class ZooniverseExportDownloadBatchJob implements ShouldQueue
         \Artisan::call('batch:listen-controller start');
     }
 
-    private function getQueueUrl(SqsClient $sqs, string $configKey): string
+    private function getQueueUrl(SqsClient $sqs, string $key): string
     {
-        $queueName = config("services.aws.{$configKey}");
+        $queueName = config("services.aws.queues.{$key}");
 
         return $sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
     }

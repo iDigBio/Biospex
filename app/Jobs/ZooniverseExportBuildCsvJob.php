@@ -78,9 +78,6 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
         ZooniverseZipTriggerService $zipTriggerService
     ): void {
 
-        \Log::info('ZooniverseExportBuildCsvJob: Starting', ['queue_id' => $this->exportQueue->id]);
-        return;
-
         $this->exportQueue->load('expedition');
 
         // === GET ALL EXPORT DATA ===

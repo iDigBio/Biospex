@@ -111,7 +111,7 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
      */
     private function getQueueUrl(SqsClient $sqs, string $key): string
     {
-        $queueName = config("services.aws.{$key}");
+        $queueName = config("services.aws.queues.{$key}");
 
         return $sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
     }

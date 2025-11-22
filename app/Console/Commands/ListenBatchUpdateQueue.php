@@ -92,7 +92,7 @@ class ListenBatchUpdateQueue extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queue_batch_update' => 'AWS_SQS_BATCH_UPDATE_QUEUE',
+            'services.aws.queues.queue_batch_update' => 'AWS_SQS_BATCH_UPDATE_QUEUE',
             'services.aws.export_credentials' => 'AWS_EXPORT_CREDENTIALS',
         ];
 
@@ -412,7 +412,7 @@ class ListenBatchUpdateQueue extends Command
      */
     private function getQueueUrl(string $key): string
     {
-        $name = Config::get("services.aws.{$key}");
+        $name = Config::get("services.aws.queues.{$key}");
 
         return $this->sqs->getQueueUrl(['QueueName' => $name])['QueueUrl'];
     }
@@ -573,7 +573,7 @@ class ListenBatchUpdateQueue extends Command
         }
 
         $body .= "Configuration:\n";
-        $body .= 'Queue: '.Config::get('services.aws.queue_batch_update')."\n";
+        $body .= 'Queue: '.Config::get('services.aws.queues.queue_batch_update')."\n";
         $body .= 'Region: '.Config::get('services.aws.region', 'us-east-1')."\n";
 
         return $body;
