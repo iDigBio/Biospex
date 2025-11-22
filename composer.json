@@ -31,6 +31,7 @@
     "league/fractal": "^0.20",
     "league/oauth2-client": "^2.6",
     "livewire/livewire": "^3.6",
+    "lstrojny/fxmlrpc": "^0.22.0",
     "mongodb/laravel-mongodb": "^5.0",
     "pda/pheanstalk": "^v8.0.0",
     "pusher/pusher-php-server": "^7.0",
