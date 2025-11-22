@@ -22,6 +22,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ProcessPanoptesPusherDataJob;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Ratchet\Client\WebSocket;
@@ -75,6 +76,9 @@ class ListenPanoptesPusherCommand extends Command
     /** @var int Timestamp of last notification email sent */
     private int $lastEmailSent = 0; // Rate limiting for emails
 
+    /** @var bool Flag to prevent double reconnection scheduling */
+    private bool $intentionalDisconnect = false;
+
     /**
      * Create a new command instance.
      */
@@ -93,16 +97,6 @@ class ListenPanoptesPusherCommand extends Command
      */
     public function handle(): int
     {
-        // Only allow the production environment to proceed
-        /*
-        if (config('app.env') !== 'production') {
-            // Silently exit for non-production environments
-            // \Log::info('Panoptes listener is only available in production environment');
-
-            return self::SUCCESS;
-        }
-        */
-
         try {
             $this->info('Starting Panoptes Pusher listener...');
             $this->validateConfiguration();
@@ -188,6 +182,7 @@ class ListenPanoptesPusherCommand extends Command
             return;
         }
 
+        $this->intentionalDisconnect = false;
         $this->lastMessageTime = time();
         $url = $this->buildWebSocketUrl();
 
@@ -197,12 +192,6 @@ class ListenPanoptesPusherCommand extends Command
                 'verify_peer' => true,
                 'verify_peer_name' => true,
             ],
-            //'tcp' => [
-            //    'so_keepalive' => true,
-            //],
-            //'dns' => [
-            //    'timeout' => 10,
-            //],
         ]);
 
         $this->info('Connecting to Pusher... (attempt: '.($this->reconnectAttempts + 1).')');
@@ -355,6 +344,10 @@ class ListenPanoptesPusherCommand extends Command
                     $this->handlePusherError($payload);
                     break;
 
+                case 'pusher_internal:subscription_succeeded':
+                    \Log::info('Pusher subscription succeeded', $payload);
+                    break;
+
                 default:
                     $this->info("📨 Received event: {$event}");
                     // Log unknown events for debugging
@@ -380,6 +373,12 @@ class ListenPanoptesPusherCommand extends Command
      */
     public function onConnectionClose($code = null, $reason = null): void
     {
+        if ($this->intentionalDisconnect) {
+            $this->info('Connection closed intentionally (handling specific error logic).');
+
+            return;
+        }
+
         if (! $this->isShuttingDown) {
             $this->warn("Connection closed unexpectedly (Code: {$code}, Reason: {$reason})");
             $this->scheduleReconnection(2.0);
@@ -437,6 +436,7 @@ class ListenPanoptesPusherCommand extends Command
             }
 
             ProcessPanoptesPusherDataJob::dispatch($data);
+
             $this->info('✅ Classification job dispatched successfully');
 
         } catch (\Throwable $e) {
@@ -454,11 +454,18 @@ class ListenPanoptesPusherCommand extends Command
         $errorMessage = $payload['data']['message'] ?? 'Unknown Pusher error';
         $errorCode = $payload['data']['code'] ?? 'unknown';
 
+        // Track error frequency
+        $this->trackError();
+
         // Handle specific Pusher error codes
         switch ($errorCode) {
             case 4004: // Over quota
                 $this->handleCriticalError('Pusher account over quota - service degraded',
                     new \RuntimeException("Account for App exceeded quota. Error: {$errorMessage}"));
+
+                // Prevent onConnectionClose from scheduling a rapid reconnect
+                $this->intentionalDisconnect = true;
+
                 // Don't reconnect immediately for quota issues
                 $this->scheduleReconnection(300); // Wait 5 minutes
 
@@ -531,6 +538,96 @@ class ListenPanoptesPusherCommand extends Command
     }
 
     /**
+     * Track errors and shut down if threshold exceeded.
+     */
+    private function trackError(): void
+    {
+        $key = 'panoptes_listener_errors';
+        $window = 60; // 1 minute
+        $limit = 10;
+
+        $errors = Cache::get($key, []);
+        $now = time();
+
+        // Filter out errors older than the window
+        $errors = array_filter($errors, fn ($time) => $time > ($now - $window));
+
+        // Add current error
+        $errors[] = $now;
+
+        Cache::put($key, $errors, $window + 10);
+
+        if (count($errors) > $limit) {
+            $message = 'Too many errors detected ('.count($errors)." in {$window}s). Stopping listener via Supervisor.";
+            $this->error($message);
+            Log::critical($message);
+
+            // Attempt to stop via Supervisor XML-RPC
+            if ($this->stopViaSupervisor()) {
+                $this->info('Supervisor stop command sent.');
+                // We still exit to ensure this process stops, but Supervisor shouldn't restart it
+                // if the stop command worked (it moves to STOPPED state).
+                exit(0);
+            }
+
+            // Fallback: Sleep for a long time to "stop" the listener without exiting (avoiding rapid restarts)
+            $this->info('Supervisor stop failed or not available. Entering dormant mode for 10 minutes.');
+            sleep(600);
+            exit(1);
+        }
+    }
+
+    /**
+     * Attempt to stop this process using Supervisor XML-RPC.
+     */
+    private function stopViaSupervisor(): bool
+    {
+        $processName = getenv('SUPERVISOR_PROCESS_NAME');
+        $groupName = getenv('SUPERVISOR_GROUP_NAME');
+
+        if (! $processName || ! $groupName) {
+            return false;
+        }
+
+        $fullName = "{$groupName}:{$processName}";
+
+        // Default Supervisor socket path
+        $socketPath = '/var/run/supervisor.sock';
+        // Check env for socket path if available, or config
+        if (getenv('SUPERVISOR_SERVER_URL')) {
+            $url = getenv('SUPERVISOR_SERVER_URL');
+            if (str_starts_with($url, 'unix://')) {
+                $socketPath = substr($url, 7);
+            }
+        }
+
+        if (! file_exists($socketPath) || ! is_writable($socketPath)) {
+            return false;
+        }
+
+        try {
+            // Build XML-RPC client for Unix socket
+            $guzzle = new \GuzzleHttp\Client([
+                'curl' => [
+                    CURLOPT_UNIX_SOCKET_PATH => $socketPath,
+                ],
+            ]);
+
+            $transport = new \fXmlRpc\Transport\PsrTransport(new \GuzzleHttp\Psr7\HttpFactory, $guzzle);
+            $client = new \fXmlRpc\Client('http://localhost/RPC2', $transport);
+
+            $supervisor = new \Supervisor\Supervisor($client);
+            $supervisor->stopProcess($fullName);
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('Failed to call Supervisor XML-RPC: '.$e->getMessage());
+
+            return false;
+        }
+    }
+
+    /**
      * Handle and log error events.
      *
      * @param  string  $message  Error message
@@ -539,6 +636,8 @@ class ListenPanoptesPusherCommand extends Command
      */
     private function handleError(string $message, ?\Throwable $e = null, array $context = []): void
     {
+        $this->trackError();
+
         $context['timestamp'] = now()->toISOString();
         $context['command'] = 'panoptes:listen';
 
