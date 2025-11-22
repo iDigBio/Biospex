@@ -20,6 +20,7 @@
 
 namespace App\Console\Commands;
 
+use Aws\Sqs\SqsClient;
 use Illuminate\Console\Command;
 
 /**
@@ -37,11 +38,14 @@ class AppTestCommand extends Command
      */
     protected $description = 'Used to test code';
 
+    protected SqsClient $sqs;
+
     /**
      * Create a new command instance.
      */
     public function __construct()
     {
+
         parent::__construct();
     }
 

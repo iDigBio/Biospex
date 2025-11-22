@@ -22,10 +22,9 @@ namespace App\Providers;
 
 use Aws\S3\S3Client;
 use Aws\Sqs\SqsClient;
+use Aws\Sfn\SfnClient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
 use Schema;
@@ -104,6 +103,15 @@ class AppServiceProvider extends ServiceProvider
         // Register AWS S3 Client (if not already registered)
         $this->app->singleton(S3Client::class, function ($app) {
             return new S3Client([
+                'version' => 'latest',
+                'region' => config('services.aws.region'),
+                'credentials' => config('services.aws.export_credentials'),
+            ]);
+        });
+
+        // Register AWS Step Functions Client
+        $this->app->singleton(SfnClient::class, function ($app) {
+            return new SfnClient([
                 'version' => 'latest',
                 'region' => config('services.aws.region'),
                 'credentials' => config('services.aws.export_credentials'),

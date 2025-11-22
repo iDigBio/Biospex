@@ -21,7 +21,7 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actor\Traits\ZooniverseErrorNotification;
+use App\Traits\NotifyOnJobFailure;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -37,7 +37,7 @@ use Throwable;
  */
 class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
+    use Batchable, Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
     public int $timeout = 300;
 
@@ -57,7 +57,6 @@ class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
-        \Log::info('ZooniverseExportDeleteFilesJob: '.$this->exportQueue->id);
         $processDir = config('config.scratch_dir')."/{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
         if (Storage::disk('s3')->exists($processDir)) {
             Storage::disk('s3')->deleteDirectory($processDir);
@@ -67,7 +66,9 @@ class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
             Storage::disk('efs')->deleteDirectory($processDir);
         }
 
+        \Artisan::call('update:listen-controller stop');
         $this->exportQueue->delete();
+        \Log::info("Export queue stop process: {$this->exportQueue->id}");
     }
 
     /**
@@ -75,6 +76,9 @@ class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
-        $this->sendErrorNotification($this->exportQueue, $throwable);
+        $this->exportQueue->error = 1;
+        $this->exportQueue->save();
+
+        $this->notifyGroupOnFailure($this->exportQueue, $throwable);
     }
 }

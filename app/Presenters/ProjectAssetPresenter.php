@@ -42,7 +42,7 @@ class ProjectAssetPresenter extends Presenter
             if (! empty($this->model->download_path)) {
                 if (Storage::disk('s3')->exists($this->model->download_path)) {
                     // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                    $url = Storage::disk('s3')->temporaryUrl($this->model->download_path, now()->addHour());
+                    $url = Storage::disk('s3')->url($this->model->download_path);
                 }
             }
 

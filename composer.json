@@ -38,7 +38,7 @@
     "ratchet/pawl": "^0.4.3",
     "react/event-loop": "^1.5",
     "react/socket": "^1.16",
-    "spiritix/lada-cache": "^6.0",
+    "spatie/laravel-responsecache": "^7.7",
     "supervisorphp/supervisor": "^5.1",
     "tio/laravel": "^1.10",
     "valentin-morice/filament-json-column": "dev-dev"
@@ -88,7 +88,6 @@
       "Tests\\": "tests/"
     }
   },
-  "minimum-stability": "dev",
   "prefer-stable": true,
   "scripts": {
     "post-autoload-dump": [

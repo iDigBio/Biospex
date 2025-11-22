@@ -23,42 +23,54 @@ namespace App\Console\Commands;
 use Aws\Sqs\SqsClient;
 use Illuminate\Console\Command;
 
+/**
+ * Command to purge all AWS SQS export queues for a specified environment.
+ * Handles image-tasks, zip-trigger, and updates queues.
+ */
 class AppPurgeExportQueues extends Command
 {
-    protected $signature = 'app:awsqueue-purge {env : loc, dev, or prod}';
+    protected $signature = 'app:awsqueue-purge {env : local, development, or production}';
 
     protected $description = 'Purge all export queues (image-tasks, zip-trigger, updates) for the given environment';
 
+    /**
+     * Create a new command instance.
+     *
+     * @param  \Aws\Sqs\SqsClient  $sqs  AWS SQS client instance
+     */
+    public function __construct(protected SqsClient $sqs)
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return int 0 for success, 1 for failure
+     * @throws \Exception When queue operations fail
+     */
     public function handle()
     {
         $env = $this->argument('env');
 
-        $validEnvs = ['loc', 'dev', 'prod'];
+        $validEnvs = ['local', 'development', 'production'];
         if (! in_array($env, $validEnvs)) {
             $this->error('Invalid environment. Use: '.implode(', ', $validEnvs));
 
             return 1;
         }
 
-        $suffix = $env === 'loc' ? '-local' : '-'.$env;
-
-        $queues = [
-            "export-image-tasks-queue{$suffix}", "export-zip-trigger-queue{$suffix}", "export-updates-queue{$suffix}",
-        ];
-
-        $client = new SqsClient([
-            'region' => config('services.aws.region', 'us-east-2'), 'version' => 'latest',
-        ]);
+        $queues = config('services.aws.queues');
 
         $this->info("Purging queues for environment: <comment>{$env}</comment>");
 
         foreach ($queues as $queueName) {
             try {
-                $urlResult = $client->getQueueUrl(['QueueName' => $queueName]);
+                $urlResult = $this->sqs->getQueueUrl(['QueueName' => $queueName]);
                 $queueUrl = $urlResult['QueueUrl'];
 
                 $this->line("Purging <info>{$queueName}</info>...");
-                $client->purgeQueue(['QueueUrl' => $queueUrl]);
+                $this->sqs->purgeQueue(['QueueUrl' => $queueUrl]);
 
                 $this->info("Purged: {$queueName}");
             } catch (\Exception $e) {

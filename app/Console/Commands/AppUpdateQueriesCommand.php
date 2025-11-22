@@ -20,6 +20,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\PusherTranscriptionJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -66,13 +67,15 @@ class AppUpdateQueriesCommand extends Command
             case 'update-paths':
                 $this->updateDatabasePaths();
                 break;
+            case 'process-classifications':
+                $this->processClassifications();
+                break;
 
             default:
                 $this->createS3Directories();
                 $this->moveS3DirectoryFiles();
                 $this->updateDatabasePaths();
-
-                return;
+                $this->processClassifications();
         }
     }
 
@@ -278,5 +281,22 @@ class AppUpdateQueriesCommand extends Command
         }
 
         $this->info('Database path updates completed.');
+    }
+
+    public function processClassifications(): void
+    {
+        DB::table('pusher_classifications')->orderBy('id')->chunkById(100, function ($chunk) {
+            $ids = [];
+            foreach ($chunk as $row) {
+                $data = json_decode($row->data, true);
+                if ($data && is_array($data)) {
+                    PusherTranscriptionJob::dispatch($data);
+                    $ids[] = $row->id;
+                }
+            }
+            if ($ids) {
+                DB::table('pusher_classifications')->whereIn('id', $ids)->delete();
+            }
+        }, 'id');
     }
 }

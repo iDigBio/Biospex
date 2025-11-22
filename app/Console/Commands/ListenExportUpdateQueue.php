@@ -1,36 +1,47 @@
 <?php
 
+/*
+ * Copyright (C) 2014 - 2025, Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 namespace App\Console\Commands;
 
-use App\Jobs\ExportImageUpdateJob;
+use App\Jobs\ZooniverseExportImageUpdateJob;
 use App\Jobs\ZooniverseExportZipResultJob;
+use App\Models\ExportQueue;
 use Aws\Sqs\SqsClient;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use JetBrains\PhpStorm\NoReturn;
 
-/**
- * Listens for export updates from SQS queue and processes them.
- * Handles reconnection attempts and monitoring of the connection health.
- */
-class ListenExportUpdates extends Command
+class ListenExportUpdateQueue extends Command
 {
     /** @var string Command signature */
-    protected $signature = 'export:listen-updates';
+    protected $signature = 'export:listen';
 
     /** @var string Command description */
-    protected $description = 'Robust SQS listener for export updates with reconnections and alerts';
+    protected $description = 'Robust SQS listener for export update queue with reconnections and alerts';
 
     /** @var SqsClient AWS SQS client instance */
     private SqsClient $sqs;
 
-    /** @var \React\EventLoop\LoopInterface Event loop instance */
-    private \React\EventLoop\LoopInterface $loop;
-
-    /** @var bool Indicates if the listener is shutting down */
-    private bool $isShuttingDown = false;
+    /** @var bool Indicates if the listener should exit */
+    private bool $shouldExit = false;
 
     /** @var int Number of reconnection attempts */
     private int $reconnectAttempts = 0;
@@ -38,19 +49,10 @@ class ListenExportUpdates extends Command
     /** @var int Maximum number of reconnection attempts */
     private int $maxReconnectAttempts = 10;
 
-    /** @var float Delay between reconnection attempts */
-    private float $reconnectDelay = 1.0;
-
-    /** @var int|null Timestamp of last received message */
-    private ?int $lastMessageTime;
-
-    /** @var mixed Timer for heartbeat checks */
-    private mixed $heartbeatTimer;
-
     /** @var string Admin email address for notifications */
     private string $adminEmail;
 
-    /** @var int Timestamp of last notification email sent */
+    /** @var int Timestamp of the last notification email sent */
     private int $lastEmailSent = 0;
 
     public function __construct(SqsClient $sqs)
@@ -67,15 +69,10 @@ class ListenExportUpdates extends Command
      */
     public function handle(): int
     {
-        if (config('app.env') !== 'production' && config('app.env') !== 'local') {
-
-            return self::SUCCESS;
-        }
-
         try {
-            $this->info('Starting Export Updates SQS Listener...');
+            $this->info('Starting Export Update SQS Listener...');
             $this->validateConfiguration();
-            $this->initializeListener();
+            $this->runWorker();
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
@@ -88,12 +85,12 @@ class ListenExportUpdates extends Command
     /**
      * Validate required AWS configuration settings.
      *
-     * @throws \RuntimeException When required configuration is missing
+     * @throws \RuntimeException When the required configuration is missing
      */
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queue_updates' => 'AWS_SQS_UPDATES_QUEUE',
+            'services.aws.queues.queue_export_update' => 'AWS_SQS_EXPORT_UPDATE_QUEUE',
             'services.aws.export_credentials' => 'AWS_EXPORT_CREDENTIALS',
         ];
 
@@ -105,38 +102,53 @@ class ListenExportUpdates extends Command
     }
 
     /**
-     * Initialize the SQS listener and event loop.
-     *
-     * @throws \Throwable On initialization failure
+     * Run the worker loop.
      */
-    private function initializeListener(): void
+    private function runWorker(): void
     {
-        $this->loop = \React\EventLoop\Loop::get();
-        $this->lastMessageTime = time();
-        $this->setupHeartbeat();
         $this->setupSignalHandlers();
-        $this->connectToSqs();
+        $idleStart = null;
+        $gracePeriod = (int) config('services.aws.export_idle_grace', 60);
 
-        $this->info('Event loop started. Listening...');
-        $this->loop->run();
-    }
+        $this->info('Worker started. Listening...');
 
-    /**
-     * Setup periodic heartbeat to monitor connection health.
-     */
-    private function setupHeartbeat(): void
-    {
-        $this->heartbeatTimer = $this->loop->addPeriodicTimer(30, function () {
-            if ($this->isShuttingDown) {
-                return;
+        while (true) {
+            if (extension_loaded('pcntl')) {
+                pcntl_signal_dispatch();
             }
 
-            $now = time();
-            if (($now - $this->lastMessageTime) > 300) { // 5 min
-                $this->warn('No SQS messages in 5 minutes — checking connection...');
-                $this->forceReconnection();
+            if ($this->shouldExit) {
+                break;
             }
-        });
+
+            // Check active exports logic
+            if (! $this->hasActiveExports()) {
+                if ($idleStart === null) {
+                    $idleStart = time();
+                    $this->info("No active exports. Monitoring for {$gracePeriod} seconds before shutdown.");
+                } elseif ((time() - $idleStart) > $gracePeriod) {
+                    $this->info('No active exports. Shutting down listener.');
+                    break;
+                }
+                sleep(5);
+
+                continue;
+            } else {
+                if ($idleStart !== null) {
+                    $idleStart = null;
+                    $this->info('Active exports detected—continuing polling.');
+                }
+            }
+
+            try {
+                $this->pollSqsSync();
+            } catch (\Throwable $e) {
+                $this->handleConnectionError($e);
+                sleep(min(60, pow(2, $this->reconnectAttempts)));
+            }
+        }
+
+        $this->info('Shutdown complete');
     }
 
     /**
@@ -148,66 +160,36 @@ class ListenExportUpdates extends Command
             return;
         }
 
-        foreach ([SIGINT, SIGTERM] as $signal) {
-            $this->loop->addSignal($signal, function () {
-                $this->info('Shutdown signal received...');
-                $this->shutdown(0);
-            });
-        }
+        $handler = function () {
+            $this->info('Shutdown signal received...');
+            $this->shouldExit = true;
+        };
+
+        pcntl_signal(SIGINT, $handler);
+        pcntl_signal(SIGTERM, $handler);
     }
 
     /**
-     * Establish connection to AWS SQS service.
+     * Poll SQS queue synchronously.
      */
-    private function connectToSqs(): void
+    private function pollSqsSync(): void
     {
-        if ($this->isShuttingDown) {
-            return;
-        }
+        $queueUrl = $this->getQueueUrl('queue_export_update');
 
-        $this->lastMessageTime = time();
-        $this->info('Connecting to SQS (attempt '.($this->reconnectAttempts + 1).')...');
-
-        $this->pollSqs();
-    }
-
-    /**
-     * Poll SQS queue for messages in batches.
-     */
-    private function pollSqs(): void
-    {
-        $queueUrl = $this->getQueueUrl('queue_updates');
-
-        $this->sqs->receiveMessageAsync([
+        $result = $this->sqs->receiveMessage([
             'QueueUrl' => $queueUrl,
-            'MaxNumberOfMessages' => 10, // Get up to 10 messages in batch
+            'MaxNumberOfMessages' => 10,
             'WaitTimeSeconds' => 20,
-            'VisibilityTimeout' => 30,
-            'AttributeNames' => ['ApproximateReceiveCount'], // Track retry attempts
-        ])->then(
-            function ($response) {
-                $this->reconnectAttempts = 0;
-                $this->reconnectDelay = 1.0;
+            'AttributeNames' => ['ApproximateReceiveCount'],
+        ]);
 
-                if (! empty($response['Messages'])) {
-                    $this->lastMessageTime = time();
-                    $messageCount = count($response['Messages']);
+        $messages = $result['Messages'] ?? [];
 
-                    $this->info("📦 Received batch of {$messageCount} messages from SQS");
-
-                    $this->processBatchMessages($response['Messages'], $this->getQueueUrl('queue_updates'));
-                }
-
-                if (! $this->isShuttingDown) {
-                    $this->loop->addTimer(0.1, function () {
-                        $this->pollSqs();
-                    });
-                }
-            },
-            function ($e) {
-                $this->handleConnectionError($e);
-            }
-        );
+        if (! empty($messages)) {
+            $this->reconnectAttempts = 0;
+            $this->info('📦 Received batch of '.count($messages).' messages from SQS');
+            $this->processBatchMessages($messages, $queueUrl);
+        }
     }
 
     /**
@@ -224,7 +206,6 @@ class ListenExportUpdates extends Command
             $messageId = $message['MessageId'] ?? 'unknown';
             $receiveCount = $message['Attributes']['ApproximateReceiveCount'] ?? 1;
 
-            // Log if message has been retried multiple times
             if ($receiveCount > 3) {
                 $this->warn("⚠️  Message {$messageId} has been retried {$receiveCount} times");
             }
@@ -232,33 +213,28 @@ class ListenExportUpdates extends Command
             try {
                 $this->processSingleMessage($message);
                 $processedMessages[] = $message;
-
             } catch (\InvalidArgumentException $e) {
-                // Message format errors - delete to avoid infinite retries
+                // TODO: remove this error once we've confirmed that the Step Function is working correctly'
                 $this->error("❌ Invalid message format: {$e->getMessage()} (Message ID: {$messageId})");
-                $processedMessages[] = $message; // Add to processed for deletion
-
+                $processedMessages[] = $message;
             } catch (\Throwable $e) {
                 $this->handleError('Failed to process message in batch', $e, [
                     'message_id' => $messageId,
                     'message_body_preview' => substr($message['Body'] ?? '', 0, 200),
                 ]);
-
-                // Add to processed if it's a permanent error that should be deleted
                 if ($this->isPermanentError($e)) {
                     $processedMessages[] = $message;
                 }
             }
         }
 
-        // Batch deletes successfully processed messages
         if (! empty($processedMessages)) {
             $this->batchDeleteMessages($queueUrl, $processedMessages);
         }
     }
 
     /**
-     * Process a single SQS message (extracted for batch processing).
+     * Process a single SQS message.
      *
      * @param  array  $message  SQS message data
      *
@@ -266,9 +242,6 @@ class ListenExportUpdates extends Command
      */
     private function processSingleMessage(array $message): void
     {
-        $messageId = $message['MessageId'] ?? 'unknown';
-
-        // Validate message has body
         if (empty($message['Body'])) {
             throw new \InvalidArgumentException('Message body is empty');
         }
@@ -287,11 +260,112 @@ class ListenExportUpdates extends Command
     }
 
     /**
+     * Route message to appropriate job based on function name.
+     *
+     * @param  array  $data  Message data
+     *
+     * @throws \InvalidArgumentException|\Throwable When function is missing or unknown
+     */
+    private function routeMessage(array $data): void
+    {
+        if (! isset($data['function'])) {
+            throw new \InvalidArgumentException('Message missing required "function" field');
+        }
+
+        $function = $data['function'];
+
+        try {
+            match ($function) {
+                'BiospexImageProcess' => $this->dispatchImageProcessJob($data),
+                'BiospexZipCreator', 'BiospexZipMerger' => $this->dispatchZipCreatorJob($data),
+                default => throw new \InvalidArgumentException("Unknown function: {$function}"),
+            };
+        } catch (\Throwable $e) {
+            Log::error('Failed to dispatch job', [
+                'function' => $function,
+                'error' => $e->getMessage(),
+                'data' => $data,
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Dispatch an image process job based on message data.
+     *
+     * @param  array  $data  Message data containing image processing results
+     *
+     * @throws \InvalidArgumentException When required fields are missing
+     * @throws \RuntimeException When image processing failed
+     */
+    private function dispatchImageProcessJob(array $data): void
+    {
+        $status = $data['status'] ?? throw new \InvalidArgumentException('Missing status');
+        $subjectId = $data['subjectId'] ?? throw new \InvalidArgumentException('Missing subjectId');
+
+        // Dispatch the job for BOTH success and failure
+        // The job itself will handle the status correctly and update the DB
+        ZooniverseExportImageUpdateJob::dispatch($data);
+
+        // Only throw/log if it's an unexpected status (optional)
+        // TODO remove this once we've confirmed that the job is working correctly'
+        if ($status === 'failed') {
+            $error = $data['error'] ?? 'Unknown error';
+            Log::error("Image processing failed for image #{$subjectId}: {$error}", $data);
+            // Do NOT throw here — we want the message deleted
+        }
+    }
+
+    /**
+     * Dispatch a zip creator job based on message data.
+     *
+     * @param  array  $data  Message data containing zip processing results
+     *
+     * @throws \InvalidArgumentException When required fields are missing
+     * @throws \RuntimeException When zip processing failed
+     */
+    private function dispatchZipCreatorJob(array $data): void
+    {
+        $status = $data['status'] ?? throw new \InvalidArgumentException('Missing status');
+        $queueId = $data['queueId'] ?? throw new \InvalidArgumentException('Missing queueId');
+
+        if ($status === 'zip-failed') {
+            $error = $data['error'] ?? 'Unknown error';
+
+            // Ignore harmless empty-batch noise
+            if (str_contains($error, 'No files found')) {
+                // This is a normal empty-batch message from the Step Function — ignore it
+                // TODO Remove this once we've confirmed that the Step Function is working correctly
+                Log::info('Empty batch skipped (normal for Step Function)', $data);
+
+                return;   // ← do NOT throw, do NOT dispatch a job
+            }
+
+            // REAL FAILURE — update DB and re-throw so handleError() sends the email
+            Log::error('BiospexZipCreator failed', $data);
+
+            ExportQueue::where('id', $queueId)->update([
+                'error' => 1,
+                'error_message' => $error,
+            ]);
+
+            // Send email with the error message
+            throw new \RuntimeException("Zip export failed for export #{$queueId}: {$error}");
+        }
+
+        // Don't proceed if the data is from batching large export.
+        if ($status === 'partial-zip-ready') {
+            return;
+        }
+
+        ZooniverseExportZipResultJob::dispatch($data);
+    }
+
+    /**
      * Determine if an error is permanent and message should be deleted.
      */
     private function isPermanentError(\Throwable $e): bool
     {
-        // Delete messages that have permanent issues
         $permanentErrorPatterns = [
             'Unknown function:',
             'Invalid JSON',
@@ -309,78 +383,6 @@ class ListenExportUpdates extends Command
     }
 
     /**
-     * Route message to appropriate job based on function name.
-     *
-     * @param  array  $data  Message data
-     *
-     * @throws \InvalidArgumentException|\Throwable When function is missing or unknown
-     */
-    private function routeMessage(array $data): void
-    {
-        // Validate required fields
-        if (! isset($data['function'])) {
-            throw new \InvalidArgumentException('Message missing required "function" field');
-        }
-
-        $function = $data['function'];
-
-        Log::info('Processing SQS message', [
-            'function' => $function,
-            'data_keys' => array_keys($data),
-            'command' => 'export:listen-updates',
-        ]);
-
-        try {
-            match ($function) {
-                'BiospexImageProcess' => $this->dispatchImageProcessJob($data),
-                'BiospexZipCreator' => $this->dispatchZipCreatorJob($data),
-                default => throw new \InvalidArgumentException("Unknown function: {$function}"),
-            };
-
-        } catch (\Throwable $e) {
-            Log::error('Failed to dispatch job', [
-                'function' => $function,
-                'error' => $e->getMessage(),
-                'data' => $data,
-            ]);
-            throw $e;
-        }
-    }
-
-    /**
-     * Dispatch BiospexImageProcess job with validation.
-     */
-    private function dispatchImageProcessJob(array $data): void
-    {
-        $required = ['queueId', 'subjectId', 'status'];
-        $missing = array_diff($required, array_keys($data));
-
-        if (! empty($missing)) {
-            throw new \InvalidArgumentException('BiospexImageProcess missing required fields: '.implode(', ', $missing));
-        }
-
-        ExportImageUpdateJob::dispatch(
-            $data['queueId'],
-            $data['subjectId'],
-            $data['status'],
-            $data['error'] ?? null
-        );
-    }
-
-    /**
-     * Dispatch BiospexZipCreator job with validation.
-     */
-    private function dispatchZipCreatorJob(array $data): void
-    {
-        // Add any specific validation for zip creator job
-        if (empty($data)) {
-            throw new \InvalidArgumentException('BiospexZipCreator requires data payload');
-        }
-
-        ZooniverseExportZipResultJob::dispatch($data);
-    }
-
-    /**
      * Handle non-critical errors with logging and notifications.
      *
      * @param  string  $msg  Error message
@@ -391,7 +393,7 @@ class ListenExportUpdates extends Command
     {
         $context = array_merge($ctx, [
             'timestamp' => now()->toISOString(),
-            'command' => 'export:listen-updates',
+            'command' => 'export:update:listen',
             'reconnect_attempts' => $this->reconnectAttempts,
         ]);
 
@@ -420,7 +422,7 @@ class ListenExportUpdates extends Command
     {
         $context = [
             'timestamp' => now()->toISOString(),
-            'command' => 'export:listen-updates',
+            'command' => 'export:update:listen',
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString(),
             'file' => $e->getFile(),
@@ -446,28 +448,8 @@ class ListenExportUpdates extends Command
 
         if ($this->reconnectAttempts > $this->maxReconnectAttempts) {
             $this->handleCriticalError("Max reconnection attempts ({$this->maxReconnectAttempts}) exceeded", $e);
-            $this->shutdown(1);
+            $this->shouldExit = true;
         }
-
-        // Exponential backoff with jitter using reconnectDelay as base
-        $jitter = mt_rand(0, 1000) / 1000;
-        $delay = min(60, $this->reconnectDelay * pow(2, $this->reconnectAttempts - 1)) + $jitter;
-
-        $this->info('⏰ Reconnecting in '.round($delay, 2).'s...');
-        $this->loop->addTimer($delay, function () {
-            $this->connectToSqs();
-        });
-    }
-
-    /**
-     * Force reconnection to SQS service.
-     */
-    private function forceReconnection(): void
-    {
-        $this->info('Forcing SQS reconnection...');
-        $this->loop->addTimer(1.0, function () {
-            $this->connectToSqs();
-        });
     }
 
     /**
@@ -478,7 +460,7 @@ class ListenExportUpdates extends Command
      */
     private function getQueueUrl(string $key): string
     {
-        $name = Config::get("services.aws.{$key}");
+        $name = Config::get("services.aws.queues.{$key}");
 
         return $this->sqs->getQueueUrl(['QueueName' => $name])['QueueUrl'];
     }
@@ -495,7 +477,6 @@ class ListenExportUpdates extends Command
             return;
         }
 
-        // SQS batch delete supports up to 10 messages per request
         $batches = array_chunk($messages, 10);
 
         foreach ($batches as $batchIndex => $batch) {
@@ -517,17 +498,14 @@ class ListenExportUpdates extends Command
                 $successCount = count($result['Successful'] ?? []);
                 $this->info("🗑️  Batch deleted {$successCount} messages");
 
-                // Handle any failed deletions
                 if (! empty($result['Failed'])) {
                     foreach ($result['Failed'] as $failed) {
                         $this->error("Failed to delete message in batch: {$failed['Code']} - {$failed['Message']}");
                     }
                 }
-
             } catch (\Throwable $e) {
                 $this->error('Batch delete failed, falling back to individual deletion: '.$e->getMessage());
 
-                // Fallback to individual deletion
                 foreach ($batch as $message) {
                     $this->deleteMessage($queueUrl, $message['ReceiptHandle']);
                 }
@@ -590,8 +568,8 @@ class ListenExportUpdates extends Command
 
         try {
             $subject = $critical
-                ? '[CRITICAL] Export Updates Listener - '.config('app.name')
-                : '[ERROR] Export Updates Listener - '.config('app.name');
+                ? '[CRITICAL] Export Update Queue Listener - '.config('app.name')
+                : '[ERROR] Export Update Queue Listener - '.config('app.name');
 
             $body = $this->buildEmailBody($msg, $e, $ctx, $critical);
 
@@ -600,7 +578,6 @@ class ListenExportUpdates extends Command
             });
 
             Log::info('Error notification email sent', ['subject' => $subject]);
-
         } catch (\Throwable $me) {
             Log::error('Failed to send alert email', [
                 'mail_error' => $me->getMessage(),
@@ -614,7 +591,7 @@ class ListenExportUpdates extends Command
      */
     private function buildEmailBody(string $msg, ?\Throwable $e, array $ctx, bool $critical): string
     {
-        $body = "Export Updates Listener Error Report\n";
+        $body = "Export Update Queue Listener Error Report\n";
         $body .= str_repeat('=', 50)."\n\n";
 
         if ($critical) {
@@ -644,26 +621,19 @@ class ListenExportUpdates extends Command
         }
 
         $body .= "Configuration:\n";
-        $body .= 'Queue: '.Config::get('services.aws.queue_updates')."\n";
+        $body .= 'Queue: '.Config::get('services.aws.queues.queue_export_update')."\n";
         $body .= 'Region: '.Config::get('services.aws.region', 'us-east-1')."\n";
 
         return $body;
     }
 
     /**
-     * Shutdown the listener gracefully.
+     * Check if the export queue has pending exports.
      *
-     * @param  int  $code  Exit code
+     * @return bool True if exports > 0
      */
-    #[NoReturn]
-    private function shutdown(int $code): void
+    private function hasActiveExports(): bool
     {
-        $this->isShuttingDown = true;
-        if ($this->heartbeatTimer) {
-            $this->loop->cancelTimer($this->heartbeatTimer);
-        }
-        $this->loop->stop();
-        $this->info($code === 0 ? 'Shutdown complete' : 'Shutdown with errors');
-        exit($code);
+        return ExportQueue::where('queued', 1)->where('error', 0)->count() > 0;
     }
 }

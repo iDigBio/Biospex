@@ -20,7 +20,7 @@
 
 namespace App\Models;
 
-use App\Models\Traits\UuidTrait;
+use App\Traits\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**

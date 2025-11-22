@@ -22,11 +22,10 @@ namespace App\Jobs;
 
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
-use App\Services\Actor\Traits\ZooniverseErrorNotification;
+use App\Services\Actor\Zooniverse\ZooniverseZipTriggerService;
 use App\Services\Csv\AwsS3CsvService;
 use App\Services\Process\MapZooniverseCsvColumnsService;
-use Aws\S3\S3Client;
-use Aws\Sqs\SqsClient;
+use App\Traits\NotifyOnJobFailure;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -48,9 +47,9 @@ use Throwable;
  */
 class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
+    use Batchable, Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
-    public int $timeout = 1800;
+    public int $timeout = 3600;
 
     /**
      * Create a new job instance.
@@ -68,68 +67,42 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
      *
      * Processes S3 objects, creates CSV manifest, and triggers zip creation.
      *
-     * @param  S3Client  $s3  AWS S3 client
-     * @param  SqsClient  $sqs  AWS SQS client
      * @param  AwsS3CsvService  $awsS3CsvService  Service for handling S3 CSV operations
      * @param  MapZooniverseCsvColumnsService  $mapZooniverseCsvColumnsService  Service for mapping CSV columns
-     * @throws \Exception When no images are found or CSV row count doesn't match image count
+     *
+     * @throws \Exception When no images are found or CSV row count doesn't match the image count
      */
     public function handle(
-        S3Client $s3,
-        SqsClient $sqs,
         AwsS3CsvService $awsS3CsvService,
-        MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService
+        MapZooniverseCsvColumnsService $mapZooniverseCsvColumnsService,
+        ZooniverseZipTriggerService $zipTriggerService
     ): void {
 
         $this->exportQueue->load('expedition');
 
-        // === CONFIG-BASED PATHS ===
-        $scratchDir = config('config.scratch_dir'); // e.g. "scratch"
-        $processDir = "{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
-        $fullProcessPath = "{$scratchDir}/{$processDir}";
-        $csvFilePath = "{$fullProcessPath}/manifest.csv";
-        $s3Bucket = config('filesystems.disks.s3.bucket');
+        // === GET ALL EXPORT DATA ===
+        $exportData = $zipTriggerService->getExportData($this->exportQueue);
 
-        // === LIST S3 OBJECTS + CALCULATE SIZE & COUNT ===
-        $totalSize = 0;
-        $fileCount = 0;
-        $imageKeys = [];
-
-        $paginator = $s3->getPaginator('ListObjectsV2', [
-            'Bucket' => $s3Bucket,
-            'Prefix' => "{$fullProcessPath}/",
-        ]);
-
-        foreach ($paginator as $page) {
-            foreach ($page['Contents'] ?? [] as $object) {
-                if (str_ends_with($object['Key'], '.jpg')) {
-                    $totalSize += $object['Size'];
-                    $fileCount++;
-                    $imageKeys[] = $object['Key'];
-                }
-            }
-        }
-
-        if ($fileCount === 0) {
-            throw new \Exception(t('No images found in S3 directory: %s', $fullProcessPath));
-        }
+        // === CHECK AND DELETE EXISTING MANIFEST.CSV ===
+        $zipTriggerService->deleteManifest($exportData);
 
         // === BUILD CSV ON S3 ===
-        $awsS3CsvService->createBucketStream($s3Bucket, $csvFilePath, 'w');
+        $awsS3CsvService->createBucketStream($exportData['s3Bucket'], $exportData['csvFilePath'], 'w');
         $awsS3CsvService->createCsvWriterFromStream();
         $awsS3CsvService->csv->addEncodingFormatter();
 
         $first = true;
+        $csvRowCount = 0;
 
         ExportQueueFile::where('queue_id', $this->exportQueue->id)
-            ->chunk(config('services.aws.lambda_export_count'), function ($chunk) use (
-                $imageKeys,
+            ->chunk(config('services.aws.csv_export_count'), function ($chunk) use (
+                $exportData,
                 $awsS3CsvService,
                 $mapZooniverseCsvColumnsService,
                 &$first,
-                $fullProcessPath
+                &$csvRowCount
             ) {
-                $csvData = $chunk->filter(fn ($file) => in_array("{$fullProcessPath}/{$file->subject_id}.jpg", $imageKeys)
+                $csvData = $chunk->filter(fn ($file) => in_array("{$exportData['fullProcessPath']}/{$file->subject_id}.jpg", $exportData['imageKeys'])
                 )->map(fn ($file) => $mapZooniverseCsvColumnsService->mapColumns($file, $this->exportQueue)
                 );
 
@@ -143,37 +116,16 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
                 }
 
                 $awsS3CsvService->csv->insertAll($csvData->toArray());
+                $csvRowCount += $csvData->count();
             });
 
         // === VALIDATE ROW COUNT ===
-        $awsS3CsvService->createBucketStream($s3Bucket, $csvFilePath, 'r');
-        $awsS3CsvService->createCsvReaderFromStream();
-        $csvRowCount = $awsS3CsvService->csv->getReaderCount();
-
-        // Subtract 1 for header row to get actual data row count
-        $csvDataRowCount = $csvRowCount - 1;
-
-        if ($csvDataRowCount !== $fileCount) {
-            throw new \Exception(t('CSV row count (%s) does not match image count (%s).', $csvRowCount, $fileCount));
+        if ($csvRowCount !== $exportData['fileCount']) {
+            throw new \Exception(t('CSV row count (%s) does not match image count (%s).', $csvRowCount, $exportData['fileCount']));
         }
 
-        // === SEND EXACT MESSAGE TO ZIP TRIGGER ===
-        $queueUrl = $sqs->getQueueUrl(['QueueName' => config('services.aws.queue_zip_trigger')])['QueueUrl'];
-        $updatesQueueUrl = $sqs->getQueueUrl(['QueueName' => config('services.aws.queue_updates')])['QueueUrl'];
-
-        $payload = [
-            'processDir' => $processDir, // Now just the ID part without scratch/
-            's3Bucket' => $s3Bucket,
-            'updatesQueueUrl' => $updatesQueueUrl,
-            'queueId' => $this->exportQueue->id,
-            'totalSize' => $totalSize,
-            'fileCount' => $fileCount,
-        ];
-
-        $sqs->sendMessage([
-            'QueueUrl' => $queueUrl,
-            'MessageBody' => json_encode($payload),
-        ]);
+        // === SEND ZIP TRIGGER ===
+        $zipTriggerService->sendZipTrigger($this->exportQueue, $exportData['totalSize'], $exportData['fileCount']);
 
         $this->exportQueue->stage = 3;
         $this->exportQueue->save();
@@ -186,6 +138,9 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
-        $this->sendErrorNotification($this->exportQueue, $throwable);
+        $this->exportQueue->error = 1;
+        $this->exportQueue->save();
+
+        $this->notifyGroupOnFailure($this->exportQueue, $throwable);
     }
 }

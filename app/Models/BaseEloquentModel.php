@@ -20,9 +20,9 @@
 
 namespace App\Models;
 
+use App\Traits\ClearsResponseCache;
 use Eloquent;
 use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 /**
  * Class BaseEloquentModel
@@ -42,7 +42,7 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
  */
 class BaseEloquentModel extends Model
 {
-    use LadaCacheTrait;
+    use ClearsResponseCache;
 
     /**
      * The database connection name for the model.
@@ -52,6 +52,11 @@ class BaseEloquentModel extends Model
      */
     protected $connection = 'mysql';
 
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
     public $incrementing = true;  // Enable for auto-increment IDs
 
     /**
@@ -79,8 +84,6 @@ class BaseEloquentModel extends Model
 
         parent::__construct($attributes);
     }
-
-    // ... existing code ...
 
     /**
      * Save the model to the database.

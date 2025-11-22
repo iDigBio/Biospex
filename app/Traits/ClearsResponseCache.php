@@ -18,39 +18,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Models;
+namespace App\Traits;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\ResponseCache\Facades\ResponseCache;
 
-/**
- * Class PusherClassification
- */
-class PusherClassification extends BaseEloquentModel
+trait ClearsResponseCache
 {
-    use HasFactory;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected $table = 'pusher_classifications';
-
-    /**
-     * {@inheritDoc}
-     */
-    protected $fillable = [
-        'classification_id',
-        'data',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @return string[]
-     */
-    protected function casts(): array
+    public static function bootClearsResponseCache()
     {
-        return [
-            'data' => 'array',
-        ];
+        self::created(function () {
+            ResponseCache::clear();
+        });
+
+        self::updated(function () {
+            ResponseCache::clear();
+        });
+
+        self::deleted(function () {
+            ResponseCache::clear();
+        });
     }
 }

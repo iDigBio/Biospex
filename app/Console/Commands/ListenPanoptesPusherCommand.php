@@ -97,6 +97,11 @@ class ListenPanoptesPusherCommand extends Command
      */
     public function handle(): int
     {
+        if (! config('services.aws.sqs_listen_panoptes_pusher')) {
+
+            return self::SUCCESS;
+        }
+
         try {
             $this->info('Starting Panoptes Pusher listener...');
             $this->validateConfiguration();

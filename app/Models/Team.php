@@ -20,7 +20,7 @@
 
 namespace App\Models;
 
-use App\Models\Traits\Presentable;
+use App\Traits\Presentable;
 use App\Presenters\TeamPresenter;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

@@ -1,55 +1,97 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Create The Application
-|--------------------------------------------------------------------------
-|
-| The first thing we will do is create a new Laravel application instance
-| which serves as the "glue" for all the components of Laravel, and is
-| the IoC container for the system binding all of the various parts.
-|
-*/
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 
-$app = new Illuminate\Foundation\Application(
-    realpath(__DIR__.'/../')
-);
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+        then: function () {
+            $require_files = function ($dir) {
+                $files = File::files(base_path($dir));
+                foreach ($files as $file) {
+                    require $file->getPathname();
+                }
+            };
 
-/*
-|--------------------------------------------------------------------------
-| Bind Important Interfaces
-|--------------------------------------------------------------------------
-|
-| Next, we need to bind some important interfaces into the container so
-| we will be able to resolve them when needed. The kernels serve the
-| incoming requests to this application from both the web and CLI.
-|
-*/
+            // Migrated from mapWebRoutes()
+            Route::domain(config('config.app_domain'))->middleware('web')->group(function () use ($require_files) {
+                $require_files('routes/front');
+                $require_files('routes/front/appauth');
 
-$app->singleton(
-    Illuminate\Contracts\Http\Kernel::class,
-    App\Http\Kernel::class
-);
+                Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () use ($require_files) {
+                    $require_files('routes/admin');
+                    Route::get('/', function () {
+                        return Redirect::route('admin.projects.index');
+                    });
+                });
+            });
 
-$app->singleton(
-    Illuminate\Contracts\Console\Kernel::class,
-    App\Console\Kernel::class
-);
+            // Migrated from mapApiRoutes()
+            Route::domain(config('config.api.domain'))->group(function () use ($require_files) {
+                Route::middleware(['web'])->group(base_path('routes/api/index.php'));
 
-$app->singleton(
-    Illuminate\Contracts\Debug\ExceptionHandler::class,
-    App\Exceptions\Handler::class
-);
+                Route::middleware([
+                    'api',
+                    // 'auth:sanctum',
+                ])->group(function () use ($require_files) {
+                    $require_files('routes/api/v0');
+                });
 
-/*
-|--------------------------------------------------------------------------
-| Return The Application
-|--------------------------------------------------------------------------
-|
-| This script returns the application instance. The instance is given to
-| the calling script so we can separate the building of the instances
-| from the actual running of the application and sending responses.
-|
-*/
+                Route::prefix('v1')->middleware([
+                    'api',
+                    'auth:sanctum',
+                    'ability:panoptes-pusher:read,panoptes-pusher:create,wedigbio-dashboard:read,lambda:update',
+                ])->group(function () use ($require_files) {
+                    $require_files('routes/api/v1');
+                });
+            });
+        }
+    )
+    ->withMiddleware(function (Middleware $middleware) {
+        // Global middleware stack (runs on every request)
+        $middleware->use([
+            \Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks::class,
+            \App\Http\Middleware\TrustProxies::class,
+            \Illuminate\Http\Middleware\HandleCors::class,
+            \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
+            \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+            \App\Http\Middleware\TrimStrings::class,
+            \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        ]);
 
-return $app;
+        // Web middleware group (applied to routes/web.php)
+        $middleware->web(
+            append: [
+                \App\Http\Middleware\FlashHelperMessage::class,
+                \Spatie\ResponseCache\Middlewares\CacheResponse::class,
+            ], replace: [
+                \Illuminate\Cookie\Middleware\EncryptCookies::class => \App\Http\Middleware\EncryptCookies::class,
+                \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class => \App\Http\Middleware\VerifyCsrfToken::class,
+            ]
+        );
+
+        // API middleware group (applied to routes/api.php)
+        $middleware->api(
+            append: [
+                \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            ], remove: ['throttle:api']
+        );
+
+        // Middleware aliases (for use in route definitions)
+        $middleware->alias([
+            'auth' => \App\Http\Middleware\Authenticate::class,
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+            'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
+            'doNotCacheResponse' => \Spatie\ResponseCache\Middlewares\DoNotCacheResponse::class,
+        ]);
+    })
+    ->withExceptions(function (Exceptions $exceptions) {
+        //
+    })
+    ->create();

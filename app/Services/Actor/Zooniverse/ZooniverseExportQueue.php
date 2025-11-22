@@ -21,7 +21,6 @@
 namespace App\Services\Actor\Zooniverse;
 
 use App\Jobs\ZooniverseExportProcessImagesJob;
-use App\Livewire\ProcessMonitor;
 use App\Models\Download;
 use App\Models\Expedition;
 use App\Models\ExportQueue;
@@ -49,27 +48,32 @@ class ZooniverseExportQueue
 
     /**
      * Process export queue.
-     * Gets first non-errored and non-queued export and dispatches it for processing.
+     * Gets the first non-errored and non-queued export and dispatches it for processing.
      */
     public function processQueue(): void
     {
-        \Log::info('Processing export queue...');
+        if ($this->exportQueue->where('queued', 1)->where('error', 0)->exists()) {
+            return;
+        }
+
         $exportQueue = $this->exportQueue
             ->with('expedition')
             ->where('error', 0)
             ->where('queued', 0)
+            ->where('files_ready', 1)
             ->orderBy('created_at', 'asc')
             ->first();
 
         if (! $exportQueue) {
-            \Log::info('No export queue items available.');
-
             return;
         }
 
         $exportQueue->queued = 1;
         $exportQueue->stage = 1;
         $exportQueue->save();
+
+        \Log::info("Export queue start process: {$exportQueue->id}");
+        \Artisan::call('update:listen-controller start');
 
         ZooniverseExportProcessImagesJob::dispatch($exportQueue);
     }
@@ -92,7 +96,6 @@ class ZooniverseExportQueue
      */
     public function resetExpeditionExport(int $expeditionId): void
     {
-        \Log::info('Resetting expedition export for expedition ID: '.$expeditionId);
         $expedition = $this->expeditionService->getExpeditionForQueueReset($expeditionId);
 
         if (! is_null($expedition->exportQueue)) {

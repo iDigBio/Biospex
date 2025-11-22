@@ -20,6 +20,7 @@
 
 namespace App\Models;
 
+use App\Traits\ClearsResponseCache;
 use MongoDB\Laravel\Eloquent\Model;
 
 /**
@@ -41,6 +42,8 @@ use MongoDB\Laravel\Eloquent\Model;
  */
 class BaseMongoModel extends Model
 {
+    use ClearsResponseCache;
+
     /**
      * The database connection name for the model.
      * Uses MongoDB connection for all MongoDB-based models.
