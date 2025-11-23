@@ -21,8 +21,8 @@
 namespace App\Providers;
 
 use Aws\S3\S3Client;
-use Aws\Sqs\SqsClient;
 use Aws\Sfn\SfnClient;
+use Aws\Sqs\SqsClient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Redis;

@@ -12,7 +12,9 @@ return [
 
     'expedition_size' => env('EXPEDITION_SIZE'),
 
-    'reverb_debug' => env('REVERB_DEBUG', false),
+    'reverb_debug' => env('REVERB_DEBUG', 0),
+
+    'enable_panoptes_listener' => env('ENABLE_PANOPTES_LISTENER', 1),
 
     'api' => [
         'domain' => env('API_DOMAIN'),
@@ -213,6 +215,7 @@ return [
         'APP_DOMAIN',
         'APP_SERVER_USER',
         'APP_CURRENT_PATH',
+        'ENABLE_PANOPTES_LISTENER',
         'QUEUE_CHART',
         'QUEUE_CLASSIFICATION',
         'QUEUE_DEFAULT',

@@ -1,169 +1,188 @@
 <?php
 
-/*
- * Copyright (C) 2014 - 2025, Biospex
- * biospex@gmail.com
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 namespace App\Services;
 
 use Aws\Sqs\SqsClient;
+use Closure;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 class SqsListenerService
 {
+    private SqsClient $sqs;
+
+    private string $adminEmail;
+
+    private bool $shouldExit = false;
+
     private int $reconnectAttempts = 0;
+
     private int $maxReconnectAttempts = 10;
+
     private int $lastEmailSent = 0;
-    private ?string $adminEmail;
-    private string $commandName;
 
-    public function __construct(
-        protected SqsClient $sqs,
-        string $commandName = 'sqs:listener'
-    ) {
+    public function __construct(SqsClient $sqs)
+    {
+        $this->sqs = $sqs;
         $this->adminEmail = config('mail.from.address', 'admin@biospex.org');
-        $this->commandName = $commandName;
     }
 
-    public function getQueueUrl(string $configKey): string
-    {
-        $name = Config::get("services.aws.queues.{$configKey}");
-        if (empty($name)) {
-            throw new \RuntimeException("Missing config for queue: {$configKey}");
-        }
+    /**
+     * Run the main listener loop.
+     *
+     * @param  Closure  $idleChecker  Callback to check for active work (returns bool)
+     * @param  string  $queueKey  Config key for the queue name (e.g., 'queue_reconciliation_update')
+     * @param  string  $graceKey  Config key for idle grace period (e.g., 'services.aws.reconciliation_idle_grace')
+     * @param  Closure  $routeCallback  Callback to route/process a decoded message body (receives array $body, returns void or throws)
+     * @param  Command  $command  The console command instance (for logging/output)
+     */
+    public function run(
+        Closure $idleChecker,
+        string $queueKey,
+        string $graceKey,
+        Closure $routeCallback,
+        Command $command
+    ): void {
+        $this->setupSignalHandlers($command);
+        $idleStart = null;
+        $gracePeriod = (int) config($graceKey, 60);
 
-        return $this->sqs->getQueueUrl(['QueueName' => $name])['QueueUrl'];
-    }
+        $command->info('Worker started. Listening...');
 
-    public function receiveMessages(string $queueUrl, int $maxMessages = 10, int $waitTime = 20): array
-    {
-        $result = $this->sqs->receiveMessage([
-            'QueueUrl' => $queueUrl,
-            'MaxNumberOfMessages' => $maxMessages,
-            'WaitTimeSeconds' => $waitTime,
-            'AttributeNames' => ['ApproximateReceiveCount'],
-        ]);
+        while (true) {
+            if (extension_loaded('pcntl')) {
+                pcntl_signal_dispatch();
+            }
 
-        return $result['Messages'] ?? [];
-    }
+            if ($this->shouldExit) {
+                break;
+            }
 
-    public function deleteMessage(string $queueUrl, string $receiptHandle): void
-    {
-        try {
-            $this->sqs->deleteMessage(['QueueUrl' => $queueUrl, 'ReceiptHandle' => $receiptHandle]);
-        } catch (\Throwable $e) {
-            // Log locally but don't throw to avoid crashing the loop for one deletion failure
-            Log::error("Failed to delete message: {$e->getMessage()}");
-        }
-    }
+            // Check idle logic
+            if (! $idleChecker()) {
+                if ($idleStart === null) {
+                    $idleStart = time();
+                    $command->info("No pending messages. Monitoring for {$gracePeriod} seconds before shutdown.");
+                } elseif ((time() - $idleStart) > $gracePeriod) {
+                    $command->info('No pending messages. Shutting down listener.');
+                    break;
+                }
+                sleep(5);
 
-    public function batchDeleteMessages(string $queueUrl, array $messages): void
-    {
-        if (empty($messages)) {
-            return;
-        }
-
-        $batches = array_chunk($messages, 10);
-
-        foreach ($batches as $batch) {
-            $entries = [];
-            foreach ($batch as $index => $message) {
-                $entries[] = [
-                    'Id' => (string) $index,
-                    'ReceiptHandle' => $message['ReceiptHandle'],
-                ];
+                continue;
+            } else {
+                if ($idleStart !== null) {
+                    $idleStart = null;
+                    $command->info('Messages detected—continuing polling.');
+                }
             }
 
             try {
-                $result = $this->sqs->deleteMessageBatch([
-                    'QueueUrl' => $queueUrl,
-                    'Entries' => $entries,
-                ]);
+                $this->pollAndProcess($queueKey, $routeCallback, $command);
+                $this->reconnectAttempts = 0;
+            } catch (Throwable $e) {
+                $this->handleConnectionError($e, $command);
+                sleep(min(60, pow(2, $this->reconnectAttempts)));
+            }
+        }
 
-                if (!empty($result['Failed'])) {
-                    foreach ($result['Failed'] as $failed) {
-                        Log::error("Failed to delete message in batch: {$failed['Code']} - {$failed['Message']}");
-                    }
+        $command->info('Shutdown complete');
+    }
+
+    /**
+     * Poll SQS and process messages.
+     */
+    private function pollAndProcess(string $queueKey, Closure $routeCallback, Command $command): void
+    {
+        $queueUrl = $this->getQueueUrl($queueKey);
+
+        $result = $this->sqs->receiveMessage([
+            'QueueUrl' => $queueUrl,
+            'MaxNumberOfMessages' => 10,
+            'WaitTimeSeconds' => 20,
+            'AttributeNames' => ['ApproximateReceiveCount'],
+        ]);
+
+        $messages = $result['Messages'] ?? [];
+
+        if (! empty($messages)) {
+            $command->info('📦 Received batch of '.count($messages).' messages from SQS');
+            $this->processBatchMessages($messages, $queueUrl, $routeCallback, $command);
+        }
+    }
+
+    /**
+     * Process a batch of messages.
+     */
+    private function processBatchMessages(
+        array $messages,
+        string $queueUrl,
+        Closure $routeCallback,
+        Command $command
+    ): void {
+        $processedMessages = [];
+
+        foreach ($messages as $message) {
+            $messageId = $message['MessageId'] ?? 'unknown';
+            $receiveCount = $message['Attributes']['ApproximateReceiveCount'] ?? 1;
+
+            if ($receiveCount > 3) {
+                $command->warn("⚠️  Message {$messageId} has been retried {$receiveCount} times");
+            }
+
+            try {
+                $this->processSingleMessage($message, $routeCallback);
+                $processedMessages[] = $message;
+            } catch (Throwable $e) {
+                if ($e instanceof \InvalidArgumentException) {
+                    $command->error("❌ Invalid message format: {$e->getMessage()} (Message ID: {$messageId})");
+                } else {
+                    $this->handleError('Failed to process message in batch', $e, [
+                        'message_id' => $messageId,
+                        'message_body_preview' => substr($message['Body'] ?? '', 0, 200),
+                    ], $command);
                 }
-            } catch (\Throwable $e) {
-                Log::error('Batch delete failed, falling back to individual deletion: ' . $e->getMessage());
-                foreach ($batch as $message) {
-                    $this->deleteMessage($queueUrl, $message['ReceiptHandle']);
+
+                if ($this->isPermanentError($e)) {
+                    $processedMessages[] = $message;
                 }
             }
         }
-    }
 
-    public function handleConnectionError(\Throwable $e, callable $onCriticalError): void
-    {
-        $this->reconnectAttempts++;
-        $this->handleError("SQS connection failed (attempt {$this->reconnectAttempts})", $e);
-
-        if ($this->reconnectAttempts > $this->maxReconnectAttempts) {
-            $msg = "Max reconnection attempts ({$this->maxReconnectAttempts}) exceeded";
-            $this->handleCriticalError($msg, $e);
-            $onCriticalError();
+        if (! empty($processedMessages)) {
+            $this->batchDeleteMessages($queueUrl, $processedMessages, $command);
         }
     }
 
-    public function resetConnectionAttempts(): void
+    /**
+     * Process a single message.
+     */
+    private function processSingleMessage(array $message, Closure $routeCallback): void
     {
-        $this->reconnectAttempts = 0;
-    }
-
-    public function handleError(string $msg, ?\Throwable $e = null, array $ctx = []): void
-    {
-        $context = array_merge($ctx, [
-            'timestamp' => now()->toISOString(),
-            'command' => $this->commandName,
-            'reconnect_attempts' => $this->reconnectAttempts,
-        ]);
-
-        if ($e) {
-            $context['error'] = $e->getMessage();
-            $context['trace'] = $e->getTraceAsString();
-            $context['file'] = $e->getFile();
-            $context['line'] = $e->getLine();
+        if (empty($message['Body'])) {
+            throw new \InvalidArgumentException('Message body is empty');
         }
 
-        Log::error($msg, $context);
+        $body = json_decode($message['Body'], true);
 
-        if ($this->shouldSendEmail($msg)) {
-            $this->sendEmail($msg, $e, $context);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Invalid JSON in message body: '.json_last_error_msg());
         }
+
+        if (! is_array($body)) {
+            throw new \InvalidArgumentException('Message body must be a JSON object, got: '.gettype($body));
+        }
+
+        $routeCallback($body);
     }
 
-    public function handleCriticalError(string $msg, \Throwable $e): void
-    {
-        $context = [
-            'timestamp' => now()->toISOString(),
-            'command' => $this->commandName,
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-            'reconnect_attempts' => $this->reconnectAttempts,
-        ];
-
-        Log::critical($msg, $context);
-        $this->sendEmail($msg, $e, $context, true);
-    }
-
-    public function isPermanentError(\Throwable $e): bool
+    /**
+     * Determine if an error is permanent and message should be deleted.
+     */
+    private function isPermanentError(Throwable $e): bool
     {
         $permanentErrorPatterns = [
             'Unknown function:',
@@ -181,6 +200,174 @@ class SqsListenerService
         return false;
     }
 
+    /**
+     * Setup signal handlers on the command.
+     */
+    private function setupSignalHandlers(Command $command): void
+    {
+        if (! extension_loaded('pcntl')) {
+            return;
+        }
+
+        $handler = function () {
+            $this->shouldExit = true;
+        };
+
+        pcntl_signal(SIGINT, $handler);
+        pcntl_signal(SIGTERM, $handler);
+    }
+
+    /**
+     * Get queue URL from config key.
+     */
+    private function getQueueUrl(string $key): string
+    {
+        $name = Config::get("services.aws.queues.{$key}");
+
+        return $this->sqs->getQueueUrl(['QueueName' => $name])['QueueUrl'];
+    }
+
+    /**
+     * Check if queue has pending messages.
+     */
+    public function hasPendingMessages(string $queueKey): bool
+    {
+        try {
+            $queueUrl = $this->getQueueUrl($queueKey);
+            $result = $this->sqs->getQueueAttributes([
+                'QueueUrl' => $queueUrl,
+                'AttributeNames' => ['ApproximateNumberOfMessages'],
+            ]);
+
+            return (int) ($result['Attributes']['ApproximateNumberOfMessages'] ?? 0) > 0;
+        } catch (Throwable $e) {
+            Log::warning('Failed to check queue attributes: '.$e->getMessage());
+
+            return true;  // Assume pending on error to avoid false shutdown
+        }
+    }
+
+    /**
+     * Batch delete messages.
+     */
+    private function batchDeleteMessages(string $queueUrl, array $messages, Command $command): void
+    {
+        if (empty($messages)) {
+            return;
+        }
+
+        $batches = array_chunk($messages, 10);
+
+        foreach ($batches as $batchIndex => $batch) {
+            $entries = [];
+
+            foreach ($batch as $index => $message) {
+                $entries[] = [
+                    'Id' => (string) $index,
+                    'ReceiptHandle' => $message['ReceiptHandle'],
+                ];
+            }
+
+            try {
+                $result = $this->sqs->deleteMessageBatch([
+                    'QueueUrl' => $queueUrl,
+                    'Entries' => $entries,
+                ]);
+
+                $successCount = count($result['Successful'] ?? []);
+                $command->info("🗑️  Batch deleted {$successCount} messages");
+
+                if (! empty($result['Failed'])) {
+                    foreach ($result['Failed'] as $failed) {
+                        $command->error("Failed to delete message in batch: {$failed['Code']} - {$failed['Message']}");
+                    }
+                }
+            } catch (Throwable $e) {
+                $command->error('Batch delete failed, falling back to individual deletion: '.$e->getMessage());
+
+                foreach ($batch as $message) {
+                    $this->deleteMessage($queueUrl, $message['ReceiptHandle'], $command);
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete single message.
+     */
+    private function deleteMessage(string $queueUrl, string $receipt, Command $command): void
+    {
+        try {
+            $this->sqs->deleteMessage(['QueueUrl' => $queueUrl, 'ReceiptHandle' => $receipt]);
+        } catch (Throwable $e) {
+            $command->error('Failed to delete message: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Handle non-critical errors.
+     */
+    public function handleError(string $msg, ?Throwable $e, array $ctx, Command $command): void
+    {
+        $context = array_merge($ctx, [
+            'timestamp' => now()->toISOString(),
+            'service' => 'SqsListenerService',
+            'reconnect_attempts' => $this->reconnectAttempts,
+        ]);
+
+        if ($e) {
+            $context['error'] = $e->getMessage();
+            $context['trace'] = $e->getTraceAsString();
+            $context['file'] = $e->getFile();
+            $context['line'] = $e->getLine();
+        }
+
+        Log::error($msg, $context);
+        $command->error($msg.($e ? ': '.$e->getMessage() : ''));
+
+        if ($this->shouldSendEmail($msg)) {
+            $this->sendEmail($msg, $e, $context, false, $command);
+        }
+    }
+
+    /**
+     * Handle critical errors.
+     */
+    public function handleCriticalError(string $msg, Throwable $e, Command $command): void
+    {
+        $context = [
+            'timestamp' => now()->toISOString(),
+            'service' => 'SqsListenerService',
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'reconnect_attempts' => $this->reconnectAttempts,
+        ];
+
+        Log::critical($msg, $context);
+        $command->error("🚨 CRITICAL: {$msg}: {$e->getMessage()}");
+
+        $this->sendEmail($msg, $e, $context, true, $command);
+    }
+
+    /**
+     * Handle connection errors with backoff.
+     */
+    public function handleConnectionError(Throwable $e, Command $command): void
+    {
+        $this->reconnectAttempts++;
+        $this->handleError("SQS connection failed (attempt {$this->reconnectAttempts})", $e, [], $command);
+
+        if ($this->reconnectAttempts > $this->maxReconnectAttempts) {
+            $this->handleCriticalError("Max reconnection attempts ({$this->maxReconnectAttempts}) exceeded", $e, $command);
+            $this->shouldExit = true;
+        }
+    }
+
+    /**
+     * Check if email should be sent (throttled).
+     */
     private function shouldSendEmail(string $msg): bool
     {
         $now = time();
@@ -191,20 +378,28 @@ class SqsListenerService
         foreach ($keywords as $kw) {
             if (stripos($msg, $kw) !== false) {
                 $this->lastEmailSent = $now;
+
                 return true;
             }
         }
+
         return false;
     }
 
-    private function sendEmail(string $msg, ?\Throwable $e, array $ctx, bool $critical = false): void
+    /**
+     * Send email notification.
+     */
+    public function sendEmail(string $msg, ?Throwable $e, array $ctx, bool $critical, Command $command): void
     {
-        if (!$this->adminEmail) {
+        if (! $this->adminEmail) {
             return;
         }
 
         try {
-            $subject = ($critical ? '[CRITICAL] ' : '[ERROR] ') . $this->commandName . ' - ' . config('app.name');
+            $subject = $critical
+                ? '[CRITICAL] SQS Listener Service - '.config('app.name')
+                : '[ERROR] SQS Listener Service - '.config('app.name');
+
             $body = $this->buildEmailBody($msg, $e, $ctx, $critical);
 
             Mail::raw($body, function ($m) use ($subject) {
@@ -212,7 +407,7 @@ class SqsListenerService
             });
 
             Log::info('Error notification email sent', ['subject' => $subject]);
-        } catch (\Throwable $me) {
+        } catch (Throwable $me) {
             Log::error('Failed to send alert email', [
                 'mail_error' => $me->getMessage(),
                 'original_error' => $e?->getMessage(),
@@ -220,32 +415,42 @@ class SqsListenerService
         }
     }
 
-    private function buildEmailBody(string $msg, ?\Throwable $e, array $ctx, bool $critical): string
+    /**
+     * Build email body.
+     */
+    private function buildEmailBody(string $msg, ?Throwable $e, array $ctx, bool $critical): string
     {
-        $body = "SQS Listener Error Report\n";
-        $body .= str_repeat('=', 50) . "\n\n";
+        $body = "SQS Listener Service Error Report\n";
+        $body .= str_repeat('=', 50)."\n\n";
 
         if ($critical) {
             $body .= "🚨 CRITICAL ERROR - Immediate attention required!\n\n";
         }
 
-        $body .= 'Time: ' . now()->format('Y-m-d H:i:s T') . "\n";
-        $body .= 'Server: ' . php_uname('n') . "\n";
-        $body .= 'Application: ' . config('app.name') . "\n";
+        $body .= 'Time: '.now()->format('Y-m-d H:i:s T')."\n";
+        $body .= 'Server: '.php_uname('n')."\n";
+        $body .= 'Application: '.config('app.name')."\n";
+        $body .= 'Environment: '.config('app.env')."\n";
+        $body .= 'Reconnect Attempts: '.$this->reconnectAttempts."\n\n";
+
         $body .= "Error Message:\n{$msg}\n\n";
 
         if ($e) {
             $body .= "Exception Details:\n";
-            $body .= 'Type: ' . get_class($e) . "\n";
-            $body .= 'Message: ' . $e->getMessage() . "\n";
-            $body .= 'File: ' . $e->getFile() . ':' . $e->getLine() . "\n\n";
-            $body .= "Stack Trace:\n" . $e->getTraceAsString() . "\n\n";
+            $body .= 'Type: '.get_class($e)."\n";
+            $body .= 'Message: '.$e->getMessage()."\n";
+            $body .= 'File: '.$e->getFile().':'.$e->getLine()."\n\n";
+
+            $body .= "Stack Trace:\n".$e->getTraceAsString()."\n\n";
         }
 
-        if (!empty($ctx)) {
+        if (! empty($ctx)) {
             $body .= "Context:\n";
-            $body .= json_encode($ctx, JSON_PRETTY_PRINT) . "\n\n";
+            $body .= json_encode($ctx, JSON_PRETTY_PRINT)."\n\n";
         }
+
+        $body .= "Configuration:\n";
+        $body .= 'Region: '.Config::get('services.aws.region', 'us-east-1')."\n";
 
         return $body;
     }

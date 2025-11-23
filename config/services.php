@@ -69,7 +69,7 @@ return [
         // SQS QUEUE NAMES
         'queues' => [
             'batch_trigger' => env('AWS_SQS_BATCH_TRIGGER'),
-            'queue_batch_update' => env('AWS_SQS_BATCH_UPDATE'),
+            'batch_update' => env('AWS_SQS_BATCH_UPDATE'),
             'export_image_tasks_dlq' => env('AWS_SQS_EXPORT_IMAGE_TASKS_DLQ'),
             'export_image_tasks' => env('AWS_SQS_EXPORT_IMAGE_TASKS'),
             'export_update' => env('AWS_SQS_EXPORT_UPDATE'),
@@ -79,11 +79,9 @@ return [
             'reconciliation_update' => env('AWS_SQS_RECONCILIATION_UPDATE'),
         ],
 
-        // set whether to run or not via .env for different environments
-        'sqs_listen_panoptes_pusher' => env('AWS_SQS_LISTEN_PANOPTES_PUSHER', true),
-
         'batch_idle_grace' => env('AWS_BATCH_IDLE_GRACE', 1800),
-        'listener_idle_grace' => env('AWS_LISTENER_IDLE_GRACE', 300),
+        'export_idle_grace' => env('AWS_LISTENER_IDLE_GRACE', 300),
+        'reconcile_idle_grace' => env('AWS_RECONCILE_IDLE_GRACE', 300),
         'zip_threshold' => env('AWS_ZIP_THRESHOLD', 8000),
     ],
 ];

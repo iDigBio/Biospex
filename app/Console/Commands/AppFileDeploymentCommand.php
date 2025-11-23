@@ -288,6 +288,10 @@ class AppFileDeploymentCommand extends Command
                 return config('config.supervisor_group');
             }
 
+            if ($field === 'ENABLE_PANOPTES_LISTENER') {
+                return config('config.enable_panoptes_listener');
+            }
+
             return config('config.'.strtolower(Str::replaceFirst('_', '.', $field)));
 
         } catch (Exception $e) {
