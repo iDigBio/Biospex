@@ -124,7 +124,7 @@ class ZooniverseZipTriggerService
                 'stateMachineArn' => 'arn:aws:states:us-east-2:147899039648:stateMachine:ZipBatchOrchestrator',
                 'input' => json_encode($payload),
             ]);
-            //TODO Remove this log once we have a better way to track executions
+            // TODO Remove this log once we have a better way to track executions
             \Log::info("Step Function execution started for {$processDir}: ".$result['executionArn']);
         } else {
             // Send to SQS for direct Lambda processing for small jobs
@@ -156,7 +156,6 @@ class ZooniverseZipTriggerService
      * Delete manifest CSV file from S3 bucket if it exists.
      *
      * @param  array  $exportData  Export data containing s3Bucket and csvFilePath keys
-     * @return void
      */
     public function deleteManifest(array $exportData): void
     {

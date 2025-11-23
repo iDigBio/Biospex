@@ -47,6 +47,7 @@ class AppPurgeQueues extends Command
      * Execute the console command.
      *
      * @return int 0 for success, 1 for failure
+     *
      * @throws \Exception When queue operations fail
      */
     public function handle()
