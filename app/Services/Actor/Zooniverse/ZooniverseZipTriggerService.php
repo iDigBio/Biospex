@@ -98,8 +98,8 @@ class ZooniverseZipTriggerService
     public function sendZipTrigger(ExportQueue $exportQueue, int $totalSize, int $fileCount): void
     {
         // Get queue URLs
-        $queueUrl = $this->getQueueUrl('queue_zip_trigger');
-        $updatesQueueUrl = $this->getQueueUrl('queue_export_update');
+        $queueUrl = $this->getQueueUrl('export_zip_trigger');
+        $updatesQueueUrl = $this->getQueueUrl('export_update');
 
         // Build process directory path
         $processDir = $this->buildProcessDir($exportQueue);

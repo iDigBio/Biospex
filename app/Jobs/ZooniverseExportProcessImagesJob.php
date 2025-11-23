@@ -74,8 +74,8 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
             ->orderBy('id')
             ->cursor();
 
-        $queueUrl = $this->getQueueUrl($sqs, 'queue_image_tasks');
-        $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_export_update');
+        $queueUrl = $this->getQueueUrl($sqs, 'export_image_tasks');
+        $updatesQueueUrl = $this->getQueueUrl($sqs, 'export_update');
         $processDir = "{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
 
         $processedCount = 0;

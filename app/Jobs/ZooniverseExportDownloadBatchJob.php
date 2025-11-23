@@ -58,7 +58,7 @@ class ZooniverseExportDownloadBatchJob implements ShouldQueue
 
         $size = Storage::disk('s3')->size($path);
 
-        $triggerQueueUrl = $this->getQueueUrl($sqs, 'queue_batch_trigger');
+        $triggerQueueUrl = $this->getQueueUrl($sqs, 'batch_trigger');
         $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_batch_update');
 
         $message = [

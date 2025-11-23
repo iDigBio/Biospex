@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Mail;
  * Listens for updates from SQS queue and processes them.
  * Handles reconnection attempts and monitoring of the connection health.
  */
-class ListenBatchUpdateQueue extends Command
+class SqsListenerBatchUpdate extends Command
 {
     /** @var string Command signature */
     protected $signature = 'batch:listen';
@@ -92,7 +92,7 @@ class ListenBatchUpdateQueue extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.queue_batch_update' => 'AWS_SQS_BATCH_UPDATE_QUEUE',
+            'services.aws.queues.queue_batch_update' => 'AWS_SQS_BATCH_UPDATE',
             'services.aws.export_credentials' => 'AWS_EXPORT_CREDENTIALS',
         ];
 
@@ -182,7 +182,6 @@ class ListenBatchUpdateQueue extends Command
             'QueueUrl' => $queueUrl,
             'MaxNumberOfMessages' => 10,
             'WaitTimeSeconds' => 20,
-            'VisibilityTimeout' => 60,
             'AttributeNames' => ['ApproximateReceiveCount'],
         ]);
 

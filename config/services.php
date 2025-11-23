@@ -68,19 +68,22 @@ return [
 
         // SQS QUEUE NAMES
         'queues' => [
-            'queue_batch_trigger' => env('AWS_SQS_BATCH_TRIGGER_QUEUE'),
-            'queue_batch_update' => env('AWS_SQS_BATCH_UPDATE_QUEUE'),
-            'queue_image_tasks_dlq' => env('AWS_SQS_IMAGE_TASKS_DLQ'),
-            'queue_image_tasks' => env('AWS_SQS_IMAGE_TASKS_QUEUE'),
-            'queue_export_update' => env('AWS_SQS_EXPORT_UPDATE_QUEUE'),
-            'queue_zip_trigger' => env('AWS_SQS_ZIP_TRIGGER_QUEUE'),
+            'batch_trigger' => env('AWS_SQS_BATCH_TRIGGER'),
+            'queue_batch_update' => env('AWS_SQS_BATCH_UPDATE'),
+            'export_image_tasks_dlq' => env('AWS_SQS_EXPORT_IMAGE_TASKS_DLQ'),
+            'export_image_tasks' => env('AWS_SQS_EXPORT_IMAGE_TASKS'),
+            'export_update' => env('AWS_SQS_EXPORT_UPDATE'),
+            'export_zip_trigger' => env('AWS_SQS_EXPORT_ZIP_TRIGGER'),
+            'reconciliation_trigger_dlq' => env('AWS_SQS_RECONCILIATION_TRIGGER_DLQ'),
+            'reconciliation_trigger' => env('AWS_SQS_RECONCILIATION_TRIGGER'),
+            'reconciliation_update' => env('AWS_SQS_RECONCILIATION_UPDATE'),
         ],
 
         // set whether to run or not via .env for different environments
         'sqs_listen_panoptes_pusher' => env('AWS_SQS_LISTEN_PANOPTES_PUSHER', true),
 
         'batch_idle_grace' => env('AWS_BATCH_IDLE_GRACE', 1800),
-        'export_idle_grace' => env('AWS_EXPORT_IDLE_GRACE', 300),
+        'listener_idle_grace' => env('AWS_LISTENER_IDLE_GRACE', 300),
         'zip_threshold' => env('AWS_ZIP_THRESHOLD', 8000),
     ],
 ];

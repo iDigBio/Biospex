@@ -20,8 +20,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\ZooniverseExportImageUpdateJob;
-use App\Models\ExportQueue;
+use App\Jobs\LabelReconciliationJob;
 use Aws\Sqs\SqsClient;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
@@ -29,16 +28,16 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 /**
- * Listens for messages from the export DLQ and processes recovery.
+ * Listens for updates from SQS queue and processes them.
  * Handles reconnection attempts and monitoring of the connection health.
  */
-class ListenExportImageTasksDlq extends Command
+class SqsListenerReconciliationUpdate extends Command
 {
     /** @var string Command signature */
-    protected $signature = 'export:monitor-dlq';
+    protected $signature = 'reconciliation:listen';
 
     /** @var string Command description */
-    protected $description = 'Robust SQS listener for export DLQ with automatic recovery';
+    protected $description = 'Robust SQS listener for reconciliation update queue with reconnections and alerts';
 
     /** @var SqsClient AWS SQS client instance */
     private SqsClient $sqs;
@@ -55,7 +54,7 @@ class ListenExportImageTasksDlq extends Command
     /** @var string Admin email address for notifications */
     private string $adminEmail;
 
-    /** @var int Timestamp of last notification email sent */
+    /** @var int Timestamp of the last notification email sent */
     private int $lastEmailSent = 0;
 
     public function __construct(SqsClient $sqs)
@@ -73,13 +72,13 @@ class ListenExportImageTasksDlq extends Command
     public function handle(): int
     {
         try {
-            $this->info('Starting Export DLQ Monitor...');
+            $this->info('Starting Reconciliation Update SQS Listener...');
             $this->validateConfiguration();
             $this->runWorker();
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
-            $this->handleCriticalError('Failed to start export DLQ monitor', $e);
+            $this->handleCriticalError('Failed to start reconciliation updates listener', $e);
 
             return self::FAILURE;
         }
@@ -93,8 +92,7 @@ class ListenExportImageTasksDlq extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.queue_image_tasks_dlq' => 'AWS_SQS_IMAGE_TASKS_DLQ',
-            'services.aws.export_credentials' => 'AWS_EXPORT_CREDENTIALS',
+            'services.aws.queues.queue_reconciliation_update' => 'AWS_SQS_RECONCILIATION_UPDATE',
         ];
 
         foreach ($required as $key => $env) {
@@ -111,9 +109,9 @@ class ListenExportImageTasksDlq extends Command
     {
         $this->setupSignalHandlers();
         $idleStart = null;
-        $gracePeriod = (int) config('services.aws.export_idle_grace', 60);
+        $gracePeriod = (int) config('services.aws.listener_idle_grace', 60);
 
-        $this->info('Worker started. Monitoring DLQ...');
+        $this->info('Worker started. Listening...');
 
         while (true) {
             if (extension_loaded('pcntl')) {
@@ -124,13 +122,13 @@ class ListenExportImageTasksDlq extends Command
                 break;
             }
 
-            // Check active exports logic
-            if (! $this->hasActiveExports()) {
+            // Check active reconciliations logic
+            if (! $this->hasActiveReconciliations()) {
                 if ($idleStart === null) {
                     $idleStart = time();
-                    $this->info("No active exports. Monitoring for {$gracePeriod} seconds before shutdown.");
+                    $this->info("No pending reconciliation messages. Monitoring for {$gracePeriod} seconds before shutdown.");
                 } elseif ((time() - $idleStart) > $gracePeriod) {
-                    $this->info('No active exports. Shutting down DLQ monitor.');
+                    $this->info('No pending reconciliation messages. Shutting down listener.');
                     break;
                 }
                 sleep(5);
@@ -139,7 +137,7 @@ class ListenExportImageTasksDlq extends Command
             } else {
                 if ($idleStart !== null) {
                     $idleStart = null;
-                    $this->info('Active exports detected—continuing DLQ monitoring.');
+                    $this->info('Reconciliation messages detected—continuing polling.');
                 }
             }
 
@@ -151,7 +149,7 @@ class ListenExportImageTasksDlq extends Command
             }
         }
 
-        $this->info('DLQ Monitor shutdown complete');
+        $this->info('Shutdown complete');
     }
 
     /**
@@ -177,7 +175,7 @@ class ListenExportImageTasksDlq extends Command
      */
     private function pollSqsSync(): void
     {
-        $queueUrl = $this->getQueueUrl('queue_image_tasks_dlq');
+        $queueUrl = $this->getQueueUrl('queue_reconciliation_update');
 
         $result = $this->sqs->receiveMessage([
             'QueueUrl' => $queueUrl,
@@ -190,13 +188,13 @@ class ListenExportImageTasksDlq extends Command
 
         if (! empty($messages)) {
             $this->reconnectAttempts = 0;
-            $this->warn('⚠️ Found '.count($messages).' messages in DLQ - processing recovery');
+            $this->info('📦 Received batch of '.count($messages).' messages from SQS');
             $this->processBatchMessages($messages, $queueUrl);
         }
     }
 
     /**
-     * Process a batch of DLQ messages.
+     * Process a batch of SQS messages.
      *
      * @param  array  $messages  Array of SQS messages
      * @param  string  $queueUrl  URL of the SQS queue
@@ -207,16 +205,26 @@ class ListenExportImageTasksDlq extends Command
 
         foreach ($messages as $message) {
             $messageId = $message['MessageId'] ?? 'unknown';
+            $receiveCount = $message['Attributes']['ApproximateReceiveCount'] ?? 1;
+
+            if ($receiveCount > 3) {
+                $this->warn("⚠️  Message {$messageId} has been retried {$receiveCount} times");
+            }
 
             try {
                 $this->processSingleMessage($message);
                 $processedMessages[] = $message;
+            } catch (\InvalidArgumentException $e) {
+                $this->error("❌ Invalid message format: {$e->getMessage()} (Message ID: {$messageId})");
+                $processedMessages[] = $message;
             } catch (\Throwable $e) {
-                $this->handleError('Failed to process DLQ message', $e, [
+                $this->handleError('Failed to process message in batch', $e, [
                     'message_id' => $messageId,
                     'message_body_preview' => substr($message['Body'] ?? '', 0, 200),
                 ]);
-                $processedMessages[] = $message;
+                if ($this->isPermanentError($e)) {
+                    $processedMessages[] = $message;
+                }
             }
         }
 
@@ -226,7 +234,7 @@ class ListenExportImageTasksDlq extends Command
     }
 
     /**
-     * Process a single DLQ message for recovery.
+     * Process a single SQS message.
      *
      * @param  array  $message  SQS message data
      *
@@ -235,62 +243,147 @@ class ListenExportImageTasksDlq extends Command
     private function processSingleMessage(array $message): void
     {
         if (empty($message['Body'])) {
-            throw new \InvalidArgumentException('DLQ message body is empty');
+            throw new \InvalidArgumentException('Message body is empty');
         }
 
         $body = json_decode($message['Body'], true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Invalid JSON in DLQ message body: '.json_last_error_msg());
+            throw new \InvalidArgumentException('Invalid JSON in message body: '.json_last_error_msg());
         }
 
         if (! is_array($body)) {
-            throw new \InvalidArgumentException('DLQ message body must be a JSON object, got: '.gettype($body));
+            throw new \InvalidArgumentException('Message body must be a JSON object, got: '.gettype($body));
         }
 
-        $messageId = $message['MessageId'] ?? 'unknown';
-        $this->recoverFailedMessage($body, $messageId);
+        $this->routeMessage($body);
     }
 
     /**
-     * Recover a failed message by dispatching it as failed.
+     * Determine if an error is permanent and message should be deleted.
+     */
+    private function isPermanentError(\Throwable $e): bool
+    {
+        $permanentErrorPatterns = [
+            'Unknown function:',
+            'Invalid JSON',
+            'Missing function',
+            'Class.*not found',
+        ];
+
+        foreach ($permanentErrorPatterns as $pattern) {
+            if (stripos($e->getMessage(), $pattern) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Route message to the appropriate job based on the function name.
      *
      * @param  array  $data  Message data
-     * @param  string  $messageId  SQS message ID
      *
-     * @throws \InvalidArgumentException When required fields are missing
+     * @throws \InvalidArgumentException|\Throwable When a function is missing or unknown
      */
-    private function recoverFailedMessage(array $data, string $messageId): void
+    private function routeMessage(array $data): void
     {
-        $required = ['queueId', 'subjectId'];
-        $missing = array_diff($required, array_keys($data));
-
-        if (! empty($missing)) {
-            throw new \InvalidArgumentException('DLQ message missing required fields: '.implode(', ', $missing));
+        if (! isset($data['function'])) {
+            throw new \InvalidArgumentException('Message missing required "function" field');
         }
 
-        $queueId = $data['queueId'];
-        $subjectId = $data['subjectId'];
+        $function = $data['function'];
 
-        $this->warn("🔄 Recovering failed subject {$subjectId} from queue {$queueId} (DLQ message {$messageId})");
-
-        ZooniverseExportImageUpdateJob::dispatch($data);
-
-        Log::info('DLQ message recovered', [
-            'queue_id' => $queueId,
-            'subject_id' => $subjectId,
-            'dlq_message_id' => $messageId,
-        ]);
+        try {
+            match ($function) {
+                'BiospexLabelReconciliation' => $this->dispatchLabelReconciliationJob($data),
+                default => throw new \InvalidArgumentException("Unknown function: {$function}"),
+            };
+        } catch (\Throwable $e) {
+            Log::error('Failed to dispatch job', [
+                'function' => $function,
+                'error' => $e->getMessage(),
+                'data' => $data,
+            ]);
+            throw $e;
+        }
     }
 
     /**
-     * Check if an export is currently queued/active.
+     * Dispatch a label reconciliation job based on message data.
      *
-     * @return bool True if queued export exists
+     * @param  array  $data  Message data containing reconciliation results
+     *
+     * @throws \InvalidArgumentException When required fields are missing
+     * @throws \RuntimeException When reconciliation failed
      */
-    private function hasActiveExports(): bool
+    private function dispatchLabelReconciliationJob(array $data): void
     {
-        return ExportQueue::where('queued', 1)->exists();
+        $status = $data['status'] ?? throw new \InvalidArgumentException('Missing status');
+        $expeditionId = $data['expeditionId'] ?? throw new \InvalidArgumentException('Missing expeditionId');
+
+        if ($status === 'failed') {
+            $error = $data['error'] ?? 'Unknown error';
+            Log::error('BiospexLabelReconciliation failed', $data);
+            throw new \RuntimeException("Label reconciliation failed for expedition #{$expeditionId}: {$error}");
+        }
+
+        LabelReconciliationJob::dispatch($data);
+    }
+
+    /**
+     * Handle non-critical errors with logging and notifications.
+     *
+     * @param  string  $msg  Error message
+     * @param  \Throwable|null  $e  Exception if any
+     * @param  array  $ctx  Additional context
+     */
+    private function handleError(string $msg, ?\Throwable $e = null, array $ctx = []): void
+    {
+        $context = array_merge($ctx, [
+            'timestamp' => now()->toISOString(),
+            'command' => 'reconciliation:listen-update',
+            'reconnect_attempts' => $this->reconnectAttempts,
+        ]);
+
+        if ($e) {
+            $context['error'] = $e->getMessage();
+            $context['trace'] = $e->getTraceAsString();
+            $context['file'] = $e->getFile();
+            $context['line'] = $e->getLine();
+        }
+
+        Log::error($msg, $context);
+        $this->error($msg.($e ? ': '.$e->getMessage() : ''));
+
+        if ($this->shouldSendEmail($msg)) {
+            $this->sendEmail($msg, $e, $context);
+        }
+    }
+
+    /**
+     * Handle critical errors with logging and immediate notification.
+     *
+     * @param  string  $msg  Error message
+     * @param  \Throwable  $e  Exception that occurred
+     */
+    private function handleCriticalError(string $msg, \Throwable $e): void
+    {
+        $context = [
+            'timestamp' => now()->toISOString(),
+            'command' => 'reconciliation:listen-update',
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'reconnect_attempts' => $this->reconnectAttempts,
+        ];
+
+        Log::critical($msg, $context);
+        $this->error("🚨 CRITICAL: {$msg}: {$e->getMessage()}");
+
+        $this->sendEmail($msg, $e, $context, true);
     }
 
     /**
@@ -301,7 +394,7 @@ class ListenExportImageTasksDlq extends Command
     private function handleConnectionError(\Throwable $e): void
     {
         $this->reconnectAttempts++;
-        $this->handleError("DLQ connection failed (attempt {$this->reconnectAttempts})", $e);
+        $this->handleError("SQS connection failed (attempt {$this->reconnectAttempts})", $e);
 
         if ($this->reconnectAttempts > $this->maxReconnectAttempts) {
             $this->handleCriticalError("Max reconnection attempts ({$this->maxReconnectAttempts}) exceeded", $e);
@@ -353,15 +446,15 @@ class ListenExportImageTasksDlq extends Command
                 ]);
 
                 $successCount = count($result['Successful'] ?? []);
-                $this->info("🗑️  Cleared {$successCount} DLQ messages");
+                $this->info("🗑️  Batch deleted {$successCount} messages");
 
                 if (! empty($result['Failed'])) {
                     foreach ($result['Failed'] as $failed) {
-                        $this->error("Failed to delete DLQ message: {$failed['Code']} - {$failed['Message']}");
+                        $this->error("Failed to delete message in batch: {$failed['Code']} - {$failed['Message']}");
                     }
                 }
             } catch (\Throwable $e) {
-                $this->error('DLQ batch delete failed, falling back to individual deletion: '.$e->getMessage());
+                $this->error('Batch delete failed, falling back to individual deletion: '.$e->getMessage());
 
                 foreach ($batch as $message) {
                     $this->deleteMessage($queueUrl, $message['ReceiptHandle']);
@@ -381,62 +474,8 @@ class ListenExportImageTasksDlq extends Command
         try {
             $this->sqs->deleteMessage(['QueueUrl' => $queueUrl, 'ReceiptHandle' => $receipt]);
         } catch (\Throwable $e) {
-            $this->error('Failed to delete DLQ message: '.$e->getMessage());
+            $this->error('Failed to delete message: '.$e->getMessage());
         }
-    }
-
-    /**
-     * Handle non-critical errors with logging and notifications.
-     *
-     * @param  string  $msg  Error message
-     * @param  \Throwable|null  $e  Exception if any
-     * @param  array  $ctx  Additional context
-     */
-    private function handleError(string $msg, ?\Throwable $e = null, array $ctx = []): void
-    {
-        $context = array_merge($ctx, [
-            'timestamp' => now()->toISOString(),
-            'command' => 'export:monitor-dlq',
-            'reconnect_attempts' => $this->reconnectAttempts,
-        ]);
-
-        if ($e) {
-            $context['error'] = $e->getMessage();
-            $context['trace'] = $e->getTraceAsString();
-            $context['file'] = $e->getFile();
-            $context['line'] = $e->getLine();
-        }
-
-        Log::error($msg, $context);
-        $this->error($msg.($e ? ': '.$e->getMessage() : ''));
-
-        if ($this->shouldSendEmail($msg)) {
-            $this->sendEmail($msg, $e, $context);
-        }
-    }
-
-    /**
-     * Handle critical errors with logging and immediate notification.
-     *
-     * @param  string  $msg  Error message
-     * @param  \Throwable  $e  Exception that occurred
-     */
-    private function handleCriticalError(string $msg, \Throwable $e): void
-    {
-        $context = [
-            'timestamp' => now()->toISOString(),
-            'command' => 'export:monitor-dlq',
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'reconnect_attempts' => $this->reconnectAttempts,
-        ];
-
-        Log::critical($msg, $context);
-        $this->error("🚨 CRITICAL: {$msg}: {$e->getMessage()}");
-
-        $this->sendEmail($msg, $e, $context, true);
     }
 
     /**
@@ -479,8 +518,8 @@ class ListenExportImageTasksDlq extends Command
 
         try {
             $subject = $critical
-                ? '[CRITICAL] Export DLQ Monitor - '.config('app.name')
-                : '[ERROR] Export DLQ Monitor - '.config('app.name');
+                ? '[CRITICAL] Reconciliation Update Queue Listener - '.config('app.name')
+                : '[ERROR] Reconciliation Update Queue Listener - '.config('app.name');
 
             $body = $this->buildEmailBody($msg, $e, $ctx, $critical);
 
@@ -488,9 +527,9 @@ class ListenExportImageTasksDlq extends Command
                 $m->to($this->adminEmail)->subject($subject);
             });
 
-            Log::info('DLQ error notification email sent', ['subject' => $subject]);
+            Log::info('Error notification email sent', ['subject' => $subject]);
         } catch (\Throwable $me) {
-            Log::error('Failed to send DLQ alert email', [
+            Log::error('Failed to send alert email', [
                 'mail_error' => $me->getMessage(),
                 'original_error' => $e?->getMessage(),
             ]);
@@ -502,7 +541,7 @@ class ListenExportImageTasksDlq extends Command
      */
     private function buildEmailBody(string $msg, ?\Throwable $e, array $ctx, bool $critical): string
     {
-        $body = "Export DLQ Monitor Error Report\n";
+        $body = "Reconciliation Update Queue Listener Error Report\n";
         $body .= str_repeat('=', 50)."\n\n";
 
         if ($critical) {
@@ -532,9 +571,31 @@ class ListenExportImageTasksDlq extends Command
         }
 
         $body .= "Configuration:\n";
-        $body .= 'DLQ: '.Config::get('services.aws.queues.queue_image_tasks_dlq')."\n";
+        $body .= 'Queue: '.Config::get('services.aws.queues.queue_reconciliation_update')."\n";
         $body .= 'Region: '.Config::get('services.aws.region', 'us-east-1')."\n";
 
         return $body;
+    }
+
+    /**
+     * Check if the reconciliation queue has pending messages.
+     *
+     * @return bool True if messages > 0
+     */
+    private function hasActiveReconciliations(): bool
+    {
+        try {
+            $queueUrl = $this->getQueueUrl('queue_reconciliation_update');
+            $result = $this->sqs->getQueueAttributes([
+                'QueueUrl' => $queueUrl,
+                'AttributeNames' => ['ApproximateNumberOfMessages'],
+            ]);
+
+            return (int) ($result['Attributes']['ApproximateNumberOfMessages'] ?? 0) > 0;
+        } catch (\Throwable $e) {
+            $this->warn('Failed to check queue attributes: '.$e->getMessage());
+
+            return true;  // Assume active on error to avoid false shutdown
+        }
     }
 }

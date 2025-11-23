@@ -23,19 +23,16 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Supervisor\Supervisor;
 
-class ListenExportUpdateControlCommand extends Command
+class SqsListenerBatchUpdateCommand extends Command
 {
-    protected $signature = 'update:listen-controller {action=start|stop}';
+    protected $signature = 'batch:listen-controller {action=start|stop}';
 
-    protected $description = 'Start/stop the export update listener via Supervisor';
+    protected $description = 'Start/stop the batch listener via Supervisor';
 
     public function handle(): int
     {
         $action = $this->argument('action');
-        $programs = [
-            'loc-biospex:loc-biospex-listen-export-update-queue',  // Exact from status
-            'loc-biospex:loc-biospex-listen-export-image-tasks-dlq',
-        ];
+        $program = 'loc-biospex:loc-biospex-listen-batch-update';  // Exact from status
 
         try {
             // Build XML-RPC client for Unix socket
@@ -50,19 +47,17 @@ class ListenExportUpdateControlCommand extends Command
 
             $supervisor = new Supervisor($client);
 
-            foreach ($programs as $type => $program) {
-                if ($action === 'start') {
-                    $supervisor->startProcess($program);
-                    $this->info("Started {$type} listener: {$program}");
-                } else {
-                    $supervisor->stopProcess($program);
-                    $this->info("Stopped {$type} listener: {$program}");
-                }
+            if ($action === 'start') {
+                $supervisor->startProcess($program);
+                $this->info("Started {$program}");
+            } else {
+                $supervisor->stopProcess($program);
+                $this->info("Stopped {$program}");
             }
 
             return self::SUCCESS;
         } catch (\Exception $e) {
-            $this->error("Failed to {$action} listeners: ".$e->getMessage());
+            $this->error("Failed to {$action} {$program}: ".$e->getMessage());
 
             return self::FAILURE;
         }
