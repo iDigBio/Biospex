@@ -71,7 +71,7 @@ class SqsListenerBatchUpdate extends Command
     {
         $required = [
             'services.aws.queues.batch_update' => 'AWS_SQS_BATCH_UPDATE',
-            'services.aws.export_credentials' => 'AWS_EXPORT_CREDENTIALS',
+            'services.aws.credentials' => 'AWS_CREDENTIALS',
         ];
 
         foreach ($required as $key => $env) {

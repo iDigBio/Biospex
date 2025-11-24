@@ -21,7 +21,6 @@
 namespace App\Http\Controllers\Front;
 
 use App\Events\SnsTopicSubscriptionEvent;
-use App\Jobs\SnsLabelReconciliationJob;
 use App\Jobs\SnsTesseractOcrJob;
 use Aws\Sns\Exception\InvalidSnsMessageException;
 use Aws\Sns\Message;
@@ -69,7 +68,6 @@ class AwsSnsController
         $payload = json_decode($message['Message'], true);
 
         $job = match (true) {
-            str_contains($payload['requestContext']['functionArn'], config('services.aws.lambda_reconciliation_function')) => SnsLabelReconciliationJob::class,
             str_contains($payload['requestContext']['functionArn'], config('services.aws.lambda_ocr_function')) => SnsTesseractOcrJob::class,
             default => null,
         };

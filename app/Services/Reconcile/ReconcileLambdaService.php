@@ -20,8 +20,8 @@
 
 namespace App\Services\Reconcile;
 
-use App\Services\Api\AwsLambdaApiService;
 use App\Traits\SkipZooniverse;
+use Aws\Sqs\SqsClient;
 
 /**
  * Class ReconcileLambdaService
@@ -37,24 +37,46 @@ class ReconcileLambdaService
     /**
      * ReconcileLambdaService constructor.
      */
-    public function __construct(
-        protected AwsLambdaApiService $awsLambdaApiService
-    ) {}
+    public function __construct(protected SqsClient $sqs) {}
 
     /**
-     * Process explained file via lambda labelReconciliations.
-     *
-     * @see \App\Http\Controllers\Admin\ExpertReconcileController::create
-     * @see \App\Console\Commands\ZooniverseExpertReviewCommand::handle
+     * Trigger explained reconciliation via the environment's trigger queue
      */
     public function invokeLambdaExplained(int $expeditionId): void
     {
-        $attributes = [
+        $this->sendToTriggerQueue($expeditionId, true);
+    }
+
+    /**
+     * Re-run normal reconciliation (optional but useful)
+     */
+    public function invokeLambdaNormal(int $expeditionId): void
+    {
+        $this->sendToTriggerQueue($expeditionId, false);
+    }
+
+    /**
+     * Send message to the correct environment-specific trigger queue
+     */
+    private function sendToTriggerQueue(int $expeditionId, bool $explanations = false): void
+    {
+        $name = config('services.aws.reconcile_trigger');
+
+        if (! $name) {
+            throw new \RuntimeException('Missing config: services.aws.reconcile_trigger');
+        }
+
+        $queueUrl = $this->sqs->getQueueUrl(['QueueName' => $name])['QueueUrl'];
+
+        $message = [
+            'expeditionId' => (string) $expeditionId,
             'bucket' => config('filesystems.disks.s3.bucket'),
-            'key' => config('zooniverse.directory.classification').'/'.$expeditionId.'.csv',
-            'explanations' => true,
+            'explanations' => $explanations,
         ];
 
-        $this->awsLambdaApiService->lambdaInvokeAsync(config('services.aws.lambda_reconciliation_function'), $attributes);
+        $this->sqs->sendMessage([
+            'QueueUrl' => $queueUrl,
+            'MessageBody' => json_encode($message),
+        ]);
     }
 }

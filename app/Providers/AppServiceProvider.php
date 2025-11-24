@@ -96,7 +96,7 @@ class AppServiceProvider extends ServiceProvider
             return new SqsClient([
                 'version' => 'latest',
                 'region' => config('services.aws.region'),
-                'credentials' => config('services.aws.export_credentials'),
+                'credentials' => config('services.aws.credentials'),
             ]);
         });
 
@@ -105,7 +105,7 @@ class AppServiceProvider extends ServiceProvider
             return new S3Client([
                 'version' => 'latest',
                 'region' => config('services.aws.region'),
-                'credentials' => config('services.aws.export_credentials'),
+                'credentials' => config('services.aws.credentials'),
             ]);
         });
 
@@ -114,7 +114,7 @@ class AppServiceProvider extends ServiceProvider
             return new SfnClient([
                 'version' => 'latest',
                 'region' => config('services.aws.region'),
-                'credentials' => config('services.aws.export_credentials'),
+                'credentials' => config('services.aws.credentials'),
             ]);
         });
     }

@@ -25,7 +25,6 @@ use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Reconcile\ReconcileProcessAll;
 use App\Services\Reconcile\ReconcileProcessExplained;
-use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -40,7 +39,7 @@ class LabelReconciliationJob implements ShouldQueue
      */
     public function __construct(protected array $data)
     {
-        $this->onQueue(config('config.queue.sns_reconciliation'));
+        $this->onQueue(config('config.queue.reconcile'));
     }
 
     /**
@@ -53,19 +52,8 @@ class LabelReconciliationJob implements ShouldQueue
         ReconcileProcessExplained $reconcileProcessExplained,
         Expedition $expedition): void
     {
-        $responsePayload = $this->data['responsePayload'];
-
-        // If errorMessage, something really went bad.
-        if (isset($responsePayload['errorMessage'])) {
-            throw new Exception($responsePayload['errorMessage']);
-        }
-
-        if ($responsePayload['statusCode'] !== 200) {
-            throw new Exception('Invalid response status code: '.$responsePayload['body']['message']);
-        }
-
-        $expeditionId = (int) $responsePayload['body']['expeditionId'];
-        $explanations = (bool) $responsePayload['body']['explanations'];
+        $expeditionId = (int) $this->data['expeditionId'];
+        $explanations = (bool) $this->data['explanations'];
 
         $record = $expedition->find($expeditionId);
 

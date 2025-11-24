@@ -52,10 +52,6 @@ return [
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
         ],
-        'export_credentials' => [
-            'key' => env('AWS_EXPORT_ACCESS_KEY_ID'),
-            'secret' => env('AWS_EXPORT_SECRET_ACCESS_KEY'),
-        ],
         // LAMBDA FUNCTION NAMES
         'lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION', 'BiospexExportProcessor'),
         'lambda_reconciliation_function' => env('AWS_LAMBDA_RECONCILIATION_FUNCTION', 'labelReconciliations'),
@@ -74,14 +70,13 @@ return [
             'export_image_tasks' => env('AWS_SQS_EXPORT_IMAGE_TASKS'),
             'export_update' => env('AWS_SQS_EXPORT_UPDATE'),
             'export_zip_trigger' => env('AWS_SQS_EXPORT_ZIP_TRIGGER'),
-            'reconciliation_trigger_dlq' => env('AWS_SQS_RECONCILIATION_TRIGGER_DLQ'),
-            'reconciliation_trigger' => env('AWS_SQS_RECONCILIATION_TRIGGER'),
-            'reconciliation_update' => env('AWS_SQS_RECONCILIATION_UPDATE'),
+            'reconcile_trigger' => env('AWS_SQS_RECONCILE_TRIGGER'),
+            'reconcile_update' => env('AWS_SQS_RECONCILE_UPDATE'),
         ],
 
         'batch_idle_grace' => env('AWS_BATCH_IDLE_GRACE', 1800),
-        'export_idle_grace' => env('AWS_LISTENER_IDLE_GRACE', 300),
-        'reconcile_idle_grace' => env('AWS_RECONCILE_IDLE_GRACE', 300),
+        'export_idle_grace' => env('AWS_EXPORT_IDLE_GRACE', 300),
+        'reconcile_idle_grace' => env('AWS_RECONCILE_IDLE_GRACE', 1800),
         'zip_threshold' => env('AWS_ZIP_THRESHOLD', 8000),
     ],
 ];

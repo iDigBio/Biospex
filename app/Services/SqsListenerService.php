@@ -34,7 +34,7 @@ class SqsListenerService
      * Run the main listener loop.
      *
      * @param  Closure  $idleChecker  Callback to check for active work (returns bool)
-     * @param  string  $queueKey  Config key for the queue name (e.g., 'queue_reconciliation_update')
+     * @param  string  $queueKey  Config key for the queue name (e.g., 'reconcile_update')
      * @param  string  $graceKey  Config key for idle grace period (e.g., 'services.aws.reconciliation_idle_grace')
      * @param  Closure  $routeCallback  Callback to route/process a decoded message body (receives array $body, returns void or throws)
      * @param  Command  $command  The console command instance (for logging/output)

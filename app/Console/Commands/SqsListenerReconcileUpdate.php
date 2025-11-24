@@ -29,10 +29,10 @@ use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
 
-class SqsListenerReconciliationUpdate extends Command
+class SqsListenerReconcileUpdate extends Command
 {
     /** @var string Command signature */
-    protected $signature = 'reconciliation:listen';
+    protected $signature = 'reconcile:listen';
 
     /** @var string Command description */
     protected $description = 'Robust SQS listener for reconciliation update queue with reconnections and alerts';
@@ -70,7 +70,7 @@ class SqsListenerReconciliationUpdate extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.reconciliation_update' => 'AWS_SQS_RECONCILIATION_UPDATE',
+            'services.aws.queues.reconcile_update' => 'AWS_SQS_RECONCILE_UPDATE',
         ];
 
         foreach ($required as $key => $env) {
@@ -86,7 +86,7 @@ class SqsListenerReconciliationUpdate extends Command
     private function runWorker(): void
     {
         $idleChecker = fn () => $this->hasActiveReconciliations();
-        $queueKey = 'reconciliation_update';
+        $queueKey = 'reconcile_update';
         $graceKey = 'services.aws.reconcile_idle_grace';
         $routeCallback = fn ($body) => $this->routeMessage($body);
 
@@ -139,9 +139,20 @@ class SqsListenerReconciliationUpdate extends Command
         if ($status === 'failed') {
             $error = $data['error'] ?? 'Unknown error';
             Log::error('BiospexLabelReconciliation failed', $data);
-            throw new RuntimeException("Label reconciliation failed for expedition #{$expeditionId}: {$error}");
+
+            // ALERT but DO NOT throw — so message gets deleted
+            $this->service->handleError(
+                "Label reconciliation failed for expedition #{$expeditionId}: {$error}",
+                null,
+                $data,
+                $this
+            );
+
+            // Do NOT throw — message will be deleted
+            return;
         }
 
+        // Success path
         LabelReconciliationJob::dispatch($data);
     }
 
@@ -152,6 +163,6 @@ class SqsListenerReconciliationUpdate extends Command
      */
     private function hasActiveReconciliations(): bool
     {
-        return $this->service->hasPendingMessages('reconciliation_update');
+        return $this->service->hasPendingMessages('reconcile_update');
     }
 }

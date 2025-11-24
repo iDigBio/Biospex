@@ -72,7 +72,7 @@ class SqsListenerExportUpdate extends Command
     {
         $required = [
             'services.aws.queues.export_update' => 'AWS_SQS_EXPORT_UPDATE',
-            'services.aws.export_credentials' => 'AWS_EXPORT_CREDENTIALS',
+            'services.aws.credentials' => 'AWS_CREDENTIALS',
         ];
 
         foreach ($required as $key => $env) {

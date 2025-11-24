@@ -29,7 +29,7 @@ use Illuminate\Console\Command;
  */
 class AppPurgeQueues extends Command
 {
-    protected $signature = 'app:awsqueue-purge {env : local, development, or production}';
+    protected $signature = 'app:awsqueue-purge {env : loc, dev, or prod}';
 
     protected $description = 'Purge all aws queues for the given environment';
 
@@ -54,7 +54,7 @@ class AppPurgeQueues extends Command
     {
         $env = $this->argument('env');
 
-        $validEnvs = ['local', 'development', 'production'];
+        $validEnvs = ['loc', 'dev', 'prod'];
         if (! in_array($env, $validEnvs)) {
             $this->error('Invalid environment. Use: '.implode(', ', $validEnvs));
 

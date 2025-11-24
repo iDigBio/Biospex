@@ -72,7 +72,7 @@ class SqsListenerExportImageTasksDlq extends Command
     {
         $required = [
             'services.aws.queues.export_image_tasks_dlq' => 'AWS_SQS_EXPORT_IMAGE_TASKS_DLQ',
-            'services.aws.export_credentials' => 'AWS_EXPORT_CREDENTIALS',
+            'services.aws.credentials' => 'AWS_CREDENTIALS',
         ];
 
         foreach ($required as $key => $env) {
