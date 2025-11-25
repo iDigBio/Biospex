@@ -273,11 +273,7 @@ class AppFileDeploymentCommand extends Command
     {
         try {
             if (str_starts_with($field, 'APP_')) {
-                if ($field === 'APP_ENV') {
-                    return config('app.env');
-                }
-
-                return config('config.'.strtolower($field));
+                return config('app.'.$field);
             }
 
             if ($field === 'REVERB_DEBUG') {

@@ -36,7 +36,7 @@ class RegisterUserService
      */
     public function showForm(?GroupInvite $invite = null): \Illuminate\Contracts\View\View|RedirectResponse
     {
-        if (! config('config.app_registration')) {
+        if (! config('app.registration')) {
             return \Redirect::route('home')->with('error', t('Registration is not available at this time.'));
         }
 

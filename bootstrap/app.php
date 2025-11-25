@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             };
 
             // Migrated from mapWebRoutes()
-            Route::domain(config('config.app_domain'))->middleware('web')->group(function () use ($require_files) {
+            Route::domain(config('app.domain'))->middleware('web')->group(function () use ($require_files) {
                 $require_files('routes/front');
                 $require_files('routes/front/appauth');
 

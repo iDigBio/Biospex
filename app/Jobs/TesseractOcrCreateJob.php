@@ -67,7 +67,7 @@ class TesseractOcrCreateJob implements ShouldQueue
             return;
         }
 
-        $ocrQueue = $tesseractOcrBuild->createOcrQueue($this->project, $this->expedition, ['total' => $total]);
+        $ocrQueue = $tesseractOcrBuild->createOcrQueue($this->project, $this->expedition, $total);
 
         $tesseractOcrBuild->createOcrQueueFiles($ocrQueue, $this->project, $this->expedition);
 

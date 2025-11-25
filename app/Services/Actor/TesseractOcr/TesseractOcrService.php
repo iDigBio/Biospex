@@ -48,61 +48,31 @@ class TesseractOcrService
      */
     public function getFirstQueue(bool $reset = false): ?OcrQueue
     {
+        if (! $reset && $this->ocrQueue->queued(1)->error(0)->exists()) {
+            return null;
+        }
+
         return $reset ?
             $this->ocrQueue->orderBy('id')->first() :
-            $this->ocrQueue->where('error', 0)->where('status', 0)->orderBy('id')->first();
-    }
-
-    /**
-     * Get unprocessed ocr queue files.
-     * Limited return depending on config.
-     */
-    public function getUnprocessedOcrQueueFiles(int $queueId, int $take = 50): \Illuminate\Database\Eloquent\Collection|array
-    {
-        return $this->ocrQueueFile->where('queue_id', $queueId)->where('processed', 0)->take($take)->get();
+            $this->ocrQueue->queued(0)->error(0)->filesReady(1)->orderBy('id')->first();
     }
 
     /**
      * Ocr process completed.
      *
      * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\Exception
      */
     public function ocrCompleted(OcrQueue $ocrQueue): void
     {
-        $this->updateSubjects($ocrQueue->id);
-
         $this->sendNotify($ocrQueue);
-
         $ocrQueue->delete();
-    }
-
-    /**
-     * Update subjects with ocr result.
-     */
-    public function updateSubjects(int $queueId): void
-    {
-        $cursor = $this->ocrQueueFile->where('queue_id', $queueId)->cursor();
-
-        $cursor->each(function ($file) {
-            $filePath = config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt';
-
-            $content = ! Storage::disk('s3')->exists($filePath) ?
-                t('Error: Text file is missing in path: %s', $filePath) :
-                Storage::disk('s3')->get($filePath);
-
-            $ocrText = trim(preg_replace('/\s+/', ' ', trim($content)));
-
-            $this->subjectService->update(['ocr' => $ocrText], $file->subject_id);
-
-            Storage::disk('s3')->delete($filePath);
-            $file->delete();
-        });
     }
 
     /**
      * Send notification for completed ocr process.
      *
-     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\CannotInsertRecord|\League\Csv\Exception
      */
     public function sendNotify(OcrQueue $queue): void
     {

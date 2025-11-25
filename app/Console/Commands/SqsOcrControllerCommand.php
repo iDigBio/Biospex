@@ -20,56 +20,60 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\TesseractOcrProcessJob;
-use App\Services\Actor\TesseractOcr\TesseractOcrService;
+use App\Services\SupervisorControlService;
 use Illuminate\Console\Command;
 
-class TesseractOcrCommand extends Command
+/**
+ * Command to control OCR listeners via Supervisor
+ *
+ * @author Biospex <biospex@gmail.com>
+ */
+class SqsOcrControllerCommand extends Command
 {
     /**
-     * The name and signature of the console command.
+     * The console command signature.
      *
      * @var string
      */
-    protected $signature = 'tesseract:ocr-process {--reset}';
+    protected $signature = 'ocr:listen-controller {action=start|stop|restart}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Checks queue and processes OCR jobs.';
+    protected $description = 'Start/stop/restart OCR listeners via Supervisor (environment-neutral)';
 
     /**
      * Create a new command instance.
-     * Command is called after queue is created and while processing.
      *
-     * @see \App\Services\Actor\TesseractOcr\TesseractOcrProcess
-     * @see \App\Jobs\TesseractOcrCreateJob
+     * @param  \App\Services\SupervisorControlService  $service
      */
-    public function __construct(protected TesseractOcrService $service)
+    public function __construct(protected SupervisorControlService $service)
     {
         parent::__construct();
     }
 
     /**
      * Execute the console command.
+     *
+     * @return int
      */
-    public function handle(): void
+    public function handle(): int
     {
-        // If reset is true, it will return first in the queue whether it's error or not.
-        $queue = $this->option('reset') ?
-            $this->service->getFirstQueue(true) :
-            $this->service->getFirstQueue();
+        try {
+            $this->service->control([
+                'update' => 'listen-ocr-update',
+                'dlq' => 'listen-ocr-trigger-dlq',
+            ], $this->argument('action'));
 
-        if ($queue === null) {
-            return;
+            $this->info('OCR listeners '.$this->argument('action').'ed');
+
+            return self::SUCCESS;
+        } catch (\Throwable $e) {
+            $this->error('Failed to control OCR listeners: '.$e->getMessage());
+
+            return self::FAILURE;
         }
-
-        $queue->queued = 1;
-        $queue->error = 0;
-        $queue->save();
-
-        TesseractOcrProcessJob::dispatch($queue);
     }
 }

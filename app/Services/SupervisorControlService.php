@@ -1,0 +1,78 @@
+<?php
+
+/*
+ * Copyright (C) 2014 - 2025, Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+namespace App\Services;
+
+use GuzzleHttp\Client;
+use Supervisor\Supervisor;
+
+/**
+ * Service class for controlling Supervisor processes.
+ *
+ * This class provides functionality to manage Supervisor processes by executing
+ * start, stop, and restart commands through XML-RPC interface.
+ */
+class SupervisorControlService
+{
+    /**
+     * Control Supervisor processes with specified action.
+     *
+     * @param  array  $programNames  List of program names to control. Keys can be string identifiers with values as suffixes,
+     *                               or numeric keys with values as both identifiers and suffixes.
+     * @param  string  $action  Action to perform on processes ('start', 'stop', or 'restart')
+     *
+     * @throws \RuntimeException When environment or group configuration is missing
+     */
+    public function control(array $programNames, string $action): void
+    {
+        $env = config('app.env_short');
+        $group = config('config.supervisor_group');
+
+        if (! $env || ! $group) {
+            throw new \RuntimeException('Missing app.env_short or config.supervisor_group');
+        }
+
+        $fullPrograms = [];
+        foreach ($programNames as $key => $suffix) {
+            $full = "{$env}-{$group}:{$env}-{$group}-{$suffix}";
+            $fullPrograms[is_string($key) ? $key : $suffix] = $full;
+        }
+
+        $guzzle = new Client([
+            'curl' => [CURLOPT_UNIX_SOCKET_PATH => '/var/run/supervisor.sock'],
+        ]);
+
+        $transport = new \fXmlRpc\Transport\PsrTransport(new \GuzzleHttp\Psr7\HttpFactory, $guzzle);
+        $client = new \fXmlRpc\Client('http://localhost/RPC2', $transport);
+        $supervisor = new Supervisor($client);
+
+        foreach ($fullPrograms as $type => $program) {
+            match ($action) {
+                'start' => $supervisor->startProcess($program),
+                'stop' => $supervisor->stopProcess($program),
+                'restart' => (function () use ($supervisor, $program) {
+                    $supervisor->stopProcess($program);
+                    $supervisor->startProcess($program);
+                })(),
+            };
+            \Log::info("Supervisor: {$action}ed {$type} → {$program}");
+        }
+    }
+}
