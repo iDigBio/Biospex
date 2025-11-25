@@ -34,11 +34,7 @@ class SupervisorControlService
     /**
      * Control Supervisor processes with specified action.
      *
-     * @param  array  $programNames  List of program names to control. Keys can be string identifiers with values as suffixes,
-     *                               or numeric keys with values as both identifiers and suffixes.
      * @param  string  $action  Action to perform on processes ('start', 'stop', or 'restart')
-     *
-     * @throws \RuntimeException When environment or group configuration is missing
      */
     public function control(array $programs, string $action): void
     {
@@ -50,8 +46,10 @@ class SupervisorControlService
         $client = new \fXmlRpc\Client('http://localhost/RPC2', $transport);
         $supervisor = new Supervisor($client);
 
+        $group = config('config.supervisor_group');
         foreach ($programs as $program) {
-            // $program is now exactly the Supervisor program name (e.g. "loc-batch-update")
+            // Join program name with group name to form full program name
+            $program = "{$group}:{$program}";
             match ($action) {
                 'start' => $supervisor->startProcess($program),
                 'stop' => $supervisor->stopProcess($program),

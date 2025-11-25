@@ -48,7 +48,7 @@ class SqsControllerBatchCommand extends Command
      *
      * @return int Command exit code
      *
-     * @throws \Throwable When supervisor control operation fails
+     * @throws \Throwable When a supervisor control operation fails
      */
     public function handle(): int
     {
