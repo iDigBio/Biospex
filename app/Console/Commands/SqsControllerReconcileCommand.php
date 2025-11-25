@@ -24,19 +24,21 @@ use App\Services\SupervisorControlService;
 use Illuminate\Console\Command;
 
 /**
- * Command to control export listeners via Supervisor.
- * Usage: php artisan update:listen-controller {action=start|stop|restart}
+ * Command to control reconciliation listener via Supervisor.
+ *
+ * This command allows starting, stopping, or restarting the reconciliation
+ * update listener through Supervisor in an environment-neutral way.
  */
-class SqsExportControllerCommand extends Command
+class SqsControllerReconcileCommand extends Command
 {
-    protected $signature = 'update:listen-controller {action=start|stop|restart}';
+    protected $signature = 'reconcile:listen-controller {action=start|stop|restart}';
 
-    protected $description = 'Start/stop/restart export listeners via Supervisor (environment-neutral)';
+    protected $description = 'Start/stop/restart the reconciliation update listener via Supervisor (environment-neutral)';
 
     /**
      * Create a new command instance.
      *
-     * @param  SupervisorControlService  $service  Service to control supervisor processes
+     * @param  SupervisorControlService  $service  Service to control Supervisor processes
      */
     public function __construct(protected SupervisorControlService $service)
     {
@@ -46,21 +48,22 @@ class SqsExportControllerCommand extends Command
     /**
      * Execute the console command.
      *
+     * Controls the reconciliation listener process through Supervisor based on the provided action.
+     *
      * @return int Command exit code (SUCCESS=0 or FAILURE=1)
      */
     public function handle(): int
     {
         try {
             $this->service->control([
-                'update' => 'listener-export-update',
-                'dlq' => 'listener-export-image-tasks-dlq',
+                config('services.aws.queues.reconcile_update'),
             ], $this->argument('action'));
 
-            $this->info('Export listeners '.$this->argument('action').'ed');
+            $this->info('Reconciliation listener '.$this->argument('action').'ed');
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
-            $this->error('Failed: '.$e->getMessage());
+            $this->error('Failed to control reconciliation listener: '.$e->getMessage());
 
             return self::FAILURE;
         }

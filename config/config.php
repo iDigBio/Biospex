@@ -10,7 +10,8 @@ return [
 
     'reverb_debug' => env('REVERB_DEBUG', 0),
 
-    'enable_panoptes_listener' => env('ENABLE_PANOPTES_LISTENER', 1),
+    'panoptes_listener' => env('PANOPTES_LISTENER', 'prod-panoptes-pusher'),
+    'panoptes_listener_enabled' => env('PANOPTES_LISTENER_ENABLED', 1),
 
     'api' => [
         'domain' => env('API_DOMAIN'),
@@ -211,7 +212,14 @@ return [
         'APP_DOMAIN',
         'APP_SERVER_USER',
         'APP_CURRENT_PATH',
-        'ENABLE_PANOPTES_LISTENER',
+        'AWS_SQS_BATCH_UPDATE',
+        'AWS_SQS_EXPORT_IMAGE_TASKS_DLQ',
+        'AWS_SQS_EXPORT_UPDATE',
+        'AWS_SQS_RECONCILE_UPDATE',
+        'AWS_SQS_OCR_TRIGGER_DLQ',
+        'AWS_SQS_OCR_UPDATE',
+        'PANOPTES_LISTENER_ENABLED',
+        'PANOPTES_LISTENER',
         'QUEUE_CHART',
         'QUEUE_CLASSIFICATION',
         'QUEUE_DEFAULT',

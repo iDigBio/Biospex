@@ -40,20 +40,8 @@ class SupervisorControlService
      *
      * @throws \RuntimeException When environment or group configuration is missing
      */
-    public function control(array $programNames, string $action): void
+    public function control(array $programs, string $action): void
     {
-        $group = config('config.supervisor_group');
-
-        if (! $group) {
-            throw new \RuntimeException('Missing config.supervisor_group');
-        }
-
-        $fullPrograms = [];
-        foreach ($programNames as $key => $suffix) {
-            $full = "{$group}:{$group}-{$suffix}";
-            $fullPrograms[is_string($key) ? $key : $suffix] = $full;
-        }
-
         $guzzle = new Client([
             'curl' => [CURLOPT_UNIX_SOCKET_PATH => '/var/run/supervisor.sock'],
         ]);
@@ -62,7 +50,8 @@ class SupervisorControlService
         $client = new \fXmlRpc\Client('http://localhost/RPC2', $transport);
         $supervisor = new Supervisor($client);
 
-        foreach ($fullPrograms as $type => $program) {
+        foreach ($programs as $program) {
+            // $program is now exactly the Supervisor program name (e.g. "loc-batch-update")
             match ($action) {
                 'start' => $supervisor->startProcess($program),
                 'stop' => $supervisor->stopProcess($program),
@@ -71,7 +60,8 @@ class SupervisorControlService
                     $supervisor->startProcess($program);
                 })(),
             };
-            \Log::info("Supervisor: {$action}ed {$type} → {$program}");
+
+            \Log::info("Supervisor: {$action}ed program {$program}");
         }
     }
 }

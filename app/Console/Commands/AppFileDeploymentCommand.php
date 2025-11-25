@@ -277,6 +277,11 @@ class AppFileDeploymentCommand extends Command
                 return config('app.'.$value);
             }
 
+            if (str_starts_with($field, 'AWS_SQS_')) {
+                $value = strtolower(str_replace('AWS_SQS_', '', $field));
+                return config('services.aws.queues.'.$value);
+            }
+
             if ($field === 'REVERB_DEBUG') {
                 return config('config.reverb_debug') ? '--debug' : '';
             }
@@ -285,8 +290,8 @@ class AppFileDeploymentCommand extends Command
                 return config('config.supervisor_group');
             }
 
-            if ($field === 'ENABLE_PANOPTES_LISTENER') {
-                return config('config.enable_panoptes_listener');
+            if (str_starts_with($field, 'PANOPTES_')) {
+                return config('config.'.strtolower($field));
             }
 
             return config('config.'.strtolower(Str::replaceFirst('_', '.', $field)));

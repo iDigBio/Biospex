@@ -24,21 +24,19 @@ use App\Services\SupervisorControlService;
 use Illuminate\Console\Command;
 
 /**
- * Command to control reconciliation listener via Supervisor.
- *
- * This command allows starting, stopping, or restarting the reconciliation
- * update listener through Supervisor in an environment-neutral way.
+ * Command to control the batch update listener via Supervisor.
+ * Provides functionality to start, stop, or restart the batch update process.
  */
-class SqsReconcileControllerCommand extends Command
+class SqsControllerBatchCommand extends Command
 {
-    protected $signature = 'reconcile:listen-controller {action=start|stop|restart}';
+    protected $signature = 'batch:listen-controller {action=start|stop|restart}';
 
-    protected $description = 'Start/stop/restart the reconciliation update listener via Supervisor (environment-neutral)';
+    protected $description = 'Start/stop/restart the batch update listener via Supervisor (environment-neutral)';
 
     /**
-     * Create a new command instance.
+     * {@inheritDoc}
      *
-     * @param  SupervisorControlService  $service  Service to control Supervisor processes
+     * @param  SupervisorControlService  $service  Service to control supervisor processes
      */
     public function __construct(protected SupervisorControlService $service)
     {
@@ -46,24 +44,24 @@ class SqsReconcileControllerCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Execute the console command to control batch listener.
      *
-     * Controls the reconciliation listener process through Supervisor based on the provided action.
+     * @return int Command exit code
      *
-     * @return int Command exit code (SUCCESS=0 or FAILURE=1)
+     * @throws \Throwable When supervisor control operation fails
      */
     public function handle(): int
     {
         try {
             $this->service->control([
-                'update' => 'listener-reconcile-update',
+                config('services.aws.queues.batch_update'),
             ], $this->argument('action'));
 
-            $this->info('Reconciliation listener '.$this->argument('action').'ed');
+            $this->info('Batch listener '.$this->argument('action').'ed');
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
-            $this->error('Failed to control reconciliation listener: '.$e->getMessage());
+            $this->error('Failed to control batch listener: '.$e->getMessage());
 
             return self::FAILURE;
         }

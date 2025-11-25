@@ -24,17 +24,17 @@ use App\Services\SupervisorControlService;
 use Illuminate\Console\Command;
 
 /**
- * Command to control the batch update listener via Supervisor.
- * Provides functionality to start, stop, or restart the batch update process.
+ * Command to control export listeners via Supervisor.
+ * Usage: php artisan update:listen-controller {action=start|stop|restart}
  */
-class SqsBatchControllerCommand extends Command
+class SqsControllerExportCommand extends Command
 {
-    protected $signature = 'batch:listen-controller {action=start|stop|restart}';
+    protected $signature = 'update:listen-controller {action=start|stop|restart}';
 
-    protected $description = 'Start/stop/restart the batch update listener via Supervisor (environment-neutral)';
+    protected $description = 'Start/stop/restart export listeners via Supervisor (environment-neutral)';
 
     /**
-     * {@inheritDoc}
+     * Create a new command instance.
      *
      * @param  SupervisorControlService  $service  Service to control supervisor processes
      */
@@ -44,24 +44,23 @@ class SqsBatchControllerCommand extends Command
     }
 
     /**
-     * Execute the console command to control batch listener.
+     * Execute the console command.
      *
-     * @return int Command exit code
-     *
-     * @throws \Throwable When supervisor control operation fails
+     * @return int Command exit code (SUCCESS=0 or FAILURE=1)
      */
     public function handle(): int
     {
         try {
             $this->service->control([
-                'update' => 'listener-batch-update',
+                config('services.aws.queues.export_update'),
+                config('services.aws.queues.export_image_tasks_dlq'),
             ], $this->argument('action'));
 
-            $this->info('Batch listener '.$this->argument('action').'ed');
+            $this->info('Export listeners '.$this->argument('action').'ed');
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
-            $this->error('Failed to control batch listener: '.$e->getMessage());
+            $this->error('Failed: '.$e->getMessage());
 
             return self::FAILURE;
         }

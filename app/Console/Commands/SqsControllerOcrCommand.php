@@ -28,7 +28,7 @@ use Illuminate\Console\Command;
  *
  * @author Biospex <biospex@gmail.com>
  */
-class SqsOcrControllerCommand extends Command
+class SqsControllerOcrCommand extends Command
 {
     /**
      * The console command signature.
@@ -63,8 +63,8 @@ class SqsOcrControllerCommand extends Command
     {
         try {
             $this->service->control([
-                'update' => 'listener-ocr-update',
-                'dlq' => 'listener-ocr-trigger-dlq',
+                config('services.aws.queues.ocr_update'),
+                config('services.aws.queues.ocr_trigger_dlq'),
             ], $this->argument('action'));
 
             $this->info('OCR listeners '.$this->argument('action').'ed');
