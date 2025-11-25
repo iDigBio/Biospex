@@ -52,8 +52,8 @@ class SqsExportControllerCommand extends Command
     {
         try {
             $this->service->control([
-                'update' => 'listen-export-update',
-                'dlq' => 'listen-export-image-tasks-dlq',
+                'update' => 'listener-export-update',
+                'dlq' => 'listener-export-image-tasks-dlq',
             ], $this->argument('action'));
 
             $this->info('Export listeners '.$this->argument('action').'ed');

@@ -54,7 +54,7 @@ class SqsBatchControllerCommand extends Command
     {
         try {
             $this->service->control([
-                'update' => 'listen-batch-update',
+                'update' => 'listener-batch-update',
             ], $this->argument('action'));
 
             $this->info('Batch listener '.$this->argument('action').'ed');

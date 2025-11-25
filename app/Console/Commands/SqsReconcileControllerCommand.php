@@ -56,7 +56,7 @@ class SqsReconcileControllerCommand extends Command
     {
         try {
             $this->service->control([
-                'update' => 'listener-reconciliation-update',
+                'update' => 'listener-reconcile-update',
             ], $this->argument('action'));
 
             $this->info('Reconciliation listener '.$this->argument('action').'ed');

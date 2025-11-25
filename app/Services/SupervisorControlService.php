@@ -42,16 +42,15 @@ class SupervisorControlService
      */
     public function control(array $programNames, string $action): void
     {
-        $env = config('app.env_short');
         $group = config('config.supervisor_group');
 
-        if (! $env || ! $group) {
-            throw new \RuntimeException('Missing app.env_short or config.supervisor_group');
+        if (! $group) {
+            throw new \RuntimeException('Missing config.supervisor_group');
         }
 
         $fullPrograms = [];
         foreach ($programNames as $key => $suffix) {
-            $full = "{$env}-{$group}:{$env}-{$group}-{$suffix}";
+            $full = "{$group}:{$group}-{$suffix}";
             $fullPrograms[is_string($key) ? $key : $suffix] = $full;
         }
 

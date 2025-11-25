@@ -63,8 +63,8 @@ class SqsOcrControllerCommand extends Command
     {
         try {
             $this->service->control([
-                'update' => 'listen-ocr-update',
-                'dlq' => 'listen-ocr-trigger-dlq',
+                'update' => 'listener-ocr-update',
+                'dlq' => 'listener-ocr-trigger-dlq',
             ], $this->argument('action'));
 
             $this->info('OCR listeners '.$this->argument('action').'ed');

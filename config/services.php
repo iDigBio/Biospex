@@ -73,8 +73,8 @@ return [
             'reconcile_trigger' => env('AWS_SQS_RECONCILE_TRIGGER'),
             'reconcile_update' => env('AWS_SQS_RECONCILE_UPDATE'),
             'ocr_trigger' => env('AWS_SQS_OCR_TRIGGER'),
+            'ocr_trigger_dlq' => env('AWS_SQS_OCR_TRIGGER_DLQ'),
             'ocr_update' => env('AWS_SQS_OCR_UPDATE'),
-            'ocr_dlq' => env('AWS_SQS_OCR_DLQ'),
         ],
 
         'batch_idle_grace' => env('AWS_BATCH_IDLE_GRACE', 1800),

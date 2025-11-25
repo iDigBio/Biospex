@@ -273,7 +273,8 @@ class AppFileDeploymentCommand extends Command
     {
         try {
             if (str_starts_with($field, 'APP_')) {
-                return config('app.'.$field);
+                $value = strtolower(str_replace('APP_', '', $field));
+                return config('app.'.$value);
             }
 
             if ($field === 'REVERB_DEBUG') {

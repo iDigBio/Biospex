@@ -85,6 +85,7 @@ class TesseractOcrProcessJob implements ShouldQueue
             ]);
         }
 
+        \Artisan::call('ocr:listen-controller start');
         \Log::info("Sent {$files->count()} OCR tasks for queue #{$this->ocrQueue->id}");
         $this->delete();
     }

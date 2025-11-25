@@ -31,7 +31,13 @@ return [
     */
 
     'env' => env('APP_ENV', 'production'),
-    'env_short' => env('APP_ENV_SHORT', 'loc'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Application Environment
+    |--------------------------------------------------------------------------
+    |
+    */
     'domain' => env('APP_DOMAIN'),
     'current_path' => env('APP_CURRENT_PATH'),
     'server_user' => env('APP_SERVER_USER'),

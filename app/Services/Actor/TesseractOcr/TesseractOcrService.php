@@ -44,7 +44,7 @@ class TesseractOcrService
     ) {}
 
     /**
-     * Return ocr queue for command process.
+     * Return ocr queue for a command process.
      */
     public function getFirstQueue(bool $reset = false): ?OcrQueue
     {

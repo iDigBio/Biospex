@@ -29,7 +29,7 @@ use Throwable;
 
 class SqsListenerOcrUpdate extends Command
 {
-    protected $signature = 'ocr:listen-update';
+    protected $signature = 'ocr:listen';
 
     protected $description = 'Robust SQS listener for OCR update queue with reconnections and alerts';
 

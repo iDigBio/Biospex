@@ -6,6 +6,7 @@ use App\Models\OcrQueue;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Actor\TesseractOcr\TesseractOcrService;
+use Artisan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,6 +30,8 @@ class TesseractOcrCompleteJob implements ShouldQueue
     {
         // Run completion logic (report + notify)
         $service->ocrCompleted($this->ocrQueue);
+
+        Artisan::call('ocr:listen-controller stop');
 
         // Delete the queue record
         $this->ocrQueue->delete();
