@@ -28,7 +28,7 @@ use Storage;
 /**
  * Class ZooniverseReconcileChainedCommand
  *
- * Runs lambda labelReconciliation for single or multiple expeditions.
+ * Runs lambda BiospexLabelReconciliation for single or multiple expeditions.
  * LabelReconciliationListener will handle the reconciliation process after it's complete
  * by running ZooniverseTranscriptionJob() and ZooniversePusherJob().
  */

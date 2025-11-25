@@ -26,7 +26,7 @@ use App\Services\Api\PanoptesApiService;
 use App\Services\Api\ZooniverseTalkApiService;
 use App\Services\Permission\CheckPermission;
 use App\Services\Reconcile\ExpertReconcileService;
-use App\Services\Reconcile\ReconcileLambdaService;
+use App\Services\Reconcile\ReconcileService;
 use App\Traits\SkipZooniverse;
 use Redirect;
 use Request;
@@ -77,12 +77,12 @@ class ExpertReconcileController extends Controller
     }
 
     /**
-     * Start Expert Review set up by invoking explained via lambda labelReconciliations
+     * Start Expert Review set up by invoking explained via lambda BiospexLabelReconcilation
      * and redirect to index for processing.
      *
      * @throws \Throwable
      */
-    public function create(Expedition $expedition, ReconcileLambdaService $reconcileLambdaService)
+    public function create(Expedition $expedition, ReconcileService $reconcileLambdaService)
     {
         $expedition->load('project.group.owner');
 
@@ -95,7 +95,7 @@ class ExpertReconcileController extends Controller
                 ->with('warning', t('Expert Review Process for Expedition (:id) was skipped. Please contact Biospex Administration', [':id' => $expedition->id]));
         }
 
-        $reconcileLambdaService->invokeLambdaExplained($expedition->id);
+        $reconcileLambdaService->sendToReconcileTriggerQueue($expedition->id, true);
 
         return Redirect::route('admin.expeditions.show', [$expedition])
             ->with('success', t('The job to create the Expert Review has been submitted. You will receive an email when it is complete and review can begin.'));

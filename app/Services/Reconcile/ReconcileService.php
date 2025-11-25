@@ -24,41 +24,25 @@ use App\Traits\SkipZooniverse;
 use Aws\Sqs\SqsClient;
 
 /**
- * Class ReconcileLambdaService
+ * Class ReconcileService
  *
  * Handles all methods for the reconcile and explained process.
  *
  * @see \App\Listeners\LabelReconciliationListener
  */
-class ReconcileLambdaService
+class ReconcileService
 {
     use SkipZooniverse;
 
     /**
-     * ReconcileLambdaService constructor.
+     * ReconcileService constructor.
      */
     public function __construct(protected SqsClient $sqs) {}
 
     /**
-     * Trigger explained reconciliation via the environment's trigger queue
-     */
-    public function invokeLambdaExplained(int $expeditionId): void
-    {
-        $this->sendToTriggerQueue($expeditionId, true);
-    }
-
-    /**
-     * Re-run normal reconciliation (optional but useful)
-     */
-    public function invokeLambdaNormal(int $expeditionId): void
-    {
-        $this->sendToTriggerQueue($expeditionId, false);
-    }
-
-    /**
      * Send message to the correct environment-specific trigger queue
      */
-    private function sendToTriggerQueue(int $expeditionId, bool $explanations = false): void
+    public function sendToReconcileTriggerQueue(int $expeditionId, bool $explanations = false): void
     {
         $name = config('services.aws.reconcile_trigger');
 
