@@ -24,20 +24,25 @@ use GuzzleHttp\Client;
 use Supervisor\Supervisor;
 
 /**
- * Service class for controlling Supervisor processes.
+ * Service for controlling Supervisor processes.
  *
- * This class provides functionality to manage Supervisor processes by executing
- * start, stop, and restart commands through XML-RPC interface.
+ * This service provides methods to manage Supervisor processes, including starting,
+ * stopping, and restarting programs within specified groups.
  */
 class SupervisorControlService
 {
     /**
-     * Control Supervisor processes with specified action.
+     * Control Supervisor programs with a specified action.
      *
-     * @param  string  $action  Action to perform on processes ('start', 'stop', or 'restart')
+     * @param  array  $programs  List of program names to control
+     * @param  string  $action  Action to perform ('start', 'stop', or 'restart')
+     *
+     * @throws \InvalidArgumentException When an invalid action is provided
      */
     public function control(array $programs, string $action): void
     {
+        $group = config('config.supervisor_group', ''); // e.g. "biospex" or "listeners"
+
         $guzzle = new Client([
             'curl' => [CURLOPT_UNIX_SOCKET_PATH => '/var/run/supervisor.sock'],
         ]);
@@ -46,20 +51,75 @@ class SupervisorControlService
         $client = new \fXmlRpc\Client('http://localhost/RPC2', $transport);
         $supervisor = new Supervisor($client);
 
-        $group = config('config.supervisor_group');
         foreach ($programs as $program) {
-            // Join program name with group name to form full program name
-            $program = "{$group}:{$program}";
+            // Add group prefix if set
+            $fullProgramName = $group ? "{$group}:{$program}" : $program;
+
+            try {
+                $info = $supervisor->getProcessInfo($fullProgramName);
+                $state = $info['statename'] ?? 'UNKNOWN';
+            } catch (\Throwable $e) {
+                // Program might not exist yet — treat as STOPPED
+                $state = 'STOPPED';
+                \Log::info("Supervisor: Program {$fullProgramName} not found in Supervisor — assuming STOPPED");
+            }
+
             match ($action) {
-                'start' => $supervisor->startProcess($program),
-                'stop' => $supervisor->stopProcess($program),
-                'restart' => (function () use ($supervisor, $program) {
-                    $supervisor->stopProcess($program);
-                    $supervisor->startProcess($program);
-                })(),
+                'start' => $this->startIfNeeded($supervisor, $fullProgramName, $state),
+                'stop' => $this->stopIfNeeded($supervisor, $fullProgramName, $state),
+                'restart' => $this->restartProcess($supervisor, $fullProgramName, $state),
+                default => throw new \InvalidArgumentException("Invalid action: {$action}"),
             };
 
-            \Log::info("Supervisor: {$action}ed program {$program}");
+            \Log::info("Supervisor: {$action}ed program {$fullProgramName} (was {$state})");
         }
+    }
+
+    /**
+     * Start a Supervisor program if it's not already running.
+     *
+     * @param  Supervisor  $supervisor  Supervisor instance
+     * @param  string  $program  Program name
+     * @param  string  $state  Current state of the program
+     */
+    private function startIfNeeded(Supervisor $supervisor, string $program, string $state): void
+    {
+        if (in_array($state, ['STOPPED', 'BACKOFF', 'EXITED', 'FATAL', 'UNKNOWN'])) {
+            $supervisor->startProcess($program);
+        } else {
+            \Log::info("Supervisor: {$program} already running — skipping start");
+        }
+    }
+
+    /**
+     * Stop a Supervisor program if it's currently running.
+     *
+     * @param  Supervisor  $supervisor  Supervisor instance
+     * @param  string  $program  Program name
+     * @param  string  $state  Current state of the program
+     */
+    private function stopIfNeeded(Supervisor $supervisor, string $program, string $state): void
+    {
+        if ($state === 'RUNNING') {
+            $supervisor->stopProcess($program);
+        } else {
+            \Log::info("Supervisor: {$program} not running — skipping stop");
+        }
+    }
+
+    /**
+     * Restart a Supervisor program regardless of its current state.
+     *
+     * @param  Supervisor  $supervisor  Supervisor instance
+     * @param  string  $program  Program name
+     * @param  string  $state  Current state of the program
+     */
+    private function restartProcess(Supervisor $supervisor, string $program, string $state): void
+    {
+        if ($state === 'RUNNING') {
+            $supervisor->stopProcess($program);
+        }
+        // Always start — works whether it was running or not
+        $supervisor->startProcess($program);
     }
 }
