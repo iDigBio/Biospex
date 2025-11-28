@@ -20,9 +20,9 @@
 
 namespace App\Models;
 
+use App\Presenters\DownloadPresenter;
 use App\Traits\Presentable;
 use App\Traits\UuidTrait;
-use App\Presenters\DownloadPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;

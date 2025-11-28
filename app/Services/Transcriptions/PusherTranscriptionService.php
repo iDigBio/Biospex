@@ -33,8 +33,6 @@ class PusherTranscriptionService
 
     /**
      * Create a new PusherTranscriptionService instance.
-     *
-     * @param  PusherTranscription  $model
      */
     public function __construct(protected PusherTranscription $model) {}
 
@@ -43,7 +41,6 @@ class PusherTranscriptionService
      *
      * @param  string  $column  Column to search
      * @param  string  $value  Value to match
-     * @return \App\Models\PusherTranscription|null
      */
     public function findBy(string $column, string $value): ?PusherTranscription
     {
@@ -52,9 +49,6 @@ class PusherTranscriptionService
 
     /**
      * Create a new PusherTranscription record.
-     *
-     * @param  array  $data
-     * @return \App\Models\PusherTranscription
      */
     public function create(array $data): PusherTranscription
     {
@@ -63,10 +57,6 @@ class PusherTranscriptionService
 
     /**
      * Update existing PusherTranscription record.
-     *
-     * @param  array  $data
-     * @param  mixed  $resourceId
-     * @return \App\Models\PusherTranscription|false
      */
     public function update(array $data, mixed $resourceId): \App\Models\PusherTranscription|false
     {
@@ -78,8 +68,6 @@ class PusherTranscriptionService
 
     /**
      * Get a total count of dashboard items.
-     *
-     * @return int
      */
     public function getWeDigBioDashboardCount(): int
     {
@@ -88,10 +76,6 @@ class PusherTranscriptionService
 
     /**
      * Get paginated dashboard items.
-     *
-     * @param  int  $limit
-     * @param  int  $offset
-     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getWeDigBioDashboardItems(int $limit, int $offset): \Illuminate\Database\Eloquent\Collection
     {
@@ -100,9 +84,6 @@ class PusherTranscriptionService
 
     /**
      * Set query builder for dashboard based on request parameters.
-     *
-     * @param  array  $request
-     * @return void
      */
     public function setQueryForDashboard(array $request): void
     {
@@ -119,9 +100,6 @@ class PusherTranscriptionService
 
     /**
      * Set start timestamp from request or current time.
-     *
-     * @param  array  $request
-     * @return \Carbon\Carbon
      */
     private function setTimestampStart(array $request): Carbon
     {
@@ -130,9 +108,6 @@ class PusherTranscriptionService
 
     /**
      * Set the end timestamp from request or null.
-     *
-     * @param  array  $request
-     * @return \Carbon\Carbon|null
      */
     private function setTimestampEnd(array $request): ?Carbon
     {

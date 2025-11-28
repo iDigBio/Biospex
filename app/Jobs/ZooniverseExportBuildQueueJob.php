@@ -58,6 +58,7 @@ class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
      * Creates or updates the export queue and builds associated files for subjects.
      *
      * @param  SubjectService  $subjectService  Service to handle subject operations
+     *
      * @throws \Throwable
      */
     public function handle(SubjectService $subjectService): void

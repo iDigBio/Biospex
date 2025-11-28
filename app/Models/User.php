@@ -20,10 +20,10 @@
 
 namespace App\Models;
 
+use App\Presenters\UserPresenter;
 use App\Traits\HasGroup;
 use App\Traits\Presentable;
 use App\Traits\UuidTrait;
-use App\Presenters\UserPresenter;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;

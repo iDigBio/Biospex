@@ -20,9 +20,9 @@
 
 namespace App\Models;
 
+use App\Presenters\SiteAssetPresenter;
 use App\Traits\Presentable;
 use App\Traits\UuidTrait;
-use App\Presenters\SiteAssetPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**

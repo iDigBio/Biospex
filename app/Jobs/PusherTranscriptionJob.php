@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2014 - 2025, Biospex
  * biospex@gmail.com
@@ -43,7 +44,9 @@ class PusherTranscriptionJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 5;
+
     public array $backoff = [10, 30, 60, 120, 300];
+
     public int $timeout = 60;
 
     /**
@@ -63,6 +66,7 @@ class PusherTranscriptionJob implements ShouldQueue
      * Handles duplicate key errors by logging and stopping retries.
      *
      * @param  PusherTranscriptionService  $service  The service to process transcriptions
+     *
      * @throws BulkWriteException When a non-duplicate write error occurs
      */
     public function handle(PusherTranscriptionService $service): void

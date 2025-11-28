@@ -20,9 +20,9 @@
 
 namespace App\Models;
 
+use App\Presenters\EventTeamPresenter;
 use App\Traits\Presentable;
 use App\Traits\UuidTrait;
-use App\Presenters\EventTeamPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**

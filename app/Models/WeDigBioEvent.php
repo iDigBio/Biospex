@@ -20,9 +20,9 @@
 
 namespace App\Models;
 
+use App\Presenters\WeDigBioDatePresenter;
 use App\Traits\Presentable;
 use App\Traits\UuidTrait;
-use App\Presenters\WeDigBioDatePresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
