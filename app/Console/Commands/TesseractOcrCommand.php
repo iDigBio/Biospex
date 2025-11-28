@@ -70,6 +70,7 @@ class TesseractOcrCommand extends Command
         $queue->error = 0;
         $queue->save();
 
+        \Log::info('TesseractOcrProcessJob dispatched for queue: '.$queue->id);
         TesseractOcrProcessJob::dispatch($queue);
     }
 }

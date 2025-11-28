@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2014 - 2025, Biospex
  * biospex@gmail.com
@@ -94,7 +95,7 @@ class TesseractOcrUpdateJob implements ShouldQueue
         $wasProcessed = $file->processed;
 
         if ($this->status === 'success') {
-            $text = trim($this->text ?? '');
+            $text = trim(preg_replace('/\s+/', ' ', $this->text));
             $text = $text !== '' ? $text : '[OCR produced no text]';
 
             $subjectService->update(['ocr' => $text], $this->subjectId);

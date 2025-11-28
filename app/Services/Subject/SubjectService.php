@@ -130,7 +130,10 @@ class SubjectService
         $query = $expedition === null ? $query : $query->where('expedition_ids', $expedition->id);
 
         return $query->where(function ($q) {
-            $q->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
+            $q->where('ocr', '')
+                ->orWhere('ocr', '[OCR produced no text]')
+                ->orWhere('ocr', 'regex', '/^\[OCR Failed\]/i')
+                ->orWhere('ocr', 'regex', '/^Error/i');
         })->options(['allowDiskUse' => true])->timeout(86400)->cursor();
     }
 
@@ -143,7 +146,10 @@ class SubjectService
         $query = $expedition === null ? $query : $query->where('expedition_ids', $expedition->id);
 
         return $query->where(function ($query) {
-            $query->where('ocr', '')->orWhere('ocr', 'regex', '/^Error/');
+            $query->where('ocr', '')
+                ->orWhere('ocr', '[OCR produced no text]')
+                ->orWhere('ocr', 'regex', '/^\[OCR Failed\]/i')
+                ->orWhere('ocr', 'regex', '/^Error/i');
         })->count();
     }
 

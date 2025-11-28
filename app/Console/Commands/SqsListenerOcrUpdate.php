@@ -80,6 +80,10 @@ class SqsListenerOcrUpdate extends Command
         $ocrQueueFileId = $data['ocrQueueFileId'] ?? throw new InvalidArgumentException('Missing ocrQueueFileId');
         $status = $data['status'] ?? throw new InvalidArgumentException('Missing status');
 
+        // Dispatch job for BOTH success and failure
+        TesseractOcrUpdateJob::dispatch($data);
+
+        // Only log/email on failure
         if ($status === 'failed') {
             $error = $data['error'] ?? 'Unknown OCR error';
             $this->service->handleError(
@@ -88,12 +92,7 @@ class SqsListenerOcrUpdate extends Command
                 $data,
                 $this
             );
-            // Do NOT throw → message gets deleted
-            return;
         }
-
-        // Success → dispatch job
-        TesseractOcrUpdateJob::dispatch($data);
     }
 
     private function hasActiveOcrJobs(): bool

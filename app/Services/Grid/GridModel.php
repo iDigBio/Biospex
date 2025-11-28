@@ -160,8 +160,7 @@ class GridModel
         if ($column === 'ocr') {
             $col = array_merge($col, [
                 'title' => false,
-                'classes' => 'ocrPreview',
-                'cellattr' => 'addDataAttr',
+                'classes' => 'ocr-clickable',
             ]);
         }
 

@@ -52,34 +52,26 @@ return [
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
         ],
-        // LAMBDA FUNCTION NAMES
-        'lambda_export_function' => env('AWS_LAMBDA_EXPORT_FUNCTION', 'BiospexExportProcessor'),
-        'lambda_reconciliation_function' => env('AWS_LAMBDA_RECONCILIATION_FUNCTION', 'labelReconciliations'),
-        'lambda_ocr_function' => env('AWS_LAMBDA_OCR_FUNCTION', 'tesseractOcr'),
 
         // NEW KEYS
         'csv_export_count' => env('AWS_CSV_EXPORT_COUNT', 1000),
-        'lambda_qualifier' => env('AWS_LAMBDA_QUALIFIER', ''),
-        'lambda_ocr_count' => env('AWS_LAMBDA_OCR_COUNT', 100),
 
         // SQS QUEUE NAMES
         'queues' => [
             'batch_trigger' => env('AWS_SQS_BATCH_TRIGGER'),
             'batch_update' => env('AWS_SQS_BATCH_UPDATE'),
-            'export_image_tasks_dlq' => env('AWS_SQS_EXPORT_IMAGE_TASKS_DLQ'),
             'export_image_tasks' => env('AWS_SQS_EXPORT_IMAGE_TASKS'),
             'export_update' => env('AWS_SQS_EXPORT_UPDATE'),
             'export_zip_trigger' => env('AWS_SQS_EXPORT_ZIP_TRIGGER'),
             'reconcile_trigger' => env('AWS_SQS_RECONCILE_TRIGGER'),
             'reconcile_update' => env('AWS_SQS_RECONCILE_UPDATE'),
             'ocr_trigger' => env('AWS_SQS_OCR_TRIGGER'),
-            'ocr_trigger_dlq' => env('AWS_SQS_OCR_TRIGGER_DLQ'),
             'ocr_update' => env('AWS_SQS_OCR_UPDATE'),
         ],
 
         'batch_idle_grace' => env('AWS_BATCH_IDLE_GRACE', 1800),
         'export_idle_grace' => env('AWS_EXPORT_IDLE_GRACE', 300),
-        'ocr_idle_grace' => env('AWS_OCR_IDLE_GRACE', 300),
+        'ocr_idle_grace' => env('AWS_OCR_IDLE_GRACE', 1500),
         'reconcile_idle_grace' => env('AWS_RECONCILE_IDLE_GRACE', 1800),
         'zip_threshold' => env('AWS_ZIP_THRESHOLD', 8000),
     ],

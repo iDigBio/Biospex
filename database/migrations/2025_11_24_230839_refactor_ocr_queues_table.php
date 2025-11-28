@@ -13,7 +13,7 @@ return new class extends Migration
             $table->dropColumn('status');
 
             // 2. Add new columns (exactly like export_queues)
-            $table->boolean('queued')->default(true)->after('expedition_id');
+            $table->boolean('queued')->default(0)->after('expedition_id');
             $table->boolean('files_ready')->default(0)->after('queued');
         });
 

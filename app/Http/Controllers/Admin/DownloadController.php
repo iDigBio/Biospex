@@ -58,7 +58,7 @@ class DownloadController extends Controller
     }
 
     /**
-     * Send request to have export split into batch downloads.
+     * Send a request to have export split into batch downloads.
      */
     public function create(Download $download): \Illuminate\Http\RedirectResponse
     {

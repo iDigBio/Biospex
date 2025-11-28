@@ -59,7 +59,7 @@ class ZooniverseExportDownloadBatchJob implements ShouldQueue
         $size = Storage::disk('s3')->size($path);
 
         $triggerQueueUrl = $this->getQueueUrl($sqs, 'batch_trigger');
-        $updatesQueueUrl = $this->getQueueUrl($sqs, 'queue_batch_update');
+        $updatesQueueUrl = $this->getQueueUrl($sqs, 'batch_update');
 
         $message = [
             'downloadId' => $this->download->id,
@@ -90,6 +90,7 @@ class ZooniverseExportDownloadBatchJob implements ShouldQueue
     private function getQueueUrl(SqsClient $sqs, string $key): string
     {
         $queueName = config("services.aws.queues.{$key}");
+        \Log::info("Queue name: {$queueName}");
 
         return $sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
     }

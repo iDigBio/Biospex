@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2014 - 2025, Biospex
  * biospex@gmail.com
@@ -69,7 +70,11 @@ class TesseractOcrProcessJob implements ShouldQueue
         }
 
         $queueUrl = $sqs->getQueueUrl([
-            'QueueName' => config('services.aws.ocr_trigger'),
+            'QueueName' => config('services.aws.queues.ocr_trigger'),
+        ])['QueueUrl'];
+
+        $updatesQueueUrl = $sqs->getQueueUrl([
+            'QueueName' => config('services.aws.queues.ocr_update'), // e.g. loc-ocr-update
         ])['QueueUrl'];
 
         foreach ($files as $file) {
@@ -77,12 +82,14 @@ class TesseractOcrProcessJob implements ShouldQueue
                 'ocrQueueFileId' => $file->id,
                 'subjectId' => $file->subject_id,
                 'access_uri' => $file->access_uri,
+                'updatesQueueUrl' => $updatesQueueUrl,
             ];
 
             $sqs->sendMessage([
                 'QueueUrl' => $queueUrl,
                 'MessageBody' => json_encode($payload),
             ]);
+
         }
 
         \Artisan::call('ocr:listen-controller start');

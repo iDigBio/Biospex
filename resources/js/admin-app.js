@@ -17,14 +17,13 @@
  */
 
 import "./app.js";
-import { GeolocateFieldManager } from "./livewire/index.js";
 
 try {
 
     window.$ = window.jQuery = require('jquery');
     window.ClipboardJS = require('clipboard');
 
-    require('bootstrap');
+    window.bootstrap = require('bootstrap');
 
     require("bootstrap-select/dist/js/bootstrap-select.min");
     require("bootstrap-notify/bootstrap-notify");
