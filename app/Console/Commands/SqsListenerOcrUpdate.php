@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Console\Commands;
 
 use App\Jobs\TesseractOcrUpdateJob;
@@ -48,6 +49,7 @@ class SqsListenerOcrUpdate extends Command
             return self::SUCCESS;
         } catch (Throwable $e) {
             $this->service->handleCriticalError('Failed to start OCR updates listener', $e, $this);
+
             return self::FAILURE;
         }
     }

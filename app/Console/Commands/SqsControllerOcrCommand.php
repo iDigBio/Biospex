@@ -46,8 +46,6 @@ class SqsControllerOcrCommand extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param  \App\Services\SupervisorControlService  $service
      */
     public function __construct(protected SupervisorControlService $service)
     {
@@ -56,8 +54,6 @@ class SqsControllerOcrCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
     public function handle(): int
     {

@@ -274,11 +274,13 @@ class AppFileDeploymentCommand extends Command
         try {
             if (str_starts_with($field, 'APP_')) {
                 $value = strtolower(str_replace('APP_', '', $field));
+
                 return config('app.'.$value);
             }
 
             if (str_starts_with($field, 'AWS_SQS_')) {
                 $value = strtolower(str_replace('AWS_SQS_', '', $field));
+
                 return config('services.aws.queues.'.$value);
             }
 

@@ -93,8 +93,8 @@ class ZooniverseCsvService
      *
      * @throws \GuzzleHttp\Exception\GuzzleException*@throws \Exception
      * @throws \Exception
-     * @see \App\Listeners\LabelReconciliationListener for returned data.
      *
+     * @see \App\Listeners\LabelReconciliationListener for returned data.
      */
     public function downloadCsv(int $expeditionId, string $uri): void
     {

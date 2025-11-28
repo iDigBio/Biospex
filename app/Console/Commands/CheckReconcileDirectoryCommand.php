@@ -56,6 +56,7 @@ class CheckReconcileDirectoryCommand extends Command
 
         if ($shouldReconcile) {
             $this->moveFiles($fileNames);
+
             return;
         }
 
@@ -78,8 +79,6 @@ class CheckReconcileDirectoryCommand extends Command
      * from the classification directory to the lambda-reconciliation directory.
      *
      * @param  array  $fileNames  Array of file names to be moved.
-     *
-     * @return void
      */
     private function moveFiles(array $fileNames): void
     {

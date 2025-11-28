@@ -26,7 +26,6 @@ use App\Notifications\Generic;
 use App\Notifications\Traits\ButtonTrait;
 use App\Services\Process\CreateReportService;
 use App\Services\Subject\SubjectService;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class TesseractOcrService
