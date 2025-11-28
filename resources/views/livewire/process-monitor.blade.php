@@ -1,5 +1,5 @@
 <!-- resources/views/livewire/process-monitor.blade.php -->
-<div wire:poll.15s>
+<div wire:poll.5s>
     <p class="text-center color-action small mb-4">
         {{ t('Stats update every 15 seconds.') }}
     </p>

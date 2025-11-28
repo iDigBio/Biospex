@@ -106,7 +106,7 @@ class JavascriptService
      */
     public function expeditionEdit(Expedition $expedition, array $subjectIds): void
     {
-        $this->setModel($expedition->project);
+        $this->setModel($expedition->project, 'edit');
 
         $this->javascript->put([
             'model' => $this->model,

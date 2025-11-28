@@ -70,7 +70,7 @@ class TesseractOcrBuild
         $subjects = $this->subjectService->getSubjectCursorForOcr($project, $expedition);
         $chunkSize = 1000;  // Adjust based on memory (1k safe for 20k total)
 
-        \Log::info("Creating OCR Queue Files for {$queue->id}");
+        \Log::info("Creating OCR Queue Files for Queue {$queue->id}");
         $subjects->chunk($chunkSize)->each(function ($chunk) use ($queue) {
             $filesData = $chunk->map(function ($subject) use ($queue) {
                 return [

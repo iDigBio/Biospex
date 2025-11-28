@@ -157,8 +157,8 @@ class TesseractOcrUpdateJob implements ShouldQueue
 
         // Optional: log once per queue, not per file
         \Log::error('OCR Update Job failed (queue will be marked errored)', [
-            'ocrQueueFileId' => $this->data['ocrQueueFileId'] ?? 'unknown',
-            'subjectId' => $this->data['subjectId'] ?? 'unknown',
+            'ocrQueueFileId' => $this->ocrQueueFileId ?? 'unknown',
+            'subjectId' => $this->subjectId ?? 'unknown',
             'error' => $throwable->getMessage(),
         ]);
     }

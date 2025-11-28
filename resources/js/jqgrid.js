@@ -37,6 +37,28 @@ $(function () {
 
         let $grid = $("#jqGridTable");
 
+        // Center and enlarge the loading message
+        $('head').append(`
+                <style>
+                    #load_jqGridTable {
+                        position: fixed !important;
+                        top: 50% !important;
+                        left: 50% !important;
+                        transform: translate(-50%, -50%) !important;
+                        z-index: 99999 !important;
+                        font-size: 24px !important;
+                        font-weight: bold;
+                        padding: 20px 40px !important;
+                        background: #ffffff !important;
+                        border: 2px solid #cccccc !important;
+                        border-radius: 5px;
+                        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+                        opacity: 1 !important;
+                        display: none;
+                    }
+                </style>
+            `);
+
         mapFormatter(cm);
 
         let saveObjectInLocalStorage = function (storageItemName, object) {

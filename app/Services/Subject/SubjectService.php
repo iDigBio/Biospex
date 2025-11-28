@@ -65,15 +65,16 @@ class SubjectService
      * Updates an existing Subject record in the database.
      *
      * @param  array  $data  The data to update the subject with
-     * @param  string|int  $resourceId  The ID of the subject to update
+     * @param  int|string  $resourceId  The ID of the subject to update
      * @return \App\Models\Subject|bool Returns the updated Subject model on success, false on failure
      */
-    public function update(array $data, $resourceId): bool|Subject
+    public function update(array $data, int|string $resourceId): bool|Subject
     {
-        $model = $this->subject->find($resourceId);
-        $result = $model->fill($data)->save();
+        if (! $model = $this->subject->find($resourceId)) {
+            return false;
+        }
 
-        return $result ? $model : false;
+        return $model->update($data) ? $model : false;
     }
 
     /**
@@ -276,8 +277,8 @@ class SubjectService
 
         if (isset($vars['filters']['rules']) && is_array($vars['filters']['rules'])) {
             $rules = $vars['filters']['rules'];
-            $query->where(function ($query) use ($rules) {
-                $this->handleRules($query, $rules);
+            $query->where(function ($query) use ($rules, $vars) {
+                $this->handleRules($query, $rules, $vars);
             });
         }
 
@@ -308,11 +309,11 @@ class SubjectService
     /**
      * Handle the passed filters.
      */
-    protected function handleRules(&$query, $rules): void
+    protected function handleRules(&$query, $rules, $vars = []): void
     {
         foreach ($rules as $rule) {
             if ($rule['field'] === 'assigned') {
-                $this->assignedRule($query, $rule);
+                $this->assignedRule($query, $rule, $vars);
 
                 continue;
             }
@@ -411,7 +412,7 @@ class SubjectService
      * Filter for if subject is assigned to an expedition.
      * data = all, true, false
      */
-    protected function assignedRule(&$query, $rule): void
+    protected function assignedRule(&$query, $rule, $vars = []): void
     {
         // Handle empty string as 'all' - no filtering needed
         if ($rule['data'] === '' || $rule['data'] === 'all') {
@@ -421,6 +422,12 @@ class SubjectService
         }
 
         $this->assignedRuleData = $rule['data'];
+
+        if ($rule['data'] === 'current' && isset($vars['expeditionId'])) {
+            $this->setWhereIn($query, 'expedition_ids', [(int) $vars['expeditionId']]);
+
+            return;
+        }
 
         $this->setWhereForAssigned($query, $rule);
     }
