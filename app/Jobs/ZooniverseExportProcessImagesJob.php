@@ -21,7 +21,6 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Models\ExportQueueFile;
 use App\Traits\NotifyOnJobFailure;
 use Aws\Sqs\SqsClient;
 use Illuminate\Bus\Queueable;
@@ -38,7 +37,7 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
-    public int $timeout = 3600;
+    public int $timeout = 1800;
 
     /**
      * Create a new job instance.
@@ -63,57 +62,58 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
     {
         $this->exportQueue->load('expedition');
 
-        if (! ExportQueueFile::where('queue_id', $this->exportQueue->id)
-            ->where('processed', 0)
-            ->exists()) {
+        // Count files first for logging/logic
+        $totalFiles = $this->exportQueue->files()->where('processed', 0)->count();
+
+        // If no files → do nothing (could be re-run or race)
+        if ($totalFiles === 0) {
             throw new \Exception("No unprocessed files found for export queue ID: {$this->exportQueue->id}");
         }
 
-        $files = ExportQueueFile::where('queue_id', $this->exportQueue->id)
-            ->where('processed', 0)
-            ->orderBy('id')
-            ->cursor();
+        $sentCount = 0;
 
-        $queueUrl = $this->getQueueUrl($sqs, 'export_image_tasks');
-        $updatesQueueUrl = $this->getQueueUrl($sqs, 'export_update');
+        $queueUrl = $sqs->getQueueUrl([
+            'QueueName' => config('services.aws.queues.export_image_tasks'),
+        ])['QueueUrl'];
+
+        $updatesQueueUrl = $sqs->getQueueUrl([
+            'QueueName' => config('services.aws.queues.export_update'),
+        ])['QueueUrl'];
+
         $processDir = "{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
 
-        $processedCount = 0;
-        foreach ($files as $file) {
-            $payload = [
-                'processDir' => $processDir,
-                'accessURI' => $file->access_uri,
-                'subjectId' => $file->subject_id,
-                's3Bucket' => config('filesystems.disks.s3.bucket'),
-                'updatesQueueUrl' => $updatesQueueUrl,
-                'queueId' => $this->exportQueue->id,
-            ];
+        // Use chunking to save memory and by id to lock rows
+        $this->exportQueue->files()
+            ->where('processed', 0)
+            ->orderBy('id')
+            ->chunkById(1000, function ($files) use ($sqs, $queueUrl, $updatesQueueUrl, $processDir, &$sentCount) {
+                foreach ($files as $file) {
+                    $payload = [
+                        'processDir' => $processDir,
+                        'accessURI' => $file->access_uri,
+                        'subjectId' => $file->subject_id,
+                        's3Bucket' => config('filesystems.disks.s3.bucket'),
+                        'updatesQueueUrl' => $updatesQueueUrl,
+                        'queueId' => $this->exportQueue->id,
+                    ];
 
-            try {
-                $sqs->sendMessage([
-                    'QueueUrl' => $queueUrl,
-                    'MessageBody' => json_encode($payload),
-                ]);
-            } catch (\Exception $e) {
-                \Log::error("Failed to send for file {$file->id}: ".$e->getMessage());
-            }
-            $processedCount++;
+                    $sqs->sendMessage([
+                        'QueueUrl' => $queueUrl,
+                        'MessageBody' => json_encode($payload),
+                    ]);
+
+                    $sentCount++;
+                }
+            }, 'id');
+
+        // $ $sentCount === $totalFiles
+        if ($sentCount !== $totalFiles) {
+            \Artisan::queue('app:lambda-control', [
+                'lambda' => 'BiospexImageProcess',
+                'action' => 'stop',
+            ])->onQueue(config('config.queue.default'));
+            throw new \Exception("SQS send incomplete: {$sentCount}/{$totalFiles} messages sent");
         }
-        \Log::info("Sent {$processedCount} records to SQS");
-    }
-
-    /**
-     * Get AWS SQS queue URL for given queue key.
-     *
-     * @param  SqsClient  $sqs  AWS SQS client instance
-     * @param  string  $key  Queue configuration key
-     * @return string Queue URL
-     */
-    private function getQueueUrl(SqsClient $sqs, string $key): string
-    {
-        $queueName = config("services.aws.queues.{$key}");
-
-        return $sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
     }
 
     /**
@@ -123,9 +123,6 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
-        $this->exportQueue->error = 1;
-        $this->exportQueue->save();
-
         $this->exportQueue->error = 1;
         $this->exportQueue->save();
 

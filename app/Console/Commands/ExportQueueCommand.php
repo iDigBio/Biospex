@@ -20,7 +20,10 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Actor\Zooniverse\ZooniverseExportQueue;
+use App\Models\User;
+use App\Notifications\Generic;
+use App\Services\Actor\Zooniverse\ZooniverseExportCleanupService;
+use App\Services\Actor\Zooniverse\ZooniverseExportQueueService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -48,21 +51,47 @@ class ExportQueueCommand extends Command
     /**
      * ExportQueueCommand constructor.
      */
-    public function __construct(protected ZooniverseExportQueue $zooniverseExportQueue)
-    {
+    public function __construct(
+        protected ZooniverseExportQueueService $queueService,
+        protected ZooniverseExportCleanupService $cleanupService
+    ) {
         parent::__construct();
     }
 
     /**
-     * Handle job.
+     * Handle the job.
+     *
+     * @throws \Exception
      */
     public function handle(): void
     {
         $expeditionId = $this->argument('expeditionId');
 
-        is_null($expeditionId) ?
-            $this->zooniverseExportQueue->processQueue() :
-            $this->zooniverseExportQueue->resetExpeditionExport($expeditionId);
+        try {
+            is_null($expeditionId)
+                ? $this->queueService->processNextQueue()
+                : $this->cleanupService->resetExpeditionExport($expeditionId);
+        } catch (\Throwable $e) {
+            $this->fail($e);
+        }
 
+    }
+
+    /**
+     * Handle the command failure.
+     */
+    public function fail(string|null|\Throwable $exception = null): void
+    {
+        $attributes = [
+            'subject' => t('ExportQueueCommand Failed'),
+            'html' => [
+                t('File: %s', $exception->getFile()),
+                t('Line: %s', $exception->getLine()),
+                t('Message: %s', $exception->getMessage()),
+            ],
+        ];
+
+        $user = User::find(config('config.admin.user_id'));
+        $user->notify(new Generic($attributes));
     }
 }

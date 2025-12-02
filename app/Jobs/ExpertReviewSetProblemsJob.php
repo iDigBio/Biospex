@@ -22,8 +22,8 @@ namespace App\Jobs;
 
 use App\Models\Expedition;
 use App\Notifications\Generic;
-use App\Notifications\Traits\ButtonTrait;
 use App\Services\Reconcile\ExpertReconcileService;
+use App\Traits\ButtonTrait;
 use App\Traits\SkipZooniverse;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;

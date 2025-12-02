@@ -24,8 +24,8 @@ use App\Models\Expedition;
 use App\Models\OcrQueue;
 use App\Models\OcrQueueFile;
 use App\Models\Project;
-use App\Notifications\Traits\ButtonTrait;
 use App\Services\Subject\SubjectService;
+use App\Traits\ButtonTrait;
 
 /**
  * Class OcrService
@@ -68,10 +68,8 @@ class TesseractOcrBuild
     public function createOcrQueueFiles(OcrQueue $queue, Project $project, ?Expedition $expedition = null): void
     {
         $subjects = $this->subjectService->getSubjectCursorForOcr($project, $expedition);
-        $chunkSize = 1000;  // Adjust based on memory (1k safe for 20k total)
 
-        \Log::info("Creating OCR Queue Files for Queue {$queue->id}");
-        $subjects->chunk($chunkSize)->each(function ($chunk) use ($queue) {
+        $subjects->chunk(1000)->each(function ($chunk) use ($queue) {
             $filesData = $chunk->map(function ($subject) use ($queue) {
                 return [
                     'queue_id' => $queue->id,

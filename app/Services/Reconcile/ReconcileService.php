@@ -64,6 +64,6 @@ class ReconcileService
             'MessageBody' => json_encode($message),
         ]);
 
-        Artisan::call('reconcile:listen-controller start');
+        Artisan::queue('reconcile:listen-controller start')->onQueue(config('config.queue.default'));
     }
 }

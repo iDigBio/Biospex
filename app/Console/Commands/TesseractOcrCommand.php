@@ -20,9 +20,11 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\TesseractOcrProcessJob;
-use App\Services\Actor\TesseractOcr\TesseractOcrService;
+use App\Models\User;
+use App\Notifications\Generic;
+use App\Services\Actor\TesseractOcr\TesseractOcrQueueService;
 use Illuminate\Console\Command;
+use Throwable;
 
 class TesseractOcrCommand extends Command
 {
@@ -47,30 +49,48 @@ class TesseractOcrCommand extends Command
      * @see \App\Services\Actor\TesseractOcr\TesseractOcrProcess
      * @see \App\Jobs\TesseractOcrCreateJob
      */
-    public function __construct(protected TesseractOcrService $service)
+    public function __construct(protected TesseractOcrQueueService $service)
     {
         parent::__construct();
     }
 
     /**
      * Execute the console command.
+     *
+     * @throws \Exception
      */
     public function handle(): void
     {
-        // If reset is true, it will return first in the queue whether it's error or not.
-        $queue = $this->option('reset') ?
-            $this->service->getFirstQueue(true) :
-            $this->service->getFirstQueue();
-
-        if ($queue === null) {
+        if (! config('config.ocr_enabled')) {
             return;
         }
 
-        $queue->queued = 1;
-        $queue->error = 0;
-        $queue->save();
+        try {
+            $this->service->processNextQueue($this->option('reset'));
+        } catch (Throwable $e) {
+            $this->fail($e);
+        }
+    }
 
-        \Log::info('TesseractOcrProcessJob dispatched for queue: '.$queue->id);
-        TesseractOcrProcessJob::dispatch($queue);
+    /**
+     * Handle the command failure.
+     */
+    public function fail(Throwable|string|null $exception = null): void
+    {
+        $message = $exception instanceof Throwable
+            ? $exception->getMessage()
+            : ($exception ?? 'Command failed');
+
+        \Log::error("TesseractOcrCommand failed: {$message}");
+
+        $attributes = [
+            'subject' => t('TesseractOcrCommand Failed'),
+            'html' => [
+                t('Message: %s', $message),
+            ],
+        ];
+
+        $user = User::find(config('config.admin.user_id'));
+        $user?->notify(new Generic($attributes));
     }
 }

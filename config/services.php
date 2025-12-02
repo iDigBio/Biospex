@@ -53,9 +53,6 @@ return [
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
         ],
 
-        // NEW KEYS
-        'csv_export_count' => env('AWS_CSV_EXPORT_COUNT', 1000),
-
         // SQS QUEUE NAMES
         'queues' => [
             'batch_trigger' => env('AWS_SQS_BATCH_TRIGGER'),
@@ -74,5 +71,14 @@ return [
         'ocr_idle_grace' => env('AWS_OCR_IDLE_GRACE', 1500),
         'reconcile_idle_grace' => env('AWS_RECONCILE_IDLE_GRACE', 1800),
         'zip_threshold' => env('AWS_ZIP_THRESHOLD', 8000),
+
+        'lambdas' => [
+            'BiospexZipMerger' => env('AWS_LAMBDA_ZIP_MERGER_CONCURRENCY', 1),
+            'BiospexImageProcess' => env('AWS_LAMBDA_IMAGE_PROCESS_CONCURRENCY', 100),
+            'BiospexTesseractOcr' => env('AWS_LAMBDA_TESSERACT_OCR_CONCURRENCY', 100),
+            'BiospexLabelReconcile' => env('AWS_LAMBDA_LABEL_RECONCILE_CONCURRENCY', 8),
+            'BiospexBatchCreator' => env('AWS_LAMBDA_BATCH_CREATOR_CONCURRENCY', 1),
+            'BiospexZipCreator' => env('AWS_LAMBDA_ZIP_CREATOR_CONCURRENCY', 10),
+        ],
     ],
 ];

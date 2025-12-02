@@ -30,7 +30,7 @@
         <env name="MONGODB_PASSWORD" value=""/>
         <env name="MONGODB_DATABASE" value="test_database"/>
         <env name="MAIL_MAILER" value="array"/>
-        <env name="LARAVEL_QUEUE_DRIVER" value="sync"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>

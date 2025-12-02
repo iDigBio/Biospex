@@ -66,9 +66,7 @@ class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
             Storage::disk('efs')->deleteDirectory($processDir);
         }
 
-        \Artisan::call('update:listen-controller stop');
         $this->exportQueue->delete();
-        \Log::info("Export queue stop process: {$this->exportQueue->id}");
     }
 
     /**

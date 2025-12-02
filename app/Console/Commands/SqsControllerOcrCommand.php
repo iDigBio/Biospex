@@ -60,7 +60,6 @@ class SqsControllerOcrCommand extends Command
         try {
             $this->service->control([
                 config('services.aws.queues.ocr_update'),
-                config('services.aws.queues.ocr_trigger_dlq'),
             ], $this->argument('action'));
 
             $this->info('OCR listeners '.$this->argument('action').'ed');

@@ -66,7 +66,7 @@ return [
     ],
 
     'export_stages' => [
-        'Building Queue', // 0
+        'Waiting for Export to start', // 0
         'Processing Images', // 1
         'Building CSV', // 2
         'Creating Archive', // 3

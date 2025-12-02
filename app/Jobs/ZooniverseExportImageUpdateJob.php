@@ -104,7 +104,6 @@ class ZooniverseExportImageUpdateJob implements ShouldQueue
         if ($total === $processed && $queue->stage === 1) {
             $queue->stage = 2;
             $queue->save();
-
             ZooniverseExportBuildCsvJob::dispatch($queue);
         }
     }

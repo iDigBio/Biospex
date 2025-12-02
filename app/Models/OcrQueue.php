@@ -43,6 +43,7 @@ class OcrQueue extends BaseEloquentModel
         'project_id',
         'expedition_id',
         'queued',
+        'stage',
         'files_ready',
         'total',
         'error',

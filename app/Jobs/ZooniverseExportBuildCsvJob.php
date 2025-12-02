@@ -95,7 +95,7 @@ class ZooniverseExportBuildCsvJob implements ShouldBeUnique, ShouldQueue
         $csvRowCount = 0;
 
         ExportQueueFile::where('queue_id', $this->exportQueue->id)
-            ->chunk(config('services.aws.csv_export_count'), function ($chunk) use (
+            ->chunkById(1000, function ($chunk) use (
                 $exportData,
                 $awsS3CsvService,
                 $mapZooniverseCsvColumnsService,

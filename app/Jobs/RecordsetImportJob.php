@@ -259,11 +259,6 @@ class RecordsetImportJob implements ShouldQueue
                 throw new Exception(t('Unable to save downloaded file to :path', [':path' => $filePath]));
             }
 
-            Log::info('RecordsetImportJob: File downloaded successfully', [
-                'file_path' => $filePath,
-                'file_size' => strlen($fileContent),
-            ]);
-
             return $this->import->create([
                 'user_id' => $this->data['user_id'],
                 'project_id' => $this->data['project_id'],

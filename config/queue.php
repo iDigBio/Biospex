@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('LARAVEL_QUEUE_DRIVER', 'sync'),
+    'default' => env('QUEUE_CONNECTION', 'sync'),
 
     /*
     |--------------------------------------------------------------------------

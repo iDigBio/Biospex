@@ -22,10 +22,10 @@ namespace App\Jobs;
 
 use App\Models\Import;
 use App\Notifications\Generic;
-use App\Notifications\Traits\ButtonTrait;
 use App\Services\DarwinCore\DwcBatchProcessor;
 use App\Services\Process\CreateReportService;
 use App\Services\Project\ProjectService;
+use App\Traits\ButtonTrait;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

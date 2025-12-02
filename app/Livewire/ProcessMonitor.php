@@ -1,114 +1,88 @@
 <?php
 
+/*
+ * Copyright (C) 2014 - 2025, Biospex
+ * biospex@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 namespace App\Livewire;
 
 use App\Models\ExportQueue;
 use App\Models\OcrQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
 
+/**
+ * ProcessMonitor Livewire Component
+ *
+ * Monitors OCR and Export queue processes and displays their current status.
+ */
 class ProcessMonitor extends Component
 {
-    public string $exportHtml = '';
-
-    public string $ocrHtml = '';
-
-    protected $listeners = ['livewire.refresh-process-monitor' => 'render'];
-
-    public function mount()
+    /**
+     * Render the process monitor component
+     */
+    public function render(): \Illuminate\View\View
     {
-        $this->loadData();
+        return view('livewire.process-monitor', [
+            'ocrQueues' => $this->getOcrQueues(),
+            'exportQueues' => $this->getExportQueues(),
+        ]);
     }
 
-    public function render()
+    public function refreshData()
     {
-        $this->loadData();
-
-        return view('livewire.process-monitor');
+        // Empty method. Livewire will re-render and fetch fresh data.
     }
 
-    private function loadData(): void
+    /**
+     * Get OCR queue records with related expedition and project data
+     *
+     * @return Collection<OcrQueue>
+     */
+    private function getOcrQueues(): Collection
     {
-        $exportData = $this->getExportData();
-        $ocrData = $this->getOcrData();
-
-        $this->exportHtml = $exportData['html'];
-        $this->ocrHtml = $ocrData['html'];
+        return OcrQueue::query()
+            ->select(['id', 'expedition_id', 'project_id', 'total', 'stage'])
+            ->with(['expedition:id,title', 'project:id,title'])
+            ->withCount(['files as processed_files' => fn ($q) => $q->where('processed', 1)])
+            ->orderBy('id')
+            ->get();
     }
 
-    private function getExportData(): array
+    /**
+     * Get export queue records with related expedition data
+     *
+     * @return Collection<ExportQueue>
+     */
+    private function getExportQueues(): Collection
     {
         $queues = ExportQueue::query()
-            ->with(['expedition'])
+            ->select(['id', 'expedition_id', 'queued', 'stage', 'total'])
+            ->with('expedition:id,title')
             ->withCount(['files as processed_files' => fn ($q) => $q->where('processed', 1)])
             ->where('error', 0)
             ->orderBy('id')
             ->get();
 
-        $html = '';
-        $count = 0;
+        // ADD THIS BLOCK
+        $queues->each(function ($q) {
+            \Log::info("DEBUG: Queue {$q->id} processed count: {$q->processed_files}");
+        });
 
-        foreach ($queues as $queue) {
-            if (! $queue->queued) {
-                $position = $count === 0
-                    ? t('Next in queue.')
-                    : t(n(':count export in queue before processing begins.', ':count exports in queue before processing begins.', $count), [':count' => $count]);
-
-                $html .= view('common.export-process-queued', [
-                    'title' => $queue->expedition?->title ?? '—',
-                    'remainingCount' => $position,
-                ])->render();
-            } else {
-                $stage = config('zooniverse.export_stages')[$queue->stage] ?? 'Unknown';
-                $processedRecords = $queue->stage === 1
-                    ? t(' :processed of :total completed.', [
-                        ':processed' => $queue->processed_files ?: 0,
-                        ':total' => $queue->total,
-                    ])
-                    : null;
-
-                $html .= view('common.export-process', [
-                    'title' => $queue->expedition?->title ?? '—',
-                    'stage' => $stage,
-                    'processedRecords' => $processedRecords,
-                ])->render();
-            }
-            $count++;
-        }
-
-        return ['html' => $html];
-    }
-
-    private function getOcrData(): array
-    {
-        $records = OcrQueue::query()
-            ->with(['expedition', 'project'])
-            ->withCount(['files as processed_files' => fn ($q) => $q->where('processed', 1)])
-            ->orderBy('id')
-            ->get();
-
-        $html = '';
-        $count = 0;
-
-        foreach ($records as $record) {
-            $title = $record->expedition?->title ?? $record->project?->title ?? '—';
-            $batches = $count === 0
-                ? ''
-                : t(n(':batches_queued process remains in queue before processing begins', ':batches_queued processes remain in queue before processing begins', $count), [':batches_queued' => $count]);
-
-            $ocr = t(n(':processed record of :total completed.', ':processed records of :total completed.', $record->processed_files), [
-                ':processed' => $record->processed_files,
-                ':total' => $record->total,
-            ]);
-
-            $html .= view('common.ocr-process', [
-                'title' => $title,
-                'ocr' => $ocr,
-                'batches' => $batches,
-            ])->render();
-
-            $count++;
-        }
-
-        return ['html' => $html];
+        return $queues;
     }
 }

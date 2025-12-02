@@ -53,7 +53,6 @@ class SqsControllerExportCommand extends Command
         try {
             $this->service->control([
                 config('services.aws.queues.export_update'),
-                config('services.aws.queues.export_image_tasks_dlq'),
             ], $this->argument('action'));
 
             $this->info('Export listeners '.$this->argument('action').'ed');

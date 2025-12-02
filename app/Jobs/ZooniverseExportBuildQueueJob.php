@@ -23,6 +23,7 @@ namespace App\Jobs;
 use App\Models\ActorExpedition;
 use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
+use App\Services\Actor\Zooniverse\ZooniverseExportQueueService;
 use App\Services\Subject\SubjectService;
 use App\Traits\NotifyOnJobFailure;
 use Illuminate\Bus\Queueable;
@@ -59,55 +60,45 @@ class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
      *
      * @param  SubjectService  $subjectService  Service to handle subject operations
      *
-     * @throws \Throwable
+     * @throws \Exception
      */
-    public function handle(SubjectService $subjectService): void
+    public function handle(
+        SubjectService $subjectService,
+        ZooniverseExportQueueService $queueService): void
     {
-        \Log::info("Building export queue for expedition {$this->actorExpedition->expedition_id}");
 
-        try {
-            $this->actorExpedition->load('expedition');
+        $this->actorExpedition->load('expedition');
 
-            // === CREATE OR UPDATE EXPORT QUEUE ===
-            $queue = ExportQueue::firstOrCreate([
-                'expedition_id' => $this->actorExpedition->expedition_id,
-                'actor_id' => $this->actorExpedition->actor_id,
-            ]);
+        // === CREATE OR UPDATE EXPORT QUEUE ===
+        $queue = ExportQueue::firstOrCreate([
+            'expedition_id' => $this->actorExpedition->expedition_id,
+            'actor_id' => $this->actorExpedition->actor_id,
+        ]);
 
-            // === BUILD FILES ===
-            \Log::info("Building files for queue {$queue->id}");
-            $subjects = $subjectService->getSubjectCursorForExport($this->actorExpedition->expedition_id);
-            $chunkSize = 1000;  // Adjust based on memory (1k safe for 20k total)
-            $inserted = 0;
+        // === BUILD FILES ===
+        $subjects = $subjectService->getSubjectCursorForExport($this->actorExpedition->expedition_id);
 
-            $subjects->chunk($chunkSize)->each(function ($chunk) use ($queue, &$inserted) {
-                $filesData = $chunk->map(function ($subject) use ($queue) {
-                    return [
-                        'queue_id' => $queue->id, 'subject_id' => (string) $subject->_id,
-                        'access_uri' => $subject->accessURI, 'created_at' => now(), 'updated_at' => now(),
-                    ];
-                })->toArray();
+        $subjects->chunk(1000)->each(function ($chunk) use ($queue) {
+            $filesData = $chunk->map(function ($subject) use ($queue) {
+                return [
+                    'queue_id' => $queue->id, 'subject_id' => (string) $subject->_id,
+                    'access_uri' => $subject->accessURI, 'created_at' => now(), 'updated_at' => now(),
+                ];
+            })->toArray();
 
-                // Bulk upsert (insert if not exists, update if does)
-                ExportQueueFile::upsert($filesData, ['queue_id', 'subject_id'], ['access_uri', 'updated_at']);
+            // Bulk upsert (insert if not exists, update if does)
+            ExportQueueFile::upsert($filesData, ['queue_id', 'subject_id'], ['access_uri', 'updated_at']);
 
-                $inserted += count($filesData);
-                \Log::info('Inserted chunk of '.count($filesData)." files for queue {$queue->id} (total: {$inserted})");
+            return true;  // Continue chunking
+        });
 
-                return true;  // Continue chunking
-            });
+        $queue->total = $this->actorExpedition->total;
+        $queue->files_ready = 1;
+        $queue->save();
 
-            \Log::info("Completed inserting {$inserted} files for queue {$queue->id}");
+        // The service handles the "is another running?" check safely now.
+        $queueService->processNextQueue();
 
-            $queue->queued = 0;
-            $queue->error = 0;
-            $queue->stage = 0;
-            $queue->total = $this->actorExpedition->total;
-            $queue->files_ready = 1;
-            $queue->save();
-        } catch (Throwable $e) {
-            throw $e;
-        }
     }
 
     /**

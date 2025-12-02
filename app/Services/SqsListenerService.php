@@ -109,7 +109,6 @@ class SqsListenerService
         $messages = $result['Messages'] ?? [];
 
         if (! empty($messages)) {
-            $command->info('📦 Received batch of '.count($messages).' messages from SQS');
             $this->processBatchMessages($messages, $queueUrl, $routeCallback, $command);
         }
     }
@@ -273,9 +272,6 @@ class SqsListenerService
                     'QueueUrl' => $queueUrl,
                     'Entries' => $entries,
                 ]);
-
-                $successCount = count($result['Successful'] ?? []);
-                $command->info("🗑️  Batch deleted {$successCount} messages");
 
                 if (! empty($result['Failed'])) {
                     foreach ($result['Failed'] as $failed) {

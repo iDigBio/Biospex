@@ -120,12 +120,6 @@ class DwcUriImportJob implements ShouldQueue
                 throw new Exception(t('An error occurred while attempting to save file: %s', $filePath));
             }
 
-            Log::info('DwcUriImportJob: File downloaded successfully', [
-                'file_path' => $filePath,
-                'file_size' => strlen($file),
-                'url' => $url,
-            ]);
-
             $import = $import->create([
                 'user_id' => $this->data['user_id'],
                 'project_id' => $this->data['id'],

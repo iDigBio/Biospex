@@ -23,82 +23,76 @@ namespace App\Services\Actor\TesseractOcr;
 use App\Models\OcrQueue;
 use App\Models\OcrQueueFile;
 use App\Notifications\Generic;
-use App\Notifications\Traits\ButtonTrait;
 use App\Services\Process\CreateReportService;
 use App\Services\Subject\SubjectService;
+use App\Traits\ButtonTrait;
 use Illuminate\Support\Str;
 
-class TesseractOcrService
+/**
+ * Service for handling completion of Tesseract OCR processing tasks.
+ * Manages post-processing tasks including email notifications and cleanup.
+ */
+class TesseractOcrCompletionService
 {
     use ButtonTrait;
 
     /**
-     * OcrService constructor.
+     * @param  OcrQueueFile  $ocrQueueFile  The OCR queue file model
+     * @param  SubjectService  $subjectService  Service for handling subject-related operations
+     * @param  CreateReportService  $createReportService  Service for creating reports
      */
     public function __construct(
-        protected OcrQueue $ocrQueue,
         protected OcrQueueFile $ocrQueueFile,
         protected SubjectService $subjectService,
         protected CreateReportService $createReportService
     ) {}
 
     /**
-     * Return ocr queue for a command process.
-     */
-    public function getFirstQueue(bool $reset = false): ?OcrQueue
-    {
-        if (! $reset && $this->ocrQueue->queued(1)->error(0)->exists()) {
-            return null;
-        }
-
-        return $reset ?
-            $this->ocrQueue->orderBy('id')->first() :
-            $this->ocrQueue->queued(0)->error(0)->filesReady(1)->orderBy('id')->first();
-    }
-
-    /**
-     * Ocr process completed.
+     * Completes the OCR processing task and performs cleanup.
+     *
+     * @param  OcrQueue  $queue  The OCR queue entry to complete
      *
      * @throws \League\Csv\CannotInsertRecord
      * @throws \League\Csv\Exception
      */
-    public function ocrCompleted(OcrQueue $ocrQueue): void
+    public function complete(OcrQueue $queue): void
     {
-        $this->sendNotify($ocrQueue);
-        $ocrQueue->delete();
+        $this->sendCompletionEmail($queue);
+        $queue->delete();
     }
 
     /**
-     * Send notification for completed ocr process.
+     * Sends a completion notification email to a project owner.
+     * Includes OCR results report and download button if available.
      *
-     * @throws \League\Csv\CannotInsertRecord|\League\Csv\Exception
+     * @param  OcrQueue  $queue  The OCR queue entry containing project and expedition information
+     *
+     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\Exception
      */
-    public function sendNotify(OcrQueue $queue): void
+    private function sendCompletionEmail(OcrQueue $queue): void
     {
         $queue->load('project.group.owner', 'expedition');
 
         $cursor = $this->subjectService->getSubjectCursorForOcr($queue->project, $queue->expedition);
-        $subjects = $cursor->map(function ($subject) {
-            return [
-                'subject_id' => $subject->_id,
-                'url' => $subject->accessURI,
-                'ocr' => $subject->ocr,
-            ];
-        });
+        $subjects = $cursor->map(fn ($subject) => [
+            'subject_id' => $subject->_id,
+            'url' => $subject->accessURI,
+            'ocr' => $subject->ocr,
+        ]);
 
         $csvName = Str::random().'.csv';
         $fileName = $this->createReportService->createCsvReport($csvName, $subjects->toArray());
+
         $button = [];
-        if ($fileName !== null) {
+        if ($fileName) {
             $route = route('admin.downloads.report', ['file' => $fileName]);
             $button = $this->createButton($route, t('View OCR Errors'), 'error');
         }
 
         $attributes = [
-            'subject' => t('Ocr Process Complete'),
-            'html' => [
-                t('The OCR processing of your data is complete for %s.', $queue->project->title),
-            ],
+            'subject' => t('OCR Process Complete'),
+            'html' => [t('The OCR processing of your data is complete for %s.', $queue->project->title)],
             'buttons' => $button,
         ];
 

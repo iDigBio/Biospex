@@ -39,6 +39,8 @@ class TesseractOcrProcessJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $timeout = 1800;
+
     /**
      * Create a new job instance.
      *
@@ -55,19 +57,23 @@ class TesseractOcrProcessJob implements ShouldQueue
      * Retrieves unprocessed files from OCR queue and sends them to AWS SQS for processing.
      *
      * @param  SqsClient  $sqs  AWS SQS client instance
+     *
+     * @throws \Exception
      */
     public function handle(SqsClient $sqs): void
     {
-        // Grab ALL unprocessed files — no limit
-        $files = $this->ocrQueue->files()->where('processed', 0)->get();
+        // Count files first for logging/logic
+        $totalFiles = $this->ocrQueue->files()->where('processed', 0)->count();
 
         // If no files → do nothing (could be re-run or race)
-        if ($files->isEmpty()) {
-            \Log::info("No unprocessed files in queue #{$this->ocrQueue->id} — skipping");
-            $this->delete();
-
-            return;
+        if ($totalFiles === 0) {
+            throw new \Exception("No unprocessed files found for ocr queue ID: {$this->ocrQueue->id}");
         }
+
+        \Artisan::queue('ocr:listen-controller start')
+            ->onQueue(config('config.queue.default'));
+
+        $sentCount = 0;
 
         $queueUrl = $sqs->getQueueUrl([
             'QueueName' => config('services.aws.queues.ocr_trigger'),
@@ -77,23 +83,40 @@ class TesseractOcrProcessJob implements ShouldQueue
             'QueueName' => config('services.aws.queues.ocr_update'), // e.g. loc-ocr-update
         ])['QueueUrl'];
 
-        foreach ($files as $file) {
-            $payload = [
-                'ocrQueueFileId' => $file->id,
-                'subjectId' => $file->subject_id,
-                'access_uri' => $file->access_uri,
-                'updatesQueueUrl' => $updatesQueueUrl,
-            ];
+        // Use chunking to save memory and by id to lock rows
+        $this->ocrQueue->files()
+            ->where('processed', 0)
+            ->orderBy('id')
+            ->chunkById(1000, function ($files) use ($sqs, $queueUrl, $updatesQueueUrl, &$sentCount) {
+                foreach ($files as $file) {
+                    $payload = [
+                        'ocrQueueFileId' => $file->id,
+                        'subjectId' => $file->subject_id,
+                        'access_uri' => $file->access_uri,
+                        'updatesQueueUrl' => $updatesQueueUrl,
+                    ];
 
-            $sqs->sendMessage([
-                'QueueUrl' => $queueUrl,
-                'MessageBody' => json_encode($payload),
-            ]);
+                    $sqs->sendMessage([
+                        'QueueUrl' => $queueUrl,
+                        'MessageBody' => json_encode($payload),
+                    ]);
 
+                    $sentCount++;
+                }
+            }, 'id');
+
+        // $ $sentCount === $totalFiles
+        if ($sentCount !== $totalFiles) {
+            \Artisan::queue('app:lambda-control', [
+                'lambda' => 'BiospexTesseractOcr',
+                'action' => 'stop',
+            ])->onQueue(config('config.queue.default'));
+            throw new \Exception("SQS send incomplete: {$sentCount}/{$totalFiles} messages sent");
         }
 
-        \Artisan::call('ocr:listen-controller start');
-        \Log::info("Sent {$files->count()} OCR tasks for queue #{$this->ocrQueue->id}");
+        $this->ocrQueue->stage = 1;
+        $this->ocrQueue->save();
+
         $this->delete();
     }
 

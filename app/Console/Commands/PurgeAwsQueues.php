@@ -27,7 +27,7 @@ use Illuminate\Console\Command;
  * Command to purge all AWS SQS export queues for a specified environment.
  * Handles image-tasks, zip-trigger, and updates queues.
  */
-class AppPurgeQueues extends Command
+class PurgeAwsQueues extends Command
 {
     protected $signature = 'app:awsqueue-purge {env : loc, dev, or prod}';
 

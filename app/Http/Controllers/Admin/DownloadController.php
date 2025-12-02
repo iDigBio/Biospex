@@ -62,11 +62,8 @@ class DownloadController extends Controller
      */
     public function create(Download $download): \Illuminate\Http\RedirectResponse
     {
-        \Log::info("Creating download batch for expedition {$download->expedition_id}");
-
         $download->load('expedition');
 
-        \Log::info("Expedition {$download->id}");
         ZooniverseExportDownloadBatchJob::dispatch($download);
 
         return Redirect::route('admin.expeditions.show', [$download->expedition])

@@ -20,11 +20,10 @@
 
 namespace App\Console\Commands;
 
+use App\Models\OcrQueue;
+use App\Models\OcrQueueFile;
 use Illuminate\Console\Command;
 
-/**
- * Class AppCommand
- */
 class AppTestCommand extends Command
 {
     /**
@@ -35,16 +34,58 @@ class AppTestCommand extends Command
     /**
      * The console command description.
      */
-    protected $description = 'Used to test code';
+    protected $description = 'Simulate OCR Process for Queue';
 
     /**
-     * Create a new command instance.
+     * Execute the console command.
      */
-    public function __construct()
+    public function handle(): void
     {
+        $queueId = 53;
+        $this->info("Looking for Queue ID: $queueId");
 
-        parent::__construct();
+        $queue = OcrQueue::find($queueId);
+
+        if (! $queue) {
+            $this->error('Queue not found!');
+
+            return;
+        }
+
+        $this->info('Found Queue. Resetting processed files...');
+
+        // Reset counts
+        OcrQueueFile::where('queue_id', $queueId)->update(['processed' => 0]);
+
+        // Verify reset
+        $total = OcrQueueFile::where('queue_id', $queueId)->count();
+        $queue->total = $total;
+        $queue->stage = 2; // Running
+        $queue->save();
+
+        $this->info("Queue reset. Total files: $total");
+        $this->info('Switch to your browser NOW. Starting simulation in 5 seconds...');
+
+        sleep(5);
+
+        $bar = $this->output->createProgressBar($total);
+        $bar->start();
+
+        $files = OcrQueueFile::where('queue_id', $queueId)->get();
+
+        foreach ($files as $file) {
+            // Simulate processing
+            $file->processed = 1;
+            $file->save();
+
+            $bar->advance();
+
+            // Wait 2 seconds to allow browser polling to catch it
+            sleep(2);
+        }
+
+        $bar->finish();
+        $this->newLine();
+        $this->info('Simulation Complete.');
     }
-
-    public function handle(): void {}
 }

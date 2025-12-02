@@ -20,6 +20,7 @@
 
 namespace App\Providers;
 
+use Aws\Lambda\LambdaClient;
 use Aws\S3\S3Client;
 use Aws\Sfn\SfnClient;
 use Aws\Sqs\SqsClient;
@@ -115,6 +116,13 @@ class AppServiceProvider extends ServiceProvider
                 'version' => 'latest',
                 'region' => config('services.aws.region'),
                 'credentials' => config('services.aws.credentials'),
+            ]);
+        });
+
+        $this->app->singleton(LambdaClient::class, function ($app) {
+            return new LambdaClient([
+                'region' => config('services.aws.region'),
+                'version' => 'latest',
             ]);
         });
     }

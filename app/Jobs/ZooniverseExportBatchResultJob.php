@@ -42,7 +42,6 @@ class ZooniverseExportBatchResultJob implements ShouldQueue
 
     public function handle(): void
     {
-        \Log::info('ZooniverseExportBatchResultJob', $this->data);
         $downloadId = $this->data['downloadId'] ?? throw new \InvalidArgumentException('Missing downloadId');
         $batchFiles = $this->data['batchFiles'] ?? throw new \InvalidArgumentException('Missing batchFiles');
 
@@ -61,7 +60,6 @@ class ZooniverseExportBatchResultJob implements ShouldQueue
 
         $download->expedition->project->group->owner->notify(new Generic($attributes, true));
 
-        \Log::info('Stopping batch supervisor');
         \Artisan::call('batch:listen-controller stop');
     }
 

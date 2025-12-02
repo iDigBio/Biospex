@@ -284,9 +284,13 @@ $(function () {
                 setSelectedCount();
             },
             onCellSelect: function (rowid, iCol, cellcontent, e) {
-                const $span = $(e.target).closest('.ui-jqgrid-cell-wrapper');
-                const text = $span.length ? $span.text() : cellcontent;
-                Livewire.dispatch('openOcrModal', { cellContent: text });
+                const $td = $(e.target).closest('td');
+                // Only trigger if the cell matches your OCR criteria
+                if ($td.hasClass('ocr-clickable') || ($td.attr('aria-describedby') && $td.attr('aria-describedby').endsWith('_ocr_text'))) {
+                    const $span = $(e.target).closest('.ui-jqgrid-cell-wrapper');
+                    const text = $span.length ? $span.text() : cellcontent;
+                    Livewire.dispatch('openOcrModal', {cellContent: text});
+                }
             }
         })
         .jqGrid("navGrid", {add: false, edit: false, del: false, search: true}, {}, {}, {}, {
