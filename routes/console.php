@@ -25,12 +25,11 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Schedule::command('export:queue')->everyTwoMinutes();
-// Schedule::command('tesseract:ocr-process')->everyTwoMinutes();
+Schedule::command('export:queue')->everyTwoMinutes();
+Schedule::command('tesseract:ocr-process')->everyTwoMinutes();
 Schedule::command('cache:prune-stale-tags')->hourly();
 Schedule::command('queue:prune-batches --hours=48 --unfinished=72')->daily();
 
-/*
 // Clean bingo maps
 Schedule::command('bingo:clean')->dailyAt('10:05');
 
@@ -46,4 +45,3 @@ if ($this->app->environment('production')) {
     // Clean efs directories for files over 72 hours old.
     // Schedule::command('app:clean-efs-dirs')->daily();
 }
-*/
