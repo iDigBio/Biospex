@@ -82,7 +82,7 @@ class DeleteProjectJob implements ShouldQueue
         $attributes = [
             'subject' => t('Delete Project Job Failed'),
             'html' => [
-                t('Error: Could not delete Group %s', $this->project->title),
+                t('Error: Could not delete Project %s', $this->project->title),
                 t('File: %s', $throwable->getFile()),
                 t('Line: %s', $throwable->getLine()),
                 t('Message: %s', $throwable->getMessage()),
