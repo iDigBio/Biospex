@@ -321,7 +321,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REPO: ${{ github.repository }}
-                  - name: Revoke Runner IP from AWS Security Group
+      - name: Revoke Runner IP from AWS Security Group
         if: always()
         run: |
           aws ec2 revoke-security-group-ingress \
