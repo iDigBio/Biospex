@@ -460,14 +460,21 @@ class ListenPanoptesPusherCommand extends Command
         // Handle specific Pusher error codes
         switch ($errorCode) {
             case 4004: // Over quota
-                $this->handleCriticalError('Pusher account over quota - service degraded',
-                    new \RuntimeException("Account for App exceeded quota. Error: {$errorMessage}"));
+                // Set cooldown flag to prevent repeated emails and reconnections
+                $cooldownKey = 'panoptes_listener_quota_cooldown';
+                if (! Cache::has($cooldownKey)) {
+                    $this->handleCriticalError('Pusher account over quota - service degraded',
+                        new \RuntimeException("Account for App exceeded quota. Error: {$errorMessage}"));
+
+                    // Set cooldown for 1 hour
+                    Cache::put($cooldownKey, true, 3600);
+                }
 
                 // Prevent onConnectionClose from scheduling a rapid reconnect
                 $this->intentionalDisconnect = true;
 
-                // Don't reconnect immediately for quota issues
-                $this->scheduleReconnection(300); // Wait 5 minutes
+                // Don't reconnect immediately for quota issues - wait 1 hour
+                $this->scheduleReconnection(3600); // Wait 1 hour instead of 5 minutes
 
                 return;
 
@@ -545,6 +552,12 @@ class ListenPanoptesPusherCommand extends Command
         $key = 'panoptes_listener_errors';
         $window = 60; // 1 minute
         $limit = 10;
+        $shutdownKey = 'panoptes_listener_shutdown_attempted';
+
+        // Check if we already attempted shutdown recently (prevent multiple attempts)
+        if (Cache::has($shutdownKey)) {
+            return;
+        }
 
         $errors = Cache::get($key, []);
         $now = time();
@@ -558,9 +571,21 @@ class ListenPanoptesPusherCommand extends Command
         Cache::put($key, $errors, $window + 10);
 
         if (count($errors) > $limit) {
+            // Mark that we're attempting shutdown to prevent repeated attempts
+            Cache::put($shutdownKey, true, 3600); // Cooldown for 1 hour
+
             $message = 'Too many errors detected ('.count($errors)." in {$window}s). Stopping listener via Supervisor.";
             $this->error($message);
             Log::critical($message);
+
+            // Send one notification email about the shutdown
+            if ($this->shouldSendCriticalEmail()) {
+                $this->sendErrorEmail($message, new \RuntimeException('Error threshold exceeded'), [
+                    'error_count' => count($errors),
+                    'window' => $window,
+                    'limit' => $limit,
+                ], true);
+            }
 
             // Attempt to stop via Supervisor XML-RPC
             if ($this->stopViaSupervisor()) {
@@ -571,8 +596,8 @@ class ListenPanoptesPusherCommand extends Command
             }
 
             // Fallback: Sleep for a long time to "stop" the listener without exiting (avoiding rapid restarts)
-            $this->info('Supervisor stop failed or not available. Entering dormant mode for 10 minutes.');
-            sleep(600);
+            $this->info('Supervisor stop failed or not available. Entering dormant mode for 1 hour.');
+            sleep(3600); // Sleep for 1 hour instead of 10 minutes
             exit(1);
         }
     }
@@ -671,7 +696,10 @@ class ListenPanoptesPusherCommand extends Command
         Log::critical($message, $context);
         $this->error("🚨 CRITICAL: {$message}: {$e->getMessage()}");
 
-        $this->sendErrorEmail($message, $e, $context, true);
+        // Rate limit critical emails - only send once per hour
+        if ($this->shouldSendCriticalEmail()) {
+            $this->sendErrorEmail($message, $e, $context, true);
+        }
     }
 
     private function shouldSendEmailNotification(string $message): bool
@@ -694,6 +722,25 @@ class ListenPanoptesPusherCommand extends Command
         }
 
         return false;
+    }
+
+    /**
+     * Check if a critical email should be sent (rate limited to once per hour).
+     */
+    private function shouldSendCriticalEmail(): bool
+    {
+        $key = 'panoptes_listener_critical_email_sent';
+        $lastSent = Cache::get($key, 0);
+        $now = time();
+
+        // Only send critical emails once per hour
+        if (($now - $lastSent) < 3600) {
+            return false;
+        }
+
+        Cache::put($key, $now, 3700); // Cache for slightly longer than check period
+
+        return true;
     }
 
     private function sendErrorEmail(string $message, ?\Throwable $e, array $context, bool $isCritical = false): void
