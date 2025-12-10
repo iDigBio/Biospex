@@ -31,6 +31,7 @@ class AppTestCommand extends Command
 
     /**
      * The console command description.
+     *  chaange to push
      */
     protected $description = 'Simulate OCR Process for Queue';
 
