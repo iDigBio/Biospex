@@ -49,3 +49,6 @@ panoptes-pusher.js
 /.env.*
 hooks
 /task.txt
+/.junie/
+/boost.json
+laradumps.yaml

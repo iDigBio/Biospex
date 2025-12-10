@@ -62,8 +62,8 @@ host('production')
 
 // Development: development branch → /data/web/dev.biospex
 host('development')
-    ->set('hostname', '3.142.169.134')
-    ->set('deploy_path', '{{base_path}}/dev.biospex')
+    ->set('hostname', '3.138.217.206')
+    ->set('deploy_path', '{{base_path}}/biospex')
     ->set('branch', 'development')
     ->set('environment', 'development')
     ->set('app_tag', 'biospex');

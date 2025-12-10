@@ -130,7 +130,6 @@ task('supervisor:ensure-log-dir', function () {
     // Optional: set sane permissions
     run("sudo chown root:root {$logDir}");
     run("sudo chmod 755 {$logDir}");
-    run("sudo chown ubuntu:ubuntu {$appLogDir}");   // or www-data:www-data
     run("sudo chmod 755 {$appLogDir}");
 
     writeln("Supervisor log directory ready: {$appLogDir}");

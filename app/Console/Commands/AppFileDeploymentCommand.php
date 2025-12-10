@@ -67,6 +67,7 @@ class AppFileDeploymentCommand extends Command
             $this->buildReplacementMap();
             $sourceFiles = $this->getSourceFiles();
             $processedFiles = $this->processFiles($sourceFiles);
+            $this->createSupervisorDirectory();
 
             $this->info("Successfully processed {$processedFiles} file(s)");
 
@@ -299,5 +300,19 @@ class AppFileDeploymentCommand extends Command
 
             return null;
         }
+    }
+
+    /**
+     * Create supervisor log directory for the application.
+     *
+     * Creates a subdirectory under /var/log/supervisor using the application tag
+     * from configuration. Uses sudo to ensure proper permissions.
+     */
+    private function createSupervisorDirectory(): void
+    {
+        $logDir = '/var/log/supervisor';
+        $appTag = config('app.tag');
+        $appLogDir = "{$logDir}/{$appTag}";
+        exec("sudo mkdir -p {$appLogDir}");
     }
 }
