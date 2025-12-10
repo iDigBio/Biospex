@@ -38,7 +38,7 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'env_short' => env('APP_ENV_SHORT', 'prod'),
+    'tag' => env('APP_TAG', 'biospex'),
     'domain' => env('APP_DOMAIN'),
     'current_path' => env('APP_CURRENT_PATH'),
     'server_user' => env('APP_SERVER_USER'),

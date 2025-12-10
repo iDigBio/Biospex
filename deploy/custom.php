@@ -46,7 +46,7 @@ task('deploy:vendors', function () {
     }
 
     // Check if this is a development deployment
-    $isDevelopment = get('domain_name') === 'dev-biospex';
+    $isDevelopment = get('environment') === 'development';
 
     if ($isDevelopment) {
         // Install with dev dependencies for development environment
@@ -115,6 +115,27 @@ task('set:permissions', function () {
     run('sudo truncate -s 0 {{release_or_current_path}}/storage/logs/*.log');
 });
 
+desc('Ensure Supervisor log directory exists');
+task('supervisor:ensure-log-dir', function () {
+    $logDir = '/var/log/supervisor';
+    $appTag = get('app_tag', 'app');        // fallback if not set
+
+    // Create main log dir if missing
+    run("sudo mkdir -p {$logDir}");
+
+    // Create app-specific log dir (e.g. /var/log/supervisor/digacad)
+    $appLogDir = "{$logDir}/{$appTag}";
+    run("sudo mkdir -p {$appLogDir}");
+
+    // Optional: set sane permissions
+    run("sudo chown root:root {$logDir}");
+    run("sudo chmod 755 {$logDir}");
+    run("sudo chown ubuntu:ubuntu {$appLogDir}");   // or www-data:www-data
+    run("sudo chmod 755 {$appLogDir}");
+
+    writeln("Supervisor log directory ready: {$appLogDir}");
+});
+
 /*
  * =============================================================================
  * SUPERVISOR PROCESS MANAGEMENT
@@ -125,70 +146,6 @@ desc('Reload Supervisor configuration (config-only update)');
 task('supervisor:reload', function () {
     run('sudo supervisorctl reread');
     run('sudo supervisorctl update');
-});
-
-desc('Safely restart domain-specific supervisor processes (checks queues first)');
-task('supervisor:restart-domain-safe', function () {
-    $domain = get('domain_name');
-
-    if (! $domain) {
-        throw new Exception('Domain name not configured for this host');
-    }
-
-    // Skip supervisor check entirely for dev-biospex
-    if ($domain === 'dev-biospex') {
-        writeln('ℹ️ Skipping supervisor restart for dev environment (dev-biospex).');
-
-        return;
-    }
-
-    // Continue with normal supervisor checks for production
-    $groupExists = run("sudo supervisorctl status {$domain}:* >/dev/null 2>&1 && echo 'EXISTS' || echo 'NOT_FOUND'", ['tty' => false]);
-
-    if (trim($groupExists) !== 'EXISTS') {
-        writeln("ℹ️ Supervisor group '{$domain}' not found. Skipping restart.");
-
-        return;
-    }
-
-    // Get environment prefix - use "production" for queue names
-    $envPrefix = 'production';
-
-    // Define base queue names
-    $baseQueues = [
-        'export',
-        'geolocate',
-        'import',
-        'ocr',
-        'lambda-ocr',
-        'reconcile',
-        'sns-image-export',
-        'sns-reconciliation',
-        'sns-tesseract-ocr',
-        'sernec-file',
-        'sernec-row',
-    ];
-
-    // Build full queue names
-    $queues = array_map(function ($queue) use ($envPrefix) {
-        return "{$envPrefix}-{$queue}";
-    }, $baseQueues);
-
-    foreach ($queues as $queue) {
-        if (empty($queue)) {
-            continue;
-        }
-        $count = run("php {{release_or_current_path}}/artisan queue:count {$queue} --quiet || echo 0", ['tty' => false]);
-        if ((int) trim($count) > 0) {
-            writeln("⚠️ Queue '{$queue}' has active jobs. Skipping supervisor restart.");
-
-            return;
-        }
-    }
-
-    // Safe to restart domain processes
-    run("sudo supervisorctl restart {$domain}:*");
-    writeln("✅ Supervisor group '{$domain}' restarted");
 });
 
 /*
@@ -289,11 +246,10 @@ task('opcache:reset', function () {
                 throw new Exception('OPCACHE_WEBHOOK_TOKEN not set');
             }
 
-            $hostname = currentHost()->get('hostname');
-            $currentPath = run('readlink {{deploy_path}}/current');
-            $appUrl = strpos($currentPath, 'dev.biospex') !== false
-                ? 'https://dev.biospex.org'
-                : 'https://biospex.org';
+            $environment = get('environment', 'production');  // default to production
+            $appUrl = $appUrl = ($environment === 'development' || str_contains($environment, 'dev'))
+                ? 'https://devopcache.biospex.org'
+                : 'https://opcache.biospex.org';
 
             $webhookUrl = "{$appUrl}/admin/opcache/reset/{$webhookToken}";
             $response = run("curl -X POST -H 'Content-Type: application/json' '{$webhookUrl}'");
@@ -309,43 +265,6 @@ task('opcache:reset', function () {
             writeln('⚠️  Deployment will continue without OpCache reset');
         }
     }
-});
-
-desc('Reset OpCache via webhook (reliable method)');
-task('opcache:reset-webhook', function () {
-    $webhookToken = $_ENV['OPCACHE_WEBHOOK_TOKEN'] ?? getenv('OPCACHE_WEBHOOK_TOKEN') ?? '';
-    if (empty($webhookToken)) {
-        throw new Exception('OPCACHE_WEBHOOK_TOKEN environment variable is required');
-    }
-
-    $hostname = currentHost()->get('hostname');
-    $currentPath = run('readlink {{deploy_path}}/current');
-    $appUrl = strpos($currentPath, 'dev.biospex') !== false
-        ? 'https://dev.biospex.org'
-        : 'https://biospex.org';
-
-    $webhookUrl = "{$appUrl}/admin/opcache/reset/{$webhookToken}";
-    $response = run("curl -X POST -H 'Content-Type: application/json' '{$webhookUrl}' -w '%{http_code}'");
-
-    if (strpos($response, '200') === false) {
-        throw new Exception('OpCache webhook reset failed. Response: '.$response);
-    }
-
-    writeln('✅ OpCache reset successful via webhook');
-});
-
-desc('Reset OpCache after deployment (Production Only)');
-task('opcache:reset-production', function () {
-    // Only execute on production host
-    $currentHost = currentHost()->get('alias');
-    if ($currentHost !== 'production') {
-        writeln('⏭️  Skipping OpCache reset (not production environment)');
-
-        return;
-    }
-
-    writeln('🔄 Resetting OpCache for production deployment...');
-    invoke('opcache:reset');
 });
 
 /*

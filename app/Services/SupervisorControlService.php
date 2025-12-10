@@ -41,7 +41,7 @@ class SupervisorControlService
      */
     public function control(array $programs, string $action): void
     {
-        $group = config('config.supervisor_group', ''); // e.g. "biospex" or "listeners"
+        $group = config('app.tag', ''); // e.g. "biospex" or "listeners"
 
         $guzzle = new Client([
             'curl' => [CURLOPT_UNIX_SOCKET_PATH => '/var/run/supervisor.sock'],

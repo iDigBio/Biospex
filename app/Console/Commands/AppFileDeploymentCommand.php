@@ -288,10 +288,6 @@ class AppFileDeploymentCommand extends Command
                 return config('config.reverb_debug') ? '--debug' : '';
             }
 
-            if ($field === 'SUPERVISOR_GROUP') {
-                return config('config.supervisor_group');
-            }
-
             if (str_starts_with($field, 'PANOPTES_')) {
                 return config('config.'.strtolower($field));
             }

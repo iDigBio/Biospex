@@ -2,8 +2,6 @@
 
 return [
 
-    'supervisor_group' => env('SUPERVISOR_GROUP'), // For supervisor: biospex, dev-biospex
-
     'db_log' => env('DB_LOG', false),
 
     'expedition_size' => env('EXPEDITION_SIZE'),
@@ -214,6 +212,7 @@ return [
         'APP_DOMAIN',
         'APP_SERVER_USER',
         'APP_CURRENT_PATH',
+        'APP_TAG',
         'AWS_SQS_BATCH_UPDATE',
         'AWS_SQS_EXPORT_UPDATE',
         'AWS_SQS_RECONCILE_UPDATE',
@@ -237,6 +236,5 @@ return [
         'QUEUE_SERNEC_FILE',
         'QUEUE_SERNEC_ROW',
         'REVERB_DEBUG',
-        'SUPERVISOR_GROUP',
     ],
 ];

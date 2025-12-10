@@ -57,14 +57,16 @@ host('production')
     ->set('hostname', '3.142.169.134')
     ->set('deploy_path', '{{base_path}}/biospex')
     ->set('branch', 'main')
-    ->set('domain_name', 'prod-biospex');
+    ->set('environment', 'production')
+    ->set('app_tag', 'biospex');
 
 // Development: development branch → /data/web/dev.biospex
 host('development')
     ->set('hostname', '3.142.169.134')
     ->set('deploy_path', '{{base_path}}/dev.biospex')
     ->set('branch', 'development')
-    ->set('domain_name', 'dev-biospex');
+    ->set('environment', 'development')
+    ->set('app_tag', 'biospex');
 
 /*
  * DEPLOYMENT TASK SEQUENCE - CI/CD Option 1 Implementation
@@ -102,12 +104,15 @@ task('deploy', [
     'artisan:filament:optimize',   // Optimize Filament resources and assets
 
     // Phase 6: OpCache Management (Production Only)
-    'opcache:reset-production', // Reset OpCache after deployment (production only)
+    'opcache:reset',
 
     // Phase 7: Domain-Specific Supervisor Management
-    'supervisor:reload',               // Update configs only
-    'supervisor:restart-domain-safe',  // Check queues + restart domain processes
+    'supervisor:reload', // Update configs only
+    'artisan:queue:restart',
+
+    // Phase 8: Finalization
     'set:permissions',
+    'deploy:clear_paths',      // Remove unnecessary files/directories
     'deploy:publish',
     'deploy:verify-structure', // Verify flat structure post-deploy
 ]);
