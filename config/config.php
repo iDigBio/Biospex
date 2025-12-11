@@ -4,7 +4,7 @@ return [
 
     'db_log' => env('DB_LOG', false),
 
-    'expedition_size' => env('EXPEDITION_SIZE'),
+    'expedition_size' => env('EXPEDITION_SIZE', 20000),
 
     'reverb_debug' => env('REVERB_DEBUG', 0),
 
@@ -13,9 +13,6 @@ return [
 
     'api' => [
         'domain' => env('API_DOMAIN'),
-        'url' => env('API_URL'),
-        'version' => env('API_VERSION'),
-        'token' => env('API_TOKEN'),
     ],
 
     'admin' => [
@@ -127,10 +124,6 @@ return [
         'State/Province' => 'state_province',
         'State' => 'state_province',
         'County' => 'county',
-    ],
-
-    'darwin_core' => [
-        'use_batch_processing' => env('DWC_USE_BATCH_PROCESSING', false),
     ],
 
     /* Beanstalk Queues */

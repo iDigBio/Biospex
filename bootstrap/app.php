@@ -36,13 +36,6 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::domain(config('config.api.domain'))->group(function () use ($require_files) {
                 Route::middleware(['web'])->group(base_path('routes/api/index.php'));
 
-                Route::middleware([
-                    'api',
-                    // 'auth:sanctum',
-                ])->group(function () use ($require_files) {
-                    $require_files('routes/api/v0');
-                });
-
                 Route::prefix('v1')->middleware([
                     'api',
                     'auth:sanctum',
