@@ -44,7 +44,7 @@ class EventUserExportCsvJob implements ShouldQueue
     /**
      * The number of seconds the job can run before timing out.
      */
-    public int $timeout = 1800;
+    public int $timeout = 300;
 
     /**
      * Create a new job instance.

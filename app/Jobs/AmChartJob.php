@@ -40,7 +40,7 @@ class AmChartJob implements ShouldQueue
     /**
      * The number of seconds the job can run before timing out.
      */
-    public int $timeout = 3600;
+    public int $timeout = 300;
 
     /**
      * AmChartJob constructor.
