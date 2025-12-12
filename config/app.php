@@ -8,6 +8,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Custom Application Environment
+    |--------------------------------------------------------------------------
+    |
+    */
+    'tag' => env('APP_TAG', 'biospex'),
+    'domain' => env('APP_DOMAIN', 'biospex.org'),
+    'current_path' => env('APP_CURRENT_PATH', '/data/web/biospex/current'),
+    'server_user' => env('APP_SERVER_USER', 'ubuntu'),
+    'registration' => env('APP_REGISTRATION', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Name
     |--------------------------------------------------------------------------
     |
@@ -34,18 +46,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Custom Application Environment
-    |--------------------------------------------------------------------------
-    |
-    */
-    'tag' => env('APP_TAG', 'biospex'),
-    'domain' => env('APP_DOMAIN'),
-    'current_path' => env('APP_CURRENT_PATH'),
-    'server_user' => env('APP_SERVER_USER'),
-    'registration' => env('APP_REGISTRATION'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Application Debug Mode
     |--------------------------------------------------------------------------
     |
@@ -68,7 +68,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'https://biospex.org'),
 
     'asset_url' => env('ASSET_URL', null),
 

@@ -2,33 +2,33 @@
 
 return [
     'enabled' => env('ZOONIVERSE_ENABLED', true),
-    'actor_id' => env('ZOONIVERSE_ACTOR_ID'),
-    'project_url' => env('ZOONIVERSE_PROJECT_URL'),
-    'reconcile_problem_regex' => env('ZOONIVERSE_RECONCILE_PROBLEM_REGEX'),
-    'talk_api_uri' => env('ZOONIVERSE_TALK_API'),
+    'actor_id' => 2,
+    'project_url' => 'https://www.zooniverse.org/projects/PROJECT_SLUG',
+    'reconcile_problem_regex' => '/No (?:select|text) match on|Only 1 transcript in|There was 1 number in/i',
+    'talk_api_uri' => 'https://talk.zooniverse.org/comments?http_cache=true&section=project-PROJECT_ID&focus_id=SUBJECT_ID&focus_type=Subject&page=1&sort=-created_at',
     'new_expedition_notification' => [2 => 'ZooniverseNewExpedition'],
-    'participate_url' => env('ZOONIVERSE_PARTICIPATE_URL'),
+    'participate_url' => 'https://www.zooniverse.org/projects/PROJECT_SLUG/classify?workflow=WORKFLOW_ID',
     // Skip api calls for expedition ids that cause issues
-    'skip_api' => env('ZOONIVERSE_SKIP_API'),
+    'skip_api' => [55],
     // Skip reconcile for expedition ids that cause issues
-    'skip_reconcile' => env('ZOONIVERSE_SKIP_RECONCILE'),
+    'skip_reconcile' => [27, 45, 223, 194],
     'pusher' => [
         'id' => env('ZOONIVERSE_PUSHER_ID'),
-        'cluster' => env('ZOONIVERSE_PUSHER_CLUSTER'),
-        'channel' => env('ZOONIVERSE_PUSHER_CHANNEL'),
+        'cluster' => 'mt1',
+        'channel' => 'panoptes',
     ],
 
     'directory' => [
-        'parent' => env('ZOONIVERSE_DIRECTORY', 'zooniverse'),
-        'classification' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/classification',
-        'reconciled' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled',
-        'reconciled-with-expert' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled-with-expert',
-        'reconciled-with-user' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/reconciled-with-user',
-        'summary' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/summary',
-        'transcript' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/transcript',
-        'explained' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/explained',
-        'lambda-reconciliation' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/lambda-reconciliation',
-        'lambda-ocr' => env('ZOONIVERSE_DIRECTORY', 'zooniverse').'/lambda-ocr',
+        'parent' => 'zooniverse',
+        'classification' => 'zooniverse/classification',
+        'reconciled' => 'zooniverse/reconciled',
+        'reconciled-with-expert' => 'zooniverse/reconciled-with-expert',
+        'reconciled-with-user' => 'zooniverse/reconciled-with-user',
+        'summary' => 'zooniverse/summary',
+        'transcript' => 'zooniverse/transcript',
+        'explained' => 'zooniverse/explained',
+        'lambda-reconciliation' => 'zooniverse/lambda-reconciliation',
+        'lambda-ocr' => 'zooniverse/lambda-ocr',
     ],
 
     'file_types' => [
@@ -39,9 +39,9 @@ return [
     ],
 
     'search_urls' => [
-        'eol' => env('ZOONIVERSE_EOL_SEARCH'),
-        'mol' => env('ZOONIVERSE_MOL_SEARCH'),
-        'idigbio' => env('ZOONIVERSE_IDIGBIO_SEARCH'),
+        'eol' => 'http://www.eol.org/search?q=SCIENTIFIC_NAME',
+        'mol' => 'https://www.mol.org/species/SCIENTIFIC_NAME',
+        'idigbio' => 'https://www.idigbio.org/portal/search?rq={%22scientificname%22:%22SCIENTIFIC_NAME%22}',
     ],
 
     'csv_map' => [
@@ -77,10 +77,10 @@ return [
     'panoptes' => [
         'client_id' => env('ZOONIVERSE_PANOPTES_CLIENT_ID'),
         'client_secret' => env('ZOONIVERSE_PANOPTES_CLIENT_SECRET'),
-        'api_uri' => env('ZOONIVERSE_PANOPTES_URI'),
-        'token_uri' => env('ZOONIVERSE_PANOPTES_TOKEN_URI'),
-        'redirect_uri' => env('ZOONIVERSE_PANOPTES_REDIRECT_URI'),
-        'scopes' => env('ZOONIVERSE_PANOPTES_SCOPES'),
+        'api_uri' => 'https://www.zooniverse.org/api',
+        'token_uri' => 'https://www.zooniverse.org/oauth/token',
+        'redirect_uri' => 'urn:ietf:wg:oauth:2.0:oob',
+        'scopes' => 'user+project+group+collection+classification+subject',
     ],
 
     // See TranscriptionHelper.php

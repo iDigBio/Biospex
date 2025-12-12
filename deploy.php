@@ -58,7 +58,8 @@ host('production')
     ->set('deploy_path', '{{base_path}}/biospex')
     ->set('branch', 'main')
     ->set('environment', 'production')
-    ->set('app_tag', 'biospex');
+    ->set('app_tag', 'biospex')
+    ->set('identity_file', '/home/ubuntu/.ssh/biospexaws.pem');
 
 // Development: development branch → /data/web/dev.biospex
 host('development')
@@ -66,7 +67,8 @@ host('development')
     ->set('deploy_path', '{{base_path}}/biospex')
     ->set('branch', 'development')
     ->set('environment', 'development')
-    ->set('app_tag', 'biospex');
+    ->set('app_tag', 'biospex')
+    ->set('identity_file', '/home/ubuntu/.ssh/biospexaws.pem');
 
 /*
  * DEPLOYMENT TASK SEQUENCE - CI/CD Option 1 Implementation
@@ -76,6 +78,9 @@ host('development')
  */
 desc('Deploys your project using CI/CD artifacts');
 task('deploy', [
+    // Phase 0: Ensure .env from SSM is ready
+    'env:ssm',
+
     // Phase 1: Preparation
     'deploy:prepare',           // Create release directory and setup structure
 

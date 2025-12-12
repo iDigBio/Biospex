@@ -61,8 +61,8 @@ return [
             'driver' => 'mongodb',
             'host' => env('MONGODB_HOST', 'localhost'),
             'port' => env('MONGODB_PORT', 27017),
-            'username' => env('MONGODB_USERNAME', 'user'),
-            'password' => env('MONGODB_PASSWORD', 'pass'),
+            'username' => env('MONGODB_USERNAME', null),
+            'password' => env('MONGODB_PASSWORD', null),
             'database' => env('MONGODB_DATABASE', 'local'),
         ],
 

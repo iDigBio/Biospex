@@ -4,7 +4,7 @@ return [
 
     'db_log' => env('DB_LOG', false),
 
-    'expedition_size' => env('EXPEDITION_SIZE'),
+    'expedition_size' => 20000,
 
     'reverb_debug' => env('REVERB_DEBUG', 0),
 
@@ -13,23 +13,20 @@ return [
 
     'api' => [
         'domain' => env('API_DOMAIN'),
-        'url' => env('API_URL'),
-        'version' => env('API_VERSION'),
-        'token' => env('API_TOKEN'),
     ],
 
     'admin' => [
-        'home' => env('ADMIN_HOME', '/projects'),
-        'group' => env('ADMIN_GROUP', 'Admin'),
-        'group_id' => env('ADMIN_GROUP_ID', 1),
-        'user_id' => env('ADMIN_USER_ID', 1),
+        'home' => '/projects',
+        'group' => 'Admin',
+        'group_id' => 1,
+        'user_id' => 1,
     ],
 
-    'batch_dir' => env('BATCH_DIR', 'batch'),
-    'export_dir' => env('EXPORT_DIR', 'export'),
-    'import_dir' => env('IMPORT_DIR', 'import'),
-    'report_dir' => env('REPORT_DIR', 'report'),
-    'scratch_dir' => env('SCRATCH_DIR', 'scratch'),
+    'batch_dir' => 'batch',
+    'export_dir' => 'export',
+    'import_dir' => 'import',
+    'report_dir' => 'report',
+    'scratch_dir' => 'scratch',
 
     'missing_project_logo' => env('APP_URL').'/images/placeholders/project.png',
     'missing_expedition_logo' => env('APP_URL').'/images/placeholders/card-image-place-holder02.jpg',
@@ -63,9 +60,9 @@ return [
     // Whether OCR is enabled for overnight scripts.
     'ocr_enabled' => env('OCR_ENABLED', true),
 
-    'poll_scoreboard_channel' => env('POLL_SCOREBOARD_CHANNEL'),
-    'poll_bingo_channel' => env('POLL_BINGO_CHANNEL'),
-    'poll_wedigbio_progress_channel' => env('POLL_WEDIGBIO_PROGRESS_CHANNEL'),
+    'poll_scoreboard_channel' => 'scoreboard',
+    'poll_bingo_channel' => 'bingo',
+    'poll_wedigbio_progress_channel' => 'wedigbio-progress',
 
     'project_assets' => [
         'Website URL',
@@ -129,28 +126,24 @@ return [
         'County' => 'county',
     ],
 
-    'darwin_core' => [
-        'use_batch_processing' => env('DWC_USE_BATCH_PROCESSING', false),
-    ],
-
     /* Beanstalk Queues */
     'queue' => [
-        'chart' => env('QUEUE_CHART'),
-        'classification' => env('QUEUE_CLASSIFICATION'),
-        'default' => env('QUEUE_DEFAULT'),
-        'event' => env('QUEUE_EVENT'),
-        'export' => env('QUEUE_EXPORT'),
-        'geolocate' => env('QUEUE_GEOLOCATE'),
-        'import' => env('QUEUE_IMPORT'),
-        'ocr' => env('QUEUE_OCR'),
-        'biospex_event' => env('QUEUE_BIOSPEX_EVENT'),
-        'pusher_handler' => env('QUEUE_PUSHER_HANDLER'),
-        'wedigbio_event' => env('QUEUE_WEDIGBIO_EVENT'),
-        'pusher_process' => env('QUEUE_PUSHER_PROCESS'),
-        'reconcile' => env('QUEUE_RECONCILE'),
-        'workflow' => env('QUEUE_WORKFLOW'),
-        'sernec_file' => env('QUEUE_SERNEC_FILE'),
-        'sernec_row' => env('QUEUE_SERNEC_ROW'),
+        'chart' => 'chart',
+        'classification' => 'classification',
+        'default' => 'default',
+        'event' => 'event',
+        'export' => 'export',
+        'geolocate' => 'geolocate',
+        'import' => 'import',
+        'ocr' => 'ocr',
+        'biospex_event' => 'biospex-event',
+        'pusher_handler' => 'pusher-handler',
+        'wedigbio_event' => 'wedigbio-event',
+        'pusher_process' => 'pusher-process',
+        'reconcile' => 'reconcile',
+        'workflow' => 'workflow',
+        'sernec_file' => 'sernec-file',
+        'sernec_row' => 'sernec-row',
     ],
 
     /* Images */

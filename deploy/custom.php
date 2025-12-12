@@ -156,10 +156,19 @@ task('supervisor:reload', function () {
 desc('Download and extract pre-built assets from GitHub Actions (OPTION 1 CORE FEATURE)');
 task('deploy:ci-artifacts', function () {
     // Environment variables automatically provided by GitHub Actions workflow
-    // Try multiple methods to access environment variables
+    $githubActions = ($_ENV['GITHUB_ACTIONS'] ?? getenv('GITHUB_ACTIONS') ?? '') === 'true';
+
     $githubToken = $_ENV['GITHUB_TOKEN'] ?? getenv('GITHUB_TOKEN') ?? '';
     $githubSha = $_ENV['GITHUB_SHA'] ?? getenv('GITHUB_SHA') ?? '';
     $githubRepo = $_ENV['GITHUB_REPO'] ?? getenv('GITHUB_REPO') ?? 'iDigBio/Biospex';
+
+    // If not running in GitHub Actions, skip this task (manual deploy path)
+    if (! $githubActions) {
+        writeln('⚠️  Skipping deploy:ci-artifacts (not running in GitHub Actions).');
+        writeln('    Tip: Use GitHub Actions for artifact-based deploys, or deploy from repository instead.');
+
+        return;
+    }
 
     // Validate required environment variables
     if (empty($githubToken) || empty($githubSha)) {
@@ -280,3 +289,22 @@ task('deploy:verify-structure', function () {
     }
     writeln('✅ Deployment structure verified: flat and clean');
 });
+
+// Task: generate .env from SSM on the remote server
+desc('Generate .env from AWS SSM Parameter Store');
+task('env:ssm', function () {
+    // app name for the SSM path and deploy_path; adjust if needed
+    $appName = 'biospex';
+
+    // environment is already set on the host ('production' or 'development')
+    $environment = currentHost()->get('environment') ?? 'development';
+
+    // we assume generate-env is in the home directory of the remote_user
+    $remoteUser = get('remote_user');
+    $homeDir = "/home/{$remoteUser}";
+
+    $cmd = "cd {$homeDir} && ./generate-env {$appName} {$environment}";
+
+    writeln("Running: {$cmd}");
+    run($cmd);
+})->once(); // only once per deploy

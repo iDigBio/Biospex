@@ -27,18 +27,20 @@ use App\Services\Requests\HttpRequest;
  */
 class GeoLocateApi extends HttpRequest
 {
-    private string $geolocateStatsUri;
+    private string $geolocateStatsBaseUrl;
 
-    private string $geolocateDownloadUri;
+    private string $geolocateDownloadBaseUrl;
+
+    private string $token;
 
     /**
      * GeoLocateApi Construct
      */
     public function __construct(protected AwsS3ApiService $awsS3ApiService)
     {
-        // Get the geolocate api config values from the config file.
-        $this->geolocateStatsUri = config('geolocate.api.geolocate_stats_uri');
-        $this->geolocateDownloadUri = config('geolocate.api.geolocate_download_uri');
+        $this->geolocateStatsBaseUrl = config('geolocate.api.base_stats_url');
+        $this->geolocateDownloadBaseUrl = config('geolocate.api.base_download_url');
+        $this->token = (string) config('geolocate.api.geolocate_token');
     }
 
     /**
@@ -55,6 +57,7 @@ class GeoLocateApi extends HttpRequest
      * Get download file and save to aws.
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Exception
      */
     public function getDataSourceDownload(string $uri, int $expeditionId, string $type): void
     {
@@ -71,10 +74,16 @@ class GeoLocateApi extends HttpRequest
      */
     public function buildStatsUri(string $cname, ?string $dname = null): string
     {
-        $uri = $this->geolocateStatsUri.'&cname='.$cname;
-        $uri .= $dname === null ? '' : '&dname='.$dname;
+        $query = [
+            'token' => $this->token,
+            'cname' => $cname,
+        ];
 
-        return $uri;
+        if ($dname !== null) {
+            $query['dname'] = $dname;
+        }
+
+        return $this->geolocateStatsBaseUrl.'?'.http_build_query($query);
     }
 
     /**
@@ -82,6 +91,13 @@ class GeoLocateApi extends HttpRequest
      */
     public function buildDownloadUri(string $cname, string $dname, string $fmt): string
     {
-        return $this->geolocateDownloadUri.'&cname='.$cname.'&dname='.$dname.'&fmt='.$fmt;
+        $query = [
+            'token' => $this->token,
+            'cname' => $cname,
+            'dname' => $dname,
+            'fmt' => $fmt,
+        ];
+
+        return $this->geolocateDownloadBaseUrl.'?'.http_build_query($query);
     }
 }
