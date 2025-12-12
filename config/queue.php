@@ -88,26 +88,4 @@ return [
         'database' => env('DB_CONNECTION', 'mysql'),
         'table' => 'failed_jobs',
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Monitored Queues
-    |--------------------------------------------------------------------------
-    |
-    | These are the queues that will be monitored during deployment to check
-    | if they have active jobs before restarting the queue system. This allows
-    | for environment-specific queue names (e.g., dev prefixes in development).
-    |
-    */
-
-    'monitored_queues' => [
-        env('QUEUE_EXPORT', 'export'),
-        env('QUEUE_GEOLOCATE', 'geolocate'),
-        env('QUEUE_IMPORT', 'import'),
-        env('QUEUE_OCR', 'ocr'),
-        env('QUEUE_RECONCILE', 'reconcile'),
-        env('QUEUE_SERNEC_FILE', 'sernec_file'),
-        env('QUEUE_SERNEC_ROW', 'sernec_row'),
-    ],
-
 ];
