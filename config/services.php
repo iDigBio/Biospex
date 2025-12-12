@@ -1,5 +1,15 @@
 <?php
 
+$env = env('APP_ENV', 'local');
+
+$prefixMap = [
+    'local' => 'loc',
+    'development' => 'dev',
+    'production' => 'prod',
+];
+
+$queuePrefix = $prefixMap[$env] ?? $env;
+
 return [
 
     /*
@@ -55,30 +65,31 @@ return [
 
         // SQS QUEUE NAMES
         'queues' => [
-            'batch_trigger' => env('AWS_SQS_BATCH_TRIGGER'),
-            'batch_update' => env('AWS_SQS_BATCH_UPDATE'),
-            'export_image_tasks' => env('AWS_SQS_EXPORT_IMAGE_TASKS'),
-            'export_update' => env('AWS_SQS_EXPORT_UPDATE'),
-            'export_zip_trigger' => env('AWS_SQS_EXPORT_ZIP_TRIGGER'),
-            'reconcile_trigger' => env('AWS_SQS_RECONCILE_TRIGGER'),
-            'reconcile_update' => env('AWS_SQS_RECONCILE_UPDATE'),
-            'ocr_trigger' => env('AWS_SQS_OCR_TRIGGER'),
-            'ocr_update' => env('AWS_SQS_OCR_UPDATE'),
+            // previously env('AWS_SQS_*'), now derived from APP_ENV
+            'batch_trigger' => "{$queuePrefix}-batch-trigger",
+            'batch_update' => "{$queuePrefix}-batch-update",
+            'export_image_tasks' => "{$queuePrefix}-export-image-tasks",
+            'export_update' => "{$queuePrefix}-export-update",
+            'export_zip_trigger' => "{$queuePrefix}-export-zip-trigger",
+            'reconcile_trigger' => "{$queuePrefix}-reconcile-trigger",
+            'reconcile_update' => "{$queuePrefix}-reconcile-update",
+            'ocr_trigger' => "{$queuePrefix}-ocr-trigger",
+            'ocr_update' => "{$queuePrefix}-ocr-update",
         ],
 
-        'batch_idle_grace' => env('AWS_BATCH_IDLE_GRACE', 1800),
-        'export_idle_grace' => env('AWS_EXPORT_IDLE_GRACE', 300),
-        'ocr_idle_grace' => env('AWS_OCR_IDLE_GRACE', 1500),
-        'reconcile_idle_grace' => env('AWS_RECONCILE_IDLE_GRACE', 1800),
-        'zip_threshold' => env('AWS_ZIP_THRESHOLD', 8000),
+        'batch_idle_grace' => 1800,
+        'export_idle_grace' => 300,
+        'ocr_idle_grace' => 1500,
+        'reconcile_idle_grace' => 1800,
+        'zip_threshold' => 8000,
 
         'lambdas' => [
-            'BiospexZipMerger' => env('AWS_LAMBDA_ZIP_MERGER_CONCURRENCY', 1),
-            'BiospexImageProcess' => env('AWS_LAMBDA_IMAGE_PROCESS_CONCURRENCY', 100),
-            'BiospexTesseractOcr' => env('AWS_LAMBDA_TESSERACT_OCR_CONCURRENCY', 100),
-            'BiospexLabelReconcile' => env('AWS_LAMBDA_LABEL_RECONCILE_CONCURRENCY', 8),
-            'BiospexBatchCreator' => env('AWS_LAMBDA_BATCH_CREATOR_CONCURRENCY', 1),
-            'BiospexZipCreator' => env('AWS_LAMBDA_ZIP_CREATOR_CONCURRENCY', 10),
+            'BiospexZipMerger' => 1,
+            'BiospexImageProcess' => 100,
+            'BiospexTesseractOcr' => 100,
+            'BiospexLabelReconcile' => 8,
+            'BiospexBatchCreator' => 1,
+            'BiospexZipCreator' => 10,
         ],
     ],
 ];

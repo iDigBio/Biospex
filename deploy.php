@@ -76,6 +76,9 @@ host('development')
  */
 desc('Deploys your project using CI/CD artifacts');
 task('deploy', [
+    // Phase 0: Ensure .env from SSM is ready
+    'env:ssm',
+
     // Phase 1: Preparation
     'deploy:prepare',           // Create release directory and setup structure
 

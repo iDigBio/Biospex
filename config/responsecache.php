@@ -18,6 +18,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+$tag = config('app.tag', 'biospex');
+
 return [
     /*
      * Determine if the response cache middleware should be enabled.
@@ -59,7 +61,7 @@ return [
      * This setting determines the name of the http header that contains
      * the time at which the response was cached
      */
-    'cache_time_header_name' => env('RESPONSE_CACHE_HEADER_NAME', 'laravel-responsecache'),
+    'cache_time_header_name' => "{$tag}-responsecache",
 
     /*
      * This setting determines if a http header named with the cache age
@@ -73,7 +75,7 @@ return [
      * This setting determines the name of the http header that contains
      * the age of cache
      */
-    'cache_age_header_name' => env('RESPONSE_CACHE_AGE_HEADER_NAME', 'laravel-responsecache-age'),
+    'cache_age_header_name' => "{$tag}-responsecache-age",
 
     /*
      * Here you may define the cache store that should be used to store
@@ -97,7 +99,7 @@ return [
      *
      * You may use a string or an array here.
      */
-    'cache_tag' => env('RESPONSE_CACHE_TAG'),
+    'cache_tag' => "{$tag}-tag",
 
     /*
      * This class is responsible for generating a hash for a request. This hash

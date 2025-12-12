@@ -1,21 +1,20 @@
 <?php
 
 return [
-    'enabled' => env('GEOLOCATE_ENABLED', true),
-    'actor_id' => env('GEOLOCATE_ACTOR_ID'),
-    'workflow_id' => env('GEOLOCATE_WORKFLOW_ID'),
+    'enabled' => env('GEOLOCATE_ENABLED', false),
+    'actor_id' => 4,
+    'workflow_id' => 6,
     'fields_file' => resource_path('json/geolocate-fields.json'),
     'api' => [
-        'geolocate_uname' => env('GEOLOCATE_UNAME'),
         'geolocate_token' => env('GEOLOCATE_TOKEN'),
-        'geolocate_stats_uri' => env('GEOLOCATE_STATS_URI'),
-        'geolocate_download_uri' => env('GEOLOCATE_DOWNLOAD_URI'),
+        'base_stats_url' => 'https://coge.geo-locate.org/api/stats',
+        'base_download_url' => 'https://coge.geo-locate.org/api/downloads',
     ],
     'dir' => [
-        'parent' => env('GEOLOCATE_DIR', 'geolocate'),
-        'csv' => env('GEOLOCATE_DIR', 'geolocate').'/csv',
-        'export' => env('GEOLOCATE_DIR', 'geolocate').'/export',
-        'geo-reconciled' => env('GEOLOCATE_DIR', 'geolocate').'/geo-reconciled',
-        'kml' => env('GEOLOCATE_DIR', 'geolocate').'/kml',
+        'parent' => 'geolocate',
+        'csv' => 'geolocate/csv',
+        'export' => 'geolocate/export',
+        'geo-reconciled' => 'geolocate/geo-reconciled',
+        'kml' => 'geolocate/kml',
     ],
 ];

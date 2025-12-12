@@ -280,3 +280,22 @@ task('deploy:verify-structure', function () {
     }
     writeln('✅ Deployment structure verified: flat and clean');
 });
+
+// Task: generate .env from SSM on the remote server
+desc('Generate .env from AWS SSM Parameter Store');
+task('env:ssm', function () {
+    // app name for the SSM path and deploy_path; adjust if needed
+    $appName = 'biospex';
+
+    // environment is already set on the host ('production' or 'development')
+    $environment = host()->get('environment') ?? 'development';
+
+    // we assume generate-env is in the home directory of the remote_user
+    $remoteUser = get('remote_user');
+    $homeDir = "/home/{$remoteUser}";
+
+    $cmd = "cd {$homeDir} && ./generate-env {$appName} {$environment}";
+
+    writeln("Running: {$cmd}");
+    run($cmd);
+})->once(); // only once per deploy

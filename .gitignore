@@ -52,3 +52,4 @@ hooks
 /.junie/
 /boost.json
 laradumps.yaml
+/generate-env
