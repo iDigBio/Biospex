@@ -205,15 +205,23 @@ class AppFileDeploymentCommand extends Command
      */
     private function writeTargetFile(string $targetPath, string $content): void
     {
-        // Remove existing file if it exists
-        if (File::exists($targetPath)) {
-            File::delete($targetPath);
+        $dir = dirname($targetPath);
+
+        if (! File::isDirectory($dir)) {
+            File::makeDirectory($dir, 0755, true);
         }
 
-        // Write new content
-        if (! File::put($targetPath, $content)) {
-            throw new Exception("Failed to write target file: {$targetPath}");
+        // Write to a temp file in the same directory (same filesystem),
+        // then move into place (atomic replace on Linux).
+        $tmpPath = $dir.DIRECTORY_SEPARATOR.'.'.basename($targetPath).'.tmp';
+
+        // LOCK_EX prevents two deploys from clobbering each other mid-write.
+        if (File::put($tmpPath, $content, true) === false) {
+            throw new Exception("Failed to write temp file: {$tmpPath}");
         }
+
+        // File::move uses rename() under the hood when possible (atomic).
+        File::move($tmpPath, $targetPath);
     }
 
     /**
