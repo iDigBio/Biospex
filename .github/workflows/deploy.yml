@@ -24,6 +24,11 @@ on:
       - development # Development environment
   release:
     types: [published] # Production deployment trigger
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   # Create release when pushing to main
   create-release:
@@ -137,6 +142,11 @@ jobs:
       - name: Get Runner IP
         id: ip
         uses: haythem/public-ip@v1.3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::147899039648:role/GitHubActionsDeployRole
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: Whitelist Runner IP in AWS Security Group
         run: |
           aws ec2 authorize-security-group-ingress \
@@ -144,10 +154,6 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -226,10 +232,6 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
   build-and-deploy-development:
     runs-on: ubuntu-latest
@@ -241,6 +243,11 @@ jobs:
       - name: Get Runner IP
         id: ip
         uses: haythem/public-ip@v1.3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::147899039648:role/GitHubActionsDeployRole
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: Whitelist Runner IP in AWS Security Group
         run: |
           aws ec2 authorize-security-group-ingress \
@@ -248,10 +255,6 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -329,7 +332,3 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
