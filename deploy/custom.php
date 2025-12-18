@@ -299,11 +299,11 @@ task('env:ssm', function () {
     // environment is already set on the host ('production' or 'development')
     $environment = currentHost()->get('environment') ?? 'development';
 
-    // we assume generate-env is in the home directory of the remote_user
+    // we assume generate-env-params is in the home directory of the remote_user
     $remoteUser = get('remote_user');
     $homeDir = "/home/{$remoteUser}";
 
-    $cmd = "cd {$homeDir} && ./generate-env {$appName} {$environment}";
+    $cmd = "cd {$homeDir} && ./generate-env-params-params {$appName} {$environment}";
 
     writeln("Running: {$cmd}");
     run($cmd);
