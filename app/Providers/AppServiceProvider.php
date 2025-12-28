@@ -92,38 +92,36 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
         }
 
+        $awsConfig = [
+            'version' => 'latest',
+            'region' => config('services.aws.region', 'us-east-2'),
+        ];
+
+        // If keys are in .env, use them.
+        // If NOT (Local ~/.aws/credentials or Server IAM Role),
+        // omitting 'credentials' lets the SDK find them automatically.
+        if (config('services.aws.credentials.key') && config('services.aws.credentials.secret')) {
+            $awsConfig['credentials'] = config('services.aws.credentials');
+        }
+
         // Register AWS SQS Client
-        $this->app->singleton(SqsClient::class, function ($app) {
-            return new SqsClient([
-                'version' => 'latest',
-                'region' => config('services.aws.region'),
-                'credentials' => config('services.aws.credentials'),
-            ]);
+        $this->app->singleton(SqsClient::class, function ($app) use ($awsConfig) {
+            return new SqsClient($awsConfig);
         });
 
-        // Register AWS S3 Client (if not already registered)
-        $this->app->singleton(S3Client::class, function ($app) {
-            return new S3Client([
-                'version' => 'latest',
-                'region' => config('services.aws.region'),
-                'credentials' => config('services.aws.credentials'),
-            ]);
+        // Register AWS S3 Client
+        $this->app->singleton(S3Client::class, function ($app) use ($awsConfig) {
+            return new S3Client($awsConfig);
         });
 
         // Register AWS Step Functions Client
-        $this->app->singleton(SfnClient::class, function ($app) {
-            return new SfnClient([
-                'version' => 'latest',
-                'region' => config('services.aws.region'),
-                'credentials' => config('services.aws.credentials'),
-            ]);
+        $this->app->singleton(SfnClient::class, function ($app) use ($awsConfig) {
+            return new SfnClient($awsConfig);
         });
 
-        $this->app->singleton(LambdaClient::class, function ($app) {
-            return new LambdaClient([
-                'region' => config('services.aws.region'),
-                'version' => 'latest',
-            ]);
+        // Register AWS Lambda Client
+        $this->app->singleton(LambdaClient::class, function ($app) use ($awsConfig) {
+            return new LambdaClient($awsConfig);
         });
     }
 }
