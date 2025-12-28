@@ -56,3 +56,4 @@ laradumps.yaml
 /remove-env-params
 
 /.ai/
+/generate-env
