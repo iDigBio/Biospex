@@ -28,6 +28,9 @@ set('php_fpm_version', '8.3');
 set('ssh_multiplexing', true);
 set('writable_mode', 'chmod');
 set('keep_releases', 3);  // Keep only 3 recent releases
+
+// Use sudo for cleanup to prevent "Directory not empty" or permission errors
+set('cleanup_use_sudo', true);
 // Shared Files (persisted across deployments)
 set('shared_files', [
     '.env',                        // Environment configuration
