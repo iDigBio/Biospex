@@ -293,7 +293,7 @@ task('deploy:verify-structure', function () {
 // Task: generate .env from SSM on the remote server
 desc('Generate .env from AWS SSM Parameter Store');
 task('env:ssm', function () {
-    // app name for the SSM path and deploy_path; adjust if needed
+    // app name for the SSM path and deploy_path
     $appName = 'biospex';
 
     // environment is already set on the host ('production' or 'development')
@@ -303,7 +303,7 @@ task('env:ssm', function () {
     $remoteUser = get('remote_user');
     $homeDir = "/home/{$remoteUser}";
 
-    $cmd = "cd {$homeDir} && ./generate-env-params-params {$appName} {$environment}";
+    $cmd = "cd {$homeDir} && ./generate-env {$appName} {$environment}";
 
     writeln("Running: {$cmd}");
     run($cmd);

@@ -51,6 +51,10 @@ set('clear_paths', [
     'deployment-package', // Remove any residual nesting dirs
 ]);
 
+// Determine if the local identity file exists (for manual deployments)
+$localKey = '/home/ubuntu/.ssh/biospexaws.pem';
+$hasLocalKey = file_exists($localKey);
+
 // Server Configurations
 // Production: main branch → /data/web/biospex
 host('production')
@@ -58,8 +62,11 @@ host('production')
     ->set('deploy_path', '{{base_path}}/biospex')
     ->set('branch', 'main')
     ->set('environment', 'production')
-    ->set('app_tag', 'biospex')
-    ->set('identity_file', '/home/ubuntu/.ssh/biospexaws.pem');
+    ->set('app_tag', 'biospex');
+
+if ($hasLocalKey) {
+    host('production')->set('identity_file', $localKey);
+}
 
 // Development: development branch → /data/web/dev.biospex
 host('development')
@@ -67,8 +74,11 @@ host('development')
     ->set('deploy_path', '{{base_path}}/biospex')
     ->set('branch', 'development')
     ->set('environment', 'development')
-    ->set('app_tag', 'biospex')
-    ->set('identity_file', '/home/ubuntu/.ssh/biospexaws.pem');
+    ->set('app_tag', 'biospex');
+
+if ($hasLocalKey) {
+    host('development')->set('identity_file', $localKey);
+}
 
 /*
  * DEPLOYMENT TASK SEQUENCE - CI/CD Option 1 Implementation
