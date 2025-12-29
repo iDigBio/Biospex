@@ -455,7 +455,7 @@ class ListenerPanoptesPusherCommand extends Command
         $errorCode = $payload['data']['code'] ?? 'unknown';
 
         // Track error frequency
-        $this->trackError();
+        $this->trackError($errorMessage);
 
         // Handle specific Pusher error codes
         switch ($errorCode) {
@@ -547,9 +547,10 @@ class ListenerPanoptesPusherCommand extends Command
     /**
      * Track errors and shut down if threshold exceeded.
      */
-    private function trackError(): void
+    private function trackError(?string $details = null): void
     {
         $key = 'panoptes_listener_errors';
+        $detailsKey = 'panoptes_listener_error_details';
         $window = 60; // 1 minute
         $limit = 10;
         $shutdownKey = 'panoptes_listener_shutdown_attempted';
@@ -570,85 +571,43 @@ class ListenerPanoptesPusherCommand extends Command
 
         Cache::put($key, $errors, $window + 10);
 
+        // Store recent error details for the summary email
+        if ($details) {
+            $recentDetails = Cache::get($detailsKey, []);
+            $recentDetails[] = '['.date('H:i:s').'] '.$details;
+            // Keep only the last 15 details
+            Cache::put($detailsKey, array_slice($recentDetails, -15), $window + 10);
+        }
+
         if (count($errors) > $limit) {
             // Mark that we're attempting shutdown to prevent repeated attempts
             Cache::put($shutdownKey, true, 3600); // Cooldown for 1 hour
 
-            $message = 'Too many errors detected ('.count($errors)." in {$window}s). Stopping listener via Supervisor.";
+            $message = 'Too many errors detected ('.count($errors)." in {$window}s). Entering dormant mode for 1 hour to protect mailbox.";
             $this->error($message);
             Log::critical($message);
 
             // Send one notification email about the shutdown
             if ($this->shouldSendCriticalEmail()) {
-                $this->sendErrorEmail($message, new \RuntimeException('Error threshold exceeded'), [
+                $summaryDetails = Cache::get($detailsKey, []);
+                $context = [
                     'error_count' => count($errors),
                     'window' => $window,
                     'limit' => $limit,
-                ], true);
+                    'recent_errors_summary' => $summaryDetails,
+                    'next_attempt' => now()->addHour()->format('H:i:s T'),
+                ];
+
+                $this->sendErrorEmail($message, new \RuntimeException('Error threshold exceeded'), $context, true);
+                Cache::forget($detailsKey);
             }
 
-            // Attempt to stop via Supervisor XML-RPC
-            if ($this->stopViaSupervisor()) {
-                $this->info('Supervisor stop command sent.');
-                // We still exit to ensure this process stops, but Supervisor shouldn't restart it
-                // if the stop command worked (it moves to STOPPED state).
-                exit(0);
-            }
-
-            // Fallback: Sleep for a long time to "stop" the listener without exiting (avoiding rapid restarts)
-            $this->info('Supervisor stop failed or not available. Entering dormant mode for 1 hour.');
-            sleep(3600); // Sleep for 1 hour instead of 10 minutes
+            // Instead of stopping Supervisor, we just "sleep" this process.
+            // Supervisor will keep it "Running" but it won't be doing anything.
+            // After 1 hour, it exits with 1, and Supervisor restarts it.
+            $this->info('Entering dormant mode for 1 hour...');
+            sleep(3600);
             exit(1);
-        }
-    }
-
-    /**
-     * Attempt to stop this process using Supervisor XML-RPC.
-     */
-    private function stopViaSupervisor(): bool
-    {
-        $processName = getenv('SUPERVISOR_PROCESS_NAME');
-        $groupName = getenv('SUPERVISOR_GROUP_NAME');
-
-        if (! $processName || ! $groupName) {
-            return false;
-        }
-
-        $fullName = "{$groupName}:{$processName}";
-
-        // Default Supervisor socket path
-        $socketPath = '/var/run/supervisor.sock';
-        // Check env for socket path if available, or config
-        if (getenv('SUPERVISOR_SERVER_URL')) {
-            $url = getenv('SUPERVISOR_SERVER_URL');
-            if (str_starts_with($url, 'unix://')) {
-                $socketPath = substr($url, 7);
-            }
-        }
-
-        if (! file_exists($socketPath) || ! is_writable($socketPath)) {
-            return false;
-        }
-
-        try {
-            // Build XML-RPC client for Unix socket
-            $guzzle = new \GuzzleHttp\Client([
-                'curl' => [
-                    CURLOPT_UNIX_SOCKET_PATH => $socketPath,
-                ],
-            ]);
-
-            $transport = new \fXmlRpc\Transport\PsrTransport(new \GuzzleHttp\Psr7\HttpFactory, $guzzle);
-            $client = new \fXmlRpc\Client('http://localhost/RPC2', $transport);
-
-            $supervisor = new \Supervisor\Supervisor($client);
-            $supervisor->stopProcess($fullName);
-
-            return true;
-        } catch (\Throwable $e) {
-            Log::error('Failed to call Supervisor XML-RPC: '.$e->getMessage());
-
-            return false;
         }
     }
 
@@ -661,14 +620,14 @@ class ListenerPanoptesPusherCommand extends Command
      */
     private function handleError(string $message, ?\Throwable $e = null, array $context = []): void
     {
-        $this->trackError();
+        $details = $message.($e ? ": {$e->getMessage()}" : '');
+        $this->trackError($details);
 
         $context['timestamp'] = now()->toISOString();
         $context['command'] = 'panoptes:listen';
 
         if ($e) {
             $context['error'] = $e->getMessage();
-            $context['trace'] = $e->getTraceAsString();
             $context['file'] = $e->getFile();
             $context['line'] = $e->getLine();
         }
@@ -688,7 +647,6 @@ class ListenerPanoptesPusherCommand extends Command
             'timestamp' => now()->toISOString(),
             'command' => 'panoptes:listen',
             'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
         ];
@@ -791,8 +749,6 @@ class ListenerPanoptesPusherCommand extends Command
             $body .= 'Type: '.get_class($e)."\n";
             $body .= 'Message: '.$e->getMessage()."\n";
             $body .= 'File: '.$e->getFile().':'.$e->getLine()."\n\n";
-
-            $body .= "Stack Trace:\n".$e->getTraceAsString()."\n\n";
         }
 
         if (! empty($context)) {
