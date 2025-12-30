@@ -51,7 +51,7 @@ class SqsListenerExportUpdate extends Command
     public function handle(): int
     {
         try {
-            $this->info('Starting Export Update SQS Listener...');
+            \Log::info('Starting Export Update SQS Listener...');
             $this->validateConfiguration();
             $this->runWorker();
 
@@ -71,13 +71,13 @@ class SqsListenerExportUpdate extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.export_update' => 'AWS_SQS_EXPORT_UPDATE',
-            'services.aws.credentials' => 'AWS_CREDENTIALS',
+            'services.aws.queues.export_update',
+            'services.aws.region',
         ];
 
-        foreach ($required as $key => $env) {
+        foreach ($required as $key) {
             if (empty(Config::get($key))) {
-                throw new RuntimeException("Missing config: {$key} (env: {$env})");
+                throw new RuntimeException("Missing configuration: {$key}");
             }
         }
     }
@@ -140,6 +140,7 @@ class SqsListenerExportUpdate extends Command
 
         // Dispatch the job for BOTH success and failure
         // The job itself will handle the status correctly and update the DB
+        \Log::info('Dispatching ImageProcessJob', $data);
         ZooniverseExportImageUpdateJob::dispatch($data);
 
         // Only throw/log if it's an unexpected status (optional)
@@ -192,7 +193,7 @@ class SqsListenerExportUpdate extends Command
         if ($status === 'partial-zip-ready') {
             return;
         }
-
+        \Log::info('Dispatching ZipCreatorJob', $data);
         ZooniverseExportZipResultJob::dispatch($data);
     }
 

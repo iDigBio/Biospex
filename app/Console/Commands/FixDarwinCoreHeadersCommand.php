@@ -34,7 +34,7 @@ class FixDarwinCoreHeadersCommand extends Command
      */
     public function handle(HeaderService $headerService): int
     {
-        $this->info('Starting Darwin Core header fix process...');
+        \Log::info('Starting Darwin Core header fix process...');
 
         $dryRun = $this->option('dry-run');
         $verbose = $this->option('verbose');
@@ -54,25 +54,25 @@ class FixDarwinCoreHeadersCommand extends Command
                 return self::FAILURE;
             }
 
-            $this->info("Processing project ID: {$projectId}");
+            \Log::info("Processing project ID: {$projectId}");
 
             $headerData = $header->header;
             $isProblematic = $this->isHeaderProblematic($headerData);
 
             if (! $isProblematic) {
-                $this->info("Header for project {$projectId} is already complete: ".$this->getHeaderDescription($headerData));
+                \Log::info("Header for project {$projectId} is already complete: ".$this->getHeaderDescription($headerData));
 
                 return self::SUCCESS;
             }
 
             if ($verbose) {
-                $this->line('Current header: '.$this->getHeaderDescription($headerData));
+                \Log::info('Current header: '.$this->getHeaderDescription($headerData));
             }
 
             if (! $dryRun) {
                 $fixed = $this->fixHeaderFromAllSubjects($header, $headerData, $verbose);
                 if ($fixed) {
-                    $this->info('Darwin Core header fix completed successfully!');
+                    \Log::info('Darwin Core header fix completed successfully!');
                 } else {
                     $this->warn('Header could not be fixed - check logs for details');
                 }
@@ -150,7 +150,7 @@ class FixDarwinCoreHeadersCommand extends Command
                 return false;
             }
 
-            $this->info("Processing {$totalSubjects} subjects in batches of {$batchSize}");
+            \Log::info("Processing {$totalSubjects} subjects in batches of {$batchSize}");
 
             // Use sets to avoid duplicates while building comprehensive headers
             $imageFieldsSet = [];
@@ -175,7 +175,7 @@ class FixDarwinCoreHeadersCommand extends Command
                     }
 
                     if ($verbose) {
-                        $this->line("  Processed {$processedCount}/{$totalSubjects} subjects - Image fields: ".count($imageFieldsSet).', Occurrence fields: '.count($occurrenceFieldsSet));
+                        \Log::info("  Processed {$processedCount}/{$totalSubjects} subjects - Image fields: ".count($imageFieldsSet).', Occurrence fields: '.count($occurrenceFieldsSet));
                     }
                 });
 
@@ -201,10 +201,10 @@ class FixDarwinCoreHeadersCommand extends Command
 
             DB::commit();
 
-            $this->info('Header updated successfully:');
-            $this->line('  - Image fields: '.count($imageHeaders));
-            $this->line('  - Occurrence fields: '.count($occurrenceHeaders));
-            $this->line("  - Processed subjects: {$processedCount}");
+            \Log::info('Header updated successfully:');
+            \Log::info('  - Image fields: '.count($imageHeaders));
+            \Log::info('  - Occurrence fields: '.count($occurrenceHeaders));
+            \Log::info("  - Processed subjects: {$processedCount}");
 
             return true;
 

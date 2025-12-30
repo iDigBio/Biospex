@@ -71,10 +71,10 @@ class AppSubjectReplace extends Command
             return 1;
         }
 
-        $this->info('Starting AppSubjectReplace');
-        $this->line("CSV: {$csvPath}");
-        $this->line('Expedition ID: '.(string) $expeditionId);
-        $this->line('Mode: '.($dryRun ? 'DRY RUN (no changes will be saved)' : 'LIVE (changes will be saved)'));
+        \Log::info('Starting AppSubjectReplace');
+        \Log::info("CSV: {$csvPath}");
+        \Log::info('Expedition ID: '.(string) $expeditionId);
+        \Log::info('Mode: '.($dryRun ? 'DRY RUN (no changes will be saved)' : 'LIVE (changes will be saved)'));
         $this->newLine();
 
         // Load expedition and project id
@@ -103,7 +103,7 @@ class AppSubjectReplace extends Command
 
             return 1;
         }
-        $this->line('Project ID: '.(string) $projectId);
+        \Log::info('Project ID: '.(string) $projectId);
 
         // Stats
         $stats = [
@@ -168,9 +168,9 @@ class AppSubjectReplace extends Command
         }
         $stats['csv_subjectIds_count'] = count($subjectIdSet);
 
-        $this->line('Unique subjectIds loaded from CSV: '.$stats['csv_subjectIds_count']);
+        \Log::info('Unique subjectIds loaded from CSV: '.$stats['csv_subjectIds_count']);
         $this->newLine();
-        $this->info('Scanning project subjects...');
+        \Log::info('Scanning project subjects...');
 
         // Iterate subjects in the project
         $query = Subject::query()->where('project_id', $projectId);
@@ -259,7 +259,7 @@ class AppSubjectReplace extends Command
 
         // After processing all subjects, update expedition counts
         $this->newLine();
-        $this->info('Updating expedition counts...');
+        \Log::info('Updating expedition counts...');
 
         $actorExpeditionUpdated = 0;
         $expeditionStatUpdated = 0;
@@ -268,7 +268,7 @@ class AppSubjectReplace extends Command
             try {
                 // Count remaining subjects in the expedition
                 $remainingSubjectCount = Subject::where('expedition_ids', $expeditionId)->count();
-                $this->line("Remaining subjects in expedition {$expeditionId}: {$remainingSubjectCount}");
+                \Log::info("Remaining subjects in expedition {$expeditionId}: {$remainingSubjectCount}");
 
                 // Update ActorExpedition records
                 $actorExpeditionUpdated = ActorExpedition::where('expedition_id', $expeditionId)
@@ -283,19 +283,19 @@ class AppSubjectReplace extends Command
         }
 
         $this->newLine();
-        $this->info('Completed AppSubjectReplace');
-        $this->line('Summary:');
-        $this->line('  CSV total rows:                 '.$stats['csv_rows_total']);
-        $this->line('  CSV rows with subjectId:        '.$stats['csv_rows_with_subjectId']);
-        $this->line('  Unique CSV subjectIds:          '.$stats['csv_subjectIds_count']);
-        $this->line('  Project subjects scanned:       '.$stats['subjects_scanned']);
-        $this->line('  Already absent association:     '.$stats['expedition_ids_already_absent']);
-        $this->line('  '.($dryRun ? 'Would update (dry run):      ' : 'Updated:                       ').$stats['updated']);
-        $this->line('  Errors:                         '.$stats['errors']);
+        \Log::info('Completed AppSubjectReplace');
+        \Log::info('Summary:');
+        \Log::info('  CSV total rows:                 '.$stats['csv_rows_total']);
+        \Log::info('  CSV rows with subjectId:        '.$stats['csv_rows_with_subjectId']);
+        \Log::info('  Unique CSV subjectIds:          '.$stats['csv_subjectIds_count']);
+        \Log::info('  Project subjects scanned:       '.$stats['subjects_scanned']);
+        \Log::info('  Already absent association:     '.$stats['expedition_ids_already_absent']);
+        \Log::info('  '.($dryRun ? 'Would update (dry run):      ' : 'Updated:                       ').$stats['updated']);
+        \Log::info('  Errors:                         '.$stats['errors']);
 
         if (! $dryRun && $stats['updated'] > 0) {
-            $this->line('  ActorExpedition records updated: '.$actorExpeditionUpdated);
-            $this->line('  ExpeditionStat records updated:  '.$expeditionStatUpdated);
+            \Log::info('  ActorExpedition records updated: '.$actorExpeditionUpdated);
+            \Log::info('  ExpeditionStat records updated:  '.$expeditionStatUpdated);
         }
 
         return 0;

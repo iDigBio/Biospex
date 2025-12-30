@@ -60,7 +60,7 @@ class DeleteMultimediaSubjectsCommand extends Command
             return;
         }
 
-        $this->info('Processing multimedia.csv file...');
+        \Log::info('Processing multimedia.csv file...');
 
         $handle = fopen($csvPath, 'r');
         if ($handle === false) {
@@ -107,14 +107,14 @@ class DeleteMultimediaSubjectsCommand extends Command
 
             if ($deletedRecords > 0) {
                 $deletedCount += $deletedRecords;
-                $this->info("Deleted {$deletedRecords} record(s) for identifier: {$identifier}");
+                \Log::info("Deleted {$deletedRecords} record(s) for identifier: {$identifier}");
             }
         }
 
         fclose($handle);
 
-        $this->info('Processing complete!');
-        $this->info("Processed {$processedCount} rows from CSV");
-        $this->info("Total records deleted: {$deletedCount}");
+        \Log::info('Processing complete!');
+        \Log::info("Processed {$processedCount} rows from CSV");
+        \Log::info("Total records deleted: {$deletedCount}");
     }
 }

@@ -72,6 +72,7 @@ class TesseractOcrProcessJob implements ShouldQueue
 
         \Artisan::queue('ocr:listen-controller start')
             ->onQueue(config('config.queue.default'));
+        \Log::info('TesseractOcrProcessJob: Starting OCR Lambda');
 
         $sentCount = 0;
 

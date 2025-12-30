@@ -45,11 +45,11 @@ class AwsS3ApiService
     private function hasAwsConfiguration(): bool
     {
         $bucket = config('filesystems.disks.s3.bucket');
-        $key = config('filesystems.disks.s3.key');
-        $secret = config('filesystems.disks.s3.secret');
         $region = config('filesystems.disks.s3.region');
 
-        return ! empty($bucket) && ! empty($key) && ! empty($secret) && ! empty($region);
+        // We no longer check for key/secret because they are provided
+        // by IAM Roles (server) or ~/.aws/credentials (local)
+        return ! empty($bucket) && ! empty($region);
     }
 
     /**
@@ -62,7 +62,7 @@ class AwsS3ApiService
     public function createS3BucketStream(string $bucket, string $filePath, string $mode, bool $seekable = true)
     {
         if (! $this->client) {
-            throw new \Exception('AWS S3 client not available. Check: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION, and AWS_BUCKET in .env');
+            throw new \Exception('AWS S3 client not available. Please verify your AWS configuration (Region and Bucket).');
         }
 
         $this->client->registerStreamWrapper();
@@ -89,7 +89,7 @@ class AwsS3ApiService
     public function getFileCount(string $bucket, string $dirPath): int
     {
         if (! $this->client) {
-            throw new \Exception('AWS S3 client not available. Required: AWS_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION');
+            throw new \Exception('AWS S3 client not available. Please verify your AWS configuration (Region and Bucket).');
         }
 
         $prefix = rtrim($dirPath, '/').'/';

@@ -58,7 +58,7 @@ class AppFileDeploymentCommand extends Command
     {
         try {
             $this->isDryRun = $this->option('dry-run');
-            $this->info('Starting file deployment process...');
+            \Log::info('Starting file deployment process...');
 
             if ($this->isDryRun) {
                 $this->warn('DRY RUN MODE: No files will be modified');
@@ -69,7 +69,7 @@ class AppFileDeploymentCommand extends Command
             $processedFiles = $this->processFiles($sourceFiles);
             $this->createSupervisorDirectory();
 
-            $this->info("Successfully processed {$processedFiles} file(s)");
+            \Log::info("Successfully processed {$processedFiles} file(s)");
 
             return CommandAlias::SUCCESS;
 
@@ -97,7 +97,7 @@ class AppFileDeploymentCommand extends Command
             throw new Exception("No supervisor template files found in: {$supervisorPath}");
         }
 
-        $this->info('Found '.count($files).' supervisor template file(s)');
+        \Log::info('Found '.count($files).' supervisor template file(s)');
 
         return collect($files);
     }
@@ -188,7 +188,7 @@ class AppFileDeploymentCommand extends Command
     {
         if (! $this->isDryRun && ! Storage::exists('supervisor')) {
             Storage::makeDirectory('supervisor');
-            $this->info('Created supervisor directory');
+            \Log::info('Created supervisor directory');
         }
     }
 
@@ -230,18 +230,18 @@ class AppFileDeploymentCommand extends Command
     private function showDryRunChanges(string $filename, string $original, string $processed): void
     {
         if ($original !== $processed) {
-            $this->line("\n<fg=yellow>Changes for {$filename}:</>");
+            \Log::info("\n<fg=yellow>Changes for {$filename}:</>");
 
             $changes = 0;
             foreach ($this->replacements as $search => $replace) {
                 if ($replace !== null && $replace !== '' && str_contains($original, $search)) {
-                    $this->line("  <fg=cyan>{$search}</> → <fg=green>{$replace}</>");
+                    \Log::info("  <fg=cyan>{$search}</> → <fg=green>{$replace}</>");
                     $changes++;
                 }
             }
 
             if ($changes === 0) {
-                $this->line('  <fg=gray>No replacements needed</>');
+                \Log::info('  <fg=gray>No replacements needed</>');
             }
         }
     }
@@ -272,7 +272,7 @@ class AppFileDeploymentCommand extends Command
                 return $value !== null && $value !== '';
             });
 
-        $this->info('Built replacement map with '.$this->replacements->count().' entries');
+        \Log::info('Built replacement map with '.$this->replacements->count().' entries');
     }
 
     /**

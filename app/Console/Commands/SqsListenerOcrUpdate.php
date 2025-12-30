@@ -42,7 +42,7 @@ class SqsListenerOcrUpdate extends Command
     public function handle(): int
     {
         try {
-            $this->info('Starting OCR Update SQS Listener...');
+            \Log::info('Starting OCR Update SQS Listener...');
             $this->validateConfiguration();
             $this->runWorker();
 
@@ -57,12 +57,13 @@ class SqsListenerOcrUpdate extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.ocr_update' => 'AWS_SQS_OCR_UPDATE',
+            'services.aws.queues.ocr_update',
+            'services.aws.region',
         ];
 
-        foreach ($required as $key => $env) {
+        foreach ($required as $key) {
             if (empty(Config::get($key))) {
-                throw new RuntimeException("Missing config: {$key} (env: {$env})");
+                throw new RuntimeException("Missing configuration: {$key}");
             }
         }
     }
@@ -82,6 +83,7 @@ class SqsListenerOcrUpdate extends Command
         $ocrQueueFileId = $data['ocrQueueFileId'] ?? throw new InvalidArgumentException('Missing ocrQueueFileId');
         $status = $data['status'] ?? throw new InvalidArgumentException('Missing status');
 
+        \Log::info('Dispatching OCR job', $data);
         // Dispatch job for BOTH success and failure
         TesseractOcrUpdateJob::dispatch($data);
 

@@ -63,24 +63,24 @@ class PurgeAwsQueues extends Command
 
         $queues = config('services.aws.queues');
 
-        $this->info("Purging queues for environment: <comment>{$env}</comment>");
+        \Log::info("Purging queues for environment: <comment>{$env}</comment>");
 
         foreach ($queues as $queueName) {
             try {
                 $urlResult = $this->sqs->getQueueUrl(['QueueName' => $queueName]);
                 $queueUrl = $urlResult['QueueUrl'];
 
-                $this->line("Purging <info>{$queueName}</info>...");
+                \Log::info("Purging <info>{$queueName}</info>...");
                 $this->sqs->purgeQueue(['QueueUrl' => $queueUrl]);
 
-                $this->info("Purged: {$queueName}");
+                \Log::info("Purged: {$queueName}");
             } catch (\Exception $e) {
                 $this->warn("Failed to purge {$queueName}: ".$e->getMessage());
             }
         }
 
         $this->newLine();
-        $this->info("All queues purged for <comment>{$env}</comment>");
+        \Log::info("All queues purged for <comment>{$env}</comment>");
 
         return 0;
     }

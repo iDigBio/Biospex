@@ -72,10 +72,10 @@ class AppSubjectRemoval extends Command
             return 1;
         }
 
-        $this->info('Starting AppSubjectRemoval');
-        $this->line("CSV: {$csvPath}");
-        $this->line('Expedition ID: '.(string) $expeditionId);
-        $this->line('Mode: '.($dryRun ? 'DRY RUN (no changes will be saved)' : 'LIVE (changes will be saved)'));
+        \Log::info('Starting AppSubjectRemoval');
+        \Log::info("CSV: {$csvPath}");
+        \Log::info('Expedition ID: '.(string) $expeditionId);
+        \Log::info('Mode: '.($dryRun ? 'DRY RUN (no changes will be saved)' : 'LIVE (changes will be saved)'));
         $this->newLine();
 
         // Stats
@@ -198,7 +198,7 @@ class AppSubjectRemoval extends Command
 
         // After processing all subjects, update expedition counts
         $this->newLine();
-        $this->info('Updating expedition counts...');
+        \Log::info('Updating expedition counts...');
 
         $actorExpeditionUpdated = 0;
         $expeditionStatUpdated = 0;
@@ -207,7 +207,7 @@ class AppSubjectRemoval extends Command
             try {
                 // Count remaining subjects in the expedition
                 $remainingSubjectCount = Subject::where('expedition_ids', $expeditionId)->count();
-                $this->line("Remaining subjects in expedition {$expeditionId}: {$remainingSubjectCount}");
+                \Log::info("Remaining subjects in expedition {$expeditionId}: {$remainingSubjectCount}");
 
                 // Update ActorExpedition records
                 $actorExpeditionUpdated = ActorExpedition::where('expedition_id', $expeditionId)
@@ -223,19 +223,19 @@ class AppSubjectRemoval extends Command
         }
 
         $this->newLine();
-        $this->info('Completed AppSubjectRemoval');
-        $this->line('Summary:');
-        $this->line('  Total CSV rows:            '.$stats['rows_total']);
-        $this->line('  Rows with subjectId:       '.$stats['rows_with_subjectId']);
-        $this->line('  Subjects found:            '.$stats['subjects_found']);
-        $this->line('  Subjects missing:          '.$stats['subjects_missing']);
-        $this->line('  Already absent association: '.$stats['already_absent']);
-        $this->line('  '.($dryRun ? 'Would update (dry run):   ' : 'Updated:                  ').$stats['updated']);
-        $this->line('  Errors:                    '.$stats['errors']);
+        \Log::info('Completed AppSubjectRemoval');
+        \Log::info('Summary:');
+        \Log::info('  Total CSV rows:            '.$stats['rows_total']);
+        \Log::info('  Rows with subjectId:       '.$stats['rows_with_subjectId']);
+        \Log::info('  Subjects found:            '.$stats['subjects_found']);
+        \Log::info('  Subjects missing:          '.$stats['subjects_missing']);
+        \Log::info('  Already absent association: '.$stats['already_absent']);
+        \Log::info('  '.($dryRun ? 'Would update (dry run):   ' : 'Updated:                  ').$stats['updated']);
+        \Log::info('  Errors:                    '.$stats['errors']);
 
         if (! $dryRun && $stats['updated'] > 0) {
-            $this->line('  ActorExpedition records updated: '.$actorExpeditionUpdated);
-            $this->line('  ExpeditionStat records updated:  '.$expeditionStatUpdated);
+            \Log::info('  ActorExpedition records updated: '.$actorExpeditionUpdated);
+            \Log::info('  ExpeditionStat records updated:  '.$expeditionStatUpdated);
         }
 
         return 0;

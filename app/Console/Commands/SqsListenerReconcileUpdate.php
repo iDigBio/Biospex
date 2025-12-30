@@ -50,7 +50,7 @@ class SqsListenerReconcileUpdate extends Command
     public function handle(): int
     {
         try {
-            $this->info('Starting Reconciliation Update SQS Listener...');
+            \Log::info('Starting Reconciliation Update SQS Listener...');
             $this->validateConfiguration();
             $this->runWorker();
 
@@ -70,12 +70,13 @@ class SqsListenerReconcileUpdate extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.reconcile_update' => 'AWS_SQS_RECONCILE_UPDATE',
+            'services.aws.queues.reconcile_update',
+            'services.aws.region',
         ];
 
-        foreach ($required as $key => $env) {
+        foreach ($required as $key) {
             if (empty(Config::get($key))) {
-                throw new RuntimeException("Missing config: {$key} (env: {$env})");
+                throw new RuntimeException("Missing configuration: {$key}");
             }
         }
     }
@@ -151,6 +152,8 @@ class SqsListenerReconcileUpdate extends Command
             // Do NOT throw — message will be deleted
             return;
         }
+
+        \Log::info('Dispatching LabelReconciliationJob', $data);
 
         // Success path
         LabelReconciliationJob::dispatch($data);

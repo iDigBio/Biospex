@@ -50,7 +50,7 @@ class SqsListenerBatchUpdate extends Command
     public function handle(): int
     {
         try {
-            $this->info('Starting Batch Update SQS Listener...');
+            \Log::info('Starting Batch Update SQS Listener...');
             $this->validateConfiguration();
             $this->runWorker();
 
@@ -70,13 +70,13 @@ class SqsListenerBatchUpdate extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.batch_update' => 'AWS_SQS_BATCH_UPDATE',
-            'services.aws.credentials' => 'AWS_CREDENTIALS',
+            'services.aws.queues.batch_update',
+            'services.aws.region',
         ];
 
-        foreach ($required as $key => $env) {
+        foreach ($required as $key) {
             if (empty(Config::get($key))) {
-                throw new RuntimeException("Missing config: {$key} (env: {$env})");
+                throw new RuntimeException("Missing configuration: {$key}");
             }
         }
     }
@@ -134,6 +134,7 @@ class SqsListenerBatchUpdate extends Command
      */
     private function dispatchBatchCreatorJob(array $data): void
     {
+        \Log::info('Dispatching BiospexBatchCreator job', $data);
         $status = $data['status'] ?? throw new InvalidArgumentException('Missing status');
         $downloadId = $data['downloadId'] ?? throw new InvalidArgumentException('Missing downloadId');
 

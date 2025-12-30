@@ -46,11 +46,11 @@ class CleanEfsDirsCommand extends Command
     public function handle(): void
     {
         $directory = '/efs';
-        $this->info("Starting cleanup in $directory...");
+        \Log::info("Starting cleanup in $directory...");
 
         $deletedFiles = $this->cleanDirectory($directory);
 
-        $this->info("Cleanup completed. Files deleted: $deletedFiles");
+        \Log::info("Cleanup completed. Files deleted: $deletedFiles");
     }
 
     /**
@@ -71,7 +71,7 @@ class CleanEfsDirsCommand extends Command
 
             if ($lastModified->lessThan($threshold)) {
                 File::delete($file); // Use the File facade to delete
-                $this->info("Deleted file: $file");
+                \Log::info("Deleted file: $file");
                 $deletedFiles++;
             }
         }

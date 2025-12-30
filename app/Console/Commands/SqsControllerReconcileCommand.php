@@ -59,7 +59,7 @@ class SqsControllerReconcileCommand extends Command
                 config('services.aws.queues.reconcile_update'),
             ], $this->argument('action'));
 
-            $this->info('Reconciliation listener '.$this->argument('action').'ed');
+            \Log::info('Reconciliation listener '.$this->argument('action').'ed');
 
             return self::SUCCESS;
         } catch (\Throwable $e) {

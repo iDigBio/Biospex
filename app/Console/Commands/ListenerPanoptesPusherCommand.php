@@ -98,7 +98,7 @@ class ListenerPanoptesPusherCommand extends Command
     public function handle(): int
     {
         try {
-            $this->info('Starting Panoptes Pusher listener...');
+            \Log::info('Starting Panoptes Pusher listener...');
             $this->validateConfiguration();
             $this->initializeListener();
 
@@ -154,7 +154,7 @@ class ListenerPanoptesPusherCommand extends Command
         $this->connectToPusher();
 
         // Run the event loop
-        $this->info('Event loop starting...');
+        \Log::info('Event loop starting...');
         $this->loop->run();
     }
 
@@ -194,7 +194,7 @@ class ListenerPanoptesPusherCommand extends Command
             ],
         ]);
 
-        $this->info('Connecting to Pusher... (attempt: '.($this->reconnectAttempts + 1).')');
+        \Log::info('Connecting to Pusher... (attempt: '.($this->reconnectAttempts + 1).')');
 
         connect($url, [], [], $this->loop, $connector)
             ->then(
@@ -224,7 +224,7 @@ class ListenerPanoptesPusherCommand extends Command
         $this->reconnectDelay = 1; // Reset delay
         $this->lastMessageTime = time();
 
-        $this->info('✅ Connected to Pusher successfully!');
+        \Log::info('✅ Connected to Pusher successfully!');
 
         // Subscribe to the channel
         $this->subscribeToChannel();
@@ -255,7 +255,7 @@ class ListenerPanoptesPusherCommand extends Command
         $jitter = mt_rand(0, 1000) / 1000;
         $delay = min(60, $this->reconnectDelay * pow(2, $this->reconnectAttempts - 1)) + $jitter;
 
-        $this->info('⏰ Reconnecting in '.round($delay, 2).' seconds...');
+        \Log::info('⏰ Reconnecting in '.round($delay, 2).' seconds...');
 
         $this->loop->addTimer($delay, function () {
             $this->connectToPusher();
@@ -274,7 +274,7 @@ class ListenerPanoptesPusherCommand extends Command
                 ],
             ]));
 
-            $this->info("📡 Subscribed to channel: {$channel}");
+            \Log::info("📡 Subscribed to channel: {$channel}");
         } catch (\Throwable $e) {
             $this->handleError("Failed to subscribe to channel: {$channel}", $e);
         }
@@ -329,7 +329,7 @@ class ListenerPanoptesPusherCommand extends Command
 
             switch ($event) {
                 case 'pusher:connection_established':
-                    $this->info('🔗 Pusher connection established and authenticated');
+                    \Log::info('🔗 Pusher connection established and authenticated');
                     break;
 
                 case 'pusher:ping':
@@ -349,7 +349,7 @@ class ListenerPanoptesPusherCommand extends Command
                     break;
 
                 default:
-                    $this->info("📨 Received event: {$event}");
+                    \Log::info("📨 Received event: {$event}");
                     // Log unknown events for debugging
                     Log::info('Unknown Pusher event received', [
                         'event' => $event,
@@ -374,7 +374,7 @@ class ListenerPanoptesPusherCommand extends Command
     public function onConnectionClose($code = null, $reason = null): void
     {
         if ($this->intentionalDisconnect) {
-            $this->info('Connection closed intentionally (handling specific error logic).');
+            \Log::info('Connection closed intentionally (handling specific error logic).');
 
             return;
         }
@@ -401,7 +401,7 @@ class ListenerPanoptesPusherCommand extends Command
             // Send pong immediately when ping is received
             $pongMessage = json_encode(['event' => 'pusher:pong', 'data' => []]);
             $this->connection->send($pongMessage);
-            $this->info('🏓 Responded to Pusher ping');
+            \Log::info('🏓 Responded to Pusher ping');
 
             // Update last message time to reset heartbeat monitor
             $this->lastMessageTime = time();
@@ -414,7 +414,7 @@ class ListenerPanoptesPusherCommand extends Command
 
     private function handleClassificationEvent(array $payload): void
     {
-        $this->info('🔬 Classification event received - dispatching job');
+        \Log::info('🔬 Classification event received - dispatching job');
 
         try {
             if (! isset($payload['data'])) {
@@ -437,7 +437,7 @@ class ListenerPanoptesPusherCommand extends Command
 
             ProcessPanoptesPusherDataJob::dispatch($data);
 
-            $this->info('✅ Classification job dispatched successfully');
+            \Log::info('✅ Classification job dispatched successfully');
 
         } catch (\Throwable $e) {
             $this->handleError('Failed to dispatch classification job', $e, [
@@ -517,7 +517,7 @@ class ListenerPanoptesPusherCommand extends Command
             return;
         }
 
-        $this->info('🔄 Scheduling reconnection in '.round($delay, 1).' seconds...');
+        \Log::info('🔄 Scheduling reconnection in '.round($delay, 1).' seconds...');
 
         $this->loop->addTimer($delay, function () {
             if (! $this->isShuttingDown) {
@@ -538,7 +538,7 @@ class ListenerPanoptesPusherCommand extends Command
 
         foreach ($signals as $signal) {
             $this->loop->addSignal($signal, function ($signal) {
-                $this->info("📡 Received signal {$signal} - shutting down gracefully...");
+                \Log::info("📡 Received signal {$signal} - shutting down gracefully...");
                 $this->shutdown(0);
             });
         }
@@ -605,7 +605,7 @@ class ListenerPanoptesPusherCommand extends Command
             // Instead of stopping Supervisor, we just "sleep" this process.
             // Supervisor will keep it "Running" but it won't be doing anything.
             // After 1 hour, it exits with 1, and Supervisor restarts it.
-            $this->info('Entering dormant mode for 1 hour...');
+            \Log::info('Entering dormant mode for 1 hour...');
             sleep(3600);
             exit(1);
         }
@@ -792,7 +792,7 @@ class ListenerPanoptesPusherCommand extends Command
             $this->loop->stop();
         }
 
-        $this->info($exitCode === 0 ? '✅ Shutdown complete' : '❌ Shutdown with errors');
+        \Log::info($exitCode === 0 ? '✅ Shutdown complete' : '❌ Shutdown with errors');
 
         exit($exitCode);
     }

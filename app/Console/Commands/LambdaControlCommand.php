@@ -59,7 +59,7 @@ class LambdaControlCommand extends Command
                     'FunctionName' => $lambdaName,
                     'ReservedConcurrentExecutions' => 0,
                 ]);
-                $this->info("Stopped {$lambdaName} — concurrency set to 0");
+                \Log::info("Stopped {$lambdaName} — concurrency set to 0");
             } else {
                 // Remove any existing concurrency limit first
                 try {
@@ -72,7 +72,7 @@ class LambdaControlCommand extends Command
                     'FunctionName' => $lambdaName,
                     'ReservedConcurrentExecutions' => $targetConcurrency,
                 ]);
-                $this->info("Started {$lambdaName} — concurrency set to {$targetConcurrency}");
+                \Log::info("Started {$lambdaName} — concurrency set to {$targetConcurrency}");
             }
 
             return self::SUCCESS;

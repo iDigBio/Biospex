@@ -57,7 +57,7 @@ class SqsControllerBatchCommand extends Command
                 config('services.aws.queues.batch_update'),
             ], $this->argument('action'));
 
-            $this->info('Batch listener '.$this->argument('action').'ed');
+            \Log::info('Batch listener '.$this->argument('action').'ed');
 
             return self::SUCCESS;
         } catch (\Throwable $e) {

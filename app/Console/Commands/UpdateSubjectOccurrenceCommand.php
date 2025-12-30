@@ -59,7 +59,7 @@ class UpdateSubjectOccurrenceCommand extends Command
      */
     public function handle(): void
     {
-        $this->info('Starting subject occurrence update...');
+        \Log::info('Starting subject occurrence update...');
 
         try {
             // Read multimedia.csv to get coreid to identifier mapping
@@ -80,16 +80,16 @@ class UpdateSubjectOccurrenceCommand extends Command
 
             // Read multimedia.csv to build coreid to identifier mapping
             $multimediaData = $this->readMultimediaCsv($multimediaPath);
-            $this->info('Multimedia CSV read: '.count($multimediaData).' records');
+            \Log::info('Multimedia CSV read: '.count($multimediaData).' records');
 
             // Read occurrences.csv to get occurrence data by id
             $occurrenceData = $this->readOccurrencesCsv($occurrencesPath);
-            $this->info('Occurrences CSV read: '.count($occurrenceData).' records');
+            \Log::info('Occurrences CSV read: '.count($occurrenceData).' records');
 
             // Process updates in batches using bulk operations
             $this->updateSubjectsInBatches($multimediaData, $occurrenceData);
 
-            $this->info('Subject occurrence update completed successfully!');
+            \Log::info('Subject occurrence update completed successfully!');
 
         } catch (Exception $e) {
             $this->error('Error updating subject occurrences: '.$e->getMessage());
@@ -174,7 +174,7 @@ class UpdateSubjectOccurrenceCommand extends Command
         // Get projectId option if provided
         $projectId = $this->option('projectId');
 
-        $this->info('Building bulk operations...');
+        \Log::info('Building bulk operations...');
 
         // Build update operations batch
         foreach ($multimediaData as $coreid => $identifier) {
@@ -202,7 +202,7 @@ class UpdateSubjectOccurrenceCommand extends Command
                         return $collection->bulkWrite($batch, ['ordered' => false]);
                     });
                     $updatedCount += $result->getModifiedCount();
-                    $this->info("Updated {$updatedCount} subjects...");
+                    \Log::info("Updated {$updatedCount} subjects...");
                     $batch = []; // Reset batch
                 } catch (Exception $e) {
                     $this->error('Error in bulk write operation: '.$e->getMessage());
@@ -224,6 +224,6 @@ class UpdateSubjectOccurrenceCommand extends Command
             }
         }
 
-        $this->info("Total subjects updated: {$updatedCount}");
+        \Log::info("Total subjects updated: {$updatedCount}");
     }
 }
