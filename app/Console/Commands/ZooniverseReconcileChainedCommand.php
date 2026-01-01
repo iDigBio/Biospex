@@ -22,6 +22,7 @@ namespace App\Console\Commands;
 
 use App\Services\Expedition\ExpeditionService;
 use App\Traits\SkipZooniverse;
+use Artisan;
 use Illuminate\Console\Command;
 use Storage;
 
@@ -79,6 +80,8 @@ class ZooniverseReconcileChainedCommand extends Command
             $classification = config('zooniverse.directory.classification').'/'.$expeditionId.'.csv';
             $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation').'/'.$expeditionId.'.csv';
             Storage::disk('s3')->copy($classification, $lambda_reconciliation);
+
+            Artisan::queue('reconcile:listen-controller start')->onQueue(config('config.queue.default'));
         }
     }
 
