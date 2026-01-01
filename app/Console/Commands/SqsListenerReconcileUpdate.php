@@ -156,7 +156,7 @@ class SqsListenerReconcileUpdate extends Command
         \Log::info('Dispatching LabelReconciliationJob', $data);
 
         // Success path
-        LabelReconciliationJob::dispatch($data);
+        // LabelReconciliationJob::dispatch($data);
     }
 
     /**
