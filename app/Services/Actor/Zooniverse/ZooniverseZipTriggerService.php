@@ -120,19 +120,16 @@ class ZooniverseZipTriggerService
 
         if ($fileCount > $zipThreshold) {
             // Trigger Step Function for large jobs
-            $result = $this->stepFunctions->startExecution([
+            $this->stepFunctions->startExecution([
                 'stateMachineArn' => 'arn:aws:states:us-east-2:147899039648:stateMachine:ZipBatchOrchestrator',
                 'input' => json_encode($payload),
             ]);
-            // TODO Remove this log once we have a better way to track executions
-            \Log::info("Step Function execution started for {$processDir}: ".$result['executionArn']);
         } else {
             // Send to SQS for direct Lambda processing for small jobs
             $this->sqs->sendMessage([
                 'QueueUrl' => $queueUrl,
                 'MessageBody' => json_encode($payload),
             ]);
-            \Log::info("SQS message sent for {$processDir} direct processing");
         }
     }
 

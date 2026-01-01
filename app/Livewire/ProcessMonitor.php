@@ -78,11 +78,6 @@ class ProcessMonitor extends Component
             ->orderBy('id')
             ->get();
 
-        // ADD THIS BLOCK
-        $queues->each(function ($q) {
-            \Log::info("DEBUG: Queue {$q->id} processed count: {$q->processed_files}");
-        });
-
         return $queues;
     }
 }

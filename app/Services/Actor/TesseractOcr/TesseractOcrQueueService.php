@@ -52,16 +52,12 @@ class TesseractOcrQueueService
     public function processNextQueue(bool $reset = false): void
     {
         if ($this->ocrQueue->where('queued', 1)->where('error', 0)->exists()) {
-            \Log::info('Queue already running');
-
             return; // Already running one
         }
 
         // Find the ID of the next candidate
         $nextQueue = $this->getNextQueue($reset);
         if (! $nextQueue) {
-            \Log::info('No queue items available');
-
             return;
         }
 
@@ -87,7 +83,6 @@ class TesseractOcrQueueService
             throw new \Exception("TesseractOcr Lambda concurrency is 0 — skipping queue #{$queue->id}");
         }
 
-        \Log::info("TesseractOcr processing queue #{$queue->id}");
         TesseractOcrProcessJob::dispatch($queue);
     }
 

@@ -28,7 +28,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ZooniverseExportDownloadBatchJob implements ShouldQueue
@@ -45,8 +44,6 @@ class ZooniverseExportDownloadBatchJob implements ShouldQueue
 
     public function handle(SqsClient $sqs): void
     {
-        \Log::info('ZooniverseExportDownloadBatchJob', ['download_id' => $this->download->id]);
-
         $this->download->load('expedition');
 
         $file = $this->download->file;
@@ -70,27 +67,17 @@ class ZooniverseExportDownloadBatchJob implements ShouldQueue
             'updatesQueueUrl' => $updatesQueueUrl,
         ];
 
-        \Log::info('Batch job message', $message);
-
         $sqs->sendMessage([
             'QueueUrl' => $triggerQueueUrl,
             'MessageBody' => json_encode($message),
         ]);
 
-        Log::info('Batch job queued to Lambda', [
-            'download_id' => $this->download->id,
-            'file' => $file,
-            'size' => $size,
-        ]);
-
-        \Log::info('Starting batch supervisor listener.');
         \Artisan::call('batch:listen-controller start');
     }
 
     private function getQueueUrl(SqsClient $sqs, string $key): string
     {
         $queueName = config("services.aws.queues.{$key}");
-        \Log::info("Queue name: {$queueName}");
 
         return $sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
     }

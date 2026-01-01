@@ -402,7 +402,6 @@ class SqsListenerService
                 $m->to($this->adminEmail)->subject($subject);
             });
 
-            Log::info('Error notification email sent', ['subject' => $subject]);
         } catch (Throwable $me) {
             Log::error('Failed to send alert email', [
                 'mail_error' => $me->getMessage(),

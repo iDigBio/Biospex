@@ -94,7 +94,6 @@ class ZooniverseExportQueueService
         $exportQueue->stage = 1;
         $exportQueue->save();
 
-        Log::info("Export queue started: {$exportQueue->id}");
         ZooniverseExportProcessImagesJob::dispatch($exportQueue);
     }
 

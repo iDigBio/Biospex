@@ -84,8 +84,6 @@ class AppUpdateQueriesCommand extends Command
      */
     protected function createS3Directories(): void
     {
-        \Log::info('Creating S3 directories...');
-
         $directories = [
             config('config.uploads.site-assets'),
             config('config.uploads.project-assets'),
@@ -95,16 +93,11 @@ class AppUpdateQueriesCommand extends Command
             try {
                 if (! Storage::disk('s3')->exists($directory)) {
                     Storage::disk('s3')->makeDirectory($directory);
-                    \Log::info("Created directory: {$directory}");
-                } else {
-                    \Log::info("Directory already exists: {$directory}");
                 }
             } catch (\Exception $e) {
                 $this->error("Failed to create directory {$directory}: ".$e->getMessage());
             }
         }
-
-        \Log::info('S3 directory creation completed.');
     }
 
     /**
@@ -112,8 +105,6 @@ class AppUpdateQueriesCommand extends Command
      */
     protected function moveS3DirectoryFiles(): void
     {
-        \Log::info('Moving S3 directory files...');
-
         $bucket = config('filesystems.disks.s3.bucket');
         $region = config('filesystems.disks.s3.region');
 
@@ -133,8 +124,6 @@ class AppUpdateQueriesCommand extends Command
         foreach ($migrations as $migration) {
             $this->migrateS3Directory($bucket, $region, $migration['from'], $migration['to'], $migration['name']);
         }
-
-        \Log::info('S3 directory file migration completed.');
     }
 
     /**
@@ -142,8 +131,6 @@ class AppUpdateQueriesCommand extends Command
      */
     protected function migrateS3Directory(string $bucket, string $region, string $fromDir, string $toDir, string $description): void
     {
-        \Log::info("Migrating {$description}: {$fromDir} → {$toDir}");
-
         // Check if source directory has files
         $listCommand = sprintf(
             'aws s3 ls s3://%s/%s/ --region %s --recursive',
@@ -157,13 +144,10 @@ class AppUpdateQueriesCommand extends Command
         exec($listCommand.' 2>/dev/null', $output, $returnCode);
 
         if (empty($output)) {
-            \Log::info("   No files found in source directory: {$fromDir}");
-
             return;
         }
 
         $fileCount = count($output);
-        \Log::info("   Found {$fileCount} files to migrate");
 
         // Get initial count of destination directory
         $destListCommand = sprintf(
@@ -180,9 +164,6 @@ class AppUpdateQueriesCommand extends Command
         $initialDestFileCount = count($destInitialOutput);
         $expectedFinalCount = $initialDestFileCount + $fileCount;
 
-        \Log::info("   Initial destination files: {$initialDestFileCount}");
-        \Log::info("   Expected final count: {$expectedFinalCount}");
-
         // Copy files to new directory
         $copyCommand = sprintf(
             'aws s3 cp s3://%s/%s/ s3://%s/%s/ --region %s --recursive',
@@ -193,7 +174,6 @@ class AppUpdateQueriesCommand extends Command
             escapeshellarg($region)
         );
 
-        \Log::info('   Copying files...');
         $copyOutput = [];
         $copyReturnCode = 0;
         exec($copyCommand.' 2>&1', $copyOutput, $copyReturnCode);
@@ -203,8 +183,6 @@ class AppUpdateQueriesCommand extends Command
 
             return;
         }
-
-        \Log::info('   Files copied successfully');
 
         // Verify copy operation by listing destination directory
         $verifyOutput = [];
@@ -218,11 +196,6 @@ class AppUpdateQueriesCommand extends Command
 
             return;
         }
-
-        \Log::info("   Verification successful: {$actualFinalCount} files in destination");
-
-        \Log::info("   ✅ Migration completed: {$description}");
-        \Log::info("   Original files preserved in: {$fromDir}");
     }
 
     /**
@@ -230,8 +203,6 @@ class AppUpdateQueriesCommand extends Command
      */
     protected function updateDatabasePaths(): void
     {
-        \Log::info('Updating database paths...');
-
         // Update ProjectAsset paths from project-resources/downloads to project-assets
         $oldProjectPath = config('config.uploads.project_resources_downloads');
         $newProjectPath = config('config.uploads.project-assets');
@@ -241,19 +212,13 @@ class AppUpdateQueriesCommand extends Command
             ->get();
 
         if ($projectAssetUpdates->isNotEmpty()) {
-            \Log::info("   Updating {$projectAssetUpdates->count()} ProjectAsset records...");
-
             foreach ($projectAssetUpdates as $asset) {
                 $newPath = str_replace($oldProjectPath, $newProjectPath, $asset->download_path);
 
                 DB::table('project_assets')
                     ->where('id', $asset->id)
                     ->update(['download_path' => $newPath]);
-
-                \Log::info("   Updated ProjectAsset {$asset->id}: {$asset->download_path} → {$newPath}");
             }
-        } else {
-            \Log::info('   No ProjectAsset records to update');
         }
 
         // Update SiteAsset paths from resources to site-assets
@@ -265,22 +230,14 @@ class AppUpdateQueriesCommand extends Command
             ->get();
 
         if ($siteAssetUpdates->isNotEmpty()) {
-            \Log::info("   Updating {$siteAssetUpdates->count()} SiteAsset records...");
-
             foreach ($siteAssetUpdates as $asset) {
                 $newPath = str_replace($oldSitePath, $newSitePath, $asset->download_path);
 
                 DB::table('site_assets')
                     ->where('id', $asset->id)
                     ->update(['download_path' => $newPath]);
-
-                \Log::info("Updated SiteAsset {$asset->id}: {$asset->download_path} → {$newPath}");
             }
-        } else {
-            \Log::info('No SiteAsset records to update');
         }
-
-        \Log::info('Database path updates completed.');
     }
 
     public function processClassifications(): void
