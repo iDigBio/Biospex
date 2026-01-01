@@ -50,7 +50,6 @@ class SqsListenerBatchUpdate extends Command
     public function handle(): int
     {
         try {
-            \Log::info('Starting Batch Update SQS Listener...');
             $this->validateConfiguration();
             $this->runWorker();
 
@@ -134,7 +133,6 @@ class SqsListenerBatchUpdate extends Command
      */
     private function dispatchBatchCreatorJob(array $data): void
     {
-        \Log::info('Dispatching BiospexBatchCreator job', $data);
         $status = $data['status'] ?? throw new InvalidArgumentException('Missing status');
         $downloadId = $data['downloadId'] ?? throw new InvalidArgumentException('Missing downloadId');
 

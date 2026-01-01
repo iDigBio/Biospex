@@ -51,7 +51,6 @@ class SqsListenerExportUpdate extends Command
     public function handle(): int
     {
         try {
-            \Log::info('Starting Export Update SQS Listener...');
             $this->validateConfiguration();
             $this->runWorker();
 
@@ -140,7 +139,6 @@ class SqsListenerExportUpdate extends Command
 
         // Dispatch the job for BOTH success and failure
         // The job itself will handle the status correctly and update the DB
-        \Log::info('Dispatching ImageProcessJob', $data);
         ZooniverseExportImageUpdateJob::dispatch($data);
 
         // Only throw/log if it's an unexpected status (optional)
@@ -171,8 +169,6 @@ class SqsListenerExportUpdate extends Command
             // Ignore harmless empty-batch noise
             if (str_contains($error, 'No files found')) {
                 // This is a normal empty-batch message from the Step Function — ignore it
-                // TODO Remove this once we've confirmed that the Step Function is working correctly
-                Log::info('Empty batch skipped (normal for Step Function)', $data);
 
                 return;   // ← do NOT throw, do NOT dispatch a job
             }
@@ -193,7 +189,7 @@ class SqsListenerExportUpdate extends Command
         if ($status === 'partial-zip-ready') {
             return;
         }
-        \Log::info('Dispatching ZipCreatorJob', $data);
+
         ZooniverseExportZipResultJob::dispatch($data);
     }
 

@@ -66,7 +66,6 @@ class TesseractOcrCommand extends Command
         }
 
         try {
-            \Log::info('TesseractOcrCommand started');
             $this->service->processNextQueue($this->option('reset'));
         } catch (Throwable $e) {
             $this->fail($e);
@@ -81,8 +80,6 @@ class TesseractOcrCommand extends Command
         $message = $exception instanceof Throwable
             ? $exception->getMessage()
             : ($exception ?? 'Command failed');
-
-        \Log::error("TesseractOcrCommand failed: {$message}");
 
         $attributes = [
             'subject' => t('TesseractOcrCommand Failed'),

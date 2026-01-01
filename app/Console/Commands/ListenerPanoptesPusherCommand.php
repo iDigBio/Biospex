@@ -98,7 +98,6 @@ class ListenerPanoptesPusherCommand extends Command
     public function handle(): int
     {
         try {
-            \Log::info('Starting Panoptes Pusher listener...');
             $this->validateConfiguration();
             $this->initializeListener();
 
@@ -154,7 +153,6 @@ class ListenerPanoptesPusherCommand extends Command
         $this->connectToPusher();
 
         // Run the event loop
-        \Log::info('Event loop starting...');
         $this->loop->run();
     }
 
@@ -167,7 +165,6 @@ class ListenerPanoptesPusherCommand extends Command
 
             $now = time();
             if (($now - $this->lastMessageTime) > 120) {
-                $this->warn('No messages received for 2 minutes, forcing reconnection...');
                 $this->forceReconnection();
             }
         });
@@ -193,8 +190,6 @@ class ListenerPanoptesPusherCommand extends Command
                 'verify_peer_name' => true,
             ],
         ]);
-
-        \Log::info('Connecting to Pusher... (attempt: '.($this->reconnectAttempts + 1).')');
 
         connect($url, [], [], $this->loop, $connector)
             ->then(
@@ -223,8 +218,6 @@ class ListenerPanoptesPusherCommand extends Command
         $this->reconnectAttempts = 0; // Reset on successful connection
         $this->reconnectDelay = 1; // Reset delay
         $this->lastMessageTime = time();
-
-        \Log::info('✅ Connected to Pusher successfully!');
 
         // Subscribe to the channel
         $this->subscribeToChannel();
@@ -255,8 +248,6 @@ class ListenerPanoptesPusherCommand extends Command
         $jitter = mt_rand(0, 1000) / 1000;
         $delay = min(60, $this->reconnectDelay * pow(2, $this->reconnectAttempts - 1)) + $jitter;
 
-        \Log::info('⏰ Reconnecting in '.round($delay, 2).' seconds...');
-
         $this->loop->addTimer($delay, function () {
             $this->connectToPusher();
         });
@@ -274,7 +265,6 @@ class ListenerPanoptesPusherCommand extends Command
                 ],
             ]));
 
-            \Log::info("📡 Subscribed to channel: {$channel}");
         } catch (\Throwable $e) {
             $this->handleError("Failed to subscribe to channel: {$channel}", $e);
         }
@@ -329,7 +319,7 @@ class ListenerPanoptesPusherCommand extends Command
 
             switch ($event) {
                 case 'pusher:connection_established':
-                    \Log::info('🔗 Pusher connection established and authenticated');
+                case 'pusher_internal:subscription_succeeded':
                     break;
 
                 case 'pusher:ping':
@@ -344,12 +334,7 @@ class ListenerPanoptesPusherCommand extends Command
                     $this->handlePusherError($payload);
                     break;
 
-                case 'pusher_internal:subscription_succeeded':
-                    \Log::info('Pusher subscription succeeded', $payload);
-                    break;
-
                 default:
-                    \Log::info("📨 Received event: {$event}");
                     // Log unknown events for debugging
                     Log::info('Unknown Pusher event received', [
                         'event' => $event,
@@ -374,8 +359,6 @@ class ListenerPanoptesPusherCommand extends Command
     public function onConnectionClose($code = null, $reason = null): void
     {
         if ($this->intentionalDisconnect) {
-            \Log::info('Connection closed intentionally (handling specific error logic).');
-
             return;
         }
 
@@ -401,7 +384,6 @@ class ListenerPanoptesPusherCommand extends Command
             // Send pong immediately when ping is received
             $pongMessage = json_encode(['event' => 'pusher:pong', 'data' => []]);
             $this->connection->send($pongMessage);
-            \Log::info('🏓 Responded to Pusher ping');
 
             // Update last message time to reset heartbeat monitor
             $this->lastMessageTime = time();
@@ -414,8 +396,6 @@ class ListenerPanoptesPusherCommand extends Command
 
     private function handleClassificationEvent(array $payload): void
     {
-        \Log::info('🔬 Classification event received - dispatching job');
-
         try {
             if (! isset($payload['data'])) {
                 throw new \InvalidArgumentException('Classification event missing data field');
@@ -436,8 +416,6 @@ class ListenerPanoptesPusherCommand extends Command
             }
 
             ProcessPanoptesPusherDataJob::dispatch($data);
-
-            \Log::info('✅ Classification job dispatched successfully');
 
         } catch (\Throwable $e) {
             $this->handleError('Failed to dispatch classification job', $e, [
@@ -517,8 +495,6 @@ class ListenerPanoptesPusherCommand extends Command
             return;
         }
 
-        \Log::info('🔄 Scheduling reconnection in '.round($delay, 1).' seconds...');
-
         $this->loop->addTimer($delay, function () {
             if (! $this->isShuttingDown) {
                 $this->connectToPusher();
@@ -538,7 +514,6 @@ class ListenerPanoptesPusherCommand extends Command
 
         foreach ($signals as $signal) {
             $this->loop->addSignal($signal, function ($signal) {
-                \Log::info("📡 Received signal {$signal} - shutting down gracefully...");
                 $this->shutdown(0);
             });
         }

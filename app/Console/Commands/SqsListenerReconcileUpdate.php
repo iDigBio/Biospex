@@ -50,7 +50,6 @@ class SqsListenerReconcileUpdate extends Command
     public function handle(): int
     {
         try {
-            \Log::info('Starting Reconciliation Update SQS Listener...');
             $this->validateConfiguration();
             $this->runWorker();
 
@@ -153,10 +152,8 @@ class SqsListenerReconcileUpdate extends Command
             return;
         }
 
-        \Log::info('Dispatching LabelReconciliationJob', $data);
-
         // Success path
-        // LabelReconciliationJob::dispatch($data);
+        LabelReconciliationJob::dispatch($data);
     }
 
     /**

@@ -42,7 +42,6 @@ class SqsListenerOcrUpdate extends Command
     public function handle(): int
     {
         try {
-            \Log::info('Starting OCR Update SQS Listener...');
             $this->validateConfiguration();
             $this->runWorker();
 
@@ -83,7 +82,6 @@ class SqsListenerOcrUpdate extends Command
         $ocrQueueFileId = $data['ocrQueueFileId'] ?? throw new InvalidArgumentException('Missing ocrQueueFileId');
         $status = $data['status'] ?? throw new InvalidArgumentException('Missing status');
 
-        \Log::info('Dispatching OCR job', $data);
         // Dispatch job for BOTH success and failure
         TesseractOcrUpdateJob::dispatch($data);
 

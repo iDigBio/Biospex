@@ -38,7 +38,7 @@ class QueueCountCommand extends Command
         $tube = new TubeName($queueName);
         $stats = $pheanstalk->statsTube($tube);
         $count = $stats->currentJobsReady; // Property access for Pheanstalk 7.x
-        \Log::info("Queue '{$queueName}' has {$count} jobs.");
+        $this->info("Queue '{$queueName}' has {$count} jobs.");
 
         return $count;
     }

@@ -55,8 +55,6 @@ class SqsControllerExportCommand extends Command
                 config('services.aws.queues.export_update'),
             ], $this->argument('action'));
 
-            \Log::info('Export listeners '.$this->argument('action').'ed');
-
             return self::SUCCESS;
         } catch (\Throwable $e) {
             $this->error('Failed: '.$e->getMessage());

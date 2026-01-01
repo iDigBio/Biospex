@@ -80,7 +80,6 @@ class ZooniverseReconcileChainedCommand extends Command
             $classification = config('zooniverse.directory.classification').'/'.$expeditionId.'.csv';
             $lambda_reconciliation = config('zooniverse.directory.lambda-reconciliation').'/'.$expeditionId.'.csv';
             Storage::disk('s3')->copy($classification, $lambda_reconciliation);
-            \Log::info("Copied {$classification} to {$lambda_reconciliation}");
 
             Artisan::queue('reconcile:listen-controller start')->onQueue(config('config.queue.default'));
         }

@@ -54,15 +54,15 @@ class CleanupOrphanedS3UploadFiles extends Command
         $olderThanHours = (int) $this->option('older-than');
         $cutoffTime = now()->subHours($olderThanHours);
 
-        \Log::info('Cleanup Orphaned S3 Upload Files Command');
-        \Log::info('============================');
-        \Log::info('Mode: '.($dryRun ? 'DRY RUN (no files will be deleted)' : 'LIVE RUN (files will be deleted)'));
-        \Log::info("Cutoff time: Files older than {$olderThanHours} hours ({$cutoffTime})");
+        $this->info('Cleanup Orphaned S3 Upload Files Command');
+        $this->line('============================');
+        $this->line('Mode: '.($dryRun ? 'DRY RUN (no files will be deleted)' : 'LIVE RUN (files will be deleted)'));
+        $this->line("Cutoff time: Files older than {$olderThanHours} hours ({$cutoffTime})");
         $this->newLine();
 
         // Get all referenced file paths from database
         $referencedFiles = $this->getReferencedFiles();
-        \Log::info('Found '.count($referencedFiles).' files referenced in database');
+        $this->info('Found '.count($referencedFiles).' files referenced in database');
 
         // Check each upload directory
         $directories = [
@@ -82,23 +82,24 @@ class CleanupOrphanedS3UploadFiles extends Command
         $totalDeleted = 0;
 
         foreach ($directories as $directory) {
-            \Log::info("\nChecking directory: {$directory}");
-            \Log::info('----------------------------------------');
+            $this->newLine();
+            $this->info("Checking directory: {$directory}");
+            $this->line('----------------------------------------');
 
             $orphanedCount = $this->cleanupDirectory($directory, $referencedFiles, $cutoffTime, $dryRun, $totalDeleted);
             $totalOrphaned += $orphanedCount;
         }
 
         $this->newLine();
-        \Log::info('Summary:');
-        \Log::info('--------');
-        \Log::info("Total orphaned files found: {$totalOrphaned}");
+        $this->info('Summary:');
+        $this->line('--------');
+        $this->line("Total orphaned files found: {$totalOrphaned}");
 
         if ($dryRun) {
             $this->warn('DRY RUN: No files were actually deleted');
-            \Log::info('Run without --dry-run to actually delete the orphaned files');
+            $this->line('Run without --dry-run to actually delete the orphaned files');
         } else {
-            \Log::info("Total files deleted: {$totalDeleted}");
+            $this->info("Total files deleted: {$totalDeleted}");
         }
     }
 
@@ -157,12 +158,12 @@ class CleanupOrphanedS3UploadFiles extends Command
             $orphanedCount = 0;
 
             if (empty($files)) {
-                \Log::info('  No files found in directory');
+                $this->line('  No files found in directory');
 
                 return 0;
             }
 
-            \Log::info('  Found '.count($files).' files in directory');
+            $this->line('  Found '.count($files).' files in directory');
 
             foreach ($files as $file) {
                 // Skip if file is referenced in database
@@ -176,7 +177,7 @@ class CleanupOrphanedS3UploadFiles extends Command
                     $fileDate = \Carbon\Carbon::createFromTimestamp($lastModified);
 
                     if ($fileDate->greaterThan($cutoffTime)) {
-                        \Log::info("  Skipping recent file: {$file} (modified: {$fileDate})");
+                        $this->line("  Skipping recent file: {$file} (modified: {$fileDate})");
 
                         continue;
                     }
@@ -190,12 +191,12 @@ class CleanupOrphanedS3UploadFiles extends Command
                 $orphanedCount++;
 
                 if ($dryRun) {
-                    \Log::info("  [DRY RUN] Would delete: {$file}");
+                    $this->line("  [DRY RUN] Would delete: {$file}");
                 } else {
                     try {
                         Storage::disk('s3')->delete($file);
                         $totalDeleted++;
-                        \Log::info("  Deleted: {$file}");
+                        $this->info("  Deleted: {$file}");
                     } catch (\Exception $e) {
                         $this->error("  Failed to delete {$file}: ".$e->getMessage());
                     }
@@ -203,7 +204,7 @@ class CleanupOrphanedS3UploadFiles extends Command
             }
 
             if ($orphanedCount === 0) {
-                \Log::info('  No orphaned files found in this directory');
+                $this->line('  No orphaned files found in this directory');
             }
 
             return $orphanedCount;

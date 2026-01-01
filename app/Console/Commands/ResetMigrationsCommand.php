@@ -45,12 +45,12 @@ class ResetMigrationsCommand extends Command
      */
     public function handle()
     {
-        \Log::info('Starting migration reset process...');
+        $this->info('Starting migration reset process...');
 
         // Step 1: Delete all migrations with batch >= 1
-        \Log::info('Deleting migrations with batch >= 1...');
+        $this->line('Deleting migrations with batch >= 1...');
         $deletedCount = DB::table('migrations')->where('batch', '>=', 1)->delete();
-        \Log::info("Deleted {$deletedCount} migration records.");
+        $this->info("Deleted {$deletedCount} migration records.");
 
         // Step 2: Get all migration files from database/migration directory
         $migrationPath = database_path('migration');
@@ -78,10 +78,10 @@ class ResetMigrationsCommand extends Command
             return 0;
         }
 
-        \Log::info("Found {$migrationFiles->count()} migration files.");
+        $this->info("Found {$migrationFiles->count()} migration files.");
 
         // Step 3: Insert all migration files into migrations table with batch = 1
-        \Log::info('Adding migrations to migrations table with batch = 1...');
+        $this->line('Adding migrations to migrations table with batch = 1...');
 
         $insertData = [];
         foreach ($migrationFiles as $migration) {
@@ -93,8 +93,8 @@ class ResetMigrationsCommand extends Command
 
         DB::table('migrations')->insert($insertData);
 
-        \Log::info("Successfully added {$migrationFiles->count()} migrations with batch = 1.");
-        \Log::info('Migration reset process completed successfully!');
+        $this->info("Successfully added {$migrationFiles->count()} migrations with batch = 1.");
+        $this->info('Migration reset process completed successfully!');
 
         return 0;
     }

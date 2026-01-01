@@ -46,7 +46,6 @@ class CleanEfsDirsCommand extends Command
     public function handle(): void
     {
         $directory = '/efs';
-        \Log::info("Starting cleanup in $directory...");
 
         $deletedFiles = $this->cleanDirectory($directory);
 

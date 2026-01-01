@@ -58,7 +58,6 @@ class AppFileDeploymentCommand extends Command
     {
         try {
             $this->isDryRun = $this->option('dry-run');
-            \Log::info('Starting file deployment process...');
 
             if ($this->isDryRun) {
                 $this->warn('DRY RUN MODE: No files will be modified');
@@ -68,8 +67,6 @@ class AppFileDeploymentCommand extends Command
             $sourceFiles = $this->getSourceFiles();
             $processedFiles = $this->processFiles($sourceFiles);
             $this->createSupervisorDirectory();
-
-            \Log::info("Successfully processed {$processedFiles} file(s)");
 
             return CommandAlias::SUCCESS;
 
@@ -188,7 +185,6 @@ class AppFileDeploymentCommand extends Command
     {
         if (! $this->isDryRun && ! Storage::exists('supervisor')) {
             Storage::makeDirectory('supervisor');
-            \Log::info('Created supervisor directory');
         }
     }
 
@@ -230,12 +226,9 @@ class AppFileDeploymentCommand extends Command
     private function showDryRunChanges(string $filename, string $original, string $processed): void
     {
         if ($original !== $processed) {
-            \Log::info("\n<fg=yellow>Changes for {$filename}:</>");
-
             $changes = 0;
             foreach ($this->replacements as $search => $replace) {
                 if ($replace !== null && $replace !== '' && str_contains($original, $search)) {
-                    \Log::info("  <fg=cyan>{$search}</> → <fg=green>{$replace}</>");
                     $changes++;
                 }
             }
@@ -271,8 +264,6 @@ class AppFileDeploymentCommand extends Command
 
                 return $value !== null && $value !== '';
             });
-
-        \Log::info('Built replacement map with '.$this->replacements->count().' entries');
     }
 
     /**

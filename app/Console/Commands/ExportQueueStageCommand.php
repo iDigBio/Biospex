@@ -99,7 +99,7 @@ class ExportQueueStageCommand extends Command
                 default => throw new \InvalidArgumentException('Invalid stage'),
             };
 
-            \Log::info("Successfully processed stage {$queue->stage} for queue ID {$queue->id}");
+            $this->info("Successfully processed stage {$queue->stage} for queue ID {$queue->id}");
 
             return CommandAlias::SUCCESS;
 
@@ -117,7 +117,7 @@ class ExportQueueStageCommand extends Command
      */
     protected function sendBiospexZipTrigger(ExportQueue $queue): void
     {
-        \Log::info('Sending ZIP trigger to AWS SQS...');
+        $this->line('Sending ZIP trigger to AWS SQS...');
 
         // Process the complete zip trigger workflow
         $exportData = $this->zipTriggerService->processZipTrigger($queue);
@@ -126,6 +126,6 @@ class ExportQueueStageCommand extends Command
         $queue->stage = 3;
         $queue->save();
 
-        \Log::info("ZIP trigger sent successfully - {$exportData['fileCount']} files ({$exportData['totalSize']} bytes)");
+        $this->info("ZIP trigger sent successfully - {$exportData['fileCount']} files ({$exportData['totalSize']} bytes)");
     }
 }
