@@ -34,10 +34,12 @@ If you need to test deployments locally:
 4. **Deploys using deployphp** with environment variables for token access
 
 ### Deployment Process (`deploy.php` + `deploy/custom.php`)
-1. **Downloads CI artifacts** using GitHub API
-2. **Extracts and deploys** built assets without server-side building
-3. **Checks queue status** before restarting to prevent job interruption
-4. **Cleans up** temporary files and node_modules automatically
+1. **PHP 8.3 Environment**: The deployment now runs on PHP 8.3.
+2. **Downloads CI artifacts** using GitHub API: This replaces server-side building, so `npm` or `yarn` are no longer required on the server.
+3. **Dynamic SQS Queues**: Queue names are now environment-prefixed (`prod-`, `dev-`, or `loc-`) as defined in `config/services.php`.
+4. **Filament & OpCache**: Automated tasks now handle Filament asset optimization and OpCache resets during deployment.
+5. **Checks queue status** before restarting to prevent job interruption
+6. **Cleans up** temporary files and node_modules automatically
 
 ## Key Features
 
@@ -47,20 +49,14 @@ If you need to test deployments locally:
 - Faster deployments with reduced server resource usage
 
 ### ✅ Queue-Safe Deployments
-- `queue:count` command checks Beanstalkd queue status
-- Deployment pauses queue restart if jobs are running
-- Prevents interruption of long-running tasks (e.g., CSV processing)
-
-### ✅ Automatic Cleanup
-- `node_modules` removed automatically via `clear_paths`
-- Temporary artifact files cleaned up after deployment
-- No manual intervention required
+- `queue:count` command checks status before restarting.
+- **Dynamic Prefixing**: SQS queues are dynamically named based on the environment (e.g., `prod-batch-trigger`).
 
 ## Queue Names Configuration
-The deployment checks these queues by default:
-- `export`
-- `geolocate`
-- `pusher_classification`
+The deployment checks these queues by default. Note that names are now derived from the `APP_ENV` prefix:
+- `{{prefix}}-export`
+- `{{prefix}}-geolocate`
+- `{{prefix}}-pusher_classification`
 
 To modify queue names, edit the `$queues` array in `deploy/custom.php`:
 ```php
