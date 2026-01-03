@@ -158,6 +158,25 @@ $(function () {
         $(this).toggleClass("is-active");
     });
 
+        const flashCookie = document.cookie.split('; ').find(row => row.startsWith('app_flash='));
+        if (flashCookie) {
+            try {
+                const rawValue = decodeURIComponent(flashCookie.split('=')[1]);
+                const data = JSON.parse(rawValue);
+            
+                if (data && data.message) {
+                    notify(data.icon, data.message, data.type);
+                }
+            
+                // Force delete by matching the path and ensuring no domain conflict
+                document.cookie = "app_flash=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                // Extra safety: Try to delete the dotted domain version too if it exists
+                document.cookie = "app_flash=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
+                document.cookie = "app_flash=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + window.location.hostname + ";";
+            } catch (e) {
+                console.error("Flash cookie error", e);
+            }
+        }
 
     if (Laravel.flashMessage.length) {
         notify(Laravel.flashIcon, Laravel.flashMessage, Laravel.flashType);

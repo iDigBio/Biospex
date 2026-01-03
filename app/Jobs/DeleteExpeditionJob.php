@@ -61,7 +61,19 @@ class DeleteExpeditionJob implements ShouldQueue
         $this->expedition->load('downloads');
 
         $this->expedition->downloads->each(function ($download) {
-            Storage::disk('s3')->delete(config('config.export_dir').'/'.$download->file);
+            $path = config('config.export_dir').'/'.$download->file;
+
+            try {
+                // We check existence to avoid unnecessary API calls,
+                // but we catch the failure because S3 consistency is not guaranteed.
+                if (Storage::disk('s3')->exists($path)) {
+                    Storage::disk('s3')->delete($path);
+                }
+            } catch (\Throwable $e) {
+                // If the file is already gone or inaccessible, we continue.
+                // This prevents the "UnableToDeleteFile" exception from failing the job.
+                \Log::warning('S3 Delete failed but continuing: '.$path);
+            }
         });
 
         $mongoDbService->setCollection('pusher_transcriptions');

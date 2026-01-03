@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2014 - 2025, Biospex
+ * Copyright (C) 2014 - 2026, Biospex
  * biospex@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use JavaScript;
 
 class FlashHelperMessage
 {
@@ -31,72 +30,46 @@ class FlashHelperMessage
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        $message = [
-            'flashType' => '',
-            'flashMessage' => '',
-            'flashIcon' => '',
-        ];
+        // If there's a flash message, tell the Cache middleware (running next) to skip this request
+        if (session()->hasAny(['success', 'info', 'warning', 'danger'])) {
+            $request->attributes->set('laravel-responsecache.do-not-cache', true);
+        }
 
-        $status = ['success', 'info', 'warning', 'danger'];
-        if (session()->hasAny('success', 'info', 'warning', 'danger')) {
+        $response = $next($request);
+
+        if ($request->isMethod('GET')) {
+            $status = ['success', 'info', 'warning', 'danger'];
+
             foreach ($status as $type) {
                 if (session()->has($type)) {
-                    $message['flashType'] = $type;
-                    $message['flashMessage'] = session($type);
-                    $message['flashIcon'] = match ($type) {
-                        'success' => 'check-circle',
-                        'info' => 'info-circle',
-                        'warning' => 'exclamation-circle',
-                        'danger' => 'times-circle',
-                    };
+                    // 2. Also set the header on the outgoing response for safety
+                    $response->headers->set('laravel-responsecache', 'do-not-cache');
+
+                    $payload = json_encode([
+                        'type' => $type,
+                        'message' => (string) session($type),
+                        'icon' => match ($type) {
+                            'success' => 'check-circle',
+                            'info' => 'info-circle',
+                            'warning' => 'exclamation-circle',
+                            'danger' => 'times-circle',
+                            default => 'info-circle',
+                        },
+                    ]);
+
+                    // Create a simple session cookie (minutes=0)
+                    // No domain, No secure (for local testing), No httpOnly
+                    $response->withCookie(cookie('app_flash', $payload, 0, '/', null, false, false, false, 'Lax'));
+
+                    session()->forget($type);
+
+                    // Forget the session key so it doesn't persist
+                    session()->forget($type);
                     break;
                 }
             }
         }
 
-        JavaScript::put($message);
-
-        return $next($request);
-    }
-
-    private function create($message, $type, $icon)
-    {
-        session()->flash('flash_message', [
-            'type' => $type,
-            'message' => $message,
-            'icon' => $icon,
-        ]);
-    }
-
-    /**
-     * Create success message.
-     */
-    public function success($message)
-    {
-        $this->create($message, 'success', 'check-circle');
-    }
-
-    /**
-     * Create info message.
-     */
-    public function info($message)
-    {
-        $this->create($message, 'info', 'info-circle');
-    }
-
-    /**
-     * Create warning message.
-     */
-    public function warning($message)
-    {
-        $this->create($message, 'warning', 'exclamation-circle');
-    }
-
-    /**
-     * Create danger message.
-     */
-    public function error($message)
-    {
-        $this->create($message, 'danger', 'times-circle');
+        return $response;
     }
 }

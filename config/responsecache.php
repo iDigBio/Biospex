@@ -90,6 +90,7 @@ return [
      */
     'replacers' => [
         \Spatie\ResponseCache\Replacers\CsrfTokenReplacer::class,
+        \App\Services\Cache\FlashReplacer::class,
     ],
 
     /*
