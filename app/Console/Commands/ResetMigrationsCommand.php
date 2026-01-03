@@ -48,7 +48,7 @@ class ResetMigrationsCommand extends Command
         $this->info('Starting migration reset process...');
 
         // Step 1: Delete all migrations with batch >= 1
-        $this->info('Deleting migrations with batch >= 1...');
+        $this->line('Deleting migrations with batch >= 1...');
         $deletedCount = DB::table('migrations')->where('batch', '>=', 1)->delete();
         $this->info("Deleted {$deletedCount} migration records.");
 
@@ -81,7 +81,7 @@ class ResetMigrationsCommand extends Command
         $this->info("Found {$migrationFiles->count()} migration files.");
 
         // Step 3: Insert all migration files into migrations table with batch = 1
-        $this->info('Adding migrations to migrations table with batch = 1...');
+        $this->line('Adding migrations to migrations table with batch = 1...');
 
         $insertData = [];
         foreach ($migrationFiles as $migration) {

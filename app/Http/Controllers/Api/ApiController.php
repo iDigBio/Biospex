@@ -77,9 +77,9 @@ class ApiController extends Controller
     protected function respondWithArray(array $array, array $headers = []): Response
     {
         $content = json_encode($array);
-        $contentType = 'application/'.config('api.standardsTree').'.'.config('api.subtype').config('api.version').'+json';
-
-        $headers = ['Content-Type' => $contentType];
+        $headers = array_merge($headers, [
+            'Content-Type' => 'application/json',
+        ]);
 
         return response($content, $this->statusCode, $headers);
     }

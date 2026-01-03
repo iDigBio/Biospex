@@ -91,9 +91,10 @@ class ZooniverseCsvService
     /**
      * Download csv file to S3 lambda-reconciliation and trigger reconciliation.
      *
-     * @see \App\Listeners\LabelReconciliationListener for returned data.
+     * @throws \GuzzleHttp\Exception\GuzzleException*@throws \Exception
+     * @throws \Exception
      *
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @see \App\Listeners\LabelReconciliationListener for returned data.
      */
     public function downloadCsv(int $expeditionId, string $uri): void
     {

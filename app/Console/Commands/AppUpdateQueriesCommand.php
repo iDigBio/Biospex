@@ -20,6 +20,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\PusherTranscriptionJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -66,13 +67,15 @@ class AppUpdateQueriesCommand extends Command
             case 'update-paths':
                 $this->updateDatabasePaths();
                 break;
+            case 'process-classifications':
+                $this->processClassifications();
+                break;
 
             default:
                 $this->createS3Directories();
                 $this->moveS3DirectoryFiles();
                 $this->updateDatabasePaths();
-
-                return;
+                $this->processClassifications();
         }
     }
 
@@ -81,8 +84,6 @@ class AppUpdateQueriesCommand extends Command
      */
     protected function createS3Directories(): void
     {
-        $this->info('Creating S3 directories...');
-
         $directories = [
             config('config.uploads.site-assets'),
             config('config.uploads.project-assets'),
@@ -92,16 +93,11 @@ class AppUpdateQueriesCommand extends Command
             try {
                 if (! Storage::disk('s3')->exists($directory)) {
                     Storage::disk('s3')->makeDirectory($directory);
-                    $this->info("Created directory: {$directory}");
-                } else {
-                    $this->info("Directory already exists: {$directory}");
                 }
             } catch (\Exception $e) {
                 $this->error("Failed to create directory {$directory}: ".$e->getMessage());
             }
         }
-
-        $this->info('S3 directory creation completed.');
     }
 
     /**
@@ -109,8 +105,6 @@ class AppUpdateQueriesCommand extends Command
      */
     protected function moveS3DirectoryFiles(): void
     {
-        $this->info('Moving S3 directory files...');
-
         $bucket = config('filesystems.disks.s3.bucket');
         $region = config('filesystems.disks.s3.region');
 
@@ -130,8 +124,6 @@ class AppUpdateQueriesCommand extends Command
         foreach ($migrations as $migration) {
             $this->migrateS3Directory($bucket, $region, $migration['from'], $migration['to'], $migration['name']);
         }
-
-        $this->info('S3 directory file migration completed.');
     }
 
     /**
@@ -139,8 +131,6 @@ class AppUpdateQueriesCommand extends Command
      */
     protected function migrateS3Directory(string $bucket, string $region, string $fromDir, string $toDir, string $description): void
     {
-        $this->info("Migrating {$description}: {$fromDir} → {$toDir}");
-
         // Check if source directory has files
         $listCommand = sprintf(
             'aws s3 ls s3://%s/%s/ --region %s --recursive',
@@ -154,13 +144,10 @@ class AppUpdateQueriesCommand extends Command
         exec($listCommand.' 2>/dev/null', $output, $returnCode);
 
         if (empty($output)) {
-            $this->line("   No files found in source directory: {$fromDir}");
-
             return;
         }
 
         $fileCount = count($output);
-        $this->info("   Found {$fileCount} files to migrate");
 
         // Get initial count of destination directory
         $destListCommand = sprintf(
@@ -177,9 +164,6 @@ class AppUpdateQueriesCommand extends Command
         $initialDestFileCount = count($destInitialOutput);
         $expectedFinalCount = $initialDestFileCount + $fileCount;
 
-        $this->line("   Initial destination files: {$initialDestFileCount}");
-        $this->line("   Expected final count: {$expectedFinalCount}");
-
         // Copy files to new directory
         $copyCommand = sprintf(
             'aws s3 cp s3://%s/%s/ s3://%s/%s/ --region %s --recursive',
@@ -190,7 +174,6 @@ class AppUpdateQueriesCommand extends Command
             escapeshellarg($region)
         );
 
-        $this->line('   Copying files...');
         $copyOutput = [];
         $copyReturnCode = 0;
         exec($copyCommand.' 2>&1', $copyOutput, $copyReturnCode);
@@ -200,8 +183,6 @@ class AppUpdateQueriesCommand extends Command
 
             return;
         }
-
-        $this->info('   Files copied successfully');
 
         // Verify copy operation by listing destination directory
         $verifyOutput = [];
@@ -215,11 +196,6 @@ class AppUpdateQueriesCommand extends Command
 
             return;
         }
-
-        $this->info("   Verification successful: {$actualFinalCount} files in destination");
-
-        $this->info("   ✅ Migration completed: {$description}");
-        $this->info("   Original files preserved in: {$fromDir}");
     }
 
     /**
@@ -227,8 +203,6 @@ class AppUpdateQueriesCommand extends Command
      */
     protected function updateDatabasePaths(): void
     {
-        $this->info('Updating database paths...');
-
         // Update ProjectAsset paths from project-resources/downloads to project-assets
         $oldProjectPath = config('config.uploads.project_resources_downloads');
         $newProjectPath = config('config.uploads.project-assets');
@@ -238,19 +212,13 @@ class AppUpdateQueriesCommand extends Command
             ->get();
 
         if ($projectAssetUpdates->isNotEmpty()) {
-            $this->info("   Updating {$projectAssetUpdates->count()} ProjectAsset records...");
-
             foreach ($projectAssetUpdates as $asset) {
                 $newPath = str_replace($oldProjectPath, $newProjectPath, $asset->download_path);
 
                 DB::table('project_assets')
                     ->where('id', $asset->id)
                     ->update(['download_path' => $newPath]);
-
-                $this->line("   Updated ProjectAsset {$asset->id}: {$asset->download_path} → {$newPath}");
             }
-        } else {
-            $this->line('   No ProjectAsset records to update');
         }
 
         // Update SiteAsset paths from resources to site-assets
@@ -262,21 +230,30 @@ class AppUpdateQueriesCommand extends Command
             ->get();
 
         if ($siteAssetUpdates->isNotEmpty()) {
-            $this->info("   Updating {$siteAssetUpdates->count()} SiteAsset records...");
-
             foreach ($siteAssetUpdates as $asset) {
                 $newPath = str_replace($oldSitePath, $newSitePath, $asset->download_path);
 
                 DB::table('site_assets')
                     ->where('id', $asset->id)
                     ->update(['download_path' => $newPath]);
-
-                $this->line("   Updated SiteAsset {$asset->id}: {$asset->download_path} → {$newPath}");
             }
-        } else {
-            $this->line('   No SiteAsset records to update');
         }
+    }
 
-        $this->info('Database path updates completed.');
+    public function processClassifications(): void
+    {
+        DB::table('pusher_classifications')->orderBy('id')->chunkById(100, function ($chunk) {
+            $ids = [];
+            foreach ($chunk as $row) {
+                $data = json_decode($row->data, true);
+                if ($data && is_array($data)) {
+                    PusherTranscriptionJob::dispatch($data);
+                    $ids[] = $row->id;
+                }
+            }
+            if ($ids) {
+                DB::table('pusher_classifications')->whereIn('id', $ids)->delete();
+            }
+        }, 'id');
     }
 }

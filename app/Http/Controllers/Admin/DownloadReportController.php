@@ -32,7 +32,7 @@ class DownloadReportController extends Controller
     public function __invoke(string $fileName)
     {
         $url = Storage::disk('s3')
-            ->temporaryUrl(config('config.report_dir').'/'.base64_decode($fileName), now()->addMinutes(5), ['ResponseContentDisposition' => 'attachment;']);
+            ->temporaryUrl(config('config.report_dir').'/'.base64_decode($fileName), now()->addHours(24), ['ResponseContentDisposition' => 'attachment;']);
 
         return Redirect::to($url);
     }

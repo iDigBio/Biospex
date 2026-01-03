@@ -224,29 +224,6 @@ $(function () {
 
     clockDiv();
 
-
-    const $processModal = $('#process-modal');
-    if ($processModal.length) {
-        $processModal.on('shown.bs.modal', function () {
-            fetchPoll();
-            pollInterval = setInterval(fetchPoll, 60000);
-        }).on('hidden.bs.modal', function () {
-            clearInterval(pollInterval);
-        });
-
-        Echo.channel(Laravel.ocrChannel)
-            .listen('PollOcrEvent', (e) => {
-                let ocrHtml = polling_data(e.data);
-                $('#ocr-html').html(ocrHtml);
-            });
-
-        Echo.channel(Laravel.exportChannel)
-            .listen('PollExportEvent', (e) => {
-                let exportHtml = polling_data(e.data);
-                $('#export-html').html(exportHtml);
-            });
-    }
-
     $('#wedigbio-progress-modal').on('show.bs.modal', function (e) {
         let $modal = $(this).find('.modal-body');
         let $button = $(e.relatedTarget); // Button that triggered the modal
@@ -277,25 +254,6 @@ $(function () {
         clearInterval(timeInterval);
     });
 });
-
-// Fetch poll data
-fetchPoll = function () {
-    $.get("/poll");
-}
-
-// Loop data from polling
-polling_data = function (data) {
-    let groupIds = $.parseJSON(Laravel.groupIds);
-    let groupData = '';
-    $.each(data['payload'], function (index) {
-        if ($.inArray(data['payload'][index].groupId, groupIds) === -1) {
-            return true;
-        }
-        groupData += data['payload'][index].notice;
-    });
-
-    return !groupData ? data['message'] : groupData;
-}
 
 /**
  * data attributes: project-id, type (active, completed), sort, order, url, target

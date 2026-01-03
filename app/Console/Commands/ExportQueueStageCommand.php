@@ -21,69 +21,111 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ZooniverseExportBuildCsvJob;
-use App\Jobs\ZooniverseExportBuildZipJob;
 use App\Jobs\ZooniverseExportCreateReportJob;
 use App\Jobs\ZooniverseExportDeleteFilesJob;
 use App\Jobs\ZooniverseExportProcessImagesJob;
-use App\Services\Actor\ActorDirectory;
-use App\Services\Actor\Zooniverse\ZooniverseExportQueue;
+use App\Models\ExportQueue;
+use App\Services\Actor\Zooniverse\ZooniverseZipTriggerService;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use Symfony\Component\Console\Command\Command as CommandAlias;
 
-/**
- * Class ExportQueueCommand
- */
 class ExportQueueStageCommand extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'export:stage {queueId} {stage}';
+    protected $signature = 'app:export-stage {queueId} {--stage= : Stage number (1-5) to override queue stage (optional)}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Fire export queue in mid process by giving stage.';
+    protected $description = 'Admin command to manually trigger export queue stages for failed exports. Uses current queue stage if --stage not provided.';
 
-    /**
-     * ExportQueueCommand constructor.
-     */
+    protected ZooniverseZipTriggerService $zipTriggerService;
+
     public function __construct(
-        protected ZooniverseExportQueue $zooniverseExportQueue,
-        protected ActorDirectory $actorDirectory)
-    {
+        ZooniverseZipTriggerService $zipTriggerService
+    ) {
         parent::__construct();
+        $this->zipTriggerService = $zipTriggerService;
     }
 
     /**
-     * Handle job.
+     * Execute the console command.
      */
-    public function handle(): void
+    public function handle()
     {
-        $queueId = (int) $this->argument('queueId');
-        $stage = (int) $this->argument('stage');
+        $queueId = $this->argument('queueId');
+        $stageOption = $this->option('stage');
+        $queue = ExportQueue::with('expedition')->find($queueId);
 
-        $exportQueue = $this->zooniverseExportQueue->getExportQueueForStageCommand($queueId);
-        $exportQueue->stage = $stage;
-        $exportQueue->error = 0;
-        $exportQueue->save();
+        if (! $queue) {
+            $this->error('Queue not found');
 
-        $this->actorDirectory->setFolder($exportQueue->expedition_id, config('zooniverse.actor_id'), $exportQueue->expedition->uuid);
-        $this->actorDirectory->setDirectories();
+            return CommandAlias::FAILURE;
+        }
 
-        match (true) {
-            $stage === 1 => ZooniverseExportProcessImagesJob::dispatch($exportQueue, $this->actorDirectory),
-            $stage === 2 => ZooniverseExportBuildCsvJob::dispatch($exportQueue, $this->actorDirectory),
-            $stage === 3 => ZooniverseExportBuildZipJob::dispatch($exportQueue, $this->actorDirectory),
-            $stage === 4 => ZooniverseExportCreateReportJob::dispatch($exportQueue, $this->actorDirectory),
-            $stage === 5 => ZooniverseExportDeleteFilesJob::dispatch($exportQueue, $this->actorDirectory),
-            default => $this->error('Invalid stage. Please select another.')
-        };
+        // Validate stage option if provided
+        if ($stageOption !== null) {
+            $stageOption = (int) $stageOption;
+            if ($stageOption < 1 || $stageOption > 5) {
+                $this->error('Stage must be between 1 and 5');
+
+                return CommandAlias::FAILURE;
+            }
+            $stage = $stageOption;
+        } else {
+            $stage = $queue->stage;
+        }
+
+        $queue->stage = $stage;
+        $queue->queued = 1;
+        $queue->error = 0;
+        $queue->save();
+
+        \Artisan::call('update:listen-controller start');
+
+        try {
+            match ($queue->stage) {
+                1 => ZooniverseExportProcessImagesJob::dispatch($queue),
+                2 => ZooniverseExportBuildCsvJob::dispatch($queue),
+                3 => $this->sendBiospexZipTrigger($queue),
+                4 => ZooniverseExportCreateReportJob::dispatch($queue),
+                5 => ZooniverseExportDeleteFilesJob::dispatch($queue),
+                default => throw new \InvalidArgumentException('Invalid stage'),
+            };
+
+            $this->info("Successfully processed stage {$queue->stage} for queue ID {$queue->id}");
+
+            return CommandAlias::SUCCESS;
+
+        } catch (\Exception $e) {
+            $this->error("Error processing stage {$queue->stage}: ".$e->getMessage());
+
+            return CommandAlias::FAILURE;
+        }
+    }
+
+    /**
+     * Send ZIP trigger to AWS SQS for stage 2 processing.
+     *
+     * @throws \Exception
+     */
+    protected function sendBiospexZipTrigger(ExportQueue $queue): void
+    {
+        $this->line('Sending ZIP trigger to AWS SQS...');
+
+        // Process the complete zip trigger workflow
+        $exportData = $this->zipTriggerService->processZipTrigger($queue);
+
+        // Update queue stage to indicate zip creation is in progress
+        $queue->stage = 3;
+        $queue->save();
+
+        $this->info("ZIP trigger sent successfully - {$exportData['fileCount']} files ({$exportData['totalSize']} bytes)");
     }
 }

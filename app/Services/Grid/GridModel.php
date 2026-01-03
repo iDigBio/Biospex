@@ -160,8 +160,7 @@ class GridModel
         if ($column === 'ocr') {
             $col = array_merge($col, [
                 'title' => false,
-                'classes' => 'ocrPreview',
-                'cellattr' => 'addDataAttr',
+                'classes' => 'ocr-clickable',
             ]);
         }
 
@@ -180,6 +179,11 @@ class GridModel
         // Set default value based on route - 'false' (No) for create/clone, 'all' for others
         $defaultValue = ($route === 'create') ? 'false' : 'all';
 
+        $value = 'all:All;true:Yes;false:No';
+        if ($route === 'edit') {
+            $value .= ';current:Current';
+        }
+
         return [
             'name' => 'assigned',
             'index' => 'assigned',
@@ -188,7 +192,7 @@ class GridModel
             'hidedlg' => false,
             'stype' => 'select',
             'sortable' => false,
-            'searchoptions' => ['defaultValue' => $defaultValue, 'sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No'],
+            'searchoptions' => ['defaultValue' => $defaultValue, 'sopt' => ['eq'], 'value' => $value],
         ];
     }
 

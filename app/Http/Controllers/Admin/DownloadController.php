@@ -21,7 +21,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ExportDownloadBatchJob;
+use App\Jobs\ZooniverseExportDownloadBatchJob;
 use App\Models\Download;
 use App\Models\Expedition;
 use App\Services\Expedition\ExpeditionService;
@@ -58,13 +58,13 @@ class DownloadController extends Controller
     }
 
     /**
-     * Send request to have export split into batch downloads.
+     * Send a request to have export split into batch downloads.
      */
     public function create(Download $download): \Illuminate\Http\RedirectResponse
     {
         $download->load('expedition');
 
-        ExportDownloadBatchJob::dispatch($download);
+        ZooniverseExportDownloadBatchJob::dispatch($download);
 
         return Redirect::route('admin.expeditions.show', [$download->expedition])
             ->with('success', t('Your batch request has been submitted. You will receive an email with download links when the process is complete.'));

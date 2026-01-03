@@ -22,7 +22,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ExpertReviewMigrateReconcilesJob;
 use App\Jobs\ExpertReviewSetProblemsJob;
-use App\Services\Reconcile\ReconcileLambdaService;
+use App\Services\Reconcile\ReconcileService;
 use Illuminate\Console\Command;
 
 /**
@@ -56,10 +56,10 @@ class ZooniverseExpertReviewCommand extends Command
      * @see ExpertReviewMigrateReconcilesJob
      * @see ExpertReviewSetProblemsJob
      */
-    public function handle(ReconcileLambdaService $reconcileLambdaService): void
+    public function handle(ReconcileService $reconcileLambdaService): void
     {
         $expeditionId = $this->argument('expeditionId');
 
-        $reconcileLambdaService->invokeLambdaExplained($expeditionId);
+        $reconcileLambdaService->sendToReconcileTriggerQueue($expeditionId, true);
     }
 }

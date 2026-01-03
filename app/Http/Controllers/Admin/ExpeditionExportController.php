@@ -36,7 +36,8 @@ class ExpeditionExportController extends Controller
     public function __invoke(Expedition $expedition): \Illuminate\Http\RedirectResponse
     {
         try {
-            Artisan::call('export:queue', ['expeditionId' => $expedition->id]);
+            Artisan::queue('export:queue', ['expeditionId' => $expedition->id])
+                ->onQueue(config('config.queue.default'));
             $status = 'success';
             $message = t('Export generation has been added to the job queue. You will be notified when completed.');
         } catch (Throwable $throwable) {

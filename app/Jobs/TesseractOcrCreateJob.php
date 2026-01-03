@@ -25,6 +25,7 @@ use App\Models\Project;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Actor\TesseractOcr\TesseractOcrBuild;
+use App\Services\Actor\TesseractOcr\TesseractOcrQueueService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -53,10 +54,14 @@ class TesseractOcrCreateJob implements ShouldQueue
 
     /**
      * Handle Job.
+     *
+     * @throws \Exception
      */
-    public function handle(TesseractOcrBuild $tesseractOcrBuild): void
+    public function handle(TesseractOcrBuild $tesseractOcrBuild, TesseractOcrQueueService $queueService): void
     {
         if (! config('config.ocr_enabled')) {
+            logger()->info('OCR is disabled.');
+
             return;
         }
 
@@ -67,9 +72,12 @@ class TesseractOcrCreateJob implements ShouldQueue
             return;
         }
 
-        $ocrQueue = $tesseractOcrBuild->createOcrQueue($this->project, $this->expedition, ['total' => $total]);
+        $ocrQueue = $tesseractOcrBuild->createOcrQueue($this->project, $this->expedition, $total);
 
         $tesseractOcrBuild->createOcrQueueFiles($ocrQueue, $this->project, $this->expedition);
+
+        // Trigger processing immediately with race-condition safety
+        $queueService->processNextQueue();
 
         $this->delete();
     }

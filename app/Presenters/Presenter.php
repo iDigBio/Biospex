@@ -22,7 +22,6 @@ namespace App\Presenters;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Storage;
 
 abstract class Presenter
 {
@@ -56,15 +55,5 @@ abstract class Presenter
         }
 
         return $this->model->{Str::snake($property)};
-    }
-
-    /**
-     * @param  \Czim\Paperclip\Attachment\Attachment  $attachment
-     * @param  null  $variant
-     * @return bool
-     */
-    public function variantExists($attachment, $variant = null)
-    {
-        return $attachment->exists() && Storage::disk('public')->exists($attachment->variantPath($variant));
     }
 }

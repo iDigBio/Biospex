@@ -291,21 +291,16 @@ class ProjectService
      */
     public function filterOrDeleteAssets($asset): bool
     {
-        \Log::info('filterOrDeleteAssets', ['asset' => $asset]);
         if ($asset['type'] === null) {
-            \Log::info('Null', ['asset' => $asset]);
 
             return true;
         }
 
         if (strtolower($asset['type']) === 'delete') {
-            \Log::info('Delete', ['asset' => $asset]);
             ProjectAsset::destroy($asset['id']);
 
             return true;
         }
-
-        \Log::info('Not Delete', ['asset' => $asset]);
 
         return false;
     }

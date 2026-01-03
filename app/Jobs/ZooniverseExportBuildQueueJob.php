@@ -21,9 +21,11 @@
 namespace App\Jobs;
 
 use App\Models\ActorExpedition;
-use App\Models\User;
-use App\Notifications\Generic;
-use App\Services\Actor\Zooniverse\ZooniverseBuildQueue;
+use App\Models\ExportQueue;
+use App\Models\ExportQueueFile;
+use App\Services\Actor\Zooniverse\ZooniverseExportQueueService;
+use App\Services\Subject\SubjectService;
+use App\Traits\NotifyOnJobFailure;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -32,16 +34,19 @@ use Illuminate\Queue\InteractsWithQueue;
 use Throwable;
 
 /**
- * Class ZooniverseExportBuildQueueJob
+ * Job to build export queue for Zooniverse expedition data.
+ * Creates or updates export queue entries and builds associated files for subjects.
  */
 class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
+    use Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable;
 
     public int $timeout = 3600;
 
     /**
      * Create a new job instance.
+     *
+     * @param  ActorExpedition  $actorExpedition  The actor expedition instance
      */
     public function __construct(protected ActorExpedition $actorExpedition)
     {
@@ -51,32 +56,59 @@ class ZooniverseExportBuildQueueJob implements ShouldBeUnique, ShouldQueue
 
     /**
      * Execute the job.
+     * Creates or updates the export queue and builds associated files for subjects.
+     *
+     * @param  SubjectService  $subjectService  Service to handle subject operations
      *
      * @throws \Exception
      */
-    public function handle(ZooniverseBuildQueue $zooniverseBuildQueue): void
+    public function handle(
+        SubjectService $subjectService,
+        ZooniverseExportQueueService $queueService): void
     {
-        $zooniverseBuildQueue->process($this->actorExpedition);
+
+        $this->actorExpedition->load('expedition');
+
+        // === CREATE OR UPDATE EXPORT QUEUE ===
+        $queue = ExportQueue::firstOrCreate([
+            'expedition_id' => $this->actorExpedition->expedition_id,
+            'actor_id' => $this->actorExpedition->actor_id,
+        ]);
+
+        // === BUILD FILES ===
+        $subjects = $subjectService->getSubjectCursorForExport($this->actorExpedition->expedition_id);
+
+        $subjects->chunk(1000)->each(function ($chunk) use ($queue) {
+            $filesData = $chunk->map(function ($subject) use ($queue) {
+                return [
+                    'queue_id' => $queue->id, 'subject_id' => (string) $subject->_id,
+                    'access_uri' => $subject->accessURI, 'created_at' => now(), 'updated_at' => now(),
+                ];
+            })->toArray();
+
+            // Bulk upsert (insert if not exists, update if does)
+            ExportQueueFile::upsert($filesData, ['queue_id', 'subject_id'], ['access_uri', 'updated_at']);
+
+            return true;  // Continue chunking
+        });
+
+        $queue->total = $this->actorExpedition->total;
+        $queue->files_ready = 1;
+        $queue->save();
+
+        // The service handles the "is another running?" check safely now.
+        $queueService->processNextQueue();
+
     }
 
     /**
      * Handle a job failure.
+     * Sends notification to admin user about the failure.
+     *
+     * @param  Throwable  $throwable  The exception that caused the failure
      */
     public function failed(Throwable $throwable): void
     {
-        $attributes = [
-            'subject' => t('Zooniverse Export Build Queue Job Failed'),
-            'html' => [
-                t('An error occurred building the export queue.'),
-                t('Actor Id: %s', $this->actorExpedition->actor_id),
-                t('Expedition Id: %s', $this->actorExpedition->expedition_id),
-                t('File: %s', $throwable->getFile()),
-                t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage()),
-            ],
-        ];
-
-        $user = User::find(config('config.admin.user_id'));
-        $user->notify(new Generic($attributes));
+        $this->notifyGroupOnFailure($this->actorExpedition, $throwable);
     }
 }

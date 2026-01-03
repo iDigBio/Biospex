@@ -1,5 +1,15 @@
 <?php
 
+$env = env('APP_ENV', 'local');
+
+$prefixMap = [
+    'local' => 'loc',
+    'development' => 'dev',
+    'production' => 'prod',
+];
+
+$queuePrefix = $prefixMap[$env] ?? $env;
+
 return [
 
     /*
@@ -43,5 +53,43 @@ return [
         'site_key' => env('RECAPTCHA_SITE_KEY'),
         'secret_key' => env('RECAPTCHA_SECRET_KEY'),
         'url' => env('RECAPTCHA_URL', 'https://www.google.com/recaptcha/api/siteverify'),
+    ],
+
+    // config/services.php
+    'aws' => [
+        'region' => env('AWS_REGION', 'us-east-2'),
+        'credentials' => [
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        ],
+
+        // SQS QUEUE NAMES
+        'queues' => [
+            // previously env('AWS_SQS_*'), now derived from APP_ENV
+            'batch_trigger' => "{$queuePrefix}-batch-trigger",
+            'batch_update' => "{$queuePrefix}-batch-update",
+            'export_image_tasks' => "{$queuePrefix}-export-image-tasks",
+            'export_update' => "{$queuePrefix}-export-update",
+            'export_zip_trigger' => "{$queuePrefix}-export-zip-trigger",
+            'reconcile_trigger' => "{$queuePrefix}-reconcile-trigger",
+            'reconcile_update' => "{$queuePrefix}-reconcile-update",
+            'ocr_trigger' => "{$queuePrefix}-ocr-trigger",
+            'ocr_update' => "{$queuePrefix}-ocr-update",
+        ],
+
+        'batch_idle_grace' => 1800,
+        'export_idle_grace' => 300,
+        'ocr_idle_grace' => 1500,
+        'reconcile_idle_grace' => 1800,
+        'zip_threshold' => 8000,
+
+        'lambdas' => [
+            'BiospexZipMerger' => 1,
+            'BiospexImageProcess' => 100,
+            'BiospexTesseractOcr' => 100,
+            'BiospexLabelReconcile' => 8,
+            'BiospexBatchCreator' => 1,
+            'BiospexZipCreator' => 10,
+        ],
     ],
 ];

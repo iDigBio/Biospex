@@ -20,10 +20,12 @@
 
 namespace App\Providers;
 
+use Aws\Lambda\LambdaClient;
+use Aws\S3\S3Client;
+use Aws\Sfn\SfnClient;
+use Aws\Sqs\SqsClient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
 use Schema;
@@ -89,5 +91,37 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment() !== 'production') {
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
         }
+
+        $awsConfig = [
+            'version' => 'latest',
+            'region' => config('services.aws.region', 'us-east-2'),
+        ];
+
+        // If keys are in .env, use them.
+        // If NOT (Local ~/.aws/credentials or Server IAM Role),
+        // omitting 'credentials' lets the SDK find them automatically.
+        if (config('services.aws.credentials.key') && config('services.aws.credentials.secret')) {
+            $awsConfig['credentials'] = config('services.aws.credentials');
+        }
+
+        // Register AWS SQS Client
+        $this->app->singleton(SqsClient::class, function ($app) use ($awsConfig) {
+            return new SqsClient($awsConfig);
+        });
+
+        // Register AWS S3 Client
+        $this->app->singleton(S3Client::class, function ($app) use ($awsConfig) {
+            return new S3Client($awsConfig);
+        });
+
+        // Register AWS Step Functions Client
+        $this->app->singleton(SfnClient::class, function ($app) use ($awsConfig) {
+            return new SfnClient($awsConfig);
+        });
+
+        // Register AWS Lambda Client
+        $this->app->singleton(LambdaClient::class, function ($app) use ($awsConfig) {
+            return new LambdaClient($awsConfig);
+        });
     }
 }

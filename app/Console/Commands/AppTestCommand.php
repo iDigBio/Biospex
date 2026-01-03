@@ -22,9 +22,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-/**
- * Class AppCommand
- */
 class AppTestCommand extends Command
 {
     /**
@@ -34,16 +31,12 @@ class AppTestCommand extends Command
 
     /**
      * The console command description.
+     *  chaange to push
      */
-    protected $description = 'Used to test code';
+    protected $description = 'Simulate OCR Process for Queue';
 
     /**
-     * Create a new command instance.
+     * Execute the console command.
      */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function handle(): void {}
 }

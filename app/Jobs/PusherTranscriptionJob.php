@@ -22,62 +22,86 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Transcriptions\CreatePusherTranscriptionService;
+use App\Services\Transcriptions\PusherTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Throwable;
+use Illuminate\Queue\SerializesModels;
+use MongoDB\Driver\Exception\BulkWriteException;
 
 /**
- * Class PusherTranscriptionJob
+ * Job to handle Pusher transcription data processing.
+ *
+ * This job processes transcription data received from Pusher service, with retry logic
+ * for failed attempts. It handles duplicate entry cases and notifies administrators
+ * of failures.
+ *
+ * @implements ShouldQueue
  */
 class PusherTranscriptionJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * The number of seconds the job can run before timing out.
-     */
-    public int $timeout = 300;
+    public int $tries = 5;
+
+    public array $backoff = [10, 30, 60, 120, 300];
+
+    public int $timeout = 60;
 
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param  array  $dashboardData  The dashboard data to be processed
      */
-    public function __construct()
+    public function __construct(protected array $dashboardData)
     {
-        $this->onQueue(config('config.queue.pusher_process'));
+        $this->onQueue(config('config.queue.pusher_handler'));
     }
 
     /**
-     * Executes moving pusher classifications from mysql to pusher transcriptions in mongodb.
-     * Cron runs every 5 minutes.
+     * Execute the job.
+     *
+     * Processes the dashboard data through the transcription service.
+     * Handles duplicate key errors by logging and stopping retries.
+     *
+     * @param  PusherTranscriptionService  $service  The service to process transcriptions
+     *
+     * @throws BulkWriteException When a non-duplicate write error occurs
      */
-    public function handle(CreatePusherTranscriptionService $createPusherTranscriptionService): void
+    public function handle(PusherTranscriptionService $service): void
     {
-
-        $createPusherTranscriptionService->process();
-        $this->delete();
-
+        try {
+            $service->create($this->dashboardData);
+        } catch (BulkWriteException $e) {
+            if (str_contains($e->getMessage(), 'E11000 duplicate key error')) {
+                \Log::info('Duplicate classification skipped', [
+                    'id' => $this->dashboardData['classification_id'] ?? null,
+                ]);
+                $this->delete(); // Don't retry
+            } else {
+                throw $e; // Retry other errors
+            }
+        }
     }
 
     /**
      * Handle a job failure.
+     *
+     * Notifies administrator about the failure with detailed error information.
+     *
+     * @param  \Throwable  $e  The exception that caused the failure
      */
-    public function failed(Throwable $throwable): void
+    public function failed(\Throwable $e): void
     {
-        $attributes = [
-            'subject' => t('Pusher Transcription Job Error'),
-            'html' => [
-                t('File: %s', $throwable->getFile()),
-                t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage()),
-            ],
-        ];
-
         $user = User::find(config('config.admin.user_id'));
-        $user->notify(new Generic($attributes));
+        $user?->notify(new Generic([
+            'subject' => 'Pusher Transcription Job Error',
+            'html' => [
+                "File: {$e->getFile()}",
+                "Line: {$e->getLine()}",
+                "Message: {$e->getMessage()}",
+            ],
+        ]));
     }
 }

@@ -24,6 +24,11 @@ on:
       - development # Development environment
   release:
     types: [published] # Production deployment trigger
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   # Create release when pushing to main
   create-release:
@@ -134,6 +139,21 @@ jobs:
     if: "github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip deploy]') && !contains(github.event.head_commit.message, '[no deploy]')"
     steps:
       - uses: actions/checkout@v4
+      - name: Get Runner IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::147899039648:role/GitHubActionsDeployRole
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Whitelist Runner IP in AWS Security Group
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.AWS_SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -204,6 +224,14 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REPO: ${{ github.repository }}
           OPCACHE_WEBHOOK_TOKEN: ${{ secrets.OPCACHE_WEBHOOK_TOKEN }}
+      - name: Revoke Runner IP from AWS Security Group
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.AWS_SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
   build-and-deploy-development:
     runs-on: ubuntu-latest
@@ -212,6 +240,21 @@ jobs:
     if: "github.ref == 'refs/heads/development' && !contains(github.event.head_commit.message, '[skip deploy]') && !contains(github.event.head_commit.message, '[no deploy]')"
     steps:
       - uses: actions/checkout@v4
+      - name: Get Runner IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::147899039648:role/GitHubActionsDeployRole
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Whitelist Runner IP in AWS Security Group
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.AWS_SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -281,3 +324,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REPO: ${{ github.repository }}
+      - name: Revoke Runner IP from AWS Security Group
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.AWS_SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32

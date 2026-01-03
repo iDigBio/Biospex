@@ -23,87 +23,108 @@ namespace App\Jobs;
 use App\Models\OcrQueue;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Services\Actor\TesseractOcr\TesseractOcrService;
-use App\Services\Api\AwsLambdaApiService;
+use Aws\Sqs\SqsClient;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Storage;
 use Throwable;
 
 /**
- * Class TesseractOcrProcessJob
+ * Job to process OCR queue files using Tesseract OCR engine.
+ * Sends unprocessed files to AWS SQS queue for OCR processing.
  */
 class TesseractOcrProcessJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $timeout = 1800;
+
     /**
      * Create a new job instance.
+     *
+     * @param  OcrQueue  $ocrQueue  The OCR queue to process
      */
     public function __construct(protected OcrQueue $ocrQueue)
     {
         $this->ocrQueue = $ocrQueue->withoutRelations();
-        $this->onQueue(config('config.queue.lambda_ocr'));
+        $this->onQueue(config('config.queue.ocr'));
     }
 
     /**
      * Execute the job.
+     * Retrieves unprocessed files from OCR queue and sends them to AWS SQS for processing.
+     *
+     * @param  SqsClient  $sqs  AWS SQS client instance
+     *
+     * @throws \Exception
      */
-    public function handle(
-        TesseractOcrService $tesseractOcrService,
-        AwsLambdaApiService $awsLambdaApiService
-    ): void {
+    public function handle(SqsClient $sqs): void
+    {
+        // Count files first for logging/logic
+        $totalFiles = $this->ocrQueue->files()->where('processed', 0)->count();
 
-        $files = $tesseractOcrService->getUnprocessedOcrQueueFiles($this->ocrQueue->id, 100);
-
-        // If processed files count is 0, update subjects in mongodb, send notification to user, and delete the queue
-        if ($files->count() === 0) {
-            TesseractOcrCompleteJob::dispatch($this->ocrQueue);
-            $this->delete();
-
-            return;
+        // If no files → do nothing (could be re-run or race)
+        if ($totalFiles === 0) {
+            throw new \Exception("No unprocessed files found for ocr queue ID: {$this->ocrQueue->id}");
         }
 
-        $files->each(function ($file) use ($awsLambdaApiService) {
-            $filePath = config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt';
-            if (Storage::disk('s3')->exists($filePath)) {
-                $file->processed = 1;
-                $file->save();
+        \Artisan::queue('ocr:listen-controller start')
+            ->onQueue(config('config.queue.default'));
 
-                return;
-            }
+        $sentCount = 0;
 
-            if ($file->tries < 3) {
-                $file->increment('tries');
-                $this->invoke($awsLambdaApiService, $file);
+        $queueUrl = $sqs->getQueueUrl([
+            'QueueName' => config('services.aws.queues.ocr_trigger'),
+        ])['QueueUrl'];
 
-                return;
-            }
+        $updatesQueueUrl = $sqs->getQueueUrl([
+            'QueueName' => config('services.aws.queues.ocr_update'), // e.g. loc-ocr-update
+        ])['QueueUrl'];
 
-            Storage::disk('s3')->put($filePath, t('Error: Exceeded maximum tries trying to read OCR.'));
-            $file->processed = 1;
-            $file->save();
-        });
+        // Use chunking to save memory and by id to lock rows
+        $this->ocrQueue->files()
+            ->where('processed', 0)
+            ->orderBy('id')
+            ->chunkById(1000, function ($files) use ($sqs, $queueUrl, $updatesQueueUrl, &$sentCount) {
+                foreach ($files as $file) {
+                    $payload = [
+                        'ocrQueueFileId' => $file->id,
+                        'subjectId' => $file->subject_id,
+                        'access_uri' => $file->access_uri,
+                        'updatesQueueUrl' => $updatesQueueUrl,
+                    ];
+
+                    $sqs->sendMessage([
+                        'QueueUrl' => $queueUrl,
+                        'MessageBody' => json_encode($payload),
+                    ]);
+
+                    $sentCount++;
+                }
+            }, 'id');
+
+        // $ $sentCount === $totalFiles
+        if ($sentCount !== $totalFiles) {
+            \Artisan::queue('app:lambda-control', [
+                'lambda' => 'BiospexTesseractOcr',
+                'action' => 'stop',
+            ])->onQueue(config('config.queue.default'));
+            throw new \Exception("SQS send incomplete: {$sentCount}/{$totalFiles} messages sent");
+        }
+
+        $this->ocrQueue->stage = 1;
+        $this->ocrQueue->save();
+
+        $this->delete();
     }
 
     /**
-     * Invoke the lambda function.
-     */
-    public function invoke(AwsLambdaApiService $awsLambdaApiService, $file): void
-    {
-        $awsLambdaApiService->lambdaInvokeAsync(config('config.aws.lambda_ocr_function'), [
-            'bucket' => config('filesystems.disks.s3.bucket'),
-            'key' => config('zooniverse.directory.lambda-ocr').'/'.$file->subject_id.'.txt',
-            'file' => $file->id,
-            'uri' => $file->access_uri,
-        ]);
-    }
-
-    /**
-     * The job failed to process.
+     * Handle a job failure.
+     * Marks OCR queue as error and sends notification to admin.
+     *
+     * @param  Throwable  $throwable  Exception that caused the failure
      */
     public function failed(Throwable $throwable): void
     {
@@ -111,15 +132,15 @@ class TesseractOcrProcessJob implements ShouldQueue
         $this->ocrQueue->save();
 
         $attributes = [
-            'subject' => t('Ocr Process Error'),
+            'subject' => t('OCR Process Job Failed'),
             'html' => [
-                t('Queue Id: %s', $this->ocrQueue->id),
-                t('Project Id: %s', $this->ocrQueue->project->id),
-                t('File: %s', $throwable->getFile()),
-                t('Line: %s', $throwable->getLine()),
-                t('Message: %s', $throwable->getMessage()),
+                t('OCR Queue ID: %s', $this->ocrQueue->id),
+                t('Project ID: %s', $this->ocrQueue->project_id),
+                t('Expedition ID: %s', $this->ocrQueue->expedition_id ?? 'None'),
+                t('Error: %s', $throwable->getMessage()),
             ],
         ];
+
         $user = User::find(config('config.admin.user_id'));
         $user->notify(new Generic($attributes));
     }

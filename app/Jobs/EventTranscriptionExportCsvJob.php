@@ -23,10 +23,10 @@ namespace App\Jobs;
 use App\Models\Event;
 use App\Models\User;
 use App\Notifications\Generic;
-use App\Notifications\Traits\ButtonTrait;
 use App\Services\Event\EventTranscriptionService;
 use App\Services\Process\CreateReportService;
 use App\Services\Transcriptions\PanoptesTranscriptionService;
+use App\Traits\ButtonTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -45,7 +45,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
     /**
      * The number of seconds the job can run before timing out.
      */
-    public int $timeout = 1800;
+    public int $timeout = 300;
 
     /**
      * Create a new job instance.

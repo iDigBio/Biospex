@@ -32,9 +32,7 @@ trait SkipZooniverse
      */
     protected function skipReconcile($expeditionId)
     {
-        $skipReconcile = explode(',', config('zooniverse.skip_reconcile'));
-
-        if (in_array($expeditionId, $skipReconcile, false)) {
+        if (in_array($expeditionId, config('zooniverse.skip_reconcile'), false)) {
             return true;
         }
 
@@ -48,9 +46,7 @@ trait SkipZooniverse
      */
     protected function skipApi($expeditionId)
     {
-        $skipApi = explode(',', config('zooniverse.skip_api'));
-
-        if (in_array($expeditionId, $skipApi, false)) {
+        if (in_array($expeditionId, config('zooniverse.skip_api'), false)) {
             return true;
         }
 

@@ -29,7 +29,6 @@ class ProjectPresenter extends Presenter
 {
     /**
      * Check if logo file exists or return default.
-     * Supports both new Livewire path and legacy paperclip during transition.
      *
      * @return \Illuminate\Config\Repository|mixed
      */
@@ -39,19 +38,7 @@ class ProjectPresenter extends Presenter
         if (! empty($this->model->logo_path)) {
             if (Storage::disk('s3')->exists($this->model->logo_path)) {
                 // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                return Storage::disk('s3')->temporaryUrl($this->model->logo_path, now()->addHour());
-            }
-        }
-
-        // Fallback to legacy paperclip logic during transition
-        if (! empty($this->model->logo_file_name)) {
-            $baseLength = config('paperclip.storage.base-urls.public');
-            $idPartition = sprintf('%03d/%03d/%03d', 0, 0, $this->model->id);
-            $paperclipPath = "/paperclip/App/Models/Project/logos/{$idPartition}/original/{$this->model->logo_file_name}";
-            $url = $baseLength.$paperclipPath;
-
-            if (Storage::disk('public')->exists($paperclipPath)) {
-                return $url;
+                return Storage::disk('s3')->url($this->model->logo_path);
             }
         }
 

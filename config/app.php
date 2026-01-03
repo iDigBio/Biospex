@@ -8,6 +8,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Custom Application Environment
+    |--------------------------------------------------------------------------
+    |
+    */
+    'tag' => env('APP_TAG', 'biospex'),
+    'domain' => env('APP_DOMAIN', 'biospex.org'),
+    'current_path' => env('APP_CURRENT_PATH', '/data/web/biospex/current'),
+    'server_user' => env('APP_SERVER_USER', 'ubuntu'),
+    'registration' => env('APP_REGISTRATION', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Name
     |--------------------------------------------------------------------------
     |
@@ -56,7 +68,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'https://biospex.org'),
 
     'asset_url' => env('ASSET_URL', null),
 
@@ -174,7 +186,6 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\Filament\AdminPanelProvider::class,
-        App\Providers\RouteServiceProvider::class,
         App\Providers\BiospexServiceProvider::class,
         App\Providers\ImageServiceProvider::class,
     ],

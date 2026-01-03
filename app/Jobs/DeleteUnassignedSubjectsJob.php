@@ -41,7 +41,7 @@ class DeleteUnassignedSubjectsJob implements ShouldQueue
     /**
      * The number of seconds the job can run before timing out.
      */
-    public int $timeout = 7200; // 2 hours for large datasets
+    public int $timeout = 3600;
 
     /**
      * The number of times the job may be attempted.

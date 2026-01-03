@@ -21,9 +21,7 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue;
-use App\Services\Actor\ActorDirectory;
-use App\Services\Actor\Traits\ZooniverseErrorNotification;
-use App\Services\Actor\Zooniverse\ZooniverseExportDeleteFiles;
+use App\Traits\NotifyOnJobFailure;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -31,6 +29,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 /**
@@ -38,14 +37,14 @@ use Throwable;
  */
 class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ZooniverseErrorNotification;
+    use Batchable, Dispatchable, InteractsWithQueue, NotifyOnJobFailure, Queueable, SerializesModels;
 
     public int $timeout = 300;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(protected ExportQueue $exportQueue, protected ActorDirectory $actorDirectory)
+    public function __construct(protected ExportQueue $exportQueue)
     {
         $this->exportQueue = $exportQueue->withoutRelations();
         $this->onQueue(config('config.queue.export'));
@@ -56,11 +55,18 @@ class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
      *
      * @throws \Exception
      */
-    public function handle(ZooniverseExportDeleteFiles $zooniverseExportDeleteFiles): void
+    public function handle(): void
     {
-        $this->exportQueue->increment('stage');
-        \Artisan::call('export:poll');
-        $zooniverseExportDeleteFiles->process($this->exportQueue, $this->actorDirectory);
+        $processDir = config('config.scratch_dir')."/{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
+        if (Storage::disk('s3')->exists($processDir)) {
+            Storage::disk('s3')->deleteDirectory($processDir);
+        }
+
+        if (Storage::disk('efs')->exists($processDir)) {
+            Storage::disk('efs')->deleteDirectory($processDir);
+        }
+
+        $this->exportQueue->delete();
     }
 
     /**
@@ -68,6 +74,9 @@ class ZooniverseExportDeleteFilesJob implements ShouldBeUnique, ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
-        $this->sendErrorNotification($this->exportQueue, $throwable);
+        $this->exportQueue->error = 1;
+        $this->exportQueue->save();
+
+        $this->notifyGroupOnFailure($this->exportQueue, $throwable);
     }
 }

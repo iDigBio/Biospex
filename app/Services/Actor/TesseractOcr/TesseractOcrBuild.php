@@ -24,8 +24,8 @@ use App\Models\Expedition;
 use App\Models\OcrQueue;
 use App\Models\OcrQueueFile;
 use App\Models\Project;
-use App\Notifications\Traits\ButtonTrait;
 use App\Services\Subject\SubjectService;
+use App\Traits\ButtonTrait;
 
 /**
  * Class OcrService
@@ -44,7 +44,7 @@ class TesseractOcrBuild
     ) {}
 
     /**
-     * Get subject count for ocr process.
+     * Get subject count for an ocr process.
      */
     public function getSubjectCountForOcr(Project $project, ?Expedition $expedition = null): int
     {
@@ -54,12 +54,12 @@ class TesseractOcrBuild
     /**
      * Create ocr queue record.
      */
-    public function createOcrQueue(Project $project, ?Expedition $expedition = null, array $data = []): OcrQueue
+    public function createOcrQueue(Project $project, ?Expedition $expedition, int $total): OcrQueue
     {
         return $this->ocrQueue->firstOrCreate([
             'project_id' => $project->id,
             'expedition_id' => $expedition?->id,
-        ], $data);
+        ], ['total' => $total]);
     }
 
     /**
@@ -67,16 +67,23 @@ class TesseractOcrBuild
      */
     public function createOcrQueueFiles(OcrQueue $queue, Project $project, ?Expedition $expedition = null): void
     {
-        $cursor = $this->subjectService->getSubjectCursorForOcr($project, $expedition);
+        $subjects = $this->subjectService->getSubjectCursorForOcr($project, $expedition);
 
-        $cursor->each(function ($subject) use ($queue) {
-            $attributes = [
-                'queue_id' => $queue->id,
-                'subject_id' => (string) $subject->_id,
-                'access_uri' => $subject->accessURI,
-            ];
+        $subjects->chunk(1000)->each(function ($chunk) use ($queue) {
+            $filesData = $chunk->map(function ($subject) use ($queue) {
+                return [
+                    'queue_id' => $queue->id,
+                    'subject_id' => (string) $subject->_id,
+                    'access_uri' => $subject->accessURI,
+                ];
+            })->toArray();
 
-            $this->ocrQueueFile->firstOrCreate($attributes, $attributes);
+            $this->ocrQueueFile->upsert($filesData, ['queue_id', 'subject_id'], ['access_uri']);
+
+            return true;  // Continue chunking
         });
+
+        $queue->files_ready = 1;
+        $queue->save();
     }
 }

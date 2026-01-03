@@ -20,9 +20,9 @@
 
 namespace App\Models;
 
-use App\Models\Traits\Presentable;
-use App\Models\Traits\UuidTrait;
 use App\Presenters\EventPresenter;
+use App\Traits\Presentable;
+use App\Traits\UuidTrait;
 use DateTimeZone;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

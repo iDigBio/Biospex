@@ -28,6 +28,9 @@ set('php_fpm_version', '8.3');
 set('ssh_multiplexing', true);
 set('writable_mode', 'chmod');
 set('keep_releases', 3);  // Keep only 3 recent releases
+
+// Use sudo for cleanup to prevent "Directory not empty" or permission errors
+set('cleanup_use_sudo', true);
 // Shared Files (persisted across deployments)
 set('shared_files', [
     '.env',                        // Environment configuration
@@ -51,20 +54,34 @@ set('clear_paths', [
     'deployment-package', // Remove any residual nesting dirs
 ]);
 
+// Determine if the local identity file exists (for manual deployments)
+$localKey = '/home/ubuntu/.ssh/biospexaws.pem';
+$hasLocalKey = file_exists($localKey);
+
 // Server Configurations
 // Production: main branch → /data/web/biospex
 host('production')
     ->set('hostname', '3.142.169.134')
     ->set('deploy_path', '{{base_path}}/biospex')
     ->set('branch', 'main')
-    ->set('domain_name', 'prod-biospex');
+    ->set('environment', 'production')
+    ->set('app_tag', 'biospex');
+
+if ($hasLocalKey) {
+    host('production')->set('identity_file', $localKey);
+}
 
 // Development: development branch → /data/web/dev.biospex
 host('development')
-    ->set('hostname', '3.142.169.134')
-    ->set('deploy_path', '{{base_path}}/dev.biospex')
+    ->set('hostname', '3.138.217.206')
+    ->set('deploy_path', '{{base_path}}/biospex')
     ->set('branch', 'development')
-    ->set('domain_name', 'dev-biospex');
+    ->set('environment', 'development')
+    ->set('app_tag', 'biospex');
+
+if ($hasLocalKey) {
+    host('development')->set('identity_file', $localKey);
+}
 
 /*
  * DEPLOYMENT TASK SEQUENCE - CI/CD Option 1 Implementation
@@ -74,6 +91,9 @@ host('development')
  */
 desc('Deploys your project using CI/CD artifacts');
 task('deploy', [
+    // Phase 0: Ensure .env from SSM is ready
+    'env:ssm',
+
     // Phase 1: Preparation
     'deploy:prepare',           // Create release directory and setup structure
 
@@ -88,8 +108,8 @@ task('deploy', [
     'artisan:app:deploy-files', // Custom app deployment files
 
     // Phase 4: Database & Updates
-    // 'artisan:migrate',         // Run database migrations
-    // 'artisan:app:update-queries', // Run custom database updates
+    'artisan:migrate',         // Run database migrations
+    'artisan:app:update-queries', // Run custom database updates
 
     // Phase 5: Cache Optimization
     'artisan:optimize:clear',  // Clear all Laravel caches
@@ -102,12 +122,15 @@ task('deploy', [
     'artisan:filament:optimize',   // Optimize Filament resources and assets
 
     // Phase 6: OpCache Management (Production Only)
-    'opcache:reset-production', // Reset OpCache after deployment (production only)
+    'opcache:reset',
 
     // Phase 7: Domain-Specific Supervisor Management
-    'supervisor:reload',               // Update configs only
-    'supervisor:restart-domain-safe',  // Check queues + restart domain processes
+    'supervisor:reload', // Update configs only
+    'artisan:queue:restart',
+
+    // Phase 8: Finalization
     'set:permissions',
+    'deploy:clear_paths',      // Remove unnecessary files/directories
     'deploy:publish',
     'deploy:verify-structure', // Verify flat structure post-deploy
 ]);

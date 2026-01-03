@@ -37,6 +37,28 @@ $(function () {
 
         let $grid = $("#jqGridTable");
 
+        // Center and enlarge the loading message
+        $('head').append(`
+                <style>
+                    #load_jqGridTable {
+                        position: fixed !important;
+                        top: 50% !important;
+                        left: 50% !important;
+                        transform: translate(-50%, -50%) !important;
+                        z-index: 99999 !important;
+                        font-size: 24px !important;
+                        font-weight: bold;
+                        padding: 20px 40px !important;
+                        background: #ffffff !important;
+                        border: 2px solid #cccccc !important;
+                        border-radius: 5px;
+                        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+                        opacity: 1 !important;
+                        display: none;
+                    }
+                </style>
+            `);
+
         mapFormatter(cm);
 
         let saveObjectInLocalStorage = function (storageItemName, object) {
@@ -91,6 +113,9 @@ $(function () {
                     columnsState = getObjectFromLocalStorage(myColumnStateName);
 
                 if (columnsState) {
+                    if (columnsState.permutation && columnsState.permutation.length !== (l + (checkbox ? 1 : 0))) {
+                        return null;
+                    }
                     colStates = columnsState.colStates;
                     for (i = 0; i < l; i++) {
                         colItem = colModel[i];
@@ -139,11 +164,23 @@ $(function () {
                 }
             },
             updateIdsOfSelectedRows = function (id, isSelected) {
-                let index = $.inArray(id, selected);
+                let index = -1;
+                let strId = String(id).trim();
+
+                // Find index using robust string comparison
+                for (let i = 0; i < selected.length; i++) {
+                    if (String(selected[i]).trim() === strId) {
+                        index = i;
+                        break;
+                    }
+                }
+
                 if (!isSelected && index >= 0) {
-                    selected.splice($.inArray(id, selected), 1);
-                } else if (index < 0) {
-                    selected.push(id);
+                    // Remove from array
+                    selected.splice(index, 1);
+                } else if (isSelected && index < 0) {
+                    // Add to array
+                    selected.push(strId);
                 }
             },
             setSelected = function () {
@@ -154,7 +191,18 @@ $(function () {
 
                 let ids = $grid.jqGrid('getDataIDs');
                 $.each(ids, function (index, rowId) {
-                    if ($.inArray(rowId, selected) > -1) {
+                    let strRowId = String(rowId).trim();
+                    let found = false;
+
+                    // Check if ID is in the selected array using robust string comparison
+                    for (let i = 0; i < selected.length; i++) {
+                        if (String(selected[i]).trim() === strRowId) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found) {
                         $grid.jqGrid('setSelection', rowId, false);
                     }
                 });
@@ -212,6 +260,18 @@ $(function () {
                 }
                 setSelectedCount();
             },
+            beforeSelectRow: function (rowid, e) {
+                // Prevent row selection if clicking on the OCR cell
+                // Check if the target or its parent has the class 'ocr-clickable'
+                // OR check the column index if you know it via 'iCol' from onCellSelect (but beforeSelectRow runs first usually)
+
+                // A robust way: check if the clicked element is inside a cell we want to ignore
+                const $td = $(e.target).closest('td');
+                // Assuming your OCR column has a specific class like 'ocr-clickable'
+                // or you can check the column name from aria-describedby attribute
+                return !($td.hasClass('ocr-clickable') || $td.attr('aria-describedby').endsWith('_ocr_text'));
+
+            },
             loadComplete: function () {
                 if (firstLoad) {
                     firstLoad = false;
@@ -222,40 +282,49 @@ $(function () {
                 saveColumnState.call($(this), this.p.remapColumns);
                 setSelected();
                 setSelectedCount();
+            },
+            onCellSelect: function (rowid, iCol, cellcontent, e) {
+                const $td = $(e.target).closest('td');
+                // Only trigger if the cell matches your OCR criteria
+                if ($td.hasClass('ocr-clickable') || ($td.attr('aria-describedby') && $td.attr('aria-describedby').endsWith('_ocr_text'))) {
+                    const $span = $(e.target).closest('.ui-jqgrid-cell-wrapper');
+                    const text = $span.length ? $span.text() : cellcontent;
+                    Livewire.dispatch('openOcrModal', {cellContent: text});
+                }
             }
         })
-            .jqGrid("navGrid", {add: false, edit: false, del: false, search: true}, {}, {}, {}, {
-                afterShowSearch: function ($form) {
-                    $form.closest(".ui-jqdialog").position({
-                        of: window, // or any other element
-                        my: "center center",
-                        at: "center center"
-                    });
-                },
-                width: 700,
-                multipleSearch: true,
-                recreateFilter: true
-            })
-            .jqGrid("navButtonAdd", {
-                caption: '',
-                buttonicon: "fas fa-columns",
-                title: "Choose columns",
-                onClickButton: columnChooser
-            })
-            .jqGrid("navButtonAdd", {
-                caption: '',
-                buttonicon: "fas fa-eraser",
-                title: "Clear saved grid's settings",
-                onClickButton: eraseSettings
-            })
-            .jqGrid("navButtonAdd", {
-                caption: '',
-                buttonicon: "fas fa-file-export",
-                title: "Export to CSV",
-                onClickButton: exportSettings
-            })
-            .jqGrid("filterToolbar")
-            .jqGrid("gridResize");
+        .jqGrid("navGrid", {add: false, edit: false, del: false, search: true}, {}, {}, {}, {
+            afterShowSearch: function ($form) {
+                $form.closest(".ui-jqdialog").position({
+                    of: window, // or any other element
+                    my: "center center",
+                    at: "center center"
+                });
+            },
+            width: 700,
+            multipleSearch: true,
+            recreateFilter: true
+        })
+        .jqGrid("navButtonAdd", {
+            caption: '',
+            buttonicon: "fas fa-columns",
+            title: "Choose columns",
+            onClickButton: columnChooser
+        })
+        .jqGrid("navButtonAdd", {
+            caption: '',
+            buttonicon: "fas fa-eraser",
+            title: "Clear saved grid's settings",
+            onClickButton: eraseSettings
+        })
+        .jqGrid("navButtonAdd", {
+            caption: '',
+            buttonicon: "fas fa-file-export",
+            title: "Export to CSV",
+            onClickButton: exportSettings
+        })
+        .jqGrid("filterToolbar")
+        .jqGrid("gridResize");
 
         $('#gridForm').submit(function () {
             if (selected.length > maxCount) {

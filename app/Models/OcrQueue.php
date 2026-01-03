@@ -20,6 +20,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -40,10 +42,39 @@ class OcrQueue extends BaseEloquentModel
     protected $fillable = [
         'project_id',
         'expedition_id',
+        'queued',
+        'stage',
+        'files_ready',
         'total',
-        'status',
         'error',
     ];
+
+    /**
+     * Scope a query to only include queue.
+     */
+    #[Scope]
+    protected function queued(Builder $query, int $queued): void
+    {
+        $query->where('queued', $queued);
+    }
+
+    /**
+     * Scope a query to only include queue with no error.
+     */
+    #[Scope]
+    protected function error(Builder $query, int $error): void
+    {
+        $query->where('error', $error);
+    }
+
+    /**
+     * Scope a query to only include queue with ready_files.
+     */
+    #[Scope]
+    protected function filesReady(Builder $query, int $ready): void
+    {
+        $query->where('files_ready', $ready);
+    }
 
     /**
      * Project relation

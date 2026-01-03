@@ -58,7 +58,6 @@ class AppFileDeploymentCommand extends Command
     {
         try {
             $this->isDryRun = $this->option('dry-run');
-            $this->info('Starting file deployment process...');
 
             if ($this->isDryRun) {
                 $this->warn('DRY RUN MODE: No files will be modified');
@@ -67,8 +66,7 @@ class AppFileDeploymentCommand extends Command
             $this->buildReplacementMap();
             $sourceFiles = $this->getSourceFiles();
             $processedFiles = $this->processFiles($sourceFiles);
-
-            $this->info("Successfully processed {$processedFiles} file(s)");
+            $this->createSupervisorDirectory();
 
             return CommandAlias::SUCCESS;
 
@@ -96,7 +94,7 @@ class AppFileDeploymentCommand extends Command
             throw new Exception("No supervisor template files found in: {$supervisorPath}");
         }
 
-        $this->info('Found '.count($files).' supervisor template file(s)');
+        \Log::info('Found '.count($files).' supervisor template file(s)');
 
         return collect($files);
     }
@@ -187,7 +185,6 @@ class AppFileDeploymentCommand extends Command
     {
         if (! $this->isDryRun && ! Storage::exists('supervisor')) {
             Storage::makeDirectory('supervisor');
-            $this->info('Created supervisor directory');
         }
     }
 
@@ -204,15 +201,23 @@ class AppFileDeploymentCommand extends Command
      */
     private function writeTargetFile(string $targetPath, string $content): void
     {
-        // Remove existing file if it exists
-        if (File::exists($targetPath)) {
-            File::delete($targetPath);
+        $dir = dirname($targetPath);
+
+        if (! File::isDirectory($dir)) {
+            File::makeDirectory($dir, 0755, true);
         }
 
-        // Write new content
-        if (! File::put($targetPath, $content)) {
-            throw new Exception("Failed to write target file: {$targetPath}");
+        // Write to a temp file in the same directory (same filesystem),
+        // then move into place (atomic replace on Linux).
+        $tmpPath = $dir.DIRECTORY_SEPARATOR.'.'.basename($targetPath).'.tmp';
+
+        // LOCK_EX prevents two deploys from clobbering each other mid-write.
+        if (File::put($tmpPath, $content, true) === false) {
+            throw new Exception("Failed to write temp file: {$tmpPath}");
         }
+
+        // File::move uses rename() under the hood when possible (atomic).
+        File::move($tmpPath, $targetPath);
     }
 
     /**
@@ -221,18 +226,15 @@ class AppFileDeploymentCommand extends Command
     private function showDryRunChanges(string $filename, string $original, string $processed): void
     {
         if ($original !== $processed) {
-            $this->line("\n<fg=yellow>Changes for {$filename}:</>");
-
             $changes = 0;
             foreach ($this->replacements as $search => $replace) {
                 if ($replace !== null && $replace !== '' && str_contains($original, $search)) {
-                    $this->line("  <fg=cyan>{$search}</> → <fg=green>{$replace}</>");
                     $changes++;
                 }
             }
 
             if ($changes === 0) {
-                $this->line('  <fg=gray>No replacements needed</>');
+                \Log::info('  <fg=gray>No replacements needed</>');
             }
         }
     }
@@ -262,8 +264,6 @@ class AppFileDeploymentCommand extends Command
 
                 return $value !== null && $value !== '';
             });
-
-        $this->info('Built replacement map with '.$this->replacements->count().' entries');
     }
 
     /**
@@ -273,19 +273,23 @@ class AppFileDeploymentCommand extends Command
     {
         try {
             if (str_starts_with($field, 'APP_')) {
-                if ($field === 'APP_ENV') {
-                    return config('app.env');
-                }
+                $value = strtolower(str_replace('APP_', '', $field));
 
-                return config('config.'.strtolower($field));
+                return config('app.'.$value);
+            }
+
+            if (str_starts_with($field, 'AWS_SQS_')) {
+                $value = strtolower(str_replace('AWS_SQS_', '', $field));
+
+                return config('services.aws.queues.'.$value);
             }
 
             if ($field === 'REVERB_DEBUG') {
                 return config('config.reverb_debug') ? '--debug' : '';
             }
 
-            if ($field === 'SUPERVISOR_GROUP') {
-                return config('config.supervisor_group');
+            if (str_starts_with($field, 'PANOPTES_')) {
+                return config('config.'.strtolower($field));
             }
 
             return config('config.'.strtolower(Str::replaceFirst('_', '.', $field)));
@@ -295,5 +299,19 @@ class AppFileDeploymentCommand extends Command
 
             return null;
         }
+    }
+
+    /**
+     * Create supervisor log directory for the application.
+     *
+     * Creates a subdirectory under /var/log/supervisor using the application tag
+     * from configuration. Uses sudo to ensure proper permissions.
+     */
+    private function createSupervisorDirectory(): void
+    {
+        $logDir = '/var/log/supervisor';
+        $appTag = config('app.tag');
+        $appLogDir = "{$logDir}/{$appTag}";
+        exec("sudo mkdir -p {$appLogDir}");
     }
 }
