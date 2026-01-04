@@ -20,6 +20,10 @@
 
 use App\Models\PanoptesTranscription;
 
+beforeEach(function () {
+    Storage::fake('s3');
+});
+
 describe('Home Page Basic Tests', function () {
     beforeEach(function () {
         PanoptesTranscription::truncate();
