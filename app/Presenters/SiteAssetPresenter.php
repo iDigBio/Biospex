@@ -34,19 +34,11 @@ class SiteAssetPresenter extends Presenter
      */
     public function assetUrl()
     {
-        $url = null;
-        $filename = null;
-
         // Check for new Livewire download_path first (check S3 for new uploads)
-        if (! empty($this->model->download_path)) {
-            if (Storage::disk('s3')->exists($this->model->download_path)) {
-                // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                $url = Storage::disk('s3')->url($this->model->download_path);
-                $filename = basename($this->model->download_path);
-            }
-        }
+        if (! empty($this->model->download_path) && Storage::disk('s3')->exists($this->model->download_path)) {
+            $url = Storage::disk('s3')->url($this->model->download_path);
+            $filename = basename($this->model->download_path);
 
-        if ($url && $filename) {
             return '<a href="'.$url.'" target="_blank"><i class="fas fa-file"></i> '.$filename.'</a>';
         }
 

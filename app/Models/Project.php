@@ -76,7 +76,6 @@ class Project extends BaseEloquentModel
         'twitter',
         'activities',
         'language_skills',
-        'logo',
         'logo_path',
         'banner_file',
         'target_fields',

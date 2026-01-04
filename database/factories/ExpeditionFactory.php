@@ -51,10 +51,7 @@ final class ExpeditionFactory extends Factory
             'workflow_id' => \App\Models\Workflow::factory(),
             'completed' => fake()->randomNumber(1),
             'locked' => fake()->randomNumber(1),
-            'logo_file_name' => fake()->optional()->word,
-            'logo_file_size' => fake()->optional()->randomNumber(),
-            'logo_content_type' => fake()->optional()->word,
-            'logo_updated_at' => fake()->optional()->datetime(),
+            'logo_path' => 'logos/'.fake()->uuid.'.png',
         ];
     }
 }

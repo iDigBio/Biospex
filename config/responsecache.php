@@ -100,7 +100,7 @@ return [
      *
      * You may use a string or an array here.
      */
-    'cache_tag' => "{$tag}-tag",
+    'cache_tag' => env('RESPONSE_CACHE_TAGS_ENABLED', false) ? "{$tag}-tag" : '',
 
     /*
      * This class is responsible for generating a hash for a request. This hash

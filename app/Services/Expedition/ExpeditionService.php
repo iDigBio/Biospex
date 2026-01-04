@@ -278,7 +278,6 @@ class ExpeditionService
             );
 
             // Manually flush all Lada Cache
-            // $this->flushLadaCacheManually();
 
         } catch (\Exception $e) {
             Log::error('Failed to sync expedition stat', [

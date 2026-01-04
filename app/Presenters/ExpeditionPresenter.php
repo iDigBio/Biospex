@@ -44,7 +44,6 @@ class ExpeditionPresenter extends Presenter
 
             // Try original path on S3 as fallback
             if (Storage::disk('s3')->exists($this->model->logo_path)) {
-                // Generate a temporary signed URL for private S3 files (valid for 1 hour)
                 return Storage::disk('s3')->url($this->model->logo_path);
             }
         }
@@ -60,11 +59,9 @@ class ExpeditionPresenter extends Presenter
     public function showLogo()
     {
         // Check for new Livewire logo_path first (check S3 for new uploads)
-        if (! empty($this->model->logo_path)) {
-            if (Storage::disk('s3')->exists($this->model->logo_path)) {
-                // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                return Storage::disk('s3')->url($this->model->logo_path);
-            }
+        if (! empty($this->model->logo_path) && Storage::disk('s3')->exists($this->model->logo_path)) {
+            // Generate a temporary signed URL for private S3 files (valid for 1 hour)
+            return Storage::disk('s3')->url($this->model->logo_path);
         }
 
         // Return default missing logo

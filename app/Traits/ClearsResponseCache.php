@@ -26,6 +26,10 @@ trait ClearsResponseCache
 {
     public static function bootClearsResponseCache()
     {
+        if (! config('responsecache.enabled')) {
+            return;
+        }
+
         self::created(function () {
             ResponseCache::clear();
         });
