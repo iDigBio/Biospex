@@ -45,10 +45,7 @@ final class SiteAssetFactory extends Factory
         return [
             'title' => fake()->words(3, true),
             'description' => fake()->text,
-            'document_file_name' => fake()->optional()->word,
-            'document_file_size' => fake()->optional()->randomNumber(),
-            'document_content_type' => fake()->optional()->word,
-            'document_updated_at' => fake()->optional()->datetime(),
+            'download_path' => 'site-assets/'.fake()->word().'.pdf',
             'order' => fake()->randomNumber(1),
         ];
     }

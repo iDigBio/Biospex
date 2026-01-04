@@ -48,12 +48,12 @@ class SiteAssetController extends Controller
      */
     public function show(SiteAsset $siteAsset): RedirectResponse|StreamedResponse
     {
-        if (! $siteAsset->document->exists() || ! file_exists(public_path('storage'.$siteAsset->document->path()))) {
+        if (empty($siteAsset->download_path) || ! Storage::disk('s3')->exists($siteAsset->download_path)) {
 
             return Redirect::route('front.site-assets.index')
                 ->with('danger', t('File cannot be found.'));
         }
 
-        return Storage::download('public/'.$siteAsset->document->path());
+        return Storage::disk('s3')->download($siteAsset->download_path);
     }
 }
