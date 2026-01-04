@@ -178,7 +178,7 @@ $(function () {
             }
         }
 
-    if (Laravel.flashMessage.length) {
+    if (Laravel.flashMessage && Laravel.flashMessage.length) {
         notify(Laravel.flashIcon, Laravel.flashMessage, Laravel.flashType);
     }
 
@@ -381,4 +381,3 @@ notify = function (icon, msg, type) {
         delay: 6000,
     });
 }
-
