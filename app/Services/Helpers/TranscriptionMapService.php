@@ -37,6 +37,8 @@ class TranscriptionMapService
      * Map transcription fields that are varied in database.
      *
      * @return mixed|string
+     *
+     * @throws \Throwable
      */
     public function mapTranscriptionField(
         string $type,
@@ -45,7 +47,7 @@ class TranscriptionMapService
     ): mixed {
         try {
             foreach ($this->mappedTranscriptionFields[$type] as $value) {
-                $encodedValue = $this->decodeTranscriptionField($value);
+                $encodedValue = $this->encodeTranscriptionField($value);
                 if (isset($panoptesTranscription->{$encodedValue})) {
                     return $panoptesTranscription->{$encodedValue};
                 }
@@ -104,7 +106,14 @@ class TranscriptionMapService
             return $field;
         }
 
-        return $this->base64UrlDecode($field);
+        $decoded = $this->base64UrlDecode($field);
+
+        // If decoding yields garbage or non-UTF8, it probably wasn't encoded
+        if ($decoded === false || ! mb_check_encoding($decoded, 'UTF-8')) {
+            return $field;
+        }
+
+        return $decoded;
     }
 
     /**
