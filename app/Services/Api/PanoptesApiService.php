@@ -270,7 +270,7 @@ class PanoptesApiService extends HttpRequest
      *
      * @return mixed|null
      */
-    public function getSubjectImageLocation($subjectId): ?array
+    public function getSubjectImageLocation($subjectId): ?string
     {
         $subject = $this->getPanoptesSubject($subjectId);
         $locations = collect($subject['locations'])->filter(function ($location) {
