@@ -87,22 +87,38 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
             ->where('processed', 0)
             ->orderBy('id')
             ->chunkById(1000, function ($files) use ($sqs, $queueUrl, $updatesQueueUrl, $processDir, &$sentCount) {
-                foreach ($files as $file) {
-                    $payload = [
-                        'processDir' => $processDir,
-                        'accessURI' => $file->access_uri,
-                        'subjectId' => $file->subject_id,
-                        's3Bucket' => config('filesystems.disks.s3.bucket'),
-                        'updatesQueueUrl' => $updatesQueueUrl,
-                        'queueId' => $this->exportQueue->id,
+                $batch = [];
+                foreach ($files as $index => $file) {
+                    $batch[] = [
+                        'Id' => (string) $file->id, // Required: unique string for the batch
+                        'MessageBody' => json_encode([
+                            'processDir' => $processDir,
+                            'accessURI' => $file->access_uri,
+                            'subjectId' => $file->subject_id,
+                            's3Bucket' => config('filesystems.disks.s3.bucket'),
+                            'updatesQueueUrl' => $updatesQueueUrl,
+                            'queueId' => $this->exportQueue->id,
+                        ]),
                     ];
 
-                    $sqs->sendMessage([
-                        'QueueUrl' => $queueUrl,
-                        'MessageBody' => json_encode($payload),
-                    ]);
+                    // SQS Batch limit is 10
+                    if (count($batch) === 10) {
+                        $sqs->sendMessageBatch([
+                            'QueueUrl' => $queueUrl,
+                            'Entries' => $batch,
+                        ]);
+                        $sentCount += count($batch);
+                        $batch = [];
+                    }
+                }
 
-                    $sentCount++;
+                // Send remaining messages (less than 10)
+                if (count($batch) > 0) {
+                    $sqs->sendMessageBatch([
+                        'QueueUrl' => $queueUrl,
+                        'Entries' => $batch,
+                    ]);
+                    $sentCount += count($batch);
                 }
             }, 'id');
 

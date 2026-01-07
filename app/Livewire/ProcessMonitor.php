@@ -59,6 +59,7 @@ class ProcessMonitor extends Component
             ->select(['id', 'expedition_id', 'project_id', 'total', 'stage'])
             ->with(['expedition:id,title', 'project:id,title'])
             ->withCount(['files as processed_files' => fn ($q) => $q->where('processed', 1)])
+            ->where('error', 0)
             ->orderBy('id')
             ->get();
     }

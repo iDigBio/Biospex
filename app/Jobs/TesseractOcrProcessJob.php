@@ -88,20 +88,35 @@ class TesseractOcrProcessJob implements ShouldQueue
             ->where('processed', 0)
             ->orderBy('id')
             ->chunkById(1000, function ($files) use ($sqs, $queueUrl, $updatesQueueUrl, &$sentCount) {
+                $batch = [];
                 foreach ($files as $file) {
-                    $payload = [
-                        'ocrQueueFileId' => $file->id,
-                        'subjectId' => $file->subject_id,
-                        'access_uri' => $file->access_uri,
-                        'updatesQueueUrl' => $updatesQueueUrl,
+                    $batch[] = [
+                        'Id' => (string) $file->id,
+                        'MessageBody' => json_encode([
+                            'ocrQueueFileId' => $file->id,
+                            'subjectId' => $file->subject_id,
+                            'access_uri' => $file->access_uri,
+                            'updatesQueueUrl' => $updatesQueueUrl,
+                        ]),
                     ];
 
-                    $sqs->sendMessage([
-                        'QueueUrl' => $queueUrl,
-                        'MessageBody' => json_encode($payload),
-                    ]);
+                    if (count($batch) === 10) {
+                        $sqs->sendMessageBatch([
+                            'QueueUrl' => $queueUrl,
+                            'Entries' => $batch,
+                        ]);
+                        $sentCount += 10;
+                        $batch = [];
+                    }
+                }
 
-                    $sentCount++;
+                // Send remaining messages
+                if (! empty($batch)) {
+                    $sqs->sendMessageBatch([
+                        'QueueUrl' => $queueUrl,
+                        'Entries' => $batch,
+                    ]);
+                    $sentCount += count($batch);
                 }
             }, 'id');
 
