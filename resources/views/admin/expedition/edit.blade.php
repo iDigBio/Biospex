@@ -49,7 +49,6 @@
                                 @livewire('image-upload', ['modelType' => 'Expedition', 'fieldName' => 'logo_path', 'maxSize' => 5120], key('logo-upload-'.$expedition->id))
                                 @livewire('expedition-manager', ['logo_path' => $expedition->logo_path, 'expeditionUuid' => $expedition->uuid, 'projectUuid' => $expedition->project->uuid], key('expedition-manager-'.$expedition->id))
                             </div>
-                            <input type="hidden" name="current_logo" value="{{ $expedition->logo_file_name }}">
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
                                      src="{{ $expedition->present()->show_medium_logo }}" alt="Expedition Logo"/>

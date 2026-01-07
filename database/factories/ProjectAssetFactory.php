@@ -47,10 +47,7 @@ final class ProjectAssetFactory extends Factory
             'type' => fake()->word,
             'name' => fake()->optional()->name,
             'description' => fake()->optional()->text,
-            'download_file_name' => fake()->optional()->word,
-            'download_file_size' => fake()->optional()->randomNumber(),
-            'download_content_type' => fake()->optional()->word,
-            'download_updated_at' => fake()->optional()->datetime(),
+            'download_path' => 'project-assets/'.fake()->word().'.pdf',
         ];
     }
 }

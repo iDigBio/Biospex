@@ -36,8 +36,13 @@ describe('SiteAsset Page Basic Tests', function () {
 
 describe('SiteAsset Content Tests', function () {
     it('displays site-asset titles when available', function () {
+        Storage::fake('s3');
         SiteAsset::factory()->count(3)->create();
         $titles = SiteAsset::all()->pluck('title')->toArray();
+
+        foreach (SiteAsset::all() as $asset) {
+            Storage::disk('s3')->put($asset->download_path, 'fake content');
+        }
 
         $response = $this->get(route('front.site-assets.index'));
 
@@ -47,7 +52,12 @@ describe('SiteAsset Content Tests', function () {
     });
 
     it('displays site-asset content when available', function () {
+        Storage::fake('s3');
         $resources = SiteAsset::factory()->count(2)->create();
+
+        foreach ($resources as $resource) {
+            Storage::disk('s3')->put($resource->download_path, 'fake content');
+        }
 
         $response = $this->get(route('front.site-assets.index'));
 

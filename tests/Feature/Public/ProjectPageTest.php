@@ -18,6 +18,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use Database\Seeders\ProjectPageTestSeeder;
+use Illuminate\Support\Facades\Storage;
+
+beforeEach(function () {
+    Storage::fake('s3');
+});
+
 it('has projectpage page', function () {
     $response = $this->get(route('front.projects.index'));
 

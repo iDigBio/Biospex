@@ -66,7 +66,7 @@ describe('ProjectAssetManager Component', function () {
                 'type' => 'Dataset',
                 'name' => 'Test Resource',
                 'description' => 'Test Description',
-                'download_path' => '',
+                'download_path' => $projectAsset->download_path,
             ]]);
     });
 
@@ -195,7 +195,7 @@ describe('ProjectAssetManager Component', function () {
         expect($component->get('assets.0.type'))->toBe('Dataset');
         expect($component->get('assets.0.name'))->toBe('Test Resource');
         expect($component->get('assets.0.description'))->toBe('Test Description');
-        expect($component->get('assets.0.download_path'))->toBe('');
+        expect($component->get('assets.0.download_path'))->toBe($projectAsset->download_path);
     });
 
     it('handles multiple resources correctly', function () {

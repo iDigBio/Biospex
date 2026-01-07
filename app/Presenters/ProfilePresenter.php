@@ -35,11 +35,8 @@ class ProfilePresenter extends Presenter
     public function showAvatar()
     {
         // Check for new Livewire avatar_path first (check S3 for new uploads)
-        if (! empty($this->model->avatar_path)) {
-            if (Storage::disk('s3')->exists($this->model->avatar_path)) {
-                // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                return Storage::disk('s3')->url($this->model->avatar_path);
-            }
+        if (! empty($this->model->avatar_path) && Storage::disk('s3')->exists($this->model->avatar_path)) {
+            return Storage::disk('s3')->url($this->model->avatar_path);
         }
 
         // Return default missing avatar

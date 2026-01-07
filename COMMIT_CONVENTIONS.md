@@ -10,9 +10,11 @@ Version numbers follow the format `MAJOR.MINOR.PATCH` (e.g., `1.2.3`).
 
 ## How It Works
 
-1. **Development Branch**: Push to `development` → Automatically deploys to development environment
+1. **Development Branch**: Push to `development` → Automatically deploys to development environment (Host: `3.138.217.206`)
+   - Operates using `dev-` prefixed SQS queues.
 2. **Main Branch**: Push to `main` → Creates GitHub release with auto-incremented version → Automatically deploys to
-   production
+   production (Host: `3.142.169.134`)
+   - Operates using `prod-` prefixed SQS queues.
 3. **Version Control**: Commit messages determine which part of the version number gets incremented
 
 ## Version Bump Rules

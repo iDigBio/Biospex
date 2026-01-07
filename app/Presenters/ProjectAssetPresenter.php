@@ -39,14 +39,9 @@ class ProjectAssetPresenter extends Presenter
             $url = null;
 
             // Check for new Livewire download_path first (check S3 for new uploads)
-            if (! empty($this->model->download_path)) {
-                if (Storage::disk('s3')->exists($this->model->download_path)) {
-                    // Generate a temporary signed URL for private S3 files (valid for 1 hour)
-                    $url = Storage::disk('s3')->url($this->model->download_path);
-                }
-            }
+            if (! empty($this->model->download_path) && Storage::disk('s3')->exists($this->model->download_path)) {
+                $url = Storage::disk('s3')->url($this->model->download_path);
 
-            if ($url) {
                 return '<a href="'.$url.'" target="_blank" data-hover="tooltip" title="'.$description.'">
                 <i class="fas fa-file"></i> '.$name.'</a>';
             }
