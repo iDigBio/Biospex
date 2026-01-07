@@ -84,17 +84,6 @@ class SqsListenerOcrUpdate extends Command
 
         // Dispatch job for BOTH success and failure
         TesseractOcrUpdateJob::dispatch($data);
-
-        // Only log/email on failure
-        if ($status === 'failed') {
-            $error = $data['error'] ?? 'Unknown OCR error';
-            $this->service->handleError(
-                "OCR failed for file ID #{$ocrQueueFileId}: {$error}",
-                null,
-                $data,
-                $this
-            );
-        }
     }
 
     private function hasActiveOcrJobs(): bool
