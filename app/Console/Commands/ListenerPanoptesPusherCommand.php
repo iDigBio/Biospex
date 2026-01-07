@@ -630,6 +630,13 @@ class ListenerPanoptesPusherCommand extends Command
 
     private function handleCriticalError(string $message, \Throwable $e): void
     {
+        // Do not send ANY critical emails if we are in a quota cooldown
+        if (Cache::has('panoptes_listener_quota_cooldown')) {
+            $this->error("Suppressed critical email during quota cooldown: {$message}");
+
+            return;
+        }
+
         $context = [
             'timestamp' => now()->toISOString(),
             'command' => 'panoptes:listen',
@@ -679,6 +686,11 @@ class ListenerPanoptesPusherCommand extends Command
      */
     private function shouldSendCriticalEmail(): bool
     {
+        // Double check quota cooldown here as well
+        if (Cache::has('panoptes_listener_quota_cooldown')) {
+            return false;
+        }
+
         $key = 'panoptes_listener_critical_email_sent';
         $lastSent = Cache::get($key, 0);
         $now = time();
