@@ -179,6 +179,13 @@ class ListenerPanoptesPusherCommand extends Command
             return;
         }
 
+        // Check if we are in a quota cooldown period before attempting connection
+        if (Cache::has('panoptes_listener_quota_cooldown')) {
+            $this->warn('Still in Pusher quota cooldown. Skipping connection attempt.');
+
+            return;
+        }
+
         $this->intentionalDisconnect = false;
         $this->lastMessageTime = time();
         $url = $this->buildWebSocketUrl();
@@ -233,6 +240,11 @@ class ListenerPanoptesPusherCommand extends Command
      */
     public function onConnectionFailure(\Throwable $e): void
     {
+        // If we are in quota cooldown, don't process connection failures
+        if (Cache::has('panoptes_listener_quota_cooldown')) {
+            return;
+        }
+
         $this->reconnectAttempts++;
 
         $this->handleError("Connection failed (attempt {$this->reconnectAttempts})", $e);
@@ -444,7 +456,7 @@ class ListenerPanoptesPusherCommand extends Command
                     $this->handleCriticalError('Pusher account over quota - service degraded',
                         new \RuntimeException("Account for App exceeded quota. Error: {$errorMessage}"));
 
-                    // Set cooldown for 1 hour
+                    // Set cooldown for 1 hour (3600 seconds)
                     Cache::put($cooldownKey, true, 3600);
                 }
 
@@ -452,7 +464,7 @@ class ListenerPanoptesPusherCommand extends Command
                 $this->intentionalDisconnect = true;
 
                 // Don't reconnect immediately for quota issues - wait 1 hour
-                $this->scheduleReconnection(3600); // Wait 1 hour instead of 5 minutes
+                $this->scheduleReconnection(3600);
 
                 return;
 
@@ -637,9 +649,14 @@ class ListenerPanoptesPusherCommand extends Command
 
     private function shouldSendEmailNotification(string $message): bool
     {
-        // Rate limiting - only send one email per 5 minutes for regular errors
+        // Don't send regular error emails if we're already in a quota cooldown
+        if (Cache::has('panoptes_listener_quota_cooldown')) {
+            return false;
+        }
+
+        // Rate limiting - only send one email per 15 minutes (900 seconds) for regular errors
         $now = time();
-        if (($now - $this->lastEmailSent) < 300) {
+        if (($now - $this->lastEmailSent) < 900) {
             return false;
         }
 

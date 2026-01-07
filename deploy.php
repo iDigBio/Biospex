@@ -91,14 +91,14 @@ if ($hasLocalKey) {
  */
 desc('Deploys your project using CI/CD artifacts');
 task('deploy', [
-    // Phase 0: Ensure .env from SSM is ready
-    'env:ssm',
-
     // Phase 1: Preparation
     'deploy:prepare',           // Create release directory and setup structure
 
+    // Phase 1.5: Ensure .env from SSM is ready (Moved after prepare)
+    'env:ssm',
+
     // Phase 2: Dependencies & Assets
-    'deploy:vendors',          // Install PHP Composer dependencies safely (--no-scripts to prevent DB connection issues)
+    'deploy:vendors',          // Install PHP Composer dependencies safely
     'deploy:ci-artifacts',     // Download & extract pre-built assets from GitHub Actions (NEW: No server building!)
 
     // Phase 3: Laravel Setup
