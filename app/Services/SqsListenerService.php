@@ -221,7 +221,7 @@ class SqsListenerService
      */
     private function getQueueUrl(string $key): string
     {
-        $name = Config::get("services.aws.queues.{$key}");
+        $name = Config::get("services.aws.sqs.{$key}");
 
         return $this->sqs->getQueueUrl(['QueueName' => $name])['QueueUrl'];
     }

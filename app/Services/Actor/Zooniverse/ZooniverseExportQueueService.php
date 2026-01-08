@@ -87,8 +87,9 @@ class ZooniverseExportQueueService
             throw new \Exception("Export Lambda concurrency is 0 — skipping queue #{$exportQueue->id}");
         }
 
-        // 5. Start Listener & Dispatch
-        \Artisan::queue('update:listen-controller start')
+        // 5. Start Listeners & Dispatch
+        // Using unified controller to start update listener and shared DLQ listener
+        \Artisan::queue('sqs:control export_update image_trigger_dlq --action=start')
             ->onQueue(config('config.queue.default'));
 
         $exportQueue->stage = 1;

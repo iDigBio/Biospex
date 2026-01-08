@@ -70,7 +70,7 @@ class SqsListenerExportUpdate extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.export_update',
+            'services.aws.sqs.export_update',
             'services.aws.region',
         ];
 

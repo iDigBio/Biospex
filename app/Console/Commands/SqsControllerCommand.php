@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2014 - 2025, Biospex
+ * Copyright (C) 2014 - 2026, Biospex
  * biospex@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,24 +22,21 @@ namespace App\Console\Commands;
 
 use App\Services\SupervisorControlService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 
 /**
- * Command to control reconciliation listener via Supervisor.
- *
- * This command allows starting, stopping, or restarting the reconciliation
- * update listener through Supervisor in an environment-neutral way.
+ * Unified command to control any SQS listener via Supervisor.
+ * Usage: php artisan sqs:control export_update start
  */
-class SqsControllerReconcileCommand extends Command
+class SqsControllerCommand extends Command
 {
-    protected $signature = 'reconcile:listen-controller {action=start|stop|restart}';
-
-    protected $description = 'Start/stop/restart the reconciliation update listener via Supervisor (environment-neutral)';
-
     /**
-     * Create a new command instance.
-     *
-     * @param  SupervisorControlService  $service  Service to control Supervisor processes
+     * The console command signature.
      */
+    protected $signature = 'sqs:control {queue_keys*} {--action=start : start|stop|restart}';
+
+    protected $description = 'Control one or more SQS listeners via Supervisor by providing config queue keys';
+
     public function __construct(protected SupervisorControlService $service)
     {
         parent::__construct();
@@ -47,21 +44,35 @@ class SqsControllerReconcileCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * Controls the reconciliation listener process through Supervisor based on the provided action.
-     *
-     * @return int Command exit code (SUCCESS=0 or FAILURE=1)
      */
     public function handle(): int
     {
+        $keys = $this->argument('queue_keys');
+        $action = $this->option('action');
+
+        $queueNames = [];
+        foreach ($keys as $key) {
+            $name = Config::get("services.aws.sqs.{$key}");
+            if (empty($name)) {
+                $this->warn("Invalid queue key: '{$key}' - skipping.");
+
+                continue;
+            }
+            $queueNames[] = $name;
+        }
+
+        if (empty($queueNames)) {
+            $this->error('No valid queue names found to control.');
+
+            return self::FAILURE;
+        }
+
         try {
-            $this->service->control([
-                config('services.aws.queues.reconcile_update'),
-            ], $this->argument('action'));
+            $this->service->control($queueNames, $action);
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
-            $this->error('Failed to control reconciliation listener: '.$e->getMessage());
+            $this->error('Supervisor Control Failed: '.$e->getMessage());
 
             return self::FAILURE;
         }

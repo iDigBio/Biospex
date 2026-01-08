@@ -281,7 +281,7 @@ class AppFileDeploymentCommand extends Command
             if (str_starts_with($field, 'AWS_SQS_')) {
                 $value = strtolower(str_replace('AWS_SQS_', '', $field));
 
-                return config('services.aws.queues.'.$value);
+                return config('services.aws.sqs.'.$value);
             }
 
             if ($field === 'REVERB_DEBUG') {

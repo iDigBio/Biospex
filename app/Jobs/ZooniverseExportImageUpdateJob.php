@@ -20,6 +20,8 @@ class ZooniverseExportImageUpdateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public ?int $fileId;
+
     public int $queueId;
 
     public string $subjectId;
@@ -41,6 +43,7 @@ class ZooniverseExportImageUpdateJob implements ShouldQueue
      */
     public function __construct(array $data)
     {
+        $this->fileId = isset($data['fileId']) ? (int) $data['fileId'] : null;
         $this->queueId = (int) $data['queueId'];
         $this->subjectId = (string) $data['subjectId'];
         $this->status = (string) $data['status'];
@@ -56,12 +59,16 @@ class ZooniverseExportImageUpdateJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $file = ExportQueueFile::where('queue_id', $this->queueId)
-            ->where('subject_id', $this->subjectId)
-            ->first();
+        // Primary lookup by ID if available, otherwise fallback to legacy lookup
+        $file = $this->fileId
+            ? ExportQueueFile::find($this->fileId)
+            : ExportQueueFile::where('queue_id', $this->queueId)
+                ->where('subject_id', $this->subjectId)
+                ->first();
 
         if (! $file) {
             \Log::warning('ZooniverseExportImageUpdateJob: File not found', [
+                'file_id' => $this->fileId,
                 'queue_id' => $this->queueId,
                 'subject_id' => $this->subjectId,
             ]);
@@ -69,7 +76,7 @@ class ZooniverseExportImageUpdateJob implements ShouldQueue
             return;
         }
 
-        $wasProcessed = $file->processed;  // Cache for guard
+        $wasProcessed = $file->processed;
 
         $file->processed = 1;
         $file->tries = $file->tries + 1;

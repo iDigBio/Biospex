@@ -69,7 +69,7 @@ class SqsListenerReconcileUpdate extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.reconcile_update',
+            'services.aws.sqs.reconcile_update',
             'services.aws.region',
         ];
 

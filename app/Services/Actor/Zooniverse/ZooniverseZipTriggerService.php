@@ -180,7 +180,7 @@ class ZooniverseZipTriggerService
      */
     protected function getQueueUrl(string $key): string
     {
-        $queueName = config("services.aws.queues.{$key}");
+        $queueName = config("services.aws.sqs.{$key}");
 
         return $this->sqs->getQueueUrl(['QueueName' => $queueName])['QueueUrl'];
     }

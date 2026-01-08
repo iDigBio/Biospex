@@ -56,7 +56,7 @@ class SqsListenerOcrUpdate extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.ocr_update',
+            'services.aws.sqs.ocr_update',
             'services.aws.region',
         ];
 
@@ -79,22 +79,11 @@ class SqsListenerOcrUpdate extends Command
 
     private function routeMessage(array $data): void
     {
-        $ocrQueueFileId = $data['ocrQueueFileId'] ?? throw new InvalidArgumentException('Missing ocrQueueFileId');
+        $fileId = $data['fileId'] ?? throw new InvalidArgumentException('Missing fileId');
         $status = $data['status'] ?? throw new InvalidArgumentException('Missing status');
 
         // Dispatch job for BOTH success and failure
         TesseractOcrUpdateJob::dispatch($data);
-
-        // Only log/email on failure
-        if ($status === 'failed') {
-            $error = $data['error'] ?? 'Unknown OCR error';
-            $this->service->handleError(
-                "OCR failed for file ID #{$ocrQueueFileId}: {$error}",
-                null,
-                $data,
-                $this
-            );
-        }
     }
 
     private function hasActiveOcrJobs(): bool
