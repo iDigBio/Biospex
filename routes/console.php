@@ -28,7 +28,7 @@ Artisan::command('inspire', function () {
 Schedule::command('export:queue')->everyTwoMinutes();
 Schedule::command('tesseract:ocr-process')->everyTwoMinutes();
 Schedule::command('cache:prune-stale-tags')->hourly();
-Schedule::command('queue:prune-batches --hours=48 --unfinished=72')->daily();
+// Schedule::command('queue:prune-batches --hours=48 --unfinished=72')->daily();
 
 // Clean bingo maps
 Schedule::command('bingo:clean')->dailyAt('10:05');

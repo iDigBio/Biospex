@@ -607,6 +607,11 @@ class ListenerPanoptesPusherCommand extends Command
      */
     private function handleError(string $message, ?\Throwable $e = null, array $context = []): void
     {
+        // Don't process or email if we're in a quota cooldown
+        if (Cache::has('panoptes_listener_quota_cooldown')) {
+            return;
+        }
+
         $details = $message.($e ? ": {$e->getMessage()}" : '');
         $this->trackError($details);
 
