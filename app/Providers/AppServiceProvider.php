@@ -97,11 +97,26 @@ class AppServiceProvider extends ServiceProvider
             'region' => config('services.aws.region', 'us-east-2'),
         ];
 
-        // If keys are in .env, use them.
-        // If NOT (Local ~/.aws/credentials or Server IAM Role),
-        // omitting 'credentials' lets the SDK find them automatically.
-        if (config('services.aws.credentials.key') && config('services.aws.credentials.secret')) {
-            $awsConfig['credentials'] = config('services.aws.credentials');
+        $key = config('services.aws.credentials.key');
+        $secret = config('services.aws.credentials.secret');
+
+        if (! empty($key) && ! empty($secret)) {
+            // Case 1: Keys provided via .env (CI or specific local setup)
+            $awsConfig['credentials'] = [
+                'key' => $key,
+                'secret' => $secret,
+            ];
+        } else {
+            // Fix for Supervisor/Background processes on local WSL:
+            // Explicitly point to the credentials file when running locally.
+            $localCreds = '/home/ubuntu/.aws/credentials';
+
+            if (app()->isLocal() && file_exists($localCreds)) {
+                $awsConfig['credentials'] = \Aws\Credentials\CredentialProvider::ini('default', $localCreds);
+            } else {
+                // EC2 IAM Role fallback (Production/Development)
+                $awsConfig['credentials'] = \Aws\Credentials\CredentialProvider::defaultProvider();
+            }
         }
 
         // Register AWS SQS Client

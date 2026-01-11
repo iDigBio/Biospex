@@ -80,10 +80,21 @@ class TesseractOcrUpdateJob implements ShouldQueue
      */
     public function handle(SubjectService $subjectService): void
     {
-        $file = OcrQueueFile::find($this->fileId);
+        // Primary lookup by ID if available, otherwise fallback to subject_id lookup
+        $file = $this->fileId > 0
+            ? OcrQueueFile::find($this->fileId)
+            : OcrQueueFile::where('subject_id', $this->subjectId)
+                ->where('processed', 0)
+                ->first();
 
-        if (! $file || $file->subject_id !== $this->subjectId) {
-            return; // stale or malformed
+        if (! $file) {
+            \Log::warning('TesseractOcrUpdateJob: File not found', [
+                'file_id' => $this->fileId,
+                'subject_id' => $this->subjectId,
+                'queue_id' => $this->queueId,
+            ]);
+
+            return;
         }
 
         $wasProcessed = $file->processed;

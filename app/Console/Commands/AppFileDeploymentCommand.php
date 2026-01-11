@@ -24,6 +24,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Command\Command as CommandAlias;
@@ -94,7 +95,7 @@ class AppFileDeploymentCommand extends Command
             throw new Exception("No supervisor template files found in: {$supervisorPath}");
         }
 
-        \Log::info('Found '.count($files).' supervisor template file(s)');
+        Log::info('Found '.count($files).' supervisor template file(s)');
 
         return collect($files);
     }
@@ -201,6 +202,7 @@ class AppFileDeploymentCommand extends Command
      */
     private function writeTargetFile(string $targetPath, string $content): void
     {
+
         $dir = dirname($targetPath);
 
         if (! File::isDirectory($dir)) {
@@ -234,7 +236,7 @@ class AppFileDeploymentCommand extends Command
             }
 
             if ($changes === 0) {
-                \Log::info('  <fg=gray>No replacements needed</>');
+                Log::info('  <fg=gray>No replacements needed</>');
             }
         }
     }

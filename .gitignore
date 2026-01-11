@@ -57,3 +57,5 @@ laradumps.yaml
 
 /.ai/
 /generate-env
+/.github/
+/.vscode/

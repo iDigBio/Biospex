@@ -95,11 +95,28 @@ class SqsListenerImageDlq extends Command
      */
     private function routeMessage(array $data): void
     {
+        // 1. Detect S3 Event (OCR Hard Crash)
+        if (isset($data['Records'][0]['s3'])) {
+            $key = $data['Records'][0]['s3']['object']['key'];
+
+            // Extract the unique subjectId from the filename (e.g., "ocr/123/subjectABC.jpg" -> "subjectABC")
+            $subjectId = pathinfo($key, PATHINFO_FILENAME);
+
+            $data = [
+                'taskType' => 'ocr',
+                'subjectId' => $subjectId,
+                'status' => 'failed',
+                'error' => 'DLQ: Lambda System Crash (Timeout/OOM) during OCR processing',
+            ];
+        }
+
         $taskType = $data['taskType'] ?? 'unknown';
 
-        // Inject failure metadata for the existing Update Jobs
-        $data['status'] = 'failed';
-        $data['error'] = 'DLQ: Message exceeded maximum retries in SQS (likely Fetcher timeout or invalid URL)';
+        // 2. Inject failure metadata if not already set (for standard SQS triggers)
+        if (! isset($data['status'])) {
+            $data['status'] = 'failed';
+            $data['error'] = 'DLQ: Message exceeded maximum retries in SQS';
+        }
 
         try {
             match ($taskType) {
