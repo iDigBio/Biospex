@@ -666,9 +666,12 @@ class ListenerPanoptesPusherCommand extends Command
             return false;
         }
 
-        // Rate limiting - only send one email per 15 minutes (900 seconds) for regular errors
+        // Rate limiting - use Cache instead of $this->lastEmailSent to survive restarts
+        $key = 'panoptes_listener_regular_email_sent';
+        $lastSent = Cache::get($key, 0);
         $now = time();
-        if (($now - $this->lastEmailSent) < 900) {
+
+        if (($now - $lastSent) < 900) {
             return false;
         }
 
@@ -677,7 +680,7 @@ class ListenerPanoptesPusherCommand extends Command
 
         foreach ($criticalKeywords as $keyword) {
             if (stripos($message, $keyword) !== false) {
-                $this->lastEmailSent = $now;
+                Cache::put($key, $now, 1000); // Record in cache
 
                 return true;
             }
